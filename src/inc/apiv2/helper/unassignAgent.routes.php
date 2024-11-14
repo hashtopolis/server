@@ -24,7 +24,7 @@ class UnassignAgentHelperAPI extends AbstractHelperAPI {
     ];
   }
   
-  public function actionPost($data): array|null {
+  public function actionPost($data): object|array|null {
     AgentUtils::assign($data[Agent::AGENT_ID], 0, $this->getCurrentUser());
     
     # TODO: Check how to handle custom return messages that are not object, probably we want that to be in some kind of standardized form.

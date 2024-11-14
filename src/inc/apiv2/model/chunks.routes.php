@@ -1,6 +1,7 @@
 <?php
 use DBA\Factory;
 
+use DBA\Agent;
 use DBA\Chunk;
 use DBA\Task;
 
@@ -20,27 +21,22 @@ class ChunkAPI extends AbstractModelAPI {
       return Chunk::class;
     }   
 
-    public function getExpandables(): array {
-      return ["task"];
-    }
-
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof Chunk); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'task':
-          return $this->getForeignKeyRelation(
-            $objects,
-            Chunk::TASK_ID,
-            Factory::getTaskFactory(),
-            Task::TASK_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
-    }  
+    public static function getToOneRelationships(): array {
+      return [
+        'agent' => [
+          'key' => Chunk::AGENT_ID,
+          
+          'relationType' => Agent::class,
+          'relationKey' => Agent::AGENT_ID,
+        ],
+        'task' => [
+          'key' => Chunk::TASK_ID,
+          
+          'relationType' => Task::class,
+          'relationKey' => Task::TASK_ID,
+        ],
+      ];
+    }    
 
     protected function createObject(array $data): int {
       /* Dummy code to implement abstract functions */
@@ -48,7 +44,7 @@ class ChunkAPI extends AbstractModelAPI {
       return -1;
     }
 
-    public function updateObject(object $object, array $data, array $processed = []): void {
+    protected function updateObject(object $object, array $data, array $processed = []): void {
       assert(False, "Chunks cannot be updated via API");
     }
 

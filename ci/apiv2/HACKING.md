@@ -9,7 +9,7 @@ TOKEN=$(curl -X POST --user admin:hashtopolis http://localhost:8080/api/v2/auth/
 
 Fetch object:
 ```
-curl --header "Content-Type: application/json" -X GET --header "Authorization: Bearer $TOKEN" 'http://localhost:8080/api/v2/ui/hashlists/1?expand=hashes' -d '{}'
+curl --compressed --header "Authorization: Bearer $TOKEN" -g 'http://localhost:8080/api/v2/ui/hashtypes?page[size]=5'
 ```
 
 Access database:
@@ -21,6 +21,12 @@ Enable query logging:
 ```
 docker exec $(docker ps -aqf "ancestor=mysql:8.0") mysql -u root -phashtopolis -e "SET global log_output = 'FILE'; SET global general_log_file='/tmp/mysql_all.log'; SET global general_log = 1;"
 docker exec $(docker ps -aqf "ancestor=mysql:8.0") tail -f /tmp/mysql_all.log
+```
+
+Shortcut for testing within development setup:
+```
+cd ~/src/hashtopolis/server/ci/apiv2
+pytest --exitfirst --last-failed
 ```
 
 ### paper flipchart scribbles

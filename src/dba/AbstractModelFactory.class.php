@@ -658,6 +658,10 @@ abstract class AbstractModelFactory {
       $options['order'] = $orderOptions;
     }
     $query .= $this->applyOrder($options['order']);
+
+    if (array_key_exists("limit", $options)) {
+      $query .= $this->applyLimit($options['limit']);
+    }
     
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
@@ -719,6 +723,12 @@ abstract class AbstractModelFactory {
       $orderQueries[] = $order->getQueryString($this->getModelTable());
     }
     return " ORDER BY " . implode(", ", $orderQueries);
+  }
+
+  //applylimit is slightly different than the other apply functions, since you can only limit by a single value
+  //the $limit argument is a single object LimitFilter object instead of an array of objects.
+  private function applyLimit($limit) {
+    return " LIMIT " . $limit->getQueryString();
   }
   
   private function applyGroups($groups) {

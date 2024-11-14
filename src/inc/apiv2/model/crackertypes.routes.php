@@ -5,6 +5,7 @@ use DBA\OrderFilter;
 
 use DBA\CrackerBinary;
 use DBA\CrackerBinaryType;
+use DBA\Task;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -18,27 +19,24 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
       return CrackerBinaryType::class;
     }
 
-    public function getExpandables(): array {
-      return ["crackerVersions"];
+
+    public static function getToManyRelationships(): array {
+      return [
+        'crackerVersions' => [
+          'key' => CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
+          
+          'relationType' => CrackerBinary::class,
+          'relationKey' => CrackerBinary::CRACKER_BINARY_TYPE_ID,        
+        ],
+        'tasks' => [
+          'key' => CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
+          
+          'relationType' => Task::class,
+          'relationKey' => Task::CRACKER_BINARY_TYPE_ID,
+        ]
+      ];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof CrackerBinaryType); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'crackerVersions':
-          return $this->getManyToOneRelation(
-            $objects,
-            CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
-            Factory::getCrackerBinaryFactory(),
-            CrackerBinary::CRACKER_BINARY_TYPE_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
-    }
   
     protected function createObject(array $data): int {
       CrackerUtils::createBinaryType($data[CrackerBinaryType::TYPE_NAME]);

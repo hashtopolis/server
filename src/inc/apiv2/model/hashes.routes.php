@@ -19,35 +19,23 @@ class HashAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return Hash::class;
-    }   
-
-    public function getExpandables(): array {
-      return ["hashlist", "chunk"];
     }
+    
+    public static function getToOneRelationships(): array {
+      return [
+        'chunk' => [
+          'key' => Hash::CHUNK_ID, 
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof Hash); });
+          'relationType' => Chunk::class,
+          'relationKey' => Chunk::CHUNK_ID,
+        ],
+        'hashlist' => [
+          'key' => Hash::HASHLIST_ID, 
 
-      /* Expand requested section */
-      switch($expand) {
-        case 'hashlist':
-          return $this->getForeignKeyRelation(
-            $objects,
-            Hash::HASHLIST_ID,
-            Factory::getHashListFactory(),
-            HashList::HASHLIST_ID
-          );
-        case 'chunk':
-          return $this->getForeignKeyRelation(
-            $objects,
-            Hash::CHUNK_ID,
-            Factory::getChunkFactory(),
-            Chunk::CHUNK_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+          'relationType' => Hashlist::class,
+          'relationKey' => Hashlist::HASHLIST_ID,
+        ],
+      ];
     }
 
     protected function createObject(array $data): int {

@@ -36,6 +36,8 @@ use Tuupola\Middleware\HttpBasicAuthentication;
 use Tuupola\Middleware\HttpBasicAuthentication\AuthenticatorInterface;
 use Tuupola\Middleware\CorsMiddleware;
 
+use Middlewares\DeflateEncoder;
+
 use Skeleton\Application\Response\UnauthorizedResponse;
 
 use Psr\Http\Message\ResponseInterface;
@@ -154,7 +156,7 @@ class JsonBodyParserMiddleware implements MiddlewareInterface
     {
         $contentType = $request->getHeaderLine('Content-Type');
 
-        if (strstr($contentType, 'application/json')) {
+        if (strstr($contentType, 'application/json') || strstr($contentType, 'application/vnd.api+json')) {
             $contents = json_decode(file_get_contents('php://input'), true);
             if (json_last_error() === JSON_ERROR_NONE) {
                 $request = $request->withParsedBody($contents);
@@ -225,11 +227,9 @@ $app->add("HttpBasicAuthentication");
 $app->add("JwtAuthentication");
 $app->add(new TokenAsParameterMiddleware());
 $app->add(new ContentLengthMiddleware());       // NOTE: Add any middleware which may modify the response body before adding the ContentLengthMiddleware
-
-// NOTE: The ErrorMiddleware should be added after any middleware which may modify the response body
-$errorMiddleware = $app->addErrorMiddleware(true, true, true);
-$errorHandler = $errorMiddleware->getDefaultErrorHandler();
-$errorHandler->forceContentType('application/json');
+$app->add((new DeflateEncoder())->contentType(
+  '/^(image\/svg\\+xml|text\/.*|application\/json|"application\/vnd\.api+json)(;.*)?$/'
+));
 
 $app->add(new CorsHackMiddleware());            // NOTE: The RoutingMiddleware should be added after our CORS middleware so routing is performed first
 $app->addRoutingMiddleware();
@@ -280,5 +280,10 @@ require __DIR__ . "/../../inc/apiv2/helper/recountFileLines.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/resetChunk.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/setUserPassword.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/unassignAgent.routes.php";
+
+// NOTE: The ErrorMiddleware should be added after any middleware which may modify the response body
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
+$errorHandler = $errorMiddleware->getDefaultErrorHandler();
+$errorHandler->forceContentType('application/json');
 
 $app->run();

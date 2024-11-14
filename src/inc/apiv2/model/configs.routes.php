@@ -20,26 +20,15 @@ class ConfigAPI extends AbstractModelAPI {
       return Config::class;
     }
 
-    public function getExpandables(): array {
-      return ['configSection'];
-    }
+    public static function getToOneRelationships(): array {
+      return [
+        'configSection' => [
+          'key' => Config::CONFIG_SECTION_ID, 
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof Config); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'configSection':
-          return $this->getForeignKeyRelation(
-            $objects,
-            Config::CONFIG_SECTION_ID,
-            Factory::getConfigSectionFactory(),
-            ConfigSection::CONFIG_SECTION_ID,
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+          'relationType' => ConfigSection::class,
+          'relationKey' => ConfigSection::CONFIG_SECTION_ID,
+        ],
+      ];
     }
  
     protected function createObject(array $data): int {
