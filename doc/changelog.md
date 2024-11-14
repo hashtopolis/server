@@ -16,7 +16,7 @@ Changes/Bugfixes on new UI:
 
 ## Bugfixes
 
-- Fixed a bug for APIv1 where a hash in binary format did not return the plain text when cracked
+- Fixed a bug in the user API where a hash in binary format did not return the plain text when cracked
 - Increase the limit of the attack command length
 
 
