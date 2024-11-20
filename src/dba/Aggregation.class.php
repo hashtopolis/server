@@ -11,6 +11,11 @@ class Aggregation {
    * @var AbstractModelFactory
    */
   private $factory;
+
+  const SUM = "SUM";
+  const MAX = "MAX";
+  const MIN = "MIN";
+  const COUNT = "COUNT"; 
   
   function __construct($column, $function, $factory = null) {
     $this->column = $column;

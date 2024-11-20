@@ -380,23 +380,19 @@ class Util {
   public static function getTaskInfo($task) {
     $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     
-    $qF2 = new QueryFilter(Chunk::DISPATCH_TIME, 0, ">");
-    $qF3 = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
-    $agg1 = new Aggregation(Chunk::SOLVE_TIME, "SUM");
-    $agg2 = new Aggregation(Chunk::DISPATCH_TIME, "SUM");
-    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], [$agg1, $agg2]);
+    $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
+    $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
+    $agg3 = new Aggregation(Chunk::CRACKED, Aggregation::SUM);
+    $agg4 = new Aggregation(Chunk::SPEED, Aggregation::SUM);
+    $agg5 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::MAX);
+    $agg6 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::MAX);
+    $agg7 = new Aggregation(Chunk::CHUNK_ID, Aggregation::COUNT);
+    $agg8 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::SUM);
+    $agg9 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::SUM);
     
-    $totalTimeSpent = $results[$agg1->getName()] - $results[$agg2->getName()];
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2, $agg3, $agg4, $agg5, $agg6, $agg7, $agg8, $agg9]);
     
-    $agg1 = new Aggregation(Chunk::CHECKPOINT, "SUM");
-    $agg2 = new Aggregation(Chunk::SKIP, "SUM");
-    $agg3 = new Aggregation(Chunk::CRACKED, "SUM");
-    $agg4 = new Aggregation(Chunk::SPEED, "SUM");
-    $agg5 = new Aggregation(Chunk::DISPATCH_TIME, "MAX");
-    $agg6 = new Aggregation(Chunk::SOLVE_TIME, "MAX");
-    $agg7 = new Aggregation(Chunk::CHUNK_ID, "COUNT");
-    
-    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2, $agg3, $agg4, $agg5, $agg6, $agg7]);
+    $totalTimeSpent = $results[$agg8->getName()] - $results[$agg9->getName()];
     
     $progress = $results[$agg1->getName()] - $results[$agg2->getName()];
     $cracked = $results[$agg3->getName()];
