@@ -104,7 +104,17 @@ class getFileHelperAPI extends AbstractHelperAPI {
     $file_id = intval($request->getQueryParams()['file']); 
 
     $filename = $this->validateFile($request, $file_id);
-    // $file = $filename;
+
+    $size = Util::filesize($filename); 
+    $lastModified = filemtime($filename);
+
+    $etag = md5($lastModified . $size);
+
+    $ifNoneMatch = $request->getHeaderLine('If-None-Match');
+    if ($ifNoneMatch === $etag) {
+        return $response->withStatus(304);
+    }
+
     $exp = explode(".", $filename);
     if ($exp[sizeof($exp) - 1] == '7z') {
       $contentType = "application/x-7z-compressed";
@@ -117,7 +127,6 @@ class getFileHelperAPI extends AbstractHelperAPI {
       throw new HttpForbiddenException($request, "Can't open the file");
     }
 
-    $size = Util::filesize($filename); // File size
     $start = 0;                        // Start byte
     $end = $size - 1;                  // End byte
 
@@ -149,7 +158,8 @@ class getFileHelperAPI extends AbstractHelperAPI {
       ->withHeader("Content-Disposition", "attachment; filename=\"" . $filename . "\"")
       ->withHeader("Accept-Ranges", "Byte")
       ->withHeader("Content-Range", "bytes $start-$end/$size")
-      ->withHeader("Content-Length", $length);
+      ->withHeader("Content-Length", $length)
+      ->withHeader("ETag", $etag);
   }
 
   static public function register($app): void
