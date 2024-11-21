@@ -27,21 +27,20 @@ class getFileHelperAPI extends AbstractHelperAPI {
   }
 
   public function validateFile($request, $file_id) {
-    if (!$file_id) {
-      throw new HTException("Invallid file id given");
+    if (!is_numeric($file_id)) {
+      throw new HTException("Invalid file id given: " . $file_id);
     }
     $file = Factory::getFileFactory()->get($file_id);
     if (!$file) {
       throw new HttpNotFoundException($request, "No file with id: " . $file_id);
     }
     $filename = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename();
+    //checks below should never trigger 
     if (!file_exists($filename)) {
       throw new HttpNotFoundException($request, "File not found at filesystem");
     }
-
-    //todo use validatePermissions() on correct file type
-    switch ($file->getFiletype()) {
-
+    if (!is_readable($filename)) {
+      throw new HttpForbiddenException($request, "Not allowed to read file");
     }
 
     return $filename;
@@ -109,7 +108,6 @@ class getFileHelperAPI extends AbstractHelperAPI {
     $lastModified = filemtime($filename);
 
     $etag = md5($lastModified . $size);
-
     $ifNoneMatch = $request->getHeaderLine('If-None-Match');
     if ($ifNoneMatch === $etag) {
         return $response->withStatus(304);
@@ -127,8 +125,8 @@ class getFileHelperAPI extends AbstractHelperAPI {
       throw new HttpForbiddenException($request, "Can't open the file");
     }
 
-    $start = 0;                        // Start byte
-    $end = $size - 1;                  // End byte
+    $start = 0;          // Start byte
+    $end = $size - 1;    // End byte
 
     $status = 200;
     if (isset($_SERVER['HTTP_RANGE'])) {
