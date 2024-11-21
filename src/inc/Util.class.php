@@ -1,5 +1,6 @@
 <?php
 
+use DBA\Aggregation;
 use DBA\AbstractModel;
 use DBA\AccessGroup;
 use DBA\AccessGroupUser;
@@ -377,33 +378,33 @@ class Util {
    * @return array
    */
   public static function getTaskInfo($task) {
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-    $progress = 0;
-    $cracked = 0;
-    $maxTime = 0;
-    $totalTimeSpent = 0;
-    $speed = 0;
-    foreach ($chunks as $chunk) {
-      if ($chunk->getDispatchTime() > 0 && $chunk->getSolveTime() > 0) {
-        $totalTimeSpent += $chunk->getSolveTime() - $chunk->getDispatchTime();
-      }
-      $progress += $chunk->getCheckpoint() - $chunk->getSkip();
-      $cracked += $chunk->getCracked();
-      if ($chunk->getDispatchTime() > $maxTime) {
-        $maxTime = $chunk->getDispatchTime();
-      }
-      if ($chunk->getSolveTime() > $maxTime) {
-        $maxTime = $chunk->getSolveTime();
-      }
-      $speed += $chunk->getSpeed();
-    }
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    
+    $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
+    $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
+    $agg3 = new Aggregation(Chunk::CRACKED, Aggregation::SUM);
+    $agg4 = new Aggregation(Chunk::SPEED, Aggregation::SUM);
+    $agg5 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::MAX);
+    $agg6 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::MAX);
+    $agg7 = new Aggregation(Chunk::CHUNK_ID, Aggregation::COUNT);
+    $agg8 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::SUM);
+    $agg9 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::SUM);
+    
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2, $agg3, $agg4, $agg5, $agg6, $agg7, $agg8, $agg9]);
+    
+    $totalTimeSpent = $results[$agg8->getName()] - $results[$agg9->getName()];
+    
+    $progress = $results[$agg1->getName()] - $results[$agg2->getName()];
+    $cracked = $results[$agg3->getName()];
+    $speed = $results[$agg4->getName()];
+    $maxTime = max($results[$agg5->getName()], $results[$agg6->getName()]);
+    $numChunks = $results[$agg7->getName()];
     
     $isActive = false;
     if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $task->getKeyspace() || $task->getUsePreprocessor() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE)) {
       $isActive = true;
     }
-    return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0, $speed);
+    return array($progress, $cracked, $isActive, $numChunks, ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0, $speed);
   }
   
   /**
@@ -438,8 +439,12 @@ class Util {
    */
   public static function getChunkInfo($task) {
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $cracked = Factory::getChunkFactory()->sumFilter([Factory::FILTER => $qF], Chunk::CRACKED);
-    $numChunks = Factory::getChunkFactory()->countFilter([Factory::FILTER => $qF]);
+    $agg1 = new Aggregation(Chunk::CRACKED, "SUM");
+    $agg2 = new Aggregation(Chunk::CHUNK_ID, "COUNT");
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF], [$agg1, $agg2]);
+    
+    $cracked = $results[$agg1->getName()];
+    $numChunks = $results[$agg2->getName()];
     
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $numAssignments = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);

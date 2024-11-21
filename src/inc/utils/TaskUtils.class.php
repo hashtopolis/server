@@ -1152,18 +1152,20 @@ class TaskUtils {
     else if ($task->getUsePreprocessor() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE) {
       return $task;
     }
+
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $qF2 = new QueryFilter(Chunk::PROGRESS, 10000, ">=");
+    $sum = Factory::getChunkFactory()->sumFilter([Factory::FILTER => [$qF1, $qF2]], Chunk::LENGTH);
+
+    $dispatched = $task->getSkipKeyspace() + $sum;
+    $completed = $task->getSkipKeyspace() + $sum;
     
     // check chunks
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-    $dispatched = $task->getSkipKeyspace();
-    $completed = $task->getSkipKeyspace();
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $qF2 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
     foreach ($chunks as $chunk) {
-      if ($chunk->getProgress() >= 10000) {
-        $dispatched += $chunk->getLength();
-        $completed += $chunk->getLength();
-      }
-      else if ($chunk->getAgentId() == null) {
+      if ($chunk->getAgentId() == null) {
         return $task; // at least one chunk is not assigned
       }
       else if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) > SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT)) {
