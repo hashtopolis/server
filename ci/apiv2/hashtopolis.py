@@ -818,6 +818,17 @@ class Helper(HashtopolisConnector):
         else:
             return self.resp_to_json(r)
 
+    def _helper_get_request_file(self, helper_uri, payload):
+        self.authenticate()
+        uri = self._api_endpoint + self._model_uri + helper_uri
+        headers = self._headers
+
+        logging.debug(f"Sending GET request to {uri}, with params:{payload}")
+        r = requests.get(uri, headers=headers, params=payload)
+        assert r.status_code == 200
+        logging.debug(f"received file contents: \n {r.text}")
+        return r.text
+
     def _test_authentication(self, username, password):
         auth_uri = self._api_endpoint + '/auth/token'
         auth = (username, password)
@@ -898,6 +909,11 @@ class Helper(HashtopolisConnector):
         response = self._helper_request("importCrackedHashes", payload)
         return response['data']
 
+    def get_file(self, file):
+        payload = {
+            'file': file.id
+        }
+        return self._helper_get_request_file("getFile", payload)
 
     def recount_file_lines(self, file):
         payload = {
