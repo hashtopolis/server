@@ -818,14 +818,19 @@ class Helper(HashtopolisConnector):
         else:
             return self.resp_to_json(r)
 
-    def _helper_get_request_file(self, helper_uri, payload):
+    def _helper_get_request_file(self, helper_uri, payload, range=None):
         self.authenticate()
         uri = self._api_endpoint + self._model_uri + helper_uri
         headers = self._headers
+        if range:
+            headers["Range"] = range
 
         logging.debug(f"Sending GET request to {uri}, with params:{payload}")
         r = requests.get(uri, headers=headers, params=payload)
-        assert r.status_code == 200
+        if range == None:
+            assert r.status_code == 200
+        else:
+            assert r.status_code == 206
         logging.debug(f"received file contents: \n {r.text}")
         return r.text
 
@@ -909,11 +914,11 @@ class Helper(HashtopolisConnector):
         response = self._helper_request("importCrackedHashes", payload)
         return response['data']
 
-    def get_file(self, file):
+    def get_file(self, file, range=None):
         payload = {
             'file': file.id
         }
-        return self._helper_get_request_file("getFile", payload)
+        return self._helper_get_request_file("getFile", payload, range)
 
     def recount_file_lines(self, file):
         payload = {
