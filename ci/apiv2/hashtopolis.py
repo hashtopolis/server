@@ -827,7 +827,7 @@ class Helper(HashtopolisConnector):
 
         logging.debug(f"Sending GET request to {uri}, with params:{payload}")
         r = requests.get(uri, headers=headers, params=payload)
-        if range == None:
+        if range is None:
             assert r.status_code == 200
         else:
             assert r.status_code == 206
