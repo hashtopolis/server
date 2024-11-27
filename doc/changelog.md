@@ -1,5 +1,10 @@
 # v0.14.2 -> v0.14.3
 
+## Bugfixes
+
+- Fixed a bug where creating a new preprocessor would copy the configured limit command over the configured skip command
+
+
 ## Tech Preview New API
 Release 0.14.3 comes with an update to the tech preview of the new API. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
 
