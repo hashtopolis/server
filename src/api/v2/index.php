@@ -7,7 +7,7 @@ if (!$enabled || $enabled == 'false') {
 }
 
 date_default_timezone_set("UTC");
-error_reporting(E_ALL);
+error_reporting(E_ALL ^ E_DEPRECATED);
 ini_set("display_errors", '1');
 /**
  * Treat warnings as error, very usefull during unit testing.
