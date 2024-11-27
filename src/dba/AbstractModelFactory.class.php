@@ -855,6 +855,8 @@ abstract class AbstractModelFactory {
     }
     else {
       global $CONN;
+      // The utf8mb4 is here to force php to connect with that encoding, so you can save emoji's or other non ascii chars (specifically, unicode characters outside of the BMP) into the database. 
+      // If you are running into issues with this line, we could make this configurable.
       $dsn = 'mysql:dbname=' . $CONN['db'] . ";host=" . $CONN['server'] . ";port=" . $CONN['port'] . ";charset=utf8mb4";
       $user = $CONN['user'];
       $password = $CONN['pass'];

@@ -1,3 +1,10 @@
+# v0.14.3 -> v0.14.4
+
+## Enhancements
+
+- Use utf8mb4 as default encoding in order to support the full unicode range
+
+
 # v0.14.2 -> v0.14.3
 
 ## Tech Preview New API
