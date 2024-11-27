@@ -15,6 +15,7 @@ use DBA\AgentBinary;
 use DBA\AgentStat;
 use DBA\Assignment;
 use DBA\Chunk;
+use DBA\ComparisonFilter;
 use DBA\Config;
 use DBA\ConfigSection;
 use DBA\CrackerBinary;
@@ -919,22 +920,22 @@ abstract class AbstractBaseAPI
       switch($matches['operator']) {
         case '':
         case '__eq':
-          array_push($qFs, new QueryFilter($remappedKey, $val, '='));
+          $operator = '=';
           break;
         case '__ne':
-          array_push($qFs, new QueryFilter($remappedKey, $val, '!='));
+          $operator = '!=';
           break;
         case '__lt':
-          array_push($qFs, new QueryFilter($remappedKey, $val, '<'));
+          $operator = '<';
           break;
         case '__lte':
-          array_push($qFs, new QueryFilter($remappedKey, $val, '<='));
+          $operator = '<=';
           break;
         case '__gt':
-          array_push($qFs, new QueryFilter($remappedKey, $val, '>'));
+          $operator = '>';
           break;
         case '__gte':
-          array_push($qFs, new QueryFilter($remappedKey, $val, '>='));
+          $operator = '>=';
           break;
         case '__contains':
           array_push($qFs, new LikeFilter($remappedKey, "%" . $val . "%"));
@@ -956,6 +957,14 @@ abstract class AbstractBaseAPI
           break;
         default:
           assert(False, "Operator '" . $matches['operator'] . "' not implemented");
+      }
+
+      if ($operator) {
+        if (array_key_exists($val, $features)) {
+          array_push($qFs, new ComparisonFilter($remappedKey, $val, $operator));
+        } else {
+          array_push($qFs, new QueryFilter($remappedKey, $val, $operator));
+        }
       }
     }
     return $qFs;
@@ -1257,7 +1266,7 @@ abstract class AbstractBaseAPI
 
   //Meta response for helper functions that do not respond with resource records
   protected static function getMetaResponse(array $meta, Request $request, Response $response, int $statusCode=200) {
-    $ret = self::createJsonResponse($meta=$meta);
+    $ret = self::createJsonResponse(meta: $meta);
     $body = $response->getBody();
     $body->write(self::ret2json($ret));
 

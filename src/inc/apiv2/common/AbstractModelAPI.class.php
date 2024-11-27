@@ -560,6 +560,41 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
+   * API entry point for retrieving count information of data
+   */
+  public function count(Request $request, Response $response, array $args): Response
+  {
+    $this->preCommon($request);
+
+    $factory = $this->getFactory();
+    $aliasedfeatures = $this->getAliasedFeatures();
+
+    /* Generate filters */
+    $qFs_Filter = $this->makeFilter($request, $aliasedfeatures);
+    $qFs_ACL = $this->getFilterACL();
+    $qFs = array_merge($qFs_ACL, $qFs_Filter);
+    if (count($qFs) > 0) {
+      $aFs[Factory::FILTER] = $qFs;
+    }
+
+    $count = $factory->countFilter($aFs);
+    $meta = ["count" => $count];
+
+    $include_total = $request->getQueryParams()['include_total'];
+    if ($include_total == "true") {
+      $meta["total_count"] = $factory->countFilter([]);
+    }
+
+    $ret = self::createJsonResponse(meta: $meta);
+
+    $body = $response->getBody();
+    $body->write($this->ret2json($ret));
+
+    return $response->withStatus(200)
+      ->withHeader("Content-Type", 'application/vnd.api+json');
+  }
+
+  /**
    * Get input field names valid for creation of object
    */
   final public function getCreateValidFeatures(): array
@@ -1106,6 +1141,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     if (in_array("GET", $available_methods)) {
       $app->get($baseUri, $me . ':get')->setname($me . ':get');
+      $app->get($baseUri . "/count", $me . ':count')->setname($me . ':count');
     }
 
     foreach ($me::getToOneRelationships() as $name => $relationship) {
