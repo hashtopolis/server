@@ -54,7 +54,7 @@ class PreprocessorUtils {
       $limitCommand = null;
     }
     
-    $preprocessor = new Preprocessor(null, $name, $url, $binaryName, $keyspaceCommand, $limitCommand, $limitCommand);
+    $preprocessor = new Preprocessor(null, $name, $url, $binaryName, $keyspaceCommand, $skipCommand, $limitCommand);
     Factory::getPreprocessorFactory()->save($preprocessor);
   }
   
