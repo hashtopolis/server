@@ -1,3 +1,10 @@
+# v0.14.3 -> v0.14.4
+
+## Bugfixes
+
+- Fixed a bug where creating a new preprocessor would copy the configured limit command over the configured skip command
+
+
 # v0.14.2 -> v0.14.3
 
 ## Tech Preview New API
