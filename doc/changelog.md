@@ -1,8 +1,13 @@
 # v0.14.3 -> v0.14.4
 
+
 ## Enhancements
 
 - Use utf8mb4 as default encoding in order to support the full unicode range
+
+## Bugfixes
+
+- Fixed a bug where creating a new preprocessor would copy the configured limit command over the configured skip command
 
 
 # v0.14.2 -> v0.14.3
