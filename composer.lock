@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6a357741d92415a1fe0b0b8344e3c53c",
+    "content-hash": "bcdc14df33ed1da39f804212f6df89e0",
     "packages": [
         {
             "name": "crell/api-problem",
@@ -252,62 +252,6 @@
             "time": "2024-11-14T18:34:49+00:00"
         },
         {
-            "name": "middlewares/encoder",
-            "version": "v2.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/middlewares/encoder.git",
-                "reference": "6fd1744bcf88bec4e3dea0ca98ed6f900cc41ce0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/middlewares/encoder/zipball/6fd1744bcf88bec4e3dea0ca98ed6f900cc41ce0",
-                "reference": "6fd1744bcf88bec4e3dea0ca98ed6f900cc41ce0",
-                "shasum": ""
-            },
-            "require": {
-                "ext-zlib": "*",
-                "middlewares/utils": "^3.0",
-                "php": "^7.2 || ^8.0",
-                "psr/http-server-middleware": "^1.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.0",
-                "laminas/laminas-diactoros": "^2.2",
-                "oscarotero/php-cs-fixer-config": "^1.0",
-                "phpstan/phpstan": "^0.12",
-                "phpunit/phpunit": "^8|^9",
-                "squizlabs/php_codesniffer": "^3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Middlewares\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Middleware to encode the response body to gzip or deflate",
-            "homepage": "https://github.com/middlewares/encoder",
-            "keywords": [
-                "compression",
-                "deflate",
-                "encoding",
-                "gzip",
-                "http",
-                "middleware",
-                "psr-15",
-                "psr-7"
-            ],
-            "support": {
-                "issues": "https://github.com/middlewares/encoder/issues",
-                "source": "https://github.com/middlewares/encoder/tree/v2.1.1"
-            },
-            "time": "2020-12-03T01:13:28+00:00"
-        },
-        {
             "name": "middlewares/negotiation",
             "version": "v2.1.1",
             "source": {
@@ -366,39 +310,36 @@
         },
         {
             "name": "middlewares/utils",
-            "version": "v3.3.0",
+            "version": "v4.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/middlewares/utils.git",
-                "reference": "670b135ce0dbd040eadb025a9388f9bd617cc010"
+                "reference": "4c4d81f661e126022485cf7a2f6d91b5cf0365c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/middlewares/utils/zipball/670b135ce0dbd040eadb025a9388f9bd617cc010",
-                "reference": "670b135ce0dbd040eadb025a9388f9bd617cc010",
+                "url": "https://api.github.com/repos/middlewares/utils/zipball/4c4d81f661e126022485cf7a2f6d91b5cf0365c5",
+                "reference": "4c4d81f661e126022485cf7a2f6d91b5cf0365c5",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2 || ^8.0",
+                "php": ">=8.1",
                 "psr/container": "^1.0 || ^2.0",
                 "psr/http-factory": "^1.0",
-                "psr/http-message": "^1.0",
+                "psr/http-message": "^1.0 || ^2.0",
                 "psr/http-server-middleware": "^1.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^v2.16",
-                "guzzlehttp/psr7": "^2.0",
-                "laminas/laminas-diactoros": "^2.4",
-                "nyholm/psr7": "^1.0",
-                "oscarotero/php-cs-fixer-config": "^1.0",
-                "phpstan/phpstan": "^0.12",
-                "phpunit/phpunit": "^8|^9",
-                "slim/psr7": "^1.4",
-                "squizlabs/php_codesniffer": "^3.5",
-                "sunrise/http-message": "^1.0",
-                "sunrise/http-server-request": "^1.0",
-                "sunrise/stream": "^1.0.15",
-                "sunrise/uri": "^1.0.15"
+                "friendsofphp/php-cs-fixer": "^3.41",
+                "guzzlehttp/psr7": "^2.6",
+                "laminas/laminas-diactoros": "^3.3",
+                "nyholm/psr7": "^1.8",
+                "oscarotero/php-cs-fixer-config": "^2.0",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.5",
+                "slim/psr7": "^1.6",
+                "squizlabs/php_codesniffer": "^3.8",
+                "sunrise/http-message": "^3.0"
             },
             "type": "library",
             "autoload": {
@@ -422,9 +363,9 @@
             ],
             "support": {
                 "issues": "https://github.com/middlewares/utils/issues",
-                "source": "https://github.com/middlewares/utils/tree/v3.3.0"
+                "source": "https://github.com/middlewares/utils/tree/v4.0.1"
             },
-            "time": "2021-07-04T17:56:23+00:00"
+            "time": "2024-11-21T20:21:49+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -816,16 +757,16 @@
         },
         {
             "name": "psr/http-message",
-            "version": "1.1",
+            "version": "2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-message.git",
-                "reference": "cb6ce4845ce34a8ad9e68117c10ee90a29919eba"
+                "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-message/zipball/cb6ce4845ce34a8ad9e68117c10ee90a29919eba",
-                "reference": "cb6ce4845ce34a8ad9e68117c10ee90a29919eba",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/402d35bcb92c70c026d1a6a9883f06b2ead23d71",
+                "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71",
                 "shasum": ""
             },
             "require": {
@@ -834,7 +775,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -849,7 +790,7 @@
             "authors": [
                 {
                     "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "homepage": "https://www.php-fig.org/"
                 }
             ],
             "description": "Common interface for HTTP messages",
@@ -863,9 +804,9 @@
                 "response"
             ],
             "support": {
-                "source": "https://github.com/php-fig/http-message/tree/1.1"
+                "source": "https://github.com/php-fig/http-message/tree/2.0"
             },
-            "time": "2023-04-04T09:50:52+00:00"
+            "time": "2023-04-04T09:54:51+00:00"
         },
         {
             "name": "psr/http-server-handler",
