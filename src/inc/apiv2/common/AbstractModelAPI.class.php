@@ -573,6 +573,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $qFs_Filter = $this->makeFilter($request, $aliasedfeatures);
     $qFs_ACL = $this->getFilterACL();
     $qFs = array_merge($qFs_ACL, $qFs_Filter);
+    $aFs = [];
     if (count($qFs) > 0) {
       $aFs[Factory::FILTER] = $qFs;
     }
