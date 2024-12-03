@@ -291,6 +291,9 @@ class HashtopolisConnector(object):
 
         # TODO: Cleanup object to allow re-creation
 
+    def count(self, filter):
+        pass
+
 
 # Build Django ORM style django.query interface
 class QuerySet():
@@ -912,7 +915,7 @@ class Helper(HashtopolisConnector):
             'separator': separator,
         }
         response = self._helper_request("importCrackedHashes", payload)
-        return response['data']
+        return response['meta']
 
     def get_file(self, file, range=None):
         payload = {
@@ -925,14 +928,14 @@ class Helper(HashtopolisConnector):
             'fileId': file.id,
         }
         response = self._helper_request("recountFileLines", payload)
-        return File(**response['data'])
+        return File(**response['meta'])
 
     def unassign_agent(self, agent):
         payload = {
             'agentId': agent.id,
         }
         response = self._helper_request("unassignAgent", payload)
-        return response['data']
+        return response['meta']
 
     def assign_agent(self, agent, task):
         payload = {
@@ -940,4 +943,4 @@ class Helper(HashtopolisConnector):
             'taskId': task.id,
         }
         response = self._helper_request("assignAgent", payload)
-        return response['data']
+        return response['meta']
