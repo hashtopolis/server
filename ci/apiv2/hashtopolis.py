@@ -292,8 +292,18 @@ class HashtopolisConnector(object):
         # TODO: Cleanup object to allow re-creation
 
     def count(self, filter):
-        pass
+        self.authenticate()
+        uri = self._api_endpoint + self._model_uri + "/count"
+        headers = self._headers
+        payload = {}
+        if filter:
+            for k, v in filter.items():
+                payload[f"filter[{k}]"] = v
 
+        logger.debug("Sending GET payload: %s to %s", json.dumps(payload), uri)
+        r = requests.get(uri, headers=headers, params=payload)
+        self.validate_status_code(r, [200], "Getting count failed")
+        return self.resp_to_json(r)['meta']
 
 # Build Django ORM style django.query interface
 class QuerySet():
@@ -437,6 +447,11 @@ class ManagerBase(type):
     @classmethod
     def get(cls, **filters):
         return QuerySet(cls, filters=filters).get()
+    
+    @classmethod
+    def count(cls, **filters):
+        return cls.get_conn().count(filter=filters)
+        
 
     @classmethod
     def paginate(cls, **pages):
