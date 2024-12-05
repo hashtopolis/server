@@ -471,6 +471,10 @@ abstract class AbstractModelFactory {
     $query = $query . " FROM " . $this->getModelTable();
     
     $vals = array();
+
+    if (array_key_exists('join', $options)) {
+      $query .= $this->applyJoins($options['join']);
+    }
     
     if (array_key_exists("filter", $options)) {
       $query .= $this->applyFilters($vals, $options['filter']);
@@ -748,6 +752,21 @@ abstract class AbstractModelFactory {
       $orderQueries[] = $order->getQueryString($this->getModelTable());
     }
     return " ORDER BY " . implode(", ", $orderQueries);
+  }
+
+  private function applyJoins($joins) {
+    $query = "";
+    foreach ($joins as $join) {
+      $joinFactory = $join->getOtherFactory();
+      $localFactory = $this;
+      if ($join->getOverrideOwnFactory() != null) {
+        $localFactory = $join->getOverrideOwnFactory();
+      }
+      $match1 = $join->getMatch1();
+      $match2 = $join->getMatch2();
+      $query .= " INNER JOIN " . $joinFactory->getModelTable() . " ON " . $localFactory->getModelTable() . "." . $match1 . "=" . $joinFactory->getModelTable() . "." . $match2 . " ";
+    }
+    return $query;
   }
 
   //applylimit is slightly different than the other apply functions, since you can only limit by a single value
