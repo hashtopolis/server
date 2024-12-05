@@ -392,7 +392,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $aFs = [];
 
     /* Generate filters */
-    $qFs_Filter = $apiClass->makeFilter($request, $aliasedfeatures);
+    $filters = $apiClass->getFilters($request);
+    $qFs_Filter = $apiClass->makeFilter($filters, $apiClass);
     $qFs_ACL = $apiClass->getFilterACL();
     $qFs = array_merge($qFs_ACL, $qFs_Filter);
     if (count($qFs) > 0) {
@@ -560,20 +561,86 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
+   * Maps filters to the appropiate models based on their feautures.
+   * 
+   * Helper function to get valid filters for the models. This is usefull when multiple objects
+   * have been included and the correct filters need to be mapped to the correct objects.
+   * Currently used to make complex filters for counting objects
+   * 
+   * @param array $filters An associative array of filters where the key is the filter 
+   *                       name and the value is the filter value. Filters should match
+   *                       the pattern `<field><operator>`, where `<operator>` can be 
+   *                       one of the supported suffixes (e.g., `__eq`, `__ne`).
+   * @param array $models  An array of model objects. Each model must have a `getFeatures()` 
+   *                       method that returns an associative array of model features. 
+   *                       The features should map filter keys to their respective 
+   *                       attributes or aliases.
+   * 
+   * @return array An associative array mapping model classes to their respective valid filters.
+   *               The structure is:
+   *               [
+   *                   ModelClassName => [
+   *                       'filter' => 'value',
+   *                       ...
+   *                   ],
+   *                   ...
+   *               ]
+   * 
+   * @throws HTException If a filter key does not match the expected format or is invalid.
+   */
+  public function filterObjectMap(array $filters, array $models) {
+
+    $modelFilterMap = [];
+    foreach ($filters as $filter => $value) {
+      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith)$/', $filter, $matches) == 0) {
+        throw new HTException("Filter parameter '" . $filter . "' is not valid");
+      }
+
+      foreach($models as $model) {
+        $features = $model->getFeatures();
+        // Special filtering of _id to use for uniform access to model primary key
+        $cast_key = $matches['key'] == '_id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
+        if (array_key_exists($cast_key, $features) == false) {
+          continue; //not a valid filter for current model
+        };
+        $modelFilterMap[$model::class][$filter] =  $value;
+        break; //filter has been found for current model, so break to go to next filter
+      }
+    }
+    return $modelFilterMap;
+  }
+
+  /**
    * API entry point for retrieving count information of data
    */
   public function count(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
-
     $factory = $this->getFactory();
-    $aliasedfeatures = $this->getAliasedFeatures();
 
-    /* Generate filters */
-    $qFs_Filter = $this->makeFilter($request, $aliasedfeatures);
-    $qFs_ACL = $this->getFilterACL();
-    $qFs = array_merge($qFs_ACL, $qFs_Filter);
-    $aFs = [];
+    //resolve all expandables
+    $validExpandables = $this::getExpandables();
+    $expands = $this->makeExpandables($request, $validExpandables);
+
+    $objects = [$factory->getNullObject()];
+    //build join filters
+    foreach ($expands as $expand) {
+      $relation = $this->getToManyRelationships()[$expand];
+      $objects[] = $this->getModelFactory($relation["relationType"])->getNullObject();
+      $otherFactory = $this->getModelFactory($relation["relationType"]);
+      $primaryKey = $this->getPrimaryKey();
+      $aFs[Factory::JOIN][] = new JoinFilter($otherFactory, $relation["relationKey"], $primaryKey, $factory);
+    }
+
+    $filters = $this->getFilters($request);
+    $filterObjectMap = $this->filterObjectMap($filters, $objects);
+    $qFs = [];
+    foreach($filterObjectMap as $class => $cur_filters) {
+      $relationApiClass = new ($this->container->get('classMapper')->get($class))($this->container);
+      $current_qFs = $this->makeFilter($cur_filters, $relationApiClass);
+      $qFs = array_merge($qFs, $current_qFs);
+    }
+
     if (count($qFs) > 0) {
       $aFs[Factory::FILTER] = $qFs;
     }
