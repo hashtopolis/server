@@ -1153,14 +1153,13 @@ class Util {
     $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0)) ? "https://" : "http://";
     $hostname = $_SERVER['HTTP_HOST'];
     $port = $_SERVER['SERVER_PORT'];
-    if (strpos($hostname, ":") !== false) {
-      $hostname = substr($hostname, 0, strpos($hostname, ":"));
-    }
+
     if ($protocol == "https://" && $port == 443 || $protocol == "http://" && $port == 80) {
       $port = "";
     }
     else {
       $port = ":$port";
+      $hostname = substr($hostname, 0, strrpos($hostname, ":")); //Needs to use strrpos in case of ipv6 because of multiple ':' characters
     }
     return $protocol . $hostname . $port;
   }
