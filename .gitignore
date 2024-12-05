@@ -11,7 +11,7 @@ src/files/*
 *.phpproj
 *.sln
 *.phpproj.user
-*.lock
+*.lock*
 
 # dynamically created by installer
 src/install/.htaccess
