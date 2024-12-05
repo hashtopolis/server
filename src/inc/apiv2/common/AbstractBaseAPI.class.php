@@ -888,10 +888,7 @@ abstract class AbstractBaseAPI
   {
     $qFs = []; 
     $features = $apiClass->getAliasedFeatures();
-    // $features = $factory->getNullObject()->getFeatures();
-    // $factory = $this->getModelFactory($apiClass->getDBAclass());
     $factory = $apiClass->getFactory();
-    // $filters = $this->getQueryParameterFamily($request, 'filter'); 
     foreach ($filters as $filter => $value) {
 
       if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith)$/', $filter, $matches) == 0) {
