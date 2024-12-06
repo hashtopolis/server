@@ -15,6 +15,7 @@ use DBA\AgentBinary;
 use DBA\AgentStat;
 use DBA\Assignment;
 use DBA\Chunk;
+use DBA\ComparisonFilter;
 use DBA\Config;
 use DBA\ConfigSection;
 use DBA\CrackerBinary;
@@ -875,14 +876,19 @@ abstract class AbstractBaseAPI
     }
   }
 
+  function getFilters(Request $request) {
+    return $this->getQueryParameterFamily($request, 'filter'); 
+  }
+
   /**
    * Check for valid filter parameters and build QueryFilter
    */
-  protected function makeFilter(Request $request, array $features): array
+  // protected function makeFilter(Request $request, array $features): array
+  protected function makeFilter(array $filters, object $apiClass): array
   {
-    $qFs = [];
-
-    $filters = $this->getQueryParameterFamily($request, 'filter'); 
+    $qFs = []; 
+    $features = $apiClass->getAliasedFeatures();
+    $factory = $apiClass->getFactory();
     foreach ($filters as $filter => $value) {
 
       if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith)$/', $filter, $matches) == 0) {
@@ -919,43 +925,51 @@ abstract class AbstractBaseAPI
       switch($matches['operator']) {
         case '':
         case '__eq':
-          array_push($qFs, new QueryFilter($remappedKey, $val, '='));
+          $operator = '=';
           break;
         case '__ne':
-          array_push($qFs, new QueryFilter($remappedKey, $val, '!='));
+          $operator = '!=';
           break;
         case '__lt':
-          array_push($qFs, new QueryFilter($remappedKey, $val, '<'));
+          $operator = '<';
           break;
         case '__lte':
-          array_push($qFs, new QueryFilter($remappedKey, $val, '<='));
+          $operator = '<=';
           break;
         case '__gt':
-          array_push($qFs, new QueryFilter($remappedKey, $val, '>'));
+          $operator = '>';
           break;
         case '__gte':
-          array_push($qFs, new QueryFilter($remappedKey, $val, '>='));
+          $operator = '>=';
           break;
         case '__contains':
-          array_push($qFs, new LikeFilter($remappedKey, "%" . $val . "%"));
+          array_push($qFs, new LikeFilter($remappedKey, "%" . $val . "%", $factory));
           break;
         case '__startswith':
-          array_push($qFs, new LikeFilter($remappedKey, $val . "%"));
+          array_push($qFs, new LikeFilter($remappedKey, $val . "%", $factory));
           break;
         case '__endswith':
-          array_push($qFs, new LikeFilter($remappedKey, "%" . $val));
+          array_push($qFs, new LikeFilter($remappedKey, "%" . $val, $factory));
           break;
         case '__icontains':
-          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val . "%"));
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val . "%", $factory));
           break;
         case '__istartswith':
-          array_push($qFs, new LikeFilterInsensitive($remappedKey, $val . "%"));
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, $val . "%", $factory));
           break;
         case '__iendswith':
-          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val));
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val, $factory));
           break;
         default:
           assert(False, "Operator '" . $matches['operator'] . "' not implemented");
+      }
+
+      if ($operator) {
+        if (array_key_exists($val, $features)) {
+          array_push($qFs, new ComparisonFilter($remappedKey, $val, $operator, $factory));
+        } else {
+          array_push($qFs, new QueryFilter($remappedKey, $val, $operator, $factory));
+        }
       }
     }
     return $qFs;
@@ -1257,7 +1271,7 @@ abstract class AbstractBaseAPI
 
   //Meta response for helper functions that do not respond with resource records
   protected static function getMetaResponse(array $meta, Request $request, Response $response, int $statusCode=200) {
-    $ret = self::createJsonResponse($meta=$meta);
+    $ret = self::createJsonResponse(meta: $meta);
     $body = $response->getBody();
     $body->write(self::ret2json($ret));
 
