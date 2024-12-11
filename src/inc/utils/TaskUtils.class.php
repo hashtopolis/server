@@ -1114,6 +1114,7 @@ class TaskUtils {
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     Factory::getChunkFactory()->massDeletion([Factory::FILTER => $qF]);
     Factory::getTaskFactory()->delete($task);
+    LockUtils::deleteLockFile($task->getId());
   }
   
   /**
@@ -1188,6 +1189,7 @@ class TaskUtils {
       if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
         Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::PRIORITY, 0);
       }
+      LockUtils::deleteLockFile($task->getId());
       return null;
     }
     else if ($dispatched >= $task->getKeyspace()) {

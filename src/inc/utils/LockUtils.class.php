@@ -41,4 +41,18 @@ class LockUtils {
       }
     }
   }
+
+  /**
+   * Deletes a lock file associated with a specific task ID if it exists.
+   * 
+   * @param int $taskId The unique identifier of the task associated with the lock file.
+   * 
+   * @return void
+   */
+  public static function deleteLockFile($taskId) {
+    $lockFile = dirname(__FILE__) . "/locks/" . LOCK::CHUNKING . $taskId;
+    if(file_exists($lockFile)) {
+      unlink($lockFile);
+    }
+  }
 }
