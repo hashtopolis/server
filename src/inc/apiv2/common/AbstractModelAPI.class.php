@@ -623,6 +623,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $expands = $this->makeExpandables($request, $validExpandables);
 
     $objects = [$factory->getNullObject()];
+    $aFs = [];
     //build join filters
     foreach ($expands as $expand) {
       $relation = $this->getToManyRelationships()[$expand];
