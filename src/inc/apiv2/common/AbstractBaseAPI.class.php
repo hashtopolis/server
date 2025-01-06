@@ -112,7 +112,7 @@ abstract class AbstractBaseAPI
     $features = [];
     foreach($this->getFormFields() as $key => $feature) {
       /* Innitate default values */
-      $features[$key] = $feature + ['null' => False, 'protected' => False, 'private' => False, 'choices' => "unset", 'pk' => False];
+      $features[$key] = $feature + ['null' => False, 'protected' => False, 'private' => False, 'choices' => "unset", 'pk' => False, 'read_only' => True];
       if (!array_key_exists('alias', $feature)) {
         $features[$key]['alias'] = $key;
       }
@@ -128,6 +128,10 @@ abstract class AbstractBaseAPI
   public function getAliasedFeatures(): array
   {
     $features = $this->getFeatures();
+    return $this->mapFeatures($features);
+  }
+
+  final protected function mapFeatures($features) {
     $mappedFeatures = [];
     foreach ($features as $key => $value) {
       $mappedFeatures[$value['alias']] = $value;

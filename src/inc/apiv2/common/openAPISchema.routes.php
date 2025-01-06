@@ -388,7 +388,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           ],
           "data" => [
             "type" => "object",
-            "properties" => makeProperties($class->getAliasedFeatures(), true)
+            "properties" => makeProperties($class->getFeaturesWithoutFormfields(), true)
           ]
           ];
 

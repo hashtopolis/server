@@ -110,6 +110,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     );
   }
 
+  /**
+   * Seperate get features function to get features without the formfields. This is needed to generate the openAPI documentation
+   * TODO: This function could probably be used in the patch endpoints aswell, since formfields are not relevant there.
+   */
+  public function getFeaturesWithoutFormfields(): array {
+    $features = call_user_func($this->getDBAclass() . '::getFeatures');
+    return $this->mapFeatures($features);
+  }
+
   /** 
    * Get features based on DBA model features
    * 
@@ -1157,7 +1166,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    */
   final public function getPatchValidFeatures(): array
   {
-    $aliasedfeatures = $this->getAliasedFeatures();
+    $aliasedfeatures = $this->getFeaturesWithoutFormfields();
     $validFeatures = [];
 
     // Generate listing of validFeatures
