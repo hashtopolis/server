@@ -228,6 +228,7 @@ function makeDescription($isRelation, $method, $singleObject): string {
           $description = "GET many request to retrieve multiple objects.";
         }
       }
+      break;
     case "post":
       if ($isRelation) {
         if ($singleObject) {
@@ -238,7 +239,8 @@ function makeDescription($isRelation, $method, $singleObject): string {
       } else {
         $description = "POST request to create a new object. The request must contain the resource record as data with the attributes of the new object." 
           . "To add relationships, a relationships object can be added with the resource records of the relations that are part of this object.";
-        }        
+        }
+      break;
     case "patch":
       if ($isRelation) {
         if ($singleObject) {
