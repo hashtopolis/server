@@ -869,8 +869,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   /*
   * API endpoint to patch a to one relationship link
   */
-  //This works as intended but it can give weird behaviour. ex. it allows you to put an MD5 hash to a SHA1 hashlist 
+  // TODO This works as intended but it can give weird behaviour. ex. it allows you to put an MD5 hash to a SHA1 hashlist 
   //by patching the foreingkey. Simple fix could be to make foreignkey immutable for cases like this.
+  //Or just like with the patch many, create an overrideable function to add more logic in child
   public function patchToOneRelationshipLink(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
@@ -1192,25 +1193,26 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $foo = $me::getDBAClass();
     $baseUri = $me::getBaseUri();
     $baseUriOne = $baseUri . '/{id:[0-9]+}';
+    $baseUriCount = $baseUri . "/count";
 
     $baseUriRelationships = $baseUri . '/{id:[0-9]+}/relationships';
+    $uris = [$baseUri, $baseUriOne, $baseUriCount, $baseUriRelationships];
 
     $classMapper = $app->getContainer()->get('classMapper');
     $classMapper->add($me::getDBAclass(), $me);
 
     /* Allow CORS preflight requests */
-    $app->options($baseUri, function (Request $request, Response $response): Response {
-      return $response;
-    });
-    $app->options($baseUriOne, function (Request $request, Response $response): Response {
-      return $response;
-    });
+    foreach ($uris as $uri) {
+      $app->options($uri, function (Request $request, Response $response): Response {
+        return $response;
+      });
+    }
 
     $available_methods = $me::getAvailableMethods();
 
     if (in_array("GET", $available_methods)) {
       $app->get($baseUri, $me . ':get')->setname($me . ':get');
-      $app->get($baseUri . "/count", $me . ':count')->setname($me . ':count');
+      $app->get($baseUriCount, $me . ':count')->setname($me . ':count');
     }
 
     foreach ($me::getToOneRelationships() as $name => $relationship) {
