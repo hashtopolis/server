@@ -31,7 +31,7 @@ class SupertaskTest(BaseTest):
 
         # Quirk for expanding object to allow update to take place
         work_obj = Supertask.objects.prefetch_related('pretasks').get(pk=model_obj.id)
-        new_pretasks = [self.create_pretask() for i in range(2)]
+        new_pretasks = [self.create_pretask(file_id="003") for i in range(2)]
         selected_pretasks = [work_obj.pretasks_set[0], new_pretasks[1]]
         work_obj.pretasks_set = selected_pretasks
         work_obj.save()

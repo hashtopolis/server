@@ -554,7 +554,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           // ]];
          
         } elseif ($method == 'patch') {
-          $paths[$path][$method]["responses"]["201"] = [
+          $paths[$path][$method]["responses"]["200"] = [
             "description" => "successful operation",
             "content" => [
               "application/json" => [
