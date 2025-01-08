@@ -4,6 +4,7 @@
 ## Enhancements
 
 - Use utf8mb4 as default encoding in order to support the full unicode range
+- Updated OpenAPI docs to latest API updates
 
 ## Bugfixes
 

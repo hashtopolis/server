@@ -110,6 +110,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     );
   }
 
+  /**
+   * Seperate get features function to get features without the formfields. This is needed to generate the openAPI documentation
+   * TODO: This function could probably be used in the patch endpoints aswell, since formfields are not relevant there.
+   */
+  public function getFeaturesWithoutFormfields(): array {
+    $features = call_user_func($this->getDBAclass() . '::getFeatures');
+    return $this->mapFeatures($features);
+  }
+
   /** 
    * Get features based on DBA model features
    * 
@@ -343,7 +352,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
   /**
    * Helper function to determine if $resourceRecord is a valid resource record
-   * returns true if it is a valid resource record and false if it is an invallid resource record
+   * returns true if it is a valid resource record and false if it is an invalid resource record
    */
   final protected function validateResourceRecord(mixed $resourceRecord): bool
   {
@@ -356,7 +365,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     foreach ($data as $item) {
       if (!$this->validateResourceRecord($item)) {
         $encoded_item = json_encode($item);
-        throw new HttpErrorException('Invallid resource record given in list! invalid resource record: ' . $encoded_item);
+        throw new HttpErrorException('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
       }
       $updates[] = new MassUpdateSet($item["id"], $parentId);
     }
@@ -380,7 +389,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') ?? 0;
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
     if ($pageSize < 0) {
-      throw new HttpErrorException("Invallid parameter, page[size] must be a positive integer", 400);
+      throw new HttpErrorException("Invalid parameter, page[size] must be a positive integer", 400);
     } elseif ($pageSize > $maxPageSize) {
       throw new HttpErrorException(sprintf("You requested a size of %d, but %d is the maximum.", $pageSize, $maxPageSize), 400);
     }
@@ -714,7 +723,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     // Return updated object
     $newObject = $this->getFactory()->get($object->getId());
-    return self::getOneResource($this, $newObject, $request, $response, 201);
+    return self::getOneResource($this, $newObject, $request, $response, 200);
   }
 
 
@@ -1003,8 +1012,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     if ($jsonBody === null || !array_key_exists('data', $jsonBody) || !is_array($jsonBody['data'])) {
       throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
     }
-    $data = $jsonBody['data'];
 
+    $data = $jsonBody['data'];
+    $this->updateToManyRelationship($request, $data, $args);
+
+    return $response->withStatus(204)
+      ->withHeader("Content-Type", "application/vnd.api+json");
+  }
+
+  /**
+   * Overidable function to update the to many relationship
+   */
+  protected function updateToManyRelationship(Request $request, array $data, array $args): void {
     $relation = $this->getToManyRelationships()[$args['relation']];
     $primaryKey = $this->getPrimaryKeyOther($relation['relationType']);
     $relationKey = $relation['relationKey'];
@@ -1030,7 +1049,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     foreach ($data as $item) {
       if (!$this->validateResourceRecord($item)) {
         $encoded_item = json_encode($item);
-        throw new HttpErrorException('Invallid resource record given in list! invalid resource record: ' . $encoded_item);
+        throw new HttpErrorException('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
       }
       $updates[] = new MassUpdateSet($item["id"], $args["id"]);
       unset($modelsDict[$item["id"]]);
@@ -1050,9 +1069,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     if (!$factory->getDB()->commit()) {
       throw new HttpErrorException("Was not able to update to many relationship");
     }
-
-    return $response->withStatus(204)
-      ->withHeader("Content-Type", "application/vnd.api+json");
   }
 
   /**
@@ -1158,7 +1174,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    */
   final public function getPatchValidFeatures(): array
   {
-    $aliasedfeatures = $this->getAliasedFeatures();
+    $aliasedfeatures = $this->getFeaturesWithoutFormfields();
     $validFeatures = [];
 
     // Generate listing of validFeatures

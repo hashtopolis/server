@@ -252,10 +252,28 @@ class HashtopolisConnector(object):
         payload = self.create_payload(obj, attributes, id=obj.id)
         logger.debug("Sending PATCH payload: %s to %s", json.dumps(payload), uri)
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))
-        self.validate_status_code(r, [201], "Patching failed")
+        self.validate_status_code(r, [200], "Patching failed")
 
         # TODO: Validate if return objects matches digital twin
         obj.set_initial(self.resp_to_json(r)['data'].copy())
+
+    def send_patch(self, uri, data):
+        self.authenticate()
+        headers = self._headers
+        headers['Content-Type'] = 'application/json'
+        logger.debug("Sending PATCH payload: %s to %s", json.dumps(data), uri)
+        r = requests.patch(uri, headers=headers, data=json.dumps(data))
+        self.validate_status_code(r, [204], "Patching failed")
+
+    def patch_to_many_relationships(self, obj):
+        for k, v in obj.diff_includes().items():
+            attributes = []
+            logger.debug("Going to patch object '%s' property '%s' from '%s' to '%s'", obj, k, v[0], v[1])
+            for include_id in v[1]:
+                attributes.append({"type": k, "id": include_id})
+            data = {"data": attributes}
+            uri = self._hashtopolis_uri + obj.uri + "/relationships/" + k
+            self.send_patch(uri, data)
 
     def create(self, obj):
         # Check if object to be created is new
@@ -426,6 +444,8 @@ class ManagerBase(type):
 
     @classmethod
     def patch(cls, obj):
+        # TODO also patch to one relationships
+        cls.get_conn().patch_to_many_relationships(obj)
         cls.get_conn().patch_one(obj)
 
     @classmethod
@@ -452,7 +472,6 @@ class ManagerBase(type):
     def count(cls, **filters):
         return cls.get_conn().count(filter=filters)
         
-
     @classmethod
     def paginate(cls, **pages):
         return QuerySet(cls, pages=pages)
@@ -605,6 +624,10 @@ class Model(metaclass=ModelBase):
             if v_current != v_innitial:
                 diffs.append((key, (v_innitial, v_current)))
 
+        return dict(diffs)
+
+    def diff_includes(self):
+        diffs = []
         # Find includeables sets which have changed
         for include in self.__included:
             if include.endswith('_set'):
@@ -618,7 +641,7 @@ class Model(metaclass=ModelBase):
                 # Use ID of ojbects as new current/update identifiers
                 if sorted(v_innitial_ids) != sorted(v_current_ids):
                     diffs.append((innitial_name, (v_innitial_ids, v_current_ids)))
-
+        
         return dict(diffs)
 
     def has_changed(self):
