@@ -383,9 +383,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $aliasedfeatures = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
 
-    // TODO: Maximum and default should be configurable per server instance
     $defaultPageSize = 10000;
     $maxPageSize = 50000;
+    // TODO: if 0.14.4 release has happened, following parameters can be retrieved from config
+    // $defaultPageSize = SConfig::getInstance()->getVal(DConfig::DEFAULT_PAGE_SIZE);
+    // $maxPageSize = SConfig::getInstance()->getVal(DConfig::MAX_PAGE_SIZE);
 
     $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') ?? 0;
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
