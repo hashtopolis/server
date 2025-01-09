@@ -1,11 +1,20 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
+use DBA\Config;
 use DBA\Factory;
+use DBA\QueryFilter;
 
 if (!isset($PRESENT["v0.14.x_pagination"])) {
-  Factory::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
-    (78, 3, 'defaultPageSize', '10000');"); 
-  Factory::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
-    (79, 3, 'maxPageSize', '50000');"); 
-    $EXECUTED["v0.14.x_pagination"];
+  $qF = new QueryFilter(Config::ITEM, DConfig::DEFAULT_PAGE_SIZE, "=");
+  $item = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
+  if (!$item) {
+    $config = new Config(null, 3, DConfig::DEFAULT_PAGE_SIZE, '10000');
+    Factory::getConfigFactory()->save($config);
+  }
+  $qF = new QueryFilter(Config::ITEM, DConfig::MAX_PAGE_SIZE, "=");
+  $item = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
+  if (!$item) {
+    $config = new Config(null, 3, DConfig::MAX_PAGE_SIZE, '50000');
+    Factory::getConfigFactory()->save($config);
+  }
 }
