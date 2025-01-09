@@ -9,6 +9,7 @@ use Slim\Exception\HttpForbiddenException;
 use Middlewares\Utils\HttpErrorException;
 
 use DBA\AbstractModelFactory;
+use DBA\Aggregation;
 use DBA\JoinFilter;
 use DBA\Factory;
 use DBA\ContainFilter;
@@ -382,9 +383,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $aliasedfeatures = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
 
-    // TODO: Maximum and default should be configurable per server instance
     $defaultPageSize = 10000;
     $maxPageSize = 50000;
+    // TODO: if 0.14.4 release has happened, following parameters can be retrieved from config
+    // $defaultPageSize = SConfig::getInstance()->getVal(DConfig::DEFAULT_PAGE_SIZE);
+    // $maxPageSize = SConfig::getInstance()->getVal(DConfig::MAX_PAGE_SIZE);
 
     $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') ?? 0;
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
@@ -426,18 +429,28 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
 
+    $primaryKey = $apiClass->getPrimaryKey();
     //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
     //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
-    //if this query is too expensive for big tables, it should be removed
-    $max = $factory->minMaxFilter($finalFs, $apiClass->getPrimaryKey(), "MAX");
+    //if this query is too expensive for big tables, it can be removed
+    $agg1 = new Aggregation($primaryKey, Aggregation::MAX);
+    $agg2 = new Aggregation($primaryKey, Aggregation::MIN);
+    $agg3 = new Aggregation($primaryKey, Aggregation::COUNT);
+    $aggregation_results = $factory->multicolAggregationFilter($finalFs, [$agg1, $agg2, $agg3]);
+
+    $max = $aggregation_results[$agg1->getName()];
+    $min = $aggregation_results[$agg2->getName()];
+    $total = $aggregation_results[$agg3->getName()];
+
+    $totalPages = ceil($total / $pageSize);
 
     //pagination filters need to be added after max has been calculated
     $finalFs[Factory::LIMIT] = new LimitFilter($pageSize);
 
-    $finalFs[Factory::FILTER][] = new QueryFilter($apiClass->getPrimaryKey(), $pageAfter, '>', $factory);
+    $finalFs[Factory::FILTER][] = new QueryFilter($primaryKey, $pageAfter, '>', $factory);
     $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
     if (isset($pageBefore)) {
-      $finalFs[Factory::FILTER][] = new QueryFilter($apiClass->getPrimaryKey(), $pageBefore, '<', $factory);
+      $finalFs[Factory::FILTER][] = new QueryFilter($primaryKey, $pageBefore, '<', $factory);
     }
 
     /* Request objects */
@@ -525,12 +538,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       }
       // Build prev link 
       $prevId = $defaultSort == "DESC" ? $maxId : $minId;
-      if ($prevId != 1) { //only set previous page when its not the first page
+      if ($prevId != $min) { //only set previous page when its not the first page
         $prevParams = $selfParams;
-        //This scenario might return a link to an empty array if the elements with the lowest id are deleted, but this is allowed according
-        //to the json API spec https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links
-        //We could also get the lowest id the same way we got the max, but this is probably unnecessary expensive.
-        //But pull request: https://github.com/hashtopolis/server/pull/1069 would create a cheaper way of doing this in a single query
         $prevParams['page']['before'] = $prevId;
         unset($prevParams['page']['after']);
         $linksPrev = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($prevParams));
@@ -541,7 +550,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $firstParams = $request->getQueryParams();
     unset($firstParams['page']['before']);
     $firstParams['page']['size'] = $pageSize;
-    $firstParams['page']['after'] = 0;
+    $firstParams['page']['after'] = $min;
     $linksFirst = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($firstParams));
     $links = [
         "self" => $linksSelf,
@@ -551,8 +560,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         "prev" => $linksPrev,
       ];
 
+    $metadata = ["page" => ["total_pages" => $totalPages]];
     // Generate JSON:API GET output
-    $ret = self::createJsonResponse($dataResources, $links, $includedResources);
+    $ret = self::createJsonResponse($dataResources, $links, $includedResources, $metadata);
 
     $body = $response->getBody();
     $body->write($apiClass->ret2json($ret));
