@@ -31,4 +31,4 @@ jobs:
         FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
         FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
       run: |
-        lftp -e "mirror -R site/ /home/godesig/www/docs.hashtopolis.org/; quit" -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER
+        lftp -e "mirror -R site/ /; quit" -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER
