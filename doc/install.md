@@ -5,6 +5,7 @@
 _NOTE: The instructions provided in this section have only been tested on Ubuntu 22.04 and Windows 11 with WSL2_
 
 To install Hashtopolis server, ensure that the following prerequisites are met:
+
 1. *Docker*: Follow the instructions available on the Docker website:
    - Install Docker on Ubuntu
    - Install Docker on Windows
