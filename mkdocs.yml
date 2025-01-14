@@ -1,0 +1,8 @@
+site_name: Hashtopolis
+site_url: https://docs.hashtopolis.org
+repo_url: https://github.com/hashtopolis/server
+docs_dir: doc
+theme:
+  name: readthedocs
+nav:
+  - 'install.md'
