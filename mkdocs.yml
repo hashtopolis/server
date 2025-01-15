@@ -8,12 +8,6 @@ nav:
  - user_manual.md
  - advanced.md
  - changelog.md
-nav:
- - index.md
- - install.md
- - user_manual.md
- - advanced.md
- - changelog.md
 theme:
   name: material
   logo: assets/images/logo.png
@@ -21,3 +15,5 @@ edit_uri: blob/docs/doc/ # Edit the URL to the static branch and folder
 markdown_extensions:
   - github-callouts # Add the ability of notes, warnings, etc.
   - sane_lists # Make the numbered lists continue
+  - attr_list # allows to add HTML attributes and CSS classes
+  - md_in_html # allows for writing Markdown inside of HTML

@@ -15,7 +15,9 @@ Refer to the Hashcat documentation for detailed information on supported hash ty
 ### Create a hashlist
 In the Hashtopolis web interface, navigate to *Lists > New Hashlist*. You will get the following window:
 
-![screenshot_hashlist](https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png?20120228065200)
+<figure markdown="span">
+    ![screenshot_hashlist](https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png?20120228065200){ width="300" }
+</figure>
 
 Here is how to fill in the different fields: 
 
@@ -54,6 +56,10 @@ When creating a password recovery task in Hashtopolis, you may need to upload ad
     This category includes any additional files required for specific attack types or configurations. Examples include … These files vary depending on the nature of the task and the tools being used.
 Files can be uploaded to the Hashtopolis server from the Files page. To begin, select the appropriate file category by clicking on one of the tabs: Rules, Wordlists, or Other. The following figure illustrates the selection of the Rules category.
 
+<figure markdown="span">
+    ![screenshot_files](https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png?20120228065200){ width="300" }
+</figure>
+
 Once a category is selected, files can be added to the server using one of the following methods:
 
 - **Upload from your computer** – Directly upload files stored on your local machine.
@@ -62,6 +68,10 @@ Once a category is selected, files can be added to the server using one of the f
 Detailed instructions for each upload method are provided in the following subsections.
 
 ### Upload a new file from the computer
+
+<figure markdown="span">
+    ![screenshot_new_file](https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png?20120228065200){ width="300" }
+</figure>
 
 1. **Add file**: Click this button to enable file upload.. After clicking, a new field labeled Choose file will appear. Each time you click on Add File, an additional Choose file field will be added, allowing you to upload multiple files simultaneously..
 2. **Associated Access Group**: Define the access group that will have permissions to access the file(s) you are uploading. 
@@ -78,11 +88,19 @@ docker cp <dict> hashtopolis-backend:/usr/local/share/hashtopolis/import/
 
 - **Import the file**: 
 
+<figure markdown="span">
+    ![screenshot_import_file](https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png?20120228065200){ width="300" }
+</figure>
+
 1. **Associated Access Group**: Define the access group that will have permissions to access the file(s) you are uploading. 
 2. **Select the files to import** by ticking the box in front of them. Alternatively, use Select All below.
 3. **Import files**.
 
 ### Download new file from URL
+
+<figure markdown="span">
+    ![screenshot_download_file](https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png?20120228065200){ width="300" }
+</figure>
 
 1. **Associated Access Group**: Define the access group that will have permissions to access the file(s) you are uploading. 
 2. **URL**: Provide the URL to download from..
@@ -90,6 +108,10 @@ docker cp <dict> hashtopolis-backend:/usr/local/share/hashtopolis/import/
 
 ### Manage Files
 Navigating to the Files page of the Hashtopolis User Interface, you can manage the files uploaded to the server.
+
+<figure markdown="span">
+    ![screenshot_manage_file](https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png?20120228065200){ width="300" }
+</figure>
 
 1. **Select Category**.
 2. **Secret**: Files that are marked as secret will only be sent to trusted agents.
