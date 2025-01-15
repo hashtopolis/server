@@ -3,7 +3,7 @@ site_url: https://docs.hashtopolis.org
 repo_url: https://github.com/hashtopolis/server
 docs_dir: doc
 theme:
-  name: readthedocs
+  name: material
 edit_uri: blob/docs/doc/ # Edit the URL to the static branch and folder
 markdown_extensions:
   - github-callouts # Add the ability of notes, warnings, etc.
