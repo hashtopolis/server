@@ -1,4 +1,9 @@
-# Documentation
+# Hashtopolis
+
+> [!CAUTION]
+> This is a new page that will be used for documentation. It is work in progress, so use with care!
+
+
 
 ## Hashtopolis Protocol
 
