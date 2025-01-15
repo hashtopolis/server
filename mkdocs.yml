@@ -5,7 +5,10 @@ docs_dir: doc
 nav:
  - index.md
  - install.md
- - user_manual.md
+ - User_Manual:
+   - User_Manual/user_manual.md
+   - User_Manual/advanced_hashlist.md
+   - User_Manual/settings_and_configuration.md
  - advanced.md
  - changelog.md
 theme:

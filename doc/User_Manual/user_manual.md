@@ -123,28 +123,6 @@ Line count: Reprocess the file and update the line count with the number of line
 
 ## Monitoring
 
-# Advanced options/Features
-
-## Advanced Hashlist
-
-- Super Hashlist
-
-- New Hashmode
-
-## Advanced tasks
-
-- Advanced option in task creation
-- Preconfigured tasks (including from existing task)
-- Super Task
-- Import Super task
-
-## New Binary
-
-# Settings and Configuration
-
-# Access Management 
-
-Under construction
 
 # Future Work
 - Project structure
