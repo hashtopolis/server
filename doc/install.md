@@ -25,18 +25,18 @@ mkdir hashtopolis
 cd hashtopolis
 ```
 2. Download docker-compose.yml and env.example    
-   ```
-   wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.yml 
-   wget https://raw.githubusercontent.com/hashtopolis/server/master/env.example -O .env
-   ```   
+```
+wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.yml 
+wget https://raw.githubusercontent.com/hashtopolis/server/master/env.example -O .env
+```   
 3. Edit the .env file and change the settings to your likings.   
-   ```
-   nano .env
-   ```   
+```
+nano .env
+```   
 4. Start the containers:   
-   ```
-   docker compose up --detach
-   ```   
+```
+docker compose up --detach
+```   
 5. Access the Hashtopolis UI through: http://127.0.0.1:8080 using the credentials (user=admin, password=hashtopolis)
 6. If you want to play around with a preview of the version 2 of the UI, consult the New user interface: technical preview section.
 

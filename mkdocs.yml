@@ -4,5 +4,7 @@ repo_url: https://github.com/hashtopolis/server
 docs_dir: doc
 theme:
   name: readthedocs
-nav:
-  - 'install.md'
+edit_uri: blob/docs/doc/ # Edit the URL to the static branch and folder
+markdown_extensions:
+  - github-callouts # Add the ability of notes, warnings, etc.
+  - sane_lists # Make the numbered lists continue
