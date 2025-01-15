@@ -5,15 +5,25 @@ docs_dir: doc
 nav:
  - index.md
  - install.md
- - User_Manual:
-   - User_Manual/user_manual.md
-   - User_Manual/advanced_hashlist.md
-   - User_Manual/settings_and_configuration.md
- - advanced.md
+ - User Manual:
+   - user_manual/user_manual.md
+   - user_manual/advanced_hashlist.md
+   - user_manual/settings_and_configuration.md
+ - Advanced Usage:
+   - advanced_usage/tls.md
+   - advanced_usage/docker.md
+   - advanced_usage/generic_cracker.md
+   - advanced_usage/slow_hashes.md
  - changelog.md
+ - API Reference:
+   - APIv2: apiv2.md
+
 theme:
   name: material
   logo: assets/images/logo.png
+  features:
+   - content.code.copy
+   - content.action.edit
 edit_uri: blob/docs/doc/ # Edit the URL to the static branch and folder
 markdown_extensions:
   - github-callouts # Add the ability of notes, warnings, etc.
