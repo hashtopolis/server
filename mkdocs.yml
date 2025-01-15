@@ -2,6 +2,18 @@ site_name: Hashtopolis
 site_url: https://docs.hashtopolis.org
 repo_url: https://github.com/hashtopolis/server
 docs_dir: doc
+nav:
+ - index.md
+ - install.md
+ - user_manual.md
+ - advanced.md
+ - changelog.md
+nav:
+ - index.md
+ - install.md
+ - user_manual.md
+ - advanced.md
+ - changelog.md
 theme:
   name: material
   logo: assets/images/logo.png

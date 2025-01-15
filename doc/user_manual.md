@@ -1,5 +1,7 @@
 # Basic Workflow
+
 Basic workflow highlighting the main point. The goal is that with such workflow a new user is able to run a task on a new hashlist with files or with masks. 
+
 - New Hashlist
 - New Files, wordlist/rules/others
 - New Task
@@ -13,7 +15,10 @@ Refer to the Hashcat documentation for detailed information on supported hash ty
 ### Create a hashlist
 In the Hashtopolis web interface, navigate to *Lists > New Hashlist*. You will get the following window:
 
+![screenshot_hashlist](https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png?20120228065200)
+
 Here is how to fill in the different fields: 
+
 1. **Name**: Provide a descriptive name for your hashlist.
 2. **Hash Type**: Select the appropriate hash type from the dropdown menu. Suggestions will appear as you enter text.
 3. **Hashlist Format**: Choose the format for your hashlist:
@@ -32,8 +37,10 @@ Here is how to fill in the different fields:
 
 ## Files: Rules, Wordlist and other
 When creating a password recovery task in Hashtopolis, you may need to upload additional files to the server, depending on the type of attack you want to perform. These files fall into three main categories:
+
 1. **Rules**
     Rules files contain sets of instructions for dynamically modifying entries in a wordlist during an attack. By applying rules, you can generate variations of passwords without the need for additional wordlist files. For example, rules can:
+
     - Append numbers or special characters.
     - Replace or capitalize specific characters.
     - Reverse words or combine entries.
@@ -48,6 +55,7 @@ When creating a password recovery task in Hashtopolis, you may need to upload ad
 Files can be uploaded to the Hashtopolis server from the Files page. To begin, select the appropriate file category by clicking on one of the tabs: Rules, Wordlists, or Other. The following figure illustrates the selection of the Rules category.
 
 Once a category is selected, files can be added to the server using one of the following methods:
+
 - **Upload from your computer** – Directly upload files stored on your local machine.
 - **Import from an import directory** – Use files that have been preloaded into the server’s import directory.
 - **Download from a URL** – Provide a URL to fetch files from an external source.
@@ -62,10 +70,12 @@ Detailed instructions for each upload method are provided in the following subse
 
 ### Import a new file
 When dealing with large files, such as wordlists, rules, or hashlists, you may encounter issues uploading them via the v1 of the Hashtopolis User Interface.. Common errors include exceeding the maximum upload size or experiencing a connection timeout. To bypass these limitations, you can use the import functionality of Hashtopolis.
+
 - **Copy the file to the import folder**: Place the file in the designated import directory on the Hashtopolis server. If you are using the default Docker Compose setup, you can achieve this with the following command:
 ```
 docker cp <dict> hashtopolis-backend:/usr/local/share/hashtopolis/import/
 ```
+
 - **Import the file**: 
 
 1. **Associated Access Group**: Define the access group that will have permissions to access the file(s) you are uploading. 
