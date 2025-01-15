@@ -18,7 +18,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install mkdocs markdown-callouts mkdocs-material
+        pip install mkdocs
+        pip3 install $(mkdocs get-deps)
         sudo apt-get update
         sudo apt-get install -y lftp
 
