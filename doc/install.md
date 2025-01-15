@@ -19,7 +19,7 @@ The official Docker images can be found on Docker Hub at: https://hub.docker.com
 
 A docker-compose file allowing to configure the docker containers for Hashtopolis is available in this repository. Here are the steps to follow to run Hashtopolis using that docker-compose file:
 
-1. Create a folder and change into the folder
+1. Create a folder and change into the folder   
 ``` 
 mkdir hashtopolis
 cd hashtopolis
@@ -52,9 +52,9 @@ To enable 'version 2' of the API:
 2. set the HASHTOPOLIS_APIV2_ENABLE to 1 inside the .env file.
 
 3. Relaunch the containers
-   ```
-   docker compose up --detach
-   ```
+```
+docker compose up --detach
+```
 
 4. Access the technical preview via: http://127.0.0.1:4200 using the credentials user=admin and password=hashtopolis, unless modified in the .env file.
 
@@ -62,10 +62,10 @@ To enable 'version 2' of the API:
 #### Prerequisites
 To install the agent, ensure that the following prerequisites are met:
 1. Python: Python 3 must be installed on the agent system. You can verify the installation by running the following command in your terminal:
-   ```
-   python3 --version
-   ```
-   If Python 3 is not installed, refer to the official Python installation guide.
+```
+python3 --version
+```
+If Python 3 is not installed, refer to the official Python installation guide.
 2. Python Packages: The Hashtopolis agents depends on the following Python packages:
    - requests
    - psutil
@@ -85,36 +85,36 @@ pip install requests psutil
 #### Download the Hashtopolis agent
 1. Connect to the Hashtopolis server: http://<server-ip-address>:8080 and log in. Navigate to the Agents tab > New Agent. 
 2. From that page, you can either download the agent by clicking on the Download button, or copy and paste the provided url to download the agent using wget/curl:
-   ```
-   curl -o hastopolis.zip "http://<server-ip-address>:8080/agents.php?download=1"
-   ```
+```
+curl -o hastopolis.zip "http://<server-ip-address>:8080/agents.php?download=1"
+```
 
 #### Start and register a new agent
 
 1. Activate your python virtual environment if not done before:   
-   ```
-   source hashtopolis_env/bin/activate
-   ```   
+```
+source hashtopolis_env/bin/activate
+```   
 2. Start the agent:   
-   ```
-   python hashtopolis.zip
-   ```
+```
+python hashtopolis.zip
+```
 
 3. When prompted, provide the URL to the server API as provided in the Agents page of Hashtopolis (http://<server-ip-address>:8080/api/server.php).   
-   ```
-   Starting client 's3-python-0.7.2.4'...
-   Please enter the url to the API of your Hashtopolis installation:
-   http://localhost:8080/api/server.php
-   ```   
+```
+Starting client 's3-python-0.7.2.4'...
+Please enter the url to the API of your Hashtopolis installation:
+http://localhost:8080/api/server.php
+```   
 4. On the server Agents page of Hashtopolis, create a new Voucher and copy it.
 5. Register the agent by providing the newly created token.   
-   ```
-   No token found! Please enter a voucher to register your agent:
-   peKxylVY
-   Successfully registered!
-   Collecting agent data...
-   Login successful!
-   ```
+```
+No token found! Please enter a voucher to register your agent:
+peKxylVY
+Successfully registered!
+Collecting agent data...
+Login successful!
+```
 
 Your agent is now ready to receive new tasks. If you wish to finetune the configuration of your agent, please consult the section related to the agent configuration file or the command line arguments in the Advanced installation section. Otherwise, to start using Hashtopolis, consult the Basic workflow section.
 
