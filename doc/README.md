@@ -16,5 +16,5 @@ virtualenv venv
 source venv/bin/activate
 pip3 install mkdocs
 pip3 install $(mkdocs get-deps)
-mkdocs server
+mkdocs serve
 ```

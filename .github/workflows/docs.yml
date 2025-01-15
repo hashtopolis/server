@@ -22,7 +22,18 @@ jobs:
         pip3 install $(mkdocs get-deps)
         sudo apt-get update
         sudo apt-get install -y lftp
-
+        sudo apt-get install nodejs
+        sudo apt-get install npm 
+        sudo npm i openapi-to-md -g
+    - name: Start application containers #same steps as in ci.yml, might make it more modular in the future
+      working-directory: .devcontainer
+      run: docker compose up -d
+    - name: Wait until entrypoint is finished and Hashtopolis is started
+      run: bash .github/scripts/await-hashtopolis-startup.sh
+    - name: Download newest apiv2 spec
+      run: |
+        wget http://localhost:8080/api/v2/openapi.json -P /tmp/
+        openapi-to-md /tmp/openapi.json /docs/api/
     - name: Build MkDocs site
       run: |
         mkdocs build
