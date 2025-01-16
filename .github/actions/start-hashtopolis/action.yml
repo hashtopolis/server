@@ -3,9 +3,9 @@ description: Starts application containers and waits for Hashtopolis to be ready
 
 runs:
   using: "composite"
-    steps:
-      - name: Start application containers
-        working-directory: .devcontainer
-        run: docker compose up -d
-      - name: Wait until entrypoint is finished and Hashtopolis is started
-        run: bash .github/scripts/await-hashtopolis-startup.sh
+  steps:
+    - name: Start application containers
+      working-directory: .devcontainer
+      run: docker compose up -d
+    - name: Wait until entrypoint is finished and Hashtopolis is started
+      run: bash .github/scripts/await-hashtopolis-startup.sh
