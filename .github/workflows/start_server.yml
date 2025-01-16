@@ -5,7 +5,7 @@ on:
 
 jobs:
   start-hashtopolis:
-    runs-on: ubbuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
