@@ -11,14 +11,13 @@ on:
     - dev
 
 jobs:
-  start-hashtopolis:
-      uses: ./.github/workflows/start_server.yml
   build:
-    needs: start-hashtopolis
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Start Hashtopolis server
+        uses: ./.github/actions/start-hashtopolis
       - name: Give Apache permissions on necessary directories # for the tests, only src/files and src/inc/utils/locks seem necessary
         run: docker exec -u root hashtopolis-server-dev bash -c "chown -R www-data:www-data /var/www/html/src && chmod -R g+w /var/www/html/src"
       - name: Run test suite

@@ -1,15 +1,9 @@
 name: Start Hashtopolis server
+description: Starts application containers and waits for Hashtopolis to be ready.
 
-on:
-  workflow_call:
-
-jobs:
-  start-hashtopolis:
-    runs-on: ubuntu-latest
-
+runs:
+  using: "composite"
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
       - name: Start application containers
         working-directory: .devcontainer
         run: docker compose up -d
