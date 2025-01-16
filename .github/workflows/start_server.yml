@@ -8,6 +8,8 @@ jobs:
     runs-on: ubbuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Start application containers
         working-directory: .devcontainer
         run: docker compose up -d
