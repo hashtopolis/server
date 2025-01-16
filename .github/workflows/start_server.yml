@@ -1,0 +1,15 @@
+name: Start Hashtopolis server
+
+on:
+  workflow_call:
+
+jobs:
+  start-hashtopolis:
+    runs-on: ubbuntu-latest
+
+    steps:
+      - name: Start application containers
+        working-directory: .devcontainer
+        run: docker compose up -d
+      - name: Wait until entrypoint is finished and Hashtopolis is started
+        run: bash .github/scripts/await-hashtopolis-startup.sh
