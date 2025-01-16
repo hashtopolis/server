@@ -35,7 +35,7 @@ jobs:
     - name: Create function level documentation with phpdocumentor
       run: |
         wget https://phpdoc.org/phpDocumentor.phar -P /tmp/
-        php /tmp/phpDocumentor.phar --ignore vendor/ -d . -t /docs/php-documentor/
+        sudo php /tmp/phpDocumentor.phar --ignore vendor/ -d . -t /docs/php-documentor/
     - name: Build MkDocs site
       run: |
         mkdocs build
