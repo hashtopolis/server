@@ -872,7 +872,7 @@ abstract class AbstractBaseAPI
   protected function getPrimaryKey(): string
   {
     $features = $this->getFeatures();
-    # Word-around required since getPrimaryKey is not static in dba/models/*.php
+    # Work-around required since getPrimaryKey is not static in dba/models/*.php
     foreach($features as $key => $value) {
       if ($value['pk'] == True) {
         return $key;
