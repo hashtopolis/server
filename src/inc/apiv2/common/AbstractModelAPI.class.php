@@ -255,33 +255,32 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   ): array {
     assert($intermediateFactory instanceof AbstractModelFactory);
     assert($targetFactory instanceof AbstractModelFactory);
-    $retval = array();
-
-
+    $many2Many = array();
+    
     /* Retrieve Parent -> Intermediate -> Target objects */
     $objectIds = [];
-    foreach ($objects as $object) {
+    foreach($objects as $object) {
       $kv = $object->getKeyValueDict();
       $objectIds[] = $kv[$objectField];
     }
     $qF = new ContainFilter($filterField, $objectIds, $intermediateFactory);
     $jF = new JoinFilter($intermediateFactory, $joinField, $joinField);
     $hO = $targetFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-
-    /* Build mapping Parent -> Intermediate */
-    $i2p = [];
-    foreach ($hO[$intermediateFactory->getModelName()] as $intermidiateObject) {
-      $kv = $intermidiateObject->getKeyValueDict();
-      $i2p[$kv[$joinField]] = $kv[$filterField];
+    
+    $intermediateObjectList = $hO[$intermediateFactory->getModelName()];
+    $targetObjectList = $hO[$targetFactory->getModelName()];
+    
+    $intermediateObject = current($intermediateObjectList);
+    $targetObject = current($targetObjectList);
+    
+    while ($intermediateObject && $targetObject) {
+      $kv = $intermediateObject->getKeyValueDict();
+      $many2Many[$kv[$filterField]][] = $targetObject;
+      
+      $intermediateObject = next($intermediateObjectList);
+      $targetObject = next($targetObjectList);
     }
-
-    /* Associate Target -> Parent (via Intermediate) */
-    foreach ($hO[$targetFactory->getModelName()] as $targetObject) {
-      $parent = $i2p[$targetObject->getKeyValueDict()[$joinField]];
-      $retval[$parent][] = $targetObject;
-    }
-
-    return $retval;
+    return $many2Many;
   }
 
   /** 
