@@ -11,7 +11,9 @@
 	\maketitle
 	\section*{Introduction}
 	The communication for the User API is always in JSON formatted values. When sending a request to the server, it should be a POST containing the JSON data.
-	Every request has a \textit{section} and a \textit{request} field to state which action should be executed. Every response again then contains the requested section and request and gives a \textit{status} to indicate if the query was successful or not. To increase the readability of this document, requests are always in blue, successful responses in green and error messages in red.
+	Every request has a \textit{section} and a \textit{request} field to state which action should be executed. Every response again then contains the requested section and request and gives a \textit{status} to indicate if the query was successful or not. To increase the readability of this document, requests are always in blue, successful responses in green and error messages in red. \\
+
+	The User API can be found at http[s]://[YOUR_SERVER]:8080/api/user.php. All of the below payloads should be sent to that endpoint.
 
 	\section*{Errors}
 	In case of an error with the query which the user sends to the server, the response will have following format with the corresponding action which was requested and the error message which should help in getting information about this error.
