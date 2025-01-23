@@ -55,7 +55,7 @@ class UserAPI extends AbstractModelAPI {
       /* Expand requested section */
       switch($expand) {
         case 'accessGroups':
-          return self::getManyToOneRelationViaIntermediate(
+          return self::getManyToManyRelationViaIntermediate(
             $objects,
             User::USER_ID,
             Factory::getAccessGroupUserFactory(),

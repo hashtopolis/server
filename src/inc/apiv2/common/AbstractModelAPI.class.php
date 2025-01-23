@@ -176,7 +176,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    * @return array $many2One which is a map where the key is the id of the parent object and the value is an array of the included
    *                objects that are included for this parent object
    */
-  //A bit hacky solution to get a to one through an intermediate table, needed when from a task you need to include the hashlists
+  //A bit hacky solution to get a to one through an intermediate table, currently only used by tasks to include a hashlist through the taskwrapper
+  //another solution can be to overwrite fetchExpandObjects() in tasks.routes
   final protected static function getManyToOneRelationViaIntermediate(
     array $objects,
     string $objectField,
