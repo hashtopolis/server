@@ -47,6 +47,12 @@ class TaskAPI extends AbstractModelAPI {
           'intermediateType' => TaskWrapper::class,
           'joinField' => Task::TASK_WRAPPER_ID,
           'joinFieldRelation' => TaskWrapper::TASK_WRAPPER_ID,
+
+          'junctionTableType' => TaskWrapper::class,
+          'junctionTableFilterField' => TaskWrapper::HASHLIST_ID,
+          'junctionTableJoinField' => TaskWrapper::TASK_WRAPPER_ID,
+
+          'parentKey' => Task::TASK_ID
         ],
       ];
     }

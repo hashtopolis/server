@@ -58,6 +58,19 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $toOneRelationships = static::getToOneRelationships();
     if (array_key_exists($expand, $toOneRelationships)) {
       $relationFactory = self::getModelFactory($toOneRelationships[$expand]['relationType']);
+
+      if (array_key_exists('junctionTableType', $toOneRelationships[$expand])) {
+        $junctionTableFactory = self::getModelFactory($toOneRelationships[$expand]['junctionTableType']);
+        return self::getManyToOneRelationViaIntermediate(
+          $objects,
+          $toOneRelationships[$expand]['junctionTableJoinField'],
+          $junctionTableFactory,
+          $relationFactory,
+          $toOneRelationships[$expand]['relationKey'],
+          $toOneRelationships[$expand]['parentKey']
+        );
+      };
+
       return self::getForeignKeyRelation(
         $objects,
         $toOneRelationships[$expand]['key'],
@@ -73,7 +86,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       /* Associative entity */
       if (array_key_exists('junctionTableType', $toManyRelationships[$expand])) {
         $junctionTableFactory = self::getModelFactory($toManyRelationships[$expand]['junctionTableType']);
-        return self::getManyToOneRelationViaIntermediate(
+        return self::getManyToManyRelationViaIntermediate(
           $objects,
           $toManyRelationships[$expand]['key'],
           $junctionTableFactory,
@@ -146,6 +159,66 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         return $key;
       }
     }
+  }
+
+  /**
+   * Retrieve ManyToOne relalation for $objects ('parents') of type $targetFactory via 'intermidate'
+   * of $intermediateFactory joining on $joinField (between 'intermediate' and 'target'). Filtered by 
+   * $filterField at $intermediateFactory.
+   * 
+   * @param array $objects Objects Fetch relation for selected Objects 
+   * @param string $objectField Field to use as base for $objects
+   * @param object $intermediateFactory Factory used as intermediate between parentObject and targetObject
+   * @param string $filterField Filter field of intermadiateObject to filter against $objects field
+   * @param object $targetFactory Object properties of objects returned
+   * @param string $joinField Field to connect 'intermediate' to 'target'
+
+   * @return array $many2One which is a map where the key is the id of the parent object and the value is an array of the included
+   *                objects that are included for this parent object
+   */
+  //A bit hacky solution to get a to one through an intermediate table, currently only used by tasks to include a hashlist through the taskwrapper
+  //another solution can be to overwrite fetchExpandObjects() in tasks.routes
+  final protected static function getManyToOneRelationViaIntermediate(
+    array $objects,
+    string $objectField,
+    object $intermediateFactory,
+    object $targetFactory,
+    string $joinField,
+    string $parentKey
+  ): array {
+    assert($intermediateFactory instanceof AbstractModelFactory);
+    assert($targetFactory instanceof AbstractModelFactory);
+    $many2One = array();
+    
+    /* Retrieve Parent -> Intermediate -> Target objects */
+    $objectIds = [];
+    foreach($objects as $object) {
+      $kv = $object->getKeyValueDict();
+      $objectIds[] = $kv[$objectField];
+    }
+    $baseFactory = self::getModelFactory(static::getDBAClass());
+    $qF = new ContainFilter($objectField, $objectIds, $intermediateFactory);
+    $jF = new JoinFilter($intermediateFactory, $joinField, $joinField);
+    $jF2 = new JoinFilter($baseFactory, $objectField, $objectField, $intermediateFactory);
+    $hO = $targetFactory->filter([Factory::FILTER => $qF, Factory::JOIN => [$jF, $jF2]]);
+    
+    $intermediateObjectList = $hO[$intermediateFactory->getModelName()];
+    $targetObjectList = $hO[$targetFactory->getModelName()];
+    $baseObjectList = $hO[$baseFactory->getModelName()];
+    
+    $intermediateObject = current($intermediateObjectList);
+    $targetObject = current($targetObjectList);
+    $baseObject = current($baseObjectList);
+    
+    while ($intermediateObject && $targetObject && $baseObject) {
+      $kv = $baseObject->getKeyValueDict();
+      $many2One[$kv[$parentKey]] = $targetObject;
+      
+      $intermediateObject = next($intermediateObjectList);
+      $targetObject = next($targetObjectList);
+      $baseObject = next($baseObjectList);
+    }
+    return $many2One;
   }
 
   /**
@@ -243,9 +316,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    * @param object $targetFactory Object properties of objects returned
    * @param string $joinField Field to connect 'intermediate' to 'target'
 
-   * @return array 
+   * @return array $many2many which is a map where the key is the id of the parent object and the value is an array of the included
+   *                objects that are included for this parent object
    */
-  final protected static function getManyToOneRelationViaIntermediate(
+  final protected static function getManyToManyRelationViaIntermediate(
     array $objects,
     string $objectField,
     object $intermediateFactory,
@@ -372,6 +446,22 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $updates;
   }
 
+  protected static function addToRelatedResources(array $relatedResources, array $relatedResource) {
+    $alreadyExists = false;
+    $searchType = $relatedResource["type"];
+    $searchId = $relatedResource["id"];
+    foreach ($relatedResources as $resource) {
+      if ($resource["id"] == $searchId && $resource["type"] == $searchType) {
+        $alreadyExists = true;
+        break;
+      }
+    }
+    if (!$alreadyExists) {
+     $relatedResources[] = $relatedResource; 
+    }
+    return $relatedResources;
+  }
+
   /**
    * API entry point for requesting multiple objects
    */
@@ -484,14 +574,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
           $expandResultObject = $expandResult[$expand][$object->getId()];
           if (is_array($expandResultObject)) {
             foreach ($expandResultObject as $expandObject) {
-              $includedResources[] = $apiClass->obj2Resource($expandObject);
+              $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject));
             }
           } else {
             if ($expandResultObject === null) {
               // to-only relation which is nullable
               continue;
             }
-            $includedResources[] = $apiClass->obj2Resource($expandResultObject);
+            $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandResultObject));
           }
         }
       }
