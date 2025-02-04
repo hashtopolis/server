@@ -650,7 +650,10 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
               ]        
           ]];
 
-        } else { 
+        }  elseif ($method == 'patch') {
+          // TODO add patch many here
+        }
+        else { 
           throw new HttpErrorException("Method '$method' not implemented");
         }
       }

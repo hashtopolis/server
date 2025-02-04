@@ -320,7 +320,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   // Solution 2: implement delete logic in every api model 
   {
     $this->preCommon($request);
-    $object = $this->doFetch($request, $args['id']);
+    $object = $this->doFetch($args['id']);
 
     /* Actually delete object */
     $this->deleteObject($object);
@@ -332,11 +332,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   /**
    * Request single object from database & validate permissons
    */
-  protected function doFetch(Request $request, string $pk): mixed
+  protected function doFetch(string $pk): mixed
   {
     $object = $this->getFactory()->get($pk);
     if ($object === null) {
-      throw new HttpNotFoundException($request, "Object not found!");
+      throw new HttpErrorException("Object not found!", 404);
     }
 
     return $object;
@@ -695,7 +695,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   public function getOne(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
-    $object = $this->doFetch($request, $args['id']);
+    $object = $this->doFetch($args['id']);
 
     $classMapper = $this->container->get('classMapper');
 
@@ -709,7 +709,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   public function patchOne(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
-    $object = $this->doFetch($request, $args['id']);
+    $objectId = $args['id'];
+    // $object = $this->doFetch($args['id']);
 
     $data = $request->getParsedBody()['data'];
     if (!$this->validateResourceRecord($data)) {
@@ -728,13 +729,70 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     // This does the real things, patch the values that were sent in the data.
     $mappedData = $this->unaliasData($attributes, $aliasedfeatures);
-    $this->updateObject($object, $mappedData); //TODO updateObject not implemented in every route?
+    $this->updateObject($objectId, $mappedData);
 
     // Return updated object
-    $newObject = $this->getFactory()->get($object->getId());
+    $newObject = $this->getFactory()->get($objectId);
     return self::getOneResource($this, $newObject, $request, $response, 200);
   }
 
+  //follows style of bulk methods: https://github.com/json-api/json-api/blob/9c7a03dbc37f80f6ca81b16d444c960e96dd7a57/extensions/bulk/index.md
+  //1. parse into key => value pairs of what is updated or object => key => value dict
+  //2. retrieve object $object = $this->doFetch($request, $args['id']);
+  //3. create updateObjects functions, that in base case will just do updateObject on every element in array
+  //4. overload function in config route
+  /**
+   * {
+ * "data": [{
+ *   "id": "1",
+ *  "type": "articles"
+ *   "attributes": {
+ *     "title": "To TDD or Not"
+ *   }
+ * }, {
+ *   "id": "2",
+ *  "type": "articles"
+ *   "attributes": {
+ *     "title": "LOL Engineering"
+ *   }
+ * }]
+   */
+  public function patchMultiple(Request $request, Response $response, array $args): Response {
+    $this->preCommon($request);
+    $data = $request->getParsedBody()['data'];
+    $objects = [];
+    $aliasedfeatures = $this->getAliasedFeatures();
+    foreach ($data as $resourceRecord) {
+      if (!$this->validateResourceRecord($resourceRecord)) {
+        throw new HttpErrorException('No valid resource identifier object was given as data!', 403);
+      }
+      $attributes = $resourceRecord["attributes"];
+      foreach (array_keys($attributes) as $key) {
+        // Ensure key can be updated 
+        $this->isAllowedToMutate($request, $aliasedfeatures, $key);
+      }
+      $mappedData = $this->unaliasData($attributes, $aliasedfeatures);
+      $objects[$resourceRecord["id"]] = $mappedData;
+
+    }
+    $this->updateObjects($objects);
+
+    // $newObject = $this->getFactory()->get($object->getId());
+    // return self::getOneResource($this, $newObject, $request, $response, 200);
+    //TODO maybe nicer to return all changed objects
+    return $response->withStatus(204)
+      ->withHeader("Content-Type", "application/json");
+  }
+
+  /**
+   * Overidable function to update mulitple objects
+   * @objects ia an array where id is the key and the values are the attributes that need to be patched
+   */
+  protected function updateObjects(array $objects) {
+    foreach ($objects as $objectId => $attributes) {
+      $this->updateObject($objectId, $attributes);
+    }
+  }
 
   /**
    * API entry point creation of new object
@@ -797,7 +855,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $object = $factory->filter($aFs)[$intermediateFactory->getModelName()][0];
     } else {
       // Base object
-      $object = $this->doFetch($request, $args['id']);
+      $object = $this->doFetch($args['id']);
     }
 
     // Relation object
@@ -848,7 +906,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       //retrieve the only element of the intermediate table, which contains the data for the relatedResource
       $object = $factory->filter($aFs)[$intermediateFactory->getModelName()][0];
     } else {
-      $object = $this->doFetch($request, $args['id']);
+      $object = $this->doFetch($args['id']);
     };
 
     $id = $object->getKeyValueDict()[$relation['key']];
@@ -909,7 +967,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $this->isAllowedToMutate($request, $features, $relationKey);
 
     $factory = $this->getFactory();
-    $object = $this->doFetch($request, intval($args['id']));
+    $object = $this->doFetch(intval($args['id']));
     if ($data == null) {
       $factory->set($object, $relationKey, null);
     } elseif (!$this->validateResourceRecord($data)) {
@@ -972,7 +1030,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $this->preCommon($request);
 
     // Base object -> Relationship objects
-    $object = $this->doFetch($request, $args['id']);
+    $object = $this->doFetch($args['id']);
     $expandObjects = $this->fetchExpandObjects([$object], $args['relation']);
 
     $dataResources = [];
@@ -1167,15 +1225,16 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   /**
    * Update object with provided values
    */
-  protected function updateObject(object $object, array $data, array $processed = []): void
+  protected function updateObject(int $objectId, array $data): void
   {
-    // Apply changes 
+    $updateHandlers = $this->getUpdateHandlers($objectId, $this->getCurrentUser());
     foreach ($data as $key => $value) {
-      if (in_array($key, $processed)) {
-        continue;
+      if (array_key_exists($key, $updateHandlers)) {
+        $updateHandlers[$key]($value);
+      } else {
+        $object = $this->doFetch($objectId);
+        $this->getFactory()->set($object, $key, $value);
       }
-
-      $this->getFactory()->set($object, $key, $value);
     }
   }
 
@@ -1266,6 +1325,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     if (in_array("PATCH", $available_methods)) {
       $app->patch($baseUriOne, $me . ':patchOne')->setName($me . ':patchOne');
+      $app->patch($baseUri, $me . ':patchMultiple')->setName($me . ':patchMultiple');
     }
 
     if (in_array("DELETE", $available_methods)) {

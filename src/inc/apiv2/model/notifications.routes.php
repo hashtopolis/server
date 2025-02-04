@@ -78,6 +78,12 @@ class NotificationSettingAPI extends AbstractModelAPI {
     protected function deleteObject(object $object): void {
       NotificationUtils::delete($object->getId(), $this->getCurrentUser());
     }
+
+    protected function getUpdateHandlers($id, $current_user): array {
+      return [
+        NotificationSetting::IS_ACTIVE => fn ($value) => NotificationUtils::setActive($id, $value, false, $current_user),
+      ];
+    }
 }
 
 NotificationSettingAPI::register($app);

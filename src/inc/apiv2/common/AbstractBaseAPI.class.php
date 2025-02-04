@@ -120,6 +120,10 @@ abstract class AbstractBaseAPI
     return $features;
   }
 
+  protected function getUpdateHandlers($id, $current_user): array {
+    return [];
+  }
+
   /**
    * Take all the dba features and converts them to a list.
    * It uses the data from the generator and replaces the keys with the aliasses.
@@ -264,6 +268,10 @@ abstract class AbstractBaseAPI
   final protected static function getTask(int $pk): Task
   {
     return self::fetchOne(Task::class, $pk);
+  }
+  final protected static function getTaskWrapper(int $pk): TaskWrapper
+  {
+    return self::fetchOne(TaskWrapper::class, $pk);
   }
 
   final protected static function getUser(int $pk): User

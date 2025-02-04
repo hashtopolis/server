@@ -46,9 +46,6 @@ class UserAPI extends AbstractModelAPI {
       ];
     }
 
-
-
-
     protected static function fetchExpandObjects(array $objects, string $expand): mixed {        
       array_walk($objects, function($obj) { assert($obj instanceof User); });
 
@@ -102,24 +99,19 @@ class UserAPI extends AbstractModelAPI {
       UserUtils::deleteUser($object->getId(), $this->getCurrentUser());
     }
 
-    public function updateObject(object $object, $data, $processed = []): void {    
-      $key = USER::RIGHT_GROUP_ID;
-      if (array_key_exists($key, $data)) {
-        array_push($processed, $key);
-        UserUtils::setRights($object->getId(), $data[$key], $this->getCurrentUser());
+    private function toggleValidityUser($userId, $isValid, $current_user) {
+      if ($isValid) {
+        UserUtils::enableUser($userId);
+      } else {
+        UserUtils::disableUser($userId, $current_user);
       }
+    }
 
-      $key = USER::IS_VALID;
-      if (array_key_exists($key, $data)) {
-        array_push($processed, $key);
-        if ($data[$key] == True) {
-          UserUtils::enableUser($object->getId());
-        } else {
-          UserUtils::disableUser($object->getId(), $this->getCurrentUser());
-        }
-      }
-
-      parent::updateObject($object, $data, $processed);
+    protected function getUpdateHandlers($id, $current_user): array {
+      return [
+        User::RIGHT_GROUP_ID => fn ($value) => UserUtils::setRights($id, $value, $current_user),
+        User::IS_VALID => fn ($value) => $this->toggleValidityUser($id, $value, $current_user)
+      ];
     }
 
 }

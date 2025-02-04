@@ -44,7 +44,7 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
        return -1;
     }
 
-    public function updateObject(object $object, array $data, array $processed = []): void {
+    public function updateObject(int $objectId, array $data): void {
       assert(False, "HealthCheckAgents cannot be updated via API");
    }
 

@@ -148,6 +148,12 @@ class FileAPI extends AbstractModelAPI {
       return $objects[0]->getId();
     }
 
+    protected function getUpdateHandlers($id, $current_user): array {
+      return [
+        File::FILE_TYPE => fn ($value) => FileUtils::setFileType($id, $value, $current_user)
+      ];
+    }
+
 
     protected function deleteObject(object $object): void {
       FileUtils::delete($object->getId(), $this->getCurrentUser());

@@ -84,7 +84,93 @@ class PreprocessorUtils {
     }
     return $preprocessor;
   }
+
+  /**
+   * @param $preprocessorId
+   * @param $name
+   * Edits the name of the preprocessor
+   * @throws HTException when name already exists
+   */
+  public static function editName($preprocessorId, $name) {
+    $qF1 = new QueryFilter(Preprocessor::NAME, $name, "=");
+    $qF2 = new QueryFilter(Preprocessor::PREPROCESSOR_ID, $preprocessorId, "<>");
+    $check = Factory::getPreprocessorFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
+    if ($check !== null) {
+      throw new HTException("This preprocessor name already exists!");
+    }
+
+    $preprocessor = PreprocessorUtils::getPreprocessor($preprocessorId);
+    Factory::getPreprocessorFactory()->set($preprocessor, Preprocessor::NAME, $name);
+  }
+
+  /**
+   * @param $preprocessorId
+   * @param $binaryName
+   * Edits the binaryName of the preprocessor
+   * @throws HTException when BinaryName is empty or contains blacklisted characters
+   */
+  public static function editBinaryName($preprocessorId, $binaryName) {
+
+    if (strlen($binaryName) == 0) {
+      throw new HTException("Binary basename cannot be empty!");
+    } else if (Util::containsBlacklistedChars($binaryName)) {
+      throw new HTException("The binary name must contain no blacklisted characters!");
+    }
+    $preprocessor = PreprocessorUtils::getPreprocessor($preprocessorId);
+    Factory::getPreprocessorFactory()->set($preprocessor, Preprocessor::BINARY_NAME, $binaryName);
+  }
   
+  /**
+   * @param $preprocessorId
+   * @param $keyspaceCommand
+   * Edits the keyspaceCommand of the preprocessor
+   * @throws HTException when keyspaceCommand is empty or contains blacklisted characters
+   */
+  public static function editKeyspaceCommand($preprocessorId, $keyspaceCommand) {
+
+    if (strlen($keyspaceCommand) == 0) {
+      $keyspaceCommand == null;
+    } else if (Util::containsBlacklistedChars($keyspaceCommand)) {
+      throw new HTException("The keyspace command must contain no blacklisted characters!");
+    }
+    $preprocessor = PreprocessorUtils::getPreprocessor($preprocessorId);
+    Factory::getPreprocessorFactory()->set($preprocessor, Preprocessor::KEYSPACE_COMMAND, $keyspaceCommand);
+  }
+  
+  /**
+   * @param $preprocessorId
+   * @param $skipCommand
+   * Edits the skipCommand of the preprocessor
+   * @throws HTException when skipCommand is empty or contains blacklisted characters
+   */
+  public static function editSkipCommand($preprocessorId, $skipCommand) {
+
+    if (strlen($skipCommand) == 0) {
+      $skipCommand == null;
+    } else if (Util::containsBlacklistedChars($skipCommand)) {
+      throw new HTException("The skip command must contain no blacklisted characters!");
+    }
+    $preprocessor = PreprocessorUtils::getPreprocessor($preprocessorId);
+    Factory::getPreprocessorFactory()->set($preprocessor, Preprocessor::SKIP_COMMAND, $skipCommand);
+  }
+
+  /**
+   * @param $preprocessorId
+   * @param $limitCommand
+   * Edits the limitCommand of the preprocessor
+   * @throws HTException when limitCommand is empty or contains blacklisted characters
+   */
+  public static function editLimitCommand($preprocessorId, $limitCommand) {
+
+    if (strlen($limitCommand) == 0) {
+      $limitCommand == null;
+    } else if (Util::containsBlacklistedChars($limitCommand)) {
+      throw new HTException("The limit command must contain no blacklisted characters!");
+    }
+    $preprocessor = PreprocessorUtils::getPreprocessor($preprocessorId);
+    Factory::getPreprocessorFactory()->set($preprocessor, Preprocessor::LIMIT_COMMAND, $limitCommand);
+  }
+
   /**
    * @param $preprocessorId
    * @param $name

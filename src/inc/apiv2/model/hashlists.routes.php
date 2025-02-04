@@ -146,21 +146,14 @@ class HashlistAPI extends AbstractModelAPI {
       HashlistUtils::delete($object->getId(), $this->getCurrentUser());
     }
 
-    public function updateObject(object $object, $data, $processed = []): void {
-
-      $key = Hashlist::IS_ARCHIVED;
-      if (array_key_exists($key, $data)) {
-        array_push($processed, $key);
-        HashlistUtils::setArchived($object->getId(), $data[$key], $this->getCurrentUser());
-      }
-
-      $key = Hashlist::NOTES;
-      if (array_key_exists($key, $data)) {
-        array_push($processed, $key);
-        HashlistUtils::editNotes($object->getId(), $data[$key], $this->getCurrentUser());
-      }
-
-      parent::updateObject($object, $data, $processed = []);
+    protected function getUpdateHandlers($id, $current_user): array {
+      return [
+        Hashlist::IS_ARCHIVED => fn ($value) => HashListUtils::setArchived($id, $value, $current_user),
+        Hashlist::NOTES => fn ($value) => HashListUtils::editNotes($id, $value, $current_user),
+        Hashlist::IS_SECRET => fn ($value) => HashListUtils::setSecret($id, $value, $current_user),
+        Hashlist::HASHLIST_NAME => fn ($value) => HashListUtils::rename($id, $value, $current_user),
+        Hashlist::ACCESS_GROUP_ID => fn ($value) => HashListUtils::changeAccessGroup($id, $value, $current_user)
+      ];
     }
 }
 
