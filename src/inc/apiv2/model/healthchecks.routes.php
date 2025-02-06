@@ -2,6 +2,7 @@
 use DBA\Factory;
 
 use DBA\CrackerBinary;
+use DBA\HashType;
 use DBA\HealthCheck;
 use DBA\HealthCheckAgent;
 
@@ -26,6 +27,12 @@ class HealthCheckAPI extends AbstractModelAPI {
           'relationType' => CrackerBinary::class,
           'relationKey' => CrackerBinary::CRACKER_BINARY_ID,
         ],
+        'hashType' => [
+          'key' => HealthCheck::HASHTYPE_ID, 
+
+          'relationType' => HashType::class,
+          'relationKey' => HashType::HASH_TYPE_ID,
+        ]
       ];
     }
 
