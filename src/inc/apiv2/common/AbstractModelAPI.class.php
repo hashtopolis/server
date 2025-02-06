@@ -478,7 +478,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     // $defaultPageSize = SConfig::getInstance()->getVal(DConfig::DEFAULT_PAGE_SIZE);
     // $maxPageSize = SConfig::getInstance()->getVal(DConfig::MAX_PAGE_SIZE);
 
-    $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') ?? 0;
+    $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after');
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
     if ($pageSize < 0) {
       throw new HttpErrorException("Invalid parameter, page[size] must be a positive integer", 400);
@@ -536,7 +536,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     //pagination filters need to be added after max has been calculated
     $finalFs[Factory::LIMIT] = new LimitFilter($pageSize);
 
-    $finalFs[Factory::FILTER][] = new QueryFilter($primaryKey, $pageAfter, '>', $factory);
+    if (isset($pageAfter)){
+      $finalFs[Factory::FILTER][] = new QueryFilter($primaryKey, $pageAfter, '>', $factory);
+    }
     $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
     if (isset($pageBefore)) {
       $finalFs[Factory::FILTER][] = new QueryFilter($primaryKey, $pageBefore, '<', $factory);
