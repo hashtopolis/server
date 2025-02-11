@@ -89,6 +89,10 @@ $app->group("/api/v2/helper/importFile", function (RouteCollectorProxy $group) {
       $list = explode(",", $update["upload_metadata_raw"]);
       foreach ($list as $item) {
         list($key, $b64val) = explode(" ", $item);
+        if (!isset($b64val)) {
+          $response->getBody()->write("Error Upload-Metadata, should be a key value pair that is seperated by a space, no value has been provided");
+          return $response->withStatus(400);
+        }
         if (($val = base64_decode($b64val, true)) === false) {
           $response->getBody()->write("Error Upload-Metadata '$key' invalid base64 encoding");
           return $response->withStatus(400);
@@ -97,7 +101,7 @@ $app->group("/api/v2/helper/importFile", function (RouteCollectorProxy $group) {
       }
     }
     // TODO: Should filename be mandatory?
-    if (array_key_exists('filename', $update_metadata)) {
+    if (isset($update_metadata) && array_key_exists('filename', $update_metadata)) {
       $filename = $update_metadata['filename'];
       /* Generate unique upload identifier */
       $id = date("YmdHis") . "-" . md5($filename);
@@ -111,6 +115,10 @@ $app->group("/api/v2/helper/importFile", function (RouteCollectorProxy $group) {
     }
     $update["upload_metadata"] = $update_metadata;
 
+    if ($request->hasHeader('Upload-Defer-Length') && $request->hasHeader('Upload-Length')) {
+      $response->getBody()->write('Error: Cannot provide both Upload-Length and Upload-Defer-Length');
+      return $response->withStatus(400);
+    }
     if ($request->hasHeader('Upload-Defer-Length')) {
       if ($request->getHeader('Upload-Defer-Length')[0] == "1") {
         $update["upload_defer_length"] = true;
