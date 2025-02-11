@@ -4,10 +4,12 @@ repo_url: https://github.com/hashtopolis/server
 docs_dir: doc
 nav:
  - index.md
- - install.md
+ - Installation Guidelines:
+   - installation_guidelines/basic_install.md
+   - installation_guidelines/advanced_install.md 
  - User Manual:
    - user_manual/user_manual.md
-   - user_manual/advanced_hashlist.md
+   - user_manual/advanced_manual.md
    - user_manual/settings_and_configuration.md
  - Advanced Usage:
    - advanced_usage/tls.md

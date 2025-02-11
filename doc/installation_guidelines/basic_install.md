@@ -1,8 +1,7 @@
-# Installation Guidelines (Work in Progress)
-## Basic installation
-### Server installation
+# Basic installation
+## Server installation
 This guide details installing Hashtopolis using Docker, the recommended method since version 0.14.0. Docker offers a faster, more consistent setup process.
-#### Prerequisites:
+### Prerequisites:
 
 > [!NOTE]
 > The instructions provided in this section have only been tested on Ubuntu 22.04 and Windows 11 with WSL2.
@@ -14,7 +13,7 @@ To install Hashtopolis server, ensure that the following prerequisites are met:
 2. Docker Compose v2: Follow the instructions available on the Docker website:
    - Install Docker Compose on Linux
 
-#### Setup Hashtopolis Server
+### Setup Hashtopolis Server
 The official Docker images can be found on Docker Hub at: https://hub.docker.com/u/hashtopolis. Two Docker images are needed to run Hashtopolis: hashtopolis/frontend (setting up the web user interface), and hashtopolis/backend (taking care of the Hashtopolis database).
 
 A docker-compose file allowing to configure the docker containers for Hashtopolis is available in this repository. Here are the steps to follow to run Hashtopolis using that docker-compose file:
@@ -40,7 +39,7 @@ docker compose up --detach
 5. Access the Hashtopolis UI through: http://127.0.0.1:8080 using the credentials (user=admin, password=hashtopolis)
 6. If you want to play around with a preview of the version 2 of the UI, consult the New user interface: technical preview section.
 
-#### New user interface: technical preview
+### New user interface: technical preview
 
 > [!NOTE]
 > The APIv2 and UIv2 are a technical preview. Currently, when enabled, everyone through the new API will be fully admin!
@@ -58,14 +57,16 @@ docker compose up --detach
 
 4. Access the technical preview via: http://127.0.0.1:4200 using the credentials user=admin and password=hashtopolis, unless modified in the .env file.
 
-### Agent installation
-#### Prerequisites
+## Agent installation
+### Prerequisites
 To install the agent, ensure that the following prerequisites are met:
+
 1. Python: Python 3 must be installed on the agent system. You can verify the installation by running the following command in your terminal:
 ```
 python3 --version
 ```
 If Python 3 is not installed, refer to the official Python installation guide.
+
 2. Python Packages: The Hashtopolis agents depends on the following Python packages:
    - requests
    - psutil
@@ -82,14 +83,14 @@ Then, install the packages:
 pip install requests psutil
 ```
 
-#### Download the Hashtopolis agent
+### Download the Hashtopolis agent
 1. Connect to the Hashtopolis server: http://<server-ip-address>:8080 and log in. Navigate to the Agents tab > New Agent. 
 2. From that page, you can either download the agent by clicking on the Download button, or copy and paste the provided url to download the agent using wget/curl:
 ```
 curl -o hastopolis.zip "http://<server-ip-address>:8080/agents.php?download=1"
 ```
 
-#### Start and register a new agent
+### Start and register a new agent
 
 1. Activate your python virtual environment if not done before:   
 ```
@@ -117,12 +118,3 @@ Login successful!
 ```
 
 Your agent is now ready to receive new tasks. If you wish to finetune the configuration of your agent, please consult the section related to the agent configuration file or the command line arguments in the Advanced installation section. Otherwise, to start using Hashtopolis, consult the Basic workflow section.
-
-## Advanced installation
-- Installation in an airgapped/offline/oil-gapped system (make a note about the binary)
-- Installation with local folders
-- Installation of TLS X.509 certificate
-- Agent configuration file and command line arguments
-- (Boot from PXE) and run HtP as a service (voucher, local disk,...)
-- Misc.
-- Upgrade of the install

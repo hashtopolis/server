@@ -21,7 +21,7 @@ openssl req -x509 -newkey rsa:2048 -keyout nginx.key -out nginx.crt -days 365 -n
 
 ## Setting up docker-compose and env.example
 
-Please see the [Install](../install.md) page on how to download those settings file. 
+Please see the [Install](../installation_guidelines/basic_install.md) page on how to download those settings file. 
 
 1. Edit docker-compose.yaml
 
