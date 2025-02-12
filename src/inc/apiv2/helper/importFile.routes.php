@@ -27,12 +27,12 @@ define('DEFAULT_UPLOAD_EXPIRES_TIMEOUT', 3600);
 require_once(dirname(__FILE__) . "/../../load.php");
 
 function getUploadPath(string $id): string {
-  $filename = "/tmp/" . $id . '.part';
+  $filename = "/var/tmp/tus/uploads/" . $id . '.part';
   return $filename;
 };
 
 function getMetaPath(string $id): string {
-  $filename = "/tmp/" . $id . '.meta';
+  $filename = "/var/tmp/tus/meta/" . $id . '.meta';
   return $filename;
 };
 
@@ -69,7 +69,8 @@ $app->group("/api/v2/helper/importFile", function (RouteCollectorProxy $group) {
       ->withHeader('Tus-Version', '1.0.0')
       ->withHeader('Tus-Resumable', '1.0.0')
       ->withHeader('Tus-Checksum-Algorithm', join(',', getChecksumAlgorithm()))
-      //TODO: Maybe add Upload-Expires support. Return in PATCH with RFC 7231
+      //TODO: Maybe add Upload-Expires support. Return in PATCH with RFC 7231. 
+      //TODO: Maybe add creation-with-upload support
       ->withHeader('Tus-Extension', 'checksum,creation,creation-defer-length,expiration,termination')
       ->withHeader('Access-Control-Expose-Headers', 'Tus-Version, Tus-Resumable, Tus-Checksum-Algorithm, Tus-Extension');
       //TODO: Option for Tus-Max-Size: 1073741824
@@ -190,9 +191,6 @@ $app->group("/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}", function (R
     }
   });
 
-
-
-
   $group->patch('', function (Request $request, Response $response, array $args): Response {
     // Check for Content-Type: application/offset+octet-stream or return 415
     if (($request->hasHeader('Content-Type') == false) || 
@@ -203,7 +201,7 @@ $app->group("/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}", function (R
 
     /* Return 404 if entry is not found */
     $filename = getUploadPath($args['id']);
-    if (file_exists($filename) === false) {
+    if (!file_exists($filename)) {
       // TODO: Maybe 410 if actual file still exists and meta file also exists?
       $response->getBody()->write('Upload ID does not exists');
       return $response->withStatus(404); 
@@ -230,17 +228,6 @@ $app->group("/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}", function (R
     if (strlen($chunk) != $contentLength) {
       $response->getBody()->write('Mismatch between Content-Length specified and sent');
       return $response->withStatus(400);
-    }
-
-    $ds = getMetaStorage($args['id']);
-    
-    /* Validate if upload time is still valid */
-    $now = new DateTimeImmutable();
-    $dt = (new DateTime())->setTimeStamp($ds['upload_expires']);
-    if (($dt->getTimestamp() - $now->getTimestamp()) <= 0) {
-      // TODO: Remove expired uploads
-      $response->getBody()->write('Upload token expired');
-      return $response->withStatus(410);
     }
 
     /* Validate checksum */
@@ -278,6 +265,7 @@ $app->group("/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}", function (R
       }
     }
 
+    $ds = getMetaStorage($args['id']);
     if ($ds["upload_defer_length"] === true) {
       if ($request->hasHeader('Upload-Length')) {
         $update["upload_length"] = intval($request->getHeader('Upload-Length')[0]);
@@ -286,7 +274,10 @@ $app->group("/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}", function (R
       }
     }
 
-    file_put_contents($filename, $chunk, FILE_APPEND);
+    if (file_put_contents($filename, $chunk, FILE_APPEND) == false) {
+      $response->getBody()->write('Failed to write to file');
+      return $response->withStatus(400);
+    }
 
     clearstatcache();
     $newSize = filesize($filename);
@@ -315,6 +306,7 @@ $app->group("/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}", function (R
       $statusMsg = "Next chunk please";
     }
 
+    $dt = (new DateTime())->setTimeStamp($ds['upload_expires']);
     $response->getBody()->write($statusMsg);
     return $response->withStatus(204)
       ->withHeader("Tus-Resumable", "1.0.0")
@@ -325,9 +317,16 @@ $app->group("/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}", function (R
   });
 
   $group->delete('', function (Request $request, Response $response, array $args): Response {
-    // TODO delete file
+    /* Return 404 if entry is not found */
+    $filename_upload = getUploadPath($args['id']);
+    $filename_meta = getMetaPath($args['id']);
+    if (!file_exists($filename_upload) && !file_exists($filename_meta)) {
+      $response->getBody()->write('Upload ID does not exists');
+      return $response->withStatus(404); 
+    }
+    unlink($filename_upload);
+    unlink($filename_meta);
 
-    // TODO return 404 or 410 if entry is not found
     return $response->withStatus(204)
       ->withHeader("Tus-Resumable", "1.0.0")
       ->WithHeader("Access-Control-Expose-Headers", "Tus-Resumable");

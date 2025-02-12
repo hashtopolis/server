@@ -25,22 +25,22 @@ done
 
 echo "Database ready."
 
+directories=(
+  "${HASHTOPOLIS_FILES_PATH}"
+  "${HASHTOPOLIS_CONFIG_PATH}"
+  "${HASHTOPOLIS_LOG_PATH}"
+  "${HASHTOPOLIS_IMPORT_PATH}"
+  "${HASHTOPOLIS_BINARIES_PATH}"
+  "${HASHTOPOLIS_TUS_PATH}"
+  "${HASHTOPOLIS_TEMP_UPLOADS_PATH}"
+  "${HASHTOPOLIS_TEMP_META_PATH}"
+)
+
 echo "Setting up folders"
-if [ ! -d ${HASHTOPOLIS_FILES_PATH} ];then
-	mkdir -p ${HASHTOPOLIS_FILES_PATH} && chown www-data:www-data ${HASHTOPOLIS_FILES_PATH}
-fi
-if [ ! -d ${HASHTOPOLIS_CONFIG_PATH} ];then
-	mkdir -p ${HASHTOPOLIS_CONFIG_PATH} && chown www-data:www-data ${HASHTOPOLIS_CONFIG_PATH}
-fi
-if [ ! -d ${HASHTOPOLIS_LOG_PATH} ];then
-	mkdir -p ${HASHTOPOLIS_LOG_PATH} && chown www-data:www-data ${HASHTOPOLIS_LOG_PATH}
-fi
-if [ ! -d ${HASHTOPOLIS_IMPORT_PATH} ];then
-	mkdir -p ${HASHTOPOLIS_IMPORT_PATH} && chown www-data:www-data ${HASHTOPOLIS_IMPORT_PATH}
-fi
-if [ ! -d ${HASHTOPOLIS_BINARIES_PATH} ];then
-  mkdir -p ${HASHTOPOLIS_BINARIES_PATH} && chown www-data:www-data ${HASHTOPOLIS_BINARIES_PATH}
-fi
+for dir in "${directories[@]}"; do
+  mkdir -p "$dir"
+  chown www-data:www-data "$dir"
+done
 
 # required to trigger the initialization
 echo "Start initialization process..."

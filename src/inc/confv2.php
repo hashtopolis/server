@@ -30,7 +30,10 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
     "files" => "/usr/local/share/hashtopolis/files",
     "import" => "/usr/local/share/hashtopolis/import",
     "log" => "/usr/local/share/hashtopolis/log",
-    "config" => "/usr/local/share/hashtopolis/config"
+    "config" => "/usr/local/share/hashtopolis/config",
+    "tus" => "/var/tmp/tus/",
+    "temp_uploads" => "/var/tmp/tus/uploads/",
+    "temp_meta" => "/var/tmp/tus/meta/"
   ];
   
   // update from env if set
