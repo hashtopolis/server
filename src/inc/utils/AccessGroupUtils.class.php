@@ -9,6 +9,7 @@ use DBA\AccessGroupUser;
 use DBA\AccessGroupAgent;
 use DBA\Hashlist;
 use DBA\Factory;
+use DBA\File;
 
 class AccessGroupUtils {
   /**
@@ -175,6 +176,11 @@ class AccessGroupUtils {
     $qF = new QueryFilter(Hashlist::ACCESS_GROUP_ID, $group->getId(), "=");
     $uS = new UpdateSet(Hashlist::ACCESS_GROUP_ID, $default->getId());
     Factory::getHashlistFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+
+    // update associations of files with this group
+    $qF = new QueryFilter(File::ACCESS_GROUP_ID, $group->getId(), "=");
+    $uS = new UpdateSet(File::ACCESS_GROUP_ID, $default->getId());
+    Factory::getFileFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
     
     // delete all associations to users
     $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $group->getId(), "=");
