@@ -147,13 +147,13 @@ In case you want to perform a dictionary attack with rules, you have to select t
 
 9. **Status timer**: Defines the frequency with which each agent report its progress for this task to the server. The default value is defined in the Settings (**ref to settings page XXX**).
 
-10. **Benchmark Type**: More details in the advanced section probably.
+10. **Benchmark Type**: Select which benchmarking type should be used for this task. In most of the cases, it is recommended to use the default *Speed Test*. Only in few cases, such as tasks with big salted lists, the *Runtime* may be used.
 
 11. **Task is CPU only**: If this flag is enabled, only the agents that are declared as CPU only can be assigned to this task. More details can be found in **ref to advanced agents**. The flag is disabled by default. 
 
-12. **Task is small**: If this flag is enabled, a single agent can be assigned to this task. This is relevant for small tasks or to assign the full keyspace in a single chunk to an agent. Note that this is **NOT** equivalent to define the *Maximum number of agents* to 1. Indeed, in this latter car, the task will still be divided in chunks according to the *chunk size* parameter. The flag is disabled by default.
+12. **Task is small**: If this flag is enabled, a single agent can be assigned to this task. This is relevant for small tasks or to assign the full keyspace in a single chunk to an agent. Note that this is **NOT** equivalent to define the *Maximum number of agents* to 1. Indeed, in this latter case, the task will still be divided in chunks according to the *chunk size* parameter. The flag is disabled by default.
 
-13. **Binary type to run the task**: This pair of parameters specifiy the binary type as well as the version of the binary to use for this specific task. It will by default use the latest uploaded version of the first binary type defined in the *Binaries* section (**see binaries for more details**).  
+13. **Binary type to run the task**: This pair of parameters specify the binary type as well as the version of the binary to use for this specific task. It will by default use the latest uploaded version of the first binary type defined in the *Binaries* section (**see binaries for more details**).  
 
 
 Do and Don't
