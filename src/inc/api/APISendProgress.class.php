@@ -229,6 +229,12 @@ class APISendProgress extends APIBasic {
           $qF3 = new QueryFilter(Hash::IS_CRACKED, 0, "=");
           $hashes = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3]]);
           if (sizeof($hashes) == 0) {
+            //This can happen if agent rebuild the hash incorrectly
+            //Log the skipped hash so that admin can spot this false negative
+            $logMessage = "Hash: " . $splitLine[0] . "has been cracked but skipped! The crack: " . $splitLine[1];
+            Util::createLogEntry(DLogEntryIssuer::API, $this->agent->getToken(), DLogEntry::FATAL, $logMessage);
+            DServerLog::log(DServerLog::FATAL, $logMessage);
+
             $skipped++;
             break;
           }
