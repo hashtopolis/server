@@ -299,12 +299,14 @@ abstract class AbstractBaseAPI
   {
     $expand_to_perm_mapping = array(
       'assignedAgents' => [Agent::PERM_READ],
+      'assignments' => [Assignment::PERM_READ],
       'agent' => [Agent::PERM_READ],
       'agents' => [AccessGroup::PERM_READ],
       'agentStats' => [AgentStat::PERM_READ],
       'accessGroups' => [AccessGroup::PERM_READ], 
       'accessGroup' => [AccessGroup::PERM_READ],
       'chunk' => [Chunk::PERM_READ],
+      'chunks' => [Chunk::PERM_READ],
       'configSection' => [ConfigSection::PERM_READ],
       'crackerBinary' => [CrackerBinary::PERM_READ],
       'crackerBinaryType' => [CrackerBinaryType::PERM_READ],
