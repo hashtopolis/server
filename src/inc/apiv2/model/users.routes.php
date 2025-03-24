@@ -97,6 +97,12 @@ class UserAPI extends AbstractModelAPI {
       return $objects[0]->getId();
     }
 
+    function getAllPostParameters(array $features): array {
+
+      $features = parent::getAllPostParameters($features);
+      unset($features[User::IS_VALID]);
+      return $features;
+    }
 
     protected function deleteObject(object $object): void {
       UserUtils::deleteUser($object->getId(), $this->getCurrentUser());

@@ -408,7 +408,7 @@ abstract class AbstractBaseAPI
     DAccessControl::PUBLIC_ACCESS => array(LogEntry::PERM_READ),
 
     // src/inc/defines/notifications.php
-    DAccessControl::LOGIN_ACCESS => array(NotificationSetting::PERM_CREATE, NotificationSetting::PERM_READ, NotificationSetting::PERM_UPDATE, NotificationSetting::PERM_DELETE),
+    DAccessControl::LOGIN_ACCESS => array(NotificationSetting::PERM_CREATE, NotificationSetting::PERM_READ, NotificationSetting::PERM_UPDATE, NotificationSetting::PERM_DELETE, LogEntry::PERM_CREATE, LogEntry::PERM_DELETE, LogEntry::PERM_UPDATE),
   );
 
   /** 
@@ -804,6 +804,16 @@ abstract class AbstractBaseAPI
     }
   }
 
+  //function for automatic swagger doc generation
+  function getAllPostParameters(array $features): array {
+    $postFeatures = [];
+    foreach($features as $key => $value) {
+      if ($value['protected'] == False) {
+          $postFeatures[$key] = $value;
+      }
+    }
+    return $postFeatures;
+  }
   /**
    * Validate incoming parameter keys
    */

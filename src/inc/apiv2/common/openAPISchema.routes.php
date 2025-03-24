@@ -12,6 +12,7 @@ require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 function typeLookup($feature): array {
   $type_format = null;
   $type_enum = null;
+  $sub_type = null;
   if ($feature['type'] == 'int') {
     $type = "integer";
   } elseif ($feature['type'] == 'uint64') {
@@ -24,6 +25,7 @@ function typeLookup($feature): array {
     $type = "object";
   } elseif ($feature['type'] == 'array') {
     $type = "array";
+    $sub_type = "integer"; //TODO: subtype is hardcoded because we only have int arrays
   } elseif ($feature['type'] == 'bool') {
     $type = "boolean";
   } elseif (str_starts_with($feature['type'], 'str(')) {
@@ -42,6 +44,7 @@ function typeLookup($feature): array {
      "type" => $type,
       "type_format" => $type_format,
       "type_enum" => $type_enum,
+      "subtype" => $sub_type
   ];
 
   return $result;
@@ -183,6 +186,9 @@ function makeProperties($features, $skipPK=false): array {
     }
     if ($ret["type_enum"] !== null) {
       $propertyVal[$feature['alias']]["enum"] = $ret["type_enum"];
+    }
+    if ($ret["subtype"] !== null) {
+      $propertyVal[$feature['alias']]["items"]["type"] = $ret["subtype"];
     }
   }
   return $propertyVal;
@@ -413,7 +419,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         $json_api_header = makeJsonApiHeader();
         $links = makeLinks($uri);
         $properties_return_post_patch = array_merge($json_api_header, $properties_return_post_patch);
-        $properties_create = buildPatchPost(makeProperties($class->getCreateValidFeatures(), true));
+        $properties_create = buildPatchPost(makeProperties($class->getAllPostParameters($class->getCreateValidFeatures(), true)));
         $properties_get = array_merge($json_api_header, $links, $properties_get_single, $included);
         $properties_patch = buildPatchPost(makeProperties($class->getPatchValidFeatures(), true));
 
