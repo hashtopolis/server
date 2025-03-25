@@ -194,12 +194,13 @@ function makeProperties($features, $skipPK=false): array {
   return $propertyVal;
 };
 
-function buildPatchPost($properties, $id=null): array {
+function buildPatchPost($properties, $name, $id=null): array {
   $result = ["data" => [
       "type" => "object",
       "properties" => [
         "type" => [
-          "type" => "string"
+          "type" => "string",
+          "default" => $name
         ],
         "attributes" => [
           "type" => "object",
@@ -387,18 +388,23 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
        */
       if (array_key_exists($name, $components) == false) {
         $properties_return_post_patch = [
-          "id" => [
-            "type" => "integer",
-          ],
-          "type" => [ 
-            "type" => "string",
-            "default" => $name
-          ],
           "data" => [
             "type" => "object",
-            "properties" => makeProperties($class->getFeaturesWithoutFormfields(), true)
+            "properties" => [
+              "id" => [
+                "type" => "integer",
+              ],
+              "type" => [ 
+                "type" => "string",
+                "default" => $name
+              ],
+              "attributes" => [
+                "type" => "object",
+                "properties" => makeProperties($class->getFeaturesWithoutFormfields(), true)
+              ],
+            ],
           ]
-          ];
+        ];
 
         $relationships = ["relationships" =>[
           "type" => "object",
@@ -419,9 +425,9 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         $json_api_header = makeJsonApiHeader();
         $links = makeLinks($uri);
         $properties_return_post_patch = array_merge($json_api_header, $properties_return_post_patch);
-        $properties_create = buildPatchPost(makeProperties($class->getAllPostParameters($class->getCreateValidFeatures(), true)));
+        $properties_create = buildPatchPost(makeProperties($class->getAllPostParameters($class->getCreateValidFeatures(), true)), $name);
         $properties_get = array_merge($json_api_header, $links, $properties_get_single, $included);
-        $properties_patch = buildPatchPost(makeProperties($class->getPatchValidFeatures(), true));
+        $properties_patch = buildPatchPost(makeProperties($class->getPatchValidFeatures(), true), $name);
 
         $components[$name . "Create"] =
           [
