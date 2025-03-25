@@ -37,6 +37,14 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
       ];
     }
 
+    function getAllPostParameters(array $features): array {
+
+      //for documentation purposes isChunkingAVailable has to be removed
+      // because it is currently not setable by the user
+      $features = parent::getAllPostParameters($features);
+      unset($features[CrackerBinaryType::IS_CHUNKING_AVAILABLE]);
+      return $features;
+    }
   
     protected function createObject(array $data): int {
       CrackerUtils::createBinaryType($data[CrackerBinaryType::TYPE_NAME]);

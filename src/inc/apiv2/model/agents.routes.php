@@ -71,7 +71,7 @@ class AgentAPI extends AbstractModelAPI {
     }
    
     protected function createObject(array $data): int {
-      assert(False, "Chunks cannot be created via API");
+      assert(False, "Agents cannot be created via API");
       return -1;
     }
 
