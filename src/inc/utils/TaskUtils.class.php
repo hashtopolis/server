@@ -25,6 +25,7 @@ use DBA\AccessGroupUser;
 use DBA\TaskDebugOutput;
 use DBA\Factory;
 use DBA\Speed;
+use DBA\Aggregation;
 
 class TaskUtils {
   /**
@@ -1392,5 +1393,15 @@ class TaskUtils {
     $numAssignments = self::numberOfOtherAssignedAgents($task, $agent);
     return ($task->getIsSmall() == 1 && $numAssignments > 0) || // at least one agent is already assigned here
       ($task->getMaxAgents() > 0 && $numAssignments >= $task->getMaxAgents()); // at least maxAgents agents are already assigned
+  }
+
+  public static function getTaskProgress($task) {
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    
+    $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
+    $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2]);
+    $progress = $results[$agg1->getName()] - $results[$agg2->getName()];
+    return $progress;
   }
 }
