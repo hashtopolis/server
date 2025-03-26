@@ -11,6 +11,7 @@ use DBA\Hashlist;
 use DBA\Speed;
 use DBA\Task;
 use DBA\TaskWrapper;
+use Util;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -123,6 +124,13 @@ class TaskAPI extends AbstractModelAPI {
       );
       
       return $object->getId();
+    }
+
+    static function aggregateData(object $object): array {
+      $aggregatedData["Dispatched"] = Util::showperc($object->getKeyspaceProgress(), $object->getKeyspace());
+      $aggregatedData["Searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $object->getKeyspace());
+
+      return $aggregatedData;
     }
 
     protected function deleteObject(object $object): void {

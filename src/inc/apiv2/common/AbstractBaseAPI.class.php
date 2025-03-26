@@ -121,6 +121,14 @@ abstract class AbstractBaseAPI
   }
 
   /**
+   * Overidable function to aggregate data in the object. Currently only used for Tasks
+   * returns the aggregated data in key value pairs
+   */
+  public static function aggregateData(object $object): array {
+    return [];
+  }
+
+  /**
    * Take all the dba features and converts them to a list.
    * It uses the data from the generator and replaces the keys with the aliasses.
    * structure: hashlist: name: [dbname => hashlistId]
@@ -517,6 +525,9 @@ abstract class AbstractBaseAPI
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
 
+    //TODO: only aggregate data when it has been included
+    $aggregatedData = $apiClass::aggregateData($obj);
+    $attributes = array_merge($attributes, $aggregatedData);
 
     /* Build JSON::API relationship resource */
     $toManyRelationships = $apiClass::getToManyRelationships();
@@ -890,6 +901,7 @@ abstract class AbstractBaseAPI
         return $key;
       }
     }
+    throw new HTException("Internal error: no primary key found");
   }
 
   function getFilters(Request $request) {
@@ -899,7 +911,6 @@ abstract class AbstractBaseAPI
   /**
    * Check for valid filter parameters and build QueryFilter
    */
-  // protected function makeFilter(Request $request, array $features): array
   protected function makeFilter(array $filters, object $apiClass): array
   {
     $qFs = []; 

@@ -159,6 +159,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         return $key;
       }
     }
+    throw new HTException("Internal error: no primary key found");
   }
 
   /**
