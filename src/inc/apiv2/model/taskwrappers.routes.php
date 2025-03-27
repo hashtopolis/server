@@ -2,6 +2,8 @@
 
 use DBA\AccessGroup;
 use DBA\Factory;
+use DBA\Hashlist;
+use DBA\HashType;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
 
@@ -31,6 +33,27 @@ class TaskWrapperAPI extends AbstractModelAPI {
 
           'relationType' => AccessGroup::class,
           'relationKey' => AccessGroup::ACCESS_GROUP_ID,
+        ],
+        'hashlist' => [
+          'key' => TaskWrapper::HASHLIST_ID, 
+
+          'relationType' => Hashlist::class,
+          'relationKey' => Hashlist::HASHLIST_ID,
+        ],
+        'hashType' => [
+          'key' => TaskWrapper::TASK_WRAPPER_ID,
+          'parentKey' => TaskWrapper::TASK_WRAPPER_ID,
+          
+          'intermediateType' => Hashlist::class,
+          'joinField' => TaskWrapper::HASHLIST_ID,
+          'joinFieldRelation' => Hashlist::HASHLIST_ID,
+
+          'junctionTableType' => Hashlist::class,
+          'junctionTableFilterField' => Hashlist::HASH_TYPE_ID,
+          'junctionTableJoinField' => Hashlist::HASHLIST_ID,
+
+          'relationType' => HashType::class,
+          'relationKey' => HashType::HASH_TYPE_ID,        
         ],
       ];
     }
