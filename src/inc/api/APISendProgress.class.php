@@ -231,9 +231,9 @@ class APISendProgress extends APIBasic {
           if (sizeof($hashes) == 0) {
             //This can happen if agent rebuild the hash incorrectly
             //Log the skipped hash so that admin can spot this false negative
-            $logMessage = "Hash has been cracked but skipped! This happened while cracking hashlist with Id: "
-              . $hashlist->getId() . " during chunk with id: " . $chunk->getId() . " This happens when the agent returns
-               a cracked hash that Does not exist in the database. This can happen when hashcat malforms the hash";
+            $logMessage = "Hash has been cracked but skipped! This happened while cracking hashlist with ID: "
+              . $hashlist->getId() . " during chunk with ID: " . $chunk->getId() . " This happens when the agent returns
+               a cracked hash that does not exist in the database. This can happen when hashcat malforms the hash.";
             Util::createLogEntry(DLogEntryIssuer::API, $this->agent->getToken(), DLogEntry::FATAL, $logMessage);
             DServerLog::log(DServerLog::FATAL, $logMessage);
 
