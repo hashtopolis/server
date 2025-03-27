@@ -4,6 +4,7 @@
 ## Enhancements
 
 - Use utf8mb4 as default encoding in order to support the full unicode range
+- Log hashes when they are skipped. This way the administrator can detect when Hashcat rebuilds the hashes incorrectly 
 
 ## Bugfixes
 
