@@ -127,8 +127,8 @@ class TaskAPI extends AbstractModelAPI {
     }
 
     static function aggregateData(object $object): array {
-      $aggregatedData["Dispatched"] = Util::showperc($object->getKeyspaceProgress(), $object->getKeyspace());
-      $aggregatedData["Searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $object->getKeyspace());
+      $aggregatedData["dispatched"] = Util::showperc($object->getKeyspaceProgress(), $object->getKeyspace());
+      $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $object->getKeyspace());
 
       return $aggregatedData;
     }
