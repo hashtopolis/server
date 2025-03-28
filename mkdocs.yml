@@ -7,15 +7,21 @@ nav:
  - Installation Guidelines:
    - installation_guidelines/basic_install.md
    - installation_guidelines/advanced_install.md 
+   - installation_guidelines/tls.md 
+   - installation_guidelines/docker.md 
  - User Manual:
-   - user_manual/user_manual.md
-   - user_manual/advanced_manual.md
+   - user_manual/basic_workflow.md
+   - user_manual/agents.md
+   - user_manual/tasks.md
+   - user_manual/hashlist.md
+   - user_manual/files.md
+   - user_manual/crackers_binary.md
+   - user_manual/myaccount.md
    - user_manual/settings_and_configuration.md
- - Advanced Usage:
-   - advanced_usage/tls.md
-   - advanced_usage/docker.md
-   - advanced_usage/generic_cracker.md
-   - advanced_usage/slow_hashes.md
+   - user_manual/users.md
+ - FAQ and Tips:
+    - faq_tips/faq.md
+    - faq_tips/tips.md
  - changelog.md
  - API Reference:
    - APIv2: apiv2.md
