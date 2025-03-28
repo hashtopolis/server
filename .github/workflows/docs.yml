@@ -31,11 +31,11 @@ jobs:
     - name: Download newest apiv2 spec
       run: |
         wget http://localhost:8080/api/v2/openapi.json -P /tmp/
-        openapi-to-md /tmp/openapi.json /docs/api/
+        openapi-to-md /tmp/openapi.json ./doc/api/
     - name: Create function level documentation with phpdocumentor
       run: |
         wget https://phpdoc.org/phpDocumentor.phar -P /tmp/
-        sudo php /tmp/phpDocumentor.phar --ignore vendor/ -d . -t /docs/php-documentor/
+        sudo php /tmp/phpDocumentor.phar --ignore vendor/ -d . -t ./doc/php-documentor/
     - name: Build MkDocs site
       run: |
         mkdocs build
