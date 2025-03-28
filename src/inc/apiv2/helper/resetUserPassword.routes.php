@@ -32,7 +32,6 @@ class ResetUserPasswordHelperAPI extends AbstractHelperAPI {
   public function actionPost($data): array|null {
     UserUtils::userForgotPassword($data[User::USERNAME], $data[User::EMAIL]);
     
-    # TODO: Check how to handle custom return messages that are not object, probably we want that to be in some kind of standardized form.
     return ["reset" => "success"];
   }
 }

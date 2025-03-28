@@ -10,9 +10,6 @@ for path in ${paths[@]}; do
   fi
 done
 
-echo "Running required root setups."
-sudo -E /usr/local/bin/second-level-docker-entry.sh
-
 echo "Testing database."
 MYSQL="mysql -u${HASHTOPOLIS_DB_USER} -p${HASHTOPOLIS_DB_PASS} -h ${HASHTOPOLIS_DB_HOST}"
 $MYSQL -e "SELECT 1" > /dev/null 2>&1
