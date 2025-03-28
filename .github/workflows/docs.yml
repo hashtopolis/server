@@ -31,6 +31,7 @@ jobs:
     - name: Download newest apiv2 spec
       run: |
         wget http://localhost:8080/api/v2/openapi.json -P /tmp/
+        cat /tmp/openapi.json
         openapi-to-md /tmp/openapi.json ./doc/api/
     - name: Create function level documentation with phpdocumentor
       run: |
