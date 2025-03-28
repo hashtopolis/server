@@ -28,7 +28,7 @@ class SetUserPasswordHelperAPI extends AbstractHelperAPI {
     ];
   }
 
-  public function actionPost($data): array|null {
+  public function actionPost($data): object|array|null {
     $user = self::getUser($data[User::USER_ID]);
 
     /* Set user password if provided */

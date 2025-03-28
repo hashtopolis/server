@@ -26,11 +26,11 @@ class ExportCrackedHashesHelperAPI extends AbstractHelperAPI {
     ];
   }
 
-  public function actionPost($data): array|null {
+  public function actionPost($data): object|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     
     $file = HashlistUtils::export($hashlist->getId(), $this->getCurrentUser());
-    return $this->object2Array($file);
+    return $file;
   }
 }
 

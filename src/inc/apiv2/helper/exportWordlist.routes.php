@@ -26,12 +26,12 @@ class ExportWordlistHelperAPI extends AbstractHelperAPI {
     ];
   }
 
-  public function actionPost($data): array|null {
+  public function actionPost($data): object|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     
     $arr = HashlistUtils::createWordlists($hashlist->getId(), $this->getCurrentUser());
     
-    return $this->object2Array($arr[2]);
+    return $arr[2];
   }
 }
 

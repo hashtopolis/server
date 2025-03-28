@@ -20,28 +20,19 @@ class PreTaskAPI extends AbstractModelAPI {
       return Pretask::class;
     }
 
-    public function getExpandables(): array {
-      return ["pretaskFiles"];
-    }
+    public static function getToManyRelationships(): array {
+      return [
+        'pretaskFiles' => [
+          'key' => Pretask::PRETASK_ID,
+          
+          'junctionTableType' => FilePretask::class,
+          'junctionTableFilterField' => FilePretask::PRETASK_ID,
+          'junctionTableJoinField' => FilePretask::FILE_ID,
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof PreTask); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'pretaskFiles':
-          return $this->getManyToOneRelationViaIntermediate(
-            $objects,
-            Pretask::PRETASK_ID,
-            Factory::getFilePretaskFactory(),
-            FilePretask::PRETASK_ID,
-            Factory::getFileFactory(),
-            File::FILE_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+          'relationType' => File::class,
+          'relationKey' => File::FILE_ID,        
+        ],
+      ];
     }
 
     public function getFormFields(): array {

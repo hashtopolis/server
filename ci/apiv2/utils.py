@@ -57,7 +57,7 @@ def do_create_dummy_agent():
     dummy_agent.update_information()
 
     # Validate automatically deleted when an test-agent claims the voucher
-    assert Voucher.objects.filter(_id=voucher.id) == []
+    assert list(Voucher.objects.filter(_id=voucher.id)) == []
 
     agent = Agent.objects.get(agentName=dummy_agent.name)
     return (dummy_agent, agent)
@@ -369,7 +369,7 @@ class BaseTest(unittest.TestCase):
     def _test_expandables(self, model_obj, expandables):
         """ Generic test worker to test expandables"""
         # Retrieve object expanded and check if exists
-        obj = self.model_class.objects.get(pk=model_obj.id, expand=expandables)
+        obj = self.model_class.objects.prefetch_related(*expandables).get(pk=model_obj.id)
         self.assertIsNotNone(obj)
         for expandable in expandables:
             self.assertTrue(hasattr(obj, expandable) or hasattr(obj, f"{expandable}_set"),

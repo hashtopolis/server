@@ -11,6 +11,7 @@ use DBA\Hashlist;
 use DBA\Speed;
 use DBA\Task;
 use DBA\TaskWrapper;
+use Util;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -23,67 +24,69 @@ class TaskAPI extends AbstractModelAPI {
       return Task::class;
     }
 
-    public function getExpandables(): array {
-      return ["assignedAgents", "crackerBinary", "crackerBinaryType", "hashlist", "speeds", "files"];
+    public static function getToOneRelationships(): array {
+      return [
+        'crackerBinary' => [
+          'key' => Task::CRACKER_BINARY_ID, 
+
+          'relationType' => CrackerBinary::class,
+          'relationKey' => CrackerBinary::CRACKER_BINARY_ID,
+        ],
+        'crackerBinaryType' => [
+          'key' => Task::CRACKER_BINARY_TYPE_ID, 
+
+          'relationType' => CrackerBinaryType::class,
+          'relationKey' => CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
+        ],
+        'hashlist' => [
+          'key' => TaskWrapper::HASHLIST_ID, 
+
+          'relationType' => Hashlist::class,
+          'relationKey' => Hashlist::HASHLIST_ID,
+
+          //because task doesnt have a direct connection to hashlist
+          'intermediateType' => TaskWrapper::class,
+          'joinField' => Task::TASK_WRAPPER_ID,
+          'joinFieldRelation' => TaskWrapper::TASK_WRAPPER_ID,
+
+          'junctionTableType' => TaskWrapper::class,
+          'junctionTableFilterField' => TaskWrapper::HASHLIST_ID,
+          'junctionTableJoinField' => TaskWrapper::TASK_WRAPPER_ID,
+
+          'parentKey' => Task::TASK_ID
+        ],
+      ];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof Task); });
+    public static function getToManyRelationships(): array {
+      return [
+        'assignedAgents' => [
+          'key' => Task::TASK_ID,
+          
+          'junctionTableType' => Assignment::class,
+          'junctionTableFilterField' => Assignment::TASK_ID,
+          'junctionTableJoinField' => Assignment::AGENT_ID,
 
-      /* Expand requested section */
-      switch($expand) {
-        case 'assignedAgents':
-          return $this->getManyToOneRelationViaIntermediate(
-            $objects,
-            Task::TASK_ID,
-            Factory::getAssignmentFactory(),
-            Assignment::TASK_ID,
-            Factory::getAgentFactory(),
-            Agent::AGENT_ID
-          );
-        case 'crackerBinary':
-          return $this->getForeignKeyRelation(
-            $objects,
-            Task::CRACKER_BINARY_ID,
-            Factory::getCrackerBinaryFactory(),
-            CrackerBinary::CRACKER_BINARY_ID
-          );
-        case 'crackerBinaryType':
-          return $this->getForeignKeyRelation(
-            $objects,
-            Task::CRACKER_BINARY_TYPE_ID,
-            Factory::getCrackerBinaryTypeFactory(),
-            CrackerBinaryType::CRACKER_BINARY_TYPE_ID
-          );
-        case 'hashlist':
-          return $this->getManyToOneRelationViaIntermediate(
-            $objects,
-            Task::TASK_WRAPPER_ID,
-            Factory::getTaskWrapperFactory(),
-            TaskWrapper::TASK_WRAPPER_ID,
-            Factory::getHashlistFactory(),
-            Hashlist::HASHLIST_ID
-          );
-        case 'speeds':
-          return $this->getManyToOneRelation(
-            $objects,
-            Task::TASK_ID,
-            Factory::getSpeedFactory(),
-            Speed::TASK_ID
-          );
-        case 'files':
-          return $this->getManyToOneRelationViaIntermediate(
-            $objects,
-            Task::TASK_ID,
-            Factory::getFileTaskFactory(),
-            FileTask::TASK_ID,
-            Factory::getFileFactory(),
-            File::FILE_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+          'relationType' => Agent::class,
+          'relationKey' => Agent::AGENT_ID,        
+        ],
+        'files' => [
+          'key' => Task::TASK_ID,
+          
+          'junctionTableType' => FileTask::class,
+          'junctionTableFilterField' => FileTask::TASK_ID,
+          'junctionTableJoinField' => FileTask::FILE_ID,
+
+          'relationType' => File::class,
+          'relationKey' => File::FILE_ID,        
+        ],
+        'speeds' => [
+          'key' => Task::TASK_ID,
+
+          'relationType' => Speed::class,
+          'relationKey' => Speed::TASK_ID,
+        ]
+      ];
     }
     
     public function getFormFields(): array {
@@ -121,6 +124,13 @@ class TaskAPI extends AbstractModelAPI {
       );
       
       return $object->getId();
+    }
+
+    static function aggregateData(object $object): array {
+      $aggregatedData["dispatched"] = Util::showperc($object->getKeyspaceProgress(), $object->getKeyspace());
+      $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $object->getKeyspace());
+
+      return $aggregatedData;
     }
 
     protected function deleteObject(object $object): void {

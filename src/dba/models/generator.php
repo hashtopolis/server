@@ -64,7 +64,7 @@ $CONF['Agent'] = [
     ['name' => 'lastAct', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
     ['name' => 'lastTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'lastIp', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
-    ['name' => 'userId', 'read_only' => False, 'type' => 'int', 'null' => True],
+    ['name' => 'userId', 'read_only' => False, 'type' => 'int', 'null' => True, 'relation' => 'User'],
     ['name' => 'cpuOnly', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'clientSignature', 'read_only' => False, 'type' => 'str(50)'],
   ],
@@ -83,9 +83,9 @@ $CONF['AgentBinary'] = [
 $CONF['AgentError'] = [
   'columns' => [
     ['name' => 'agentErrorId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'chunkId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Task'],
+    ['name' => 'chunkId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Chunk'],
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'error', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
   ],
@@ -93,7 +93,7 @@ $CONF['AgentError'] = [
 $CONF['AgentStat'] = [
   'columns' => [
     ['name' => 'agentStatId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'protected' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'agentId', 'read_only' => True, 'protected' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
     ['name' => 'statType', 'read_only' => True, 'protected' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'time', 'read_only' => True, 'protected' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'value', 'read_only' => True, 'protected' => True, 'type' => 'array', 'subtype' => 'int', 'protected' => True],
@@ -102,7 +102,7 @@ $CONF['AgentStat'] = [
 $CONF['AgentZap'] = [
   'columns' => [
     ['name' => 'agentZapId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
     ['name' => 'lastZapId', 'read_only' => True, 'type' => 'str(128)', 'protected' => True],
   ],
 ];
@@ -113,8 +113,8 @@ $CONF['ApiKey'] = [
     ['name' => 'endValid', 'read_only' => False, 'type' => 'int64'],
     ['name' => 'accessKey', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
     ['name' => 'accessCount', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'userId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'apiGroupId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'userId', 'read_only' => False, 'type' => 'int', 'relation' => 'User'],
+    ['name' => 'apiGroupId', 'read_only' => False, 'type' => 'int', 'relation' => 'ApiGroup'],
   ],
 ];
 $CONF['ApiGroup'] = [
@@ -128,18 +128,18 @@ $CONF['Assignment'] = [
   'permission_alias' => 'AgentAssignment',
   'columns' => [
     ['name' => 'assignmentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'taskId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'agentId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'taskId', 'read_only' => False, 'type' => 'int', 'relation' => 'Task'],
+    ['name' => 'agentId', 'read_only' => False, 'type' => 'int', 'relation' => 'Agent'],
     ['name' => 'benchmark', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
   ],
 ];
 $CONF['Chunk'] = [
   'columns' => [
     ['name' => 'chunkId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Task'],
     ['name' => 'skip', 'read_only' => True, 'type' => 'uint64', 'protected' => True],
     ['name' => 'length', 'read_only' => True, 'type' => 'uint64', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
     ['name' => 'dispatchTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'solveTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'checkpoint', 'read_only' => True, 'type' => 'int64', 'protected' => True],
@@ -152,7 +152,7 @@ $CONF['Chunk'] = [
 $CONF['Config'] = [
   'columns' => [
     ['name' => 'configId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'configSectionId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'configSectionId', 'read_only' => False, 'type' => 'int', 'relation' => 'ConfigSecion'],
     ['name' => 'item', 'read_only' => False, 'type' => 'str(128)'],
     ['name' => 'value', 'read_only' => False, 'type' => 'str(65535)'],
   ],
@@ -166,7 +166,7 @@ $CONF['ConfigSection'] = [
 $CONF['CrackerBinary'] = [
   'columns' => [
     ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'crackerBinaryTypeId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'crackerBinaryTypeId', 'read_only' => False, 'type' => 'int', 'relation' => 'CrackerBinaryType'],
     ['name' => 'version', 'read_only' => False, 'type' => 'str(20)'],
     ['name' => 'downloadUrl', 'read_only' => False, 'type' => 'str(150)'],
     ['name' => 'binaryName', 'read_only' => False, 'type' => 'str(50)'],
@@ -186,7 +186,7 @@ $CONF['File'] = [
     ['name' => 'size', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'isSecret', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'fileType', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', 'relation' => 'AccessGroup'],
     ['name' => 'lineCount', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ],
 ];
@@ -201,19 +201,19 @@ $CONF['FileDownload'] = [
   'columns' => [
     ['name' => 'fileDownloadId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'fileId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'fileId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'File'],
     ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ],
 ];
 $CONF['Hash'] = [
   'columns' => [
     ['name' => 'hashId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'hashlistId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'hashlistId', 'read_only' => False, 'type' => 'int', 'relation' => 'Hashlist'],
     ['name' => 'hash', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'salt', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'plaintext', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'timeCracked', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'chunkId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'chunkId', 'read_only' => False, 'type' => 'int', 'relation' => 'Chunk'],
     ['name' => 'isCracked', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'crackPos', 'read_only' => False, 'type' => 'int64'],
   ],
@@ -221,12 +221,12 @@ $CONF['Hash'] = [
 $CONF['HashBinary'] = [
   'columns' => [
     ['name' => 'hashBinaryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'hashlistId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'hashlistId', 'read_only' => False, 'type' => 'int', 'relation' => 'Hashlist'],
     ['name' => 'essid', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'hash', 'read_only' => False, 'type' => 'str(4294967295)'],
     ['name' => 'plaintext', 'read_only' => False, 'type' => 'str(1024)'],
     ['name' => 'timeCracked', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'chunkId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'chunkId', 'read_only' => False, 'type' => 'int', 'relation' => 'Chunk'],
     ['name' => 'isCracked', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'crackPos', 'read_only' => False, 'type' => 'int64'],
   ],
@@ -236,14 +236,14 @@ $CONF['Hashlist'] = [
     ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'hashlistName', 'read_only' => False, 'type' => 'str(100)', 'alias' => UQueryHashlist::HASHLIST_NAME],
     ['name' => 'format', 'read_only' => True, 'type' => 'int', 'choices' => $FieldHashlistFormatChoices],
-    ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int'],
+    ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'HashType'],
     ['name' => 'hashCount', 'read_only' => True, 'type' => 'int'],
     ['name' => 'saltSeparator', 'read_only' => True, 'type' => 'str(10)', 'null' => True, 'alias' => UQueryHashlist::HASHLIST_SEPARATOR],
     ['name' => 'cracked', 'read_only' => true, 'type' => 'int', 'protected' => True],
     ['name' => 'isSecret', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'hexSalt', 'read_only' => True, 'type' => 'bool', 'alias' => UQueryHashlist::HASHLIST_HEX_SALTED],
     ['name' => 'isSalted', 'read_only' => True, 'type' => 'bool'],
-    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', , 'relation' => 'AccessGroup'],
     ['name' => 'notes', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'brainId', 'read_only' => True, 'type' => 'bool', 'alias' => UQueryHashlist::HASHLIST_USE_BRAIN],
     ['name' => 'brainFeatures', 'read_only' => True, 'type' => 'int'],
@@ -264,8 +264,8 @@ $CONF['HealthCheck'] = [
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'checkType', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'hashtypeId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'crackerBinaryId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'hashtypeId', 'read_only' => False, 'type' => 'int', 'relation' => 'HashType'],
+    ['name' => 'crackerBinaryId', 'read_only' => False, 'type' => 'int', 'relation' => 'CrackerBinary'],
     ['name' => 'expectedCracks', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'attackCmd', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
   ],
@@ -273,8 +273,8 @@ $CONF['HealthCheck'] = [
 $CONF['HealthCheckAgent'] = [
   'columns' => [
     ['name' => 'healthCheckAgentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'healthCheckId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'healthCheckId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'HealthCheck'],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
     ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'numGpus', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -299,7 +299,7 @@ $CONF['NotificationSetting'] = [
     ['name' => 'action', 'read_only' => False, 'type' => 'str(50)'],
     ['name' => 'objectId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'notification', 'read_only' => False, 'type' => 'str(50)'],
-    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'User'],
     ['name' => 'receiver', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'isActive', 'read_only' => False, 'type' => 'bool'],
   ],
@@ -349,7 +349,7 @@ $CONF['RightGroup'] = [
 $CONF['Session'] = [
   'columns' => [
     ['name' => 'sessionId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, , 'relation' => 'User'],
     ['name' => 'sessionStartDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'lastActionDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'isOpen', 'read_only' => True, 'type' => 'bool', 'protected' => True],
@@ -360,8 +360,8 @@ $CONF['Session'] = [
 $CONF['Speed'] = [
   'columns' => [
     ['name' => 'speedId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Task'],
     ['name' => 'speed', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ],
@@ -394,9 +394,9 @@ $CONF['Task'] = [
     ['name' => 'isCpuTask', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'useNewBench', 'read_only' => True, 'type' => 'bool'],
     ['name' => 'skipKeyspace', 'read_only' => True, 'type' => 'int64'],
-    ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int'],
-    ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int'],
-    ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinary'],
+    ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinaryType'],
+    ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True, , 'relation' => 'TaskWrapper'],
     ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'notes', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'staticChunks', 'read_only' => True, 'type' => 'int'],
@@ -409,7 +409,7 @@ $CONF['Task'] = [
 $CONF['TaskDebugOutput'] = [
   'columns' => [
     ['name' => 'taskDebugOutputId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'taskId', 'read_only' => True, 'type' => 'int'],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'relation' => 'Task'],
     ['name' => 'output', 'read_only' => True, 'type' => 'str(256)'],
   ],
 ];
@@ -419,8 +419,8 @@ $CONF['TaskWrapper'] = [
     ['name' => 'priority', 'read_only' => False, 'type' => 'int'],
     ['name' => 'maxAgents', 'read_only' => False, 'type' => 'int'],
     ['name' => 'taskType', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldTaskTypeChoices],
-    ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Hashlist'],
+    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', 'relation' => 'AccessGroup'],
     ['name' => 'taskWrapperName', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'cracked', 'read_only' => False, 'type' => 'int', 'protected' => True],
@@ -438,7 +438,7 @@ $CONF['User'] = [
     ['name' => 'lastLoginDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'registeredSince', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'sessionLifetime', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int', 'alias' => 'globalPermissionGroupId'],
+    ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int', 'alias' => 'globalPermissionGroupId', 'relation' => 'RightGroup' ],
     ['name' => 'yubikey', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
     ['name' => 'otp1', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
     ['name' => 'otp2', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
@@ -451,8 +451,8 @@ $CONF['Zap'] = [
     ['name' => 'zapId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'hash', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
     ['name' => 'solveTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
+    ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Hashlist'],
   ],
 ];
 //
@@ -461,43 +461,43 @@ $CONF['Zap'] = [
 $CONF['AccessGroupUser'] = [
   'columns' => [
     ['name' => 'accessGroupUserId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'accessGroupId', 'read_only' => True, 'type' => 'int'],
-    ['name' => 'userId', 'read_only' => True, 'type' => 'int'],
+    ['name' => 'accessGroupId', 'read_only' => True, 'type' => 'int', 'relation' => 'AccessGroup'],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'relation' => 'User'],
   ],
 ];
 $CONF['AccessGroupAgent'] = [
   'columns' => [
     ['name' => 'accessGroupAgentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'accessGroupId', 'read_only' => True, 'type' => 'int'],
-    ['name' => 'agentId', 'read_only' => True, 'type' => 'int'],
+    ['name' => 'accessGroupId', 'read_only' => True, 'type' => 'int', 'relation' => 'accessGroup'],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'relation' => 'Agent'],
   ],
 ];
 $CONF['FileTask'] = [
   'columns' => [
     ['name' => 'fileTaskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'fileId', 'read_only' => True, 'type' => 'int'],
-    ['name' => 'taskId', 'read_only' => True, 'type' => 'int'],
+    ['name' => 'fileId', 'read_only' => True, 'type' => 'int', 'relation' => 'File'],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'relation' => 'Task'],
   ],
 ];
 $CONF['FilePretask'] = [
   'columns' => [
     ['name' => 'filePretaskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'fileId', 'read_only' => True, 'type' => 'int'],
-    ['name' => 'pretaskId', 'read_only' => True, 'type' => 'int'],
+    ['name' => 'fileId', 'read_only' => True, 'type' => 'int', 'relation' => 'File'],
+    ['name' => 'pretaskId', 'read_only' => True, 'type' => 'int', 'relation' => 'PreTask'],
   ],
 ];
 $CONF['SupertaskPretask'] = [
   'columns' => [
     ['name' => 'supertaskPretaskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'supertaskId', 'read_only' => True, 'type' => 'int'],
-    ['name' => 'pretaskId', 'read_only' => True, 'type' => 'int'],
+    ['name' => 'supertaskId', 'read_only' => True, 'type' => 'int', 'relation' => 'Supertask'],
+    ['name' => 'pretaskId', 'read_only' => True, 'type' => 'int', 'relation' => 'Pretask'],
   ],
 ];
 $CONF['HashlistHashlist'] = [
   'columns' => [
     ['name' => 'hashlistHashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True],    
-    ['name' => 'parentHashlistId', 'read_only' => True, 'type' => 'int'],
-    ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int'],
+    ['name' => 'parentHashlistId', 'read_only' => True, 'type' => 'int', 'relation' => 'Hashlist'],
+    ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'relation' => 'Hashlist'],
   ],
 ];
 

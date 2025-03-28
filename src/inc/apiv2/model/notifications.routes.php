@@ -17,35 +17,30 @@ class NotificationSettingAPI extends AbstractModelAPI {
       return NotificationSetting::class;
     }
 
-    public function getExpandables(): array {
-      return ['user'];
-    }
- 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof NotificationSetting); });
+    public static function getToOneRelationships(): array {
+      return [
+        'user' => [
+          'key' => NotificationSetting::USER_ID, 
 
-      /* Expand requested section */
-      switch($expand) {
-        case 'user':
-          return $this->getForeignKeyRelation(
-            $objects,
-            NotificationSetting::USER_ID,
-            Factory::getUserFactory(),
-            User::USER_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+          'relationType' => User::class,
+          'relationKey' => User::USER_ID,
+        ],
+      ];
     }
-    
+
+    function getAllPostParameters(array $features): array {
+      $features = parent::getAllPostParameters($features);
+      unset($features[NotificationSetting::IS_ACTIVE]);
+      return $features;
+    }
+   
     public function getFormFields(): array {
       return  ['actionFilter' => ['type' => 'str(256)']];
     }
 
     protected function createObject(array $data): int {
       $dummyPost = [];
-      switch (DNotificationType::getObjectType($data['action'])) {
+      switch (DNotificationType::getObjectType($data[NotificationSetting::ACTION])) {
         case DNotificationObjectType::USER:
           $dummyPost['user'] = $data['actionFilter'];
           break;

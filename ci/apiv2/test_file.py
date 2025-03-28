@@ -39,3 +39,17 @@ class FileTest(BaseTest):
         file = helper.recount_file_lines(file=model_obj)
 
         self.assertEqual(file.lineCount, 3)
+
+    def test_helper_get_file(self):
+        model_obj = self.create_test_object()
+
+        helper = Helper()
+        file_data = helper.get_file(file=model_obj)
+        self.assertEqual(file_data, "12345678\n123456\nprincess\n")
+    
+    def test_range_request_get_file(self):
+        model_obj = self.create_test_object()
+
+        helper = Helper()
+        file_data = helper.get_file(file=model_obj, range="bytes=9-15")
+        self.assertEqual(file_data, "123456\n")

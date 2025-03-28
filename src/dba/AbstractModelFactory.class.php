@@ -411,6 +411,31 @@ abstract class AbstractModelFactory {
     return $row['column_' . strtolower($op)];
   }
   
+  public function multicolAggregationFilter($options, $aggregations) {
+    //$options: as usual
+    //$columns: array of Aggregation objects
+    
+    $elements = [];
+    foreach ($aggregations as $aggregation) {
+      $elements[] = $aggregation->getQueryString();
+    }
+    
+    $query = "SELECT " . join(",", $elements);
+    $query = $query . " FROM " . $this->getModelTable();
+    
+    $vals = array();
+    
+    if (array_key_exists("filter", $options)) {
+      $query .= $this->applyFilters($vals, $options['filter']);
+    }
+    
+    $dbh = self::getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+  
   public function sumFilter($options, $sumColumn) {
     $query = "SELECT SUM($sumColumn) AS sum ";
     $query = $query . " FROM " . $this->getModelTable();
@@ -446,6 +471,10 @@ abstract class AbstractModelFactory {
     $query = $query . " FROM " . $this->getModelTable();
     
     $vals = array();
+
+    if (array_key_exists('join', $options)) {
+      $query .= $this->applyJoins($options['join']);
+    }
     
     if (array_key_exists("filter", $options)) {
       $query .= $this->applyFilters($vals, $options['filter']);
@@ -658,6 +687,10 @@ abstract class AbstractModelFactory {
       $options['order'] = $orderOptions;
     }
     $query .= $this->applyOrder($options['order']);
+
+    if (array_key_exists("limit", $options)) {
+      $query .= $this->applyLimit($options['limit']);
+    }
     
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
@@ -719,6 +752,27 @@ abstract class AbstractModelFactory {
       $orderQueries[] = $order->getQueryString($this->getModelTable());
     }
     return " ORDER BY " . implode(", ", $orderQueries);
+  }
+
+  private function applyJoins($joins) {
+    $query = "";
+    foreach ($joins as $join) {
+      $joinFactory = $join->getOtherFactory();
+      $localFactory = $this;
+      if ($join->getOverrideOwnFactory() != null) {
+        $localFactory = $join->getOverrideOwnFactory();
+      }
+      $match1 = $join->getMatch1();
+      $match2 = $join->getMatch2();
+      $query .= " INNER JOIN " . $joinFactory->getModelTable() . " ON " . $localFactory->getModelTable() . "." . $match1 . "=" . $joinFactory->getModelTable() . "." . $match2 . " ";
+    }
+    return $query;
+  }
+
+  //applylimit is slightly different than the other apply functions, since you can only limit by a single value
+  //the $limit argument is a single object LimitFilter object instead of an array of objects.
+  private function applyLimit($limit) {
+    return " LIMIT " . $limit->getQueryString();
   }
   
   private function applyGroups($groups) {

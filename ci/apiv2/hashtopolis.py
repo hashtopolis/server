@@ -6,10 +6,11 @@
 #
 import copy
 import json
-import requests
-from pathlib import Path
-
 import logging
+from pathlib import Path
+import requests
+import sys
+import urllib
 
 import http
 import confidence
@@ -55,6 +56,25 @@ class HashtopolisResponseError(HashtopolisError):
     pass
 
 
+class IncludedCache(object):
+    """
+    Cast (potentially) included objects to object structure which
+    allows for caching and easier retrival
+    """
+    def __init__(self, included_objects):
+        self._cache = {}
+        for included_obj in included_objects:
+            self._cache[self.get_object_uuid(included_obj)] = included_obj
+
+    @staticmethod
+    def get_object_uuid(obj):
+        """ Generate unique key identifier for object """
+        return "%s.%i" % (obj['type'], obj['id'])
+
+    def get(self, obj):
+        return self._cache[self.get_object_uuid(obj)]
+
+
 class HashtopolisConnector(object):
     # Cache authorisation token per endpoint
     token = {}
@@ -63,7 +83,7 @@ class HashtopolisConnector(object):
     @staticmethod
     def resp_to_json(response):
         content_type_header = response.headers.get('Content-Type', '')
-        if 'application/json' in content_type_header:
+        if any([x in content_type_header for x in ('application/vnd.api+json', 'application/json')]):
             return response.json()
         else:
             raise HashtopolisResponseError("Response type '%s' is not valid JSON document, text='%s'" %
@@ -94,9 +114,17 @@ class HashtopolisConnector(object):
         self._token_expires = HashtopolisConnector.token_expires[self._api_endpoint]
 
         self._headers = {
-            'Authorization': 'Bearer ' + self._token,
-            'Content-Type': 'application/json'
+            'Authorization': 'Bearer ' + self._token
         }
+    
+    def create_payload(self, obj, attributes, id=None):
+        payload = {"data": {
+            "type": type(obj).__name__,
+            "attributes": attributes
+        }}
+        if id is not None:
+            payload["data"]["id"] = id
+        return payload
 
     def validate_status_code(self, r, expected_status_code, error_msg):
         """ Validate response and convert to python exception """
@@ -110,44 +138,99 @@ class HashtopolisConnector(object):
 
         # Application hits a problem
         if r.status_code not in expected_status_code:
-            raise HashtopolisError(
+            raise HashtopolisResponseError(
                 "%s (status_code=%s): %s" % (error_msg, r.status_code, r.text),
                 status_code=r.status_code,
                 exception_details=r_json.get('exception', []),
                 message=r_json.get('message', None))
+    
+    def validate_pagination_links(self, response, page):
+        """Validate all the links that are used for paginated data"""
+        data = response["data"]
+        highest_id = max(data, key=lambda obj: obj['id'])['id']
+        lowest_id = min(data, key=lambda obj: obj['id'])['id']
 
-    def filter(self, expand, max_results, ordering, filter):
+        links = response["links"]
+        query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["next"]).query)
+        assert (int(query_params["page[size]"][0]) == page["size"])
+        assert (int(query_params["page[after]"][0]) == highest_id)
+        query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["prev"]).query)
+        assert (int(query_params["page[size]"][0]) == page["size"])
+        assert (int(query_params["page[before]"][0]) == lowest_id)
+        query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["first"]).query)
+        assert (int(query_params["page[size]"][0]) == page["size"])
+        assert (int(query_params["page[after]"][0]) == 0)
+        # query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["last"]).query)
+        # TODO not really a straightforward way to validate the last link
+    
+    def get_single_page(self, page, filter):
+        """Gets a single page by using the page parameters"""
         self.authenticate()
-        uri = self._api_endpoint + self._model_uri
+        headers = self._headers
+        request_uri = self._api_endpoint + self._model_uri
+        payload = {}
+
+        for k, v in page.items():
+            payload[f"page[{k}]"] = v
+        if filter:
+            for k, v in filter.items():
+                payload[f"filter[{k}]"] = v
+
+        request_uri = self._api_endpoint + self._model_uri + '?' + urllib.parse.urlencode(payload)
+        r = requests.get(request_uri, headers=headers)
+        logger.debug("Request URI: %s", urllib.parse.unquote(r.url))
+        self.validate_status_code(r, [200], "paging failed")
+        response = self.resp_to_json(r)
+        logger.debug("Response %s", json.dumps(response, indent=4))
+
+        # validate page links
+        self.validate_pagination_links(response, page)
+        return response["data"]
+
+    # todo refactor start_offset into page variable
+    def filter(self, include, ordering, filter, start_offset):
+        self.authenticate()
         headers = self._headers
 
-        filter_list = [f'{k}={v}' for k, v in filter.items()]
-        payload = {
-            'filter': filter_list,
-            'maxResults': max_results if max_results is not None else 999,
-        }
-        if expand is not None:
-            payload['expand'] = expand
-        if ordering is not None:
-            if type(ordering) is not list:
-                payload['ordering'] = [ordering]
-            else:
-                payload['ordering'] = ordering
+        payload = {'page[after]': start_offset}
+        if filter:
+            for k, v in filter.items():
+                payload[f"filter[{k}]"] = v
 
-        r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.validate_status_code(r, [200], "Filtering failed")
-        return self.resp_to_json(r).get('values')
+        if include:
+            payload['include'] = ','.join(include) if type(include) in (list, tuple) else include
+        if ordering:
+            payload['sort'] = ','.join(ordering) if type(ordering) in (list, tuple) else ordering
 
-    def get_one(self, pk, expand):
+        request_uri = self._api_endpoint + self._model_uri + '?' + urllib.parse.urlencode(payload)
+        while True:
+            r = requests.get(request_uri, headers=headers)
+            logger.debug("Request URI: %s", urllib.parse.unquote(r.url))
+            self.validate_status_code(r, [200], "Filtering failed")
+            response = self.resp_to_json(r)
+            logger.debug("Response %s", json.dumps(response, indent=4))
+
+            # Buffer all included objects
+            included_cache = IncludedCache(response.get('included', []))
+
+            # Iterate over response objects
+            for obj in response['data']:
+                yield (obj, included_cache)
+
+            if 'links' not in response or 'next' not in response['links'] or not response['links']['next']:
+                break
+            request_uri = self._hashtopolis_uri + response['links']['next']
+
+    def get_one(self, pk, include):
         self.authenticate()
         uri = self._api_endpoint + self._model_uri + f'/{pk}'
         headers = self._headers
 
         payload = {}
-        if expand is not None:
-            payload['expand'] = expand
+        if include is not None:
+            payload['include'] = ','.join(include) if type(include) in (list, tuple) else include
 
-        r = requests.get(uri, headers=headers, data=json.dumps(payload))
+        r = requests.get(uri, headers=headers, data=payload)
         self.validate_status_code(r, [200], "Get single object failed")
         return self.resp_to_json(r)
 
@@ -157,43 +240,67 @@ class HashtopolisConnector(object):
             return
 
         self.authenticate()
-        uri = self._hashtopolis_uri + obj._self
+        uri = self._hashtopolis_uri + obj.uri
         headers = self._headers
-        payload = {}
+        headers['Content-Type'] = 'application/json'
+        attributes = {}
 
         for k, v in obj.diff().items():
             logger.debug("Going to patch object '%s' property '%s' from '%s' to '%s'", obj, k, v[0], v[1])
-            payload[k] = v[1]
-
+            attributes[k] = v[1]
+        
+        payload = self.create_payload(obj, attributes, id=obj.id)
         logger.debug("Sending PATCH payload: %s to %s", json.dumps(payload), uri)
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))
-        self.validate_status_code(r, [201], "Patching failed")
+        self.validate_status_code(r, [200], "Patching failed")
 
         # TODO: Validate if return objects matches digital twin
-        obj.set_initial(self.resp_to_json(r).copy())
+        obj.set_initial(self.resp_to_json(r)['data'].copy())
+
+    def send_patch(self, uri, data):
+        self.authenticate()
+        headers = self._headers
+        headers['Content-Type'] = 'application/json'
+        logger.debug("Sending PATCH payload: %s to %s", json.dumps(data), uri)
+        r = requests.patch(uri, headers=headers, data=json.dumps(data))
+        self.validate_status_code(r, [204], "Patching failed")
+
+    def patch_to_many_relationships(self, obj):
+        for k, v in obj.diff_includes().items():
+            attributes = []
+            logger.debug("Going to patch object '%s' property '%s' from '%s' to '%s'", obj, k, v[0], v[1])
+            for include_id in v[1]:
+                attributes.append({"type": k, "id": include_id})
+            data = {"data": attributes}
+            uri = self._hashtopolis_uri + obj.uri + "/relationships/" + k
+            self.send_patch(uri, data)
 
     def create(self, obj):
         # Check if object to be created is new
-        assert not hasattr(obj, '_self')
+        assert obj._new_model is True
 
         self.authenticate()
         uri = self._api_endpoint + self._model_uri
         headers = self._headers
-        payload = obj.get_fields()
+        headers['Content-Type'] = 'application/json'
 
+        attributes = obj.get_fields()
+        payload = self.create_payload(obj, attributes)
+
+        logger.debug("Sending POST payload: %s to %s", json.dumps(payload), uri)
         r = requests.post(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, [201], "Creation of object failed")
 
         # TODO: Validate if return objects matches digital twin
-        obj.set_initial(self.resp_to_json(r).copy())
+        obj.set_initial(self.resp_to_json(r)['data'].copy())
 
     def delete(self, obj):
         """ Delete object from database """
         # TODO: Check if object to be deleted actually exists
-        assert hasattr(obj, '_self')
+        assert obj._new_model is False
 
         self.authenticate()
-        uri = self._hashtopolis_uri + obj._self
+        uri = self._hashtopolis_uri + obj.uri
         headers = self._headers
         payload = {}
 
@@ -202,11 +309,122 @@ class HashtopolisConnector(object):
 
         # TODO: Cleanup object to allow re-creation
 
+    def count(self, filter):
+        self.authenticate()
+        uri = self._api_endpoint + self._model_uri + "/count"
+        headers = self._headers
+        payload = {}
+        if filter:
+            for k, v in filter.items():
+                payload[f"filter[{k}]"] = v
+
+        logger.debug("Sending GET payload: %s to %s", json.dumps(payload), uri)
+        r = requests.get(uri, headers=headers, params=payload)
+        self.validate_status_code(r, [200], "Getting count failed")
+        return self.resp_to_json(r)['meta']
+
+# Build Django ORM style django.query interface
+class QuerySet():
+    def __init__(self, cls, include=None, ordering=None, filters=None, pages=None):
+        self.cls = cls
+        self.include = include
+        self.ordering = ordering
+        self.filters = filters
+        self.pages = pages
+
+    def __iter__(self):
+        yield from self.__getitem__(slice(None, None, 1))
+
+    def __getitem__(self, k):
+        if isinstance(k, int):
+            return list(self.filter_(k, k + 1, 1))[0]
+
+        if isinstance(k, slice):
+            return self.filter_(k.start or 0, k.stop or sys.maxsize, k.step or 1)
+    
+    def get_pagination(self):
+        objs = self.cls.get_conn().get_single_page(self.pages, self.filters)
+        parsed_objs = []
+        for obj in objs:
+            parsed_objs.append(self.cls._model(**obj))
+        return parsed_objs
+
+    def filter_(self, start, stop, step):
+        index = start or 0
+        cursor = index
+
+        # pk field is special and should be translated
+        if self.filters is None:
+            filters = None
+        else:
+            filters = self.filters.copy()
+            if 'pk' in filters:
+                filters['_id'] = filters['pk']
+                del filters['pk']
+
+        filter_generator = self.cls.get_conn().filter(self.include, self.ordering, filters, start_offset=cursor)
+
+        while index < stop:
+            # Fetch new entries in chunks default to server
+            try:
+                (obj, included_cache) = next(filter_generator)
+            except StopIteration:
+                return
+
+            # Return value
+            model_obj = self.cls._model(**obj)
+            model_obj.set_prefetched_relationships(included_cache)
+            yield model_obj
+
+            index += 1
+
+            # Remove items skipped by step
+            for _ in range(step - 1):
+                try:
+                    _ = next(filter_generator)
+                except StopIteration:
+                    return
+
+    def order_by(self, *ordering):
+        self.ordering = ordering
+        return self
+
+    def filter(self, **filters):
+        self.filters = filters
+        return self
+    
+    def page(self, **pages):
+        self.pages = pages
+        return self
+
+    def all(self):
+        # yield from self
+        return self
+
+    def get(self, **filters):
+        if filters:
+            self.filters = filters
+
+        # Generiek retrival, only need two entries to find out failures
+        objs = list(self.__getitem__(slice(0, 2, 1)))
+        if len(objs) == 0:
+            raise self.cls._model.DoesNotExist
+        elif len(objs) > 1:
+            raise self.cls._model.MultipleObjectsReturned
+        return objs[0]
+
+    def __len__(self):
+        return len(list(iter(self)))
+
 
 class ManagerBase(type):
     conn = {}
     # Cache configuration values
     config = None
+
+    @classmethod
+    def prefetch_related(cls, *include):
+        return QuerySet(cls, include=include)
 
     @classmethod
     def get_conn(cls):
@@ -218,15 +436,16 @@ class ManagerBase(type):
         return cls.conn[cls._model_uri]
 
     @classmethod
-    def all(cls, expand=None, max_results=None, ordering=None):
+    def all(cls):
         """
         Retrieve all backend objects
-        TODO: Make iterator supporting loading of objects via pages
         """
-        return cls.filter(expand, max_results, ordering)
+        return cls.filter()
 
     @classmethod
     def patch(cls, obj):
+        # TODO also patch to one relationships
+        cls.get_conn().patch_to_many_relationships(obj)
         cls.get_conn().patch_one(obj)
 
     @classmethod
@@ -242,43 +461,24 @@ class ManagerBase(type):
         """
         Retrieve first object
         TODO: Error handling if first object does not exists
-        TODO: Request object with limit parameter instead
         """
         return cls.all()[0]
 
     @classmethod
-    def get(cls, expand=None, ordering=None, **kwargs):
-        if 'pk' in kwargs:
-            try:
-                api_obj = cls.get_conn().get_one(kwargs['pk'], expand)
-            except HashtopolisError as e:
-                if e.status_code == 404:
-                    raise cls._model.DoesNotExist
-                else:
-                    # Re-raise error if generic failure took place
-                    raise
-            new_obj = cls._model(**api_obj)
-            return new_obj
-        else:
-            objs = cls.filter(expand, ordering, **kwargs)
-            if len(objs) == 0:
-                raise cls._model.DoesNotExist
-            elif len(objs) > 1:
-                raise cls._model.MultipleObjectsReturned
-            return objs[0]
+    def get(cls, **filters):
+        return QuerySet(cls, filters=filters).get()
+    
+    @classmethod
+    def count(cls, **filters):
+        return cls.get_conn().count(filter=filters)
+        
+    @classmethod
+    def paginate(cls, **pages):
+        return QuerySet(cls, pages=pages)
 
     @classmethod
-    def filter(cls, expand=None, max_results=None, ordering=None, **kwargs):
-        # Get all objects
-        api_objs = cls.get_conn().filter(expand, max_results, ordering, kwargs)
-
-        # Convert into class
-        objs = []
-        if api_objs:
-            for api_obj in api_objs:
-                new_obj = cls._model(**api_obj)
-                objs.append(new_obj)
-        return objs
+    def filter(cls, **filters):
+        return QuerySet(cls, filters=filters)
 
 
 class ObjectDoesNotExist(Exception):
@@ -306,7 +506,7 @@ class ModelBase(type):
                     class_name,
                     type(class_name, (class_type,), {
                         "__qualname__": "%s.%s" % (new_class.__qualname__, class_name),
-                        '__module__': "%s.%s" % (__name__, new_class.__name__)
+                        '__module__': "%s" % (__name__)
                         }))
         add_to_class('DoesNotExist', ObjectDoesNotExist)
         add_to_class('MultipleObjectsReturned', MultipleObjectsReturned)
@@ -331,78 +531,91 @@ class ModelBase(type):
 
 class Model(metaclass=ModelBase):
     def __init__(self, *args, **kwargs):
-        self.set_initial(kwargs)
+        if 'links' in kwargs:
+            # Loading of existing model
+            self.set_initial(kwargs)
+        else:
+            self.set_initial({'attributes': kwargs})
         super().__init__()
 
     def __repr__(self):
-        return self._self
+        return self.__uri
 
     def __eq__(self, other):
         return (self.get_fields() == other.get_fields())
 
     def _dict2obj(self, dict):
-        # Function to convert a dict to an object.
-        uri = dict.get('_self')
+        """
+        Convert resource object dictionary to an model Object
+        """
+        uri = dict['links']['self']
+        uri_without_id = '/'.join(uri.split('/')[:-1])
         # Loop through all the registers classes
         for _, model in cls_registry.items():
             model_uri = model.objects._model_uri
             # Check if part of the uri is in the model uri
-            if model_uri in uri:
+            if uri_without_id.endswith(model_uri):
                 return model(**dict)
         # If we are here, it means that no uri matched, thus we don't know the object.
-        raise TypeError('Object not valid model')
+        raise TypeError(f"Object identifier '{uri}' not valid/defined model")
 
     def set_initial(self, kv):
         self.__fields = []
-        self.__expanded = []
+        self.__included = []
+        self._new_model = True
         # Store fields allowing us to detect changed values
-        if '_self' in kv:
+        if 'links' in kv:
             self.__initial = copy.deepcopy(kv)
+            self.__uri = kv['links']['self']
+            self.__id = kv['id']
+            self._new_model = False
         else:
             # New model
             self.__initial = {}
 
+        self.__relationships = kv.get('relationships', {})
+
         # Create attribute values
-        for k, v in kv.items():
-            # In case expand is true, there can be a attribute which also is an object.
-            # Example: Users in AccessGroups. This part will convert the returned data.
-            # Into proper objects.
-            if type(v) is list and len(v) > 0:
-                # Many-to-Many relation
-                obj_list = []
-                # Loop through all the values in the list and convert them to objects.
-                for dict_v in v:
-                    if type(dict_v) is dict and dict_v.get('_self'):
-                        # Double check that it really is an object
-                        obj = self._dict2obj(dict_v)
-                        obj_list.append(obj)
-                # Set the attribute of the current object to a set object (like Django)
-                # Also check if it really were objects
-                if len(obj_list) > 0:
-                    setattr(self, f"{k}_set", obj_list)
-                    self.__expanded.append(f"{k}_set")
-                    continue
-            # This does the same as above, only one-to-one relations
-            if type(v) is dict and v.get('_self'):
-                setattr(self, f"{k}", self._dict2obj(v))
-                self.__expanded.append(f"{k}")
+        for k, v in kv['attributes'].items():
+            setattr(self, k, v)
+            self.__fields.append(k)
+
+    def set_prefetched_relationships(self, included_cache):
+        """
+        Populate prefetched relationships
+        """
+        for relationship_name, resource_identifier_object in self.__relationships.items():
+            if 'data' not in resource_identifier_object:
+                # TODO Deal with 'link' type related relationships
                 continue
 
-            # Skip over field 'id', as it is automatic property of model itself.
-            # This should be removed if there is a concensus on the full model.
-            # Example: not rightgroupName but name, and not rightgroupId but id
-            if k != 'id':
-                setattr(self, k, v)
-
-            if not k.startswith('_'):
-                self.__fields.append(k)
+            resource_identifier_object_data_type = type(resource_identifier_object['data'])
+            if resource_identifier_object_data_type is type(None):
+                # Empty to-one relationship
+                setattr(self, relationship_name, None)
+                self.__included.append(relationship_name)
+            elif resource_identifier_object_data_type is dict:
+                # Non-empty to-one relationship
+                to_one_relation_obj = self._dict2obj(included_cache.get(resource_identifier_object['data']))
+                setattr(self, relationship_name, to_one_relation_obj)
+                self.__included.append(relationship_name)
+            elif resource_identifier_object_data_type is list:
+                to_many_relation_objs = []
+                # to-many relationship
+                for obj in resource_identifier_object['data']:
+                    to_many_relation_objs.append(self._dict2obj(included_cache.get(obj)))
+                setattr(self, relationship_name + '_set', to_many_relation_objs)
+                self.__included.append(relationship_name + "_set")
+            else:
+                raise AssertionError("Invalid resource indentifier object class type=%s" %
+                                     resource_identifier_object_data_type)
 
     def get_fields(self):
         return dict([(k, getattr(self, k)) for k in sorted(self.__fields)])
 
     def diff(self):
         # Stored database values
-        d_initial = self.__initial
+        d_initial = self.__initial['attributes']
         # Possible changes values
         d_current = self.get_fields()
         diffs = []
@@ -411,48 +624,60 @@ class Model(metaclass=ModelBase):
             if v_current != v_innitial:
                 diffs.append((key, (v_innitial, v_current)))
 
-        # Find expandables sets which have changed
-        for expand in self.__expanded:
-            if expand.endswith('_set'):
-                innitial_name = expand[:-4]
+        return dict(diffs)
+
+    def diff_includes(self):
+        diffs = []
+        # Find includeables sets which have changed
+        for include in self.__included:
+            if include.endswith('_set'):
+                innitial_name = include[:-4]
                 # Retrieve innitial keys
-                v_innitial = self.__initial[innitial_name]
-                v_innitial_ids = [x['_id'] for x in v_innitial]
+                v_innitial = self.__initial['relationships'][innitial_name]['data']
+                v_innitial_ids = [x['id'] for x in v_innitial]
                 # Retrieve new/current keys
-                v_current = getattr(self, expand)
+                v_current = getattr(self, include)
                 v_current_ids = [x.id for x in v_current]
                 # Use ID of ojbects as new current/update identifiers
                 if sorted(v_innitial_ids) != sorted(v_current_ids):
                     diffs.append((innitial_name, (v_innitial_ids, v_current_ids)))
-
+        
         return dict(diffs)
 
     def has_changed(self):
         return bool(self.diff())
 
     def save(self):
-        if hasattr(self, '_self'):
-            self.objects.patch(self)
-        else:
+        if self._new_model:
             self.objects.create(self)
+        else:
+            self.objects.patch(self)
         return self
 
     def delete(self):
-        if hasattr(self, '_self'):
+        if not self._new_model:
             self.objects.delete(self)
 
     def serialize(self):
-        retval = dict([(x, getattr(self, x)) for x in self.__fields] + [('_self', self._self), ('_id', self._id)])
-        for expandable in self.__expanded:
-            if expandable.endswith('_set'):
-                retval[expandable] = [x.serialize() for x in getattr(self, expandable)]
+        retval = dict([(x, getattr(self, x)) for x in self.__fields] + [('_self', self.__uri), ('_id', self.__id)])
+        for includeable in self.__included:
+            if includeable.endswith('_set'):
+                retval[includeable] = [x.serialize() for x in getattr(self, includeable)]
             else:
-                retval[expandable] = getattr(self, expandable).serialize()
+                retval[includeable] = getattr(self, includeable).serialize()
         return retval
 
     @property
     def id(self):
-        return self._id
+        return self.__id
+
+    @property
+    def pk(self):
+        return self.__id
+
+    @property
+    def uri(self):
+        return self.__uri
 
 
 ##
@@ -585,7 +810,6 @@ class FileImport(HashtopolisConnector):
         uri = self._api_endpoint + self._model_uri
 
         my_client = tusclient.client.TusClient(uri)
-        del self._headers['Content-Type']
         my_client.set_headers(self._headers)
 
         metadata = {"filename": filename,
@@ -625,6 +849,7 @@ class Helper(HashtopolisConnector):
         self.authenticate()
         uri = self._api_endpoint + self._model_uri + helper_uri
         headers = self._headers
+        headers['Content-Type'] = 'application/json'
 
         logging.debug(f"Makeing POST request to {uri}, headers={headers} payload={payload}")
         r = requests.post(uri, headers=headers, data=json.dumps(payload))
@@ -633,6 +858,22 @@ class Helper(HashtopolisConnector):
             return None
         else:
             return self.resp_to_json(r)
+
+    def _helper_get_request_file(self, helper_uri, payload, range=None):
+        self.authenticate()
+        uri = self._api_endpoint + self._model_uri + helper_uri
+        headers = self._headers
+        if range:
+            headers["Range"] = range
+
+        logging.debug(f"Sending GET request to {uri}, with params:{payload}")
+        r = requests.get(uri, headers=headers, params=payload)
+        if range is None:
+            assert r.status_code == 200
+        else:
+            assert r.status_code == 206
+        logging.debug(f"received file contents: \n {r.text}")
+        return r.text
 
     def _test_authentication(self, username, password):
         auth_uri = self._api_endpoint + '/auth/token'
@@ -712,22 +953,27 @@ class Helper(HashtopolisConnector):
             'separator': separator,
         }
         response = self._helper_request("importCrackedHashes", payload)
-        return response['data']
+        return response['meta']
 
+    def get_file(self, file, range=None):
+        payload = {
+            'file': file.id
+        }
+        return self._helper_get_request_file("getFile", payload, range)
 
     def recount_file_lines(self, file):
         payload = {
             'fileId': file.id,
         }
         response = self._helper_request("recountFileLines", payload)
-        return File(**response['data'])
+        return File(**response['meta'])
 
     def unassign_agent(self, agent):
         payload = {
             'agentId': agent.id,
         }
         response = self._helper_request("unassignAgent", payload)
-        return response['data']
+        return response['meta']
 
     def assign_agent(self, agent, task):
         payload = {
@@ -735,4 +981,4 @@ class Helper(HashtopolisConnector):
             'taskId': task.id,
         }
         response = self._helper_request("assignAgent", payload)
-        return response['data']
+        return response['meta']

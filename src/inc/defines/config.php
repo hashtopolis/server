@@ -68,6 +68,8 @@ class DConfig {
   const HASH_MAX_LENGTH            = "hashMaxLength";
   const MAX_HASHLIST_SIZE          = "maxHashlistSize";
   const UAPI_SEND_TASK_IS_COMPLETE = "uApiSendTaskIsComplete";
+  const DEFAULT_PAGE_SIZE          = "defaultPageSize";
+  const MAX_PAGE_SIZE              = "maxPageSize";
   
   // Section: UI
   const TIME_FORMAT            = "timefmt";
@@ -272,6 +274,10 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::HC_ERROR_IGNORE:
         return DConfigType::STRING_INPUT;
+      case DConfig::DEFAULT_PAGE_SIZE:
+        return DConfigType::NUMBER_INPUT; 
+      case DConfig::MAX_PAGE_SIZE:
+          return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -406,6 +412,10 @@ class DConfig {
         return "Also send 'isComplete' for each task on the User API when listing all tasks (might affect performance)";
       case DConfig::HC_ERROR_IGNORE:
         return "Ignore error messages from crackers which contain given strings (multiple values separated by comma)";
+      case DConfig::DEFAULT_PAGE_SIZE:
+        return "The default page size of items that are returned in API calls.";
+      case DConfig::MAX_PAGE_SIZE:
+        return "The maximum page size of items that are allowed to return in an API call.";
     }
     return $config;
   }

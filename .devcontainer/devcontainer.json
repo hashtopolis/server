@@ -13,6 +13,7 @@
         "xdebug.php-debug",
         "bmewburn.vscode-intelephense-client",
         "editorconfig.editorconfig",
+        "eamodio.gitlens",
         "github.vscode-pull-request-github",
         "ms-python.python",
         "ms-python.flake8",

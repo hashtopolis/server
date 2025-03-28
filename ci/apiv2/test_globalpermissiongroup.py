@@ -29,5 +29,5 @@ class GlobalPermissionGroupTest(BaseTest):
 
     def test_expand(self):
         model_obj = self.create_test_object()
-        expandables = ['user']
+        expandables = ['userMembers']
         self._test_expandables(model_obj, expandables)
