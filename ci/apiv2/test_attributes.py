@@ -24,13 +24,15 @@ class AttributeTypeTest(BaseTest):
         conn.authenticate()
 
         headers = conn._headers
+        headers['Content-Type'] = 'application/json'
 
         uri = conn._api_endpoint + conn._model_uri + f'/{user.id}'
-        payload = {}
-        payload['passwordHash'] = 'test'
+        attributes = {}
+        attributes['passwordHash'] = 'test'
+        payload = conn.create_payload(user, attributes, id=user.id)
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))
 
-        self.assertEqual(r.status_code, 500)
+        self.assertEqual(r.status_code, 403)
         self.assertIn('immutable', r.json().get('exception')[0].get('message'))
         user.delete()
 
@@ -46,6 +48,7 @@ class AttributeTypeTest(BaseTest):
         )
         with self.assertRaises(HashtopolisError) as e:
             user.save()
+        
         self.assertEqual(e.exception.status_code, 500)
         self.assertIn(' not valid input ', e.exception.exception_details[0]['message'])
 

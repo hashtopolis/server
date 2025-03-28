@@ -7,36 +7,25 @@ use DBA\RightGroup;
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
 
-class GlobalPermissionGroupsAPI extends AbstractModelAPI {
+class GlobalPermissionGroupAPI extends AbstractModelAPI {
     public static function getBaseUri(): string {
       return "/api/v2/ui/globalpermissiongroups";
     }
 
     public static function getDBAclass(): string {
       return RightGroup::class;
+    }
+
+    public static function getToManyRelationships(): array {
+      return [
+        'userMembers' => [
+          'key' => RightGroup::RIGHT_GROUP_ID,
+          
+          'relationType' => User::class,
+          'relationKey' => User::RIGHT_GROUP_ID,        
+        ],
+      ];
     }    
-
-    public function getExpandables(): array {
-      return ['user'];
-    }
-
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof RightGroup); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'user':
-          return $this->getManyToOneRelation(
-            $objects,
-            RightGroup::RIGHT_GROUP_ID,
-            Factory::getUserFactory(),
-            User::RIGHT_GROUP_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
-    }
 
     /** 
      * Rewrite permissions DB values to CRUD field values
@@ -133,4 +122,4 @@ class GlobalPermissionGroupsAPI extends AbstractModelAPI {
     }
 }
 
-GlobalPermissionGroupsAPI::register($app);
+GlobalPermissionGroupAPI::register($app);

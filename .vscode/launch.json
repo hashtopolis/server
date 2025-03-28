@@ -6,7 +6,10 @@
             "name": "Listen for Xdebug",
             "type": "php",
             "request": "launch",
-            "port": 9003
+            "port": 9003,
+            "xdebugSettings": {
+              "max_data": 10240
+          }
         },
         {
             "name": "Launch currently open script",
@@ -60,11 +63,38 @@
             }
         },
         {
-            "name": "Python: File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "justMyCode": true
+          "name": "Python: htcli (list Users with Include)",
+          "type": "python",
+          "request": "launch",
+          "program": "./ci/apiv2/htcli.py",
+          "args": ["list", "Users", "-v", "DEBUG", "--include", "globalPermissionGroup"],
+          "justMyCode": true
+        },
+        {
+          "name": "Python: htcli run delete-test-data",
+          "type": "python",
+          "request": "launch",
+          "program": "./ci/apiv2/htcli.py",
+          "args": ["run", "delete-test-data", "--commit"],
+          "justMyCode": true
+        },
+        {
+          "name": "Python: Debug pytest file",
+          "type": "python",
+          "request": "launch",
+          "module": "pytest",
+          "args": ["${file}", "--exitfirst"],
+          "justMyCode": true,
+          "env": {
+            "_PYTEST_RAISE": "1"
+          },
+        },
+        {
+          "name": "Python: File",
+          "type": "python",
+          "request": "launch",
+          "program": "${file}",
+          "justMyCode": true
         }
     ],
     "inputs": [

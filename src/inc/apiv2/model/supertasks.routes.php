@@ -7,6 +7,10 @@ use DBA\Pretask;
 use DBA\Supertask;
 use DBA\SupertaskPretask;
 
+use Middlewares\Utils\HttpErrorException;
+
+use Psr\Http\Message\ServerRequestInterface as Request;
+
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
 
@@ -19,28 +23,19 @@ class SupertaskAPI extends AbstractModelAPI {
       return Supertask::class;
     }
 
-    public function getExpandables(): array {
-      return [ "pretasks" ];
-    }
+    public static function getToManyRelationships(): array {
+      return [
+        'pretasks' => [
+          'key' => Supertask::SUPERTASK_ID,
+          
+          'junctionTableType' => SupertaskPretask::class,
+          'junctionTableFilterField' => SupertaskPretask::SUPERTASK_ID,
+          'junctionTableJoinField' => SupertaskPretask::PRETASK_ID,
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof Supertask); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'pretasks':
-          return $this->getManyToOneRelationViaIntermediate(
-            $objects,
-            Supertask::SUPERTASK_ID,
-            Factory::getSupertaskPretaskFactory(),
-            SupertaskPretask::SUPERTASK_ID,
-            Factory::getPretaskFactory(),
-            Pretask::PRETASK_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+          'relationType' => Pretask::class,
+          'relationKey' => Pretask::PRETASK_ID,        
+        ],
+      ];
     }    
 
     public function getFormFields(): array {
@@ -70,19 +65,19 @@ class SupertaskAPI extends AbstractModelAPI {
       return $objects[0]->getId();      
     }
 
-    public function updateObject(object $object, $data,  $processed = []): void {
-      $key = "pretasks";
-      if (array_key_exists($key, $data)) {
-        array_push($processed, $key);
-
-        // Retrieve requested pretasks
+    public function updateToManyRelationship(Request $request, array $data, array $args): void {
+        $id = $args['id'];
         $wantedPretasks = [];
-        foreach(self::db2json($this->getAliasedFeatures()['pretasks'], $data[$key]) as $pretaskId) {
-          array_push($wantedPretasks, self::getPretask($pretaskId));
+        foreach($data as $pretask) {
+          if (!$this->validateResourceRecord($pretask)) {
+            $encoded_pretask = json_encode($pretask);
+            throw new HttpErrorException('Invalid resource record given in list! invalid resource record: ' . $encoded_pretask);
+          }
+          array_push($wantedPretasks, self::getPretask($pretask["id"]));
         }
 
         // Find out which to add and remove
-        $currentPretasks = SupertaskUtils::getPretasksOfSupertask($object->getId());
+        $currentPretasks = SupertaskUtils::getPretasksOfSupertask($id);
         function compare_ids($a, $b) 
         { 
           return ($a->getId() - $b->getId()); 
@@ -90,16 +85,20 @@ class SupertaskAPI extends AbstractModelAPI {
         $toAddPretasks = array_udiff($wantedPretasks, $currentPretasks, 'compare_ids');
         $toRemovePretasks = array_udiff($currentPretasks, $wantedPretasks, 'compare_ids');
 
-        // Update model
+        $factory = $this->getFactory();
+        $factory->getDB()->beginTransaction(); //start transaction to be able roll back
+
+        // Update models
         foreach($toAddPretasks as $pretask) {
-          SupertaskUtils::addPretaskToSupertask($object->getId(), $pretask->getId());
+          SupertaskUtils::addPretaskToSupertask($id, $pretask->getId());
         }
         foreach($toRemovePretasks as $pretask) {
-          SupertaskUtils::removePretaskFromSupertask($object->getId(), $pretask->getId());
+          SupertaskUtils::removePretaskFromSupertask($id, $pretask->getId());
         }
-      }
 
-      parent::updateObject($object, $data, $processed);
+        if (!$factory->getDB()->commit()) {
+          throw new HttpErrorException("Was not able to update to many relationship");
+        }
     }
 
     protected function deleteObject(object $object): void {

@@ -34,7 +34,7 @@ class HashlistUtils {
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to hashlist!");
     }
-    Factory::getHashlistFactory()->set($hashlist, Hashlist::NOTES, htmlentities($notes, ENT_QUOTES, "UTF-8"));
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::NOTES, $notes);
   }
   
   /**
@@ -212,8 +212,9 @@ class HashlistUtils {
     fclose($wordlistFile);
     
     //add file to files list
-    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId(), null);
-    Factory::getFileFactory()->save($file);
+    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId(), $wordCount);
+    $file = Factory::getFileFactory()->save($file);
+    # TODO: returning wordCount and wordlistName are not really required here as the name and the count are already given in the file object
     return [$wordCount, $wordlistName, $file];
   }
   
@@ -345,12 +346,19 @@ class HashlistUtils {
     $startTime = time();
     
     //find the line separator
-    $buffer = fread($file, 1024);
     $lineSeparators = array("\r\n", "\n", "\r");
     $lineSeparator = "";
-    foreach ($lineSeparators as $sep) {
-      if (strpos($buffer, $sep) !== false) {
-        $lineSeparator = $sep;
+
+    // This will loop through the buffer until it finds a line separator
+    while (!feof($file)) {
+      $buffer = fread($file, 1024);
+      foreach ($lineSeparators as $ls) {
+        if (strpos($buffer, $ls) !== false) {
+          $lineSeparator = $ls;
+          break;
+        }
+      }
+      if (!empty($lineSeparator)) {
         break;
       }
     }
@@ -386,7 +394,18 @@ class HashlistUtils {
       $crackedIn[$l->getId()] = 0;
     }
     while (!feof($file)) {
-      $data = stream_get_line($file, 1024, $lineSeparator);
+      $data = '';
+      while(($line = stream_get_line($file, 1024, $lineSeparator)) !== false){
+        $data .= $line;
+        // seek back the length of lineSeparator and check if it indeed was a line separator
+        // If no lineSeperator was found, make sure not to check but just to keep reading
+        if (strlen($lineSeparator) > 0) {
+          fseek($file, strlen($lineSeparator) * -1, SEEK_CUR);
+          if (fread($file, strlen($lineSeparator)) === $lineSeparator) {
+            break;
+          }
+        }
+      }
       if (strlen($data) == 0) {
         continue;
       }
@@ -743,7 +762,6 @@ class HashlistUtils {
    * @throws HTException
    */
   public static function createHashlist($name, $isSalted, $isSecret, $isHexSalted, $separator, $format, $hashtype, $saltSeparator, $accessGroupId, $source, $post, $files, $user, $brainId, $brainFeatures) {
-    $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $salted = ($isSalted) ? "1" : "0";
     $secret = ($isSecret) ? "1" : "0";
     $hexsalted = ($isHexSalted) ? "1" : "0";
@@ -1111,20 +1129,23 @@ class HashlistUtils {
     if (!AccessUtils::userCanAccessHashlists($lists, $user)) {
       throw new HTException("No access to the hashlists!");
     }
-    
     $hashlistIds = Util::arrayOfIds($lists);
     $qF1 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
     $qF2 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
     $hashes = [];
-    $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+    $isBinary = $hashlist->getFormat() != 0;
+    $factory = $isBinary ? Factory::getHashBinaryFactory() : Factory::getHashFactory();
+    $entries = $factory->filter([Factory::FILTER => [$qF1, $qF2]]);
     foreach ($entries as $entry) {
       $arr = [
         "hash" => $entry->getHash(),
         "plain" => $entry->getPlaintext(),
         "crackpos" => $entry->getCrackPos()
       ];
-      if (strlen($entry->getSalt()) > 0) {
-        $arr["hash"] .= $hashlist->getSaltSeparator() . $entry->getSalt();
+      if ($hashlist->getIsSalted()) {
+        if (strlen($entry->getSalt()) > 0) {
+          $arr["hash"] .= $hashlist->getSaltSeparator() . $entry->getSalt();
+        }
       }
       $hashes[] = $arr;
     }

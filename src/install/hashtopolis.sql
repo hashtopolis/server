@@ -31,7 +31,7 @@ CREATE TABLE `Agent` (
   `uid`             VARCHAR(100) NOT NULL,
   `os`              INT(11)      NOT NULL,
   `devices`         TEXT         NOT NULL,
-  `cmdPars`         VARCHAR(256) NOT NULL,
+  `cmdPars`         TEXT         NOT NULL,
   `ignoreErrors`    TINYINT(4)   NOT NULL,
   `isActive`        TINYINT(4)   NOT NULL,
   `isTrusted`       TINYINT(4)   NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE `AgentBinary` (
 ) ENGINE = InnoDB;
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
-  (1, 'python', '0.7.1', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
+  (1, 'python', '0.7.2', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
 
 CREATE TABLE `AgentError` (
   `agentErrorId` INT(11) NOT NULL,
@@ -170,7 +170,10 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (74, 4, 'agentUtilThreshold1', '90'),
   (75, 4, 'agentUtilThreshold2', '75'),
   (76, 3, 'uApiSendTaskIsComplete', '0'),
-  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed');
+  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed'),
+  (78, 3, 'defaultPageSize', '10000'),
+  (79, 3, 'maxPageSize', '50000');
+
 
 CREATE TABLE `ConfigSection` (
   `configSectionId` INT(11)      NOT NULL,
@@ -786,7 +789,7 @@ CREATE TABLE `NotificationSetting` (
 CREATE TABLE `Pretask` (
   `pretaskId`           INT(11)      NOT NULL,
   `taskName`            VARCHAR(100) NOT NULL,
-  `attackCmd`           VARCHAR(256) NOT NULL,
+  `attackCmd`           TEXT         NOT NULL,
   `chunkTime`           INT(11)      NOT NULL,
   `statusTimer`         INT(11)      NOT NULL,
   `color`               VARCHAR(20)  NULL,
@@ -851,7 +854,7 @@ CREATE TABLE `SupertaskPretask` (
 CREATE TABLE `Task` (
   `taskId`              INT(11)      NOT NULL,
   `taskName`            VARCHAR(256) NOT NULL,
-  `attackCmd`           VARCHAR(256) NOT NULL,
+  `attackCmd`           TEXT         NOT NULL,
   `chunkTime`           INT(11)      NOT NULL,
   `statusTimer`         INT(11)      NOT NULL,
   `keyspace`            BIGINT(20)   NOT NULL,
@@ -954,7 +957,7 @@ CREATE TABLE `HealthCheck` (
   `hashtypeId`      INT(11)      NOT NULL,
   `crackerBinaryId` INT(11)      NOT NULL,
   `expectedCracks`  INT(11)      NOT NULL,
-  `attackCmd`       VARCHAR(256) NOT NULL
+  `attackCmd`       TEXT         NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `HealthCheckAgent` (

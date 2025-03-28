@@ -27,7 +27,7 @@ class TaskWrapperTest(BaseTest):
         model_obj = self.create_test_object()
         with self.assertRaises(HashtopolisError) as e:
             self._test_patch(model_obj, 'taskType', 2)
-        self.assertEqual(e.exception.status_code, 500)
+        self.assertEqual(e.exception.status_code, 403)
 
     def test_delete(self):
         model_obj = self.create_test_object(delete=False)

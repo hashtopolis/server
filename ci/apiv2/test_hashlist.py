@@ -1,4 +1,4 @@
-from hashtopolis import Hashlist, Helper
+from hashtopolis import Hashlist, Helper, File
 from utils import BaseTest
 
 
@@ -38,6 +38,104 @@ class HashlistTest(BaseTest):
         model_obj = self.create_test_object(file_id='003')
         self._test_create(model_obj)
 
+    def test_export_cracked_hashes(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        helper = Helper()
+        file = helper.export_cracked_hashes(model_obj)
+
+        obj = File.objects.get(fileId=file.id)
+        self.assertEqual(int(file.id), obj.id)
+        self.assertIn('Pre-cracked_', obj.filename)
+
+        self.delete_after_test(obj)
+
+    def test_export_left_hashes(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        helper = Helper()
+        file = helper.export_left_hashes(model_obj)
+
+        obj = File.objects.get(fileId=file.id)
+        self.assertEqual(int(file.id), obj.id)
+        self.assertIn('Leftlist_', obj.filename)
+
+        self.delete_after_test(obj)
+
+    def test_export_wordlist(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        cracked = "cc03e747a6afbbcbf8be7668acfebee5:test123"
+
+        helper = Helper()
+        helper.import_cracked_hashes(model_obj, cracked, ':')
+
+        file = helper.export_wordlist(model_obj)
+
+        obj = File.objects.get(fileId=file.id)
+        self.assertEqual(int(file.id), obj.id)
+        self.assertIn('Wordlist_', obj.filename)
+
+        self.delete_after_test(obj)
+
+    def test_import_cracked_hashes(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        cracked = "cc03e747a6afbbcbf8be7668acfebee5:test123"
+
+        helper = Helper()
+        result = helper.import_cracked_hashes(model_obj, cracked, ':')
+
+        self.assertEqual(result['totalLines'], 1)
+        self.assertEqual(result['newCracked'], 1)
+
+        obj = Hashlist.objects.get(hashlistId=model_obj.id)
+        self.assertEqual(obj.cracked, 1)
+
+    def test_import_cracked_hashes_invalid(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        cracked = "cc03e747a6afbbcbf8be7668acfebee5__test123"
+
+        helper = Helper()
+        result = helper.import_cracked_hashes(model_obj, cracked, ':')
+
+        self.assertEqual(result['totalLines'], 1)
+        self.assertEqual(result['invalid'], 1)
+
+        obj = Hashlist.objects.get(hashlistId=model_obj.id)
+        self.assertEqual(obj.cracked, 0)
+
+    def test_import_cracked_hashes_notfound(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        cracked = "ffffffffffffffffffffffffffffffff:test123"
+
+        helper = Helper()
+        result = helper.import_cracked_hashes(model_obj, cracked, ':')
+
+        self.assertEqual(result['totalLines'], 1)
+        self.assertEqual(result['notFound'], 1)
+
+        obj = Hashlist.objects.get(hashlistId=model_obj.id)
+        self.assertEqual(obj.cracked, 0)
+
+    def test_import_cracked_hashes_already_cracked(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        cracked = "cc03e747a6afbbcbf8be7668acfebee5:test123"
+
+        helper = Helper()
+        helper.import_cracked_hashes(model_obj, cracked, ':')
+
+        result = helper.import_cracked_hashes(model_obj, cracked, ':')
+
+        self.assertEqual(result['totalLines'], 1)
+        self.assertEqual(result['alreadyCracked'], 1)
+
+        obj = Hashlist.objects.get(hashlistId=model_obj.id)
+        self.assertEqual(obj.cracked, 1)
+
     def test_helper_create_superhashlist(self):
         hashlists = [self.create_test_object() for _ in range(2)]
 
@@ -49,5 +147,5 @@ class HashlistTest(BaseTest):
         self.assertEqual(hashlist.format, 3)
 
         # Validate if created with provided hashlists
-        obj = Hashlist.objects.get(pk=hashlist.id, expand='hashlists')
+        obj = Hashlist.objects.prefetch_related('hashlists').get(pk=hashlist.id)
         self.assertListEqual(hashlists, obj.hashlists_set)

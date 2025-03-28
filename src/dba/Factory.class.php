@@ -493,4 +493,5 @@ class Factory {
   const ORDER = "order";
   const UPDATE = "update";
   const GROUP = "group";
+  const LIMIT = "limit";
 }

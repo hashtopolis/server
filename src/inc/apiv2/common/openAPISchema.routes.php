@@ -12,6 +12,7 @@ require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 function typeLookup($feature): array {
   $type_format = null;
   $type_enum = null;
+  $sub_type = null;
   if ($feature['type'] == 'int') {
     $type = "integer";
   } elseif ($feature['type'] == 'uint64') {
@@ -24,6 +25,7 @@ function typeLookup($feature): array {
     $type = "object";
   } elseif ($feature['type'] == 'array') {
     $type = "array";
+    $sub_type = "integer"; //TODO: subtype is hardcoded because we only have int arrays
   } elseif ($feature['type'] == 'bool') {
     $type = "boolean";
   } elseif (str_starts_with($feature['type'], 'str(')) {
@@ -42,14 +44,141 @@ function typeLookup($feature): array {
      "type" => $type,
       "type_format" => $type_format,
       "type_enum" => $type_enum,
+      "subtype" => $sub_type
   ];
 
   return $result;
 };
 
-function makeProperties($features): array {
+
+// "jsonapi": {
+//   "version": "1.1",
+//   "ext": [
+//       "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+//   ]
+// },
+function makeJsonApiHeader(): array {
+  return ["jsonapi" => [
+    "type" => "object",
+    "properties" => [
+      "version" => [
+        "type" => "string",
+        "default" => "1.1"
+      ],
+      "ext" => [
+        "type" => "string",
+        "default" => "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+      ]
+    ]
+  ]];
+}
+
+// "links": {
+//     "self": "/api/v2/ui/hashlists?page[size]=10000",
+//     "first": "/api/v2/ui/hashlists?page[size]=10000&page[after]=0",
+//     "last": "/api/v2/ui/hashlists?page[size]=10000&page[before]=345",
+//     "next": null,
+//     "prev": "/api/v2/ui/hashlists?page[size]=10000&page[before]=114"
+//   },
+function makeLinks($uri): array {
+  $self = $uri . "?page[size]=25";
+  return ["links" => [
+    "type" => "object",
+    "properties" => [
+      "self" => [
+        "type" => "string",
+        "default" => $self
+      ],
+      "first" => [
+        "type" => "string",
+        "default" => $self . "&page[after]=0"
+      ],
+      "last" => [
+        "type" => "string",
+        "default" => $self . "&page[before]=500"
+      ],
+      "next" => [
+        "type" => "string",
+        "default" => $self . "&page[after]=25"
+      ],
+      "previous" => [
+        "type" => "string",
+        "default" => $self . "&page[before]=25"
+      ]
+    ]
+  ]];
+}
+
+//TODO relationship array is unnecessarily indexed in the swagger UI 
+function makeRelationships($class, $uri): array {
+  $properties = [];
+  $relationshipsNames = array_merge(array_keys($class->getToOneRelationships()), array_keys($class->getToManyRelationships()));
+  sort($relationshipsNames);
+  foreach ($relationshipsNames as $relationshipName) {
+    $self = $uri . "/relationships/" . $relationshipName;
+    $related = $uri . "/" . $relationshipName;
+    array_push($properties,
+    [
+      "properties" => [
+        $relationshipName => [
+          "type" => "object",
+          "properties" => [
+            "links" => [
+              "type" => "object",
+              "properties" => [
+                "self" => [
+                  "type" => "string",
+                  "default" => $self
+                ],
+                "related" => [
+                  "type" => "string",
+                  "default" => $related
+                ]
+              ]
+            ]
+          ]
+        ]
+
+      ]
+    ]);
+  }
+  return $properties;
+}
+
+//TODO expandables array is unnecessarily indexed in the swagger UI 
+function makeExpandables($class, $container): array {
+  $properties = [];
+  $expandables = array_merge($class->getToOneRelationships(), $class->getToManyRelationships());
+  foreach ($expandables as $expand => $expandVal) {
+      $expandClass = $expandVal["relationType"];
+      $expandApiClass = new ($container->get('classMapper')->get($expandClass))($container);
+      array_push($properties,
+        [ 
+          "properties" => [ 
+            "id" => [
+              "type" => "integer"
+            ],
+            "type" => [
+              "type" => "string",
+              "default" => $expand
+            ],
+            "attributes" => [
+              "type" => "object",
+              "properties" => makeProperties($expandApiClass->getAliasedFeatures())
+            ]
+          ]
+        ]
+      );
+  };
+  return $properties;
+}
+
+function makeProperties($features, $skipPK=false): array {
   $propertyVal = [];
   foreach ($features as $feature) {
+    if ($skipPK && $feature['pk']) {
+      continue;
+    }
     $ret = typeLookup($feature);
     $propertyVal[$feature['alias']]["type"] = $ret["type"];
     if ($ret["type_format"] !== null) {
@@ -58,9 +187,80 @@ function makeProperties($features): array {
     if ($ret["type_enum"] !== null) {
       $propertyVal[$feature['alias']]["enum"] = $ret["type_enum"];
     }
+    if ($ret["subtype"] !== null) {
+      $propertyVal[$feature['alias']]["items"]["type"] = $ret["subtype"];
+    }
   }
   return $propertyVal;
 };
+
+function buildPatchPost($properties, $name, $id=null): array {
+  $result = ["data" => [
+      "type" => "object",
+      "properties" => [
+        "type" => [
+          "type" => "string",
+          "default" => $name
+        ],
+        "attributes" => [
+          "type" => "object",
+          "properties" => $properties
+          ]
+      ]
+    ]  
+  ];
+
+  if ($id) {
+    $result["data"]["properties"]["id"] = [
+      "type" => "integer",
+    ];
+  }
+  return $result;
+}
+
+function makeDescription($isRelation, $method, $singleObject): string {
+  $description = "";
+  switch ($method) {
+    case "get":
+      if ($isRelation) {
+        if($singleObject) {
+          $description = "GET request for  for a to-one relationship link. Returns the resource record of the object that is part of the specified relation.";
+        } else {
+          $description = "GET request for a to-many relationship link. Returns a list of resource records of objects that are part of the specified relation.";
+        }
+      } else {
+        if ($singleObject) {
+          $description = "GET request to retrieve a single object.";
+        } else {
+          $description = "GET many request to retrieve multiple objects.";
+        }
+      }
+      break;
+    case "post":
+      if ($isRelation) {
+        if ($singleObject) {
+          "POST request to create a to-one relationship link.";
+        } else {
+          "POST request to create a to-many relationship link.";
+        }
+      } else {
+        $description = "POST request to create a new object. The request must contain the resource record as data with the attributes of the new object." 
+          . "To add relationships, a relationships object can be added with the resource records of the relations that are part of this object.";
+        }
+      break;
+    case "patch":
+      if ($isRelation) {
+        if ($singleObject) {
+          "PATCH request to update a to one relationship.";
+        } else {
+          "PATCH request to update a to-many relationship link.";
+        }
+      } else {
+        $description = "PATCH request to update attributes of a single object." ;
+        }        
+  }
+  return $description;
+}
 
 $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($app) {
   /* Allow CORS preflight requests */
@@ -80,17 +280,17 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           "type" => "string",
           "example" => "hashlist",
         ],
-        "startsAt" => [
+        "page[after]" => [
           "type" => "integer",
           "example" => 0
         ],
-        "maxResults" => [
+        "page[before]" => [
+          "type" => "integer",
+          "example" => 0
+        ],
+        "page[size]" => [
           "type" => "integer",
           "example" => 100
-        ],
-        "total" => [
-          "type" => "integer",
-          "example" => 200
         ]
       ]
     ];
@@ -178,44 +378,85 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       /* Quick to find out if single parameter object is used */
       $singleObject = ((strstr($path, '/{id:')) !== false);
       $name = substr($class->getDBAClass(), 4);
+      $uri = $class->getBaseUri();
 
+      $isRelation = (strstr($path , "{relation:")) !== false;
+
+      $expandables = implode(",", $class->getExpandables());
       /**
        * Create component objects
        */
       if (array_key_exists($name, $components) == false) {
-        $properties_get = [
-          "_id" => [
-            "type" => "integer",
-          ],
-          "_self" => [ 
-            "type" => "string",
-          ],
-          "_expandables" => [ 
-            "type" => "string",
-            "default" => $class->getExpandables(),
+        $properties_return_post_patch = [
+          "data" => [
+            "type" => "object",
+            "properties" => [
+              "id" => [
+                "type" => "integer",
+              ],
+              "type" => [ 
+                "type" => "string",
+                "default" => $name
+              ],
+              "attributes" => [
+                "type" => "object",
+                "properties" => makeProperties($class->getFeaturesWithoutFormfields(), true)
+              ],
+            ],
           ]
-          ];
+        ];
 
-        $properties_create = makeProperties($class->getCreateValidFeatures());
-        $properties_get = array_merge($properties_get, makeProperties($class->getAliasedFeatures()));
-        $properties_patch = makeProperties($class->getPatchValidFeatures());
+        $relationships = ["relationships" =>[
+          "type" => "object",
+          "properties" => makeRelationships($class, $uri)
+        ]
+        ];
+        $included = ["included" => [ 
+          "type" => "array",
+          "items" => [
+            "type" => "object",
+            "properties" => makeExpandables($class, $app->getContainer())
+          ],
+          ]
+        ];
+
+        $properties_get_single = array_merge($properties_return_post_patch, $relationships, $included);
+
+        $json_api_header = makeJsonApiHeader();
+        $links = makeLinks($uri);
+        $properties_return_post_patch = array_merge($json_api_header, $properties_return_post_patch);
+        $properties_create = buildPatchPost(makeProperties($class->getAllPostParameters($class->getCreateValidFeatures(), true)), $name);
+        $properties_get = array_merge($json_api_header, $links, $properties_get_single, $included);
+        $properties_patch = buildPatchPost(makeProperties($class->getPatchValidFeatures(), true), $name);
 
         $components[$name . "Create"] =
-        [
-          "type" => "object",
-          "properties" => $properties_create,
-        ];
+          [
+            "type" => "object",
+            "properties" => $properties_create,
+          ];
 
         $components[$name . "Patch"] =
-        [
-          "type" => "object",
-          "properties" => $properties_patch,
-        ];
+          [
+            "type" => "object",
+            "properties" => $properties_patch,
+          ];
         
         $components[$name . "Response"] =
           [
             "type" => "object",
             "properties" => $properties_get,
+          ];
+
+        $components[$name . "SingleResponse"] =
+          [
+            "type" => "object",
+            "properties" => $properties_get_single
+          ];
+
+        $components[$name . "PostPatchResponse"] =
+          [
+            "type" => "object",
+            "properties" => $properties_return_post_patch
           ];
 
         $components[$name . "ListResponse"] =
@@ -283,6 +524,8 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         ]
       ]; 
 
+      $paths[$path][$method]["description"] = makeDescription($isRelation, $method, $singleObject);
+
       if ($singleObject) {
         /* Single objects could not exists */
         $paths[$path][$method]["responses"]["404"] =
@@ -323,12 +566,12 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           // ]];
          
         } elseif ($method == 'patch') {
-          $paths[$path][$method]["responses"]["201"] = [
+          $paths[$path][$method]["responses"]["200"] = [
             "description" => "successful operation",
             "content" => [
               "application/json" => [
                 "schema" => [
-                  '$ref' => "#/components/schemas/" . $name . "Response"
+                  '$ref' => "#/components/schemas/" . $name . "PostPatchResponse"
                 ]
               ]
             ]
@@ -347,6 +590,17 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         } elseif ($method == 'delete') {
           $paths[$path][$method]["responses"]["204"] = [
             "description" => "successfully deleted",
+          ];
+
+                    /* Empty JSON object required */
+                    $paths[$path][$method]["requestBody"] = [
+                      "required" => true,
+                      "content" => [
+                        "application/json" => [],     
+                    ]];
+        } elseif ($method == 'post') {
+          $paths[$path][$method]["responses"]["204"] = [
+            "description" => "successfully created",
           ];
 
                     /* Empty JSON object required */
@@ -392,7 +646,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             "content" => [
               "application/json" => [
                 "schema" => [
-                  '$ref' => "#/components/schemas/" . $name . "Response"
+                  '$ref' => "#/components/schemas/" . $name . "PostPatchResponse"
                 ]
               ]
             ]
@@ -412,9 +666,8 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           throw new HttpErrorException("Method '$method' not implemented");
         }
       }
-      
 
-      if ($singleObject) {
+      if ($singleObject && $method == 'get') {
         $paths[$path][$method]["responses"]["200"] = [
           "description" => "successful operation",
           "content" => [
@@ -440,52 +693,65 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         if ($method == 'get') {
           array_push($parameters, 
           [
-            "name" => "expand",
+            "name" => "include",
             "in" => "query",
             "schema" => [
               "type" => "string"
             ],
-            "description" => "Items to expand"
+            "description" => "Items to include. Comma seperated"
           ]);
         };
       } else {
         if ($method == 'get') {
           $parameters = [
             [
-              "name" => "startsAt",
+              "name" => "page[after]",
               "in" => "query",
               "schema" => [
                 "type" => "integer",
                 "format" => "int32"
               ],
               "example" => 0,
-              "description" => "The starting index of the values"
+              "description" => "Pointer to paginate to retrieve the data after the value provided"
             ],
             [
-              "name" => "maxResults",
+              "name" => "page[before]",
+              "in" => "query",
+              "schema" => [
+                "type" => "integer",
+                "format" => "int32"
+              ],
+              "example" => 0,
+              "description" => "Pointer to paginate to retrieve the data before the value provided"
+            ],
+            [
+              "name" => "page[size]",
               "in" => "query",
               "schema" => [
                 "type" => "integer",
                 "format" => "int32"
               ],
               "example" => 100,
-              "description" => "The maximum number of issues to return per page."
+              "description" => "Amout of data to retrieve inside a single page"
             ],
             [
               "name" => "filter",
               "in" => "query",
+              "style" => "deepobject",
+              "explode" => true,
               "schema" => [
-                "type" => "string"
+                "type" => "object",
               ],
-              "description" => "Filters results using a query."
+              "description" => "Filters results using a query",
+              "example" => '"filter[hashlistId__gt]": 200' 
             ],
             [
-              "name" => "expand",
+              "name" => "include",
               "in" => "query",
               "schema" => [
                 "type" => "string"
               ],
-              "description" => "Items to expand"
+              "description" => "Items to include, comma seperated. Possible options: " . $expandables
             ]
           ];
         } else {
@@ -494,7 +760,6 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       }
       $paths[$path][$method]["parameters"] = $parameters;
     };
-
 
     /** 
      * Build static entries

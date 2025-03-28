@@ -5,6 +5,9 @@ use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
 use DBA\Agent;
 use DBA\AgentStat;
+use DBA\Assignment;
+use DBA\Chunk;
+use DBA\Task;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -22,39 +25,53 @@ class AgentAPI extends AbstractModelAPI {
       return Agent::class;
     }
 
-    public function getExpandables(): array {
-      return ['accessGroups', 'agentstats'];
+    public static function getToManyRelationships(): array {
+      return [
+        'accessGroups' => [
+          'key' => Agent::AGENT_ID,
+          
+          'junctionTableType' => AccessGroupAgent::class,
+          'junctionTableFilterField' => AccessGroupAgent::AGENT_ID,
+          'junctionTableJoinField' => AccessGroupAgent::ACCESS_GROUP_ID,
+
+          'relationType' => AccessGroup::class,
+          'relationKey' => AccessGroup::ACCESS_GROUP_ID,        
+        ],
+        'agentStats' => [
+          'key' => Agent::AGENT_ID,
+          
+          'relationType' => AgentStat::class,
+          'relationKey' => AgentStat::AGENT_ID,        
+        ],
+        'chunks' => [
+          'key' => Agent::AGENT_ID,
+
+          'relationType' => Chunk::class,
+          'relationKey' => Chunk::AGENT_ID,        
+        ],
+        'tasks' => [
+          'key' => Agent::AGENT_ID,
+          
+          'junctionTableType' => Assignment::class,
+          'junctionTableFilterField' => Assignment::AGENT_ID,
+          'junctionTableJoinField' => Assignment::TASK_ID,
+
+          'relationType' => Task::class,
+          'relationKey' => Task::TASK_ID,        
+        ],
+        'assignments' => [
+          'key' => Agent::AGENT_ID,
+
+          'relationType' => Assignment::class,
+          'relationKey' => Assignment::AGENT_ID,        
+        ],
+        
+
+      ];
     }
-
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof Agent); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'accessGroups':
-          return $this->getManyToOneRelationViaIntermediate(
-            $objects,
-            Agent::AGENT_ID,
-            Factory::getAccessGroupAgentFactory(),
-            AccessGroupAgent::AGENT_ID,
-            Factory::getAccessGroupFactory(),
-            AccessGroup::ACCESS_GROUP_ID
-          );
-        case 'agentstats':
-          return $this->getManyToOneRelation(
-            $objects,
-            Agent::AGENT_ID,
-            Factory::getAgentStatFactory(),
-            AgentStat::AGENT_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
-    }  
    
     protected function createObject(array $data): int {
-      assert(False, "Chunks cannot be created via API");
+      assert(False, "Agents cannot be created via API");
       return -1;
     }
 

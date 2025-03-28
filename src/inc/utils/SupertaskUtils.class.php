@@ -28,7 +28,6 @@ class SupertaskUtils {
    * @throws HTException
    */
   public static function bulkSupertask($name, $command, $isCpuOnly, $maxAgents, $isSmall, $crackerBinaryTypeId, $benchtype, $basefiles, $iterfiles, $user) {
-    $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
     $benchtype = ($benchtype == 'speed') ? 1 : 0;
@@ -146,7 +145,7 @@ class SupertaskUtils {
    */
   public static function renameSupertask($supertaskId, $newName) {
     $supertask = SupertaskUtils::getSupertask($supertaskId);
-    Factory::getSupertaskFactory()->set($supertask, Supertask::SUPERTASK_NAME, htmlentities($newName, ENT_QUOTES, "UTF-8"));
+    Factory::getSupertaskFactory()->set($supertask, Supertask::SUPERTASK_NAME, $newName);
   }
   
   /**
@@ -327,7 +326,6 @@ class SupertaskUtils {
     if (!is_array($pretasks) || sizeof($pretasks) == 0) {
       throw new HTException("Cannot create empty supertask!");
     }
-    $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $tasks = [];
     foreach ($pretasks as $pretaskId) {
       $pretask = Factory::getPretaskFactory()->get($pretaskId);
@@ -360,7 +358,6 @@ class SupertaskUtils {
    * @throws HTException
    */
   public static function importSupertask($name, $isCpuOnly, $maxAgents, $isSmall, $useOptimized, $crackerBinaryTypeId, $masks, $benchtype) {
-    $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
     $useOptimized = ($useOptimized) ? true : false;

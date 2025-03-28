@@ -25,6 +25,7 @@ use DBA\AccessGroupUser;
 use DBA\TaskDebugOutput;
 use DBA\Factory;
 use DBA\Speed;
+use DBA\Aggregation;
 
 class TaskUtils {
   /**
@@ -99,7 +100,6 @@ class TaskUtils {
    * @throws HTException
    */
   public static function editNotes($taskId, $notes, $user) {
-    $notes = htmlentities($notes, ENT_QUOTES, "UTF-8");
     $task = TaskUtils::getTask($taskId, $user);
     Factory::getTaskFactory()->set($task, Task::NOTES, $notes);
   }
@@ -186,7 +186,7 @@ class TaskUtils {
    */
   public static function renameSupertask($taskWrapperId, $newName, $user) {
     $taskWrapper = TaskUtils::getTaskWrapper($taskWrapperId, $user);
-    Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::TASK_WRAPPER_NAME, htmlentities($newName, ENT_QUOTES, "UTF-8"));
+    Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::TASK_WRAPPER_NAME, $newName);
   }
   
   /**
@@ -635,7 +635,7 @@ class TaskUtils {
   public static function rename($taskId, $name, $user) {
     // change task name
     $task = TaskUtils::getTask($taskId, $user);
-    Factory::getTaskFactory()->set($task, Task::TASK_NAME, htmlentities($name, ENT_QUOTES, "UTF-8"));
+    Factory::getTaskFactory()->set($task, Task::TASK_NAME, $name);
   }
   
   /**
@@ -745,7 +745,6 @@ class TaskUtils {
       throw new HTException("You cannot create a task for an archived hashlist!");
     }
     
-    $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     if (strlen($name) == 0) {
       $name = "Task_" . $hashlist->getId() . "_" . date("Ymd_Hi");
     }
@@ -763,8 +762,8 @@ class TaskUtils {
     else if (strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       throw new HTException("Attack command does not contain hashlist alias!");
     }
-    else if (strlen($attackCmd) > 256) {
-      throw new HTException("Attack command is too long (max 256 characters)!");
+    else if (strlen($attackCmd) > 65535) {
+      throw new HTException("Attack command is too long (max 65535 characters)!");
     }
     else if ($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS) {
       throw new HTException("Invalid static chunk setting!");
@@ -1116,6 +1115,7 @@ class TaskUtils {
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     Factory::getChunkFactory()->massDeletion([Factory::FILTER => $qF]);
     Factory::getTaskFactory()->delete($task);
+    LockUtils::deleteLockFile($task->getId());
   }
   
   /**
@@ -1154,18 +1154,20 @@ class TaskUtils {
     else if ($task->getUsePreprocessor() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE) {
       return $task;
     }
+
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $qF2 = new QueryFilter(Chunk::PROGRESS, 10000, ">=");
+    $sum = Factory::getChunkFactory()->sumFilter([Factory::FILTER => [$qF1, $qF2]], Chunk::LENGTH);
+
+    $dispatched = $task->getSkipKeyspace() + $sum;
+    $completed = $task->getSkipKeyspace() + $sum;
     
     // check chunks
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-    $dispatched = $task->getSkipKeyspace();
-    $completed = $task->getSkipKeyspace();
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $qF2 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
     foreach ($chunks as $chunk) {
-      if ($chunk->getProgress() >= 10000) {
-        $dispatched += $chunk->getLength();
-        $completed += $chunk->getLength();
-      }
-      else if ($chunk->getAgentId() == null) {
+      if ($chunk->getAgentId() == null) {
         return $task; // at least one chunk is not assigned
       }
       else if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) > SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT)) {
@@ -1188,6 +1190,7 @@ class TaskUtils {
       if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
         Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::PRIORITY, 0);
       }
+      LockUtils::deleteLockFile($task->getId());
       return null;
     }
     else if ($dispatched >= $task->getKeyspace()) {
@@ -1390,5 +1393,15 @@ class TaskUtils {
     $numAssignments = self::numberOfOtherAssignedAgents($task, $agent);
     return ($task->getIsSmall() == 1 && $numAssignments > 0) || // at least one agent is already assigned here
       ($task->getMaxAgents() > 0 && $numAssignments >= $task->getMaxAgents()); // at least maxAgents agents are already assigned
+  }
+
+  public static function getTaskProgress($task) {
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    
+    $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
+    $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2]);
+    $progress = $results[$agg1->getName()] - $results[$agg2->getName()];
+    return $progress;
   }
 }

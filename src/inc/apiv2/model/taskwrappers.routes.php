@@ -2,6 +2,8 @@
 
 use DBA\AccessGroup;
 use DBA\Factory;
+use DBA\Hashlist;
+use DBA\HashType;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
 
@@ -11,7 +13,7 @@ use DBA\TaskWrapper;
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
 
-class TaskWrappersAPI extends AbstractModelAPI {
+class TaskWrapperAPI extends AbstractModelAPI {
     public static function getBaseUri(): string {
       return "/api/v2/ui/taskwrappers";
     }
@@ -24,34 +26,49 @@ class TaskWrappersAPI extends AbstractModelAPI {
       return TaskWrapper::class;
     }    
 
-    public function getExpandables(): array {
-      return ['accessGroup', 'tasks'];
+    public static function getToOneRelationships(): array {
+      return [
+        'accessGroup' => [
+          'key' => TaskWrapper::ACCESS_GROUP_ID, 
+
+          'relationType' => AccessGroup::class,
+          'relationKey' => AccessGroup::ACCESS_GROUP_ID,
+        ],
+        'hashlist' => [
+          'key' => TaskWrapper::HASHLIST_ID, 
+
+          'relationType' => Hashlist::class,
+          'relationKey' => Hashlist::HASHLIST_ID,
+        ],
+        'hashType' => [
+          'key' => TaskWrapper::TASK_WRAPPER_ID,
+          'parentKey' => TaskWrapper::TASK_WRAPPER_ID,
+          
+          'intermediateType' => Hashlist::class,
+          'joinField' => TaskWrapper::HASHLIST_ID,
+          'joinFieldRelation' => Hashlist::HASHLIST_ID,
+
+          'junctionTableType' => Hashlist::class,
+          'junctionTableFilterField' => Hashlist::HASH_TYPE_ID,
+          'junctionTableJoinField' => Hashlist::HASHLIST_ID,
+
+          'relationType' => HashType::class,
+          'relationKey' => HashType::HASH_TYPE_ID,        
+        ],
+      ];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof TaskWrapper); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'accessGroup':
-          return $this->getForeignKeyRelation(
-            $objects,
-            TaskWrapper::ACCESS_GROUP_ID,
-            Factory::getAccessGroupFactory(),
-            AccessGroup::ACCESS_GROUP_ID
-          );
-        case 'tasks':
-          return $this->getManyToOneRelation(
-            $objects,
-            TaskWrapper::TASK_WRAPPER_ID,
-            Factory::getTaskFactory(),
-            Task::TASK_WRAPPER_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+    public static function getToManyRelationships(): array {
+      return [
+        'tasks' => [
+          'key' => TaskWrapper::TASK_WRAPPER_ID,
+          
+          'relationType' => Task::class,
+          'relationKey' => Task::TASK_WRAPPER_ID,        
+        ],
+      ];
     }
+
 
     protected function createObject(array $data): int {
       assert(False, "TaskWrappers cannot be created via API");
@@ -104,4 +121,4 @@ class TaskWrappersAPI extends AbstractModelAPI {
     }
 }
 
-TaskWrappersAPI::register($app);
+TaskWrapperAPI::register($app);

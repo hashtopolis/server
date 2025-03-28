@@ -1,9 +1,48 @@
-# v0.14.1 -> x.x.x
+# v0.14.3 -> v0.14.4
+
+
+## Enhancements
+
+- Use utf8mb4 as default encoding in order to support the full unicode range
+- Updated OpenAPI docs to latest API updates
+
+## Bugfixes
+
+- Fixed a bug where creating a new preprocessor would copy the configured limit command over the configured skip command
+
+
+# v0.14.2 -> v0.14.3
+
+## Tech Preview New API
+Release 0.14.3 comes with an update to the tech preview of the new API. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
+
+Changes/Bugfixes on new UI:
+- After updating a task, the tasks table is also updated
+- Files can now be deleted via the context menu of the files-table
+- Step sequence corrected according to agent registration
+- Standardization of the headline styles and customization of the DarkTheme
+- Selected preprocessor value is now processed correctly when creating new tasks
+- Checkbox values on the config page are now displayed correctly
+- New Help/Contact Menu
+- The hashlists are now displayed correctly according to the tasks on the tasks page
+- Encoding bug fixed, Unicode characters were displayed incorrectly
+
+## Bugfixes
+
+- Fixed a bug in the user API where a hash in binary format did not return the plain text when cracked
+- Increase the limit of the attack command length
+
+
+# v0.14.1 -> v0.14.2
+
+## Tech Preview New API
+Release 0.14.2 comes with an update to the tech preview of APIv2. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
 
 ## Bugfixes
 - Setting maxAgent after creating doesn't update the maxAgents of the taskwrapper. This only causes issues when the maxAgents was set at creation time. #1013
 
-# v0.14.0 -> 0.14.1
+
+# v0.14.0 -> v0.14.1
 
 ## Tech Preview New API
 Release 0.14.1 comes with an update to the tech preview of APIv2. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
