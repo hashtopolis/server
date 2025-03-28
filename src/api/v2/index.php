@@ -134,7 +134,7 @@ $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface
     include(dirname(__FILE__) . '/../../inc/confv2.php');
     return new JwtAuthentication([
         "path" => "/",
-        "ignore" => ["/api/v2/auth/token", "/api/v2/openapi.json"],
+        "ignore" => ["/api/v2/auth/token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"],
         "secret" => $PEPPER[0],
         "attribute" => false,
         "secure" => false,
@@ -279,6 +279,7 @@ require __DIR__ . "/../../inc/apiv2/helper/importFile.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/purgeTask.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/recountFileLines.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/resetChunk.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/resetUserPassword.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/setUserPassword.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/unassignAgent.routes.php";
 

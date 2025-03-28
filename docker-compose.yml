@@ -6,6 +6,7 @@ services:
     restart: always
     volumes:
       - hashtopolis:/usr/local/share/hashtopolis:Z
+      # - ./ssmtp.conf:/etc/ssmtp/ssmtp.conf
     environment:
       HASHTOPOLIS_DB_USER: $MYSQL_USER
       HASHTOPOLIS_DB_PASS: $MYSQL_PASSWORD
