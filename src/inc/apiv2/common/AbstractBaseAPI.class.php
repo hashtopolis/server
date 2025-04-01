@@ -932,7 +932,7 @@ abstract class AbstractBaseAPI
       $valueList = explode(",", $value);
  
       // TODO Merge/Combine with validate parameters 
-      foreach($valueList as $value) {
+      foreach($valueList as &$value) {
         switch($features[$cast_key]['type']) {
           case 'bool':
             $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
