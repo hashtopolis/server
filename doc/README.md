@@ -1,6 +1,6 @@
 # Documentation Development
 
-This page describes howto use the documentation locally or how to contribute to it.
+This page describes how to use the documentation locally or how to contribute to it.
 
 ## Setup
 
