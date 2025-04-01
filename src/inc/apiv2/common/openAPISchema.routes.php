@@ -389,20 +389,23 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       if (array_key_exists($name, $components) == false) {
         $properties_return_post_patch = [
           "data" => [
-            "type" => "object",
-            "properties" => [
-              "id" => [
-                "type" => "integer",
-              ],
-              "type" => [ 
-                "type" => "string",
-                "default" => $name
-              ],
-              "attributes" => [
-                "type" => "object",
-                "properties" => makeProperties($class->getFeaturesWithoutFormfields(), true)
-              ],
-            ],
+            "type" => "array",
+            "items" => [
+              "type" => "object",
+              "properties" => [
+                "id" => [
+                  "type" => "integer",
+                ],
+                "type" => [ 
+                  "type" => "string",
+                  "default" => $name
+                ],
+                "attributes" => [
+                  "type" => "object",
+                  "properties" => makeProperties($class->getFeaturesWithoutFormfields(), true)
+                ],
+              ]
+            ]
           ]
         ];
 
