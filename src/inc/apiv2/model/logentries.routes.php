@@ -18,27 +18,8 @@ class LogEntryAPI extends AbstractModelAPI {
     }
 
     protected function createObject(array $data): int {
-      Util::createLogEntry(
-        $data[LogEntry::ISSUER],
-        $data[LogEntry::ISSUER_ID],
-        $data[LogEntry::LEVEL],
-        $data[LogEntry::MESSAGE]
-      );
-
-      /* On succesfully insert, return ID */
-      $qFs = [
-        new QueryFilter(LogEntry::ISSUER, $data[LogEntry::ISSUER], '='),
-        new QueryFilter(LogEntry::ISSUER_ID, $data[LogEntry::ISSUER_ID], '='),
-        new QueryFilter(LogEntry::LEVEL, $data[LogEntry::LEVEL], '='),
-        new QueryFilter(LogEntry::MESSAGE, $data[LogEntry::MESSAGE], '=')
-      ];
-
-      /* Hackish way to retreive object since Id is not returned on creation */
-      $oF = new OrderFilter(LogEntry::TIME, "DESC");
-      $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-      assert(count($objects) == 1);
-
-      return $objects[0]->getId();
+      assert(False, "Logentries cannot be created via API");
+      return -1;
     }
 
     protected function deleteObject(object $object): void {
