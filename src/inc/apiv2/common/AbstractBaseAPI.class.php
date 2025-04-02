@@ -918,7 +918,7 @@ abstract class AbstractBaseAPI
     $factory = $apiClass->getFactory();
     foreach ($filters as $filter => $value) {
 
-      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith|__in)$/', $filter, $matches) == 0) {
+      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith|__in|__nin)$/', $filter, $matches) == 0) {
         throw new HTException("Filter parameter '" . $filter . "' is not valid");
       }
 
@@ -952,71 +952,64 @@ abstract class AbstractBaseAPI
       $remappedKey = $features[$cast_key]['dbname'];
 
       $amount_values = count($valueList);
-      $val = ($amount_values === 1) ? $valueList[0] : $valueList;
-      //filters on single values
-      if ($amount_values === 1) {
-        switch($matches['operator']) {
-          case '':
-          case '__eq':
-            $operator = '=';
-            break;
-          case '__ne':
-            $operator = '!=';
-            break;
-          case '__lt':
-            $operator = '<';
-            break;
-          case '__lte':
-            $operator = '<=';
-            break;
-          case '__gt':
-            $operator = '>';
-            break;
-          case '__gte':
-            $operator = '>=';
-            break;
-          case '__contains':
-            array_push($qFs, new LikeFilter($remappedKey, "%" . $val . "%", $factory));
-            break;
-          case '__startswith':
-            array_push($qFs, new LikeFilter($remappedKey, $val . "%", $factory));
-            break;
-          case '__endswith':
-            array_push($qFs, new LikeFilter($remappedKey, "%" . $val, $factory));
-            break;
-          case '__icontains':
-            array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val . "%", $factory));
-            break;
-          case '__istartswith':
-            array_push($qFs, new LikeFilterInsensitive($remappedKey, $val . "%", $factory));
-            break;
-          case '__iendswith':
-            array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val, $factory));
-            break;
-          default:
-            assert(False, "Operator '" . $matches['operator'] . "' not implemented for single values");
-        }
-
-        if ($operator) {
-          if (array_key_exists($val, $features)) {
-            array_push($qFs, new ComparisonFilter($remappedKey, $val, $operator, $factory));
-          } else {
-            array_push($qFs, new QueryFilter($remappedKey, $val, $operator, $factory));
-          }
-        }
-
-      //filters on lists
-      } else {
-          switch($matches['operator']) {
-            case '':
-            case '__in':
-              array_push($qFs, new ContainFilter($remappedKey, $val, $factory));
-              break;
-            default:
-              assert(False, "Operator '" . $matches['operator'] . "' not implemented for list values");
-        }
+      $single_val = $valueList[0];
+      $operator = $matches['operator'];
+      $query_operator = "";
+      switch(true) {
+        case (($operator == '__eq' | $operator == '') && $amount_values == 1):
+          $query_operator = '=';
+          break;
+        case ($operator == '__ne' && $amount_values == 1):
+          $query_operator = '!=';
+          break;
+        case ($operator == '__lt' && $amount_values == 1):
+          $query_operator = '<';
+          break;
+        case ($operator == '__lte' && $amount_values == 1):
+          $query_operator = '<=';
+          break;
+        case ($operator == '__gt' && $amount_values == 1):
+          $query_operator = '>';
+          break;
+        case ($operator == '__gte' && $amount_values == 1):
+          $query_operator = '>=';
+          break;
+        case ($operator == '__contains' && $amount_values == 1):
+          array_push($qFs, new LikeFilter($remappedKey, "%" . $single_val . "%", $factory));
+          break;
+        case ($operator == '__startswith' && $amount_values == 1):
+          array_push($qFs, new LikeFilter($remappedKey, $single_val . "%", $factory));
+          break;
+        case ($operator == '__endswith' && $amount_values == 1):
+          array_push($qFs, new LikeFilter($remappedKey, "%" . $single_val, $factory));
+          break;
+        case ($operator == '__icontains' && $amount_values == 1):
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $single_val . "%", $factory));
+          break;
+        case ($operator == '__istartswith' && $amount_values == 1):
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, $single_val . "%", $factory));
+          break;
+        case ($operator == '__iendswith' && $amount_values == 1):
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $single_val, $factory));
+          break;
+        //Filters bellow operate on lists
+        case ($operator == '__in'):
+          array_push($qFs, new ContainFilter($remappedKey, $valueList, $factory));
+          break;
+        case ($operator == '__nin'):
+          array_push($qFs, new ContainFilter($remappedKey, $valueList, $factory, true));
+          break;
+        default:
+          assert(False, "Operator '" . $operator . "' not implemented");
       }
 
+      if ($query_operator) {
+        if (array_key_exists($single_val, $features)) {
+          array_push($qFs, new ComparisonFilter($remappedKey, $single_val, $query_operator, $factory));
+        } else {
+          array_push($qFs, new QueryFilter($remappedKey, $single_val, $query_operator, $factory));
+        }
+      }
     }
     return $qFs;
   }
