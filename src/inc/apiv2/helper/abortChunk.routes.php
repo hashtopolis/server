@@ -4,6 +4,9 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
+/**
+ * Endpoint to stop a running chunk
+ */
 class ChunkAbortHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
     return "/api/v2/helper/abortChunk";

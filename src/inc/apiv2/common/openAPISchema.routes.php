@@ -50,6 +50,12 @@ function typeLookup($feature): array {
   return $result;
 };
 
+function parsePhpDoc($doc) {
+  $cleanedDoc = preg_replace('/^\s*\/?\*\*?|\s*\*\/?$/m', '', $doc);
+  $cleanedDoc = preg_replace('/^\s*\* ?/m', '', $cleanedDoc);
+  return $cleanedDoc;
+}
+
 
 // "jsonapi": {
 //   "version": "1.1",
@@ -357,6 +363,9 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
 
       /* Assume only one method per route call */
       assert(sizeof($route->getMethods()) == 1);
+      /* Path relative to basePath */
+      $path = $route->getPattern();
+      $method = strtolower($route->getMethods()[0]);
 
       if (is_string($reflectionCallable) == false) {
         /* OPTIONS (CORS) have an function callable, ignore for now */
@@ -366,15 +375,15 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       /* Retrieve parameters */
       $apiClassName = explode(':', $reflectionCallable)[0];
       $class = new $apiClassName($app->getContainer());
+      $reflectionClass = new ReflectionClass($class);
 
       /* TODO: No support for helper functions yet */
       if (!($class instanceof AbstractModelAPI)){
+        $paths[$path][$method]["description"] = parsePhpDoc($reflectionClass->getDocComment());
+        $parameters = $class->getFormFields();
         continue;
       };
 
-      /* Path relative to basePath */
-      $path = $route->getPattern();
-      $method = strtolower($route->getMethods()[0]);
       /* Quick to find out if single parameter object is used */
       $singleObject = ((strstr($path, '/{id:')) !== false);
       $name = substr($class->getDBAClass(), 4);
