@@ -1,6 +1,6 @@
 # Tasks
 
-To create a new task, you have to navigate to *Tasks > New Task*. You will get the following window in which you can create a new task. Some of the fields are mandotory, some others are filled with default values. 
+To create a new task, you have to navigate to *Tasks > New Task*. You will get the following window in which you can create a new task. Some of the fields are mandatory, some others are filled with default values. 
 
 1. **Name**: provide a name for the task you want to create. This is how the task will be referenced with during the monitoring phase (see **link**) therefore it should be relatively explicit to facilitate its monitoring.
 
@@ -11,7 +11,7 @@ In case you want to perform a dictionary attack with rules, you have to select t
 
 4. **Priority**: Assign a priority number to the task. The expected value has to be an integer. Agents will be assigned to tasks in decreasing order of priority. A task with a priority 0 will not be processed even if agents are available. Default value is 0.
 
-5. **Maximum number of agents**: Specify the maximum agents that can be assigned to the task. If this amount is reached, future available agents will be assigned to the next task available with a lower priority even if the all the chunks of the task have been distributed. The default value of 0 means that there is no maximum and therefore, all available agents are assigned to this tasks until all the chunks have been distributed. This functionality is helpful to only use a portion of the cluster for a specific task, and therefore allowing to split the workers on different tasks.
+5. **Maximum number of agents**: Specify the maximum agents that can be assigned to the task. If this amount is reached, future available agents will be assigned to the next task available with a lower priority even if not all the chunks of the task have been distributed. The default value of 0 means that there is no maximum and therefore, all available agents are assigned to this tasks until all the chunks have been distributed. This functionality is helpful to only use a portion of the cluster for a specific task, and therefore allowing to split the workers on different tasks.
 
 6. **Task Notes** - *optional*: This field allows the user to indicate some details about the tasks, the command line or any other details the user can find relevant. 
 

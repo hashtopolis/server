@@ -10,7 +10,7 @@ Ordered by ID by default. It reports the hashlists created. A tick is accolated 
 ### Hashlists Details
 If you click on a Hashlist, either in the hashlists view, in the Tasks overview or inside a task, it brings you to the corresponding Hashlist details page. 
 
-Appart from the parameters specific to this hashlist (i.e. ID, Access Group, Hashlist name, ...), the page displays some information about the total number of hashes, the number of cracked ones and the number of remaining ones to be recovered. Clicking on one of these three values will open a new window displaying information about the Hashes of the Hashlist as detailed below.
+Apart from the parameters specific to this hashlist (i.e. ID, Access Group, Hashlist name, ...), the page displays some information about the total number of hashes, the number of cracked ones and the number of remaining ones to be recovered. Clicking on one of these three values will open a new window displaying information about the Hashes of the Hashlist as detailed below.
 
 #### Hashes of Hashlist X 
 This page list all the hashes from the related hashlist. Filters can be applied to show either the cracked, the uncracked or all the hashes. According to the display filter selected, the Hashes only, the plaintext only or both are displayed. Additionally, the cracking position (**to be defined**) can be displayed next to the cracked ones. Only 1000 hashes can be displayed at a time within a page but the user can navigate through the pages. The number of hashes per page can be configured in *Config > UI* settings.
@@ -111,7 +111,7 @@ Several options were not covered in the basic workflow related to the creation o
 - Enforce Piping (to apply rules before reject): **will be removed soon** and is therefore not explained here.
 
 ### Preconfigured tasks (including from existing task)
-A preconfigured tasks is a basic template for a task that is not assigned yet to a hashlist. This is particularly useful to predefine task(s) that are often use such as generic mask attack or commonly used dictionnary attack. A preconfigured task can later be assigned to a hashlist avoiding the user to redefine the same task every time. This section gives more details about this topic.
+A preconfigured tasks is a basic template for a task that is not assigned yet to a hashlist. This is particularly useful to predefine task(s) that are often use such as generic mask attack or commonly used dictionary attack. A preconfigured task can later be assigned to a hashlist avoiding the user to redefine the same task every time. This section gives more details about this topic.
 
 When the user goes to the menu *New Preconfigured TasksThe properties of a pre-configured tasks are a subset of those of a regular task and are therefore not re-defined here. THe reader can refer to the dedicated section for reference (**put a ref here**).  
 
@@ -149,7 +149,7 @@ Once a new supertask is created, or if you open the *SuperTask* menu, the overvi
   - **Name**: Name of the pre-configured task. Clicking on it opens the corresponding pre-configured task page. 
   - **SubTask Priority**: define the order in which the pre-configured tasks will be executed when an agent is assigned to the supertask. Similarly to tasks, priority is given to the highest number.
   - **SubTask Max Agents**: similarly to tasks, specifies the maximum agents that can be assigned to the task.
-  - **Remove**: remove the pre-configured task from the supertask. Note that the pre-configured task is only remove from the supertask but not deleted from the system except if the related pre-configured task was generated via the *Import Super Task* functionality (see below for more details).
+  - **Remove**: remove the pre-configured task from the supertask. Note that the pre-configured task is only removed from the supertask but not deleted from the system except if the related pre-configured task was generated via the *Import Super Task* functionality (see below for more details).
 
 #### SuperTask in the *ShowTasks* Menu
 
@@ -172,7 +172,7 @@ The Import Super Task menu offers functionalities to create SuperTasks and the r
 
 #### Masks
 
-This functionality allows the user to create a supertask from a mask file or a set of masks. It is a good alternative to replace the --increment option of hashcat that cannot be use in hashtopolis.
+This functionality allows the user to create a supertask from a mask file or a set of masks. It is a good alternative to replace the --increment option of hashcat that cannot be used in hashtopolis.
 
 - **Name**: Defines the name that will be given at the created SuperTask
 - **Are small tasks**: If this parameter is set to yes, a single agent can be assigned to the tasks that will be created when the resulting supertask is apply to a hashlist. This is relevant for small tasks or to assign the full keyspace in a single chunk to an agent. Note that this is **NOT** equivalent to define the *Maximum number of agents* to 1. Indeed, in this latter case, the task will still be divided in chunks according to the *chunk size* parameter. The parameter is set to No by default.
