@@ -1,9 +1,16 @@
+# v0.14.4 -> vx.x.x
+
+# Enhancements
+
+- Updated OpenAPI docs to latest API updates
+
+
 # v0.14.3 -> v0.14.4
 
 ## Enhancements
 
 - Use utf8mb4 as default encoding in order to support the full unicode range
-- Updated OpenAPI docs to latest API updates
+- Log hashes when they are skipped. This way the administrator can detect when Hashcat rebuilds the hashes incorrectly 
 
 ## Bugfixes
 

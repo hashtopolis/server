@@ -3,11 +3,13 @@ use DBA\Factory;
 
 use DBA\Agent;
 use DBA\Assignment;
+use DBA\Chunk;
 use DBA\CrackerBinary;
 use DBA\CrackerBinaryType;
 use DBA\File;
 use DBA\FileTask;
 use DBA\Hashlist;
+use DBA\QueryFilter;
 use DBA\Speed;
 use DBA\Task;
 use DBA\TaskWrapper;
@@ -126,9 +128,34 @@ class TaskAPI extends AbstractModelAPI {
       return $object->getId();
     }
 
+    //TODO make aggregate data queryable and not included by default
     static function aggregateData(object $object): array {
-      $aggregatedData["Dispatched"] = Util::showperc($object->getKeyspaceProgress(), $object->getKeyspace());
-      $aggregatedData["Searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $object->getKeyspace());
+      $keyspace = $object->getKeyspace();
+      $keyspaceProgress = $object->getKeyspaceProgress();
+
+      $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
+      $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
+
+      $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+      $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+      
+      $activeAgents = [];
+      foreach($chunks as $chunk) {
+        if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
+          $activeAgents[$chunk->getAgentId()] = true;
+        }
+      }
+
+      //status 1 is running, 2 is idle and 3 is completed
+      $status = 2;
+      if ($keyspaceProgress >= $keyspace && $keyspaceProgress > 0) {
+        $status = 3;
+      } elseif (count($activeAgents) > 0) {
+        $status = 1;
+      }
+      
+      $aggregatedData["activeAgents"] = array_keys($activeAgents);
+      $aggregatedData["status"] = $status;
 
       return $aggregatedData;
     }

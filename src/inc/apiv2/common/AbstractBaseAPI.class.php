@@ -40,7 +40,7 @@ use DBA\TaskWrapper;
 use DBA\User;
 
 use DBA\Factory;
-use DBA\OrderFilter;
+use DBA\ContainFilter;
 use DBA\LikeFilter;
 use DBA\LikeFilterInsensitive;
 use DBA\LogEntry;
@@ -918,7 +918,7 @@ abstract class AbstractBaseAPI
     $factory = $apiClass->getFactory();
     foreach ($filters as $filter => $value) {
 
-      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith)$/', $filter, $matches) == 0) {
+      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith|__in|__nin)$/', $filter, $matches) == 0) {
         throw new HTException("Filter parameter '" . $filter . "' is not valid");
       }
 
@@ -928,74 +928,86 @@ abstract class AbstractBaseAPI
       if (array_key_exists($cast_key, $features) == false) {
         throw new HTException("Filter parameter '" . $filter . "' is not valid (key not valid field)");
       };
+
+      $valueList = explode(",", $value);
  
       // TODO Merge/Combine with validate parameters 
-      switch($features[$cast_key]['type']) {
-        case 'bool':
-          $val = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-          if (is_null($val)) {
-            throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");
-          }
-          break;
-        case 'int':
-          $val = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-          if (is_null($val)) {
-            throw new HTException("Filter parameter '" . $filter . "' is not valid integer value");
-          }
-        default:
-          $val = $value;
-      }            
+      foreach($valueList as &$value) {
+        switch($features[$cast_key]['type']) {
+          case 'bool':
+            $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            if (is_null($value)) {
+              throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");
+            }
+            break;
+          case 'int':
+            $value = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+            if (is_null($value)) {
+              throw new HTException("Filter parameter '" . $filter . "' is not valid integer value");
+            }
+        }            
+      }
 
       // We need to remap any aliased key to the key as it appears in the database.
       $remappedKey = $features[$cast_key]['dbname'];
 
-      switch($matches['operator']) {
-        case '':
-        case '__eq':
-          $operator = '=';
+      $amount_values = count($valueList);
+      $single_val = $valueList[0];
+      $operator = $matches['operator'];
+      $query_operator = "";
+      switch(true) {
+        case (($operator == '__eq' | $operator == '') && $amount_values == 1):
+          $query_operator = '=';
           break;
-        case '__ne':
-          $operator = '!=';
+        case ($operator == '__ne' && $amount_values == 1):
+          $query_operator = '!=';
           break;
-        case '__lt':
-          $operator = '<';
+        case ($operator == '__lt' && $amount_values == 1):
+          $query_operator = '<';
           break;
-        case '__lte':
-          $operator = '<=';
+        case ($operator == '__lte' && $amount_values == 1):
+          $query_operator = '<=';
           break;
-        case '__gt':
-          $operator = '>';
+        case ($operator == '__gt' && $amount_values == 1):
+          $query_operator = '>';
           break;
-        case '__gte':
-          $operator = '>=';
+        case ($operator == '__gte' && $amount_values == 1):
+          $query_operator = '>=';
           break;
-        case '__contains':
-          array_push($qFs, new LikeFilter($remappedKey, "%" . $val . "%", $factory));
+        case ($operator == '__contains' && $amount_values == 1):
+          array_push($qFs, new LikeFilter($remappedKey, "%" . $single_val . "%", $factory));
           break;
-        case '__startswith':
-          array_push($qFs, new LikeFilter($remappedKey, $val . "%", $factory));
+        case ($operator == '__startswith' && $amount_values == 1):
+          array_push($qFs, new LikeFilter($remappedKey, $single_val . "%", $factory));
           break;
-        case '__endswith':
-          array_push($qFs, new LikeFilter($remappedKey, "%" . $val, $factory));
+        case ($operator == '__endswith' && $amount_values == 1):
+          array_push($qFs, new LikeFilter($remappedKey, "%" . $single_val, $factory));
           break;
-        case '__icontains':
-          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val . "%", $factory));
+        case ($operator == '__icontains' && $amount_values == 1):
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $single_val . "%", $factory));
           break;
-        case '__istartswith':
-          array_push($qFs, new LikeFilterInsensitive($remappedKey, $val . "%", $factory));
+        case ($operator == '__istartswith' && $amount_values == 1):
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, $single_val . "%", $factory));
           break;
-        case '__iendswith':
-          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val, $factory));
+        case ($operator == '__iendswith' && $amount_values == 1):
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $single_val, $factory));
+          break;
+        //Filters bellow operate on lists
+        case ($operator == '__in'):
+          array_push($qFs, new ContainFilter($remappedKey, $valueList, $factory));
+          break;
+        case ($operator == '__nin'):
+          array_push($qFs, new ContainFilter($remappedKey, $valueList, $factory, true));
           break;
         default:
-          assert(False, "Operator '" . $matches['operator'] . "' not implemented");
+          assert(False, "Operator '" . $operator . "' not implemented");
       }
 
-      if ($operator) {
-        if (array_key_exists($val, $features)) {
-          array_push($qFs, new ComparisonFilter($remappedKey, $val, $operator, $factory));
+      if ($query_operator) {
+        if (array_key_exists($single_val, $features)) {
+          array_push($qFs, new ComparisonFilter($remappedKey, $single_val, $query_operator, $factory));
         } else {
-          array_push($qFs, new QueryFilter($remappedKey, $val, $operator, $factory));
+          array_push($qFs, new QueryFilter($remappedKey, $single_val, $query_operator, $factory));
         }
       }
     }
