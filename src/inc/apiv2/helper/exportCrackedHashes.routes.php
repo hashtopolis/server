@@ -19,6 +19,9 @@ class ExportCrackedHashesHelperAPI extends AbstractHelperAPI {
     return [Hashlist::PERM_READ, Hash::PERM_READ, File::PERM_CREATE];
   }
 
+  /**
+   * hashlistId is the Id of the hashlist where you want to export the hashes of.
+   */
   public function getFormFields(): array 
   {
     return  [
@@ -26,6 +29,9 @@ class ExportCrackedHashesHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  /**
+   * Endpoint to export cracked hashes.
+   */
   public function actionPost($data): object|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     

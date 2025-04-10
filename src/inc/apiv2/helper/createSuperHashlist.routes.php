@@ -26,6 +26,10 @@ class CreateSuperHashlistHelperAPI extends AbstractHelperAPI {
     return [Hashlist::PERM_CREATE, Hashlist::PERM_READ];
   }
 
+  /**
+   * Hashlistids is an array of hashlist ids of the hashlists that have to be combined into a superhashlist.
+   * Name is the name of the newly created superhashlist.
+   */
   public function getFormFields(): array 
   {
     return  [
@@ -34,6 +38,9 @@ class CreateSuperHashlistHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  /**
+   * Endpoint to create a super hashlist from multiple hashlists
+   */
   public function actionPost($data): object|array|null {
     /* Validate incoming hashlists */
     $hashlistIds = [];

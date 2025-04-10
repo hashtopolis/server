@@ -18,6 +18,11 @@ class AssignAgentHelperAPI extends AbstractHelperAPI {
     return [Agent::PERM_UPDATE, Task::PERM_UPDATE];
   }
   
+  /**
+   * The agentId is the Id of the agent that has to be assigned to the task.
+   * The taskId is the Id of the task that will be assigned to the agent. If this is set to 0,
+   * the agent will be unassigned from its current assigned task.
+   */
   public function getFormFields(): array {
     return [
       Agent::AGENT_ID => ["type" => "int"],
@@ -25,10 +30,12 @@ class AssignAgentHelperAPI extends AbstractHelperAPI {
     ];
   }
   
+  /**
+   * This endpoint is responsible for assigning a task to a specific agent.
+   */
   public function actionPost($data): object|array|null {
     AgentUtils::assign($data[Agent::AGENT_ID], $data[Task::TASK_ID], $this->getCurrentUser());
     
-    # TODO: Check how to handle custom return messages that are not object, probably we want that to be in some kind of standardized form.
     return ["assign" => "success"];
   }
 }

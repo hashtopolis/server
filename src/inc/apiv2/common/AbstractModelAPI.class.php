@@ -775,14 +775,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
-   * Get input field names valid for creation of object
-   */
-  final public function getCreateValidFeatures(): array
-  {
-    return $this->getAliasedFeatures();
-  }
-
-  /**
    * API entry point for requests of single object
    */
   public function getOne(Request $request, Response $response, array $args): Response

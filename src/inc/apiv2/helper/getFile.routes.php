@@ -3,6 +3,7 @@ use DBA\File;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use DBA\Factory;
+use Middlewares\Utils\HttpErrorException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpForbiddenException;
 
@@ -47,7 +48,7 @@ class getFileHelperAPI extends AbstractHelperAPI {
   }
 
   /**
-   * Handles HTTP range requests for partial conten delivery
+   * Handles HTTP range requests for partial content delivery
    * 
    * This method processes the `Range` header from the HTTP request
    * to determine the start and end byte positions for the response,
@@ -98,9 +99,35 @@ class getFileHelperAPI extends AbstractHelperAPI {
     return true;
   }
 
+  /**
+   * Description of get params for swagger.
+   */
+  public function getParamsSwagger(): array {
+    return [
+      [
+      "in" => "query",
+      "name" => "file",
+      "schema" => [
+        "type" => "integer",
+        "format" => "int32"
+      ],
+      "required" => true,
+      "example" => 1,
+      "description" => "The ID of the file to download."
+    ]
+    ];
+  }
+
+  /**
+   * Endpoint to download files
+   */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
-    $file_id = intval($request->getQueryParams()['file']); 
+    $fileParam = $request->getQueryParams()['file'];
+    if ($fileParam == null) {
+      throw new HttpErrorException("No File query param has been provided");
+    }
+    $file_id = intval($fileParam); 
 
     $filename = $this->validateFile($request, $file_id);
 

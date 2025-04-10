@@ -105,6 +105,15 @@ abstract class AbstractBaseAPI
   }
 
   /**
+   * Get input field names valid for creation of object
+   */
+  final public function getCreateValidFeatures(): array
+  {
+    return $this->getAliasedFeatures();
+  }
+
+
+  /**
    * Create features from formfields
    */
   protected function getFeatures(): array

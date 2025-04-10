@@ -18,6 +18,9 @@ class PurgeTaskHelperAPI extends AbstractHelperAPI {
     return [Chunk::PERM_DELETE, Task::PERM_UPDATE];
   }
 
+  /**
+   * taskId is the id of the task that should be purged.
+   */
   public function getFormFields(): array 
   {
     return  [
@@ -25,6 +28,9 @@ class PurgeTaskHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  /**
+   * Endpoint to purge a task. Meaning all chunks of a task will be deleted and keyspace and progress will be set to 0.
+   */
   public function actionPost($data): object|array|null {
     $task = self::getTask($data[Task::TASK_ID]);
 

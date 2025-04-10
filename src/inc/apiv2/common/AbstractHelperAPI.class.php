@@ -19,7 +19,12 @@ use DBA\User;
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
   abstract public function actionPost(array $data): object|array|null;
   
+  //abstract function for documentation
+  // abstract public function getResponseData(): array;
 
+  public function getParamsSwagger(): array {
+    return [];
+  }
   /* Chunk API endpoint specific call to abort chunk */
   public function processPost(Request $request, Response $response, array $args): Response 
   {

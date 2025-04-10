@@ -51,8 +51,12 @@ function typeLookup($feature): array {
 };
 
 function parsePhpDoc($doc) {
-  $cleanedDoc = preg_replace('/^\s*\/?\*\*?|\s*\*\/?$/m', '', $doc);
-  $cleanedDoc = preg_replace('/^\s*\* ?/m', '', $cleanedDoc);
+  $cleanedDoc = preg_replace([
+    '/^\/\*\*/',   // Remove opening /**
+    '/\*\/$/',      // Remove closing */
+    '/^\s*\*\s?/m'  // Remove leading * on each line
+  ], '', $doc);
+  $cleanedDoc = str_replace("\n", "<br />", $cleanedDoc); //markdown friendly line end
   return $cleanedDoc;
 }
 
@@ -362,7 +366,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       $reflectionCallable = ($protectedCallable->getValue($route));
 
       /* Assume only one method per route call */
-      assert(sizeof($route->getMethods()) == 1);
+      assert(sizeof($route->getMethods()) == 1, "More than 1 methods found for this route");
       /* Path relative to basePath */
       $path = $route->getPattern();
       $method = strtolower($route->getMethods()[0]);
@@ -373,14 +377,39 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       }
 
       /* Retrieve parameters */
-      $apiClassName = explode(':', $reflectionCallable)[0];
+      $explodedCallable = explode(':', $reflectionCallable);
+      $apiClassName = $explodedCallable[0];
+      $apiMethod = $explodedCallable[1];
       $class = new $apiClassName($app->getContainer());
-      $reflectionClass = new ReflectionClass($class);
 
-      /* TODO: No support for helper functions yet */
       if (!($class instanceof AbstractModelAPI)){
-        $paths[$path][$method]["description"] = parsePhpDoc($reflectionClass->getDocComment());
-        $parameters = $class->getFormFields();
+        $name = $class::class;
+        $apiMethod = ($apiMethod == "processPost" && $name !== "ImportFileHelperAPI") ? "actionPost" : $apiMethod;
+        $reflectionApiMethod = new ReflectionMethod($name, $apiMethod);
+        $paths[$path][$method]["description"] = parsePhpDoc($reflectionApiMethod->getDocComment());
+        $parameters = $class->getCreateValidFeatures();
+        $properties = makeProperties($parameters);
+        $components[$name] =
+          [
+            "type" => "object",
+            "properties" => $properties,
+          ];
+          if($method == "post") {
+            $reflectionMethodFormFields = new ReflectionMethod($name, "getFormFields");
+            $bodyDescription = parsePhpDoc($reflectionMethodFormFields->getDocComment());
+            $paths[$path][$method]["requestBody"] = [
+              "description" => $bodyDescription,
+              "required" => true,
+              "content" => [
+                "application/json" => [
+                  "schema" => [
+                    '$ref' => "#/components/schemas/" . $name 
+                  ],
+                ]        
+            ]];
+          } elseif($method == "get") {
+            $paths[$path][$method]["parameters"] = $class->getParamsSwagger();
+          }
         continue;
       };
 
@@ -718,7 +747,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           $parameters = [
             [
               "name" => "page[after]",
-              "in" => "query",
+              "in" => "path",
               "schema" => [
                 "type" => "integer",
                 "format" => "int32"
@@ -728,7 +757,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ],
             [
               "name" => "page[before]",
-              "in" => "query",
+              "in" => "path",
               "schema" => [
                 "type" => "integer",
                 "format" => "int32"
@@ -738,7 +767,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ],
             [
               "name" => "page[size]",
-              "in" => "query",
+              "in" => "path",
               "schema" => [
                 "type" => "integer",
                 "format" => "int32"
@@ -748,7 +777,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ],
             [
               "name" => "filter",
-              "in" => "query",
+              "in" => "path",
               "style" => "deepobject",
               "explode" => true,
               "schema" => [
@@ -759,7 +788,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ],
             [
               "name" => "include",
-              "in" => "query",
+              "in" => "path",
               "schema" => [
                 "type" => "string"
               ],
