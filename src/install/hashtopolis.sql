@@ -1031,6 +1031,7 @@ ALTER TABLE `Assignment`
 ALTER TABLE `Chunk`
   ADD PRIMARY KEY (`chunkId`),
   ADD KEY `taskId` (`taskId`),
+  ADD KEY `progress` (`progress`),
   ADD KEY `agentId` (`agentId`);
 
 ALTER TABLE `Config`
@@ -1142,6 +1143,8 @@ ALTER TABLE `TaskDebugOutput`
 ALTER TABLE `TaskWrapper`
   ADD PRIMARY KEY (`taskWrapperId`),
   ADD KEY `hashlistId` (`hashlistId`),
+  ADD KEY `priority` (`priority`),
+  ADD KEY `isArchived` (`isArchived`),
   ADD KEY `accessGroupId` (`accessGroupId`);
 
 ALTER TABLE `User`
