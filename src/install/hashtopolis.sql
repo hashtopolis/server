@@ -1032,7 +1032,8 @@ ALTER TABLE `Chunk`
   ADD PRIMARY KEY (`chunkId`),
   ADD KEY `taskId` (`taskId`),
   ADD KEY `progress` (`progress`),
-  ADD KEY `agentId` (`agentId`);
+  ADD KEY `agentId` (`agentId`),
+  ADD KEY `idx_task_progress_length` (`taskId`, `progress`, `length`);
 
 ALTER TABLE `Config`
   ADD PRIMARY KEY (`configId`),
