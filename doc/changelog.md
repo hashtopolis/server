@@ -1,3 +1,9 @@
+# v0.14.4 -> vx.x.x
+
+## Enhancements
+
+- Added three more indexes in MySQL to improve the task view drastically (Note: these are not created on update due to performance issues, only on new installs)
+
 # v0.14.3 -> v0.14.4
 
 ## Enhancements
