@@ -3,6 +3,7 @@
 ## Enhancements
 
 - Added three more indexes in MySQL to improve the task view drastically (Note: these are not created on update due to performance issues, only on new installs)
+- Added an additional multi-column index in MySQL on the chunk table to increase performance for agents getting tasks (Note: these are not created on update due to performance issues, only on new installs)
 
 # v0.14.3 -> v0.14.4
 
