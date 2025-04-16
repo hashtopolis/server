@@ -32,6 +32,10 @@ class SetUserPasswordHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): array {
+    return ["Set password" => "Success"];
+  }
+
   /**
    * Endpoint to set a password of an user.
    */
@@ -44,7 +48,7 @@ class SetUserPasswordHelperAPI extends AbstractHelperAPI {
       $data["password"],
       $this->getCurrentUser()
     );
-    return null;
+    return $this->getResponse();
   }
 }  
 

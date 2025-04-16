@@ -27,6 +27,10 @@ class ChunkAbortHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): array {
+    return ["Abort" => "Success"];
+  }
+
   /**
    * Endpoint to stop a running chunk.
    */
@@ -34,7 +38,7 @@ class ChunkAbortHelperAPI extends AbstractHelperAPI {
     $chunk = self::getChunk($data[Chunk::CHUNK_ID]);
     
     TaskUtils::abortChunk($chunk->getId(), $this->getCurrentUser());
-    return null;
+    return self::getResponse();
   }  
 }
 

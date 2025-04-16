@@ -29,6 +29,10 @@ class AssignAgentHelperAPI extends AbstractHelperAPI {
       Task::TASK_ID => ["type" => "int"],
     ];
   }
+
+  public static function getResponse(): array {
+    return ["assign" => "success"];
+  }
   
   /**
    * This endpoint is responsible for assigning a task to a specific agent.
@@ -36,7 +40,7 @@ class AssignAgentHelperAPI extends AbstractHelperAPI {
   public function actionPost($data): object|array|null {
     AgentUtils::assign($data[Agent::AGENT_ID], $data[Task::TASK_ID], $this->getCurrentUser());
     
-    return ["assign" => "success"];
+    return self::getResponse();
   }
 }
 

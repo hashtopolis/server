@@ -29,6 +29,10 @@ class ExportWordlistHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): string {
+    return "File";
+  }
+
   /**
    * Endpoint to export a wordlist of the cracked hashes inside a hashlist.
    */

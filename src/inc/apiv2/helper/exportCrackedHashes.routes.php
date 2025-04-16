@@ -29,6 +29,10 @@ class ExportCrackedHashesHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): string {
+    return "File";
+  }
+
   /**
    * Endpoint to export cracked hashes.
    */

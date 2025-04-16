@@ -155,6 +155,17 @@ function makeRelationships($class, $uri): array {
   return $properties;
 }
 
+function getTUSheader(): array {
+  return [
+      "description" => "Indicates the TUS version the server supports.
+        Must always be set to `1.0.0` in compliant servers.",
+      "schema" => [
+        "type" => "string",
+        "enum" => "enum: ['1.0.0']"
+      ] 
+  ];
+}
+
 //TODO expandables array is unnecessarily indexed in the swagger UI 
 function makeExpandables($class, $container): array {
   $properties = [];
@@ -181,6 +192,23 @@ function makeExpandables($class, $container): array {
       );
   };
   return $properties;
+}
+
+function mapToProperties($map): array {
+  $properties = [];
+  foreach ($map as $key => $value) {
+    $properties[$key] = [
+        "type" => "string",
+        "default" => $value,
+    ];
+  }
+  return [
+    "type" => "array",
+    "items" => [
+      "type" => "object",
+      "properties" => $properties
+    ]
+  ];
 }
 
 function makeProperties($features, $skipPK=false): array {
@@ -394,22 +422,79 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             "type" => "object",
             "properties" => $properties,
           ];
-          if($method == "post") {
-            $reflectionMethodFormFields = new ReflectionMethod($name, "getFormFields");
-            $bodyDescription = parsePhpDoc($reflectionMethodFormFields->getDocComment());
-            $paths[$path][$method]["requestBody"] = [
-              "description" => $bodyDescription,
-              "required" => true,
-              "content" => [
-                "application/json" => [
-                  "schema" => [
-                    '$ref' => "#/components/schemas/" . $name 
-                  ],
-                ]        
-            ]];
-          } elseif($method == "get") {
-            $paths[$path][$method]["parameters"] = $class->getParamsSwagger();
-          }
+        if($method == "post") {
+          $reflectionMethodFormFields = new ReflectionMethod($name, "getFormFields");
+          $bodyDescription = parsePhpDoc($reflectionMethodFormFields->getDocComment());
+          $paths[$path][$method]["requestBody"] = [
+            "description" => $bodyDescription,
+            "required" => true,
+            "content" => [
+              "application/json" => [
+                "schema" => [
+                  '$ref' => "#/components/schemas/" . $name 
+                ],
+              ]        
+          ]];
+        } elseif($method == "get") {
+          $paths[$path][$method]["parameters"] = $class->getParamsSwagger();
+        }
+        $request_response = $class->getResponse();
+        $ref = null;
+        if (is_array($request_response)) {
+          $responseProperties = mapToProperties($request_response);
+          $components[$name . "response"] = $responseProperties;
+          $ref = "#/components/schemas/" . $name . "Response";
+        } else if (is_string($request_response)) {
+          $ref = "#/components/schemas/" . $request_response . "SingleResponse";
+        } else if ($name == "ImportFileHelperAPI"){
+          //TODO: probably have to hardcode all responses and just continue here, since every endpoint has a different status code
+          $paths[$path][$method]["responses"]["201"] = [
+            "description" => "succesful operation",
+            "headers" => [
+              "Tus-Resumable" => getTUSheader(),
+            ],
+            "content" => [
+              "application/pdf" => [
+                "type" => "string",
+                "format" => "binary"
+              ]
+            ]
+          ];
+          continue;
+        }
+        // $paths[$path][$method]["responses"]["200"] = [
+        //   "description" => "successful operation",
+        //   // "content" => [
+        //   //   "application/json" => [
+        //   //     "schema" => [
+        //   //       '$ref' => $ref
+        //   //     ]
+        //   //   ]
+        //   // ]
+        // ];
+        if (isset($ref)) {
+        $paths[$path][$method]["responses"]["200"] = [
+          "description" => "successful operation",
+          "content" => [
+            "application/json" => [
+              "schema" => [
+                '$ref' => $ref
+              ]
+            ]
+          ]
+        ];
+      } else {
+        $paths[$path][$method]["responses"]["200"] = [
+          "description" => "successful operation",
+          // "content" => [
+          //   "application/json" => [
+          //     "schema" => [
+          //       '$ref' => $ref
+          //     ]
+          //   ]
+          // ]
+        ];
+      }
         continue;
       };
 
@@ -908,6 +993,44 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         ]
       ],
       "additionalProperties" => false
+    ];
+    //Hard coded headers for the importfile endpoints.
+    $paths["/api/v2/helper/importFile"]["post"]["parameters"] = [
+      [
+        "name" => "Upload-Metadata",
+        "in" => "header",
+        "required" => "true",
+        "schema" => [
+          "type" => "string",
+          "pattern" => '^([a-zA-Z0-9]+ [A-Za-z0-9+/=]+)(,[a-zA-Z0-9]+ [A-Za-z0-9+/=]+)*$'
+        ],
+        "example" => "filename ZXhhbXBsZS50eHQ=",
+        "description" => " The Upload-Metadata header contains one or more comma-separated key-value pairs.
+            Each pair is formatted as `<key> <base64(value)>`, where:
+              - `key` is a string without spaces.
+              - `value` is base64-encoded"
+      ],
+      [
+        "name" => "Upload-Length",
+        "in" => "header",
+        "schema" => [
+          "type" => "integer",
+          "minimum" => 1
+        ],
+        "example" => 10000,
+        "description" => "The total size of the upload in bytes. Must be a positive integer.
+          Required if `Upload-Defer-Length` is not set."
+      ],
+      [
+        "name" => "Upload-Defer-Length",
+        "in" => "header",
+        "schema" => [
+          "type" => "integer",
+        ],
+        "example" => 1,
+        "description" => "Indicates that the upload length is not known at creation time.
+          Value must be `1`. If present, `Upload-Length` must be omitted."
+      ]
     ];
 
     /**

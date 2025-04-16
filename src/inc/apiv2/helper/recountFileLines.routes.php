@@ -27,6 +27,10 @@ class RecountFileFilesHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): string {
+    return "File";
+  }
+
   /**
    * Endpoint to recount files for when there is size mismatch
    */

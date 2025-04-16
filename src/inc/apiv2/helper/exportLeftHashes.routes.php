@@ -29,6 +29,10 @@ class ExportLeftHashesHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): string {
+    return "File";
+  }
+
   /**
    * Endpoint to export uncracked hashes of a hashlist.
    */

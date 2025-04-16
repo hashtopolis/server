@@ -38,6 +38,10 @@ class CreateSuperHashlistHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): string {
+    return "Hashlist";
+  }
+
   /**
    * Endpoint to create a super hashlist from multiple hashlists
    */

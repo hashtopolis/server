@@ -43,6 +43,14 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     $filename = "/tmp/" . $id . '.meta';
     return $filename;
   }
+  
+  /**
+   * Import file has no POST parameters
+   */
+  public function getFormFields(): array {
+    return [];
+  }
+
 
   static function getImportPath(string $id): string {
     $filename = Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $id;
@@ -77,7 +85,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   }
 
   /**
-   * HEAD endpoint to get info about the TUS upload.
+   * A HEAD request is used in the TUS protocol to determine the offset at which the upload should be continued.
    */
   function processHead(Request $request, Response $response, array $args): Response {
     // TODO return 404 or 410 if entry is not found
@@ -114,6 +122,13 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
         ->withHeader("Access-Control-Expose-Headers", $cors_headers . ", Upload-Length")
       ;
     }
+  }
+
+  /**
+   * getfile is different because it returns actual binary data.
+   */
+  public static function getResponse(): null {
+    return null;
   }
 
   /**  File import API

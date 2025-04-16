@@ -39,6 +39,10 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): string {
+    return "TaskWrapper";
+  }
+
   /**
    * Endpoint to create a supertask from a supertask template
    */

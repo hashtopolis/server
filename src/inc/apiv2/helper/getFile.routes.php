@@ -22,6 +22,14 @@ class getFileHelperAPI extends AbstractHelperAPI {
     return [File::PERM_READ];
   }
 
+  /**
+   * geTfile is different because it returns actual binary data.
+   */
+  public static function getResponse(): null {
+    return null;
+  }
+
+
   public function actionPost(array $data): object|array|null
   {
     assert(False, "GetFile has no POST");

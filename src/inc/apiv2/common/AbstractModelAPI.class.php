@@ -33,7 +33,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return [];
   }
 
-
   /** 
    * Available 'expand' parameters on $object
    */

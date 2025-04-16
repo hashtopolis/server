@@ -27,13 +27,17 @@ class ChunkResetHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): array {
+    return ["Reset" => "Success"];
+  }
+
   /**
    * Endpoint to reset a chunk.
    */
   public function actionPost(array $data): object|array|null {
     $chunk = self::getChunk($data[Chunk::CHUNK_ID]);
     TaskUtils::resetChunk($chunk->getId(), $this->getCurrentUser());
-    return null;
+    return $this->getResponse();
   }  
 }
 

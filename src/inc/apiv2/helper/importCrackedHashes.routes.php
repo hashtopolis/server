@@ -30,6 +30,18 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
       "separator" => ['type' => 'str'],
     ];
   }
+
+  public static function getResponse(): array {
+    return [
+      "totalLines" => 100,
+      "newCracked" => 5,
+      "alreadyCracked" => 2,
+      "invalid" => 1,
+      "notFound" => 1,
+      "processTime" => 60,
+      "tooLongPlaintexts" => 4,
+    ];
+  }
   
   /**
    * Endpoint to import cracked hashes into a hashlist.
