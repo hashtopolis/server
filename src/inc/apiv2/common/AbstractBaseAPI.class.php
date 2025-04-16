@@ -714,23 +714,23 @@ abstract class AbstractBaseAPI
    * @return void 
    */
   protected function isAllowedToMutate(Request $request, array $features, string $key) {
-      if (is_string($key) == False) {
-        throw new HttpErrorException("Key '$key' invalid", 403);
-      }
-      // Ensure key exists in target array
-      if (array_key_exists($key, $features) == False) {
-        throw new HttpErrorException("Key '$key' does not exists!", 403);
-      }
+    if (is_string($key) == False) {
+      throw new HttpErrorException("Key '$key' invalid", 403);
+    }
+    // Ensure key exists in target array
+    if (array_key_exists($key, $features) == False) {
+      throw new HttpErrorException("Key '$key' does not exists!", 403);
+    }
 
-      if ($features[$key]['read_only'] == True) {
-        throw new HttpForbiddenException($request, "Key '$key' is immutable");
-      }
-      if ($features[$key]['protected'] == True) {
-        throw new HttpForbiddenException($request, "Key '$key' is protected");
-      }
-      if ($features[$key]['private'] == True) {
-        throw new HttpForbiddenException($request, "Key '$key' is private");
-      }
+    if ($features[$key]['read_only'] == True) {
+      throw new HttpForbiddenException($request, "Key '$key' is immutable");
+    }
+    if ($features[$key]['protected'] == True) {
+      throw new HttpForbiddenException($request, "Key '$key' is protected");
+    }
+    if ($features[$key]['private'] == True) {
+      throw new HttpForbiddenException($request, "Key '$key' is private");
+    }
   }
 
   /**

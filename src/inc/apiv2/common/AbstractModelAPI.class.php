@@ -1193,16 +1193,38 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       throw new HttpErrorException("Relation does not exist!");
     }
 
-    $relationType = $relation['relationType'];
-    $primaryKey = $this->getPrimaryKeyOther($relationType);
-    $features = $this->getFeaturesOther($relationType);
-
-    // $this->checkForeignkeyPermission($request, $relationKey, $features);
-    $this->isAllowedToMutate($request, $features, $relationKey);
-
-    $factory = self::getModelFactory($relationType);
-    $updates = self::ResourceRecordArrayToUpdateArray($data, $args["id"]);
-    $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
+    // TODO this ia an abstract way of adding to junctiontables. This only works for intermediate tables 
+    // that have 3 fields (1 primary key and 2 foreignkeys to link the tables) for models that have intermediate 
+    // tables with more than 3 fields, the postToManyRelationshipLink() function should be overidden.
+    if (array_key_exists("junctionTableType", $relation)) {
+      $relationType = $relation['junctionTableType'];
+      $primaryKey = $this->getPrimaryKeyOther($relationType);
+      //Add to junction table if not exist.
+      $factory = self::getModelFactory($relationType);
+      foreach($data as $item) {
+        if (!$this->validateResourceRecord($item)) {
+          $encoded_item = json_encode($item);
+          throw new HttpErrorException('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
+        }
+        $junction_table_entry = $factory->getNullObject();
+        $setMethod1 = "set" . ucfirst($relation["junctionTableFilterField"]);
+        $setMethod2 = "set" . ucfirst($relation["junctionTableJoinField"]);
+        if (!method_exists($junction_table_entry, $setMethod1) || !method_exists($junction_table_entry, $setMethod2)) {
+          throw new HTException("Internal error, set function not found");
+        }
+        $junction_table_entry->$setMethod1($args["id"]);
+        $junction_table_entry->$setMethod2($item["id"]);
+        $factory->save($junction_table_entry);
+      }
+    } else {
+      $relationType = $relation['relationType'];
+      $primaryKey = $this->getPrimaryKeyOther($relationType);
+      $features = $this->getFeaturesOther($relationType);
+      $this->isAllowedToMutate($request, $features, $relationKey);
+      $factory = self::getModelFactory($relationType);
+      $updates = self::ResourceRecordArrayToUpdateArray($data, $args["id"]);
+      $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
+    }
 
     return $response->withStatus(201)
       ->withHeader("Content-Type", "application/vnd.api+json");
