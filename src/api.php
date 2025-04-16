@@ -1,6 +1,6 @@
 <?php
 
-use DBA\APiKey;
+use DBA\ApiKey;
 use DBA\QueryFilter;
 use DBA\Factory;
 use DBA\User;
