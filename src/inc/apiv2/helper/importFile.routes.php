@@ -86,6 +86,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
 
   /**
    * A HEAD request is used in the TUS protocol to determine the offset at which the upload should be continued.
+   * And to retrieve the upload status.
    */
   function processHead(Request $request, Response $response, array $args): Response {
     // TODO return 404 or 410 if entry is not found

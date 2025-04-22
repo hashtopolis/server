@@ -447,31 +447,9 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         } else if (is_string($request_response)) {
           $ref = "#/components/schemas/" . $request_response . "SingleResponse";
         } else if ($name == "ImportFileHelperAPI"){
-          //TODO: probably have to hardcode all responses and just continue here, since every endpoint has a different status code
-          $paths[$path][$method]["responses"]["201"] = [
-            "description" => "succesful operation",
-            "headers" => [
-              "Tus-Resumable" => getTUSheader(),
-            ],
-            "content" => [
-              "application/pdf" => [
-                "type" => "string",
-                "format" => "binary"
-              ]
-            ]
-          ];
+          //ImportFileHelperAPI is hardcoded, because its different than other helpers.
           continue;
         }
-        // $paths[$path][$method]["responses"]["200"] = [
-        //   "description" => "successful operation",
-        //   // "content" => [
-        //   //   "application/json" => [
-        //   //     "schema" => [
-        //   //       '$ref' => $ref
-        //   //     ]
-        //   //   ]
-        //   // ]
-        // ];
         if (isset($ref)) {
         $paths[$path][$method]["responses"]["200"] = [
           "description" => "successful operation",
@@ -486,13 +464,6 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       } else {
         $paths[$path][$method]["responses"]["200"] = [
           "description" => "successful operation",
-          // "content" => [
-          //   "application/json" => [
-          //     "schema" => [
-          //       '$ref' => $ref
-          //     ]
-          //   ]
-          // ]
         ];
       }
         continue;
@@ -1033,6 +1004,103 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       ]
     ];
 
+    $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["patch"]["parameters"] = [
+      [
+        "name" => "Upload-Offset",
+        "in" => "header",
+        "required" => "true",
+        "schema" => [
+          "type" => "integer",
+        ],
+        "example" => "512",
+        "description" => " The Upload-Offset header’s value MUST be equal to the current offset of the resource"
+      ],
+      [
+        "name" => "Content-Type",
+        "in" => "header",
+        "required" => "true",
+        "schema" => [
+          "type" => "string",
+          "enum" => ["application/offset+octet-stream"]
+        ],
+      ],
+    ];
+    $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["patch"]["requestBody"] = [
+      [
+        "required" => "true",
+        "description" => "The binary data to push to the file",
+        "content" => [
+          "application/offset+octet-stream" => [
+            "schema" => [
+              "type" => "string",
+              "format" => "binary"
+            ]
+          ]
+        ]
+      ]
+    ];
+
+    $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["head"]["responses"]["200"] = [
+      "description" => "sucessful request",
+      "headers" => [
+        "Tus-Resumable" => getTUSheader(),
+        "Upload-Offset" => [
+          "description" => "Number of bytes already received",
+          "schema" => [
+            "type" => "integer"
+          ]
+        ],
+        "Upload-Length" => [
+          "description" => "Total upload length (if known)",
+          "schema" => [
+            "type" => "integer"
+          ],
+        ],
+        "Upload-Defer-Length" => [
+          "description" => "Indicates deferred upload length (if applicable)",
+          "schema" => [
+            "type" => "string"
+          ],
+        ],
+        "Upload-Metadata" => [
+          "description" => "Original metadata sent during creation",
+          "schema" => [
+            "type" => "string"
+          ]
+        ]
+      ]
+    ];
+
+    $paths["/api/v2/helper/importFile"]["post"]["responses"]["201"] = [
+      "description" => "succesful operation",
+      "headers" => [
+        "Tus-Resumable" => getTUSheader(),
+        "Location" => [
+          "description" => "Location of the file where the user can push to.",
+          "schema" => [
+            "type" => "string"
+          ]
+        ]
+      ],
+      "content" => [
+        "application/pdf" => [
+          "type" => "string",
+          "format" => "binary"
+        ]
+      ]
+    ];
+    $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["patch"]["responses"]["204"] = [
+      "description" => "Chunk accepted",
+      "headers" => [
+        "Tus-Resumable" => getTUSheader(),
+        "Upload-Offset" => [
+          "description" => "The new offset after the chunk is accepted. Indicates how many bytes were received so far.",
+          "schema" => [
+            "type" => "integer"
+          ]
+        ]
+      ]
+    ];
     /**
      * Build final result
      */
