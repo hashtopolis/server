@@ -865,6 +865,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $this->preCommon($request);
 
     $relation = $args['relation'];
+    $id = $args['id'];
 
     $relationMapper = $this->getToOneRelationships()[$relation];
     $intermediate = $relationMapper["intermediateType"];
@@ -873,20 +874,31 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $intermediateFactory = self::getModelFactory($intermediate);
       $aFs[Factory::JOIN][] = new JoinFilter(
         $intermediateFactory,
-        $relationMapper['joinField'],
-        $relationMapper['joinFieldRelation'],
+        $relationMapper['junctionTableJoinField'],
+        $relationMapper['relationKey'],
+      );
+
+      $filterFactory = self::getModelFactory($relationMapper['junctionTableType']);
+      $filterField = $relationMapper['joinField'];
+
+      $aFs[Factory::FILTER][] = new QueryFilter(
+        $filterField,
+        $id,
+        '=',
+        $filterFactory
       );
 
       $factory = $this->getFactory();
       $object = $factory->filter($aFs)[$intermediateFactory->getModelName()][0];
+      $id = $object->getId();
     } else {
       // Base object
-      $object = $this->doFetch($request, $args['id']);
+      $object = $this->doFetch($request, $id);
     }
 
     // Relation object
     $relationObjects = $this->fetchExpandObjects([$object], $relation);
-    $relationObject = $relationObjects[$args['id']];
+    $relationObject = $relationObjects[$id];
 
     $relationClass = $relationMapper['relationType'];
     $relationApiClass = new ($this->container->get('classMapper')->get($relationClass))($this->container);
