@@ -42,9 +42,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $expandables;
   }
 
-  // /** 
-  //  * Fetch objects for  $expand on $objects
-  //  */
+  /** 
+    * Fetch objects for  $expand on $objects
+   */
   protected static function fetchExpandObjects(array $objects, string $expand): mixed
   {
     //disabled the check because with intermediate objects its possible to fetch a different model
@@ -522,9 +522,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
     //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
     //if this query is too expensive for big tables, it can be removed
-    $agg1 = new Aggregation($primaryKey, Aggregation::MAX);
-    $agg2 = new Aggregation($primaryKey, Aggregation::MIN);
-    $agg3 = new Aggregation($primaryKey, Aggregation::COUNT);
+    $agg1 = new Aggregation($primaryKey, Aggregation::MAX, $factory);
+    $agg2 = new Aggregation($primaryKey, Aggregation::MIN, $factory);
+    $agg3 = new Aggregation($primaryKey, Aggregation::COUNT, $factory);
     $aggregation_results = $factory->multicolAggregationFilter($finalFs, [$agg1, $agg2, $agg3]);
 
     $max = $aggregation_results[$agg1->getName()];
@@ -1033,7 +1033,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $aFs[Factory::JOIN][] = new JoinFilter(
         self::getModelFactory($toManyRelation['junctionTableType']),
         $toManyRelation['junctionTableJoinField'],
-        $toManyRelation['key'],
+        $toManyRelation['relationKey'],
       );
     }
 
