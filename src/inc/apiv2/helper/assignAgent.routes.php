@@ -31,7 +31,7 @@ class AssignAgentHelperAPI extends AbstractHelperAPI {
   }
 
   public static function getResponse(): array {
-    return ["assign" => "success"];
+    return ["Assign" => "Success"];
   }
   
   /**

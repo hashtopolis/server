@@ -28,7 +28,7 @@ class UnassignAgentHelperAPI extends AbstractHelperAPI {
   }
 
   public static function getResponse(): array {
-    return ["unassign" => "Success"];
+    return ["Unassign" => "Success"];
   }
   
   /**
