@@ -18,17 +18,26 @@ class UnassignAgentHelperAPI extends AbstractHelperAPI {
     return [Agent::PERM_UPDATE, Task::PERM_UPDATE];
   }
   
+  /**
+   * agentId is the id of the agent which you want to unassign.
+   */
   public function getFormFields(): array {
     return [
       Agent::AGENT_ID => ["type" => "int"],
     ];
   }
+
+  public static function getResponse(): array {
+    return ["Unassign" => "Success"];
+  }
   
+  /**
+   * Endpoint to unassign an agent.
+   */
   public function actionPost($data): object|array|null {
     AgentUtils::assign($data[Agent::AGENT_ID], 0, $this->getCurrentUser());
     
-    # TODO: Check how to handle custom return messages that are not object, probably we want that to be in some kind of standardized form.
-    return ["unassign" => "success"];
+    return $this->getResponse();
   }
 }
 

@@ -18,17 +18,27 @@ class ChunkAbortHelperAPI extends AbstractHelperAPI {
     return [Chunk::PERM_UPDATE, Chunk::PERM_DELETE];
   }
 
+  /**
+   * ChunkID is the ID of the chunk that needs to be aborted.
+   */
   public function getFormFields(): array {
     return  [ 
       Chunk::CHUNK_ID => ['type' => 'int']
     ];
   }
 
+  public static function getResponse(): array {
+    return ["Abort" => "Success"];
+  }
+
+  /**
+   * Endpoint to stop a running chunk.
+   */
   public function actionPost(array $data): object|array|null {
     $chunk = self::getChunk($data[Chunk::CHUNK_ID]);
     
     TaskUtils::abortChunk($chunk->getId(), $this->getCurrentUser());
-    return null;
+    return self::getResponse();
   }  
 }
 

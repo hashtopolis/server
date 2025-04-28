@@ -33,7 +33,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return [];
   }
 
-
   /** 
    * Available 'expand' parameters on $object
    */
@@ -43,9 +42,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $expandables;
   }
 
-  // /** 
-  //  * Fetch objects for  $expand on $objects
-  //  */
+  /** 
+    * Fetch objects for  $expand on $objects
+   */
   protected static function fetchExpandObjects(array $objects, string $expand): mixed
   {
     //disabled the check because with intermediate objects its possible to fetch a different model
@@ -523,9 +522,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
     //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
     //if this query is too expensive for big tables, it can be removed
-    $agg1 = new Aggregation($primaryKey, Aggregation::MAX);
-    $agg2 = new Aggregation($primaryKey, Aggregation::MIN);
-    $agg3 = new Aggregation($primaryKey, Aggregation::COUNT);
+    $agg1 = new Aggregation($primaryKey, Aggregation::MAX, $factory);
+    $agg2 = new Aggregation($primaryKey, Aggregation::MIN, $factory);
+    $agg3 = new Aggregation($primaryKey, Aggregation::COUNT, $factory);
     $aggregation_results = $factory->multicolAggregationFilter($finalFs, [$agg1, $agg2, $agg3]);
 
     $max = $aggregation_results[$agg1->getName()];
@@ -775,14 +774,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
-   * Get input field names valid for creation of object
-   */
-  final public function getCreateValidFeatures(): array
-  {
-    return $this->getAliasedFeatures();
-  }
-
-  /**
    * API entry point for requests of single object
    */
   public function getOne(Request $request, Response $response, array $args): Response
@@ -874,6 +865,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $this->preCommon($request);
 
     $relation = $args['relation'];
+    $id = $args['id'];
 
     $relationMapper = $this->getToOneRelationships()[$relation];
     $intermediate = $relationMapper["intermediateType"];
@@ -882,20 +874,31 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $intermediateFactory = self::getModelFactory($intermediate);
       $aFs[Factory::JOIN][] = new JoinFilter(
         $intermediateFactory,
-        $relationMapper['joinField'],
-        $relationMapper['joinFieldRelation'],
+        $relationMapper['junctionTableJoinField'],
+        $relationMapper['relationKey'],
+      );
+
+      $filterFactory = self::getModelFactory($relationMapper['junctionTableType']);
+      $filterField = $relationMapper['joinField'];
+
+      $aFs[Factory::FILTER][] = new QueryFilter(
+        $filterField,
+        $id,
+        '=',
+        $filterFactory
       );
 
       $factory = $this->getFactory();
       $object = $factory->filter($aFs)[$intermediateFactory->getModelName()][0];
+      $id = $object->getId();
     } else {
       // Base object
-      $object = $this->doFetch($request, $args['id']);
+      $object = $this->doFetch($request, $id);
     }
 
     // Relation object
     $relationObjects = $this->fetchExpandObjects([$object], $relation);
-    $relationObject = $relationObjects[$args['id']];
+    $relationObject = $relationObjects[$id];
 
     $relationClass = $relationMapper['relationType'];
     $relationApiClass = new ($this->container->get('classMapper')->get($relationClass))($this->container);
@@ -1042,7 +1045,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $aFs[Factory::JOIN][] = new JoinFilter(
         self::getModelFactory($toManyRelation['junctionTableType']),
         $toManyRelation['junctionTableJoinField'],
-        $toManyRelation['key'],
+        $toManyRelation['relationKey'],
       );
     }
 

@@ -19,6 +19,9 @@ class ExportWordlistHelperAPI extends AbstractHelperAPI {
     return [Hashlist::PERM_READ, Hash::PERM_READ, File::PERM_CREATE];
   }
 
+  /**
+   * hashlistId is the Id of the hashlist where you want to export the wordlist of.
+   */
   public function getFormFields(): array 
   {
     return  [
@@ -26,6 +29,13 @@ class ExportWordlistHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): string {
+    return "File";
+  }
+
+  /**
+   * Endpoint to export a wordlist of the cracked hashes inside a hashlist.
+   */
   public function actionPost($data): object|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     
