@@ -1363,6 +1363,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $app->get($baseUriOne . '/' . $relationUri, $me . ':getToOneRelatedResource')->setname($me . ':getToOneRelatedResource');
       $app->get($baseUriRelationships . '/' . $relationUri, $me . ':getToOneRelationshipLink')->setname($me . ':getToOneRelationshipLink');
       $app->patch($baseUriRelationships . '/' . $relationUri, $me . ':patchToOneRelationshipLink')->setname($me . ':patchToOneRelationshipLink');
+      $app->options($baseUriOne . '/' . $relationUri, function (Request $request, Response $response): Response {
+        return $response;
+      });
+      $app->options($baseUriRelationships . '/' . $relationUri, function (Request $request, Response $response): Response {
+        return $response;
+      });
     }
 
     foreach ($me::getToManyRelationships() as $name => $relationship) {
@@ -1372,6 +1378,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $app->patch($baseUriRelationships . '/' . $relationUri, $me . ':patchToManyRelationshipLink')->setname($me . ':patchToManyRelationshipLink');
       $app->post($baseUriRelationships . '/' . $relationUri, $me . ':postToManyRelationshipLink')->setname($me . ':postToManyRelationshipLink');
       $app->delete($baseUriRelationships . '/' . $relationUri, $me . ':deleteToManyRelationshipLink')->setname($me . ':deleteToManyRelationshipLink');
+      $app->options($baseUriOne . '/' . $relationUri, function (Request $request, Response $response): Response {
+        return $response;
+      });
+      $app->options($baseUriRelationships . '/' . $relationUri, function (Request $request, Response $response): Response {
+        return $response;
+      });
     }
 
     if (in_array("POST", $available_methods)) {
