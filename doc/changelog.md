@@ -15,7 +15,7 @@
 ## Bugfixes
 
 - Fixed a bug where creating a new preprocessor would copy the configured limit command over the configured skip command
-
+- Implemented sending emails inside docker container
 
 # v0.14.2 -> v0.14.3
 

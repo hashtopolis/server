@@ -39,6 +39,7 @@ RUN apt-get update \
     && apt-get -y install git iproute2 procps lsb-release \
     && apt-get -y install mariadb-client \
     && apt-get -y install libpng-dev \
+    && apt-get -y install ssmtp \
 \
     # Install extensions (optional)
     && docker-php-ext-install pdo_mysql gd \
