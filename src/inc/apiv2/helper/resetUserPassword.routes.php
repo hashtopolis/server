@@ -21,6 +21,10 @@ class ResetUserPasswordHelperAPI extends AbstractHelperAPI {
   public function preCommon(ServerRequestInterface $request): void {
     // nothing, there is no user for this request as it is an unauthenticated request
   }
+
+  public static function getResponse(): array {
+    return ["Reset" => "Success"];
+  }
   
   public function getFormFields(): array {
     return [
@@ -32,7 +36,7 @@ class ResetUserPasswordHelperAPI extends AbstractHelperAPI {
   public function actionPost($data): array|null {
     UserUtils::userForgotPassword($data[User::USERNAME], $data[User::EMAIL]);
     
-    return ["reset" => "success"];
+    return $this->getResponse();
   }
 }
 
