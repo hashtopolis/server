@@ -234,6 +234,9 @@ class HashtopolisConnector(object):
         self.validate_status_code(r, [200], "Get single object failed")
         return self.resp_to_json(r)
 
+    def patch_many(self, objects, attributes, field):
+        self.authenticate()
+
     def patch_one(self, obj):
         if not obj.has_changed():
             logger.debug("Object '%s' has not changed, no PATCH required", obj)
@@ -274,6 +277,7 @@ class HashtopolisConnector(object):
             data = {"data": attributes}
             uri = self._hashtopolis_uri + obj.uri + "/relationships/" + k
             self.send_patch(uri, data)
+
 
     def create(self, obj):
         # Check if object to be created is new
@@ -447,6 +451,10 @@ class ManagerBase(type):
         # TODO also patch to one relationships
         cls.get_conn().patch_to_many_relationships(obj)
         cls.get_conn().patch_one(obj)
+
+    @classmethod
+    def patch_many(cls, objects, attributes, field):
+        cls.get_conn().patch_many(objects, attributes, field)
 
     @classmethod
     def create(cls, obj):
