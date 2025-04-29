@@ -19,7 +19,16 @@ use DBA\User;
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
   abstract public function actionPost(array $data): object|array|null;
   
+  /**
+   * Function in order to create swagger documentation. SHould return either a map of strings that
+   * describes the output ex: ["assign" => "succes"] or if the endpoint returns an object it should return
+   * the string representation of that object ex: File.
+   */
+  abstract public static function getResponse(): array|string|null;
 
+  public function getParamsSwagger(): array {
+    return [];
+  }
   /* Chunk API endpoint specific call to abort chunk */
   public function processPost(Request $request, Response $response, array $args): Response 
   {

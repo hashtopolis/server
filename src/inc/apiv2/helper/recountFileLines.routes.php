@@ -17,6 +17,9 @@ class RecountFileFilesHelperAPI extends AbstractHelperAPI {
     return [File::PERM_UPDATE];
   }
 
+  /**
+   * FileId is the id of the file that needs to be recounted.
+   */
   public function getFormFields(): array 
   {
     return  [
@@ -24,6 +27,13 @@ class RecountFileFilesHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): string {
+    return "File";
+  }
+
+  /**
+   * Endpoint to recount files for when there is size mismatch
+   */
   public function actionPost($data): object|array|null {
     // first retrieve the file, as fileCountLines does not check any permissions, therfore to be sure call getFile() first, even if it is not required technically
     FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser());

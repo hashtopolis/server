@@ -18,16 +18,26 @@ class ChunkResetHelperAPI extends AbstractHelperAPI {
     return [Chunk::PERM_UPDATE];
   }
 
+  /**
+   * chunkId is the id of the chunk which you want to reset.
+   */
   public function getFormFields(): array {
     return  [ 
       Chunk::CHUNK_ID => ['type' => 'int']
     ];
   }
 
+  public static function getResponse(): array {
+    return ["Reset" => "Success"];
+  }
+
+  /**
+   * Endpoint to reset a chunk.
+   */
   public function actionPost(array $data): object|array|null {
     $chunk = self::getChunk($data[Chunk::CHUNK_ID]);
     TaskUtils::resetChunk($chunk->getId(), $this->getCurrentUser());
-    return null;
+    return $this->getResponse();
   }  
 }
 

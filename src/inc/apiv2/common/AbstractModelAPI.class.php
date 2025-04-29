@@ -33,7 +33,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return [];
   }
 
-
   /** 
    * Available 'expand' parameters on $object
    */
@@ -43,9 +42,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $expandables;
   }
 
-  // /** 
-  //  * Fetch objects for  $expand on $objects
-  //  */
+  /** 
+    * Fetch objects for  $expand on $objects
+   */
   protected static function fetchExpandObjects(array $objects, string $expand): mixed
   {
     //disabled the check because with intermediate objects its possible to fetch a different model
@@ -58,6 +57,19 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $toOneRelationships = static::getToOneRelationships();
     if (array_key_exists($expand, $toOneRelationships)) {
       $relationFactory = self::getModelFactory($toOneRelationships[$expand]['relationType']);
+
+      if (array_key_exists('junctionTableType', $toOneRelationships[$expand])) {
+        $junctionTableFactory = self::getModelFactory($toOneRelationships[$expand]['junctionTableType']);
+        return self::getManyToOneRelationViaIntermediate(
+          $objects,
+          $toOneRelationships[$expand]['junctionTableJoinField'],
+          $junctionTableFactory,
+          $relationFactory,
+          $toOneRelationships[$expand]['relationKey'],
+          $toOneRelationships[$expand]['parentKey']
+        );
+      };
+
       return self::getForeignKeyRelation(
         $objects,
         $toOneRelationships[$expand]['key'],
@@ -73,7 +85,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       /* Associative entity */
       if (array_key_exists('junctionTableType', $toManyRelationships[$expand])) {
         $junctionTableFactory = self::getModelFactory($toManyRelationships[$expand]['junctionTableType']);
-        return self::getManyToOneRelationViaIntermediate(
+        return self::getManyToManyRelationViaIntermediate(
           $objects,
           $toManyRelationships[$expand]['key'],
           $junctionTableFactory,
@@ -146,6 +158,67 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         return $key;
       }
     }
+    throw new HTException("Internal error: no primary key found");
+  }
+
+  /**
+   * Retrieve ManyToOne relalation for $objects ('parents') of type $targetFactory via 'intermidate'
+   * of $intermediateFactory joining on $joinField (between 'intermediate' and 'target'). Filtered by 
+   * $filterField at $intermediateFactory.
+   * 
+   * @param array $objects Objects Fetch relation for selected Objects 
+   * @param string $objectField Field to use as base for $objects
+   * @param object $intermediateFactory Factory used as intermediate between parentObject and targetObject
+   * @param string $filterField Filter field of intermadiateObject to filter against $objects field
+   * @param object $targetFactory Object properties of objects returned
+   * @param string $joinField Field to connect 'intermediate' to 'target'
+
+   * @return array $many2One which is a map where the key is the id of the parent object and the value is an array of the included
+   *                objects that are included for this parent object
+   */
+  //A bit hacky solution to get a to one through an intermediate table, currently only used by tasks to include a hashlist through the taskwrapper
+  //another solution can be to overwrite fetchExpandObjects() in tasks.routes
+  final protected static function getManyToOneRelationViaIntermediate(
+    array $objects,
+    string $objectField,
+    object $intermediateFactory,
+    object $targetFactory,
+    string $joinField,
+    string $parentKey
+  ): array {
+    assert($intermediateFactory instanceof AbstractModelFactory);
+    assert($targetFactory instanceof AbstractModelFactory);
+    $many2One = array();
+    
+    /* Retrieve Parent -> Intermediate -> Target objects */
+    $objectIds = [];
+    foreach($objects as $object) {
+      $kv = $object->getKeyValueDict();
+      $objectIds[] = $kv[$objectField];
+    }
+    $baseFactory = self::getModelFactory(static::getDBAClass());
+    $qF = new ContainFilter($objectField, $objectIds, $intermediateFactory);
+    $jF = new JoinFilter($intermediateFactory, $joinField, $joinField);
+    $jF2 = new JoinFilter($baseFactory, $objectField, $objectField, $intermediateFactory);
+    $hO = $targetFactory->filter([Factory::FILTER => $qF, Factory::JOIN => [$jF, $jF2]]);
+    
+    $intermediateObjectList = $hO[$intermediateFactory->getModelName()];
+    $targetObjectList = $hO[$targetFactory->getModelName()];
+    $baseObjectList = $hO[$baseFactory->getModelName()];
+    
+    $intermediateObject = current($intermediateObjectList);
+    $targetObject = current($targetObjectList);
+    $baseObject = current($baseObjectList);
+    
+    while ($intermediateObject && $targetObject && $baseObject) {
+      $kv = $baseObject->getKeyValueDict();
+      $many2One[$kv[$parentKey]] = $targetObject;
+      
+      $intermediateObject = next($intermediateObjectList);
+      $targetObject = next($targetObjectList);
+      $baseObject = next($baseObjectList);
+    }
+    return $many2One;
   }
 
   /**
@@ -243,9 +316,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    * @param object $targetFactory Object properties of objects returned
    * @param string $joinField Field to connect 'intermediate' to 'target'
 
-   * @return array 
+   * @return array $many2many which is a map where the key is the id of the parent object and the value is an array of the included
+   *                objects that are included for this parent object
    */
-  final protected static function getManyToOneRelationViaIntermediate(
+  final protected static function getManyToManyRelationViaIntermediate(
     array $objects,
     string $objectField,
     object $intermediateFactory,
@@ -372,6 +446,22 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $updates;
   }
 
+  protected static function addToRelatedResources(array $relatedResources, array $relatedResource) {
+    $alreadyExists = false;
+    $searchType = $relatedResource["type"];
+    $searchId = $relatedResource["id"];
+    foreach ($relatedResources as $resource) {
+      if ($resource["id"] == $searchId && $resource["type"] == $searchType) {
+        $alreadyExists = true;
+        break;
+      }
+    }
+    if (!$alreadyExists) {
+     $relatedResources[] = $relatedResource; 
+    }
+    return $relatedResources;
+  }
+
   /**
    * API entry point for requesting multiple objects
    */
@@ -388,7 +478,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     // $defaultPageSize = SConfig::getInstance()->getVal(DConfig::DEFAULT_PAGE_SIZE);
     // $maxPageSize = SConfig::getInstance()->getVal(DConfig::MAX_PAGE_SIZE);
 
-    $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') ?? 0;
+    $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after');
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
     if ($pageSize < 0) {
       throw new HttpErrorException("Invalid parameter, page[size] must be a positive integer", 400);
@@ -432,9 +522,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
     //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
     //if this query is too expensive for big tables, it can be removed
-    $agg1 = new Aggregation($primaryKey, Aggregation::MAX);
-    $agg2 = new Aggregation($primaryKey, Aggregation::MIN);
-    $agg3 = new Aggregation($primaryKey, Aggregation::COUNT);
+    $agg1 = new Aggregation($primaryKey, Aggregation::MAX, $factory);
+    $agg2 = new Aggregation($primaryKey, Aggregation::MIN, $factory);
+    $agg3 = new Aggregation($primaryKey, Aggregation::COUNT, $factory);
     $aggregation_results = $factory->multicolAggregationFilter($finalFs, [$agg1, $agg2, $agg3]);
 
     $max = $aggregation_results[$agg1->getName()];
@@ -446,7 +536,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     //pagination filters need to be added after max has been calculated
     $finalFs[Factory::LIMIT] = new LimitFilter($pageSize);
 
-    $finalFs[Factory::FILTER][] = new QueryFilter($primaryKey, $pageAfter, '>', $factory);
+    if (isset($pageAfter)){
+      $finalFs[Factory::FILTER][] = new QueryFilter($primaryKey, $pageAfter, '>', $factory);
+    }
     $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
     if (isset($pageBefore)) {
       $finalFs[Factory::FILTER][] = new QueryFilter($primaryKey, $pageBefore, '<', $factory);
@@ -484,14 +576,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
           $expandResultObject = $expandResult[$expand][$object->getId()];
           if (is_array($expandResultObject)) {
             foreach ($expandResultObject as $expandObject) {
-              $includedResources[] = $apiClass->obj2Resource($expandObject);
+              $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject));
             }
           } else {
             if ($expandResultObject === null) {
               // to-only relation which is nullable
               continue;
             }
-            $includedResources[] = $apiClass->obj2Resource($expandResultObject);
+            $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandResultObject));
           }
         }
       }
@@ -682,14 +774,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
-   * Get input field names valid for creation of object
-   */
-  final public function getCreateValidFeatures(): array
-  {
-    return $this->getAliasedFeatures();
-  }
-
-  /**
    * API entry point for requests of single object
    */
   public function getOne(Request $request, Response $response, array $args): Response
@@ -839,6 +923,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $this->preCommon($request);
 
     $relation = $args['relation'];
+    $id = $args['id'];
 
     $relationMapper = $this->getToOneRelationships()[$relation];
     $intermediate = $relationMapper["intermediateType"];
@@ -847,20 +932,31 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $intermediateFactory = self::getModelFactory($intermediate);
       $aFs[Factory::JOIN][] = new JoinFilter(
         $intermediateFactory,
-        $relationMapper['joinField'],
-        $relationMapper['joinFieldRelation'],
+        $relationMapper['junctionTableJoinField'],
+        $relationMapper['relationKey'],
+      );
+
+      $filterFactory = self::getModelFactory($relationMapper['junctionTableType']);
+      $filterField = $relationMapper['joinField'];
+
+      $aFs[Factory::FILTER][] = new QueryFilter(
+        $filterField,
+        $id,
+        '=',
+        $filterFactory
       );
 
       $factory = $this->getFactory();
       $object = $factory->filter($aFs)[$intermediateFactory->getModelName()][0];
+      $id = $object->getId();
     } else {
       // Base object
-      $object = $this->doFetch($args['id']);
+      $object = $this->doFetch($request, $id);
     }
 
     // Relation object
     $relationObjects = $this->fetchExpandObjects([$object], $relation);
-    $relationObject = $relationObjects[$args['id']];
+    $relationObject = $relationObjects[$id];
 
     $relationClass = $relationMapper['relationType'];
     $relationApiClass = new ($this->container->get('classMapper')->get($relationClass))($this->container);
@@ -1007,7 +1103,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $aFs[Factory::JOIN][] = new JoinFilter(
         self::getModelFactory($toManyRelation['junctionTableType']),
         $toManyRelation['junctionTableJoinField'],
-        $toManyRelation['key'],
+        $toManyRelation['relationKey'],
       );
     }
 
@@ -1158,16 +1254,38 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       throw new HttpErrorException("Relation does not exist!");
     }
 
-    $relationType = $relation['relationType'];
-    $primaryKey = $this->getPrimaryKeyOther($relationType);
-    $features = $this->getFeaturesOther($relationType);
-
-    // $this->checkForeignkeyPermission($request, $relationKey, $features);
-    $this->isAllowedToMutate($request, $features, $relationKey);
-
-    $factory = self::getModelFactory($relationType);
-    $updates = self::ResourceRecordArrayToUpdateArray($data, $args["id"]);
-    $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
+    // TODO this ia an abstract way of adding to junctiontables. This only works for intermediate tables 
+    // that have 3 fields (1 primary key and 2 foreignkeys to link the tables) for models that have intermediate 
+    // tables with more than 3 fields, the postToManyRelationshipLink() function should be overidden.
+    if (array_key_exists("junctionTableType", $relation)) {
+      $relationType = $relation['junctionTableType'];
+      $primaryKey = $this->getPrimaryKeyOther($relationType);
+      //Add to junction table if not exist.
+      $factory = self::getModelFactory($relationType);
+      foreach($data as $item) {
+        if (!$this->validateResourceRecord($item)) {
+          $encoded_item = json_encode($item);
+          throw new HttpErrorException('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
+        }
+        $junction_table_entry = $factory->getNullObject();
+        $setMethod1 = "set" . ucfirst($relation["junctionTableFilterField"]);
+        $setMethod2 = "set" . ucfirst($relation["junctionTableJoinField"]);
+        if (!method_exists($junction_table_entry, $setMethod1) || !method_exists($junction_table_entry, $setMethod2)) {
+          throw new HTException("Internal error, set function not found");
+        }
+        $junction_table_entry->$setMethod1($args["id"]);
+        $junction_table_entry->$setMethod2($item["id"]);
+        $factory->save($junction_table_entry);
+      }
+    } else {
+      $relationType = $relation['relationType'];
+      $primaryKey = $this->getPrimaryKeyOther($relationType);
+      $features = $this->getFeaturesOther($relationType);
+      $this->isAllowedToMutate($request, $features, $relationKey);
+      $factory = self::getModelFactory($relationType);
+      $updates = self::ResourceRecordArrayToUpdateArray($data, $args["id"]);
+      $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
+    }
 
     return $response->withStatus(201)
       ->withHeader("Content-Type", "application/vnd.api+json");

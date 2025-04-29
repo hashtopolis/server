@@ -3,14 +3,17 @@ use DBA\Factory;
 
 use DBA\Agent;
 use DBA\Assignment;
+use DBA\Chunk;
 use DBA\CrackerBinary;
 use DBA\CrackerBinaryType;
 use DBA\File;
 use DBA\FileTask;
 use DBA\Hashlist;
+use DBA\QueryFilter;
 use DBA\Speed;
 use DBA\Task;
 use DBA\TaskWrapper;
+use Util;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -47,6 +50,12 @@ class TaskAPI extends AbstractModelAPI {
           'intermediateType' => TaskWrapper::class,
           'joinField' => Task::TASK_WRAPPER_ID,
           'joinFieldRelation' => TaskWrapper::TASK_WRAPPER_ID,
+
+          'junctionTableType' => TaskWrapper::class,
+          'junctionTableFilterField' => TaskWrapper::HASHLIST_ID,
+          'junctionTableJoinField' => TaskWrapper::TASK_WRAPPER_ID,
+
+          'parentKey' => Task::TASK_ID
         ],
       ];
     }
@@ -117,6 +126,38 @@ class TaskAPI extends AbstractModelAPI {
       );
       
       return $object->getId();
+    }
+
+    //TODO make aggregate data queryable and not included by default
+    static function aggregateData(object $object): array {
+      $keyspace = $object->getKeyspace();
+      $keyspaceProgress = $object->getKeyspaceProgress();
+
+      $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
+      $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
+
+      $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+      $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+      
+      $activeAgents = [];
+      foreach($chunks as $chunk) {
+        if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
+          $activeAgents[$chunk->getAgentId()] = true;
+        }
+      }
+
+      //status 1 is running, 2 is idle and 3 is completed
+      $status = 2;
+      if ($keyspaceProgress >= $keyspace && $keyspaceProgress > 0) {
+        $status = 3;
+      } elseif (count($activeAgents) > 0) {
+        $status = 1;
+      }
+      
+      $aggregatedData["activeAgents"] = array_keys($activeAgents);
+      $aggregatedData["status"] = $status;
+
+      return $aggregatedData;
     }
 
     protected function deleteObject(object $object): void {

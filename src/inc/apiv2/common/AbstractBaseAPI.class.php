@@ -40,7 +40,7 @@ use DBA\TaskWrapper;
 use DBA\User;
 
 use DBA\Factory;
-use DBA\OrderFilter;
+use DBA\ContainFilter;
 use DBA\LikeFilter;
 use DBA\LikeFilterInsensitive;
 use DBA\LogEntry;
@@ -105,6 +105,15 @@ abstract class AbstractBaseAPI
   }
 
   /**
+   * Get input field names valid for creation of object
+   */
+  final public function getCreateValidFeatures(): array
+  {
+    return $this->getAliasedFeatures();
+  }
+
+
+  /**
    * Create features from formfields
    */
   protected function getFeatures(): array
@@ -121,6 +130,14 @@ abstract class AbstractBaseAPI
   }
 
   protected function getUpdateHandlers($id, $current_user): array {
+    return [];
+  }
+
+  /**
+   * Overidable function to aggregate data in the object. Currently only used for Tasks
+   * returns the aggregated data in key value pairs
+   */
+  public static function aggregateData(object $object): array {
     return [];
   }
 
@@ -307,12 +324,14 @@ abstract class AbstractBaseAPI
   {
     $expand_to_perm_mapping = array(
       'assignedAgents' => [Agent::PERM_READ],
+      'assignments' => [Assignment::PERM_READ],
       'agent' => [Agent::PERM_READ],
       'agents' => [AccessGroup::PERM_READ],
       'agentStats' => [AgentStat::PERM_READ],
       'accessGroups' => [AccessGroup::PERM_READ], 
       'accessGroup' => [AccessGroup::PERM_READ],
       'chunk' => [Chunk::PERM_READ],
+      'chunks' => [Chunk::PERM_READ],
       'configSection' => [ConfigSection::PERM_READ],
       'crackerBinary' => [CrackerBinary::PERM_READ],
       'crackerBinaryType' => [CrackerBinaryType::PERM_READ],
@@ -414,7 +433,7 @@ abstract class AbstractBaseAPI
     DAccessControl::PUBLIC_ACCESS => array(LogEntry::PERM_READ),
 
     // src/inc/defines/notifications.php
-    DAccessControl::LOGIN_ACCESS => array(NotificationSetting::PERM_CREATE, NotificationSetting::PERM_READ, NotificationSetting::PERM_UPDATE, NotificationSetting::PERM_DELETE),
+    DAccessControl::LOGIN_ACCESS => array(NotificationSetting::PERM_CREATE, NotificationSetting::PERM_READ, NotificationSetting::PERM_UPDATE, NotificationSetting::PERM_DELETE, LogEntry::PERM_CREATE, LogEntry::PERM_DELETE, LogEntry::PERM_UPDATE),
   );
 
   /** 
@@ -523,6 +542,9 @@ abstract class AbstractBaseAPI
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
 
+    //TODO: only aggregate data when it has been included
+    $aggregatedData = $apiClass::aggregateData($obj);
+    $attributes = array_merge($attributes, $aggregatedData);
 
     /* Build JSON::API relationship resource */
     $toManyRelationships = $apiClass::getToManyRelationships();
@@ -709,23 +731,23 @@ abstract class AbstractBaseAPI
    * @return void 
    */
   protected function isAllowedToMutate(Request $request, array $features, string $key) {
-      if (is_string($key) == False) {
-        throw new HttpErrorException("Key '$key' invalid", 403);
-      }
-      // Ensure key exists in target array
-      if (array_key_exists($key, $features) == False) {
-        throw new HttpErrorException("Key '$key' does not exists!", 403);
-      }
+    if (is_string($key) == False) {
+      throw new HttpErrorException("Key '$key' invalid", 403);
+    }
+    // Ensure key exists in target array
+    if (array_key_exists($key, $features) == False) {
+      throw new HttpErrorException("Key '$key' does not exists!", 403);
+    }
 
-      if ($features[$key]['read_only'] == True) {
-        throw new HttpForbiddenException($request, "Key '$key' is immutable");
-      }
-      if ($features[$key]['protected'] == True) {
-        throw new HttpForbiddenException($request, "Key '$key' is protected");
-      }
-      if ($features[$key]['private'] == True) {
-        throw new HttpForbiddenException($request, "Key '$key' is private");
-      }
+    if ($features[$key]['read_only'] == True) {
+      throw new HttpForbiddenException($request, "Key '$key' is immutable");
+    }
+    if ($features[$key]['protected'] == True) {
+      throw new HttpForbiddenException($request, "Key '$key' is protected");
+    }
+    if ($features[$key]['private'] == True) {
+      throw new HttpForbiddenException($request, "Key '$key' is private");
+    }
   }
 
   /**
@@ -810,6 +832,16 @@ abstract class AbstractBaseAPI
     }
   }
 
+  //function for automatic swagger doc generation
+  function getAllPostParameters(array $features): array {
+    $postFeatures = [];
+    foreach($features as $key => $value) {
+      if ($value['protected'] == False) {
+          $postFeatures[$key] = $value;
+      }
+    }
+    return $postFeatures;
+  }
   /**
    * Validate incoming parameter keys
    */
@@ -880,12 +912,13 @@ abstract class AbstractBaseAPI
   protected function getPrimaryKey(): string
   {
     $features = $this->getFeatures();
-    # Word-around required since getPrimaryKey is not static in dba/models/*.php
+    # Work-around required since getPrimaryKey is not static in dba/models/*.php
     foreach($features as $key => $value) {
       if ($value['pk'] == True) {
         return $key;
       }
     }
+    throw new HTException("Internal error: no primary key found");
   }
 
   function getFilters(Request $request) {
@@ -895,7 +928,6 @@ abstract class AbstractBaseAPI
   /**
    * Check for valid filter parameters and build QueryFilter
    */
-  // protected function makeFilter(Request $request, array $features): array
   protected function makeFilter(array $filters, object $apiClass): array
   {
     $qFs = []; 
@@ -903,7 +935,7 @@ abstract class AbstractBaseAPI
     $factory = $apiClass->getFactory();
     foreach ($filters as $filter => $value) {
 
-      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith)$/', $filter, $matches) == 0) {
+      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith|__in|__nin)$/', $filter, $matches) == 0) {
         throw new HTException("Filter parameter '" . $filter . "' is not valid");
       }
 
@@ -913,74 +945,86 @@ abstract class AbstractBaseAPI
       if (array_key_exists($cast_key, $features) == false) {
         throw new HTException("Filter parameter '" . $filter . "' is not valid (key not valid field)");
       };
+
+      $valueList = explode(",", $value);
  
       // TODO Merge/Combine with validate parameters 
-      switch($features[$cast_key]['type']) {
-        case 'bool':
-          $val = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-          if (is_null($val)) {
-            throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");
-          }
-          break;
-        case 'int':
-          $val = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-          if (is_null($val)) {
-            throw new HTException("Filter parameter '" . $filter . "' is not valid integer value");
-          }
-        default:
-          $val = $value;
-      }            
+      foreach($valueList as &$value) {
+        switch($features[$cast_key]['type']) {
+          case 'bool':
+            $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            if (is_null($value)) {
+              throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");
+            }
+            break;
+          case 'int':
+            $value = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+            if (is_null($value)) {
+              throw new HTException("Filter parameter '" . $filter . "' is not valid integer value");
+            }
+        }            
+      }
 
       // We need to remap any aliased key to the key as it appears in the database.
       $remappedKey = $features[$cast_key]['dbname'];
 
-      switch($matches['operator']) {
-        case '':
-        case '__eq':
-          $operator = '=';
+      $amount_values = count($valueList);
+      $single_val = $valueList[0];
+      $operator = $matches['operator'];
+      $query_operator = "";
+      switch(true) {
+        case (($operator == '__eq' | $operator == '') && $amount_values == 1):
+          $query_operator = '=';
           break;
-        case '__ne':
-          $operator = '!=';
+        case ($operator == '__ne' && $amount_values == 1):
+          $query_operator = '!=';
           break;
-        case '__lt':
-          $operator = '<';
+        case ($operator == '__lt' && $amount_values == 1):
+          $query_operator = '<';
           break;
-        case '__lte':
-          $operator = '<=';
+        case ($operator == '__lte' && $amount_values == 1):
+          $query_operator = '<=';
           break;
-        case '__gt':
-          $operator = '>';
+        case ($operator == '__gt' && $amount_values == 1):
+          $query_operator = '>';
           break;
-        case '__gte':
-          $operator = '>=';
+        case ($operator == '__gte' && $amount_values == 1):
+          $query_operator = '>=';
           break;
-        case '__contains':
-          array_push($qFs, new LikeFilter($remappedKey, "%" . $val . "%", $factory));
+        case ($operator == '__contains' && $amount_values == 1):
+          array_push($qFs, new LikeFilter($remappedKey, "%" . $single_val . "%", $factory));
           break;
-        case '__startswith':
-          array_push($qFs, new LikeFilter($remappedKey, $val . "%", $factory));
+        case ($operator == '__startswith' && $amount_values == 1):
+          array_push($qFs, new LikeFilter($remappedKey, $single_val . "%", $factory));
           break;
-        case '__endswith':
-          array_push($qFs, new LikeFilter($remappedKey, "%" . $val, $factory));
+        case ($operator == '__endswith' && $amount_values == 1):
+          array_push($qFs, new LikeFilter($remappedKey, "%" . $single_val, $factory));
           break;
-        case '__icontains':
-          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val . "%", $factory));
+        case ($operator == '__icontains' && $amount_values == 1):
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $single_val . "%", $factory));
           break;
-        case '__istartswith':
-          array_push($qFs, new LikeFilterInsensitive($remappedKey, $val . "%", $factory));
+        case ($operator == '__istartswith' && $amount_values == 1):
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, $single_val . "%", $factory));
           break;
-        case '__iendswith':
-          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val, $factory));
+        case ($operator == '__iendswith' && $amount_values == 1):
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $single_val, $factory));
+          break;
+        //Filters bellow operate on lists
+        case ($operator == '__in'):
+          array_push($qFs, new ContainFilter($remappedKey, $valueList, $factory));
+          break;
+        case ($operator == '__nin'):
+          array_push($qFs, new ContainFilter($remappedKey, $valueList, $factory, true));
           break;
         default:
-          assert(False, "Operator '" . $matches['operator'] . "' not implemented");
+          assert(False, "Operator '" . $operator . "' not implemented");
       }
 
-      if ($operator) {
-        if (array_key_exists($val, $features)) {
-          array_push($qFs, new ComparisonFilter($remappedKey, $val, $operator, $factory));
+      if ($query_operator) {
+        if (array_key_exists($single_val, $features)) {
+          array_push($qFs, new ComparisonFilter($remappedKey, $single_val, $query_operator, $factory));
         } else {
-          array_push($qFs, new QueryFilter($remappedKey, $val, $operator, $factory));
+          array_push($qFs, new QueryFilter($remappedKey, $single_val, $query_operator, $factory));
         }
       }
     }

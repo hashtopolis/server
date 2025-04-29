@@ -49,11 +49,11 @@ class AgentTest(BaseTest):
 
         result = helper.assign_agent(agent=agent_obj, task=task_obj)
 
-        self.assertEqual(result['assign'], 'success')
+        self.assertEqual(result['Assign'], 'Success')
 
         result = helper.unassign_agent(agent=agent_obj)
 
-        self.assertEqual(result['unassign'], 'success')
+        self.assertEqual(result['Unassign'], 'Success')
 
         task_test.tearDown()
 

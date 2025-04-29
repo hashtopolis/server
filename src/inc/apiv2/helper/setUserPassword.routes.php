@@ -20,6 +20,10 @@ class SetUserPasswordHelperAPI extends AbstractHelperAPI {
     return [User::PERM_UPDATE];
   }
 
+  /**
+   * userId is the is of the user of which you want to change the password.
+   * password is the new password that you want to set.
+   */
   public function getFormFields(): array 
   {
     return  [
@@ -28,6 +32,13 @@ class SetUserPasswordHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): array {
+    return ["Set password" => "Success"];
+  }
+
+  /**
+   * Endpoint to set a password of an user.
+   */
   public function actionPost($data): object|array|null {
     $user = self::getUser($data[User::USER_ID]);
 
@@ -37,7 +48,7 @@ class SetUserPasswordHelperAPI extends AbstractHelperAPI {
       $data["password"],
       $this->getCurrentUser()
     );
-    return null;
+    return $this->getResponse();
   }
 }  
 

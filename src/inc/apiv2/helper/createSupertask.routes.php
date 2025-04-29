@@ -25,6 +25,11 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
     return [TaskWrapper::PERM_CREATE, Task::PERM_CREATE, Supertask::PERM_READ, Hashlist::PERM_READ, CrackerBinary::PERM_READ];
   }
 
+  /**
+   * supertaskTemplateId is the the Id of the supertakstemplate of which you want to create a supertask of.
+   * hashlistId is the Id of the hashlist that has to be used for the supertask.
+   * crackerVersionId is the Id of the crackerversion that is used for the created supertask.
+   */
   public function getFormFields(): array 
   {
     return  [
@@ -34,6 +39,13 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
     ];
   }
 
+  public static function getResponse(): string {
+    return "TaskWrapper";
+  }
+
+  /**
+   * Endpoint to create a supertask from a supertask template
+   */
   public function actionPost($data): object|array|null {
     $supertaskTemplate = self::getSupertask($data["supertaskTemplateId"]);
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);

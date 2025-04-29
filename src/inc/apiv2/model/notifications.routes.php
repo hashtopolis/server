@@ -28,6 +28,11 @@ class NotificationSettingAPI extends AbstractModelAPI {
       ];
     }
 
+    function getAllPostParameters(array $features): array {
+      $features = parent::getAllPostParameters($features);
+      unset($features[NotificationSetting::IS_ACTIVE]);
+      return $features;
+    }
    
     public function getFormFields(): array {
       return  ['actionFilter' => ['type' => 'str(256)']];
@@ -35,7 +40,7 @@ class NotificationSettingAPI extends AbstractModelAPI {
 
     protected function createObject(array $data): int {
       $dummyPost = [];
-      switch (DNotificationType::getObjectType($data['action'])) {
+      switch (DNotificationType::getObjectType($data[NotificationSetting::ACTION])) {
         case DNotificationObjectType::USER:
           $dummyPost['user'] = $data['actionFilter'];
           break;
