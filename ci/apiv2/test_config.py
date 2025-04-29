@@ -20,13 +20,13 @@ class ConfigTest(BaseTest):
         self.assertEqual(obj.value, "1")
     
     def test_patch_many(self):
-        configs = Config.objects.get(configsectionId='1')
-        attributes_to_change = [10, 40, 1200, 20, "|"]
+        configs = Config.objects.filter(configId__lte='9')
+        attributes_to_change = ["10", "40", "1200", "20", "|"]
         Config.objects.patch_many(configs, attributes_to_change, "value")
 
-        newConfigs = Config.objects.get(configsectionId='1')
-        for idx, i in enumerate(newConfigs):
-            self.assertEqual(i.value, attributes_to_change[idx]) 
+        newConfigs = Config.objects.filter(configId__lte='9')
+        for new_config, new_attribute in zip(newConfigs, attributes_to_change):
+            self.assertEqual(new_config.value, new_attribute) 
 
     def test_expandables(self):
         model_obj = Config.objects.get(pk=1)

@@ -149,3 +149,8 @@ class HashlistTest(BaseTest):
         # Validate if created with provided hashlists
         obj = Hashlist.objects.prefetch_related('hashlists').get(pk=hashlist.id)
         self.assertListEqual(hashlists, obj.hashlists_set)
+
+    def test_bulk_archive(self):
+        hashlists = [self.create_test_object() for i in range(5)]
+        active_attributes = [True for i in range(5)]
+        Hashlist.objects.patch_many(hashlists, active_attributes, "isArchived")

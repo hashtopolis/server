@@ -117,6 +117,18 @@ class HashtopolisConnector(object):
             'Authorization': 'Bearer ' + self._token
         }
     
+    def create_to_many_payload(self, objects, attributes, field):
+        records = []
+        for obj, attribute in zip(objects, attributes):
+            records.append({
+                "type": type(obj).__name__,
+                "id": obj.id,
+                "attributes": {
+                    field: attribute
+                }
+            })
+        return {"data": records}
+
     def create_payload(self, obj, attributes, id=None):
         payload = {"data": {
             "type": type(obj).__name__,
@@ -235,7 +247,24 @@ class HashtopolisConnector(object):
         return self.resp_to_json(r)
 
     def patch_many(self, objects, attributes, field):
+        """
+        Used to test PATCH many endpoint.
+
+        args:
+            objects [Object]: the database objects that have to be PATCHED
+            field string: the field that has to be changed in the object
+            attributes [any]: these are the actual attributes you want to set the objects to, where object[0] will be
+            patched with attributes[0] on the set field
+        """
+        assert len(objects) == len(attributes)
         self.authenticate()
+        uri = self._api_endpoint + self._model_uri
+        headers = self._headers
+        headers['Content-Type'] = 'application/json'
+        payload = self.create_to_many_payload(objects, attributes, field)
+        logger.debug("Sending bulk PATCH payload: %s to %s", json.dumps(payload), uri)
+        r = requests.patch(uri, headers=headers, data=json.dumps(payload))
+        self.validate_status_code(r, [200], "Patching failed")
 
     def patch_one(self, obj):
         if not obj.has_changed():
@@ -277,7 +306,6 @@ class HashtopolisConnector(object):
             data = {"data": attributes}
             uri = self._hashtopolis_uri + obj.uri + "/relationships/" + k
             self.send_patch(uri, data)
-
 
     def create(self, obj):
         # Check if object to be created is new

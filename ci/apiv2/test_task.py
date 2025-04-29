@@ -87,7 +87,7 @@ class TaskTest(BaseTest):
 
         obj = TaskWrapper.objects.get(pk=task.taskWrapperId)
         self.assertEqual(new_priority, obj.priority)
-    
+   
     def test_task_update_maxagent(self):
         task = self.create_test_object()
         obj = TaskWrapper.objects.get(pk=task.taskWrapperId)
@@ -99,3 +99,8 @@ class TaskTest(BaseTest):
 
         obj = TaskWrapper.objects.get(pk=task.taskWrapperId)
         self.assertEqual(new_maxagent, obj.maxAgents)
+
+    def test_bulk_archive(self):
+        tasks = [self.create_test_object() for i in range(5)]
+        active_attributes = [True for i in range(5)]
+        Task.objects.patch_many(tasks, active_attributes, "isArchived")
