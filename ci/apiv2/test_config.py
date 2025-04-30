@@ -18,7 +18,7 @@ class ConfigTest(BaseTest):
 
         obj = Config.objects.get(item='hashcatBrainEnable')
         self.assertEqual(obj.value, "1")
-    
+
     def test_patch_many(self):
         configs = Config.objects.filter(configId__lte='9')
         attributes_to_change = ["10", "40", "1200", "20", "|"]

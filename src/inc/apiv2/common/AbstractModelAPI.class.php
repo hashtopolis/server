@@ -1065,13 +1065,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $factory = $this->getFactory();
     $object = $this->doFetch(intval($args['id']));
     if ($data == null) {
-      $factory->set($object, $relationKey, null);
+      $factory->DatabaseSet($object, $relationKey, null);
     } elseif (!$this->validateResourceRecord($data)) {
       throw new HttpErrorException('No valid resource identifier object was given as data!');
     } else {
-      $factory->set($object, $relationKey, $data["id"]);
+      //TODO check if foreign key exists befor inserting
+      $factory->DatabaseSet($object, $relationKey, $data["id"]);
     }
-    //TODO catch database exceptions like failed foreignkey constraint and return correct error response
 
     return $response->withStatus(201)
       ->withHeader("Content-Type", "application/vnd.api+json");
@@ -1339,6 +1339,21 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       ->withHeader("Content-Type", "application/vnd.api+json");
   }
 
+  /**
+   * Function to update fields in the database
+   */
+  protected function DatabaseSet($object, $key, $value) {
+    try {
+      $this->getFactory()->set($object, $key, $value);
+    } catch (PDOException $e) {
+      //TODO these should be set to more user friendly errors complaint to the JSON API standard
+      if ($e->getCode() === '23000') {
+        throw new HttpErrorException("Foreign key constrain failed: " . $e->getMessage()) ;
+      } else {
+        throw new HttpErrorException("MYSQL Database error [" . $e->getCode() . "]: " . $e->getMessage());
+      }
+    }
+  }
 
   /**
    * Update object with provided values
@@ -1351,7 +1366,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         $updateHandlers[$key]($value);
       } else {
         $object = $this->doFetch($objectId);
-        $this->getFactory()->set($object, $key, $value);
+        $this->DatabaseSet($object, $key, $value);
       }
     }
   }
