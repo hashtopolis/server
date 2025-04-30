@@ -16,7 +16,7 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     }
 
     public static function getAvailableMethods(): array {
-      return ['POST', 'GET', 'DELETE'];
+      return ['POST', 'GET', 'DELETE', 'PATCH'];
     }
 
     public static function getDBAclass(): string {
@@ -56,8 +56,10 @@ class AgentAssignmentAPI extends AbstractModelAPI {
       return $objects[0]->getId();      
     }
 
-    public function updateObject(object $object, array $data, array $processed = []): void {
-      assert(False, "AgentAssignments cannot be updated via API");
+    protected function getUpdateHandlers($id, $current_user): array {
+      return [
+        Assignment::BENCHMARK => fn ($value) => assignmentUtils::setBenchmark($id, $value, $current_user)
+      ];
     }
 
     protected function deleteObject(object $object): void {

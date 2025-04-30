@@ -56,3 +56,8 @@ class AgentTest(BaseTest):
         self.assertEqual(result['Unassign'], 'Success')
 
         task_test.tearDown()
+
+    def test_bulk_activate(self):
+        agents = [self.create_agent() for i in range(5)]
+        active_attributes = [True for i in range(5)]
+        Agent.objects.patch_many(agents, active_attributes, "isActive")

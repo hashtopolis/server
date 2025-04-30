@@ -73,6 +73,13 @@ class PreTaskAPI extends AbstractModelAPI {
       return $objects[0]->getId();      
     }
 
+    protected function getUpdateHandlers($id, $current_user): array {
+      return [
+        Pretask::ATTACK_CMD => fn ($value) => PretaskUtils::changeAttack($id, $value),
+        Pretask::COLOR => fn ($value) => PretaskUtils::setColor($id, $value),
+      ];
+    }
+
     protected function deleteObject(object $object): void {
       PretaskUtils::deletePretask($object->getId());
     }

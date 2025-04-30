@@ -72,6 +72,42 @@ class AgentBinaryUtils {
     
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
   }
+
+  public static function editUpdateTracker($binaryId, $updateTracker, $user) {
+    $binary = AgentBinaryUtils::getBinary($binaryId);
+    if ($updateTracker != $binary->getUpdateTrack()) {
+      Factory::getAgentBinaryFactory()->mset($agentBinary, [
+        AgentBinary::UPDATE_AVAILABLE => '',
+        AgentBinary::UPDATE_TRACK => $updateTracker
+      ]
+    );
+    } else {
+      Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::UPDATE_TRACK, $updateTracker);
+    }
+    Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
+  }
+
+  public static function editName($binaryId, $filename, $user) {
+    if (!file_exists(dirname(__FILE__) . "/../../bin/" . basename($filename))) {
+      throw new HTException("Provided filename does not exist!");
+    }
+    $agentBinary = AgentBinaryUtils::getBinary($binaryId);
+    Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::FILENAME, $filename);
+    Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
+  }
+
+  public static function editType($binaryId, $type, $user) {
+    $agentBinary = AgentBinaryUtils::getBinary($binaryId);
+    
+    $qF1 = new QueryFilter(AgentBinary::TYPE, $type, "=");
+    $qF2 = new QueryFilter(AgentBinary::AGENT_BINARY_ID, $agentBinary->getId(), "<>");
+    $result = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
+    if ($result != null) {
+      throw new HTException("You cannot have two binaries with the same type!");
+    }
+    Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::TYPE, $type);
+    Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
+  }
   
   /**
    * @param int $binaryId

@@ -66,59 +66,57 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
    
     protected function createObject(array $data): int {
       $group = AccessControlUtils::createGroup($data[RightGroup::GROUP_NAME]);
+      $id = $group->getId();
 
       // The utils function does not allow to set permissions directly. This call is to workaround this.
       // This causes the issue that if some error happens during updating the object the object is still created
       // but the permissions will not be set.
-      $this->updateObject($group, $data);
+      $this->updateObject($id, $data);
       
-      return $group->getId();
+      return $id;
     }
 
     protected function deleteObject(object $object): void {
       AccessControlUtils::deleteGroup($object->getId());
     }
 
+    protected function getUpdateHandlers($id, $current_user): array {
+      return [
+        RightGroup::PERMISSIONS => fn ($value) => $this->updatePermissions($id, $value)
+      ];
+    }
 
     /**
      * NOTE: If ANY CRUD-permission is satisfied the corresponding OLD-permission is set
      */
-    public function updateObject(object $object, $data, $processed = []): void {    
-      /* Use quirk on 'permissions' since this is casted to 'incorrect' DB representation already */
-      $permissions = unserialize($data[RightGroup::PERMISSIONS]);
-      $key = RightGroup::PERMISSIONS;
-      if (array_key_exists($key, $data)) {
-        array_push($processed, $key);
-
-        // Build reverse mapping to speed-up lookups for CRUD-permission to OLD-permission
-        $c2o = array();
-        foreach (self::$acl_mapping as $oldPerm => $crudPerms) {
-          foreach($crudPerms as $crudPerm) {
-            if (array_key_exists($crudPerm, $c2o)) {
-              array_push($c2o[$crudPerm], $oldPerm);
-            } else {
-              $c2o[$crudPerm] = [$oldPerm];
-            }
+    private function updatePermissions($id, $value) {
+      $permissions = unserialize($value);
+      // Build reverse mapping to speed-up lookups for CRUD-permission to OLD-permission
+      $c2o = array();
+      foreach (self::$acl_mapping as $oldPerm => $crudPerms) {
+        foreach($crudPerms as $crudPerm) {
+          if (array_key_exists($crudPerm, $c2o)) {
+            array_push($c2o[$crudPerm], $oldPerm);
+          } else {
+            $c2o[$crudPerm] = [$oldPerm];
           }
         }
-        
-        // Get enabled 'old-style' permissions
-        $legacyPerms = [];
-        foreach($permissions as $crudPerm => $value) {
-          if ($value === true) {
-            $legacyPerms = array_merge($legacyPerms, $c2o[$crudPerm]);
-          }
-        }
-        
-        // Modify data to conform with updateGroupPermssions input
-        $permData = [];
-        foreach($legacyPerms as $key) {
-          array_push($permData, $key . "-1");
-        }
-        AccessControlUtils::updateGroupPermissions($object->getId(), $permData);
       }
-
-      parent::updateObject($object, $data, $processed);
+      
+      // Get enabled 'old-style' permissions
+      $legacyPerms = [];
+      foreach($permissions as $crudPerm => $value) {
+        if ($value === true) {
+          $legacyPerms = array_merge($legacyPerms, $c2o[$crudPerm]);
+        }
+      }
+      
+      // Modify data to conform with updateGroupPermssions input
+      $permData = [];
+      foreach($legacyPerms as $key) {
+        array_push($permData, $key . "-1");
+      }
+      AccessControlUtils::updateGroupPermissions($id, $permData);
     }
 }
 

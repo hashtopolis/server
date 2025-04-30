@@ -1,4 +1,4 @@
-from hashtopolis import HashtopolisResponseError, AgentAssignment
+from hashtopolis import AgentAssignment
 
 from utils import BaseTest
 
@@ -15,9 +15,7 @@ class AgentStatTest(BaseTest):
 
     def test_patch(self):
         model_obj = self.create_test_object()
-        with self.assertRaises(HashtopolisResponseError) as e:
-            self._test_patch(model_obj, 'agentId', 1234)
-        self.assertEqual(e.exception.status_code, 405)
+        self._test_patch(model_obj, 'benchmark', "1234")
 
     def test_delete(self):
         model_obj = self.create_test_object(delete=False)

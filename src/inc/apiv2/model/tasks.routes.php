@@ -163,29 +163,16 @@ class TaskAPI extends AbstractModelAPI {
     protected function deleteObject(object $object): void {
       TaskUtils::deleteTask($object);
     }
-
-    public function updateObject(object $object, $data,  $processed = []): void {
-      $key = Task::IS_ARCHIVED;
-      if (array_key_exists($key, $data)) {
-        array_push($processed, $key);
-        TaskUtils::archiveTask($object->getId(), $this->getCurrentUser());
-      }
-
-      /* Update connected TaskWrapper priority as well */
-      $key = Task::PRIORITY;
-      if (array_key_exists($key, $data)) {
-        array_push($processed, $key);
-        TaskUtils::updatePriority($object->getId(), $data[Task::PRIORITY], $this->getCurrentUser());
-      }
-
-      /* Update connected TaskWrapper maxAgents as well */
-      $key = Task::MAX_AGENTS;
-      if (array_key_exists($key, $data)) {
-        array_push($processed, $key);
-        TaskUtils::updateMaxAgents($object->getId(), $data[Task::MAX_AGENTS], $this->getCurrentUser());
-      }
-
-      parent::updateObject($object, $data, $processed);
+    
+    protected function getUpdateHandlers($id, $current_user): array {
+      return [
+        Task::IS_ARCHIVED => fn ($value) => TaskUtils::archiveTask($id, $current_user),
+        Task::PRIORITY => fn ($value) => TaskUtils::updatePriority($id, $value, $current_user),
+        Task::MAX_AGENTS => fn ($value) => TaskUtils::updateMaxAgents($id, $value, $current_user),
+        Task::IS_CPU_TASK => fn ($value) => TaskUtils::setCpuTask($id, $value, $current_user),
+        Task::CHUNK_TIME => fn ($value) => TaskUtils::changeChunkTime($id, $value, $current_user),
+        Task::ATTACK_CMD => fn($value) => TaskUtils::changeAttackCmd($id, $value, $current_user),
+      ];
     }
 }
 

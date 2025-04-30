@@ -129,6 +129,10 @@ abstract class AbstractBaseAPI
     return $features;
   }
 
+  protected function getUpdateHandlers($id, $current_user): array {
+    return [];
+  }
+
   /**
    * Overidable function to aggregate data in the object. Currently only used for Tasks
    * returns the aggregated data in key value pairs
@@ -281,6 +285,10 @@ abstract class AbstractBaseAPI
   final protected static function getTask(int $pk): Task
   {
     return self::fetchOne(Task::class, $pk);
+  }
+  final protected static function getTaskWrapper(int $pk): TaskWrapper
+  {
+    return self::fetchOne(TaskWrapper::class, $pk);
   }
 
   final protected static function getUser(int $pk): User

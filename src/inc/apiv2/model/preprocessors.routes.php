@@ -41,6 +41,16 @@ class PreprocessorAPI extends AbstractModelAPI {
       return $objects[0]->getId();      
     }
 
+    protected function getUpdateHandlers($id, $current_user): array {
+      return [
+        Preprocessor::NAME => fn ($value) => PreprocessorUtils::editName($id, $value),
+        Preprocessor::BINARY_NAME => fn ($value) => PreprocessorUtils::editBinaryName($id, $value),
+        Preprocessor::KEYSPACE_COMMAND => fn ($value) => PreprocessorUtils::editKeyspaceCommand($id, $value),
+        Preprocessor::LIMIT_COMMAND => fn ($value) => PreprocessorUtils::editLimitCommand($id, $value),
+        Preprocessor::SKIP_COMMAND => fn ($value) => PreprocessorUtils::editSkipCommand($id, $value),
+      ];
+    }
+
     protected function deleteObject(object $object): void {
       PreprocessorUtils::delete($object->getId());
     }

@@ -24,6 +24,12 @@ class AgentAPI extends AbstractModelAPI {
     public static function getDBAclass(): string {
       return Agent::class;
     }
+    
+    protected function getUpdateHandlers($id, $current_user): array {
+      return [
+        Agent::IGNORE_ERRORS => fn ($value) => AgentUtils::changeIgnoreErrors($id, $value, $current_user),
+      ];
+    }
 
     public static function getToManyRelationships(): array {
       return [

@@ -45,6 +45,14 @@ class AgentBinaryAPI extends AbstractModelAPI {
     protected function deleteObject(object $object): void {
       AgentBinaryUtils::deleteBinary($object->getId());
     }
+
+    protected function getUpdateHandlers($id, $current_user): array {
+      return [
+        AgentBinary::TYPE => fn ($value) => AgentBinaryUtils::editType($id, $value, $current_user),
+        AgentBinary::FILENAME => fn ($value) => AgentBinaryUtils::editName($id, $value, $current_user),
+        AgentBinary::UPDATE_TRACK => fn ($value) => AgentBinaryUtils::editUpdateTracker($id, $value, $current_user),
+      ];
+    }
 }
 
 AgentBinaryAPI::register($app);

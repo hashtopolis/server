@@ -64,6 +64,48 @@ class ConfigUtils {
     return Factory::getConfigFactory()->filter([]);
   }
   
+  const DEFAULT_CONFIG_SECTION = 5;
+  /**
+   * @param array $arr id => [attributes]
+   * @throws HTException
+   * 
+   *  This is a new updateConfigs function that unlike the updateConfig is compliant
+   *  for the APIv2
+   */
+  public static function updateConfigs($arr) {
+    foreach ($arr as $id => $attributes) {
+      $currentConfig = Factory::getConfigFactory()->get($id);
+      $newValue = $attributes[Config::VALUE] ?? null;
+      $name = $currentConfig->getItem();
+
+      if (is_null($newValue)) {
+        throw new HTException("No new config value provided");
+      }
+      if (is_null($currentConfig)) {
+        throw new HTException("No config with this ID!");
+      }
+      if ($currentConfig->getValue() === $newValue) {
+        continue; //The value was not changed so we dont need to update it
+      }
+
+      $lengthLimits = [
+        DConfig::HASH_MAX_LENGTH => 'setMaxHashLength',
+        DConfig::PLAINTEXT_MAX_LENGTH => 'setPlaintextMaxLength'
+      ];
+      if (isset($lengthLimits[$name])) {
+        $limit = intval($newValue);
+        if (!Util::{$lengthLimits[$name]}($limit)) {
+            throw new HTException("Failed to update {$name}!");
+        }
+      }
+
+      SConfig::getInstance()->addValue($name, $newValue);
+      $currentConfig->setValue($newValue);
+      ConfigUtils::set($currentConfig, false);
+      }
+    
+    SConfig::reload();
+  }
   /**
    * @param array $arr
    * @throws HTException
@@ -79,7 +121,7 @@ class ConfigUtils {
         $qF = new QueryFilter(Config::ITEM, $name, "=");
         $config = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
         if ($config == null) {
-          $config = new Config(null, 5, $name, $val);
+          $config = new Config(null, self::DEFAULT_CONFIG_SECTION, $name, $val);
           Factory::getConfigFactory()->save($config);
         }
         else {
