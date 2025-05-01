@@ -29,7 +29,6 @@ use Slim\Routing\RouteContext;
 use Slim\Psr7\Response;
 
 use Skeleton\Domain\Token;
-use Crell\ApiProblem\ApiProblem;
 
 use Tuupola\Middleware\JwtAuthentication;
 use Tuupola\Middleware\HttpBasicAuthentication;
@@ -51,6 +50,7 @@ use DBA\User;
 use DBA\Factory;
 
 require __DIR__ . "/../../../vendor/autoload.php";
+require __DIR__ . "../../../inc/apiv2/common/ErrorHandler.class.php";
 
 require_once(dirname(__FILE__) . "/../../inc/load.php");
 
@@ -58,21 +58,6 @@ require_once(dirname(__FILE__) . "/../../inc/load.php");
 /* Construct container for middleware */
 $container = new \DI\Container();
 AppFactory::setContainer($container);
-
-
-/* Quirk to display error JSON style */
-function errorResponse($response, $message, $status = 401)
-{
-    $problem = new ApiProblem($message, "about:blank");
-    $problem->setStatus($status);
-
-    $body = $response->getBody();
-    $body->write($problem->asJson(true));
-
-    return $response
-        ->withHeader("Content-type", "application/problem+json")
-        ->withStatus($status);
-}
 
 
 /* Authentication middleware for token retrival */
@@ -192,12 +177,16 @@ class TokenAsParameterMiddleware implements MiddlewareInterface
 class CorsHackMiddleware implements MiddlewareInterface 
 {
     public function process(Request $request, RequestHandler $handler): Response {
+        $response = $handler->handle($request);
+
+        return $this::addCORSheaders($request, $response);
+    }
+
+    public static function addCORSheaders(Request $request, $response) {
         $routeContext = RouteContext::fromRequest($request);
         $routingResults = $routeContext->getRoutingResults();
         $methods = $routingResults->getAllowedMethods();
         $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
-    
-        $response = $handler->handle($request);
     
         $response = $response->withHeader('Access-Control-Allow-Origin', '*');
         $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
@@ -232,6 +221,24 @@ $app->add((new DeflateEncoder())->contentType(
 ));
 
 $app->add(new CorsHackMiddleware());            // NOTE: The RoutingMiddleware should be added after our CORS middleware so routing is performed first
+// NOTE: The ErrorMiddleware should be added after any middleware which may modify the response body
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
+$errorHandler = $errorMiddleware->getDefaultErrorHandler();
+$errorHandler->forceContentType('application/json');
+
+$customErrorHandler = function (
+  Request $request, 
+  Throwable $exception, 
+  bool $displayErrorDetails, 
+  bool $logErrors, 
+  bool $logErrorDetails) use ($app) {
+
+    $response = $app->getResponseFactory()->createResponse();
+    $response = CorsHackMiddleware::addCORSheaders($request, $response);
+
+    return errorResponse($response, $exception->getMessage(), $exception->getCode());
+  };
+  $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 $app->addRoutingMiddleware();
 
 require __DIR__ . "/../../inc/apiv2/auth/token.routes.php";
@@ -283,9 +290,5 @@ require __DIR__ . "/../../inc/apiv2/helper/resetUserPassword.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/setUserPassword.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/unassignAgent.routes.php";
 
-// NOTE: The ErrorMiddleware should be added after any middleware which may modify the response body
-$errorMiddleware = $app->addErrorMiddleware(true, true, true);
-$errorHandler = $errorMiddleware->getDefaultErrorHandler();
-$errorHandler->forceContentType('application/json');
 
 $app->run();

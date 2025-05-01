@@ -2,9 +2,6 @@
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
-
-use Slim\Exception\HttpNotFoundException;
-use Slim\Exception\HttpForbiddenException;
 use Slim\Routing\RouteContext;
 
 use DBA\AccessGroup;
@@ -54,6 +51,7 @@ use Psr\Container\NotFoundExceptionInterface;
 
 use function DI\string;
 
+include_once __DIR__ . "/ErrorHandler.class.php";
 require_once(dirname(__FILE__) . "/../../load.php");
 
 
@@ -247,7 +245,7 @@ abstract class AbstractBaseAPI
     $factory = self::getModelFactory($model);
     $object = $factory->get($pk);
     if ($object === null) {
-      throw new HTException("$model '$pk' not found!", 400);
+      throw new ResourceNotFoundError("$model '$pk' not found!", 400);
     }
     return $object;
   }
@@ -356,7 +354,7 @@ abstract class AbstractBaseAPI
     );
   
     if (array_key_exists($expand, $expand_to_perm_mapping) === False) {
-      throw new BadFunctionCallException("Internal error: Expand type '$expand' has no permission mapping implemented in getExpandPermissions()!");
+      throw new InternalError("Internal error: Expand type '$expand' has no permission mapping implemented in getExpandPermissions()!");
     }
     return $expand_to_perm_mapping[$expand];
   }
@@ -726,27 +724,27 @@ abstract class AbstractBaseAPI
    * @param string $key Field to use as base for $objects
    * @param array $features The features of the DBA object of the child
    * 
-   * @throws HttpForbiddenException when it is not allowed to alter the key
+   * @throws HttpForbidden when it is not allowed to alter the key
    * 
    * @return void 
    */
-  protected function isAllowedToMutate(Request $request, array $features, string $key) {
+  protected function isAllowedToMutate(array $features, string $key) {
     if (is_string($key) == False) {
-      throw new HttpErrorException("Key '$key' invalid", 403);
+      throw new BadRequest("Key '$key' invalid");
     }
     // Ensure key exists in target array
     if (array_key_exists($key, $features) == False) {
-      throw new HttpErrorException("Key '$key' does not exists!", 403);
+      throw new BadRequest("Key '$key' does not exists!");
     }
 
     if ($features[$key]['read_only'] == True) {
-      throw new HttpForbiddenException($request, "Key '$key' is immutable");
+      throw new HttpForbidden("Key '$key' is immutable");
     }
     if ($features[$key]['protected'] == True) {
-      throw new HttpForbiddenException($request, "Key '$key' is protected");
+      throw new HttpForbidden("Key '$key' is protected");
     }
     if ($features[$key]['private'] == True) {
-      throw new HttpForbiddenException($request, "Key '$key' is private");
+      throw new HttpForbidden("Key '$key' is private");
     }
   }
 
@@ -759,7 +757,7 @@ abstract class AbstractBaseAPI
       // Validate if field can be left empty or not
       if (($features[$key]['null'] ?? True) == False) {
         if (is_null($value) == True) {
-          throw new HttpErrorException("Key '$key' is cannot be null.");
+          throw new HttpError("Key '$key' cannot be null.");
         }
       } else {
         if (is_null($value) == True) {
@@ -771,59 +769,59 @@ abstract class AbstractBaseAPI
       // Perform type mapping
       if ($features[$key]['type'] == 'bool') {
         if (is_bool($value) == False) {
-          throw new HttpErrorException("Key '$key' is not of type boolean");
+          throw new BadRequest("Key '$key' is not of type boolean");
         }
         // Int
       } elseif (str_starts_with($features[$key]['type'], 'int')) {
         if (is_integer($value) == False) {
-          throw new HttpErrorException("Key '$key' is not of type integer");
+          throw new BadRequest("Key '$key' is not of type integer");
         }
         $maxValue = ($features[$key]['type'] === 'int64') ? 9223372036854775807 : 2147483647;
         if ($value > $maxValue || $value < -$maxValue) {
-          throw new HttpErrorException("The value exceeds the limit for a {$features[$key]['type']} integer.");
+          throw new BadRequest("The value exceeds the limit for a {$features[$key]['type']} integer.");
         }
         // Str
       } elseif (str_starts_with($features[$key]['type'], 'str')) {
         if (is_string($value) == False) {
-          throw new HttpErrorException("Key '$key' is not of type string");
+          throw new BadRequest("Key '$key' is not of type string");
         }
         if (preg_match('/str\((\d+)\)/', $features[$key]['type'], $matches)) {
           $max_string_len = (int) $matches[1];
           if (strlen($value) > $max_string_len) {
-            throw new HttpErrorException("The string value: '$value' is too long. The max size is '$max_string_len'");
+            throw new BadRequest("The string value: '$value' is too long. The max size is '$max_string_len'");
           }
         }
         // TODO: Length validation
         // Array
       } elseif (str_starts_with($features[$key]['type'], 'array')) {
         if (is_array($value) == False) {
-          throw new HttpErrorException("Key '$key' is not of type array");
+          throw new BadRequest("Key '$key' is not of type array");
         }
         // Array[Int]
         if ($features[$key]['subtype'] == 'int') {
           if (in_array(false, array_map('is_integer', $value)) == true) {
-            throw new HttpErrorException("Key '$key' array contains non-integer values");
+            throw new BadRequest("Key '$key' array contains non-integer values");
           }
         }
         // Dict
       } elseif (str_starts_with($features[$key]['type'], 'dict')) {
         if (is_array($value) == False) {
-          throw new HttpErrorException("Key '$key' is not of type dict");
+          throw new BadRequest("Key '$key' is not of type dict");
         }
         // Dict[Bool]
         if ($features[$key]['subtype'] == 'bool') {
           if (in_array(false, array_map('is_bool', $value)) == true) {
-            throw new HttpErrorException("Key '$key' dict contains non-boolean values");
+            throw new BadRequest("Key '$key' dict contains non-boolean values");
           }
         }
       } else {
-        throw new HttpErrorException("Typemapping error for key '$key' ");
+        throw new BadRequest("Typemapping error for key '$key' ");
       }
 
       // Validate values limited by choices
       if (is_array($features[$key]['choices'])) {
         if (array_key_exists($value, $features[$key]['choices']) == false) {
-          throw new HttpErrorException("Key '$key' value is not valid, choices=[" . 
+          throw new BadRequest("Key '$key' value is not valid, choices=[" . 
                                        join(",", array_keys($features[$key]['choices'])) .
                                        "], choices_details=['" . 
                                        join("', '", array_values($features[$key]['choices'])) . "']");
@@ -865,7 +863,7 @@ abstract class AbstractBaseAPI
       // Ensure debugging response lists are in sorted order
       ksort($invalidKeys);
       ksort($validFeatures);
-      throw new HTException("Parameter(s) '" . join(", ", $invalidKeys) . "' not valid input " .
+      throw new HttpForbidden("Parameter(s) '" . join(", ", $invalidKeys) . "' not valid input " .
                             "(valid key(s) : '" . join(", ", $validFeatures) . ")'", 403);
     }
 
@@ -874,7 +872,7 @@ abstract class AbstractBaseAPI
     if (count($missingKeys) > 0) {
       // Ensure debugging response lists are in sorted order
       ksort($missingKeys);
-      throw new HTException("Required parameter(s) '" .  join(", ", $missingKeys) . "' not specified");
+      throw new BadRequest("Required parameter(s) '" .  join(", ", $missingKeys) . "' not specified");
     }
   }
 
@@ -890,7 +888,7 @@ abstract class AbstractBaseAPI
 
     foreach ($queryExpands as $expand) {
       if (in_array($expand, $validExpandables) == false) {
-        throw new HTException("Parameter '" . $expand . "' is not valid expand key (valid keys are: " . join(", ", array_values($validExpandables)) . ")");
+        throw new BadRequest("Parameter '" . $expand . "' is not valid expand key (valid keys are: " . join(", ", array_values($validExpandables)) . ")");
       }
     }
 
@@ -900,7 +898,7 @@ abstract class AbstractBaseAPI
         array_push($required_perms, ...self::getExpandPermissions($expand));
     }
     if ($this->validatePermissions($required_perms) === FALSE) {
-      throw new HttpForbiddenException($request, 'Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
+      throw new BadRequest('Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
     }
 
     return $queryExpands;
@@ -918,7 +916,7 @@ abstract class AbstractBaseAPI
         return $key;
       }
     }
-    throw new HTException("Internal error: no primary key found");
+    throw new InternalError("Internal error: no primary key found");
   }
 
   function getFilters(Request $request) {
@@ -936,14 +934,14 @@ abstract class AbstractBaseAPI
     foreach ($filters as $filter => $value) {
 
       if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith|__in|__nin)$/', $filter, $matches) == 0) {
-        throw new HTException("Filter parameter '" . $filter . "' is not valid");
+        throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid");
       }
 
       // Special filtering of _id to use for uniform access to model primary key
       $cast_key = $matches['key'] == '_id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
       
       if (array_key_exists($cast_key, $features) == false) {
-        throw new HTException("Filter parameter '" . $filter . "' is not valid (key not valid field)");
+        throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid (key not valid field)");
       };
 
       $valueList = explode(",", $value);
@@ -954,13 +952,13 @@ abstract class AbstractBaseAPI
           case 'bool':
             $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
             if (is_null($value)) {
-              throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");
+              throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid boolean value");
             }
             break;
           case 'int':
             $value = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
             if (is_null($value)) {
-              throw new HTException("Filter parameter '" . $filter . "' is not valid integer value");
+              throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid integer value");
             }
         }            
       }
@@ -1052,10 +1050,10 @@ abstract class AbstractBaseAPI
           $remappedKey = $features[$cast_key]['dbname'];
           array_push($orderTemplates, ['by' => $remappedKey, 'type' => ($matches['operator'] == '-') ? "DESC" : "ASC" ]);
         } else {
-          throw new HTException("Ordering parameter '" . $order . "' is not valid");
+          throw new HttpForbidden("Ordering parameter '" . $order . "' is not valid");
         }
       } else {
-        throw new HTException("Ordering parameter '" . $order . "' is not valid");
+        throw new HttpForbidden("Ordering parameter '" . $order . "' is not valid");
       }
     }
 
@@ -1075,16 +1073,16 @@ abstract class AbstractBaseAPI
   {
     // TODO: Fix permissions
     if (!AccessControl::getInstance($user)->hasPermission(DAccessControl::MANAGE_HASHLIST_ACCESS)) {
-      throw new HttpForbiddenException($request, "No '" . DAccessControl::getDescription(DAccessControl::MANAGE_HASHLIST_ACCESS) . "' permission");
+      throw new HttpForbidden("No '" . DAccessControl::getDescription(DAccessControl::MANAGE_HASHLIST_ACCESS) . "' permission");
     }
 
     try {
       $hashlist = HashlistUtils::getHashlist($hashlistId);
     } catch (HTException $ex) {
-      throw new HttpNotFoundException($request, $ex->getMessage());
+      throw new ResourceNotFoundError($ex->getMessage());
     }
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
-      throw new HttpForbiddenException($request, "No access to hashlist!");
+      throw new HttpForbidden("No access to hashlist!");
     }
 
     return $hashlist;
@@ -1156,13 +1154,13 @@ abstract class AbstractBaseAPI
       $required_perms = $this->getRequiredPermissions($request->getMethod());  
     } catch (HTException $e) {
       # Annotate error message, with suitable candidates
-      throw new HTException($e->getMessage() . 
+      throw new HttpForbidden($e->getMessage() . 
                             "(valid methods are for model are: " . join(",", $this->getAvailableMethods()) . ")");  
     }
 
 
     if ($this->validatePermissions($required_perms) === FALSE) {
-      throw new HttpForbiddenException($request, join('||', $this->permissionErrors));
+      throw new HttpForbidden(join('||', $this->permissionErrors));
     }
   }
 
