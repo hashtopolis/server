@@ -804,7 +804,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     // Validate incoming data
     foreach (array_keys($attributes) as $key) {
       // Ensure key can be updated 
-      $this->isAllowedToMutate($request, $aliasedfeatures, $key);
+      $this->isAllowedToMutate($aliasedfeatures, $key);
     }
     // Validate input data if it matches the correct type or subtype
     $this->validateData($attributes, $aliasedfeatures);
@@ -851,7 +851,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $attributes = $resourceRecord["attributes"];
       foreach (array_keys($attributes) as $key) {
         // Ensure key can be updated 
-        $this->isAllowedToMutate($request, $aliasedfeatures, $key);
+        $this->isAllowedToMutate($aliasedfeatures, $key);
       }
       $mappedData = $this->unaliasData($attributes, $aliasedfeatures);
       $objects[$resourceRecord["id"]] = $mappedData;
@@ -1058,7 +1058,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     }
 
     $features = $this->getFeatures();
-    $this->isAllowedToMutate($request, $features, $relationKey);
+    $this->isAllowedToMutate($features, $relationKey);
 
     $factory = $this->getFactory();
     $object = $this->doFetch(intval($args['id']));
@@ -1195,7 +1195,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     $relationType = $relation['relationType'];
     $features = $this->getFeaturesOther($relationType);
-    $this->isAllowedToMutate($request, $features, $relationKey);
+    $this->isAllowedToMutate($features, $relationKey);
 
     $factory = self::getModelFactory($relationType);
 
@@ -1279,7 +1279,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $relationType = $relation['relationType'];
       $primaryKey = $this->getPrimaryKeyOther($relationType);
       $features = $this->getFeaturesOther($relationType);
-      $this->isAllowedToMutate($request, $features, $relationKey);
+      $this->isAllowedToMutate($features, $relationKey);
       $factory = self::getModelFactory($relationType);
       $updates = self::ResourceRecordArrayToUpdateArray($data, $args["id"]);
       $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
@@ -1311,7 +1311,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     $relationType = $relation['relationType'];
     $features = $this->getFeaturesOther($relationType);
-    $this->isAllowedToMutate($request, $features, $relationKey);
+    $this->isAllowedToMutate($features, $relationKey);
     if ($features[$relationKey]['null'] == False) {
       // In this scenario another solution could be to delete object TODO?
       throw new HttpForbidden("Key '$relationKey' cant be set to null");

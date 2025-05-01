@@ -720,7 +720,6 @@ abstract class AbstractBaseAPI
   /**
    * Validate the Permission of a DBA column and check if it key may be altered
    * 
-   * @param Request $request Current request that is being handled
    * @param string $key Field to use as base for $objects
    * @param array $features The features of the DBA object of the child
    * 
