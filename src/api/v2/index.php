@@ -236,7 +236,13 @@ $customErrorHandler = function (
     $response = $app->getResponseFactory()->createResponse();
     $response = CorsHackMiddleware::addCORSheaders($request, $response);
 
-    return errorResponse($response, $exception->getMessage(), $exception->getCode());
+    //Quirck to handle HTexceptions without status code, this can be removed when all HTexceptions have been migrated
+    $code = $exception->getCode();
+    if ($code == 0) {
+      $code = 500;
+    }
+
+    return errorResponse($response, $exception->getMessage(), $code);
   };
   $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 $app->addRoutingMiddleware();
