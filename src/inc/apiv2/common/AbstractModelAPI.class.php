@@ -905,8 +905,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $mappedData = $this->unaliasData($attributes, $allFeatures);
     $pk = $this->createObject($mappedData);
 
-    // TODO: Return 409 (conflict) if resource already exists or cannot be created
-
     // Request object again, since post-modified entries are not reflected into object.
     $object = $this->getFactory()->get($pk);
     return self::getOneResource($this, $object, $request, $response, 201);

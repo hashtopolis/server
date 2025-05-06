@@ -6,6 +6,7 @@ use DBA\Hashlist;
 use DBA\QueryFilter;
 use DBA\Factory;
 
+require_once('src/inc/apiv2/common/ErrorHandler.class.php');
 class HashtypeUtils {
   /**
    * @param int $hashtypeId
@@ -37,11 +38,11 @@ class HashtypeUtils {
   public static function addHashtype($hashtypeId, $description, $isSalted, $isSlowHash, $user) {
     $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
     if ($hashtype != null) {
-      throw new HTException("This hash number is already used!");
+      throw new HttpError("This hash number is already used!");
     }
     $desc = htmlentities($description, ENT_QUOTES, "UTF-8");
     if (strlen($desc) == 0 || $hashtypeId < 0) {
-      throw new HTException("Invalid inputs!");
+      throw new HttpError("Invalid inputs!");
     }
     
     $salted = 0;
@@ -55,7 +56,7 @@ class HashtypeUtils {
     
     $hashtype = new HashType($hashtypeId, $desc, $salted, $slow);
     if (Factory::getHashTypeFactory()->save($hashtype) == null) {
-      throw new HTException("Failed to add new hash type!");
+      throw new HttpError("Failed to add new hash type!");
     }
     Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashtype added: " . $hashtype->getDescription());
   }

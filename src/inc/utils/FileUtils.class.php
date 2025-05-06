@@ -12,6 +12,7 @@ use DBA\User;
 use DBA\ContainFilter;
 use DBA\FileDelete;
 use DBA\Factory;
+require_once('src/inc/apiv2/common/ErrorHandler.class.php');
 
 class FileUtils {
   /**
@@ -114,14 +115,14 @@ class FileUtils {
     
     $accessGroup = Factory::getAccessGroupFactory()->get($post['accessGroupId']);
     if ($accessGroup == null) {
-      throw new HTException("Invalid access group selected!");
+      throw new HttpError("Invalid access group selected!");
     }
     
     switch ($source) {
       case 'inline':
         $realname = str_replace(" ", "_", htmlentities(basename($post["filename"]), ENT_QUOTES, "UTF-8"));
         if ($realname == "") {
-          throw new HTException("Empty filename!");
+          throw new HttpError("Empty filename!");
         }
         $tmpfile = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $realname;
         $resp = Util::uploadFile($tmpfile, 'paste', $post['data']);
@@ -131,11 +132,11 @@ class FileUtils {
             $fileCount++;
           }
           else {
-            throw new HTException("Failed to insert file $realname into DB!");
+            throw new HttpError("Failed to insert file $realname into DB!");
           }
         }
         else {
-          throw new HTException("Failed to copy file $realname to the right place! " . $resp[1]);
+          throw new HttpError("Failed to copy file $realname to the right place! " . $resp[1]);
         }
         break;
       case "upload":
@@ -164,11 +165,11 @@ class FileUtils {
               $fileCount++;
             }
             else {
-              throw new HTException("Failed to insert file $realname into DB!");
+              throw new HttpError("Failed to insert file $realname into DB!");
             }
           }
           else {
-            throw new HTException("Failed to copy file $realname to the right place! " . $resp[1]);
+            throw new HttpError("Failed to copy file $realname to the right place! " . $resp[1]);
           }
         }
         break;
@@ -195,11 +196,11 @@ class FileUtils {
               $fileCount++;
             }
             else {
-              throw new HTException("Failed to insert file $realname into DB!");
+              throw new HttpError("Failed to insert file $realname into DB!");
             }
           }
           else {
-            throw new HTException("Failed to copy file $realname to the right place! " . $resp[1]);
+            throw new HttpError("Failed to copy file $realname to the right place! " . $resp[1]);
           }
         }
         break;
@@ -207,14 +208,14 @@ class FileUtils {
         // from url
         $realname = str_replace(" ", "_", htmlentities(basename($post["url"]), ENT_QUOTES, "UTF-8"));
         if (strlen($realname) == 0) {
-          throw new HTException("Empty URL provided!");
+          throw new HttpError("Empty URL provided!");
         }
         else if ($realname[0] == '.') {
           $realname[0] = "_";
         }
         $tmpfile = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $realname;
         if (stripos($post["url"], "https://") !== 0 && stripos($post["url"], "http://") !== 0 && stripos($post["url"], "ftp://") !== 0) {
-          throw new HTException("Only downloads from http://, https:// and ftp:// are allowed!");
+          throw new HttpError("Only downloads from http://, https:// and ftp:// are allowed!");
         }
         $resp = Util::uploadFile($tmpfile, $source, $post["url"]);
         if ($resp[0]) {
@@ -223,11 +224,11 @@ class FileUtils {
             $fileCount++;
           }
           else {
-            throw new HTException("Failed to insert file $realname into DB!");
+            throw new HttpError("Failed to insert file $realname into DB!");
           }
         }
         else {
-          throw new HTException("Failed to copy file $realname to the right place! " . $resp[1]);
+          throw new HttpError("Failed to copy file $realname to the right place! " . $resp[1]);
         }
         break;
     }

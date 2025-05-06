@@ -9,6 +9,7 @@ use DBA\QueryFilter;
 use DBA\SupertaskPretask;
 use DBA\Factory;
 
+require_once('src/inc/apiv2/common/ErrorHandler.class.php');
 class PretaskUtils {
   /**
    * @param int $pretaskId
@@ -294,25 +295,25 @@ class PretaskUtils {
    * @param int $crackerBinaryTypeId
    * @param int $maxAgents
    * @param int $priority
-   * @throws HTException
+   * @throws HttpError
    */
   public static function createPretask($name, $cmdLine, $chunkTime, $statusTimer, $color, $cpuOnly, $isSmall, $benchmarkType, $files, $crackerBinaryTypeId, $maxAgents, $priority = 0) {
     $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     
     if (strlen($name) == 0) {
-      throw new HTException("Name cannot be empty!");
+      throw new HttpError("Name cannot be empty!");
     }
     else if (strpos($cmdLine, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
-      throw new HTException("The attack command does not contain the hashlist alias!");
+      throw new HttpError("The attack command does not contain the hashlist alias!");
     }
     else if (strlen($cmdLine) > 65535) {
-      throw new HTException("Attack command is too long (max 65535 characters)!");
+      throw new HttpError("Attack command is too long (max 65535 characters)!");
     }
     else if (Util::containsBlacklistedChars($cmdLine)) {
-      throw new HTException("The command must contain no blacklisted characters!");
+      throw new HttpError("The command must contain no blacklisted characters!");
     }
     else if ($crackerBinaryType == null) {
-      throw new HTException("Invalid cracker binary type!");
+      throw new HttpError("Invalid cracker binary type!");
     }
     $chunkTime = intval($chunkTime);
     $statusTimer = intval($statusTimer);
@@ -321,13 +322,13 @@ class PretaskUtils {
       $color = "";
     }
     else if ($cpuOnly < 0 || $cpuOnly > 1) {
-      throw new HTException("Invalid cpuOnly value!");
+      throw new HttpError("Invalid cpuOnly value!");
     }
     else if ($isSmall < 0 || $isSmall > 1) {
-      throw new HTException("Invalid isSmall value!");
+      throw new HttpError("Invalid isSmall value!");
     }
     else if ($benchmarkType < 0 || $benchmarkType > 1) {
-      throw new HTException("Invalid benchmark type!");
+      throw new HttpError("Invalid benchmark type!");
     }
     else if ($chunkTime <= 0) {
       $chunkTime = SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION);

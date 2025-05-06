@@ -18,6 +18,7 @@ use DBA\Factory;
 use DBA\HealthCheckAgent;
 use DBA\Speed;
 
+require_once('src/inc/apiv2/common/ErrorHandler.class.php');
 class AgentUtils {
   /**
    * @param AgentStat $deviceUtil
@@ -384,21 +385,21 @@ class AgentUtils {
 
     $task = Factory::getTaskFactory()->get(intval($taskId));
     if ($task == null) {
-      throw new HTException("Invalid task!");
+      throw new HttpError("Invalid task!");
     }
     else if (!AccessUtils::agentCanAccessTask($agent, $task)) {
-      throw new HTException("This agent cannot access this task - either group mismatch, or agent is not configured as Trusted to access secret tasks");
+      throw new HttpError("This agent cannot access this task - either group mismatch, or agent is not configured as Trusted to access secret tasks");
     }
 
     $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
-      throw new HTException("No access to this task!");
+      throw new HttpError("No access to this task!");
     }
 
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignments = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
     if ($task->getIsSmall() && sizeof($assignments) > 0) {
-      throw new HTException("You cannot assign agent to this task as the limit of assignments is reached!");
+      throw new HttpError("You cannot assign agent to this task as the limit of assignments is reached!");
     }
 
     $qF = new QueryFilter(Agent::AGENT_ID, $agent->getId(), "=");
@@ -540,7 +541,7 @@ class AgentUtils {
     $qF = new QueryFilter(RegVoucher::VOUCHER, $newVoucher, "=");
     $check = Factory::getRegVoucherFactory()->filter([Factory::FILTER => $qF]);
     if ($check != null) {
-      throw new HTException("Same voucher already exists!");
+      throw new HttpConflict("Same voucher already exists!");
     }
 
     $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");

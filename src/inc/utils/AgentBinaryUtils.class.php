@@ -5,6 +5,7 @@ use DBA\QueryFilter;
 use DBA\User;
 use DBA\Factory;
 
+require_once('src/inc/apiv2/common/ErrorHandler.class.php');
 class AgentBinaryUtils {
   /**
    * @param string $type
@@ -17,15 +18,15 @@ class AgentBinaryUtils {
    */
   public static function newBinary($type, $os, $filename, $version, $updateTrack, $user) {
     if (strlen($version) == 0) {
-      throw new HTException("Version cannot be empty!");
+      throw new HttpError("Version cannot be empty!");
     }
     else if (!file_exists(dirname(__FILE__) . "/../../bin/" . basename($filename))) {
-      throw new HTException("Provided filename does not exist!");
+      throw new HttpError("Provided filename does not exist!");
     }
     $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
     $result = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($result != null) {
-      throw new HTException("You cannot have two binaries with the same type!");
+      throw new HttpError("You cannot have two binaries with the same type!");
     }
     $agentBinary = new AgentBinary(null, $type, $version, $os, $filename, $updateTrack, '');
     Factory::getAgentBinaryFactory()->save($agentBinary);

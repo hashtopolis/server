@@ -6,6 +6,7 @@ use DBA\HealthCheckAgent;
 use DBA\Factory;
 use DBA\HealthCheck;
 
+require_once('src/inc/apiv2/common/ErrorHandler.class.php');
 class HealthUtils {
   /**
    * @param int $checkAgentId
@@ -140,15 +141,15 @@ class HealthUtils {
    * @param int $type
    * @param int $crackerBinaryId
    * @return HealthCheck
-   * @throws HTException
+   * @throws HttpError
    */
   public static function createHealthCheck($hashtypeId, $type, $crackerBinaryId) {
     $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryId);
     if ($crackerBinary == null) {
-      throw new HTException("Invalid cracker binary selected!");
+      throw new HttpError("Invalid cracker binary selected!");
     }
     else if ($type != DHealthCheckType::BRUTE_FORCE) {
-      throw new HTException("Invalid health check type!");
+      throw new HttpError("Invalid health check type!");
     }
     
     // we use len 5 here, but this can be adjusted depending on the agents abilities
@@ -180,7 +181,7 @@ class HealthUtils {
     // check if file actually exists
     if (!file_exists($filename)) {
       Factory::getHealthCheckFactory()->delete($healthCheck);
-      throw new HTException("Failed to create hashes in tmp directory!");
+      throw new HttpError("Failed to create hashes in tmp directory!");
     }
     
     // apply it to all agents
