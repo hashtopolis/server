@@ -83,7 +83,8 @@ class HashtopolisConnector(object):
     @staticmethod
     def resp_to_json(response):
         content_type_header = response.headers.get('Content-Type', '')
-        if any([x in content_type_header for x in ('application/vnd.api+json', 'application/json')]):
+        if any([x in content_type_header for x in ('application/vnd.api+json', 'application/json',
+                                                   'application/problem+json')]):
             return response.json()
         else:
             raise HashtopolisResponseError("Response type '%s' is not valid JSON document, text='%s'" %
