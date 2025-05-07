@@ -8,7 +8,7 @@ use DBA\Supertask;
 use DBA\SupertaskPretask;
 
 
-require_once('src/inc/apiv2/common/ErrorHandler.class.php');
+require_once __DIR__ . '/../common/ErrorHandler.class.php';
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
