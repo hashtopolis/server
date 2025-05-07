@@ -7,8 +7,8 @@ use DBA\Pretask;
 use DBA\Supertask;
 use DBA\SupertaskPretask;
 
-use Middlewares\Utils\HttpErrorException;
 
+require_once('src/inc/apiv2/common/ErrorHandler.class.php');
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
@@ -71,7 +71,7 @@ class SupertaskAPI extends AbstractModelAPI {
         foreach($data as $pretask) {
           if (!$this->validateResourceRecord($pretask)) {
             $encoded_pretask = json_encode($pretask);
-            throw new HttpErrorException('Invalid resource record given in list! invalid resource record: ' . $encoded_pretask);
+            throw new HttpError('Invalid resource record given in list! invalid resource record: ' . $encoded_pretask);
           }
           array_push($wantedPretasks, self::getPretask($pretask["id"]));
         }
@@ -97,7 +97,7 @@ class SupertaskAPI extends AbstractModelAPI {
         }
 
         if (!$factory->getDB()->commit()) {
-          throw new HttpErrorException("Was not able to update to many relationship");
+          throw new HttpError("Was not able to update to many relationship");
         }
     }
 

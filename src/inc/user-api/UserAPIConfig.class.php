@@ -22,7 +22,7 @@ class UserAPIConfig extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch (HTException $e) {
+    catch (Exception $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
@@ -45,7 +45,7 @@ class UserAPIConfig extends UserAPIBasic {
         $config = ConfigUtils::get($QUERY[UQueryConfig::CONFIG_ITEM]);
         $config->setValue($QUERY[UQueryConfig::CONFIG_VALUE]);
       }
-      catch (HTException $e) {
+      catch (Exception $e) {
         $config = new Config(null, 1, $QUERY[UQueryConfig::CONFIG_ITEM], $QUERY[UQueryConfig::CONFIG_VALUE]);
         $new = true;
       }
