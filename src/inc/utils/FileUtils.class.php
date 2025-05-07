@@ -12,7 +12,7 @@ use DBA\User;
 use DBA\ContainFilter;
 use DBA\FileDelete;
 use DBA\Factory;
-require_once('src/inc/apiv2/common/ErrorHandler.class.php');
+require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class FileUtils {
   /**

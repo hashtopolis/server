@@ -7,7 +7,7 @@ use DBA\Session;
 use DBA\NotificationSetting;
 use DBA\Agent;
 use DBA\Factory;
-require_once('src/inc/apiv2/common/ErrorHandler.class.php');
+require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class UserUtils {
   /**
