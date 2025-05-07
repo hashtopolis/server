@@ -17,7 +17,7 @@ class ForgotHandler implements Handler {
           break;
       }
     }
-    catch (HTException $e) {
+    catch (Exception $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
