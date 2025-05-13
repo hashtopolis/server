@@ -51,15 +51,16 @@ events {
 }
 
 http {
+
     server {
         listen 80;
         server_name localhost;
         return 301 https://$host$request_uri;
     }
 
-
     server {
-        listen 443 ssl;
+        client_max_body_size 2G;
+        listen 443 ssl http2;
         server_name localhost;
 
         ssl_certificate /etc/nginx/ssl/nginx.crt;
@@ -69,28 +70,28 @@ http {
         ssl_prefer_server_ciphers on;
         ssl_ciphers HIGH:!aNULL:!MD5;
 
-        location / {
-            proxy_pass http://hashtopolis-frontend;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        location ~ (.*\.php) {
+            proxy_pass http://hashtopolis-backend/$request_uri;
         }
 
-        location /api/v2 {
-            proxy_pass http://hashtopolis-backend:80/api/v2;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+        location /api {
+            proxy_pass http://hashtopolis-backend/api;
         }
-    
-        location /old {
-            proxy_pass http://hashtopolis-backend/;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+
+        location /static {
+            proxy_pass http://hashtopolis-backend/static;
+        }
+
+        location / {
+            proxy_pass http://hashtopolis-frontend;
+        }
+        location /legacy {
+            proxy_pass http://hashtopolis-backend/index.php;
         }
     }
 }
@@ -104,4 +105,4 @@ http {
 docker compose up
 
 ```
-5. Visit hashtopolis on http://localhost/ the old ui is available via http://localhost/old
+5. Visit hashtopolis on https://localhost/ the old ui is available via https://localhost/legacy
