@@ -866,6 +866,21 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       ->withHeader("Content-Type", "application/json");
   }
 
+  public function deleteMultiple(Request $request, Response $response, array $args): Response {
+    $this->preCommon($request);
+    $data = $request->getParsedBody()['data'];
+
+    foreach ($data as $resourceRecord) {
+      if (!$this->validateResourceRecord($resourceRecord)) {
+        throw new HttpError('No valid resource identifier object was given as data!', 403);
+      }
+      $object = $this->doFetch($resourceRecord['id']);
+      $this->deleteObject($object);
+    }
+    return $response->withStatus(204)
+      ->withHeader("Content-Type", "application/json");
+  }
+
   /**
    * Overidable function to update mulitple objects
    * @objects ia an array where id is the key and the values are the attributes that need to be patched
@@ -1470,6 +1485,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     if (in_array("DELETE", $available_methods)) {
       $app->delete($baseUriOne, $me . ':deleteOne')->setName($me . ':deleteOne');
+      $app->delete($baseUri, $me . ':deleteMultiple')->setName($me . 'deleteMultiple');
     }
   }
 }
