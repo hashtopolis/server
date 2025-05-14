@@ -31,7 +31,7 @@ class AgentTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             self._test_patch(model_obj, 'agentName', too_long_name)  # name exceeds max size of 100
         self.assertEqual(e.exception.status_code, 400)
-        self.assertEqual(e.exception.exception_details[0]["message"],
+        self.assertEqual(e.exception.title,
                          f"The string value: '{too_long_name}' is too long. The max size is '100'")
 
     def test_expandables(self):
