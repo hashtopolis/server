@@ -865,6 +865,8 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
 
         }  elseif ($method == 'patch') {
           // TODO add patch many here
+        } elseif ($method == 'delete') {
+          // TODO add delete many here
         }
         else { 
           throw new HttpErrorException("Method '$method' not implemented");
