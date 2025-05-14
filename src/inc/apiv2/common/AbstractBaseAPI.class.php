@@ -862,7 +862,7 @@ abstract class AbstractBaseAPI
       // Ensure debugging response lists are in sorted order
       ksort($invalidKeys);
       ksort($validFeatures);
-      throw new HttpForbidden("Parameter(s) '" . join(", ", $invalidKeys) . "' not valid input " .
+      throw new HttpError("Parameter(s) '" . join(", ", $invalidKeys) . "' not valid input " .
                             "(valid key(s) : '" . join(", ", $validFeatures) . ")'", 403);
     }
 

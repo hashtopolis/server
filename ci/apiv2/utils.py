@@ -378,7 +378,7 @@ class BaseTest(unittest.TestCase):
     def _test_exception(self, func_create, *args, **kwargs):
         with self.assertRaises(HashtopolisError) as e:
             _ = func_create(*args, **kwargs)
-        self.assertEqual(e.exception.status_code,  500)
+        self.assertIn(e.exception.status_code,  [403, 500])
         self.assertGreaterEqual(len(e.exception.exception_details), 1)
 
     def _test_patch(self, model_obj, attr, new_attr_value=None):

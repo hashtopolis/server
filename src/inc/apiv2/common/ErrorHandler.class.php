@@ -1,6 +1,8 @@
 <?php
 use Crell\ApiProblem\ApiProblem;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Handlers\ErrorHandler;
+use Slim\Exception\HttpMethodNotAllowedException;
 
 /* Quirk to display error JSON style */
 function errorResponse(Response $response, $message, $status = 401)
@@ -17,8 +19,8 @@ function errorResponse(Response $response, $message, $status = 401)
 }
 
 class ResourceNotFoundError extends Exception {
-  public function __construct(string $message = "Resource not found") {
-    parent::__construct($message, 404);
+  public function __construct(string $message = "Resource not found", int $code = 404) {
+    parent::__construct($message, $code);
   }
 }
 

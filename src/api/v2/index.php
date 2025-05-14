@@ -24,7 +24,7 @@ ini_set("display_errors", '1');
 use Slim\Factory\AppFactory;
 use Slim\Middleware\ContentLengthMiddleware;
 use Slim\Routing\RouteContext;
-
+use Slim\Exception\HttpMethodNotAllowedException;
 
 use Slim\Psr7\Response;
 
@@ -244,8 +244,19 @@ $customErrorHandler = function (
 
     return errorResponse($response, $exception->getMessage(), $code);
   };
-  $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
-$app->addRoutingMiddleware();
+$errorMiddleware->setDefaultErrorHandler($customErrorHandler);
+$app->addRoutingMiddleware(); //Routing middleware has to be added after the default error handler
+$errorMiddlewareMethodNotAllowed = $app->addErrorMiddleware(true, true, true); 
+$errorMiddlewareMethodNotAllowed->setErrorHandler(HttpMethodNotAllowedException::class, function(
+  Request $request, 
+  Throwable $exception, 
+  bool $displayErrorDetails, 
+  bool $logErrors, 
+  bool $logErrorDetails) use ($app) {
+      $response = $app->getResponseFactory()->createResponse();
+      return errorResponse($response, $exception->getMessage(), 405);
+  });
+
 
 require __DIR__ . "/../../inc/apiv2/auth/token.routes.php";
 
