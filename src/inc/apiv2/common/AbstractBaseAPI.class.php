@@ -9,6 +9,7 @@ use DBA\AccessGroupAgent;
 use DBA\AccessGroupUser;
 use DBA\Agent;
 use DBA\AgentBinary;
+use DBA\AgentError;
 use DBA\AgentStat;
 use DBA\Assignment;
 use DBA\Chunk;
@@ -180,6 +181,8 @@ abstract class AbstractBaseAPI
         return Factory::getAgentFactory();
       case AgentBinary::class:
         return Factory::getAgentBinaryFactory();
+      case AgentError::class:
+        return Factory::getAgentErrorFactory();
       case AgentStat::class:
         return Factory::getAgentStatFactory();
       case Assignment::class:
@@ -325,6 +328,7 @@ abstract class AbstractBaseAPI
       'assignments' => [Assignment::PERM_READ],
       'agent' => [Agent::PERM_READ],
       'agents' => [AccessGroup::PERM_READ],
+      'agentErrors' => [AgentError::PERM_READ],
       'agentStats' => [AgentStat::PERM_READ],
       'accessGroups' => [AccessGroup::PERM_READ], 
       'accessGroup' => [AccessGroup::PERM_READ],
@@ -371,7 +375,7 @@ abstract class AbstractBaseAPI
     DAccessControl::CREATE_SUPERHASHLIST_ACCESS => array(HashlistHashlist::PERM_CREATE, HashlistHashlist::PERM_READ),
 
     DAccessControl::VIEW_HASHES_ACCESS => array(Hash::PERM_READ),
-    DAccessControl::VIEW_AGENT_ACCESS[0] => array(Agent::PERM_READ, Assignment::PERM_READ),
+    DAccessControl::VIEW_AGENT_ACCESS[0] => array(Agent::PERM_READ, Assignment::PERM_READ, AgentError::PERM_READ),
 
     DAccessControl::MANAGE_AGENT_ACCESS => array(Agent::PERM_READ, Agent::PERM_UPDATE, Agent::PERM_DELETE,
                                                 // src/inc/defines/agents.php

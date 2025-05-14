@@ -4,6 +4,7 @@ use DBA\Factory;
 use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
 use DBA\Agent;
+use DBA\AgentError;
 use DBA\AgentStat;
 use DBA\Assignment;
 use DBA\Chunk;
@@ -48,6 +49,12 @@ class AgentAPI extends AbstractModelAPI {
           
           'relationType' => AgentStat::class,
           'relationKey' => AgentStat::AGENT_ID,        
+        ],
+        'agentErrors' => [
+          'key' => Agent::AGENT_ID,
+
+          'relationType' => AgentError::class,
+          'relationKey' => AgentError::AGENT_ID,        
         ],
         'chunks' => [
           'key' => Agent::AGENT_ID,

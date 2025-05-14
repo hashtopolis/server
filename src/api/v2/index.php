@@ -265,6 +265,7 @@ require __DIR__ . "/../../inc/apiv2/common/openAPISchema.routes.php";
 require __DIR__ . "/../../inc/apiv2/model/accessgroups.routes.php";
 require __DIR__ . "/../../inc/apiv2/model/agentassignments.routes.php";
 require __DIR__ . "/../../inc/apiv2/model/agentbinaries.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/agenterrors.routes.php";
 require __DIR__ . "/../../inc/apiv2/model/agents.routes.php";
 require __DIR__ . "/../../inc/apiv2/model/agentstats.routes.php";
 require __DIR__ . "/../../inc/apiv2/model/chunks.routes.php";
