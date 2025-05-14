@@ -257,6 +257,22 @@ class HashtopolisConnector(object):
         r = requests.get(uri, headers=headers, data=payload)
         self.validate_status_code(r, [200], "Get single object failed")
         return self.resp_to_json(r)
+    
+    def delete_many(self, objects):
+        self.authenticate()
+        uri = self._api_endpoint + self._model_uri
+        headers = self._headers
+        headers['Content-Type'] = 'application/json'
+        records = []
+        for obj in objects:
+            records.append({
+                "type": type(obj).__name__,
+                "id": obj.id,
+            })
+        payload = {"data": records}
+        logger.debug("Sending bulk DELETE payload: %s to %s", json.dumps(payload), uri)
+        r = requests.delete(uri, headers=headers, data=json.dumps(payload))
+        self.validate_status_code(r, [204], "deleting failed")
 
     def patch_many(self, objects, attributes, field):
         """
@@ -496,6 +512,10 @@ class ManagerBase(type):
     @classmethod
     def patch_many(cls, objects, attributes, field):
         cls.get_conn().patch_many(objects, attributes, field)
+    
+    @classmethod
+    def delete_many(cls, objects):
+        cls.get_conn().delete_many(objects)
 
     @classmethod
     def create(cls, obj):

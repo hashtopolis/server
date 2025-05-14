@@ -154,3 +154,7 @@ class HashlistTest(BaseTest):
         hashlists = [self.create_test_object() for i in range(5)]
         active_attributes = [True for i in range(5)]
         Hashlist.objects.patch_many(hashlists, active_attributes, "isArchived")
+
+    def test_bulk_delete(self):
+        hashlists = [self.create_test_object(delete=False) for i in range(5)]
+        Hashlist.objects.delete_many(hashlists)

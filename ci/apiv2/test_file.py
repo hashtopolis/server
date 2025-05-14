@@ -46,10 +46,14 @@ class FileTest(BaseTest):
         helper = Helper()
         file_data = helper.get_file(file=model_obj)
         self.assertEqual(file_data, "12345678\n123456\nprincess\n")
-    
+
     def test_range_request_get_file(self):
         model_obj = self.create_test_object()
 
         helper = Helper()
         file_data = helper.get_file(file=model_obj, range="bytes=9-15")
         self.assertEqual(file_data, "123456\n")
+
+    def test_bulk_delete(self):
+        files = [self.create_test_object(delete=False) for i in range(5)]
+        File.objects.delete_many(files)
