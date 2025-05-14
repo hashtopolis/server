@@ -11,6 +11,7 @@ use DBA\Hashlist;
 use DBA\Factory;
 use DBA\File;
 
+require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 class AccessGroupUtils {
   /**
    * @param int $groupId
@@ -44,13 +45,13 @@ class AccessGroupUtils {
    */
   public static function createGroup($groupName) {
     if (strlen($groupName) == 0 || strlen($groupName) > DLimits::ACCESS_GROUP_MAX_LENGTH) {
-      throw new HTException("Access group name is too short or too long!");
+      throw new HttpError("Access group name is too short or too long!");
     }
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $groupName, "=");
     $check = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF], true);
     if ($check !== null) {
-      throw new HTException("There is already an access group with the same name!");
+      throw new HttpConflict("There is already an access group with the same name!");
     }
     $group = new AccessGroup(null, $groupName);
     $group = Factory::getAccessGroupFactory()->save($group);

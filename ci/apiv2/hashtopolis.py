@@ -34,7 +34,14 @@ cls_registry = {}
 
 class HashtopolisError(Exception):
     def __init__(self, *args, **kwargs):
+        print(kwargs)
         super().__init__(*args)
+        self.title = kwargs.get("title", "")
+        self.type = kwargs.get("type", "")
+        self.status = kwargs.get("status", None)
+        
+        # TODO: These are the old exception details, if all exceptions have been refactored,
+        # these following lines can be removed. 
         self.exception_details = kwargs.get('exception_details', [])
         self.message = kwargs.get('message', '')
         self.status_code = kwargs.get('status_code', None)
@@ -83,7 +90,8 @@ class HashtopolisConnector(object):
     @staticmethod
     def resp_to_json(response):
         content_type_header = response.headers.get('Content-Type', '')
-        if any([x in content_type_header for x in ('application/vnd.api+json', 'application/json')]):
+        if any([x in content_type_header for x in ('application/vnd.api+json', 'application/json',
+                                                   'application/problem+json')]):
             return response.json()
         else:
             raise HashtopolisResponseError("Response type '%s' is not valid JSON document, text='%s'" %
@@ -152,10 +160,14 @@ class HashtopolisConnector(object):
         if r.status_code not in expected_status_code:
             raise HashtopolisResponseError(
                 "%s (status_code=%s): %s" % (error_msg, r.status_code, r.text),
+                # TODO old exception details can be removed when it has been refactored everywhere.
                 status_code=r.status_code,
                 exception_details=r_json.get('exception', []),
-                message=r_json.get('message', None))
-    
+                message=r_json.get('message', None),
+                status=r_json.get('status', None),
+                type=r_json.get('type', None),
+                title=r_json.get('title', None))
+
     def validate_pagination_links(self, response, page):
         """Validate all the links that are used for paginated data"""
         data = response["data"]
@@ -354,6 +366,7 @@ class HashtopolisConnector(object):
         r = requests.get(uri, headers=headers, params=payload)
         self.validate_status_code(r, [200], "Getting count failed")
         return self.resp_to_json(r)['meta']
+
 
 # Build Django ORM style django.query interface
 class QuerySet():

@@ -13,6 +13,7 @@ use DBA\User;
 use DBA\Factory;
 use DBA\File;
 use DBA\FilePretask;
+require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class SupertaskUtils {
   /**
@@ -320,17 +321,17 @@ class SupertaskUtils {
   /**
    * @param string $name
    * @param int[] $pretasks
-   * @throws HTException
+   * @throws HttpError
    */
   public static function createSupertask($name, $pretasks) {
     if (!is_array($pretasks) || sizeof($pretasks) == 0) {
-      throw new HTException("Cannot create empty supertask!");
+      throw new HttpError("Cannot create empty supertask!");
     }
     $tasks = [];
     foreach ($pretasks as $pretaskId) {
       $pretask = Factory::getPretaskFactory()->get($pretaskId);
       if ($pretask == null) {
-        throw new HTException("Invalid preconfigured task ID ($pretaskId)!");
+        throw new HttpError("Invalid preconfigured task ID ($pretaskId)!");
       }
       $tasks[] = $pretask;
     }

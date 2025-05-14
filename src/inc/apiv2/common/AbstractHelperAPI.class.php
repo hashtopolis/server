@@ -3,18 +3,6 @@ require_once(dirname(__FILE__) . "/AbstractBaseAPI.class.php");
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use DBA\Factory;
-
-use DBA\AbstractModelFactory;
-
-use DBA\Chunk;
-use DBA\CrackerBinary;
-use DBA\Hashlist;
-use DBA\RightGroup;
-use DBA\Supertask;
-use DBA\Task;
-use DBA\TaskWrapper;
-use DBA\User;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
   abstract public function actionPost(array $data): object|array|null;

@@ -4,10 +4,6 @@ require_once(dirname(__FILE__) . "/AbstractBaseAPI.class.php");
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-use Slim\Exception\HttpNotFoundException;
-use Slim\Exception\HttpForbiddenException;
-use Middlewares\Utils\HttpErrorException;
-
 use DBA\AbstractModelFactory;
 use DBA\Aggregation;
 use DBA\JoinFilter;
@@ -17,6 +13,8 @@ use DBA\LimitFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use Psr\Http\Message\ServerRequestInterface;
+
+include_once __DIR__ . "/ErrorHandler.class.php";
 
 abstract class AbstractModelAPI extends AbstractBaseAPI
 {
@@ -103,7 +101,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       );
     };
 
-    throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
+    throw new InternalError("Internal error: Expansion '$expand' not implemented!");
   }
 
 
@@ -158,7 +156,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         return $key;
       }
     }
-    throw new HTException("Internal error: no primary key found");
+    throw new InternalError("Internal error: no primary key found");
   }
 
   /**
@@ -378,7 +376,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         $required_perm = $model::PERM_DELETE;
         break;
       default:
-        throw new HTException("Method '" . $method . "' is not allowed ");
+        throw new HttpForbidden("Method '" . $method . "' is not allowed ");
     }
     return array($required_perm);
   }
@@ -410,7 +408,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   {
     $object = $this->getFactory()->get($pk);
     if ($object === null) {
-      throw new HttpErrorException("Object not found!", 404);
+      throw new ResourceNotFoundError();
     }
 
     return $object;
@@ -439,7 +437,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     foreach ($data as $item) {
       if (!$this->validateResourceRecord($item)) {
         $encoded_item = json_encode($item);
-        throw new HttpErrorException('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
+        throw new HttpError('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
       }
       $updates[] = new MassUpdateSet($item["id"], $parentId);
     }
@@ -481,9 +479,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after');
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
     if ($pageSize < 0) {
-      throw new HttpErrorException("Invalid parameter, page[size] must be a positive integer", 400);
+      throw new HttpError("Invalid parameter, page[size] must be a positive integer");
     } elseif ($pageSize > $maxPageSize) {
-      throw new HttpErrorException(sprintf("You requested a size of %d, but %d is the maximum.", $pageSize, $maxPageSize), 400);
+      throw new HttpError(sprintf("You requested a size of %d, but %d is the maximum.", $pageSize, $maxPageSize));
     }
 
     $validExpandables = $apiClass::getExpandables();
@@ -696,14 +694,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    *                   ...
    *               ]
    * 
-   * @throws HTException If a filter key does not match the expected format or is invalid.
+   * @throws HttpForbidden If a filter key does not match the expected format or is invalid.
    */
   public function filterObjectMap(array $filters, array $models) {
 
     $modelFilterMap = [];
     foreach ($filters as $filter => $value) {
       if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith)$/', $filter, $matches) == 0) {
-        throw new HTException("Filter parameter '" . $filter . "' is not valid");
+        throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid");
       }
 
       foreach($models as $model) {
@@ -798,7 +796,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     $data = $request->getParsedBody()['data'];
     if (!$this->validateResourceRecord($data)) {
-      throw new HttpErrorException('No valid resource identifier object was given as data!', 403);
+      return errorResponse($response, "No valid resource identifier object was given as data!", 403);
     }
     $aliasedfeatures = $this->getAliasedFeatures();
     $attributes = $data['attributes'];
@@ -806,7 +804,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     // Validate incoming data
     foreach (array_keys($attributes) as $key) {
       // Ensure key can be updated 
-      $this->isAllowedToMutate($request, $aliasedfeatures, $key);
+      $this->isAllowedToMutate($aliasedfeatures, $key);
     }
     // Validate input data if it matches the correct type or subtype
     $this->validateData($attributes, $aliasedfeatures);
@@ -848,12 +846,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $aliasedfeatures = $this->getAliasedFeatures();
     foreach ($data as $resourceRecord) {
       if (!$this->validateResourceRecord($resourceRecord)) {
-        throw new HttpErrorException('No valid resource identifier object was given as data!', 403);
+        throw new HttpError('No valid resource identifier object was given as data!', 403);
       }
       $attributes = $resourceRecord["attributes"];
       foreach (array_keys($attributes) as $key) {
         // Ensure key can be updated 
-        $this->isAllowedToMutate($request, $aliasedfeatures, $key);
+        $this->isAllowedToMutate($aliasedfeatures, $key);
       }
       $mappedData = $this->unaliasData($attributes, $aliasedfeatures);
       $objects[$resourceRecord["id"]] = $mappedData;
@@ -887,11 +885,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     $data = $request->getParsedBody()["data"];
     if ($data == null) {
-      throw new HttpErrorException("POST request requires data to be present", 403);
+      throw new HttpError("POST request requires data to be present", 403);
     }
     //POST request RR only needs type, no ID
     if (!isset($data['type'])) {
-      throw new HttpErrorException('No valid resource identifier object with type was given as data!', 403);
+      throw new HttpError('No valid resource identifier object with type was given as data!', 403);
     }
     $attributes = $data["attributes"];
 
@@ -906,8 +904,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     // Remove key aliases and sanitize to 'db values and request creation
     $mappedData = $this->unaliasData($attributes, $allFeatures);
     $pk = $this->createObject($mappedData);
-
-    // TODO: Return 409 (conflict) if resource already exists or cannot be created
 
     // Request object again, since post-modified entries are not reflected into object.
     $object = $this->getFactory()->get($pk);
@@ -951,7 +947,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $id = $object->getId();
     } else {
       // Base object
-      $object = $this->doFetch($request, $id);
+      $object = $this->doFetch($id);
     }
 
     // Relation object
@@ -1050,24 +1046,24 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $jsonBody = $request->getParsedBody();
 
     if ($jsonBody === null || !array_key_exists('data', $jsonBody)) {
-      throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data": {"type": "foo", "id": 1}}');
+      throw new HttpError('No data was sent! Send the json data in the following format: {"data": {"type": "foo", "id": 1}}');
     }
     $data = $jsonBody['data'];
 
     $relationKey = $this->getToOneRelationships()[$args['relation']]['relationKey'];
     if ($relationKey == null) {
-      throw new HttpErrorException("Relation does not exist!");
+      throw new HttpError("Relation does not exist!");
     }
 
     $features = $this->getFeatures();
-    $this->isAllowedToMutate($request, $features, $relationKey);
+    $this->isAllowedToMutate($features, $relationKey);
 
     $factory = $this->getFactory();
     $object = $this->doFetch(intval($args['id']));
     if ($data == null) {
       $factory->DatabaseSet($object, $relationKey, null);
     } elseif (!$this->validateResourceRecord($data)) {
-      throw new HttpErrorException('No valid resource identifier object was given as data!');
+      throw new HttpError('No valid resource identifier object was given as data!');
     } else {
       //TODO check if foreign key exists befor inserting
       $factory->DatabaseSet($object, $relationKey, $data["id"]);
@@ -1174,7 +1170,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $jsonBody = $request->getParsedBody();
 
     if ($jsonBody === null || !array_key_exists('data', $jsonBody) || !is_array($jsonBody['data'])) {
-      throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
+      throw new HttpError('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
     }
 
     $data = $jsonBody['data'];
@@ -1192,12 +1188,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $primaryKey = $this->getPrimaryKeyOther($relation['relationType']);
     $relationKey = $relation['relationKey'];
     if ($relationKey == null) {
-      throw new HttpErrorException("Relation does not exist!");
+      throw new HttpError("Relation does not exist!");
     }
 
     $relationType = $relation['relationType'];
     $features = $this->getFeaturesOther($relationType);
-    $this->isAllowedToMutate($request, $features, $relationKey);
+    $this->isAllowedToMutate($features, $relationKey);
 
     $factory = self::getModelFactory($relationType);
 
@@ -1213,7 +1209,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     foreach ($data as $item) {
       if (!$this->validateResourceRecord($item)) {
         $encoded_item = json_encode($item);
-        throw new HttpErrorException('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
+        throw new HttpError('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
       }
       $updates[] = new MassUpdateSet($item["id"], $args["id"]);
       unset($modelsDict[$item["id"]]);
@@ -1221,7 +1217,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     $leftover_primarykeys = array_keys($modelsDict);
     if ($features[$relationKey]["null"] == False && count($leftover_primarykeys) > 0) {
-      throw new HttpErrorException("Not all current relationship objects have been included,
+      throw new HttpError("Not all current relationship objects have been included,
        but the foreignkey can't be set to null. Either add all objects or delete the not needed objects");
     }
     foreach ($leftover_primarykeys as $key) {
@@ -1231,7 +1227,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $factory->getDB()->beginTransaction(); //start transaction to be able roll back
     $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
     if (!$factory->getDB()->commit()) {
-      throw new HttpErrorException("Was not able to update to many relationship");
+      throw new HttpError("Was not able to update to many relationship");
     }
   }
 
@@ -1244,14 +1240,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     $jsonBody = $request->getParsedBody();
     if ($jsonBody === null || !array_key_exists('data', $jsonBody) || !is_array($jsonBody['data'])) {
-      throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
+      throw new HttpError('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
     }
     $data = $jsonBody['data'];
 
     $relation = $this->getToManyRelationships()[$args['relation']];
     $relationKey = $relation['relationKey'];
     if ($relationKey == null) {
-      throw new HttpErrorException("Relation does not exist!");
+      throw new HttpError("Relation does not exist!");
     }
 
     // TODO this ia an abstract way of adding to junctiontables. This only works for intermediate tables 
@@ -1265,13 +1261,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       foreach($data as $item) {
         if (!$this->validateResourceRecord($item)) {
           $encoded_item = json_encode($item);
-          throw new HttpErrorException('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
+          throw new HttpError('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
         }
         $junction_table_entry = $factory->getNullObject();
         $setMethod1 = "set" . ucfirst($relation["junctionTableFilterField"]);
         $setMethod2 = "set" . ucfirst($relation["junctionTableJoinField"]);
         if (!method_exists($junction_table_entry, $setMethod1) || !method_exists($junction_table_entry, $setMethod2)) {
-          throw new HTException("Internal error, set function not found");
+          throw new InternalError("Internal error, set function not found");
         }
         $junction_table_entry->$setMethod1($args["id"]);
         $junction_table_entry->$setMethod2($item["id"]);
@@ -1281,7 +1277,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $relationType = $relation['relationType'];
       $primaryKey = $this->getPrimaryKeyOther($relationType);
       $features = $this->getFeaturesOther($relationType);
-      $this->isAllowedToMutate($request, $features, $relationKey);
+      $this->isAllowedToMutate($features, $relationKey);
       $factory = self::getModelFactory($relationType);
       $updates = self::ResourceRecordArrayToUpdateArray($data, $args["id"]);
       $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
@@ -1301,22 +1297,22 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $jsonBody = $request->getParsedBody();
 
     if ($jsonBody === null || !array_key_exists('data', $jsonBody) && is_array($jsonBody['data'])) {
-      throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
+      throw new HttpError('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
     }
 
     $relation = $this->getToManyRelationships()[$args['relation']];
     $primaryKey = $relation['key'];
     $relationKey = $relation['relationKey'];
     if ($relationKey == null) {
-      throw new HttpErrorException("Relation does not exist!");
+      throw new HttpError("Relation does not exist!");
     }
 
     $relationType = $relation['relationType'];
     $features = $this->getFeaturesOther($relationType);
-    $this->isAllowedToMutate($request, $features, $relationKey);
+    $this->isAllowedToMutate($features, $relationKey);
     if ($features[$relationKey]['null'] == False) {
       // In this scenario another solution could be to delete object TODO?
-      throw new HttpForbiddenException($request, "Key '$relationKey' cant be set to null");
+      throw new HttpForbidden("Key '$relationKey' cant be set to null");
     }
 
     $data = $jsonBody['data'];
@@ -1324,7 +1320,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     foreach ($data as $item) {
       if (!$this->validateResourceRecord($item)) {
         $encoded_item = json_encode($item);
-        throw new HttpErrorException('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
+        throw new HttpError('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
       }
       $updates[] = new MassUpdateSet($item["id"], null);
     }
@@ -1332,7 +1328,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $factory->getDB()->beginTransaction(); //start transaction to be able roll back
     $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
     if (!$factory->getDB()->commit()) {
-      throw new HttpErrorException("Some resources failed updating");
+      throw new HttpError("Some resources failed updating");
     }
 
     return $response->withStatus(201)
@@ -1346,11 +1342,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     try {
       $this->getFactory()->set($object, $key, $value);
     } catch (PDOException $e) {
-      //TODO these should be set to more user friendly errors complaint to the JSON API standard
-      if ($e->getCode() === '23000') {
-        throw new HttpErrorException("Foreign key constrain failed: " . $e->getMessage()) ;
+    if ($e->getCode() === '23000') {
+        throw new HttpError("Foreign key constraint failed: " . $e->getMessage()) ;
       } else {
-        throw new HttpErrorException("MYSQL Database error [" . $e->getCode() . "]: " . $e->getMessage());
+        throw new HttpError("MYSQL Database error [" . $e->getCode() . "]: " . $e->getMessage());
       }
     }
   }

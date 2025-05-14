@@ -4,6 +4,7 @@ use DBA\Factory;
 use DBA\Preprocessor;
 use DBA\QueryFilter;
 use DBA\Task;
+require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class PreprocessorUtils {
   
@@ -14,34 +15,34 @@ class PreprocessorUtils {
    * @param $keyspaceCommand
    * @param $skipCommand
    * @param $limitCommand
-   * @throws HTException
+   * @throws HttpError
    */
   public static function addPreprocessor($name, $binaryName, $url, $keyspaceCommand, $skipCommand, $limitCommand) {
     $qF = new QueryFilter(Preprocessor::NAME, $name, "=");
     $check = Factory::getPreprocessorFactory()->filter([Factory::FILTER => $qF], true);
     if ($check !== null) {
-      throw new HTException("This preprocessor name already exists!");
+      throw new HttpConflict("This preprocessor name already exists!");
     }
     else if (strlen($name) == 0) {
-      throw new HTException("Preprocessor name cannot be empty!");
+      throw new HttpError("Preprocessor name cannot be empty!");
     }
     else if (strlen($binaryName) == 0) {
-      throw new HTException("Binary basename cannot be empty!");
+      throw new HttpError("Binary basename cannot be empty!");
     }
     else if (Util::containsBlacklistedChars($binaryName)) {
-      throw new HTException("The binary name must contain no blacklisted characters!");
+      throw new HttpError("The binary name must contain no blacklisted characters!");
     }
     else if (Util::containsBlacklistedChars($keyspaceCommand)) {
-      throw new HTException("The keyspace command must contain no blacklisted characters!");
+      throw new HttpError("The keyspace command must contain no blacklisted characters!");
     }
     else if (Util::containsBlacklistedChars($skipCommand)) {
-      throw new HTException("The skip command must contain no blacklisted characters!");
+      throw new HttpError("The skip command must contain no blacklisted characters!");
     }
     else if (Util::containsBlacklistedChars($limitCommand)) {
-      throw new HTException("The limit command must contain no blacklisted characters!");
+      throw new HttpError("The limit command must contain no blacklisted characters!");
     }
     else if (strlen($url) == 0) {
-      throw new HTException("URL cannot be empty!");
+      throw new HttpError("URL cannot be empty!");
     }
     
     if (strlen($keyspaceCommand) == 0) {
@@ -60,14 +61,14 @@ class PreprocessorUtils {
   
   /**
    * @param $preprocessorId
-   * @throws HTException
+   * @throws HttpError
    */
   public static function delete($preprocessorId) {
     $preprocessor = PreprocessorUtils::getPreprocessor($preprocessorId);
     $qF = new QueryFilter(Task::USE_PREPROCESSOR, $preprocessor->getId(), "=");
     $check = Factory::getTaskFactory()->filter([Factory::FILTER => [$qF]]);
     if (sizeof($check) > 0) {
-      throw new HTException("There are tasks which use this preprocessor!");
+      throw new HttpError("There are tasks which use this preprocessor!");
     }
     Factory::getPreprocessorFactory()->delete($preprocessor);
   }

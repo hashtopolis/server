@@ -7,6 +7,7 @@ use DBA\Session;
 use DBA\NotificationSetting;
 use DBA\Agent;
 use DBA\Factory;
+require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class UserUtils {
   /**
@@ -138,24 +139,24 @@ class UserUtils {
    * @param string $email
    * @param int $rightGroupId
    * @param User $adminUser
-   * @throws HTException
+   * @throws HttpError
    */
   public static function createUser($username, $email, $rightGroupId, $adminUser) {
     $username = htmlentities($username, ENT_QUOTES, "UTF-8");
     $group = AccessControlUtils::getGroup($rightGroupId);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) == 0) {
-      throw new HTException("Invalid email address!");
+      throw new HttpError("Invalid email address!");
     }
     else if (strlen($username) < 2) {
-      throw new HTException("Username is too short!");
+      throw new HttpError("Username is too short!");
     }
     else if ($group == null) {
-      throw new HTException("Invalid group!");
+      throw new HttpError("Invalid group!");
     }
     $qF = new QueryFilter("username", $username, "=");
     $res = Factory::getUserFactory()->filter([Factory::FILTER => $qF], true);
     if ($res != null) {
-      throw new HTException("Username is already used!");
+      throw new HttpConflict("Username is already used!");
     }
     $newPass = Util::randomString(10);
     $newSalt = Util::randomString(20);

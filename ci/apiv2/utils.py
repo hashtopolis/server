@@ -378,8 +378,9 @@ class BaseTest(unittest.TestCase):
     def _test_exception(self, func_create, *args, **kwargs):
         with self.assertRaises(HashtopolisError) as e:
             _ = func_create(*args, **kwargs)
-        self.assertEqual(e.exception.status_code,  500)
-        self.assertGreaterEqual(len(e.exception.exception_details), 1)
+        self.assertIn(e.exception.status_code,  [403, 500, 400])
+        # checks len of both old and new exceptions style, TODO: old can be removed when ervything has been refactored.
+        self.assertTrue(len(e.exception.exception_details) >= 1 or len(e.exception.title) >= 1)
 
     def _test_patch(self, model_obj, attr, new_attr_value=None):
         """ Generic test worker to PATCH object"""
