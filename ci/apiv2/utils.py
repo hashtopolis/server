@@ -380,8 +380,7 @@ class BaseTest(unittest.TestCase):
             _ = func_create(*args, **kwargs)
         self.assertIn(e.exception.status_code,  [403, 500, 400])
         # checks len of both old and new exceptions style, TODO: old can be removed when ervything has been refactored.
-        self.assert_(len(e.exception.exception_details) >= 1 or len(e.exception.title) >= 1)
-        self.assertGreaterEqual(len(e.exception.exception_details), 1)
+        self.assertTrue(len(e.exception.exception_details) >= 1 or len(e.exception.title) >= 1)
 
     def _test_patch(self, model_obj, attr, new_attr_value=None):
         """ Generic test worker to PATCH object"""
