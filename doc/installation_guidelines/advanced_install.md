@@ -1,9 +1,4 @@
 # Advanced installation
-- Installation of TLS X.509 certificate (***Done in advanced usage***)
-- Agent configuration file and command line arguments
-- (Boot from PXE) and run HtP as a service (voucher, local disk,...)
-- Misc.
-
 
 ## Installation in an airgapped/offline/oil-gapped system (**make a note about the binary**)
 If you are running Hashtopolis in an offline network or an air-gapped network, you will need to use a machine with internet access to either pull the images directly from the docker hub or build it yourself.
@@ -26,7 +21,7 @@ docker load --input hashtopolis-backend.tar
 docker load --input hashtopolis-frontend.tar
 ```
 
-Continue with the normal docker installation described in ***link to the basic install***
+Continue with the normal docker installation described in the [basic installation section](/installation_guidelines/basic_install/#setup-hashtopolis-server).
 
 ## Build Hashtopolis images yourself
 The Docker images can be built from source following these steps.
@@ -243,15 +238,21 @@ Repeat all the steps above, but you don't need to export/import the database. On
 
 ***To be done***
 
-## New user interface technical preview (**also present in basic install**)
-> [!NOTE]: 
+
+## New user interface: technical preview
+
+> [!NOTE]
 > The APIv2 and UIv2 are a technical preview. Currently, when enabled, everyone through the new API will be fully admin!
 
 To enable 'version 2' of the API:
 
 1. Stop your containers
-2. set the *HASHTOPOLIS_APIV2_ENABLE* to 1 inside the *.env* file.
-3. ```docker compose up --detach```
-4. Access the technical preview via: http://127.0.0.1:4200 using the credentials below (unless modified in the *.env* file)
-   - user: admin
-   - password: hashtopolis
+
+2. set the HASHTOPOLIS_APIV2_ENABLE to 1 inside the .env file.
+
+3. Relaunch the containers
+```
+docker compose up --detach
+```
+
+4. Access the technical preview via: ```http://127.0.0.1:4200``` using the credentials user=admin and password=hashtopolis, unless modified in the .env file.

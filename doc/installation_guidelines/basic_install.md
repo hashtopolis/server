@@ -40,26 +40,8 @@ nano .env
 ```
 docker compose up --detach
 ```   
-5. Access the Hashtopolis UI through: http://127.0.0.1:8080 using the credentials (user=admin, password=hashtopolis)
+5. Access the Hashtopolis UI through: ```http://127.0.0.1:8080``` using the credentials (user=admin, password=hashtopolis)
 6. If you want to play around with a preview of the version 2 of the UI, consult the New user interface: technical preview section.
-
-### New user interface: technical preview
-
-> [!NOTE]
-> The APIv2 and UIv2 are a technical preview. Currently, when enabled, everyone through the new API will be fully admin!
-
-To enable 'version 2' of the API:
-
-1. Stop your containers
-
-2. set the HASHTOPOLIS_APIV2_ENABLE to 1 inside the .env file.
-
-3. Relaunch the containers
-```
-docker compose up --detach
-```
-
-4. Access the technical preview via: http://127.0.0.1:4200 using the credentials user=admin and password=hashtopolis, unless modified in the .env file.
 
 ## Agent installation
 ### Prerequisites
@@ -88,7 +70,7 @@ pip install requests psutil
 ```
 
 ### Download the Hashtopolis agent
-1. Connect to the Hashtopolis server: http://<server-ip-address>:8080 and log in. Navigate to the Agents tab > New Agent. 
+1. Connect to the Hashtopolis server: ```http://<server-ip-address>:8080``` and log in. Navigate to the page *Agents > Show Agents* and click on the button *'+ New Agent'*. 
 2. From that page, you can either download the agent by clicking on the Download button, or copy and paste the provided url to download the agent using wget/curl:
 ```
 curl -o hastopolis.zip "http://<server-ip-address>:8080/agents.php?download=1"
@@ -105,7 +87,7 @@ source hashtopolis_env/bin/activate
 python hashtopolis.zip
 ```
 
-3. When prompted, provide the URL to the server API as provided in the Agents page of Hashtopolis (http://<server-ip-address>:8080/api/server.php).   
+3. When prompted, provide the URL to the server API as provided in the Agents page of Hashtopolis (```http://<server-ip-address>:8080/api/server.php```).   
 ```
 Starting client 's3-python-0.7.2.4'...
 Please enter the url to the API of your Hashtopolis installation:

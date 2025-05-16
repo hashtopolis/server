@@ -1,0 +1,13 @@
+# What still has to be done
+- in advanced install there should be a note about the binaries, files in www-data forat etc
+- lots of screenshots and diagrams to make the text fancier
+- details about the config files, structure of repos etc.
+- booting from PxE, running hashtopolis as a service ?
+- Make the docker page
+- Check if any difference for Agent overview in new interface
+- Acces management
+- Health Checks
+- Log
+- All users and admin settings 
+- Hashtypes
+- Binaries section

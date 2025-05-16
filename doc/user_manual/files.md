@@ -14,7 +14,7 @@ When creating a password recovery task in Hashtopolis, you may need to upload ad
     Wordlists, also known as dictionaries, are used in dictionary attacks. Each line in a wordlist is treated as a potential password candidate. Examples include: collections of commonly used passwords, specialized dictionaries tailored to a specific target or context.
 
 3. **Others:** 
-    This category includes any additional files required for specific attack types or configurations. Examples include … These files vary depending on the nature of the task and the tools being used.
+    This category includes any additional files required for specific attack types or configurations. Examples include charset files or any files needed by preprocessors. These files vary depending on the nature of the task and the tools being used.
 Files can be uploaded to the Hashtopolis server from the Files page. To begin, select the appropriate file category by clicking on one of the tabs: Rules, Wordlists, or Other. The following figure illustrates the selection of the Rules category.
 
 <figure markdown="span">
@@ -79,3 +79,6 @@ Navigating to the Files page of the Hashtopolis User Interface, you can manage t
 Line count: Reprocess the file and update the line count with the number of lines contained in the file.
 3. **Edit**: Edit the parameters of the file (name, file type and associated group).
 4. **Delete**: Removes the file from Hashtopolis.
+
+> [!NOTE]
+> Files can only be deleted if they are not referenced in any task, whether they are active, finished or even archived. 
