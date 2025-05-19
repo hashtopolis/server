@@ -965,6 +965,7 @@ abstract class AbstractBaseAPI
             }
         }            
       }
+      unset($value);
 
       // We need to remap any aliased key to the key as it appears in the database.
       $remappedKey = $features[$cast_key]['dbname'];
