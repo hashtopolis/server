@@ -1279,6 +1279,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
           throw new HttpError('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
         }
         $junction_table_entry = $factory->getNullObject();
+        $junction_table_entry->setId(null);
         $setMethod1 = "set" . ucfirst($relation["junctionTableFilterField"]);
         $setMethod2 = "set" . ucfirst($relation["junctionTableJoinField"]);
         if (!method_exists($junction_table_entry, $setMethod1) || !method_exists($junction_table_entry, $setMethod2)) {
@@ -1323,27 +1324,48 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     }
 
     $relationType = $relation['relationType'];
-    $features = $this->getFeaturesOther($relationType);
-    $this->isAllowedToMutate($features, $relationKey);
-    if ($features[$relationKey]['null'] == False) {
-      // In this scenario another solution could be to delete object TODO?
-      throw new HttpForbidden("Key '$relationKey' cant be set to null");
+    $junction_table = $relation['junctionTableType'];
+    if (!isset($junction_table)) {
+      $features = $this->getFeaturesOther($relationType);
+      $this->isAllowedToMutate($features, $relationKey);
+      if ($features[$relationKey]['null'] == False) {
+        // In this scenario another solution could be to delete object TODO?
+        throw new HttpForbidden("Key '$relationKey' cant be set to null");
+      }
     }
 
     $data = $jsonBody['data'];
 
-    foreach ($data as $item) {
-      if (!$this->validateResourceRecord($item)) {
-        $encoded_item = json_encode($item);
-        throw new HttpError('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
-      }
-      $updates[] = new MassUpdateSet($item["id"], null);
+    if (!is_array($data)) {
+      throw new HttpError("Data is not an array, data should be an array of resource records.");
     }
-    $factory = self::getModelFactory($relationType);
-    $factory->getDB()->beginTransaction(); //start transaction to be able roll back
-    $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
-    if (!$factory->getDB()->commit()) {
-      throw new HttpError("Some resources failed updating");
+
+    $factory = (isset($junction_table)) ? self::getModelFactory($junction_table) : self::getModelFactory($relationType);
+    if (isset($junction_table)) {
+      $parent_id = $args["id"];
+      $factory->getDB()->beginTransaction(); //start transaction to be able roll back
+      foreach($data as $item) {
+        $qF = new QueryFilter($relation["junctionTableFilterField"], $parent_id, "=", $factory);
+        $qF2 = new QueryFilter($relation["junctionTableJoinField"], $item['id'], "=", $factory);
+        $object = $factory->filter([Factory::FILTER => [$qF, $qF2]])[0];
+        $factory->delete($object);
+      }
+      if (!$factory->getDB()->commit()) {
+        throw new HttpError("Some resources failed updating");
+      }
+    } else {
+      foreach ($data as $item) {
+        if (!$this->validateResourceRecord($item)) {
+          $encoded_item = json_encode($item);
+          throw new HttpError('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
+        }
+        $updates[] = new MassUpdateSet($item["id"], null);
+      }
+      $factory->getDB()->beginTransaction(); //start transaction to be able roll back
+      $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
+      if (!$factory->getDB()->commit()) {
+        throw new HttpError("Some resources failed updating");
+      }
     }
 
     return $response->withStatus(201)

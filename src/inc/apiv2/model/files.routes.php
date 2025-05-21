@@ -6,7 +6,7 @@ use DBA\QueryFilter;
 use DBA\OrderFilter;
 
 use DBA\File;
-use Middlewares\Utils\HttpErrorException;
+include_once __DIR__ . "../common/ErrorHandler.class.php";
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -56,12 +56,12 @@ class FileAPI extends AbstractModelAPI {
       /* Validate target filename */  
       $realname = str_replace(" ", "_", htmlentities(basename($data[File::FILENAME]), ENT_QUOTES, "UTF-8"));
       if ($data[File::FILENAME] != $realname) {
-        throw new HttpErrorException(File::FILENAME . " is invalid filename suggestion '$realname'");
+        throw new HttpError(File::FILENAME . " is invalid filename suggestion '$realname'");
       }
 
       /* Pre-checking to allow saving some time in repairing edge cases */
       if (file_exists($this->getFilesPath() . $data[File::FILENAME])) {
-        throw new HttpErrorException("File '" . $data[File::FILENAME] . "' already exists in 'files' folder, cannot continue!");
+        throw new HttpError("File '" . $data[File::FILENAME] . "' already exists in 'files' folder, cannot continue!");
       }
 
       /* Prepare dummy request for insert */
@@ -74,30 +74,30 @@ class FileAPI extends AbstractModelAPI {
           // TODO: Should be validated as parameter input instead
           $decoded = base64_decode($data["sourceData"], true);
           if ($decoded === false) {
-            throw new HttpErrorException("sourceData not valid base64 encoding");
+            throw new HttpError("sourceData not valid base64 encoding");
           }
           $dummyPost["data"] = $decoded;
           break;
         case "import":
           $realname = str_replace(" ", "_", htmlentities(basename($data["sourceData"]), ENT_QUOTES, "UTF-8"));
           if ($data["sourceData"] != $realname) {
-            throw new HttpErrorException("sourceData is invalid filename suggestion '$realname'");
+            throw new HttpError("sourceData is invalid filename suggestion '$realname'");
           }
           /* Renaming files will require target file to be checked before renaming */
           if (!file_exists($this->getImportPath() . $data["sourceData"])) {
-            throw new HttpErrorException("File '" . $data["sourceData"] . "' not found in import folder");
+            throw new HttpError("File '" . $data["sourceData"] . "' not found in import folder");
           }
           /* We are renaming sourceData file to filename file, check if filename is not there already 
              this can be skipped if they are the same */
           if (file_exists($this->getImportPath() . $data[File::FILENAME]) && $data[File::FILENAME] != $data["sourceData"]) {
-            throw new HttpErrorException("File required temponary file '" . $data[File::FILENAME] . "' exists import folder, cannot continue");
+            throw new HttpError("File required temponary file '" . $data[File::FILENAME] . "' exists import folder, cannot continue");
           }
           /* Since we are renaming the file _before_ import the name is temponary changed */
           $dummyPost["imfile"] = [$data[File::FILENAME]];
           break;
         default:
           // TODO: Choice validation are model based checks
-          throw new HttpErrorException("sourceType value '" . $data["sourceType"] . "' is not supported (choices inline, import");
+          throw new HttpError("sourceType value '" . $data["sourceType"] . "' is not supported (choices inline, import");
       }
 
       /* TODO: Hackish view to revert back to required (hardcoded) view */
