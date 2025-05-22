@@ -116,6 +116,13 @@ class UserUtils {
     Factory::getUserFactory()->set($user, User::RIGHT_GROUP_ID, $group->getId());
   }
   
+  public static function changePassword($user, $password) {
+    $newSalt = Util::randomString(20);
+    $newHash = Encryption::passwordHash($password, $newSalt);
+    
+    Factory::getUserFactory()->mset($user, [User::PASSWORD_HASH => $newHash, User::PASSWORD_SALT => $newSalt, User::IS_COMPUTED_PASSWORD => 0]);
+  }
+
   /**
    * @param int $userId
    * @param string $password
