@@ -6,50 +6,45 @@ use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
-class SetUserPasswordHelperAPI extends AbstractHelperAPI {
+class changeOwnPasswordHelper extends AbstractHelperAPI {
   public static function getBaseUri(): string {
-    return "/api/v2/helper/setUserPassword";
+    return "/api/v2/helper/changeOwnPassword";
   }
 
   public static function getAvailableMethods(): array {
     return ['POST'];
   }
 
+  //Since this helper only allows the change of own password, no permissions are needed.
   public function getRequiredPermissions(string $method): array
   {
-    return [User::PERM_UPDATE];
+    return [];
   }
 
   /**
-   * userId is the id of the user of which you want to change the password.
    * password is the new password that you want to set.
    */
   public function getFormFields(): array 
   {
     return  [
-      User::USER_ID => ["type" => "int"],
       "password" => ["type" => "str"]
     ];
   }
 
   public static function getResponse(): array {
-    return ["Set password" => "Success"];
+    return ["Change password" => "Success"];
   }
 
   /**
    * Endpoint to set a password of an user.
    */
   public function actionPost($data): object|array|null {
-    $user = self::getUser($data[User::USER_ID]);
+    $user = $this->getCurrentUser();
 
     /* Set user password if provided */
-    UserUtils::setPassword(
-      $user->getId(),
-      $data["password"],
-      $this->getCurrentUser()
-    );
+    UserUtils::changePassword($user, $data["password"]);
     return $this->getResponse();
   }
 }  
 
-SetUserPasswordHelperAPI::register($app);
+changeOwnPasswordHelper::register($app);
