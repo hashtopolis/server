@@ -30,7 +30,6 @@ class AccessControlUtils {
       throw new HTException("Administrator group cannot be changed!");
     }
     $current_permissions_decoded = json_decode($current_permissions, true);
-    error_log("testest: " . $current_permissions_decoded);
 
     $merged_permissions = array_merge($current_permissions_decoded, $perm);
     Factory::getRightGroupFactory()->set($group, RightGroup::PERMISSIONS, json_encode($merged_permissions));
