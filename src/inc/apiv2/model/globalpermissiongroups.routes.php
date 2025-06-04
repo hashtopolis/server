@@ -102,21 +102,16 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
           }
         }
       }
-      
-      // Get enabled 'old-style' permissions
+
       $legacyPerms = [];
       foreach($permissions as $crudPerm => $value) {
-        if ($value === true) {
-          $legacyPerms = array_merge($legacyPerms, $c2o[$crudPerm]);
+        if (array_key_exists($crudPerm, $c2o)) {
+          $filled_perms = array_fill_keys($c2o[$crudPerm], $value);
+          $legacyPerms = array_merge($legacyPerms, $filled_perms);
         }
       }
-      
-      // Modify data to conform with updateGroupPermssions input
-      $permData = [];
-      foreach($legacyPerms as $key) {
-        array_push($permData, $key . "-1");
-      }
-      AccessControlUtils::updateGroupPermissions($id, $permData);
+
+      AccessControlUtils::addToPermissions($id, $legacyPerms);
     }
 }
 

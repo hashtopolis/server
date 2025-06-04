@@ -23,6 +23,18 @@ class AccessControlUtils {
     return Factory::getRightGroupFactory()->filter([]);
   }
   
+  public static function addToPermissions($groupId, $perm) {
+    $group = AccessControlUtils::getGroup($groupId);
+    $current_permissions = $group->getPermissions();
+    if ($current_permissions == 'ALL') {
+      throw new HTException("Administrator group cannot be changed!");
+    }
+    $current_permissions_decoded = json_decode($current_permissions, true);
+
+    $merged_permissions = array_merge($current_permissions_decoded, $perm);
+    Factory::getRightGroupFactory()->set($group, RightGroup::PERMISSIONS, json_encode($merged_permissions));
+  }
+
   /**
    * @param int $groupId
    * @param array $perm
