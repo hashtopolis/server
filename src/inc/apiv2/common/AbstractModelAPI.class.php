@@ -529,8 +529,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $min = $aggregation_results[$agg2->getName()];
     $total = $aggregation_results[$agg3->getName()];
 
-    $totalPages = ceil($total / $pageSize);
-
     //pagination filters need to be added after max has been calculated
     $finalFs[Factory::LIMIT] = new LimitFilter($pageSize);
 
@@ -544,6 +542,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     /* Request objects */
     $filterObjects = $factory->filter($finalFs);
+    if ($defaultSort == 'DESC') {
+      $filterObjects = array_reverse($filterObjects);
+    }
 
     /* JOIN statements will return related modules as well, discard for now */
     if (array_key_exists(Factory::JOIN, $finalFs)) {
@@ -649,7 +650,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         "prev" => $linksPrev,
       ];
 
-    $metadata = ["page" => ["total_pages" => $totalPages]];
+    $metadata = ["page" => ["total_elements" => $total]];
     // Generate JSON:API GET output
     $ret = self::createJsonResponse($dataResources, $links, $includedResources, $metadata);
 
