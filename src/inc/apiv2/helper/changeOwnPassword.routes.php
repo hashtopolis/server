@@ -36,7 +36,7 @@ class changeOwnPasswordHelper extends AbstractHelperAPI {
   }
 
   public static function getResponse(): array {
-    return ["Change password" => "Success"];
+    return ["Change password" => "Password succesfully updated!"];
   }
 
   /**
