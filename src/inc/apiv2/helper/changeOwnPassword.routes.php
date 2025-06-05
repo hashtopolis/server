@@ -22,12 +22,16 @@ class changeOwnPasswordHelper extends AbstractHelperAPI {
   }
 
   /**
-   * password is the new password that you want to set.
+   * oldPassword is the current password of the user.
+   * newPassword is the new password that you want to set.
+   * confirmPassword is the new password again to confirm it.
    */
   public function getFormFields(): array 
   {
     return  [
-      "password" => ["type" => "str"]
+      "oldPassword" => ["type" => "str"],
+      "newPassword" => ["type" => "str"],
+      "confirmPassword" => ["type" => "str"]
     ];
   }
 
@@ -42,7 +46,7 @@ class changeOwnPasswordHelper extends AbstractHelperAPI {
     $user = $this->getCurrentUser();
 
     /* Set user password if provided */
-    UserUtils::changePassword($user, $data["password"]);
+    UserUtils::changePassword($user,$data["oldPassword"], $data["newPassword"],$data["confirmPassword"] );
     return $this->getResponse();
   }
 }  
