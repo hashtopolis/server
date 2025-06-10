@@ -116,9 +116,40 @@ class UserUtils {
     Factory::getUserFactory()->set($user, User::RIGHT_GROUP_ID, $group->getId());
   }
   
-  public static function changePassword($user, $password) {
+  /**
+   * Changes the password for a given user after validating the old password and new password requirements.
+   *
+   * @param User   $user            The user object whose password is to be changed.
+   * @param string $oldPassword     The user's current password (plain text).
+   * @param string $newPassword     The new password to set (plain text).
+   * @param string $confirmPassword Confirmation of the new password (plain text).
+   *
+   * @throws HTException If the old password is incorrect, the new password is too short,
+   *                     the new passwords do not match, or the new password is the same as the old one.
+   *
+   * This method performs the following steps:
+   * 1. Verifies the old password using the user's stored salt and hash.
+   * 2. Checks that the new password meets minimum length requirements.
+   * 3. Ensures the new password and confirmation match.
+   * 4. Ensures the new password is different from the old password.
+   * 5. Generates a new salt and hash for the new password.
+   * 6. Updates the user's password hash, salt, and resets the computed password flag.
+   */
+  public static function changePassword($user, $oldPassword, $newPassword, $confirmPassword) {
+    if (!Encryption::passwordVerify($oldPassword, $user->getPasswordSalt(), $user->getPasswordHash())) {
+      throw new HTException("Your old password is wrong!");
+    }
+    else if (strlen($newPassword) < 4) {
+      throw new HTException("Your password is too short!");
+    }
+    else if ($newPassword != $confirmPassword) {
+      throw new HTException("Your new passwords do not match!");
+    }
+    else if ($newPassword == $oldPassword) {
+      throw new HTException("Your new password is the same as the old one!");
+    }
     $newSalt = Util::randomString(20);
-    $newHash = Encryption::passwordHash($password, $newSalt);
+    $newHash = Encryption::passwordHash($newPassword, $newSalt);
     
     Factory::getUserFactory()->mset($user, [User::PASSWORD_HASH => $newHash, User::PASSWORD_SALT => $newSalt, User::IS_COMPUTED_PASSWORD => 0]);
   }
