@@ -1,3 +1,28 @@
+<!-- Navigation buttons (next/previous) -->
+{% if page and page.previous_page or page.next_page %}
+  <nav class="md-footer__link">
+    <div class="md-footer__inner md-grid">
+      {% if page.previous_page %}
+        <a href="{{ page.previous_page.url | url }}" class="md-footer__button md-footer__button--prev" rel="prev">
+          <div class="md-footer__title">
+            <span class="md-footer__direction">Previous</span>
+            <div class="md-footer__page">{{ page.previous_page.title }}</div>
+          </div>
+        </a>
+      {% endif %}
+      {% if page.next_page %}
+        <a href="{{ page.next_page.url | url }}" class="md-footer__button md-footer__button--next" rel="next">
+          <div class="md-footer__title">
+            <span class="md-footer__direction">Next</span>
+            <div class="md-footer__page">{{ page.next_page.title }}</div>
+          </div>
+        </a>
+      {% endif %}
+    </div>
+  </nav>
+{% endif %}
+
+<!-- Your custom icons -->
 <div class="footer-icons" style="text-align: center; margin-top: 2rem;">
   <a href="https://github.com/hashtopolis/server" target="_blank" rel="noopener" aria-label="GitHub">
     <img src="/assets/icons/github.svg" alt="GitHub" height="32" style="margin: 0 12px;">
@@ -9,3 +34,6 @@
     <img src="/assets/icons/discord.svg" alt="Discord" height="32" style="margin: 0 12px;">
   </a>
 </div>
+
+<!-- Extra spacing after icons -->
+<div style="margin-bottom: 2rem;"></div>
