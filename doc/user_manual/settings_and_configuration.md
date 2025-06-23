@@ -127,7 +127,7 @@
 
 - **Server Level Logging to File**:  Enables detailed server-side logging output to log files for troubleshooting or audits.
 
-## Hashtypes
+## Hashtypes [to be rewritten]
 
 Hashcat gets constantly developed and often new hashtypes get added. To be flexible Hashtopolis provides the possibility for the server admin to add new Hashcat algorithms. Even if you use a customized Hashcat with some special algorithm. To add a new type you just need to add the -m number of Hashcat and the name of it.
 
@@ -142,7 +142,19 @@ grep -Hr SLOW_HASH src/modules/ | cut -d: -f1 | sort | cut -d'.' -f1 | sed 's/sr
 ```
 
 
+## Health Checks
 
-# Access Management 
+Health checks offer an excellent opportunity to ensure that the cracker binary set up is working correctly. For this purpose, a test command is executed on the agent and it is checked whether everything is working properly. The result and a possible error code are then displayed in the frontend
 
-Under construction
+A new health check can be created by clicking on **New Health Check**. All you have to do is select the binary and the test can be started. The result is displayed transparently on the overview page.
+
+Additional information is displayed by clicking on the ID. Here you will then find the detailed test result and the possible error code, which can be used for debugging.
+
+
+## Log
+
+Important events can be viewed in the log area. For example, failed logins are documented or document uploads are tracked:
+
+<figure markdown="span">
+    ![screenshot_logs_example](/assets/images/logs_example.png){ width="600" }
+</figure>
