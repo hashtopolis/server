@@ -97,13 +97,13 @@ Supertask are not displayed as regular tasks in the *Show Task* menu as displaye
 
 
 <figure markdown="span">
-    ![screenshot_import_file](https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png?20120228065200){ width="300" }
+    ![screenshot_showtask_supertask](/assets/images/supertasks_showtasks.png)
 </figure>
 
-The same information than those of a task are displayed. The *copy to Pretask* and *copy to task* options are not available. There is instead an information button which open a pop-up window displaying the list of subtasks of the supertask. This window is identical to the ShowTasks page apart that only the subtasks of the supertask are diplayed in it as shown in the figure below. 
+The same information than those of a task are displayed. The *copy to Pretask* and *copy to task* options are not available. There is instead an information button which open a pop-up window displaying the list of subtasks of the supertask. This window is identical to the ShowTasks page apart that only the subtasks of the supertask are displayed in it as shown in the figure below. 
 
 <figure markdown="span">
-    ![screenshot_import_file](https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png?20120228065200){ width="300" }
+    ![screenshot_import_file](/assets/images/)
 </figure>
 
 ## Import Super Task

@@ -7,7 +7,7 @@ Refer to the Hashcat documentation for detailed information on supported hash ty
 In the Hashtopolis web interface, navigate to *Hashlists* and click on the button *+ New Hashlist*. You will get the following window:
 
 <figure markdown="span">
-    ![screenshot_hashlist](https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png?20120228065200){ width="300" }
+    ![screenshot_create_hashlist](/assets/images/create_hashlist.png)
 </figure>
 
 Here is how to fill in the different fields: 
@@ -102,12 +102,13 @@ The result will display all the hashes that correspond to the given entry/ies. I
 - A list of all the hashes that contains the given entry, specifying in which hashlist(s) they are contained and the cleartext password if they have been cracked already.
 
 <figure markdown="span">
-    ![screenshot_import_file](https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png?20120228065200){ width="300" }
+    ![screenshot_import_file](/assets/images/search_hash_2.png)
 </figure>
 
 ## Show Crack
 
 This page displays all the cracked passwords that have been recovered and that are stored in the database. It shows the following fields.
+
 - **Time Found**: Indicates when the password has been recovered
 - **Plaintext**: Password that has been recovered
 - **Hash**: Hash for which the password was recovered

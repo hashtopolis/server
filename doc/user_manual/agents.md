@@ -35,6 +35,7 @@ This page provides a visual overview of the status of all agents, including real
 - Temperature readings for each device, helping detect overheating or hardware issues.
 
 In those visuals, the following colour code is used:
+
 - **Green**: All good
 - **Orange**: Warning
 - **Red**: Value too low
@@ -66,6 +67,7 @@ Clicking on an individual agent from the lists above brings you to the **Agent O
 - **Time Spent Cracking**: Total time the agent has spent actively cracking hashes.
 
 Similar to the ***Agent Status*** page, visuals of the recent temperature evolution and utilisation evolution of all devices associated to this agent are displayed here. 
+
 - **Device(s) Temperatures**: Current temperatures of GPUs and/or CPUs.
 - **Device(s) Utilisation**: Current utilization percentages for each device.
 - **Agent Average CPU Utilisation**: Average CPU usage over a recent period.
