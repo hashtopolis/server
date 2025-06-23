@@ -1,5 +1,5 @@
 <?php
-
+use DBA\Task;
 use DBA\AgentError;
 use DBA\Factory;
 
@@ -10,7 +10,18 @@ class AgentErrorAPI extends AbstractModelAPI {
     public static function getBaseUri(): string {
       return "/api/v2/ui/agenterrors";
     }
-
+    /* 
+    * Include the task data for the task error .
+    */
+    public static function getToOneRelationships(): array {
+      return [
+        'task' => [
+          'key' => AgentError::TASK_ID,
+          'relationType' => Task::class,
+          'relationKey' => Task::TASK_ID,
+        ],
+      ];
+    }
     public static function getAvailableMethods(): array {
       return ['GET', 'DELETE'];
     }
