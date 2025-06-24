@@ -460,6 +460,27 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $relatedResources;
   }
 
+  protected static function calculate_next_cursor(string|int $element) {
+    if (is_int($element)) {
+      return $element + 1;
+    } elseif (is_string($element)) {
+      $len = strlen($element);
+      if ($len == 0) {
+        return '~';
+      }
+
+      $lastChar = $element[$len - 1];
+      $ord = ord($lastChar);
+      if ($ord < 126) {
+        return substr($element, 0, $len-1) . chr($ord + 1);
+      } else {
+        return $element . '!'; // '!' is lowest printable ascii
+      }
+    } else {
+      throw new HttpError("Internal error", 500);
+    }
+  }
+
   /**
    * API entry point for requesting multiple objects
    */
@@ -477,6 +498,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     // $maxPageSize = SConfig::getInstance()->getVal(DConfig::MAX_PAGE_SIZE);
 
     $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after');
+    $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
     if ($pageSize < 0) {
       throw new HttpError("Invalid parameter, page[size] must be a positive integer");
@@ -504,9 +526,45 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
      * 
      * TODO: Deny pagination with un-stable sorting
      */
-    $defaultSort = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') == null &&
-      $apiClass->getQueryParameterFamilyMember($request, 'page', 'before') != null ?  'DESC' : 'ASC';
+    $sortList = $apiClass->getQueryParameterAsList($request, 'sort');
+    $isNegativeSort = $sortList != null && $sortList[0][0] == '-';
+    //this is used to reverse the array to show the data correctly for the user 
+    $reverseArray = false;
+
+    if (!$isNegativeSort && !isset($pageBefore) && isset($pageAfter)) {
+      // this happens when going to the next page while having an ascending sort
+      $defaultSort = "ASC";
+      $reverseArray = false;
+      $operator = ">";
+      $paginationCursor = $pageAfter;
+    } else if (!$isNegativeSort && isset($pageBefore) && !isset($pageAfter)) {
+      // this happens when going to the previous page while having an ascending sort
+      $defaultSort = "DESC";
+      $reverseArray = true;
+      $operator = "<";
+      $paginationCursor = $pageBefore;
+    } else if ($isNegativeSort && (isset($pageBefore) && !isset($pageAfter))) { 
+      // this happens when going to the previous page while having a descending sort
+      $defaultSort = "ASC";
+      $reverseArray = true;
+      $operator = ">";
+      $paginationCursor = $pageBefore;
+    } else if ($isNegativeSort && isset($pageAfter) && !isset($pageBefore)) {
+      // this happens when going to the next page while having an ascending sort
+      $defaultSort = "DESC";
+      $reverseArray = false;
+      $operator = "<";
+      $paginationCursor = $pageAfter;
+    } else if ($isNegativeSort) {
+      //the default negative case to retrieve the first elements in a descending way
+      $defaultSort = "DESC";
+    } else {
+      $defaultSort = "ASC";
+    }
+
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $defaultSort);
+    $orderTemplates[0]["type"] = $defaultSort;
+    $primaryFilter = $orderTemplates[0]['by'];
 
     // Build actual order filters
     foreach ($orderTemplates as $orderTemplate) {
@@ -516,13 +574,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
 
-    $primaryKey = $apiClass->getPrimaryKey();
     //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
     //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
     //if this query is too expensive for big tables, it can be removed
-    $agg1 = new Aggregation($primaryKey, Aggregation::MAX, $factory);
-    $agg2 = new Aggregation($primaryKey, Aggregation::MIN, $factory);
-    $agg3 = new Aggregation($primaryKey, Aggregation::COUNT, $factory);
+    $agg1 = new Aggregation($primaryFilter, Aggregation::MAX, $factory);
+    $agg2 = new Aggregation($primaryFilter, Aggregation::MIN, $factory);
+    $agg3 = new Aggregation($primaryFilter, Aggregation::COUNT, $factory);
     $aggregation_results = $factory->multicolAggregationFilter($finalFs, [$agg1, $agg2, $agg3]);
 
     $max = $aggregation_results[$agg1->getName()];
@@ -532,25 +589,21 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     //pagination filters need to be added after max has been calculated
     $finalFs[Factory::LIMIT] = new LimitFilter($pageSize);
 
-    if (isset($pageAfter)){
-      $finalFs[Factory::FILTER][] = new QueryFilter($primaryKey, $pageAfter, '>', $factory);
-    }
-    $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
-    if (isset($pageBefore)) {
-      $finalFs[Factory::FILTER][] = new QueryFilter($primaryKey, $pageBefore, '<', $factory);
+    if (isset($paginationCursor)) {
+      $finalFs[Factory::FILTER][] = new QueryFilter($primaryFilter, $paginationCursor, $operator, $factory);
     }
 
     /* Request objects */
     $filterObjects = $factory->filter($finalFs);
-    if ($defaultSort == 'DESC') {
-      $filterObjects = array_reverse($filterObjects);
-    }
 
     /* JOIN statements will return related modules as well, discard for now */
     if (array_key_exists(Factory::JOIN, $finalFs)) {
       $objects = $filterObjects[$factory->getModelname()];
     } else {
       $objects = $filterObjects;
+    }
+    if ($reverseArray) {
+      $objects = array_reverse($objects);
     }
 
     /* Resolve all expandables */
@@ -590,61 +643,52 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       // Add to result output
       $dataResources[] = $newObject;
     }
-
+    $baseUrl = Util::buildServerUrl();
     //build last link
     $lastParams = $request->getQueryParams();
     unset($lastParams['page']['after']);
     $lastParams['page']['size'] = $pageSize;
-    $lastParams['page']['before'] = $max + 1;
-    $linksLast = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($lastParams));
+    $lastParams['page']['before'] = urlencode(self::calculate_next_cursor($max));
+    $linksLast = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($lastParams));
 
     // Build self link
     $selfParams = $request->getQueryParams();
     $selfParams['page']['size'] = $pageSize;
-    $linksSelf = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($selfParams));
+    $linksSelf = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($selfParams));
 
     $linksNext = null;
     $linksPrev = null;
 
     // Build next link
     if (!empty($objects)) {
-      $minId = $maxId = $objects[0]->getId() ?? null;
-      foreach ($objects as $obj) {
-        $cur_id = $obj->getId();
-        if ($cur_id < $minId) {
-          $minId = $cur_id;
-        }
-        if ($cur_id > $maxId) {
-          $maxId = $cur_id;
-        }
-      }
-      $nextId = $defaultSort == "ASC" ? $maxId : $minId;
+      // retrieve last object in page and retrieve the attribute based on the filter
+      $prevId = $objects[0]->expose()[$primaryFilter];
+      $nextId = end($objects)->expose()[$primaryFilter];
 
       if ($nextId < $max) { //only set next page when its not the last page
         $nextParams = $selfParams;
-        $nextParams['page']['after'] = $nextId;
+        $nextParams['page']['after'] = urlencode($nextId);
         unset($nextParams['page']['before']);
-        $linksNext = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
+        $linksNext = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
       }
       // Build prev link 
-      $prevId = $defaultSort == "DESC" ? $maxId : $minId;
       if ($prevId != $min) { //only set previous page when its not the first page
         $prevParams = $selfParams;
-        $prevParams['page']['before'] = $prevId;
+        $prevParams['page']['before'] = urlencode($prevId);
         unset($prevParams['page']['after']);
-        $linksPrev = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($prevParams));
+        $linksPrev = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($prevParams));
       }
     }
 
     //build first link
-    $firstParams = $request->getQueryParams();
-    unset($firstParams['page']['before']);
-    $firstParams['page']['size'] = $pageSize;
-    $firstParams['page']['after'] = $min;
-    $linksFirst = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($firstParams));
+    // $firstParams = $request->getQueryParams();
+    // unset($firstParams['page']['before']);
+    // $firstParams['page']['size'] = $pageSize;
+    // $firstParams['page']['after'] = urlencode($min);
+    // $linksFirst = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($firstParams));
     $links = [
         "self" => $linksSelf,
-        "first" => $linksFirst,
+        // "first" => $linksFirst,
         "last" => $linksLast,
         "next" => $linksNext,
         "prev" => $linksPrev,
