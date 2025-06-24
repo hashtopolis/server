@@ -3,7 +3,7 @@ use DBA\File;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
-class RecountFileFilesHelperAPI extends AbstractHelperAPI {
+class RecountFileLinesHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
     return "/api/v2/helper/recountFileLines";
   }
@@ -44,4 +44,4 @@ class RecountFileFilesHelperAPI extends AbstractHelperAPI {
   }
 }
 
-RecountFileFilesHelperAPI::register($app);
+RecountFileLinesHelperAPI::register($app);

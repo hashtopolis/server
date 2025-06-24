@@ -4,7 +4,7 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
-class ChunkResetHelperAPI extends AbstractHelperAPI {
+class ResetChunkHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
     return "/api/v2/helper/resetChunk";
   }
@@ -41,4 +41,4 @@ class ChunkResetHelperAPI extends AbstractHelperAPI {
   }  
 }
 
-ChunkResetHelperAPI::register($app);
+ResetChunkHelperAPI::register($app);

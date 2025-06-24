@@ -9,7 +9,7 @@ use Slim\Exception\HttpForbiddenException;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
-class getFileHelperAPI extends AbstractHelperAPI {
+class GetFileHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
     return "/api/v2/helper/getFile";
   }
@@ -197,7 +197,7 @@ class getFileHelperAPI extends AbstractHelperAPI {
 
   static public function register($app): void
   {
-    $baseUri = getFileHelperAPI::getBaseUri();
+    $baseUri = GetFileHelperAPI::getBaseUri();
 
     /* Allow CORS preflight requests */
     $app->options($baseUri, function (Request $request, Response $response): Response {
@@ -207,4 +207,4 @@ class getFileHelperAPI extends AbstractHelperAPI {
   }
 }
 
-getFileHelperAPI::register($app); 
+GetFileHelperAPI::register($app);
