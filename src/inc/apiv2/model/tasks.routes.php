@@ -165,7 +165,7 @@ class TaskAPI extends AbstractModelAPI {
     
     protected function getUpdateHandlers($id, $current_user): array {
       return [
-        Task::IS_ARCHIVED => fn ($value) => TaskUtils::archiveTask($id, $current_user),
+        Task::IS_ARCHIVED => fn ($value) => TaskUtils::toggleArchiveTask($id, $value, $current_user),
         Task::PRIORITY => fn ($value) => TaskUtils::updatePriority($id, $value, $current_user),
         Task::MAX_AGENTS => fn ($value) => TaskUtils::updateMaxAgents($id, $value, $current_user),
         Task::IS_CPU_TASK => fn ($value) => TaskUtils::setCpuTask($id, $value, $current_user),
