@@ -1,9 +1,13 @@
 <?php
+
+use DBA\AccessGroupAgent;
+use DBA\ContainFilter;
 use DBA\Factory;
 
 use DBA\Agent;
 use DBA\HealthCheck;
 use DBA\HealthCheckAgent;
+use DBA\JoinFilter;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -19,6 +23,19 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return HealthCheckAgent::class;
+    }
+  
+    protected function getFilterACL(): array {
+      $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+      
+      return [
+        Factory::JOIN => [
+          new JoinFilter(Factory::getAccessGroupAgentFactory(), HealthCheckAgent::AGENT_ID, AccessGroupAgent::AGENT_ID),
+        ],
+        Factory::FILTER => [
+          new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory()),
+        ]
+      ];
     }
 
     public static function getToOneRelationships(): array {

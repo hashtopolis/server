@@ -77,7 +77,11 @@ class HashlistAPI extends AbstractModelAPI {
     }
 
     protected function getFilterACL(): array {
-      return [Factory::FILTER => [new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser())))]];
+      return [
+        Factory::FILTER => [
+          new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser())))
+        ]
+      ];
     }
 
     public function getFormFields(): array {

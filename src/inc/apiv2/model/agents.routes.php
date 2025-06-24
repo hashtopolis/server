@@ -36,7 +36,13 @@ class AgentAPI extends AbstractModelAPI {
     }
   
     protected function getFilterACL(): array {
-      return [Factory::JOIN => [new JoinFilter(Factory::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID)], Factory::FILTER => [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser())))]];
+      $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+      
+      return [
+        Factory::JOIN => [
+          new JoinFilter(Factory::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID)], Factory::FILTER => [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups),
+        ]
+      ];
     }
 
     public static function getToManyRelationships(): array {

@@ -1,6 +1,7 @@
 <?php
 
 use DBA\AccessGroup;
+use DBA\ContainFilter;
 use DBA\Factory;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
@@ -18,7 +19,17 @@ class FileAPI extends AbstractModelAPI {
   
     public static function getDBAclass(): string {
       return File::class;
-    }   
+    }
+  
+    protected function getFilterACL(): array {
+      $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+      
+      return [
+        Factory::FILTER => [
+          new ContainFilter(File::ACCESS_GROUP_ID, $accessGroups),
+        ]
+      ];
+    }
     
     public static function getToOneRelationships(): array {
       return [

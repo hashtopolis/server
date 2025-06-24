@@ -1,6 +1,7 @@
 <?php
 
 use DBA\AccessGroup;
+use DBA\ContainFilter;
 use DBA\Factory;
 use DBA\Hashlist;
 use DBA\HashType;
@@ -24,7 +25,20 @@ class TaskWrapperAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return TaskWrapper::class;
-    }    
+    }
+  
+    protected function getFilterACL(): array {
+      $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+      
+      return [
+        Factory::JOIN => [
+          new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID),
+        ],
+        Factory::FILTER => [
+          new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory()),
+        ]
+      ];
+    }
 
     public static function getToOneRelationships(): array {
       return [

@@ -1,7 +1,13 @@
 <?php
+
+use DBA\AccessGroupAgent;
+use DBA\ContainFilter;
+use DBA\Hashlist;
+use DBA\JoinFilter;
 use DBA\Task;
 use DBA\AgentError;
 use DBA\Factory;
+use DBA\TaskWrapper;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -28,6 +34,23 @@ class AgentErrorAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return AgentError::class;
+    }
+  
+    protected function getFilterACL(): array {
+      $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+      
+      return [
+        Factory::JOIN => [
+          new JoinFilter(Factory::getAccessGroupAgentFactory(), AgentError::AGENT_ID, AccessGroupAgent::AGENT_ID),
+          new JoinFilter(Factory::getTaskFactory(), AgentError::TASK_ID, Task::TASK_ID),
+          new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskFactory()),
+          new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID, Factory::getTaskWrapperFactory()),
+        ],
+        Factory::FILTER => [
+          new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory()),
+          new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory()),
+        ]
+      ];
     }
    
     protected function createObject(array $data): int {

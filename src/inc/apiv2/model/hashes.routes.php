@@ -1,9 +1,12 @@
 <?php
+
+use DBA\ContainFilter;
 use DBA\Factory;
 
 use DBA\Chunk;
 use DBA\Hash;
 use DBA\Hashlist;
+use DBA\JoinFilter;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -19,6 +22,19 @@ class HashAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return Hash::class;
+    }
+  
+    protected function getFilterACL(): array {
+      $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+      
+      return [
+        Factory::JOIN => [
+          new JoinFilter(Factory::getHashlistFactory(), Hash::HASHLIST_ID, Hashlist::HASHLIST_ID),
+        ],
+        Factory::FILTER => [
+          new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory()),
+        ]
+      ];
     }
     
     public static function getToOneRelationships(): array {
