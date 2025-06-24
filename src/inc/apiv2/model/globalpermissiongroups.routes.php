@@ -34,30 +34,7 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
      */
     protected static function db2json(array $feature, mixed $val): mixed {
       if ($feature['alias'] == 'permissions') {
-        $all_perms = array_unique(array_merge(...array_values(self::$acl_mapping)));
-
-        if ($val == 'ALL') {
-          // Special case ALL should set all permissions to true
-          $retval_perms = array_combine($all_perms, array_fill(0,count($all_perms), true));
-        }
-        else {
-          // Create listing of enabled permissions based on permission set in database
-          $user_available_perms = array();
-          foreach(json_decode($val) as $rightgroup_perm => $permission_set) {
-            if ($permission_set) {
-              $user_available_perms = array_unique(array_merge($user_available_perms, self::$acl_mapping[$rightgroup_perm]));
-            }
-          }
-
-          // Create output document
-          $retval_perms = array_combine($all_perms, array_fill(0,count($all_perms), false));
-          foreach($user_available_perms as $perm) {
-            $retval_perms[$perm] = True;
-          }
-        }
-        // Ensure output is sorted for easy debugging
-        ksort($retval_perms);
-        return $retval_perms; 
+        return AccessUtils::getPermissionArrayConverted($val);
       } else {
         // Consider all other fields normal conversions
         return parent::db2json($feature, $val);
