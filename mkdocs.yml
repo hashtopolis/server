@@ -20,6 +20,7 @@ nav:
       - user_manual/crackers_binary.md
       - user_manual/settings_and_configuration.md
       - user_manual/users.md
+      - user_manual/user-settings.md
   - FAQ and Tips:
       - faq_tips/faq.md
       - faq_tips/tips.md

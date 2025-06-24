@@ -1,8 +1,9 @@
 # SSL/TLS Setup
-On this page the setup proces will be described howto setup SSL for Hashtopolis. Before you continue it is highly recommanded to read [Docker](docker.md).
+
+This page describes how to set up SSL for Hashtopolis.
 
 ## Generate x509 Certificate
-First create a folder were we are going to store all of our hashtopolis persistent files.
+First, create a folder where all persistent Hashtopolis files will be stored.
 
 ```bash
 
@@ -11,7 +12,7 @@ cd hashtopolis/
 
 ```
 
-Next generate a self signed certificate
+Next generate a self-signed certificate
 
 ```bash
 
@@ -21,7 +22,7 @@ openssl req -x509 -newkey rsa:2048 -keyout nginx.key -out nginx.crt -days 365 -n
 
 ## Setting up docker-compose and env.example
 
-Please see the [Install](../installation_guidelines/basic_install.md) page on how to download those settings file. 
+Refer to the [Basic installation](../installation_guidelines/basic_install.md) page on how to download those settings file. 
 
 1. Edit docker-compose.yaml
 
@@ -41,9 +42,8 @@ Add the following new container to the `service:` section in the docker-compose.
       - 80:80
 ```
 
-2. Create a nginx.conf
-
-Make sure that the server_name reflects your real server name. If you have changed the container names inside your docker-compose file, make sure to reflect those changes inside the nginx.conf file below.
+2. Create a *nginx.conf* file
+Ensure that server_name matches your actual server name. If you changed container names in docker-compose.yaml, update them in the *nginx.conf* file accordingly.
 
 ```
 events {
@@ -97,7 +97,7 @@ http {
 }
 ```
 
-3. Edit the `HASHTOPOLIS_BACKEND_URL` in `.env` to `https://localhost/api/v2` to reflect the changes done above. 
+3. Update the value of `HASHTOPOLIS_BACKEND_URL` in the `.env` file to reflect the changes done above. 
 
 4. Start the containers
 ```
@@ -105,4 +105,4 @@ http {
 docker compose up
 
 ```
-5. Visit hashtopolis on https://localhost/ the old ui is available via https://localhost/legacy
+5. Visit hashtopolis at https://localhost/

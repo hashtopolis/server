@@ -4,7 +4,7 @@ Tasks are the core of Hashtopolis operations — they define how password cracki
 
 ## Task Creation
 
-To create a new task, click on the button *'+ New Task* in the page *Tasks > Show Task*. You will get the following window in which you can create a new task. Some of the fields are mandatory, some others are filled with default values. 
+To create a new task, click on the button "+ New Task" in the page *Tasks > Show Task*. You will get the following window in which you can create a new task. Some of the fields are mandatory, some others are filled with default values. 
 
 ### Basic Parameters
 

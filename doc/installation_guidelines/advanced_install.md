@@ -1,27 +1,40 @@
 # Advanced installation
 
-## Installation in an airgapped/offline/oil-gapped system (**make a note about the binary**)
-If you are running Hashtopolis in an offline network or an air-gapped network, you will need to use a machine with internet access to either pull the images directly from the docker hub or build it yourself.
+## Installation in an offline environment
+If you want to run Hashtopolis on a network without internet access, you need a separate machine with internet to either pull the images from Docker Hub or build them yourself.
 
 Here are the commands to pull the images from Docker hub. To build the images from source, follow the instructions in the section related to building images.
 ```
 docker pull hashtopolis/backend:latest
 docker pull hashtopolis/frontend:latest
+docker pull mysql:8.0
 ```
 
 The images can then be saved as .tar archives:
 ```
 docker save hashtopolis/backend:latest --output hashtopolis-backend.tar
 docker save hashtopolis/frontend:latest --output hashtopolis-frontend.tar
+docker save mysql:8.0 --output mysql.tar
 ```
 
-Next, transfer both file to your Hashtopolis server and import them using the following commands
+Next, transfer both file to your Hashtopolis server and import them using the following commands:
 ```
 docker load --input hashtopolis-backend.tar
 docker load --input hashtopolis-frontend.tar
+docker load --input mysql.tar
 ```
 
-Continue with the normal docker installation described in the [basic installation section](/installation_guidelines/basic_install/#setup-hashtopolis-server).
+Download docker-compose.yml and env.example and transfer them to your Hashtopolis server as well:
+
+```
+wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.yml
+wget https://raw.githubusercontent.com/hashtopolis/server/master/env.example -O .env
+```
+
+Continue with the normal docker installation described in the [basic installation section](basic_install.md#setup-hashtopolis-server).
+
+> [!CAUTION]
+> Hashtopolis is pre-configured with a hashcat cracker. However, the binary package is not loaded within the docker image. A URL is provided so that the agent can download the binary when required. Obviously this does not work in an offline environment. Please check the [binaries cracker section](../user_manual/crackers_binary.md#adding-a-new-version) for details about how to handle such situation. 
 
 ## Build Hashtopolis images yourself
 The Docker images can be built from source following these steps.
@@ -46,7 +59,7 @@ git clone https://github.com/hashtopolis/server.git
 cd server
 ```
 
-2. *(Optional)* Check the output of ```file docker-entrypoint.sh```. If it mentions *'with CRLF line terminators'*, your git checkout is converting line-ending on checkout. This is causing issues for files within the docker container. This is common behaviour for example within Windows (WSL) instances. To fix this:
+2. *(Optional)* Check the output of ```file docker-entrypoint.sh```. If it mentions *'with CRLF line terminators'*, your git checkout is converting line-ending on checkout. This is causing issues for files within the docker container. This is common behavior for example within Windows (WSL) instances. To fix this:
 ```
 git config core.eol lf
 git config core.autocrlf input
@@ -56,15 +69,13 @@ git reset --hard HEAD
 
 Check that ```file docker-entrypoint.sh``` correctly outputs: *'docker-entrypoint.sh: Bourne-Again shell script, ASCII text executable'*.
 
-3. Copy the env.example and edit the values to your likings
+3. Copy the env.example file and modify the values as needed.
 ```
 cp env.example .env
 nano .env
 ```
 
-4. (Optional) If you want to test a preview of the version 2 of the UI, consult the New user interface technical preview section. (***Internal LINK***)
-
-5. Build the server docker image
+4. Build the server docker image
 ```
 docker build . -t hashtopolis/backend:latest --target hashtopolis-server-prod
 ```
@@ -75,7 +86,7 @@ By default (when you use the default docker-compose) the Hashtopolis folder (imp
 
 You can list this volume via docker volume ls. You can also access the volume directly in the backend, because it is mounted at: ```/usr/local/share/hashtopolis``` inside the container.
 
-However, if you do not want the use the volume but want to use folders of the host OS you can change the mount points in the docker compose file:
+However, if you prefer not to use Docker volumes and instead use folders on the host OS, you can update the mount points in the *docker-compose.yml* file:
 ```
 version: '3.7'
 services:
@@ -128,7 +139,7 @@ volumes:
   hashtopolis:
 ```
 
-Make sure to copy everything out of the docker volume, you can do that using:
+Make sure to back up all data from the Docker volume. You can do this using:
 ```
 docker cp hashtopolis-backend:/usr/local/share/hashtopolis <directory>
 ```
@@ -139,4 +150,4 @@ docker compose down
 docker compose up
 ```
 
-Remember to copy the contents back into the folders.
+Finally, copy the data back into the appropriate folders after recreating the containers.
