@@ -366,7 +366,7 @@ abstract class AbstractBaseAPI
   /**
    * Temponary mapping until src/inc/defines/accessControl.php permissions are no longer used
    */
-  protected static $acl_mapping = array(
+  public static $acl_mapping = array(
     DAccessControl::VIEW_HASHLIST_ACCESS[0] => array(Hashlist::PERM_READ),
     DAccessControl::MANAGE_HASHLIST_ACCESS => array(Hashlist::PERM_READ, Hashlist::PERM_UPDATE, Hashlist::PERM_DELETE,
                                                     Hash::PERM_READ, Hash::PERM_UPDATE, Hash::PERM_DELETE),
