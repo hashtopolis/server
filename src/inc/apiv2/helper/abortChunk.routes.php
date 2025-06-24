@@ -1,10 +1,9 @@
 <?php
 use DBA\Chunk;
-use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
-class ChunkAbortHelperAPI extends AbstractHelperAPI {
+class AbortChunkHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
     return "/api/v2/helper/abortChunk";
   }
@@ -42,4 +41,4 @@ class ChunkAbortHelperAPI extends AbstractHelperAPI {
   }  
 }
 
-ChunkAbortHelperAPI::register($app);
+AbortChunkHelperAPI::register($app);

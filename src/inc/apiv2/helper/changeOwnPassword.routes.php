@@ -6,7 +6,7 @@ use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
-class changeOwnPasswordHelper extends AbstractHelperAPI {
+class ChangeOwnPasswordHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
     return "/api/v2/helper/changeOwnPassword";
   }
@@ -49,6 +49,6 @@ class changeOwnPasswordHelper extends AbstractHelperAPI {
     UserUtils::changePassword($user,$data["oldPassword"], $data["newPassword"],$data["confirmPassword"] );
     return $this->getResponse();
   }
-}  
+}
 
-changeOwnPasswordHelper::register($app);
+ChangeOwnPasswordHelperAPI::register($app);
