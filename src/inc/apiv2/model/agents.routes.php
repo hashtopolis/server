@@ -12,6 +12,7 @@ use DBA\Assignment;
 use DBA\Chunk;
 use DBA\JoinFilter;
 use DBA\Task;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -33,6 +34,14 @@ class AgentAPI extends AbstractModelAPI {
       return [
         Agent::IGNORE_ERRORS => fn ($value) => AgentUtils::changeIgnoreErrors($id, $value, $current_user),
       ];
+    }
+  
+    protected function getSingleACL(User $user, object $object): bool {
+      $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+      /** @var Agent $object */
+      $accessGroupsAgent = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($object));
+      
+      return count(array_intersect($accessGroupsAgent, $accessGroupsUser)) > 0;
     }
   
     protected function getFilterACL(): array {

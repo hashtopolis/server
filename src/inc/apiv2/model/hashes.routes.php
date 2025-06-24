@@ -7,6 +7,7 @@ use DBA\Chunk;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\JoinFilter;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -22,6 +23,13 @@ class HashAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return Hash::class;
+    }
+  
+    protected function getSingleACL(User $user, object $object): bool {
+      $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+      $hashlist = Factory::getHashlistFactory()->get($object->getHashlistId());
+      
+      return in_array($hashlist->getAccessGroupId(), $accessGroupsUser);
     }
   
     protected function getFilterACL(): array {

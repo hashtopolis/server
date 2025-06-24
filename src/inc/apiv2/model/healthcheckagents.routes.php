@@ -8,6 +8,7 @@ use DBA\Agent;
 use DBA\HealthCheck;
 use DBA\HealthCheckAgent;
 use DBA\JoinFilter;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -23,6 +24,14 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return HealthCheckAgent::class;
+    }
+  
+    protected function getSingleACL(User $user, object $object): bool {
+      $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+      $agent = Factory::getAgentFactory()->get($object->getAgentId());
+      $accessGroupsAgent = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent));
+      
+      return count(array_intersect($accessGroupsAgent, $accessGroupsUser)) > 0;
     }
   
     protected function getFilterACL(): array {

@@ -8,8 +8,10 @@ use DBA\Agent;
 use DBA\Chunk;
 use DBA\Hashlist;
 use DBA\JoinFilter;
+use DBA\QueryFilter;
 use DBA\Task;
 use DBA\TaskWrapper;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -25,6 +27,19 @@ class ChunkAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return Chunk::class;
+    }
+  
+    protected function getSingleACL(User $user, object $object): bool {
+      $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+      
+      $qF1 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupsUser, Factory::getHashlistFactory());
+      $qF2 = new QueryFilter(Chunk::CHUNK_ID, $object->getId(), "=");
+      $jF1 = new JoinFilter(Factory::getTaskFactory(), Chunk::TASK_ID, Task::TASK_ID);
+      $jF2 = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskFactory());
+      $jF3 = new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID, Factory::getTaskWrapperFactory());
+      $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::JOIN => [$jF1, $jF2, $jF3]])[Factory::getChunkFactory()->getModelName()];
+      
+      return count($chunks) > 0;
     }
   
     protected function getFilterACL(): array {

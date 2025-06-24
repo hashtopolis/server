@@ -17,6 +17,7 @@ use DBA\QueryFilter;
 use DBA\Speed;
 use DBA\Task;
 use DBA\TaskWrapper;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -27,6 +28,18 @@ class TaskAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return Task::class;
+    }
+  
+    protected function getSingleACL(User $user, object $object): bool {
+      $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+      
+      $qF1 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupsUser, Factory::getHashlistFactory());
+      $qF2 = new QueryFilter(Task::TASK_ID, $object->getId(), "=");
+      $jF1 = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskFactory());
+      $jF2 = new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID, Factory::getTaskWrapperFactory());
+      $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::JOIN => [$jF1, $jF2]])[Factory::getTaskFactory()->getModelName()];
+      
+      return count($tasks) > 0;
     }
   
     protected function getFilterACL(): array {

@@ -7,6 +7,8 @@ use DBA\QueryFilter;
 use DBA\OrderFilter;
 
 use DBA\File;
+use DBA\User;
+
 include_once __DIR__ . "/../common/ErrorHandler.class.php";
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
@@ -19,6 +21,12 @@ class FileAPI extends AbstractModelAPI {
   
     public static function getDBAclass(): string {
       return File::class;
+    }
+  
+    protected function getSingleACL(User $user, object $object): bool {
+      $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+      
+      return in_array($object->getAccessGroupId(), $accessGroupsUser);
     }
   
     protected function getFilterACL(): array {
