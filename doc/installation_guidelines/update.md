@@ -15,9 +15,11 @@ mysqldump <database-name> > hashtopolis-backup.sql
 ```
 
 3. Make copies of the following folders, located in the Hashtopolis directory next to index.php:
+
    - files
    - import
    - log
+
 4. Download the docker compose file: 
 ```
 wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.yml
@@ -91,21 +93,44 @@ Becomes */usr/local/share/hashtopolis/config/config.json*:
 }
 ```
 
-18. Restart the compose docker compose down && docker compose up
+18. Restart the containers 
+
+```
+docker compose down && docker compose up
+```
 
 ### New database 
 
 Repeat the above steps, but you do not need to export or import the database. Just ensure the .env file points to your database server and that it is reachable from the container.
 
 ## Upgrading from docker to docker (version 0.14.0 and up)
-1. Stop your docker compose docker compose down
-2. docker compose pull
-3. docker compose up
+
+For this process, you need to stop your containers, pull the new ones and then restart the containers.
+```
+docker compose down
+docker compose pull
+docker compose up
+```
 
 ## Upgrading from docker to docker (version 0.14.0 and up) - Offline System(s)
 
-***To be done***
+1. On a system with internet access execute the following commands:
 
+```
+docker pull hashtopolis/backend:latest
+docker pull hashtopolis/frontend:latest
+docker save hashtopolis/backend:latest --output hashtopolis-backend.tar
+docker save hashtopolis/frontend:latest --output hashtopolis-frontend.tar
+```
+
+2. Next, transfer both tar-files to your Hashtopolis server and import them using the following commands:
+
+```
+docker compose down
+docker load --input hashtopolis-backend.tar
+docker load --input hashtopolis-frontend.tar
+docker compose up
+```
 
 <!-- ## New user interface: technical preview
 

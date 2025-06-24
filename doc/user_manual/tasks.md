@@ -1,55 +1,59 @@
 # Tasks
 
-Tasks are the core of Hashtopolis operations — they define how password cracking jobs are executed. Each task specifies an attack configuration, including the hashlist to use, files like wordlists or rules, and the command line for Hashcat. This page explains how to create, configure, and manage tasks.
+Tasks are central to Hashtopolis operations. They define how password cracking jobs are executed. Each task specifies the attack configuration, including the hashlist, required files (such as wordlists or rules), and the command line for Hashcat. This page explains how to create, configure, and manage tasks.
 
 ## Task Creation
 
-To create a new task, click on the button "+ New Task" in the page *Tasks > Show Task*. You will get the following window in which you can create a new task. Some of the fields are mandatory, some others are filled with default values. 
+To create a new task, click on the button "+ New Task" on the *Tasks > Show Task* page. A window will open where you can enter the task details. Some fields are required, while others are filled in with default values.
 
 ### Basic Parameters
 
-1. **Name**: provide a name for the task you want to create. This is how the task will be referenced with during the monitoring phase (see **link**) therefore it should be relatively explicit to facilitate its monitoring.
+1. **Name**: Provide a name for the task you want to create. This name will be shown during [task monitoring](./tasks.md#task-overview) and should be descriptive enough for easy identification.
 
-2. **Hashlist**: select the hashlist you want to target in this specific task. Tasks are ordered by their IDs. [SuperHashlists](./hashlist.md#super-hashlists) are at the bottom of the list ordered by their respective IDs.
+2. **Hashlist**: Select the hashlist you want this task to target. Tasks are ordered by their IDs. [SuperHashlists](./hashlist.md#super-hashlists) are at the bottom of the list ordered by their respective IDs.
 
-3. **Command Line**: provide in this field the attack command that will be executed by the agent on the targeted hashlist using the selected binary (see below). Note that *#HL#* is filled in by default in the command line. It is a placeholder for the hashlist and will be replaced automatically at execution time by the agent with the correct path to the hashlist file. Therefore you should not remove it nor include the filename for the hashlist. If for example you want to perform a mask attack of 6 digits, the command line would look like ```#HL# -a3 ?d?d?d?d?d?d```.
-In case you want to perform a dictionary attack with rules, you have to select the corresponding files in the right table. If it is a wordlist, select it within the right column corresponding to T/Task. The Preprocessor part is explained in the advanced section. If it is a rule file, select first the rule tab and then select the desired rule file. Note that upon selection of a rule file, the name of the file is included in the command line and automatically include the required '-r' flag.
+3. **Command Line**: Provide the attack command to be executed by the agent. The placeholder #HL# represents the hashlist and is automatically replaced with the correct path during execution. Do not remove or replace it manually. For example, to perform a 6-digit mask attack, use: ```#HL# -a3 ?d?d?d?d?d?d```. For a dictionary attack with rules, select the necessary files from the right-side panel. Selecting a rule file automatically includes it and the '-r' flag in the command line.
 
-4. **Priority**: Assign a priority number to the task. The expected value has to be an integer. Agents will be assigned to tasks in decreasing order of priority. A task with a priority 0 will not be processed even if agents are available - except if an agent is manually assigned to it and no other task with higher priority that the agent may join are existing. Default value is 0.
+4. **Priority**: Assign an integer value. Agents are assigned to tasks based on descending priority. A task with priority 0 will not run unless an agent has been manually assigned and no higher priority tasks are available, or if the related setting is modified (["Settings > Task/Chunk > Automatic Assignment of Tasks with Priority 0"](./settings_and_configuration.md#command-line-misc)). Default is 0.
 
-5. **Maximum number of agents**: Specify the maximum agents that can be assigned to the task. If this amount is reached, future available agents will be assigned to the next task available with a lower priority even if not all the chunks of the task have been distributed. The default value of 0 means that there is no maximum and therefore, all available agents are assigned to this tasks until all the chunks have been distributed. This functionality is helpful to only use a portion of the cluster for a specific task, and therefore allowing to split the workers on different tasks.
+5. **Maximum number of agents**: Limits how many agents can work on the task. A value of 0 allows unlimited agents. Useful to reserve part of your cluster for specific tasks
 
-6. **Task Notes** - *optional*: This field allows the user to indicate some details about the tasks, the command line or any other details the user can find relevant. 
+6. **Task Notes** - *optional*: Add extra information about the task or command line here. 
 
-7. **Color** - *optional*: Can assign a color in a Hex color code format #RRGGBB. Default value is white #FFFFFF. This can be useful in the monitoring part to visually recognize a task or a set of tasks.
+7. **Color** - *optional*: Assign a color in hex format (e.g., #RRGGBB). Default is white (#FFFFFF). Helps visually distinguish tasks during monitoring.
 
 ### Advanced Parameters
 
-Several options were not covered in the basic workflow related to the creation of a task. The remaining options are described below. 
+These additional task configuration options allow greater control over execution and resource usage.
 
-8. **Chunk size**: This parameter defines the duration that each agent should take to process a chunk<span title="A portion of the keyspace assigned to an agent for cracking. If an agent fails or a chunk times out, it will be reassigned.">ℹ️</span> for this task. The default value is defined in the [Settings](./settings_and_configuration.md#benchmark-chunk).
+8. **Chunk size**: Defines the expected processing time for each chunk<span title="A portion of the keyspace assigned to an agent for cracking. If an agent fails or a chunk times out, it will be reassigned.">ℹ️</span> of this task. Default value is set in [Settings](./settings_and_configuration.md#benchmark-chunk).
 
-9. **Status timer**: Defines the frequency with which each agent report its progress for this task to the server. The default value is defined in the [Settings](./settings_and_configuration.md#activity-registration).
+9. **Status timer**: How often agents report task progress to the server. Default value is set in [Settings](./settings_and_configuration.md#activity-registration).
 
-10. **Benchmark Type**: Select which benchmarking type should be used for this task. In most of the cases, it is recommended to use the default *Speed Test*. Only in few cases, such as tasks with big salted lists, the *Runtime* may be used.
+10. **Benchmark Type**: Choose the benchmarking method, usually *Speed Test* is the most suitable one. For large salted lists, "Runtime" may be more appropriate.
 
-11. **Task is CPU only**: If this flag is enabled, only the agents that are declared as CPU only can be assigned to this task. More details can be found in the [agent overview section](./agents.md#agent-overview). 
+11. **Task is CPU only**: Limits this task to agents flagged as [CPU-only](./agents.md#agent-overview).
 
 12. **Task is small**: If this flag is enabled, a single agent can be assigned to this task. This is relevant for small tasks or to assign the full keyspace in a single chunk to an agent. Note that this is **NOT** equivalent to define the *Maximum number of agents* to 1. Indeed, in this latter case, the task will still be divided in chunks according to the *chunk size* parameter. The flag is disabled by default.
 
-13. **Binary type to run the task**: This pair of parameters specify the binary type as well as the version of the binary to use for this specific task. It will by default use the latest uploaded version of the first binary type defined in the [*Binaries* section](./crackers_binary.md).  
+13. **Binary type to run the task**: Specify the binary type and version to use for this task. Defaults to the latest available in the [Binaries](./crackers_binary.md#crackers) section. 
 
 14. **Set as preprocessor task**: Such option allows the usage of a preprocessor. By default hashtopolis is installed with a single preprocessor, namely [*Prince*](https://github.com/hashcat/princeprocessor). Additional preprocessors can be defined in the [*preprocessors*](./crackers_binary.md#preprocessors) page. The command that should be used for this preprocessor must be defined in the free text zone below. A task define with a preprocessor will result in the execution of the preprocessor redirecting the output as stdin for the command line defined above in the same task. This allows the usage of "external" candidate generator such as Prince.  
 
-15. **Skip a given keyspace at the beginning of the task**: Any value X inserted here will result in ignoring the first X values of the keyspace as it would be done with the flag "-s X" inserted in the command line. The rest of the keyspace will be processed normally. This can be useful to ignore a portion of the keyspace that has been already explored during a different process, for example on a local machine.
+15. **Skip a given keyspace at the beginning of the task**: Assign an integer value X. Skips the first X candidates in the keyspace, equivalent to adding *-s X* in the Hashcat command. Useful for resuming from a previous partial run.
 
 16. **Use Static Chunking**: If this option is enabled, the regular division in chunk (based on the chunktime and the benchmark of the agent) will be ignored. An alternative division is used depending of the choice made.
-  - *Fixed chunk size*: Each chunk will have a portion of the keyspace where the length is the value assigned (an integer) in the associated field. The last chunk of the task may be smaller than the defined length for completion.
-  - *Fixed number of chunks*: The keyspace will be divided in as many chunks as the number specified in the associated field.
+  - *Fixed chunk size*: Divides the keyspace in chunks of the provided length. The last chunk of the task may be smaller for completion.
+  - *Fixed number of chunks*: Divides the keyspace uniformly into the specified number of chunks.
+
+
+## Task Overview
+
+**Work in progress**
 
 ## Preconfigured tasks
 
-A preconfigured tasks is a basic template for a task that is not assigned yet to a hashlist. This is particularly useful to predefine task(s) that are often use such as generic mask attack or commonly used dictionary attack. A preconfigured task can later be assigned to a hashlist avoiding the user to redefine the same task every time. This section gives more details about this topic.
+A **preconfigured task** is a reusable template not yet linked to a hashlist. This is useful for defining frequently used tasks like standard mask attacks or dictionary attacks. Once created, the preconfigured task can be reused without needing to re-enter its settings.
 
 When the user creates a *New Preconfigured Tasks*, the fields to create one are a subset of those of a regular task and are therefore not re-defined here. The reader can refer to the above section for reference.  
 

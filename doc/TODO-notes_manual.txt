@@ -1,8 +1,9 @@
 # What still has to be done
-- in advanced install there should be a note about the binaries, files in www-data forat etc
+- in advanced install there should be a note about files in www-data format etc
 - lots of screenshots and diagrams to make the text fancier
 - details about the config files, structure of repos etc.
 - booting from PxE, running hashtopolis as a service ?
 - Check if any difference for Agent overview in new interface
 - Hashtypes
 - make an example of import super task to make it clearer
+- Task overview is missing !!!
