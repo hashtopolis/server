@@ -13,7 +13,6 @@ use DBA\QueryFilter;
 use DBA\Speed;
 use DBA\Task;
 use DBA\TaskWrapper;
-use Util;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 

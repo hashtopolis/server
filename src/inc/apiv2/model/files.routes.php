@@ -6,7 +6,7 @@ use DBA\QueryFilter;
 use DBA\OrderFilter;
 
 use DBA\File;
-include_once __DIR__ . "../common/ErrorHandler.class.php";
+include_once __DIR__ . "/../common/ErrorHandler.class.php";
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 

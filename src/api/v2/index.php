@@ -50,7 +50,7 @@ use DBA\User;
 use DBA\Factory;
 
 require __DIR__ . "/../../../vendor/autoload.php";
-require __DIR__ . "../../../inc/apiv2/common/ErrorHandler.class.php";
+require __DIR__ . "/../../inc/apiv2/common/ErrorHandler.class.php";
 
 require_once(dirname(__FILE__) . "/../../inc/load.php");
 
@@ -300,6 +300,7 @@ require __DIR__ . "/../../inc/apiv2/helper/createSuperHashlist.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/exportCrackedHashes.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/exportLeftHashes.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/exportWordlist.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/getAccessGroups.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getFile.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/importCrackedHashes.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/importFile.routes.php";
