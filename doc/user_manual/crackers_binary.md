@@ -7,7 +7,7 @@ Hashtopolis is also responsible of the update and distribution of several binari
 When Hashtopolis was first developed it was solely designed to manage hashcat tasks with multiple agents. As part of the evolution of the project, support for other tool than hashcat was integrated in hashtopolis. In addition to the support of different tools, hashtopolis can also manage different versions of the same tool. 
 
 <figure markdown="span">
-    ![screenshot_cracker_page](/assets/images/cracker_page.png){ width="600" }
+    ![screenshot_cracker_page](../assets/images/cracker_page.png){ width="600" }
 </figure>
 
 This page displays some basic information about all the crackers configured in hashtopolis. Apart from the ID of the cracker and its name, the version(s) available is also displayed. Hashtopolis is configured with a default hashcat cracker to be downloaded by the agents whenever they need it. 
@@ -24,7 +24,7 @@ By clicking on the ``*New Cracker*'' button, a new page opens in which you can s
 
 In other words, the keyspace is the total amount of work related to a task. The combination of skip and limit will define a portion of the keyspace, also called chunk, on wich an agent will be working. That is the main features required to distribute a task among the several agents.
 
-If chunking is not available for a cracker, then a task cannot be split and it must be run by a single agent. WHen selecting such type of cracker during the task creation, the ["small task"](/user_manual/tasks/#advanced-parameters) flag will be enabled by default. 
+If chunking is not available for a cracker, then a task cannot be split and it must be run by a single agent. WHen selecting such type of cracker during the task creation, the ["small task"](./tasks.md#advanced-parameters) flag will be enabled by default. 
 
 > [!CAUTION]
 > Creating a new type of cracker is not a simple plug-and-play process with Hashtopolis. In addition to defining the new cracker type, you must also modify the agent itself. Specifically, this involves writing a dedicated Python handler file for your cracker.
@@ -36,7 +36,7 @@ If chunking is not available for a cracker, then a task cannot be split and it m
 Whether it is the first version for a new cracker or to update an existing cracker, the page displayed below for adding a version to a cracker will appear. 
 
 <figure markdown="span">
-    ![screenshot_manage_file](/assets/images/new_binary_version.png){ width="400" }
+    ![screenshot_manage_file](../assets/images/new_binary_version.png){ width="400" }
 </figure>
 
 The three following information are required to deploy a new version.
@@ -54,16 +54,16 @@ The three following information are required to deploy a new version.
 The purpose of a pre-processor in the context of hashcat is to generate passwords candidates that are then fed through the standard input to a hashcat process. The preprocessor page displayed below list all the preprocessors configured in hashtopolis. 
 
 <figure markdown="span">
-    ![screenshot_cracker_page](/assets/images/preprocessor_page.png){ width="600" }
+    ![screenshot_cracker_page](../assets/images/preprocessor_page.png){ width="600" }
 </figure>
 
 By default hashtopolis is installed with a single preprocessor, namely [*Prince*](https://github.com/hashcat/princeprocessor). Additional preprocessors can be added by clicking the *New Preprocessor" button. The creation page below is diplayed.
 
 <figure markdown="span">
-    ![screenshot_cracker_page](/assets/images/new_preprocessor_page.png){ width="600" }
+    ![screenshot_cracker_page](../assets/images/new_preprocessor_page.png){ width="600" }
 </figure>
 
-It is rather similar to the creation of a new version of a [cracker](./crackers_binary.md#adding-a-new-version). The main difference is that the user can associate the required keyspace, skip, and limit options to different flags of the preprocessor. Note that those three remain mandatory to be used within hashtopolis, however, this allows more flexibility as the preprocessor may have named those options differently. If additional paramaters are required at execution time, they should be included in the [preprocessor's command](tasks.md#advanced-parameters) during the task creation.
+It is rather similar to the creation of a new version of a [cracker](./crackers_binary.md#adding-a-new-version). The main difference is that the user can associate the required keyspace, skip, and limit options to different flags of the preprocessor. Note that those three remain mandatory to be used within hashtopolis, however, this allows more flexibility as the preprocessor may have named those options differently. If additional paramaters are required at execution time, they should be included in the [preprocessor's command](./tasks.md#advanced-parameters) during the task creation.
 
 
 ## Agent Binaries
@@ -73,13 +73,13 @@ There are several situations where deploying a new Hashtopolis agent binary is n
 The agent binaries page displayed the information shown below about the current agent binaries configured in hashtopolis.
 
 <figure markdown="span">
-    ![screenshot_cracker_page](/assets/images/agent_binaries_page.png){ width="600" }
+    ![screenshot_cracker_page](../assets/images/agent_binaries_page.png){ width="600" }
 </figure>
 
 To create a new agent, simply press the button *New Binary* in the agent binary page. The following page is then displayed.
 
 <figure markdown="span">
-    ![screenshot_cracker_page](/assets/images/new_agent_page.png){ width="400" }
+    ![screenshot_cracker_page](../assets/images/new_agent_page.png){ width="400" }
 </figure>
 
 The following fields need to be filled at creation time.

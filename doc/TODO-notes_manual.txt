@@ -13,4 +13,4 @@
 - Agent installation is not compliant with v2
 - Pictures for installation
 - Sein: Review contribution guidelines
--
+- Hashlist page, define what is cracking position

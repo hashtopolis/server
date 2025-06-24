@@ -7,7 +7,7 @@ Refer to the Hashcat documentation for detailed information on supported hash ty
 In the Hashtopolis web interface, navigate to *Hashlists* and click on the button *+ New Hashlist*. You will get the following window:
 
 <figure markdown="span">
-    ![screenshot_create_hashlist](/assets/images/create_hashlist.png)
+    ![screenshot_create_hashlist](../assets/images/create_hashlist.png)
 </figure>
 
 Here is how to fill in the different fields: 
@@ -52,7 +52,7 @@ Several actions are offered to the user which are detailed below. Note that some
 
 - **Export Left Hashes**: This action generates a file listing all the hashes for which no password have been recovered at the moment of the file creation. The file is automatically stored in the *wordlist* section of the *Files* section. The generated file can be easily retrieved as it got assigned to the latest file ID. The filename is *Leftlist_[Hashlist_ID]_[dd-mm-yyyy]_[hh-mm-ss].txt*. 
 
-- **Import pre-cracked Hashes**: This action opens a new page in which the user can upload pre-cracked hashes for the related hashlist. A pre-crack is supposed to be a hash contained in the hashlist associated with a plaintext in the format *[hash](:[salt]):[plaintext]*. Such data can be imported in different ways: *"Paste, Upload, Import, URL download"* such as the option to import the hashes during a hashlist creation. In case of salted password, the field separator must be indicated, ':' being the default one. When validating by pressing the *Pre-crack hashes* button, the back-end will check if the imported data contains hash values from the targeted hashlist and integrate the plaintext value accordingly. If the option *Overwrite already cracked hashes* is selected, existing recovered passwords will be overwritten by the new imported ones in case of conflict. The front-end is then reporting to the user how many hashes have been considered as well as how many entries have been updated.  
+- **Import pre-cracked Hashes**: This action opens a new page in which the user can upload pre-cracked hashes for the related hashlist. A pre-crack is supposed to be a hash contained in the hashlist associated with a plaintext in the format *[hash]\(:[salt]\):[plaintext]*. Such data can be imported in different ways: *"Paste, Upload, Import, URL download"* such as the option to import the hashes during a hashlist creation. In case of salted password, the field separator must be indicated, ':' being the default one. When validating by pressing the *Pre-crack hashes* button, the back-end will check if the imported data contains hash values from the targeted hashlist and integrate the plaintext value accordingly. If the option *Overwrite already cracked hashes* is selected, existing recovered passwords will be overwritten by the new imported ones in case of conflict. The front-end is then reporting to the user how many hashes have been considered as well as how many entries have been updated.  
 
 Pre-cracked management is useful to share results between different instances of hashtopolis. This is especially relevant for salted hashlists as each new recovered plaintext is improving the efficiency of the attack is there is no more hashes associated with the same salt value. 
 
@@ -102,7 +102,7 @@ The result will display all the hashes that correspond to the given entry/ies. I
 - A list of all the hashes that contains the given entry, specifying in which hashlist(s) they are contained and the cleartext password if they have been cracked already.
 
 <figure markdown="span">
-    ![screenshot_import_file](/assets/images/search_hash_2.png)
+    ![screenshot_import_file](../assets/images/search_hash_2.png)
 </figure>
 
 ## Show Crack

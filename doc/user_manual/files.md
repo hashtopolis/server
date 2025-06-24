@@ -21,7 +21,7 @@ When creating a password recovery task in Hashtopolis, you may need to upload ad
 Each type of file has a dedicated page containing similar information. The figure below shows what the rule page looks like. It contains information such as the name of the file, its size, the number of line in it as well as the access group. The key next to the name indicates that the file is secret and can only be accessed by [trusted agents](./agents.md#agent-overview).
 
 <figure markdown="span">
-    ![screenshot_rule_page](/assets/images/rules_files.png)
+    ![screenshot_rule_page](../assets/images/rules_files.png)
 </figure>
 
 
@@ -30,7 +30,7 @@ From this page, files can be edited by clicking on their name or on the related 
 Navigating to the Files page of the Hashtopolis User Interface, you can manage the files uploaded to the server.
 
 <figure markdown="span">
-    ![screenshot_manage_file](/assets/images/edit_rule_file.png){ width="400" }
+    ![screenshot_manage_file](../assets/images/edit_rule_file.png){ width="400" }
 </figure>
 
 1. **Select Category**.
@@ -54,7 +54,7 @@ Detailed instructions for each upload method are provided in the following subse
 ### Upload a new file from the computer
 
 <figure markdown="span">
-    ![screenshot_new_file](/assets/images/upload_rule.png){ width="400" }
+    ![screenshot_new_file](../assets/images/upload_rule.png){ width="400" }
 </figure>
 
 1. **Add file**: Click this button to enable file upload. After clicking, a new field labeled Choose file will appear. Each time you click on Add File, an additional Choose file field will be added, allowing you to upload multiple files simultaneously..
@@ -83,7 +83,7 @@ docker cp <dict> hashtopolis-backend:/usr/local/share/hashtopolis/import/
 ### Download new file from URL
 
 <figure markdown="span">
-    ![screenshot_download_url](/assets/images/upload_url.png){ width="400" }
+    ![screenshot_download_url](../assets/images/upload_url.png){ width="400" }
 </figure>
 
 1. **Name**: Name of the file that will be downloaded
