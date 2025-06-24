@@ -1,4 +1,6 @@
 <?php
+
+use DBA\ContainFilter;
 use DBA\Factory;
 
 use DBA\AccessGroup;
@@ -8,6 +10,7 @@ use DBA\AgentError;
 use DBA\AgentStat;
 use DBA\Assignment;
 use DBA\Chunk;
+use DBA\JoinFilter;
 use DBA\Task;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
@@ -30,6 +33,10 @@ class AgentAPI extends AbstractModelAPI {
       return [
         Agent::IGNORE_ERRORS => fn ($value) => AgentUtils::changeIgnoreErrors($id, $value, $current_user),
       ];
+    }
+  
+    protected function getFilterACL(): array {
+      return [Factory::JOIN => [new JoinFilter(Factory::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID)], Factory::FILTER => [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser())))]];
     }
 
     public static function getToManyRelationships(): array {
