@@ -179,6 +179,12 @@ class TaskUtils {
     Factory::getTaskFactory()->set($task, Task::IS_ARCHIVED, 1);
   }
 
+  /**
+   * @param int $taskId
+   * @param bool $taskState
+   * @param User $user
+   * @throws HTException
+   */
   public static function toggleArchiveTask($taskId, $taskState, $user) {
     $task = TaskUtils::getTask($taskId, $user);
     $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $user);
