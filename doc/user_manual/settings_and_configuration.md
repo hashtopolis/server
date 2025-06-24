@@ -127,20 +127,50 @@
 
 - **Server Level Logging to File**:  Enables detailed server-side logging output to log files for troubleshooting or audits.
 
-## Hashtypes [to be rewritten]
+## Hashtypes
 
-Hashcat gets constantly developed and often new hashtypes get added. To be flexible Hashtopolis provides the possibility for the server admin to add new Hashcat algorithms. Even if you use a customized Hashcat with some special algorithm. To add a new type you just need to add the -m number of Hashcat and the name of it.
+In Hashcat (and by extension, Hashtopolis), a hashtype refers to the specific algorithm or format used to generate a hash from a password. Hashtopolis is preconfigured with the hashtypes supported by the latest version of hashcat. For flexibility reason, there is the possibility to include additional hashtypes in case you use a modified version of hashcat with additional modules. 
 
-Salted says if a hash of this algorithm has a separate hash value (e.g. vBulletin), but this does not include algorithms which have the salt included in the full hash (e.g. bcrypt). This is a feature to help that when this algorithm is selected on hashlist import, the salted checkbox gets ticked automatically.
+Click on *+ New Hashtype* to add a new hashtype. Fill the corresponding fields described below:
 
-### Slow Algorithms
+- **Hashtype**: The numeric ID corresponding to the Hashcat hashmode (used with the -m option), e.g. -m 0 for MD5.
+- **Description**: A human-readable name for the hashtype, typically matching the hashmode name.
+- **Salted**: Salted indicates whether the hash algorithm uses a separate salt value (e.g., vBulletin). It does not apply to algorithms where the salt is embedded within the hash itself (e.g., bcrypt). This setting allows Hashtopolis to automatically check the Salted box when importing a hashlist that uses such an algorithm.
+- **Slow Hash**: Check this box if the hashmode is a computationally intensive (slow) hash function. 
 
-To extract all Hashcat modes which are flagged as slow hashes, following command can be run inside the hashcat directory:
+> [!TIP]
+> Considering that the hashmode is configured in your hashcat binary, you can obtain all these information directly from hashcat:
+> ```
+> hashcat.bin --exam -m 3200
+> 
+> hashcat (v6.2.6-850-gfafb277e0+) starting in hash-info mode
+> 
+> Hash Info:
+> ==========
+> 
+> Hash mode #3200
+>   Name................: bcrypt $2*$, Blowfish (Unix)
+>   Category............: Operating System
+>  Slow.Hash...........: Yes
+>   Password.Len.Min....: 0
+>   Password.Len.Max....: 72
+>   Salt.Type...........: Embedded
+>   Salt.Len.Min........: 0
+>   Salt.Len.Max........: 256
+>   Kernel.Type(s)......: pure
+>   Example.Hash.Format.: plain
+>   Example.Hash........: $2a$05$MBCzKhG1KhezLh.0LRa0Kuw12nLJtpHy6DIaU.JAnqJUDYspHC.Ou
+>   Example.Pass........: hashcat
+>   Benchmark.Mask......: ?b?b?b?b?b?b?b
+>   Autodetect.Enabled..: Yes
+>   Self.Test.Enabled...: Yes
+>   Potfile.Enabled.....: Yes
+>   Custom.Plugin.......: No
+>   Plaintext.Encoding..: ASCII, HEX
+> 
+> ```
 
-```
-grep -Hr SLOW_HASH src/modules/ | cut -d: -f1 | sort | cut -d'.' -f1 | sed 's/src\/modules\/module_[0]\?//g'
-```
-
+You cannot create a new hashtype using an existing hashtype value. In case you want to modify an existing hashtype, you must delete it and recreate it. This is unfortunately not possible if there are existing hashlists associated to this hashtype.
 
 ## Health Checks
 

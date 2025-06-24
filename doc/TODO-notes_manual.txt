@@ -4,6 +4,13 @@
 - details about the config files, structure of repos etc.
 - booting from PxE, running hashtopolis as a service ?
 - Check if any difference for Agent overview in new interface
-- Hashtypes
+- Hashtypes --> review hashcat --exam
 - make an example of import super task to make it clearer
 - Task overview is missing !!!
+- Creating an example of preprocessors in the preprocessors binary to simplify the related section in task creation
+- Explaining the global interface of hashtopolis
+- Check the style of the manual, page, buttons, code etc should always be within the same style
+- Agent installation is not compliant with v2
+- Pictures for installation
+- Sein: Review contribution guidelines
+-

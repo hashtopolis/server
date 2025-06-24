@@ -49,49 +49,65 @@ These additional task configuration options allow greater control over execution
 
 ## Task Overview
 
-**Work in progress**
+Valuable information on the current tasks is displayed in the Task Overview. In addition to the classic information such as individual ID or the type of task, the overview offers further highlights. The most important ones are described in more detail below:
+
+- Status: The current number of password candidates attempted per second is shown in a **live status**. If the task has been completed, this is indicated by a **visual tick**; if the task is not currently running, it is in **idle** status.
+
+- Dispatched/Searched: As already described in **What is Hashtopolis**, a part of the keyspace is distributed. It is therefore very common that not 100% of the keyspace is distributed directly. This information is communicated to us at this point. The search space is always smaller than the dispatched value because Hashtopolis distributes the chunk first and then starts the password search. **Searched** shows the percentage of the entire chunk/keyspace that has already been searched.
+
+- Cracked: If a password is found during the attack, this is displayed with a 1, for example (if the number of passwords found is higher, this is correspondingly more). Clicking on the number then displays the plain text password, among other things.
+
+<figure markdown="span">
+    ![screenshot_showtask_supertask](../assets/images/task_overview.png)
+</figure>
+
+
 
 ## Preconfigured tasks
 
 A **preconfigured task** is a reusable template not yet linked to a hashlist. This is useful for defining frequently used tasks like standard mask attacks or dictionary attacks. Once created, the preconfigured task can be reused without needing to re-enter its settings.
 
-When the user creates a *New Preconfigured Tasks*, the fields to create one are a subset of those of a regular task and are therefore not re-defined here. The reader can refer to the above section for reference.  
+When creating a *new preconfigured task*, you will see a subset of the fields used for regular tasks. Refer to the [Task Creation](./tasks.md#task-creation) section for more details.
 
-Once the pre-configured task is created, the user is brought to the *Preconfigured tasks* page that lists all the existing preconfigured tasks. Here the user can set the default priority as well as the maximum number of agents for this preconfigured tasks (**NOTE I believe these two options should already appear in the template of a preconfigured task**). Those values will be used as defaults upon creation of a task from this template. 
+After creation, the new preconfigured task appears on the Preconfigured Tasks page. You can set its default priority and maximum number of agents. These defaults will be applied when generating a task from the template.
 
-In addition to the possibility to delete a preconfigured task, two additional actions are offered to the user and are defined below.
+You may delete a preconfigured task or use one of the two actions below:
 
-- **Copy to task**: This action opens a *new task* creation page where all the pre-defined values of the preconfigured task are already prefilled. The user must select the hashlist for which the task should be created. All the other values can be modified by the user if needed. Note that there is the possibility to create a task from a pretask for a specific hashlist directly from the corresponding *Hashlist details* page.  
+- **Copy to task**: Opens a *New Task* form with all values pre-filled from the preconfigured task. Just choose the target hashlist and adjust other values as needed. 
 
-- **Copy to Pretask**: This action open a *New Preconfigured Tasks* Page where all the value of the corresponding pretask are duplicated. The user can then modify those values to create a new Preconfigured tasks. This is particularly useful if one want to slightly modify an existing preconfigured task, for example by adding a new placeholder in a mask or changing a rule file in a dictionary attack. Note that while it is possible to create a perfect duplicate of a pretask there is no added-value in doing-so. 
+> [!TIP]
+> A task can also be generated from a preconfigured task directly from the *Hashlist Details*.
+
+- **Copy to Pretask**: Opens the *New Preconfigured Task* form pre-filled with the values from the existing preconfigured task for easy editing. This is useful for making slight adjustments—such as updating a mask or swapping a rule file without recreating it from scratch.
+
 
 #### Creating a preconfigured task from a task
-In the *Show Tasks* page, there is an action offered for each task, namely **Copy to Pretask**. This option will create a template from the corresponding task by extracting all the required information. The default name extracted will be the current one from the task. The user can modify at will those values and finally create the preconfigured task from it. This is useful in case you have defined an attack that you want to store for future reuse.   
 
+On the Show Tasks page, each task has an action called *Copy to Pretask*. This creates a preconfigured task pre-filled with the values from the existing task, including its name. You can modify those values before saving.
 
 ## Super Task
-
-A SuperTask is a group of pre-configured tasks. A supertask can be directly applied to a hashlist resulting in the creation of all the underlying pre-configured tasks applied to this hashlist. 
+A **SuperTask** is a collection of preconfigured tasks. When applied to a hashlist, it creates all the individual tasks included in the group. A SuperTask is handled differently by both the front-end and the back-end. As such, the monitoring is slightly different as explained below.
 
 > [!CAUTION] 
-> A supertask cannot be applied to a superhashlist. 
+> Supertasks cannot be applied to superhashlists. 
 
-This is particularly useful when applying the same attack strategy to different hashlists.
+Supertasks are ideal for defining consistent cracking strategies which can be used repeatedly with multiple hashlists.
 
 ### New SuperTask
 
-Similarly to the superhashlists, this page will display all the existing pre-configured tasks. The user needs to select all the pre-configured tasks that should be included in the supertask, give it a name, and press the *create supertask* button. 
+A new supertask can be created from the *SuperTask* page by clicking on the *+ New* button. In the following page, give a name to the supertask and select all the preconfigured tasks to include. Click the "Create SuperTask" button to finalize.
 
 ### Overview
-Once a new supertask is created, or if you open the *SuperTask* menu, the overview page of SuperTask is open. It displays the ID of all the superhashlists and their names. Three options are proposed.
 
-- **Apply to Hashlist**: This option open a new page in which you can select the hashlist to which you want to apply the set of pre-configured tasks as well as the binary to use. 
-- **Show/Hide**: This option unfolds the supertask and displays the included preconfigured task(s) with the following information/options.
-  - **ID**: ID of the pre-configured task
-  - **Name**: Name of the pre-configured task. Clicking on it opens the corresponding pre-configured task page. 
-  - **SubTask Priority**: define the order in which the pre-configured tasks will be executed when an agent is assigned to the supertask. Similarly to tasks, priority is given to the highest number.
-  - **SubTask Max Agents**: similarly to tasks, specifies the maximum agents that can be assigned to the task.
-  - **Remove**: remove the pre-configured task from the supertask. Note that the pre-configured task is only remove from the supertask but not deleted from the system except if the related pre-configured task was generated via the *Import Super Task* functionality (see below for more details).
+The **SuperTask menu** shows a list of all supertasks and their associated preconfigured tasks. The following options are available:
+
+- **Apply to Hashlist**: Select a target hashlist and binary in the opened page. This action creates all the sub-tasks from the supertask to the selected hashlist.
+- **Show/Hide**: Expands the supertask view to show the included subtasks with their details:
+  - **ID**: Preconfigured task ID.
+  - **Name**: Clickable name to open and view the subtask details. 
+  - **SubTask Priority**: Controls subtask execution order within the supertask (higher = first).
+  - **SubTask Max Agents**: Limits the number of agents per subtask.
+  - **Remove**: Removes the subtask from the supertask but doesn't delete it unless initially imported via "Import SuperTask".
 
 ### SuperTask in the *ShowTasks* Menu
 
@@ -99,13 +115,13 @@ Supertask are not displayed as regular tasks in the *Show Task* menu as displaye
 
 
 <figure markdown="span">
-    ![screenshot_showtask_supertask](/assets/images/supertasks_showtasks.png)
+    ![screenshot_showtask_supertask](../assets/images/supertasks_showtasks.png)
 </figure>
 
 The same information than those of a task are displayed. The *copy to Pretask* and *copy to task* options are not available. There is instead an information button which open a pop-up window displaying the list of subtasks of the supertask. This window is identical to the ShowTasks page apart that only the subtasks of the supertask are displayed in it as shown in the figure below. 
 
 <figure markdown="span">
-    ![screenshot_import_file](/assets/images/)
+    ![screenshot_import_file](../assets/images/supertasks_subtasks.png)
 </figure>
 
 ## Import Super Task
