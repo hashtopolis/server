@@ -381,6 +381,7 @@ abstract class AbstractBaseAPI
                                                 // src/inc/defines/agents.php
                                                 AgentStat::PERM_CREATE, AgentStat::PERM_READ, AgentStat::PERM_UPDATE, AgentStat::PERM_DELETE,
                                                 Assignment::PERM_CREATE, Assignment::PERM_READ, Assignment::PERM_UPDATE, Assignment::PERM_DELETE,
+                                                AgentError::PERM_DELETE
                                               
                                               ),
 
