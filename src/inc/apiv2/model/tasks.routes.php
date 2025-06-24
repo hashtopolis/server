@@ -36,11 +36,8 @@ class TaskAPI extends AbstractModelAPI {
         Factory::JOIN => [
           new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID),
           new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID, Factory::getTaskWrapperFactory()),
-          new JoinFilter(Factory::getAssignmentFactory(), Task::TASK_ID, Assignment::TASK_ID),
-          new JoinFilter(Factory::getAccessGroupAgentFactory(), Assignment::AGENT_ID, AccessGroupAgent::AGENT_ID, Factory::getAssignmentFactory()),
         ],
         Factory::FILTER => [
-          new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory()),
           new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory()),
         ]
       ];
