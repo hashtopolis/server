@@ -2,18 +2,29 @@
 # Updating Hashtopolis 
 
 ## Upgrading to 0.14.0 (from non-Docker to Docker)
-There are multiple ways to migrate the data from your non-docker setup to docker. You can of course completely start fresh; but if you want to migrate your data there are multiple ways to do this.
 
-### Existing database (**formerly called New database**)
+There are multiple ways to migrate data from a non-Docker setup to Docker. You can start fresh, but if you want to keep your data, several migration options are available.
+
+### Existing database
 You can reuse your old database server or also migrate the database to a docker container.
 
-1. Install docker to your system (https://docs.docker.com/engine/install/ubuntu/)
-2. Create a database backup mysqldump <database-name> > hashtopolis-backup.sql
-3. Make copies of the following folders, can be found in the hashtopolis folder along side the index.php:
+1. [Install docker](https://docs.docker.com/engine/install/ubuntu/) to your system
+2. Create a database backup using
+```
+mysqldump <database-name> > hashtopolis-backup.sql
+```
+
+3. Make copies of the following folders, located in the Hashtopolis directory next to index.php:
+
    - files
    - import
    - log
-4. Download the docker compose file: wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.yml
+
+4. Download the docker compose file: 
+```
+wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.yml
+```
+
 5. Edit the docker compose file
 ```
 [...]
@@ -29,15 +40,15 @@ You can reuse your old database server or also migrate the database to a docker 
 wget https://raw.githubusercontent.com/hashtopolis/server/master/env.example -O .env
 ```
 
-7. Edit the .env file and change the settings to your likings nano .env
-   - Optional: if you want to test the new API and new UI, set the HASHTOPOLIS_APIV2_ENABLE to 1 inside the .env file. NOTE: The APIv2 and UIv2 are a technical preview. Currently when enable everyone through the new API will be fully admin!
-   - The HASHTOPOLIS_ADMIN_USER is only used during setup time and once you import the database backup will be replaced with your old data.
+7. Edit the .env file and adjust the settings according to your desired configuration:
+
+   - HASHTOPOLIS_ADMIN_USER is only used during initial setup. Once the database is imported, it will be overwritten with your previous data.
 8. Create the folder which to referred to in the docker-compose, in our example we will use /usr/local/share/hashtopolis
 ``` 
 sudo mkdir -p /usr/local/share/hashtopolis
 ``` 
 
-9. Copy the files, import, and log to the new location you refered to in the docker-compose file.
+9. Copy the files, import, and log folders to the location referenced in the docker-compose file.
 ``` 
 sudo cp -r files/ import/ log/ /usr/local/share/hashtopolis
 ```
@@ -48,9 +59,9 @@ mkdir /usr/local/share/hashtopolis/config
 ```
 
 11. Start the docker container docker compose up
-12. Stop the backend container so that agents don't mess up the database mid migration docker 
+12. Stop the backend container to avoid agents interfering with the migration:
 ```
-stop hashtopolis-backend
+docker compose stop hashtopolis-backend
 ```
 
 13. To migrate the data, first copy the database backup towards the db container: 
@@ -65,12 +76,11 @@ docker exec -it db /bin/bash
 
 15. Import the data: 
 ```
-mysql -Dhashtopolis -p < hashtopolis-backup.sql
+mysql -D hashtopolis -p < hashtopolis-backup.sql
 ```
 
 16. Exit the container
-17. Copy the content of the PEPPER from the *inc/conf.php* file and place them into *config/config*.json`
-Example */var/www/hashtopolis/inc/conf.php*:
+17. Copy the PEPPER value from *inc/conf.php* and paste it into *config/config.json*. For example, from */var/www/hashtopolis/inc/conf.php*:
 ```
 [...]
 $PEPPER = [..., ..., ..., ...];
@@ -83,23 +93,46 @@ Becomes */usr/local/share/hashtopolis/config/config.json*:
 }
 ```
 
-18. Restart the compose docker compose down && docker compose up
+18. Restart the containers 
 
-### New database (**formerly called Existing database**)
+```
+docker compose down && docker compose up
+```
 
-Repeat all the steps above, but you don't need to export/import the database. Only make sure that you point the settings inside the .env file to your database server and that the database server is reachable from your container.
+### New database 
+
+Repeat the above steps, but you do not need to export or import the database. Just ensure the .env file points to your database server and that it is reachable from the container.
 
 ## Upgrading from docker to docker (version 0.14.0 and up)
-1. Stop your docker compose docker compose down
-2. docker compose pull
-3. docker compose up
+
+For this process, you need to stop your containers, pull the new ones and then restart the containers.
+```
+docker compose down
+docker compose pull
+docker compose up
+```
 
 ## Upgrading from docker to docker (version 0.14.0 and up) - Offline System(s)
 
-***To be done***
+1. On a system with internet access execute the following commands:
 
+```
+docker pull hashtopolis/backend:latest
+docker pull hashtopolis/frontend:latest
+docker save hashtopolis/backend:latest --output hashtopolis-backend.tar
+docker save hashtopolis/frontend:latest --output hashtopolis-frontend.tar
+```
 
-## New user interface: technical preview
+2. Next, transfer both tar-files to your Hashtopolis server and import them using the following commands:
+
+```
+docker compose down
+docker load --input hashtopolis-backend.tar
+docker load --input hashtopolis-frontend.tar
+docker compose up
+```
+
+<!-- ## New user interface: technical preview
 
 > [!NOTE]
 > The APIv2 and UIv2 are a technical preview. Currently, when enabled, everyone through the new API will be fully admin!
@@ -115,4 +148,4 @@ To enable 'version 2' of the API:
 docker compose up --detach
 ```
 
-4. Access the technical preview via: ```http://127.0.0.1:4200``` using the credentials user=admin and password=hashtopolis, unless modified in the .env file.
+4. Access the technical preview via: ```http://127.0.0.1:4200``` using the default credentials user=admin and password=hashtopolis, unless modified in the .env file. -->

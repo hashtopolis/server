@@ -1,9 +1,9 @@
 # Basic Workflow for Your First Cracking Task
 
-Before diving into Hashtopolis, it’s important to understand some key terms used throughout this manual and in the application itself:
+Before using Hashtopolis, it's important to understand key terms commonly used in the manual and the application:
 
-- **Agent**: An instance of the Hashtopolis client performing the actual password cracking using its associated hardware resources (e.g. GPUs and/or CPUs).
-- **Hashlist**: A list of hashes stored in the database. Hashlists can be TEXT, HCCAPX, or BINARY, with most being TEXT format.
+- **Agent**: A Hashtopolis client instance that performs password cracking using its available/associated hardware resources (e.g., GPUs and CPUs).
+- **Hashlist**: A collection of hashes stored in the database. Hashlists are most commonly in TEXT, yet other formats like HCCAPX, or BINARY are also supported.
 - **Task**: A specific password cracking job, defined by a command line specifying all the parameters, files to use, hashlist to target and binary to use.
 - **Supertask**: A container grouping multiple subtasks together for easier management and monitoring. It is not a standalone cracking task.
 - **Subtask**: A smaller task within a supertask, which behaves like a normal task but whose priority matters only inside the supertask.
@@ -21,7 +21,7 @@ Before diving into Hashtopolis, it’s important to understand some key terms us
 This section guides you through the essential steps to launch your first cracking task:
 
 > [!NOTE]  
-> This guide assumes you have a working Hashtopolis installation with at least one registered and active agent. For installation instructions, please see the [Installation Guide](/installation_guidelines/basic_install/).
+> This guide assumes you have a working Hashtopolis installation with at least one registered and active agent. For installation instructions, please see the [Installation Guide](../installation_guidelines/basic_install.md).
 
 
 1. **Upload Hashlists**  
@@ -48,7 +48,7 @@ Start by importing the hashes you want to crack:
 - Select the appropriate **hash type** (e.g., MD5, SHA1, NTLM).
 - Paste your hashes into the text field or upload a file.
 - Optionally assign the hashlist to a **group** to manage access permissions.
-- Click **"Submit"** to create the hashlist.
+- Click **"Create"** to create the hashlist.
 
 > [!NOTE]
 > Hash formats like plain text, HCCAPX (for WPA/WPA2), or binary dumps are supported. Make sure your input matches the expected format for the selected hash type.
@@ -60,7 +60,7 @@ Start by importing the hashes you want to crack:
 To perform most attacks, you’ll need additional resources like wordlists or rule files:
 
 - Go to the corresponding type of files in the **"Files"** section, for example **"Wordlists"**.
-- Click **"+ New Wordlists"** and select the file to upload (or provide the link to the file).
+- Click **"+ New Wordlist"** and select the file to upload (or provide the link to the file).
 - Optionally assign it to a **group**.
 - Click **"Create"** to store the file on the server.
 
@@ -72,14 +72,18 @@ Uploaded files can later be linked to tasks.
 
 Now you’re ready to define your first cracking job:
 
-- Navigate to **"Tasks"** and click the button **"+ New Task"**.
+- Navigate to **"Tasks > Show Tasks"** and click the button **"+ New Task"**.
 - Provide a task name and select the hashlist created in step 1.
-- Enter the **Attack command** for your deisered process. Note that the placeholder **#HL#** is placed by default in the command. It represents the hashlist you have selected and you therefore don't need to type it manually. The binary to use also does not need to be typed as it is added automatically by the tool. If you want to use files, they must have been uploaded to the server first. They appear in the right folding menu. By clicking on the box next to the file, they are automatically added to the command line, including the '-r' flag for rules files. 
+- Enter the **Attack command** for your desired process. The placeholder #HL# is included by default and represents the selected hashlist, so you don’t need to add it manually. The cracker selected by default (e.g. hashcat) is also automatically added to the command line by the agent. If you need to use files, they will appear in the right-hand menu assuming you have already uploaded them. Clicking the checkbox next to a file adds it to the command line, including the '-r' flag if it is a rule file.
 > [!NOTE]
 > A simple mask attack of 4 digits would therefore be the following command line:
 > ```#HL# -a3 ?d?d?d?d```
-- Choose a **priority** superior to 0 if you want the task to start. 
+- Choose a **priority** superior to 0 if you want the task to start.
+> [!TIP]
+> To allow a task with priority 0 to start, you can adjust this behavior via ["Settings > Task/Chunk > Automatic Assignment of Tasks with Priority 0"](./settings_and_configuration.md#command-line-misc) 
 - Click on the button **"Create"**.
+
+
 
 The task will automatically be assigned to available agents if it has the highest priority value.
 
@@ -90,7 +94,7 @@ The task will automatically be assigned to available agents if it has the highes
 Once the task is active, you can track its status and results:
 
 - Go to the **"Tasks"** page to see overall task progress, speed, and number of passwords retrieved.
-- Click on the task to view detailed progress and many other information.
+- Click on the task to view detailed progress and more information.
 - Cracked passwords will appear in the task view.
 
 > [!TIP]
@@ -105,6 +109,6 @@ Once the task is active, you can track its status and results:
 - **Don’t** use multiple wordlists with attack mode 0, Hashtopolis currently supports only a single wordlist per task.
 - **Don’t** use the `--increment` flag in your command line, as it is not supported.
 - **Be cautious** with the `--slow-candidates` option, it may cause performance issues or unexpected behavior.
-- **Don’t** create extremely large tasks as **small task**, as it is against the principle of parallelisation of hashtopolis.
+- **Don’t** create extremely large tasks as **small task**. This goes against Hashtopolis’s parallel processing design..
 - **Do** monitor your agents’ performance to adjust chunk sizes or task priorities as needed.
 

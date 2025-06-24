@@ -1,20 +1,20 @@
 # Agents
 
-An **agent** is an instance of the Hashtopolis client that performs password cracking using Hashcat. Agents are responsible for requesting work from the server, processing it on assigned devices (CPU or GPU), and reporting results back.
+An **agent** is a Hashtopolis client instance that performs password cracking with a cracker binary, typically hashcat. It requests work from the server, processes it on assigned devices (CPU or GPU), and reports the results back.
 
-Agents are not necessarily tied to a full system — multiple agents can run on the same physical machine, each targeting a specific device. For example, a server with multiple GPUs can host several agents, each bound to a different GPU, allowing fine-grained control and parallel task execution.
+A machine is not limited to only one agent — multiple agents can run on the same machine. For example, a server with multiple GPUs can run several agents, each assigned to a different GPU, allowing better control and parallel task execution.
 
-For installing new agents, please refer to the [dedicated section](/installation_guidelines/basic_install/#agent-installation) within the installation manual.
+For installing new agents, please refer to the [dedicated section](../installation_guidelines/basic_install.md#agent-installation) within the installation manual.
 
 
 ## Show Agents
 
-All the registered agents are displayed on this page in a table containing the following fields. 
+All registered agents are shown in a table on this page, which contains the following fields:
 
 - **Active**: Checkbox to enable or disable the agent manually. Agents are automatically disabled if they encounter repeated Hashcat errors, unless configured to ignore such errors.
 - **ID**: Unique identifier assigned to each agent by the system.
 - **Status**: Current operational status of the agent (e.g., idle, running, offline, error).
-- **Name**: The name given to the agent, by default the hostname at the registration time.
+- **Name**: The name of the agent, which by default is the hostname at the time of registration.
 - **Owner**: The user responsible for this agent, blank by default.
 - **Client**: Version of the Hashtopolis client software the agent is running.
 - **GPUs/CPUs**: Number and type of devices (GPUs and/or CPUs) available on this agent for cracking.
@@ -34,7 +34,7 @@ This page provides a visual overview of the status of all agents, including real
 - Visual graphs showing **device utilization** for both CPU and GPU agents.
 - Temperature readings for each device, helping detect overheating or hardware issues.
 
-In those visuals, the following colour code is used:
+The visuals use the following color code:
 
 - **Green**: All good
 - **Orange**: Warning
@@ -47,7 +47,9 @@ In those visuals, the following colour code is used:
 ## Agent Overview 
 ***(To be checked with the new interface)***
 
-Clicking on an individual agent from the lists above brings you to the **Agent Overview** page, where comprehensive information and management options for that agent are available:
+
+Clicking on an agent in the list opens the **Agent Overview** page, which provides detailed information and management options for that agent as described below:
+
 
 - **Agent ID**: Unique identifier assigned to each agent by the system.
 - **Active**: Checkbox to enable or disable the agent manually. Agents are automatically disabled if they encounter repeated Hashcat errors, unless configured to ignore such errors.
@@ -60,16 +62,16 @@ Clicking on an individual agent from the lists above brings you to the **Agent O
 - **CPU Only Agent**: Indicates whether the agent uses only CPU resources or includes GPUs as well.
 - **Graphic Cards**: Detailed list of GPUs detected and used by the agent.
 - **Member of Access Groups**: Lists all access groups the agent belongs to.
-- **Extra Parameters**: Parameters passed to the agent and automatically added to the command line of any task, for example to pass the flag *'-w3'*.
+- **Extra Parameters**: Arguments passed to the agent and automatically included in the command line of any task, such as the *'-w3'* flag.
 - **Cracker Errors**: Folding menu to decide how the agent should behave when an error is encountered.
 - **Trust**: Trust level or rating of the agent, possibly based on performance or error history.
 - **Assignment**: Current task and chunk assigned to this agent.
 - **Time Spent Cracking**: Total time the agent has spent actively cracking hashes.
 
-Similar to the ***Agent Status*** page, visuals of the recent temperature evolution and utilisation evolution of all devices associated to this agent are displayed here. 
+Similar to the ***Agent Status*** page, this view includes charts of recent temperature and utilization trends for all devices used by this agent. 
 
 - **Device(s) Temperatures**: Current temperatures of GPUs and/or CPUs.
-- **Device(s) Utilisation**: Current utilization percentages for each device.
-- **Agent Average CPU Utilisation**: Average CPU usage over a recent period.
+- **Device(s) Utilization**: Current utilization percentages for each device.
+- **Agent Average CPU Utilization**: Average CPU usage over a recent period.
 - **Error Messages**: Any error messages generated by the agent or Hashcat.
-- **Dispatched Chunks**: Display information about the last 50 chunk assigned to this agents.
+- **Dispatched Chunks**: Shows information about the last 50 chunks assigned to this agent.

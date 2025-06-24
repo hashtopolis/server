@@ -16,5 +16,19 @@
     ],
     "flake8.args": [
       "--max-line-length=120"
-  ],
+],
+"cSpell.words": [
+    "Hashcat",
+    "hashlist",
+    "hashlists",
+    "Hashtopolis",
+    "Hashtype",
+    "keyspace",
+    "superhashlist",
+    "superhashlists",
+    "supertask",
+    "Supertasks",
+    "wordlist",
+    "wordlists"
+],
 }
