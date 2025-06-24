@@ -26,7 +26,7 @@ nav:
       - faq_tips/tips.md
   - changelog.md
   - API Reference:
-      - APIv2: apiv2.md
+      - APIv2: api.md
 
 theme:
   name: material
@@ -64,9 +64,12 @@ markdown_extensions:
   - sane_lists
   - attr_list
   - md_in_html
+  - admonition
 
 extra_css:
   - assets/stylesheets/hero.css
+  - assets/stylesheets/redoc-dark.css
+  
 
 extra:
   font:
@@ -79,3 +82,6 @@ plugins:
       minify_html: true
   - git-revision-date-localized:
       fallback_to_build_date: true
+
+extra_javascript:
+  - https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js
