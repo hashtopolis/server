@@ -176,6 +176,15 @@ class TaskUtils {
     }
     Factory::getTaskFactory()->set($task, Task::IS_ARCHIVED, 1);
   }
+
+  public static function toggleArchiveTask($taskId, $user, $taskState) {
+    $task = TaskUtils::getTask($taskId, $user);
+    $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $user);
+    if ($taskWrapper->getTaskType() == DTaskTypes::NORMAL) {
+      Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::IS_ARCHIVED, $taskState);
+    }
+    Factory::getTaskFactory()->set($task, Task::IS_ARCHIVED, $taskState);
+  }
   
   /**
    * @param int $taskWrapperId

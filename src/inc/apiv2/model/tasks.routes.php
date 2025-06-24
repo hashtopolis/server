@@ -131,7 +131,11 @@ class TaskAPI extends AbstractModelAPI {
       $key = Task::IS_ARCHIVED;
       if (array_key_exists($key, $data)) {
         array_push($processed, $key);
-        TaskUtils::archiveTask($object->getId(), $this->getCurrentUser());
+        $archiveState = (int)$data[$key];
+        TaskUtils::toggleArchiveTask($object->getId(), $this->getCurrentUser(), $archiveState);
+      } else {
+        // Unarchive if the key is missing
+        TaskUtils::toggleArchiveTask($object->getId(), $this->getCurrentUser(), 0);
       }
 
       /* Update connected TaskWrapper priority as well */
