@@ -21,7 +21,7 @@ Before using Hashtopolis, it's important to understand key terms commonly used i
 This section guides you through the essential steps to launch your first cracking task:
 
 > [!NOTE]  
-> This guide assumes you have a working Hashtopolis installation with at least one registered and active agent. For installation instructions, please see the [Installation Guide](/installation_guidelines/basic_install/).
+> This guide assumes you have a working Hashtopolis installation with at least one registered and active agent. For installation instructions, please see the [Installation Guide](../installation_guidelines/basic_install.md).
 
 
 1. **Upload Hashlists**  
@@ -80,7 +80,7 @@ Now you’re ready to define your first cracking job:
 > ```#HL# -a3 ?d?d?d?d```
 - Choose a **priority** superior to 0 if you want the task to start.
 > [!TIP]
-> To allow a task with priority 0 to start, you can adjust this behavior via ["Settings > Task/Chunk > Automatic Assignment of Tasks with Priority 0"](/user_manual/settings_and_configuration/#command-line-misc) 
+> To allow a task with priority 0 to start, you can adjust this behavior via ["Settings > Task/Chunk > Automatic Assignment of Tasks with Priority 0"](./settings_and_configuration.md#command-line-misc) 
 - Click on the button **"Create"**.
 
 

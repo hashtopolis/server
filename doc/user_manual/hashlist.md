@@ -18,7 +18,7 @@ Here is how to fill in the different fields:
     - Text File: Paste or upload a plain text file containing one hash per line.
     - HCCAPX/PMKID: Upload a HCCAPX file containing password hashes.
     - Binary File: Upload a binary file containing password hashes.
-4. **Salted Hashes**: Tick the box related to salted hashes if appropriate and provide the correct separator for your hashlist. The flag is enabled/disabled according to the settings defined in the [Hashtype section](/user_manual/settings_and_configuration/#hashtypes). If the provided salt(s) is in hex, the following flag needs to be enabled otherwise the salt will be interpreted as a UTF8 value. 
+4. **Salted Hashes**: Tick the box related to salted hashes if appropriate and provide the correct separator for your hashlist. The flag is enabled/disabled according to the settings defined in the [Hashtype section](./settings_and_configuration.md#hashtypes). If the provided salt(s) is in hex, the following flag needs to be enabled otherwise the salt will be interpreted as a UTF8 value. 
 5. **Hash source**: Select one of the following hash source types. 
 6. **Providing the hash**: The last field of the form will automatically adapt depending on the chosen source type. You’ll be asked to provide additional details:
     - **Paste**: Copy and paste the hashes directly into the "Input" field.
@@ -29,15 +29,15 @@ Here is how to fill in the different fields:
 8. **Create Hashlist**: Click "Create Hashlist" to finalize the process. This will open a new page displaying the details of your newly created hashlist.
 
 ## Hashlists View
-Ordered by ID by default. It reports the hashlists created. A tick is accolated to the name of the hashlists if all the passwords have been recovered. It shows the number of recovered passwords as well as the total number of hashes. It allows to import *pre-cracked hashes* or export the recovered passwords (*see below for more details*). The hashlists can also be archived or deleted.
+Ordered by ID by default. It reports the hashlists created. A checkmark is shown beside the hashlist name once all associated passwords have been successfully recovered. It shows the number of recovered passwords as well as the total number of hashes. It allows to import *pre-cracked hashes* or export the recovered passwords (*see below for more details*). The hashlists can also be archived or deleted.
 
 ## Hashlists Details
 If you click on a Hashlist, either in the hashlists view, in the Tasks overview or inside a task, it brings you to the corresponding Hashlist details page. 
 
-Appart from the parameters specific to this hashlist (i.e. ID, Access Group, Hashlist name, ...), the page displays some information about the total number of hashes, the number of cracked ones and the number of remaining ones to be recovered. Clicking on one of these three values will open a new window displaying information about the Hashes of the Hashlist as detailed below.
+Apart from the parameters specific to this hashlist (i.e. ID, Access Group, Hashlist name, ...), the page displays some information about the total number of hashes, the number of cracked ones and the number of remaining ones to be recovered. Clicking on one of these three values will open a new window displaying information about the Hashes of the Hashlist as detailed below.
 
 ### Hashes of Hashlist X 
-This page list all the hashes from the related hashlist. Filters can be applied to show either the cracked, the uncracked or all the hashes. According to the display filter selected, the Hashes only, the plaintext only or both are displayed. Additionnally, the cracking position (**to be defined**) can be displayed next to the cracked ones. Only 1000 hashes can be displayed at a time within a page but the user can navigate through the pages. The number of hashes per page can be configured in *Config > UI* settings.
+This page list all the hashes from the related hashlist. Filters can be applied to show either the cracked, the uncracked or all the hashes. According to the display filter selected, the Hashes only, the plaintext only or both are displayed. Additionally, the cracking position (**to be defined**) can be displayed next to the cracked ones. Only 1000 hashes can be displayed at a time within a page but the user can navigate through the pages. The number of hashes per page can be configured in *Config > UI* settings.
 
 A HEX converter is present at the bottom of the page to convert any HEX values. This can be useful when the reported password is stored in a HEX format.
 
@@ -52,9 +52,9 @@ Several actions are offered to the user which are detailed below. Note that some
 
 - **Export Left Hashes**: This action generates a file listing all the hashes for which no password have been recovered at the moment of the file creation. The file is automatically stored in the *wordlist* section of the *Files* section. The generated file can be easily retrieved as it got assigned to the latest file ID. The filename is *Leftlist_[Hashlist_ID]_[dd-mm-yyyy]_[hh-mm-ss].txt*. 
 
-- **Import pre-cracked Hashes**: This action opens a new page in which the user can upload pre-cracked hashes for the related hashlist. A pre-crack is supposed to be a hash contained in the hashlist associated with a plaintext in the format *[hash](:[salt]):[plaintext]*. Such data can be imported in different ways: *"Paste, Upload, Import, URL downlaod"* such as the option to import the hashes during a hashlist creation. In case of salted password, the field separator must be indicated, ':' being the default one. When validating by pressing the *Pre-crack hashes* button, the back-end will check if the imported data contains hash values from the targeted hashlist and integrate the plaintext value accordingly. If the option *Overwrite already cracked hashes* is selected, existing recovered passwords will be overwritten by the new imported ones in case of conflict. The front-end is then reporting to the user how many hashes have been considered as well as how many entries have been updated.  
+- **Import pre-cracked Hashes**: This action opens a new page in which the user can upload pre-cracked hashes for the related hashlist. A pre-crack is supposed to be a hash contained in the hashlist associated with a plaintext in the format *[hash](:[salt]):[plaintext]*. Such data can be imported in different ways: *"Paste, Upload, Import, URL download"* such as the option to import the hashes during a hashlist creation. In case of salted password, the field separator must be indicated, ':' being the default one. When validating by pressing the *Pre-crack hashes* button, the back-end will check if the imported data contains hash values from the targeted hashlist and integrate the plaintext value accordingly. If the option *Overwrite already cracked hashes* is selected, existing recovered passwords will be overwritten by the new imported ones in case of conflict. The front-end is then reporting to the user how many hashes have been considered as well as how many entries have been updated.  
 
-Pre-cracked management is useful to share results between different instances of hashtopolis. This is especially relevant for salted hashlits as each new recovered plaintext is improving the efficiency of the attack is there is no more hashes associated with the same salt value. 
+Pre-cracked management is useful to share results between different instances of hashtopolis. This is especially relevant for salted hashlists as each new recovered plaintext is improving the efficiency of the attack is there is no more hashes associated with the same salt value. 
 
 ### Tasks overview and creation
 At the bottom of the page there are three subsections related to task for this hashlist.
@@ -85,7 +85,7 @@ You can select all the hashlists at once by clicking on the button *select all*.
 
 ### Overview
 
-Once you have created a superhashlist or if you open the *SuperHashlist* menu, the overview page of SuperHaslist is open. Such page diplays all the information about the superhashlists created so far. It is very similar to the hashlist overview page, the only difference being that you cannot archive a superhashlist.
+Once you have created a superhashlist or if you open the *SuperHashlist* menu, the overview page of Superhashlist is open. Such page displays all the information about the superhashlists created so far. It is very similar to the hashlist overview page, the only difference being that you cannot archive a superhashlist.
 
 If you click on a superhashlist, the superhashlist detail page will be open. Again this page is very similar to the hashlist page. The only difference is that it contains the following details about the hashlist(s) contained in the superhashlist:
 - ID of each hashlist

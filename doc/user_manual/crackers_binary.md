@@ -63,7 +63,7 @@ By default hashtopolis is installed with a single preprocessor, namely [*Prince*
     ![screenshot_cracker_page](/assets/images/new_preprocessor_page.png){ width="600" }
 </figure>
 
-It is rather similar to the creation of a new version of a [cracker](/user_manual/crackers_binary/#adding-a-new-version). The main difference is that the user can associate the required keyspace, skip, and limit options to different flags of the preprocessor. Note that those three remain mandatory to be used within hashtopolis, however, this allows more flexibility as the preprocessor may have named those options differently. If additional paramaters are required at execution time, they should be included in the [preprocessr's command](/user_manual/tasks/#advanced-parameters) during the task creation.
+It is rather similar to the creation of a new version of a [cracker](./crackers_binary.md#adding-a-new-version). The main difference is that the user can associate the required keyspace, skip, and limit options to different flags of the preprocessor. Note that those three remain mandatory to be used within hashtopolis, however, this allows more flexibility as the preprocessor may have named those options differently. If additional paramaters are required at execution time, they should be included in the [preprocessor's command](tasks.md#advanced-parameters) during the task creation.
 
 
 ## Agent Binaries

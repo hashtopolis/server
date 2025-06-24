@@ -18,7 +18,7 @@ When creating a password recovery task in Hashtopolis, you may need to upload ad
 
 ## Manage Files
 
-Each type of file has a dedicated page containing similar informations. The figure below shows what the rule page looks like. It contains information such as the name of the file, its size, the number of line in it as well as the access group. The key next to the name indicates that the file is secret and can only be accessed by trusted agents **REF?**.
+Each type of file has a dedicated page containing similar information. The figure below shows what the rule page looks like. It contains information such as the name of the file, its size, the number of line in it as well as the access group. The key next to the name indicates that the file is secret and can only be accessed by [trusted agents](./agents.md#agent-overview).
 
 <figure markdown="span">
     ![screenshot_rule_page](/assets/images/rules_files.png)

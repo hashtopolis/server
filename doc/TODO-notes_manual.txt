@@ -3,11 +3,6 @@
 - lots of screenshots and diagrams to make the text fancier
 - details about the config files, structure of repos etc.
 - booting from PxE, running hashtopolis as a service ?
-- Make the docker page
 - Check if any difference for Agent overview in new interface
-- Acces management
-- Health Checks
-- Log
-- All users and admin settings 
 - Hashtypes
-- Binaries section
+- make an example of import super task to make it clearer

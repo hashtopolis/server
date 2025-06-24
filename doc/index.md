@@ -28,7 +28,7 @@ Hashtopolis operates on a **client-server architecture**:
 
 - The **agents** are lightweight Python clients installed on various computing resources. They communicate with the server by requesting work, execute cracking tasks using Hashcat, and report results back to the server.
 
-A detailed [Basic Workflow](/user_manual/basic_workflow/) section is available for new users providing step-by-step guidance on how to operate Hashtopolis. Here, we provide a concise overview of what happens once a hash or hashlist is uploaded and a cracking task is created:
+A detailed [Basic Workflow](./user_manual/basic_workflow.md) section is available for new users providing step-by-step guidance on how to operate Hashtopolis. Here, we provide a concise overview of what happens once a hash or hashlist is uploaded and a cracking task is created:
 
 1. Agents that currently have no assigned work send requests to the server via API calls asking for new tasks.
 
@@ -58,8 +58,8 @@ The pull request will then be reviewed by at least one member and merged after a
 
 This manual aims to describe all the functionalities and settings existing in Hashtopolis. In particular, you can find the following sections:
 
-- [**Basic Workflow**](/user_manual/basic_workflow/): Tailored for new users unfamiliar with Hashtopolis. It describes the most important features to know in order to have your first tasks running.
-- [**Installation Guidelines**](/installation_guidelines/basic_install/): Covers basic installation steps to deploy a Hashtopolis instance. It also contains advanced installation procedures for air-gapped environments, HTTPS configuration, as well as many other advanced features.
-- [**User Manual**](/user_manual/agents/): goes deeper than the basic workflow into each aspect of Hashtopolis. This aims to cover all the existing features and settings. 
-- [**FAQ and Tips**](/faq_tips/faq/): gathers most of the questions that were asked on different channels (discord, wiki, etc.).
-- [**API Reference**](/apiv2/): contains all the details related to the API in case you need to automate some processes or want to develop your own front end. 
+- [**Basic Workflow**](./user_manual/basic_workflow.md): Tailored for new users unfamiliar with Hashtopolis. It describes the most important features to know in order to have your first tasks running.
+- [**Installation Guidelines**](./installation_guidelines/basic_install.md): Covers basic installation steps to deploy a Hashtopolis instance. It also contains advanced installation procedures for air-gapped environments, HTTPS configuration, as well as many other advanced features.
+- [**User Manual**](./user_manual/agents.md): goes deeper than the basic workflow into each aspect of Hashtopolis. This aims to cover all the existing features and settings. 
+- [**FAQ and Tips**](./faq_tips/faq.md): gathers most of the questions that were asked on different channels (discord, wiki, etc.).
+- [**API Reference**](./apiv2.md): contains all the details related to the API in case you need to automate some processes or want to develop your own front end. 
