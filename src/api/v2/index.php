@@ -50,7 +50,7 @@ use DBA\User;
 use DBA\Factory;
 
 require __DIR__ . "/../../../vendor/autoload.php";
-require __DIR__ . "../../../inc/apiv2/common/ErrorHandler.class.php";
+require __DIR__ . "/../../../inc/apiv2/common/ErrorHandler.class.php";
 
 require_once(dirname(__FILE__) . "/../../inc/load.php");
 
@@ -245,7 +245,7 @@ $customErrorHandler = function (
 
     return errorResponse($response, $exception->getMessage(), $code);
   };
-//$errorMiddleware->setDefaultErrorHandler($customErrorHandler);
+$errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 $app->addRoutingMiddleware(); //Routing middleware has to be added after the default error handler
 $errorMiddlewareMethodNotAllowed = $app->addErrorMiddleware(true, true, true); 
 $errorMiddlewareMethodNotAllowed->setErrorHandler(HttpMethodNotAllowedException::class, function(
