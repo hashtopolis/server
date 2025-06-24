@@ -410,6 +410,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     if ($object === null) {
       throw new ResourceNotFoundError();
     }
+    if ($this->getSingleACL($this->getCurrentUser(), $object) === false) {
+      throw new HttpForbidden("No access to this object!", 403);
+    }
 
     return $object;
   }

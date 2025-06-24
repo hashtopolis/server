@@ -146,9 +146,9 @@ class AccessUtils {
   
   /**
    * @param $agent Agent
-   * @return AccessGroup[]
+   * @return Agent[]
    */
-  public static function getAccessGroupsOfAgent($agent) {
+  public static function getAccessGroupsOfAgent(Agent $agent): array {
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
     $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);

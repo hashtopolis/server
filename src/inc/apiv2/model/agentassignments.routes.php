@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AbstractModel;
 use DBA\AccessGroupAgent;
 use DBA\ContainFilter;
 use DBA\Factory;
@@ -12,6 +13,7 @@ use DBA\Agent;
 use DBA\Assignment;
 use DBA\Task;
 use DBA\TaskWrapper;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -27,6 +29,14 @@ class AgentAssignmentAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return Assignment::class;
+    }
+  
+    protected function getSingleACL(User $user, object $object): bool {
+      $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+      $agent = Factory::getAgentFactory()->get($object->getAgentId());
+      $accessGroupsAgent = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent));
+      
+      return count(array_intersect($accessGroupsAgent, $accessGroupsUser)) > 0;
     }
     
     protected function getFilterACL(): array {
@@ -49,13 +59,13 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     public static function getToOneRelationships(): array {
       return [
         'agent' => [
-          'key' => Assignment::AGENT_ID, 
+          'key' => Assignment::AGENT_ID,
 
           'relationType' => Agent::class,
           'relationKey' => Agent::AGENT_ID,
         ],
         'task' => [
-          'key' => Assignment::TASK_ID, 
+          'key' => Assignment::TASK_ID,
 
           'relationType' => Task::class,
           'relationKey' => Task::TASK_ID,
