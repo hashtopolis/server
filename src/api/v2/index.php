@@ -50,7 +50,7 @@ use DBA\User;
 use DBA\Factory;
 
 require __DIR__ . "/../../../vendor/autoload.php";
-require __DIR__ . "/../../../inc/apiv2/common/ErrorHandler.class.php";
+require __DIR__ . "/../../inc/apiv2/common/ErrorHandler.class.php";
 
 require_once(dirname(__FILE__) . "/../../inc/load.php");
 
