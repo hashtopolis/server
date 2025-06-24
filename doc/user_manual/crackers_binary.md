@@ -90,7 +90,7 @@ The following fields need to be filled at creation time.
 - **Version**: specifies the version of the agent binaries
 - **Update Track**: this can be either stable or release. It specifies the status of the current agent.
 
-** To be reviewed **
+**To be reviewed**
 - Are the two first fields free text zones or they are checked and linked to something?
 - What it the update track field needed for... for information purpose ?
 - WHere does one store the agent... I guess it should be in the folder binaries of hashtopolis, but so it means it has to be uploaded manually and therefore we should have an explanation about this or to have an upload / url functionality.
