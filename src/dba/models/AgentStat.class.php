@@ -30,11 +30,11 @@ class AgentStat extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['agentStatId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentStatId"];
-    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId"];
-    $dict['statType'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "statType"];
-    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time"];
-    $dict['value'] = ['read_only' => True, "type" => "array", "subtype" => "int", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "value"];
+    $dict['agentStatId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentStatId", "public" => False];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId", "public" => False];
+    $dict['statType'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "statType", "public" => False];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time", "public" => False];
+    $dict['value'] = ['read_only' => True, "type" => "array", "subtype" => "int", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "value", "public" => False];
 
     return $dict;
   }

@@ -243,7 +243,7 @@ $CONF['Hashlist'] = [
     ['name' => 'isSecret', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'hexSalt', 'read_only' => True, 'type' => 'bool', 'alias' => UQueryHashlist::HASHLIST_HEX_SALTED],
     ['name' => 'isSalted', 'read_only' => True, 'type' => 'bool'],
-    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', , 'relation' => 'AccessGroup'],
+    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', 'relation' => 'AccessGroup'],
     ['name' => 'notes', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'brainId', 'read_only' => True, 'type' => 'bool', 'alias' => UQueryHashlist::HASHLIST_USE_BRAIN],
     ['name' => 'brainFeatures', 'read_only' => True, 'type' => 'int'],
@@ -349,7 +349,7 @@ $CONF['RightGroup'] = [
 $CONF['Session'] = [
   'columns' => [
     ['name' => 'sessionId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, , 'relation' => 'User'],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'User'],
     ['name' => 'sessionStartDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'lastActionDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'isOpen', 'read_only' => True, 'type' => 'bool', 'protected' => True],
@@ -396,7 +396,7 @@ $CONF['Task'] = [
     ['name' => 'skipKeyspace', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinary'],
     ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinaryType'],
-    ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True, , 'relation' => 'TaskWrapper'],
+    ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'TaskWrapper'],
     ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'notes', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'staticChunks', 'read_only' => True, 'type' => 'int'],
@@ -428,8 +428,8 @@ $CONF['TaskWrapper'] = [
 ];
 $CONF['User'] = [
   'columns' => [
-    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id'],
-    ['name' => 'username', 'read_only' => False, 'type' => 'str(100)', 'alias' => 'name'],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id', 'public' => True],
+    ['name' => 'username', 'read_only' => False, 'type' => 'str(100)', 'alias' => 'name', 'public' => True],
     ['name' => 'email', 'read_only' => False, 'type' => 'str(150)'],
     ['name' => 'passwordHash', 'read_only' => True, 'type' => 'str(256)', 'protected' => True, 'private' => True],
     ['name' => 'passwordSalt', 'read_only' => True, 'protected' => True, 'type' => 'str(256)', 'private' => True],
@@ -545,7 +545,8 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
                                      '"pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . ', ' .
                                      '"protected" => ' . (array_key_exists("protected", $COLUMN) ? ($COLUMN['protected'] ? 'True' : 'False') : 'False') . ', ' .
                                      '"private" => ' . (array_key_exists("private", $COLUMN) ? ($COLUMN['private'] ? 'True' : 'False') : 'False') . ', ' .
-                                     '"alias" => "' . (array_key_exists("alias", $COLUMN) ? $COLUMN['alias']  : $COLUMN['name']) . '"' . 
+                                     '"alias" => "' . (array_key_exists("alias", $COLUMN) ? $COLUMN['alias']  : $COLUMN['name']) . '", ' .
+                                     '"public" => ' . (array_key_exists("public", $COLUMN) ? ($COLUMN['public'] ? 'True' : 'False') : 'False') .
                                     '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
     $variables[] = "const " . makeConstant($col) . " = \"$col\";";
