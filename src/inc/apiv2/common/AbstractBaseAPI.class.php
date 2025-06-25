@@ -533,7 +533,7 @@ abstract class AbstractBaseAPI
   /** 
    * Convert DB object JSON:API Resource Object
    */
-  protected function obj2Resource(object $obj, array $expandResult = [])
+  protected function obj2Resource(object $obj, array $expandResult = [], bool $filterPublicAttributes = false)
   {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
@@ -556,6 +556,11 @@ abstract class AbstractBaseAPI
       if ($feature['pk'] === true) {
         continue;
       }
+      
+      if ($filterPublicAttributes === true && $feature['public'] !== true){
+        continue;
+      }
+      
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
 
@@ -1290,7 +1295,11 @@ abstract class AbstractBaseAPI
    */
   protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode=200): Response
   {
-    $apiClass->preCommon($request);
+    $check = $apiClass->preCommon($request);
+    $filterPublicAttributes = false;
+    if (is_array($check) && count($check) > 0){
+      $filterPublicAttributes = true;
+    }
 
     $validExpandables = $apiClass->getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);
@@ -1311,7 +1320,7 @@ abstract class AbstractBaseAPI
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object
-      $newObject = $apiClass->obj2Resource($object, $expandResult);
+      $newObject = $apiClass->obj2Resource($object, $expandResult, $filterPublicAttributes);
 
       // For compound document, included resources
       foreach ($expands as $expand) {

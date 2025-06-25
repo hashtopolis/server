@@ -468,7 +468,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    */
   public static function getManyResources(object $apiClass, Request $request, Response $response, array $relationFs = []): Response
   {
-    $apiClass->preCommon($request);
+    $check = $apiClass->preCommon($request);
+    $filterPublicAttributes = false;
+    if (is_array($check) && count($check) > 0){
+      $filterPublicAttributes = true;
+    }
 
     $aliasedfeatures = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
@@ -577,7 +581,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object  
-      $newObject = $apiClass->obj2Resource($object, $expandResult);
+      $newObject = $apiClass->obj2Resource($object, $expandResult, $filterPublicAttributes);
 
       // For compound document, included resources
       foreach ($expands as $expand) {
