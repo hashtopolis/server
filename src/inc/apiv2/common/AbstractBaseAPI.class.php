@@ -1163,7 +1163,7 @@ abstract class AbstractBaseAPI
   /**
    *  Common features for all requests, like setting user and checking basic permissions
    */
-  protected function preCommon(Request $request): array
+  protected function preCommon(Request $request): array|bool
   {
     $userId = $request->getAttribute(('userId'));
     $this->user = UserUtils::getUser($userId);

@@ -18,8 +18,9 @@ class ResetUserPasswordHelperAPI extends AbstractHelperAPI {
     return [];
   }
   
-  public function preCommon(ServerRequestInterface $request): void {
+  public function preCommon(ServerRequestInterface $request): array|bool {
     // nothing, there is no user for this request as it is an unauthenticated request
+    return [];
   }
 
   public static function getResponse(): array {
