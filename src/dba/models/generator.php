@@ -130,7 +130,7 @@ $CONF['Assignment'] = [
     ['name' => 'assignmentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'taskId', 'read_only' => False, 'type' => 'int', 'relation' => 'Task'],
     ['name' => 'agentId', 'read_only' => False, 'type' => 'int', 'relation' => 'Agent'],
-    ['name' => 'benchmark', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
+    ['name' => 'benchmark', 'read_only' => False, 'type' => 'str(50)', 'null' => True],
   ],
 ];
 $CONF['Chunk'] = [
@@ -152,7 +152,7 @@ $CONF['Chunk'] = [
 $CONF['Config'] = [
   'columns' => [
     ['name' => 'configId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'configSectionId', 'read_only' => False, 'type' => 'int', 'relation' => 'ConfigSecion'],
+    ['name' => 'configSectionId', 'read_only' => False, 'type' => 'int', 'relation' => 'ConfigSection'],
     ['name' => 'item', 'read_only' => False, 'type' => 'str(128)'],
     ['name' => 'value', 'read_only' => False, 'type' => 'str(65535)'],
   ],
