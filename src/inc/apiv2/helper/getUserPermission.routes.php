@@ -26,7 +26,8 @@ class GetUserPermissionHelperAPI extends AbstractHelperAPI {
   }
 
   public function handleGet(Request $request, Response $response): Response {
-    if (count($this->preCommon($request))) {
+    $check = $this->preCommon($request);
+    if ($check !== true && count($check)) {
       throw new HttpError('Public attribute requested, but not available on this endpoint!');
     }
     $user = $this->getCurrentUser();
