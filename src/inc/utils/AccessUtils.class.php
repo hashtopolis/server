@@ -145,8 +145,8 @@ class AccessUtils {
   }
   
   /**
-   * @param $agent Agent
-   * @return Agent[]
+   * @param Agent $agent
+   * @return AccessGroup[]
    */
   public static function getAccessGroupsOfAgent(Agent $agent): array {
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
