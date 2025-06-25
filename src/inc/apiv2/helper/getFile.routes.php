@@ -130,7 +130,9 @@ class GetFileHelperAPI extends AbstractHelperAPI {
    * Endpoint to download files
    */
   public function handleGet(Request $request, Response $response): Response {
-    $this->preCommon($request);
+    if (count($this->preCommon($request))) {
+      throw new HttpError('Public attribute requested, but not available on this endpoint!');
+    }
     $fileParam = $request->getQueryParams()['file'];
     if ($fileParam == null) {
       throw new HttpErrorException("No File query param has been provided");

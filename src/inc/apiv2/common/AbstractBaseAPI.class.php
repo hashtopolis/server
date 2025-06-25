@@ -915,7 +915,7 @@ abstract class AbstractBaseAPI
     foreach ($queryExpands as $expand) {
         array_push($required_perms, ...self::getExpandPermissions($expand));
     }
-    if ($this->validatePermissions($required_perms) === FALSE) {
+    if ($this->validatePermissions($required_perms) !== TRUE) {
       throw new HttpError('Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
     }
 
@@ -1110,11 +1110,10 @@ abstract class AbstractBaseAPI
   /** 
    * Validate permissions
    */
-  protected function validatePermissions(array $required_perms): bool {
+  protected function validatePermissions(array $required_perms): bool|array {
     // Retrieve permissions from RightGroup part of the User
     $group = Factory::getRightGroupFactory()->get($this->user->getRightGroupId());
     
-  
     if ($group->getPermissions() == 'ALL') {
       // Special (legacy) case for administative access, enable all available permissions
       $all_perms = array_keys(self::$acl_mapping);
@@ -1141,6 +1140,18 @@ abstract class AbstractBaseAPI
     // Find if all permissions are matched
     $missing_permissions = array_diff($required_perms, $user_available_perms);
     if (count($missing_permissions) > 0) {
+      $publicAttributes = [];
+      $features = $this->getFeatures();
+      foreach($features as $key => $arr){
+        if ($arr['public']){
+          $publicAttributes[] = $key;
+        }
+      }
+      
+      if(count($publicAttributes) > 0){
+        // if there are public attributes we don't return false, but the list of attributes which are public
+        return $publicAttributes;
+      }
       $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" .join(", ", $required_perms). "', user_permissions='" . join(", ", $user_available_perms) . "']");
       return FALSE;
     } else {
@@ -1152,7 +1163,7 @@ abstract class AbstractBaseAPI
   /**
    *  Common features for all requests, like setting user and checking basic permissions
    */
-  protected function preCommon(Request $request): void
+  protected function preCommon(Request $request): array
   {
     $userId = $request->getAttribute(('userId'));
     $this->user = UserUtils::getUser($userId);
@@ -1176,11 +1187,12 @@ abstract class AbstractBaseAPI
       throw new HttpForbidden($e->getMessage() . 
                             "(valid methods are for model are: " . join(",", $this->getAvailableMethods()) . ")");  
     }
-
-
-    if ($this->validatePermissions($required_perms) === FALSE) {
+    
+    $permissionResponse = $this->validatePermissions($required_perms);
+    if ($permissionResponse === FALSE) {
       throw new HttpForbidden(join('||', $this->permissionErrors));
     }
+    return $permissionResponse;
   }
 
   /* 
