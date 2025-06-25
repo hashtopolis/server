@@ -1,4 +1,6 @@
 <?php
+
+use DBA\ContainFilter;
 use DBA\Factory;
 
 use DBA\AccessGroup;
@@ -8,7 +10,9 @@ use DBA\AgentError;
 use DBA\AgentStat;
 use DBA\Assignment;
 use DBA\Chunk;
+use DBA\JoinFilter;
 use DBA\Task;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -29,6 +33,24 @@ class AgentAPI extends AbstractModelAPI {
     protected function getUpdateHandlers($id, $current_user): array {
       return [
         Agent::IGNORE_ERRORS => fn ($value) => AgentUtils::changeIgnoreErrors($id, $value, $current_user),
+      ];
+    }
+  
+    protected function getSingleACL(User $user, object $object): bool {
+      $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+      /** @var Agent $object */
+      $accessGroupsAgent = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($object));
+      
+      return count(array_intersect($accessGroupsAgent, $accessGroupsUser)) > 0;
+    }
+  
+    protected function getFilterACL(): array {
+      $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+      
+      return [
+        Factory::JOIN => [
+          new JoinFilter(Factory::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID)], Factory::FILTER => [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups),
+        ]
       ];
     }
 

@@ -1,4 +1,6 @@
 <?php
+
+use DBA\AbstractModel;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -89,9 +91,22 @@ abstract class AbstractBaseAPI
   {
     $this->container = $container;
   }
-
   
-
+  /**
+   * Checks if a user has access to the given single element retrieved
+   * @param User $user
+   * @param object $object
+   * @return bool true if the access is allowed
+   */
+  protected function getSingleACL(User $user, object $object): bool {
+    return true;
+  }
+  
+  /**
+   * Returns an array containing all filters and joins to be added to the query to ensure
+   * that only the elements are retrieved matching the access groups the user is in
+   * @return array
+   */
   protected function getFilterACL(): array {
     return [];
   }
@@ -163,8 +178,7 @@ abstract class AbstractBaseAPI
   /** 
    * Retrieve currently logged-in user
    */
-  final protected function getCurrentUser()
-  {
+  final protected function getCurrentUser(): User {
     return $this->user;
   }
 

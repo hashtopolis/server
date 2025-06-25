@@ -410,6 +410,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     if ($object === null) {
       throw new ResourceNotFoundError();
     }
+    if ($this->getSingleACL($this->getCurrentUser(), $object) === false) {
+      throw new HttpForbidden("No access to this object!", 403);
+    }
 
     return $object;
   }
@@ -493,10 +496,17 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     /* Generate filters */
     $filters = $apiClass->getFilters($request);
     $qFs_Filter = $apiClass->makeFilter($filters, $apiClass);
-    $qFs_ACL = $apiClass->getFilterACL();
-    $qFs = array_merge($qFs_ACL, $qFs_Filter);
-    if (count($qFs) > 0) {
-      $aFs[Factory::FILTER] = $qFs;
+    
+    $aFs_ACL = $apiClass->getFilterACL();
+    if (isset($aFs_ACL[Factory::FILTER])) {
+      $qFs_Filter = array_merge($aFs_ACL[Factory::FILTER], $qFs_Filter);
+    }
+    if (isset($aFs_ACL[Factory::JOIN])){
+      $aFs[Factory::JOIN] = $aFs_ACL[Factory::JOIN];
+    }
+    
+    if (count($qFs_Filter) > 0) {
+      $aFs[Factory::FILTER] = $qFs_Filter;
     }
 
     /**

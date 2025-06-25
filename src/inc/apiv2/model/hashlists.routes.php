@@ -11,6 +11,7 @@ use DBA\HashlistHashlist;
 use DBA\Task;
 use DBA\TaskWrapper;
 
+use DBA\User;
 use Middlewares\Utils\HttpErrorException;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
@@ -75,9 +76,19 @@ class HashlistAPI extends AbstractModelAPI {
         ],
       ];
     }
+  
+    protected function getSingleACL(User $user, object $object): bool {
+      $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+      
+      return in_array($object->getAccessGroupId(), $accessGroupsUser);
+    }
 
     protected function getFilterACL(): array {
-      return [new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser())))];
+      return [
+        Factory::FILTER => [
+          new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser())))
+        ]
+      ];
     }
 
     public function getFormFields(): array {

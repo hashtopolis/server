@@ -1,6 +1,7 @@
 <?php
 
 use DBA\AccessGroup;
+use DBA\ContainFilter;
 use DBA\Factory;
 use DBA\Hashlist;
 use DBA\HashType;
@@ -9,6 +10,7 @@ use DBA\QueryFilter;
 
 use DBA\Task;
 use DBA\TaskWrapper;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -24,7 +26,31 @@ class TaskWrapperAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return TaskWrapper::class;
-    }    
+    }
+  
+    protected function getSingleACL(User $user, object $object): bool {
+      $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+      
+      $qF1 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupsUser, Factory::getHashlistFactory());
+      $qF2 = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $object->getId(), "=");
+      $jF = new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID);
+      $wrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::JOIN => $jF])[Factory::getTaskWrapperFactory()->getModelName()];
+      
+      return count($wrappers) > 0;
+    }
+  
+    protected function getFilterACL(): array {
+      $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+      
+      return [
+        Factory::JOIN => [
+          new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID),
+        ],
+        Factory::FILTER => [
+          new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory()),
+        ]
+      ];
+    }
 
     public static function getToOneRelationships(): array {
       return [
