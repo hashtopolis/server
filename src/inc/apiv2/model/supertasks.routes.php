@@ -48,23 +48,11 @@ class SupertaskAPI extends AbstractModelAPI {
   
   protected function createObject(array $data): int {
     /* Use quirk on 'pretasks' since this is casted to DB representation  */
-    SupertaskUtils::createSupertask(
+    $supertask = SupertaskUtils::createSupertask(
       $data[Supertask::SUPERTASK_NAME],
       $this->db2json($this->getFeatures()['pretasks'], $data["pretasks"])
     );
-    
-    /* On successfully insert, return ID */
-    $qFs = [
-      new QueryFilter(Supertask::SUPERTASK_NAME, $data[Supertask::SUPERTASK_NAME], '=')
-    ];
-    
-    /* Hackish way to retrieve object since Id is not returned on creation */
-    $oF = new OrderFilter(Supertask::SUPERTASK_ID, "DESC");
-    $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-    /* No unique properties set on columns, thus multiple entries could exists, pick the latest (DESC ordering used) */
-    assert(count($objects) >= 1);
-    
-    return $objects[0]->getId();
+    return $supertask->getId();
   }
   
   /**

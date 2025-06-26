@@ -295,15 +295,16 @@ class PretaskUtils {
    * @param int $crackerBinaryTypeId
    * @param int $maxAgents
    * @param int $priority
+   * @return Pretask
    * @throws HttpError
    */
-  public static function createPretask($name, $cmdLine, $chunkTime, $statusTimer, $color, $cpuOnly, $isSmall, $benchmarkType, $files, $crackerBinaryTypeId, $maxAgents, $priority = 0) {
+  public static function createPretask(string $name, string $cmdLine, int $chunkTime, int $statusTimer, string $color, int $cpuOnly, int $isSmall, int $benchmarkType, array $files, int $crackerBinaryTypeId, int $maxAgents, int $priority = 0): Pretask {
     $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     
     if (strlen($name) == 0) {
       throw new HttpError("Name cannot be empty!");
     }
-    else if (strpos($cmdLine, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+    else if (!str_contains($cmdLine, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS))) {
       throw new HttpError("The attack command does not contain the hashlist alias!");
     }
     else if (strlen($cmdLine) > 65535) {
@@ -360,6 +361,7 @@ class PretaskUtils {
         Factory::getFilePretaskFactory()->save($filePretask);
       }
     }
+    return $pretask;
   }
 }
 

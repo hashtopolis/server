@@ -20,9 +20,10 @@ class PreprocessorAPI extends AbstractModelAPI {
   
   /**
    * @throws HttpError
+   * @throws HttpConflict
    */
   protected function createObject(array $data): int {
-    PreprocessorUtils::addPreprocessor(
+    $preprocessor = PreprocessorUtils::addPreprocessor(
       $data[Preprocessor::NAME],
       $data[Preprocessor::BINARY_NAME],
       $data[Preprocessor::URL],
@@ -30,19 +31,7 @@ class PreprocessorAPI extends AbstractModelAPI {
       $data[Preprocessor::SKIP_COMMAND],
       $data[Preprocessor::LIMIT_COMMAND]
     );
-    
-    /* On successfully insert, return ID */
-    $qFs = [
-      new QueryFilter(Preprocessor::NAME, $data[Preprocessor::NAME], '='),
-      new QueryFilter(Preprocessor::BINARY_NAME, $data[Preprocessor::BINARY_NAME], '=')
-    ];
-    
-    /* Hackish way to retrieve object since Id is not returned on creation */
-    $oF = new OrderFilter(Preprocessor::PREPROCESSOR_ID, "DESC");
-    $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-    assert(count($objects) == 1);
-    
-    return $objects[0]->getId();
+    return $preprocessor->getId();
   }
   
   protected function getUpdateHandlers($id, $current_user): array {

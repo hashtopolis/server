@@ -50,13 +50,13 @@ class HealthCheckAPI extends AbstractModelAPI {
    * @throws HttpError
    */
   protected function createObject(array $data): int {
-    $obj = HealthUtils::createHealthCheck(
+    $healthCheck = HealthUtils::createHealthCheck(
       $data[HealthCheck::HASHTYPE_ID],
       $data[HealthCheck::CHECK_TYPE],
       $data[HealthCheck::CRACKER_BINARY_ID]
     );
     
-    return $obj->getId();
+    return $healthCheck->getId();
   }
   
   /**

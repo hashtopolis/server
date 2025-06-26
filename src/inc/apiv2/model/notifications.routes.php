@@ -41,6 +41,7 @@ class NotificationSettingAPI extends AbstractModelAPI {
   
   /**
    * @throws HTException
+   * @throws HttpError
    */
   protected function createObject(array $data): int {
     $dummyPost = [];
@@ -59,29 +60,14 @@ class NotificationSettingAPI extends AbstractModelAPI {
         break;
     }
     
-    
-    NotificationUtils::createNotificaton(
+    $notification = NotificationUtils::createNotification(
       $data[NotificationSetting::ACTION],
       $data[NotificationSetting::NOTIFICATION],
       $data[NotificationSetting::RECEIVER],
       $dummyPost,
       $this->getCurrentUser(),
     );
-    
-    /* On successfully insert, return ID */
-    $qFs = [
-      new QueryFilter(NotificationSetting::ACTION, $data[NotificationSetting::ACTION], '='),
-      new QueryFilter(NotificationSetting::NOTIFICATION, $data[NotificationSetting::NOTIFICATION], '='),
-      new QueryFilter(NotificationSetting::RECEIVER, $data[NotificationSetting::RECEIVER], '='),
-    ];
-    
-    /* Hackish way to retrieve object since Id is not returned on creation */
-    $oF = new OrderFilter(NotificationSetting::NOTIFICATION_SETTING_ID, "DESC");
-    $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-    /* No unique properties set on columns, thus multiple entries could exists, pick the latest (DESC ordering used) */
-    assert(count($objects) >= 1);
-    
-    return $objects[0]->getId();
+    return $notification->getId();
   }
   
   /**

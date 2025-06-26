@@ -534,12 +534,13 @@ class AgentUtils {
     }
     Factory::getAgentFactory()->set($agent, Agent::IS_ACTIVE, $set);
   }
-
+  
   /**
    * @param string $newVoucher
-   * @throws HTException
+   * @return RegVoucher
+   * @throws HttpConflict
    */
-  public static function createVoucher($newVoucher) {
+  public static function createVoucher(string $newVoucher): RegVoucher {
     $qF = new QueryFilter(RegVoucher::VOUCHER, $newVoucher, "=");
     $check = Factory::getRegVoucherFactory()->filter([Factory::FILTER => $qF]);
     if ($check != null) {
@@ -548,7 +549,7 @@ class AgentUtils {
 
     $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");
     $voucher = new RegVoucher(null, $key, time());
-    Factory::getRegVoucherFactory()->save($voucher);
+    return Factory::getRegVoucherFactory()->save($voucher);
   }
 
   /**

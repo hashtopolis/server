@@ -15,10 +15,10 @@ class HashTypeAPI extends AbstractModelAPI {
   }
   
   /**
-   * @throws HTException
+   * @throws HttpError
    */
   protected function createObject(array $data): int {
-    HashtypeUtils::addHashtype(
+    $hashtype = HashtypeUtils::addHashtype(
       $data[HashType::HASH_TYPE_ID],
       $data[HashType::DESCRIPTION],
       $data[HashType::IS_SALTED],
@@ -26,7 +26,7 @@ class HashTypeAPI extends AbstractModelAPI {
       $this->getCurrentUser()
     );
     
-    return $data[HashType::HASH_TYPE_ID];
+    return $hashtype->getId();
   }
   
   /**
