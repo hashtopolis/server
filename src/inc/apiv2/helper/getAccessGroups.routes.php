@@ -25,10 +25,7 @@ class GetAccessGroupsHelperAPI extends AbstractHelperAPI {
   }
 
   public function handleGet(Request $request, Response $response): Response {
-    $check = $this->preCommon($request);
-    if ($check !== true && count($check)) {
-      throw new HttpError('Public attribute requested, but not available on this endpoint!');
-    }
+    $this->preCommon($request);
     $user = $this->getCurrentUser();
     
     $accessGroups = AccessUtils::getAccessGroupsOfUser($user);
