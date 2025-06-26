@@ -69,11 +69,10 @@ class HashtopolisAuthenticator implements AuthenticatorInterface {
     
     $filter = new QueryFilter(User::USERNAME, $username, "=");
     
-    $check = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);
-    if ($check === null || sizeof($check) == 0) {
+    $user = Factory::getUserFactory()->filter([Factory::FILTER => $filter], true);
+    if ($user === null) {
       return false;
     }
-    $user = $check[0];
     
     if ($user->getIsValid() != 1) {
       return false;
@@ -82,6 +81,7 @@ class HashtopolisAuthenticator implements AuthenticatorInterface {
       Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed login attempt due to wrong password!");
       return false;
     }
+    Factory::getUserFactory()->set($user, User::LAST_LOGIN_DATE, time());
     return true;
   }
 }
