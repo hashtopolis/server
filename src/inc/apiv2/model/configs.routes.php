@@ -42,7 +42,7 @@ class ConfigAPI extends AbstractModelAPI {
       assert(False, "Configs cannot be deleted via API");
     }
 
-    protected function updateObjects(array $objects) {
+    protected function updateObjects(array $objects): void {
       ConfigUtils::updateConfigs($objects);
     }
 }
