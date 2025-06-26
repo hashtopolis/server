@@ -1,6 +1,8 @@
 <?php
 require_once(dirname(__FILE__) . "/AbstractBaseAPI.class.php");
 
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -12,39 +14,31 @@ use DBA\ContainFilter;
 use DBA\LimitFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
-use Psr\Http\Message\ServerRequestInterface;
 
-include_once __DIR__ . "/ErrorHandler.class.php";
-
-abstract class AbstractModelAPI extends AbstractBaseAPI
-{
+abstract class AbstractModelAPI extends AbstractBaseAPI {
   abstract static public function getDBAClass();
   abstract protected function createObject(array $data): int;
   abstract protected function deleteObject(object $object): void;
 
-  public static function getToOneRelationships(): array
-  {
+  public static function getToOneRelationships(): array {
     return [];
   }
-  public static function getToManyRelationships(): array
-  {
+  public static function getToManyRelationships(): array {
     return [];
   }
 
   /** 
    * Available 'expand' parameters on $object
    */
-  public static function getExpandables(): array
-  {
-    $expandables = array_merge(array_keys(static::getToOneRelationships()), array_keys(static::getToManyRelationships()));
-    return $expandables;
+  public static function getExpandables(): array {
+    return array_merge(array_keys(static::getToOneRelationships()), array_keys(static::getToManyRelationships()));
   }
-
-  /** 
-    * Fetch objects for  $expand on $objects
+  
+  /**
+   * Fetch objects for  $expand on $objects
+   * @throws InternalError
    */
-  protected static function fetchExpandObjects(array $objects, string $expand): mixed
-  {
+  protected static function fetchExpandObjects(array $objects, string $expand): mixed {
     //disabled the check because with intermediate objects its possible to fetch a different model
     /* Ensure we receive the proper type */
     // $baseModel = static::getDBAClass();
@@ -105,16 +99,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
 
-  final protected static function getFactory(): object
-  {
+  final protected static function getFactory(): object {
     return self::getModelFactory(static::getDBAclass());
   }
 
   /** 
-   * Get features based on Formfields and DBA model features
+   * Get features based on form fields and DBA model features
    */
-  final protected function getFeatures(): array
-  {
+  final protected function getFeatures(): array {
     return array_merge(
       parent::getFeatures(),
       call_user_func($this->getDBAclass() . '::getFeatures'),
@@ -122,8 +114,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
-   * Seperate get features function to get features without the formfields. This is needed to generate the openAPI documentation
-   * TODO: This function could probably be used in the patch endpoints aswell, since formfields are not relevant there.
+   * Separate get features function to get features without the form fields. This is needed to generate the openAPI documentation
+   * TODO: This function could probably be used in the patch endpoints as well, since form fields are not relevant there.
    */
   public function getFeaturesWithoutFormfields(): array {
     $features = call_user_func($this->getDBAclass() . '::getFeatures');
@@ -135,42 +127,41 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    * 
    * @param string $dbaClass is the dba class to get the features from
    */
-  //TODO doesnt retrieve features based on formfields, could be done by adding api class in relationship objects
-  final protected function getFeaturesOther(string $dbaClass): array
-  {
+  //TODO doesnt retrieve features based on form fields, could be done by adding api class in relationship objects
+  final protected function getFeaturesOther(string $dbaClass): array {
     return call_user_func($dbaClass . '::getFeatures');
   }
-
+  
   /**
    * Find primary key for  another DBA object
    * A little bit hacky because the getPrimaryKey function in dbaClass is not static
-   * 
-   * @param string $dbaClass is the dba class to get the primarykey from
+   *
+   * @param string $dbaClass is the dba class to get the primary key from
+   * @throws InternalError
    */
   protected function getPrimaryKeyOther(string $dbaClass): string
   {
     $features = $this->getFeaturesOther($dbaClass);
     # Work-around required since getPrimaryKey is not static in dba/models/*.php
     foreach ($features as $key => $value) {
-      if ($value['pk'] == True) {
+      if ($value['pk']) {
         return $key;
       }
     }
     throw new InternalError("Internal error: no primary key found");
   }
-
+  
   /**
-   * Retrieve ManyToOne relalation for $objects ('parents') of type $targetFactory via 'intermidate'
-   * of $intermediateFactory joining on $joinField (between 'intermediate' and 'target'). Filtered by 
+   * Retrieve ManyToOne relation for $objects ('parents') of type $targetFactory via 'intermediate'
+   * of $intermediateFactory joining on $joinField (between 'intermediate' and 'target'). Filtered by
    * $filterField at $intermediateFactory.
-   * 
-   * @param array $objects Objects Fetch relation for selected Objects 
+   *
+   * @param array $objects Objects Fetch relation for selected Objects
    * @param string $objectField Field to use as base for $objects
    * @param object $intermediateFactory Factory used as intermediate between parentObject and targetObject
-   * @param string $filterField Filter field of intermadiateObject to filter against $objects field
    * @param object $targetFactory Object properties of objects returned
    * @param string $joinField Field to connect 'intermediate' to 'target'
-
+   * @param string $parentKey
    * @return array $many2One which is a map where the key is the id of the parent object and the value is an array of the included
    *                objects that are included for this parent object
    */
@@ -256,7 +247,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     /* Map objects */
     foreach ($objects as $object) {
       $fieldId = $object->getKeyValueDict()[$objectField];
-      if (array_key_exists($fieldId, $f2o) == true) {
+      if (array_key_exists($fieldId, $f2o)) {
         $retval[$object->getId()] = $f2o[$fieldId];
       }
     }
@@ -303,14 +294,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
 
   /**
-   * Retrieve ManyToOne relalation for $objects ('parents') of type $targetFactory via 'intermidate'
+   * Retrieve ManyToOne relation for $objects ('parents') of type $targetFactory via 'intermediate'
    * of $intermediateFactory joining on $joinField (between 'intermediate' and 'target'). Filtered by 
    * $filterField at $intermediateFactory.
    * 
    * @param array $objects Objects Fetch relation for selected Objects 
    * @param string $objectField Field to use as base for $objects
    * @param object $intermediateFactory Factory used as intermediate between parentObject and targetObject
-   * @param string $filterField Filter field of intermadiateObject to filter against $objects field
+   * @param string $filterField Filter field of intermediateObject to filter against $objects field
    * @param object $targetFactory Object properties of objects returned
    * @param string $joinField Field to connect 'intermediate' to 'target'
 
@@ -354,40 +345,38 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     }
     return $many2Many;
   }
-
-  /** 
+  
+  /**
    * Retrieve  permissions based on class and method requested
+   * @throws HttpForbidden
    */
-  public function getRequiredPermissions(string $method): array
-  {
+  public function getRequiredPermissions(string $method): array {
     $model = $this->getDBAclass();
     # Get required permission based on API method type
-    switch (strtoupper($method)) {
-      case "GET":
-        $required_perm = $model::PERM_READ;
-        break;
-      case "POST":
-        $required_perm = $model::PERM_CREATE;
-        break;
-      case "PATCH":
-        $required_perm = $model::PERM_UPDATE;
-        break;
-      case "DELETE":
-        $required_perm = $model::PERM_DELETE;
-        break;
-      default:
-        throw new HttpForbidden("Method '" . $method . "' is not allowed ");
-    }
+    $required_perm = match (strtoupper($method)) {
+      "GET" => $model::PERM_READ,
+      "POST" => $model::PERM_CREATE,
+      "PATCH" => $model::PERM_UPDATE,
+      "DELETE" => $model::PERM_DELETE,
+      default => throw new HttpForbidden("Method '" . $method . "' is not allowed "),
+    };
     return array($required_perm);
   }
-
+  
   /**
    * API entry point for deletion of single object
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws HTException
+   * @throws HttpForbidden
+   * @throws ResourceNotFoundError
    */
   public function deleteOne(Request $request, Response $response, array $args): Response
   // TODO how to handle cascading deletes?
   // ex. Hash foreignkey to hashlist can't be null, but hashlist delete doesnt cascade to Hash
-  // Which effectively means that we cant delete a hashlist because of foreingkey constraints 
+  // Which effectively means that we cant delete a hashlist because of foreign key constraints
   // Solution 1: make cascading rules in Database
   // Solution 2: implement delete logic in every api model 
   {
@@ -400,12 +389,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $response->withStatus(204)
       ->withHeader("Content-Type", "application/json");
   }
-
+  
   /**
-   * Request single object from database & validate permissons
+   * Request single object from database & validate permissions
+   * @throws ResourceNotFoundError
+   * @throws HttpForbidden
    */
-  protected function doFetch(string $pk): mixed
-  {
+  protected function doFetch(string $pk): mixed {
     $object = $this->getFactory()->get($pk);
     if ($object === null) {
       throw new ResourceNotFoundError();
@@ -420,8 +410,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   /**
    * Additional filtering required for limiting access to objects 
    */
-  protected function getFilterACL(): array
-  {
+  protected function getFilterACL(): array {
     return [];
   }
 
@@ -429,13 +418,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    * Helper function to determine if $resourceRecord is a valid resource record
    * returns true if it is a valid resource record and false if it is an invalid resource record
    */
-  final protected function validateResourceRecord(mixed $resourceRecord): bool
-  {
+  final protected function validateResourceRecord(mixed $resourceRecord): bool {
     return (isset($resourceRecord['type']) && is_numeric($resourceRecord['id']));
   }
-
-  final protected function ResourceRecordArrayToUpdateArray($data, $parentId)
-  {
+  
+  /**
+   * @throws HttpError
+   */
+  final protected function ResourceRecordArrayToUpdateArray($data, $parentId): array {
     $updates = [];
     foreach ($data as $item) {
       if (!$this->validateResourceRecord($item)) {
@@ -447,7 +437,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $updates;
   }
 
-  protected static function addToRelatedResources(array $relatedResources, array $relatedResource) {
+  protected static function addToRelatedResources(array $relatedResources, array $relatedResource): array {
     $alreadyExists = false;
     $searchType = $relatedResource["type"];
     $searchId = $relatedResource["id"];
@@ -462,12 +452,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     }
     return $relatedResources;
   }
-
+  
   /**
    * API entry point for requesting multiple objects
+   * @throws HttpError
    */
-  public static function getManyResources(object $apiClass, Request $request, Response $response, array $relationFs = []): Response
-  {
+  public static function getManyResources(object $apiClass, Request $request, Response $response, array $relationFs = []): Response {
     $apiClass->preCommon($request);
 
     $aliasedfeatures = $apiClass->getAliasedFeatures();
@@ -670,31 +660,31 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $response->withStatus(200)
       ->withHeader("Content-Type", 'application/vnd.api+json; ext="https://jsonapi.org/profiles/ethanresnick/cursor-pagination"');
   }
-
+  
   /**
    * API entry point for requesting multiple objects
+   * @throws HttpError
    */
-  public function get(Request $request, Response $response, array $args): Response
-  {
+  public function get(Request $request, Response $response, array $args): Response {
     return self::getManyResources($this, $request, $response);
   }
-
+  
   /**
    * Maps filters to the appropiate models based on their feautures.
-   * 
+   *
    * Helper function to get valid filters for the models. This is usefull when multiple objects
    * have been included and the correct filters need to be mapped to the correct objects.
    * Currently used to make complex filters for counting objects
-   * 
-   * @param array $filters An associative array of filters where the key is the filter 
+   *
+   * @param array $filters An associative array of filters where the key is the filter
    *                       name and the value is the filter value. Filters should match
-   *                       the pattern `<field><operator>`, where `<operator>` can be 
+   *                       the pattern `<field><operator>`, where `<operator>` can be
    *                       one of the supported suffixes (e.g., `__eq`, `__ne`).
-   * @param array $models  An array of model objects. Each model must have a `getFeatures()` 
-   *                       method that returns an associative array of model features. 
-   *                       The features should map filter keys to their respective 
+   * @param array $models An array of model objects. Each model must have a `getFeatures()`
+   *                       method that returns an associative array of model features.
+   *                       The features should map filter keys to their respective
    *                       attributes or aliases.
-   * 
+   *
    * @return array An associative array mapping model classes to their respective valid filters.
    *               The structure is:
    *               [
@@ -704,11 +694,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    *                   ],
    *                   ...
    *               ]
-   * 
+   *
    * @throws HttpForbidden If a filter key does not match the expected format or is invalid.
+   * @throws InternalError
    */
-  public function filterObjectMap(array $filters, array $models) {
-
+  public function filterObjectMap(array $filters, array $models): array {
     $modelFilterMap = [];
     foreach ($filters as $filter => $value) {
       if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith)$/', $filter, $matches) == 0) {
@@ -719,7 +709,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         $features = $model->getFeatures();
         // Special filtering of _id to use for uniform access to model primary key
         $cast_key = $matches['key'] == '_id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
-        if (array_key_exists($cast_key, $features) == false) {
+        if (!array_key_exists($cast_key, $features)) {
           continue; //not a valid filter for current model
         };
         $modelFilterMap[$model::class][$filter] =  $value;
@@ -728,12 +718,22 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     }
     return $modelFilterMap;
   }
-
+  
   /**
    * API entry point for retrieving count information of data
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
+   * @throws ContainerExceptionInterface
+   * @throws NotFoundExceptionInterface
    */
-  public function count(Request $request, Response $response, array $args): Response
-  {
+  public function count(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
     $factory = $this->getFactory();
 
@@ -781,12 +781,20 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $response->withStatus(200)
       ->withHeader("Content-Type", 'application/vnd.api+json');
   }
-
+  
   /**
    * API entry point for requests of single object
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws ContainerExceptionInterface
+   * @throws HTException
+   * @throws HttpForbidden
+   * @throws NotFoundExceptionInterface
+   * @throws ResourceNotFoundError
    */
-  public function getOne(Request $request, Response $response, array $args): Response
-  {
+  public function getOne(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
     $object = $this->doFetch($args['id']);
 
@@ -794,10 +802,17 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     return self::getOneResource($this, $object, $request, $response);
   }
-
-
+  
+  
   /**
    * API entry point for modification of single object
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
    */
   public function patchOne(Request $request, Response $response, array $args): Response
   {
@@ -836,19 +851,26 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   //4. overload function in config route
   /**
    * {
- * "data": [{
- *   "id": "1",
- *  "type": "articles"
- *   "attributes": {
- *     "title": "To TDD or Not"
- *   }
- * }, {
- *   "id": "2",
- *  "type": "articles"
- *   "attributes": {
- *     "title": "LOL Engineering"
- *   }
- * }]
+   * "data": [{
+   *   "id": "1",
+   *  "type": "articles"
+   *   "attributes": {
+   *     "title": "To TDD or Not"
+   *   }
+   * }, {
+   *   "id": "2",
+   *  "type": "articles"
+   *   "attributes": {
+   *     "title": "LOL Engineering"
+   *   }
+   * }]
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
    */
   public function patchMultiple(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -876,7 +898,17 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $response->withStatus(204)
       ->withHeader("Content-Type", "application/json");
   }
-
+  
+  /**
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws ResourceNotFoundError
+   */
   public function deleteMultiple(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
     $data = $request->getParsedBody()['data'];
@@ -893,17 +925,24 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
-   * Overidable function to update mulitple objects
+   * Overridable function to update multiple objects
    * @objects ia an array where id is the key and the values are the attributes that need to be patched
    */
-  protected function updateObjects(array $objects) {
+  protected function updateObjects(array $objects): void {
     foreach ($objects as $objectId => $attributes) {
       $this->updateObject($objectId, $attributes);
     }
   }
-
+  
   /**
    * API entry point creation of new object
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
    */
   public function post(Request $request, Response $response, array $args): Response
   {
@@ -935,13 +974,22 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $object = $this->getFactory()->get($pk);
     return self::getOneResource($this, $object, $request, $response, 201);
   }
-
-
+  
+  
   /**
-   * API endpoint to get a to one related resource record 
+   * API endpoint to get a to one related resource record
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws ContainerExceptionInterface
+   * @throws HTException
+   * @throws HttpForbidden
+   * @throws InternalError
+   * @throws NotFoundExceptionInterface
+   * @throws ResourceNotFoundError
    */
-  public function getToOneRelatedResource(Request $request, Response $response, array $args): Response
-  {
+  public function getToOneRelatedResource(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
 
     $relation = $args['relation'];
@@ -985,9 +1033,19 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     return self::getOneResource($relationApiClass, $relationObject, $request, $response);
   }
-
+  
   /**
    * API endpoint to get a to one relationship link
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws ContainerExceptionInterface
+   * @throws HTException
+   * @throws HttpForbidden
+   * @throws JsonException
+   * @throws NotFoundExceptionInterface
+   * @throws ResourceNotFoundError
    */
   public function getToOneRelationshipLink(Request $request, Response $response, array $args): Response
   {
@@ -1059,15 +1117,22 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $response->withStatus(200)
       ->withHeader("Content-Type", 'application/vnd.api+json');
   }
-
-  /*
-  * API endpoint to patch a to one relationship link
-  */
-  // TODO This works as intended but it can give weird behaviour. ex. it allows you to put an MD5 hash to a SHA1 hashlist 
-  //by patching the foreingkey. Simple fix could be to make foreignkey immutable for cases like this.
-  //Or just like with the patch many, create an overrideable function to add more logic in child
-  public function patchToOneRelationshipLink(Request $request, Response $response, array $args): Response
-  {
+  
+  /**
+   * API endpoint to patch a to one relationship link
+   * TODO: This works as intended but it can give weird behaviour. ex. it allows you to put an MD5 hash to a SHA1 hashlist
+   * by patching the foreign key. Simple fix could be to make foreignkey immutable for cases like this.
+   * Or just like with the patch many, create an overrideable function to add more logic in child
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws ResourceNotFoundError
+   */
+  public function patchToOneRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
     $jsonBody = $request->getParsedBody();
 
@@ -1098,13 +1163,21 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $response->withStatus(201)
       ->withHeader("Content-Type", "application/vnd.api+json");
   }
-
-
+  
+  
   /**
    * API endpoint for retrieving to many relationship resource records
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws ContainerExceptionInterface
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws NotFoundExceptionInterface
    */
-  public function getToManyRelatedResource(Request $request, Response $response, array $args): Response
-  {
+  public function getToManyRelatedResource(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
 
     // Base object -> Relation objects
@@ -1138,13 +1211,23 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     return self::getManyResources($relationApiClass, $request, $response, $aFs);
   }
-
-
+  
+  
   /**
-   * API get request to retrieve the to many relationship links 
+   * API get request to retrieve the to many relationship links
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws ContainerExceptionInterface
+   * @throws HTException
+   * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
+   * @throws NotFoundExceptionInterface
+   * @throws ResourceNotFoundError
    */
-  public function getToManyRelationshipLink(Request $request, Response $response, array $args): Response
-  {
+  public function getToManyRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
 
     // Base object -> Relationship objects
@@ -1186,12 +1269,19 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $response->withStatus(200)
       ->withHeader("Content-Type", 'application/vnd.api+json; ext="https://jsonapi.org/profiles/ethanresnick/cursor-pagination"');
   }
-
+  
   /**
-   * PATCH request to patch the to many relationship link TODO: handle intermediate tables
+   * PATCH request to patch the to many relationship link
+   * TODO: handle intermediate tables
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
    */
-  public function patchToManyRelationshipLink(Request $request, Response $response, array $args): Response
-  {
+  public function patchToManyRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
     $jsonBody = $request->getParsedBody();
 
@@ -1205,9 +1295,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $response->withStatus(204)
       ->withHeader("Content-Type", "application/vnd.api+json");
   }
-
+  
   /**
-   * Overidable function to update the to many relationship
+   * Overridable function to update the to many relationship
+   * @param Request $request
+   * @param array $data
+   * @param array $args
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws InternalError
    */
   protected function updateToManyRelationship(Request $request, array $data, array $args): void {
     $relation = $this->getToManyRelationships()[$args['relation']];
@@ -1241,13 +1337,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       unset($modelsDict[$item["id"]]);
     }
 
-    $leftover_primarykeys = array_keys($modelsDict);
-    if ($features[$relationKey]["null"] == False && count($leftover_primarykeys) > 0) {
+    $leftover_primary_keys = array_keys($modelsDict);
+    if (!$features[$relationKey]["null"] && count($leftover_primary_keys) > 0) {
       throw new HttpError("Not all current relationship objects have been included,
        but the foreignkey can't be set to null. Either add all objects or delete the not needed objects");
     }
-    foreach ($leftover_primarykeys as $key) {
-      //set all foreignkeys of current relationships to null that have not been included
+    foreach ($leftover_primary_keys as $key) {
+      //set all foreign keys of current relationships to null that have not been included
       $updates[] = new MassUpdateSet($key, null);
     }
     $factory->getDB()->beginTransaction(); //start transaction to be able roll back
@@ -1256,12 +1352,19 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       throw new HttpError("Was not able to update to many relationship");
     }
   }
-
+  
   /**
-   * POST request for the to many relationship link TODO
+   * POST request for the to many relationship link
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws InternalError
    */
-  public function postToManyRelationshipLink(Request $request, Response $response, array $args): Response
-  {
+  public function postToManyRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
 
     $jsonBody = $request->getParsedBody();
@@ -1276,9 +1379,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       throw new HttpError("Relation does not exist!");
     }
 
-    // TODO this ia an abstract way of adding to junctiontables. This only works for intermediate tables 
-    // that have 3 fields (1 primary key and 2 foreignkeys to link the tables) for models that have intermediate 
-    // tables with more than 3 fields, the postToManyRelationshipLink() function should be overidden.
+    // TODO this ia an abstract way of adding to junction tables. This only works for intermediate tables
+    // that have 3 fields (1 primary key and 2 foreign keys to link the tables) for models that have intermediate
+    // tables with more than 3 fields, the postToManyRelationshipLink() function should be overridden.
     if (array_key_exists("junctionTableType", $relation)) {
       $relationType = $relation['junctionTableType'];
       $primaryKey = $this->getPrimaryKeyOther($relationType);
@@ -1313,13 +1416,19 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $response->withStatus(201)
       ->withHeader("Content-Type", "application/vnd.api+json");
   }
-
+  
   /**
    * DELETE request for the to many relationship link
    * currently there is no object that can be altered this way because of constraints
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
    */
-  public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response
-  {
+  public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
     $jsonBody = $request->getParsedBody();
 
@@ -1339,7 +1448,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     if (!isset($junction_table)) {
       $features = $this->getFeaturesOther($relationType);
       $this->isAllowedToMutate($features, $relationKey);
-      if ($features[$relationKey]['null'] == False) {
+      if (!$features[$relationKey]['null']) {
         // In this scenario another solution could be to delete object TODO?
         throw new HttpForbidden("Key '$relationKey' cant be set to null");
       }
@@ -1382,11 +1491,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $response->withStatus(201)
       ->withHeader("Content-Type", "application/vnd.api+json");
   }
-
+  
   /**
    * Function to update fields in the database
+   * @throws HttpError
    */
-  protected function DatabaseSet($object, $key, $value) {
+  protected function DatabaseSet($object, $key, $value): void {
     try {
       $this->getFactory()->set($object, $key, $value);
     } catch (PDOException $e) {
@@ -1397,12 +1507,16 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       }
     }
   }
-
+  
   /**
    * Update object with provided values
+   * @param int $objectId
+   * @param array $data
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws ResourceNotFoundError
    */
-  protected function updateObject(int $objectId, array $data): void
-  {
+  protected function updateObject(int $objectId, array $data): void {
     $updateHandlers = $this->getUpdateHandlers($objectId, $this->getCurrentUser());
     foreach ($data as $key => $value) {
       if (array_key_exists($key, $updateHandlers)) {
@@ -1417,21 +1531,20 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   /**
    * Get input field names valid for patching of object
    */
-  final public function getPatchValidFeatures(): array
-  {
+  final public function getPatchValidFeatures(): array {
     $aliasedfeatures = $this->getFeaturesWithoutFormfields();
     $validFeatures = [];
 
     // Generate listing of validFeatures
     foreach ($aliasedfeatures as $name => $feature) {
       // Ensure key can be updated 
-      if ($feature['read_only'] == True) {
+      if ($feature['read_only']) {
         continue;
       }
-      if ($feature['protected'] == True) {
+      if ($feature['protected']) {
         continue;
       }
-      if ($feature['private'] == True) {
+      if ($feature['private']) {
         continue;
       }
 
@@ -1447,10 +1560,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   /**
    * Override-able registering of options
    */
-  static public function register($app): void
-  {
+  static public function register($app): void {
     $me = get_called_class();
-    $foo = $me::getDBAClass();
     $baseUri = $me::getBaseUri();
     $baseUriOne = $baseUri . '/{id:[0-9]+}';
     $baseUriCount = $baseUri . "/count";
