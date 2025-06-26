@@ -58,27 +58,27 @@ require_once(dirname(__FILE__) . "/../../load.php");
 /**
  * This class acts as the BaseAPI implementation of API model endpoints
  */
-abstract class AbstractBaseAPI
-{
+abstract class AbstractBaseAPI {
   abstract public static function getBaseUri(): string;
+  
   abstract public function getRequiredPermissions(string $method): array;
-
+  
   /** @var DBA\User|null $user is currently logged in user */
   private User|null $user;
-
+  
   /** @var RouteParserInterface|null $routeParser contains routing information
    * which are for example used dynamic creation of _self references
    */
   protected RouteParserInterface|null $routeParser;
-
+  
   /** @var ContainerInterface|null $container dynamically generated model mappings
    * which are for example used for retrival of objects based on string identity
    */
   protected ContainerInterface|null $container;
-
+  
   /** @var mixed|null $permissionErrors contained detailed results of last
    * validatePermissions function call
-  */
+   */
   private mixed $permissionErrors;
   
   /**
@@ -86,12 +86,11 @@ abstract class AbstractBaseAPI
    * no read access on the whole model exists
    */
   protected array|null $publicAttributeFilterClasses;
-
+  
   /**
    * Constructor receives container instance
    */
-  public function __construct(ContainerInterface $container)
-  {
+  public function __construct(ContainerInterface $container) {
     $this->container = $container;
     $this->publicAttributeFilterClasses = [];
   }
@@ -114,29 +113,27 @@ abstract class AbstractBaseAPI
   protected function getFilterACL(): array {
     return [];
   }
-
+  
   /**
    * Extra fields which are valid for creation of object
    */
   public function getFormFields(): array {
-    return  [];
+    return [];
   }
-
+  
   /**
    * Get input field names valid for creation of object
    */
-  final public function getCreateValidFeatures(): array
-  {
+  final public function getCreateValidFeatures(): array {
     return $this->getAliasedFeatures();
   }
   
   /**
    * Create features from form fields
    */
-  protected function getFeatures(): array
-  {
+  protected function getFeatures(): array {
     $features = [];
-    foreach($this->getFormFields() as $key => $feature) {
+    foreach ($this->getFormFields() as $key => $feature) {
       /* Initiate default values */
       $features[$key] = $feature + ['null' => False, 'protected' => False, 'private' => False, 'choices' => "unset", 'pk' => False, 'read_only' => True];
       if (!array_key_exists('alias', $feature)) {
@@ -145,11 +142,11 @@ abstract class AbstractBaseAPI
     }
     return $features;
   }
-
+  
   protected function getUpdateHandlers($id, $current_user): array {
     return [];
   }
-
+  
   /**
    * Overridable function to aggregate data in the object. Currently only used for Tasks
    * returns the aggregated data in key value pairs
@@ -157,18 +154,17 @@ abstract class AbstractBaseAPI
   public static function aggregateData(object $object): array {
     return [];
   }
-
+  
   /**
    * Take all the dba features and converts them to a list.
    * It uses the data from the generator and replaces the keys with the aliases.
    * structure: hashlist: name: [dbname => hashlistId]
    */
-  public function getAliasedFeatures(): array
-  {
+  public function getAliasedFeatures(): array {
     $features = $this->getFeatures();
     return $this->mapFeatures($features);
   }
-
+  
   final protected function mapFeatures($features): array {
     $mappedFeatures = [];
     foreach ($features as $key => $value) {
@@ -177,17 +173,17 @@ abstract class AbstractBaseAPI
     }
     return $mappedFeatures;
   }
-
+  
   /**
    * Retrieve currently logged-in user
    */
   final protected function getCurrentUser(): User {
     return $this->user;
   }
-
-
+  
+  
   protected static function getModelFactory(string $model): object {
-    switch($model) {
+    switch ($model) {
       case AccessGroup::class:
         return Factory::getAccessGroupFactory();
       case AccessGroupAgent::class:
@@ -256,7 +252,7 @@ abstract class AbstractBaseAPI
         return Factory::getTaskWrapperFactory();
       case User::class:
         return Factory::getUserFactory();
-      }
+    }
     assert(False, "Model '$model' cannot be mapped to Factory");
   }
   
@@ -266,8 +262,7 @@ abstract class AbstractBaseAPI
    * @return object
    * @throws ResourceNotFoundError
    */
-  final protected static function fetchOne(string $model, int $pk): object
-  {
+  final protected static function fetchOne(string $model, int $pk): object {
     $factory = self::getModelFactory($model);
     $object = $factory->get($pk);
     if ($object === null) {
@@ -275,48 +270,40 @@ abstract class AbstractBaseAPI
     }
     return $object;
   }
-
-  final protected static function getChunk(int $pk): Chunk
-  {
+  
+  final protected static function getChunk(int $pk): Chunk {
     return self::fetchOne(Chunk::class, $pk);
   }
-
-  final protected static function getCrackerBinary(int $pk): CrackerBinary
-  {
+  
+  final protected static function getCrackerBinary(int $pk): CrackerBinary {
     return self::fetchOne(CrackerBinary::class, $pk);
   }
-
-  final protected static function getHashlist(int $pk): Hashlist
-  {
+  
+  final protected static function getHashlist(int $pk): Hashlist {
     return self::fetchOne(Hashlist::class, $pk);
   }
-
-  final protected static function getPretask(int $pk): Pretask
-  {
+  
+  final protected static function getPretask(int $pk): Pretask {
     return self::fetchOne(Pretask::class, $pk);
   }
-
-  final protected static function getRightGroup(int $pk): RightGroup
-  {
+  
+  final protected static function getRightGroup(int $pk): RightGroup {
     return self::fetchOne(RightGroup::class, $pk);
   }
-
-  final protected static function getSupertask(int $pk): Supertask
-  {
+  
+  final protected static function getSupertask(int $pk): Supertask {
     return self::fetchOne(Supertask::class, $pk);
   }
-
-  final protected static function getTask(int $pk): Task
-  {
+  
+  final protected static function getTask(int $pk): Task {
     return self::fetchOne(Task::class, $pk);
   }
-  final protected static function getTaskWrapper(int $pk): TaskWrapper
-  {
+  
+  final protected static function getTaskWrapper(int $pk): TaskWrapper {
     return self::fetchOne(TaskWrapper::class, $pk);
   }
-
-  final protected static function getUser(int $pk): User
-  {
+  
+  final protected static function getUser(int $pk): User {
     return self::fetchOne(User::class, $pk);
   }
   
@@ -329,15 +316,16 @@ abstract class AbstractBaseAPI
    * @throws NotFoundExceptionInterface
    */
   final protected function getObjectTypeName(mixed $obj): string {
-
+    
     $container = $this->container->get('classMapper');
-
+    
     if (is_string($obj)) {
       $apiClass = $this->container->get('classMapper')->get($obj);
-    } else {
+    }
+    else {
       $apiClass = $this->container->get('classMapper')->get(get_class($obj));
     }
-
+    
     /* Use the API class Name as type identifier written in camelCase*/
     return lcfirst(substr($apiClass, 0, -3));
   }
@@ -380,68 +368,73 @@ abstract class AbstractBaseAPI
       'userMembers' => [User::PERM_READ],
       'agentMembers' => [Agent::PERM_READ],
     );
-  
+    
     if (array_key_exists($expand, $expand_to_perm_mapping) === False) {
       throw new InternalError("Internal error: Expand type '$expand' has no permission mapping implemented in getExpandPermissions()!");
     }
     return $expand_to_perm_mapping[$expand];
   }
-
+  
   /**
    * Temporary mapping until src/inc/defines/accessControl.php permissions are no longer used
    */
   public static array $acl_mapping = array(
     DAccessControl::VIEW_HASHLIST_ACCESS[0] => array(Hashlist::PERM_READ),
     DAccessControl::MANAGE_HASHLIST_ACCESS => array(Hashlist::PERM_READ, Hashlist::PERM_UPDATE, Hashlist::PERM_DELETE,
-                                                    Hash::PERM_READ, Hash::PERM_UPDATE, Hash::PERM_DELETE),
+                                                    Hash::PERM_READ, Hash::PERM_UPDATE, Hash::PERM_DELETE
+    ),
     DAccessControl::CREATE_HASHLIST_ACCESS => array(Hashlist::PERM_CREATE, Hash::PERM_CREATE),
-
+    
     DAccessControl::CREATE_SUPERHASHLIST_ACCESS => array(HashlistHashlist::PERM_CREATE, HashlistHashlist::PERM_READ),
-
+    
     DAccessControl::VIEW_HASHES_ACCESS => array(Hash::PERM_READ),
     DAccessControl::VIEW_AGENT_ACCESS[0] => array(Agent::PERM_READ, Assignment::PERM_READ, AgentError::PERM_READ),
-
+    
     DAccessControl::MANAGE_AGENT_ACCESS => array(Agent::PERM_READ, Agent::PERM_UPDATE, Agent::PERM_DELETE,
-                                                // src/inc/defines/agents.php
-                                                AgentStat::PERM_CREATE, AgentStat::PERM_READ, AgentStat::PERM_UPDATE, AgentStat::PERM_DELETE,
-                                                Assignment::PERM_CREATE, Assignment::PERM_READ, Assignment::PERM_UPDATE, Assignment::PERM_DELETE,
-                                                AgentError::PERM_DELETE
-                                              
-                                              ),
-
+                                                 // src/inc/defines/agents.php
+                                                 AgentStat::PERM_CREATE, AgentStat::PERM_READ, AgentStat::PERM_UPDATE, AgentStat::PERM_DELETE,
+                                                 Assignment::PERM_CREATE, Assignment::PERM_READ, Assignment::PERM_UPDATE, Assignment::PERM_DELETE,
+                                                 AgentError::PERM_DELETE
+    
+    ),
+    
     DAccessControl::CREATE_AGENT_ACCESS => array(Agent::PERM_CREATE, Agent::PERM_READ,
-                                                // src/inc/defines/agents.php
-                                                RegVoucher::PERM_CREATE, RegVoucher::PERM_READ, RegVoucher::PERM_UPDATE, RegVoucher::PERM_DELETE),
-
+                                                 // src/inc/defines/agents.php
+                                                 RegVoucher::PERM_CREATE, RegVoucher::PERM_READ, RegVoucher::PERM_UPDATE, RegVoucher::PERM_DELETE
+    ),
+    
     DAccessControl::VIEW_TASK_ACCESS[0] => array(Task::PERM_READ, Speed::PERM_READ, Chunk::PERM_READ, FileTask::PERM_READ),
     DAccessControl::RUN_TASK_ACCESS[0] => array(Task::PERM_CREATE, FileTask::PERM_CREATE),
     DAccessControl::CREATE_TASK_ACCESS[0] => array(Task::PERM_CREATE, FileTask::PERM_CREATE,
-                                                  Task::PERM_READ, Chunk::PERM_READ, FileTask::PERM_READ,
-                                                  TaskWrapper::PERM_CREATE, TaskWrapper::PERM_READ),
+                                                   Task::PERM_READ, Chunk::PERM_READ, FileTask::PERM_READ,
+                                                   TaskWrapper::PERM_CREATE, TaskWrapper::PERM_READ
+    ),
     DAccessControl::MANAGE_TASK_ACCESS => array(Task::PERM_READ, Task::PERM_UPDATE, Task::PERM_DELETE,
                                                 Chunk::PERM_READ, Chunk::PERM_UPDATE, Chunk::PERM_DELETE,
                                                 // src/inc/defines/tasks.php
                                                 TaskWrapper::PERM_READ, TaskWrapper::PERM_UPDATE, TaskWrapper::PERM_DELETE,
-                                                FileTask::PERM_READ, FileTask::PERM_UPDATE, FileTask::PERM_DELETE),
-
+                                                FileTask::PERM_READ, FileTask::PERM_UPDATE, FileTask::PERM_DELETE
+    ),
+    
     DAccessControl::VIEW_PRETASK_ACCESS[0] => array(Pretask::PERM_READ, FilePretask::PERM_READ),
     DAccessControl::CREATE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_CREATE, FilePretask::PERM_CREATE),
     DAccessControl::MANAGE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_UPDATE, Pretask::PERM_DELETE, FilePretask::PERM_UPDATE, FilePretask::PERM_DELETE),
-
+    
     DAccessControl::VIEW_SUPERTASK_ACCESS[0] => array(Supertask::PERM_READ),
     DAccessControl::CREATE_SUPERTASK_ACCESS => array(Supertask::PERM_CREATE, Supertask::PERM_READ),
     DAccessControl::MANAGE_SUPERTASK_ACCESS => array(Supertask::PERM_READ, Supertask::PERM_UPDATE, Supertask::PERM_DELETE),
-
+    
     DAccessControl::VIEW_FILE_ACCESS[0] => array(File::PERM_READ),
     DAccessControl::MANAGE_FILE_ACCESS => array(File::PERM_READ, File::PERM_UPDATE, File::PERM_DELETE),
     DAccessControl::ADD_FILE_ACCESS => array(File::PERM_CREATE, File::PERM_READ),
-
-     // src/inc/defines/cracker.php
+    
+    // src/inc/defines/cracker.php
     DAccessControl::CRACKER_BINARY_ACCESS => array(CrackerBinary::PERM_CREATE, CrackerBinary::PERM_READ, CrackerBinary::PERM_UPDATE, CrackerBinary::PERM_DELETE,
                                                    CrackerBinaryType::PERM_CREATE, CrackerBinaryType::PERM_READ, CrackerBinaryType::PERM_UPDATE, CrackerBinaryType::PERM_DELETE,
                                                    // src/inc/defines/agents.php
-                                                   AgentBinary::PERM_CREATE, AgentBinary::PERM_READ, AgentBinary::PERM_UPDATE, AgentBinary::PERM_DELETE),
-
+                                                   AgentBinary::PERM_CREATE, AgentBinary::PERM_READ, AgentBinary::PERM_UPDATE, AgentBinary::PERM_DELETE
+    ),
+    
     DAccessControl::SERVER_CONFIG_ACCESS => array(Config::PERM_CREATE, Config::PERM_READ, Config::PERM_UPDATE, Config::PERM_DELETE,
                                                   ConfigSection::PERM_CREATE, ConfigSection::PERM_READ, ConfigSection::PERM_UPDATE, ConfigSection::PERM_DELETE,
                                                   // src/inc/defines/preprocessor.php
@@ -450,26 +443,28 @@ abstract class AbstractBaseAPI
                                                   HealthCheck::PERM_CREATE, HealthCheck::PERM_READ, HealthCheck::PERM_UPDATE, HealthCheck::PERM_DELETE,
                                                   HealthCheckAgent::PERM_CREATE, HealthCheckAgent::PERM_READ, HealthCheckAgent::PERM_UPDATE, HealthCheckAgent::PERM_DELETE,
                                                   // src/inc/defines/hashlists.php
-                                                  HashType::PERM_CREATE, HashType::PERM_READ, HashType::PERM_UPDATE, HashType::PERM_DELETE),
-
+                                                  HashType::PERM_CREATE, HashType::PERM_READ, HashType::PERM_UPDATE, HashType::PERM_DELETE
+    ),
+    
     DAccessControl::USER_CONFIG_ACCESS => array(User::PERM_CREATE, User::PERM_READ, User::PERM_UPDATE, User::PERM_DELETE, RightGroup::PERM_CREATE, RightGroup::PERM_READ, RightGroup::PERM_UPDATE, RightGroup::PERM_DELETE),
-
+    
     DAccessControl::MANAGE_ACCESS_GROUP_ACCESS => array(AccessGroup::PERM_CREATE, AccessGroup::PERM_READ, AccessGroup::PERM_UPDATE, AccessGroup::PERM_DELETE),
-
+    
     // src/inc/defines/accessControl.php
     DAccessControl::PUBLIC_ACCESS => array(LogEntry::PERM_READ),
-
+    
     // src/inc/defines/notifications.php
     DAccessControl::LOGIN_ACCESS => array(NotificationSetting::PERM_CREATE, NotificationSetting::PERM_READ, NotificationSetting::PERM_UPDATE, NotificationSetting::PERM_DELETE, LogEntry::PERM_CREATE, LogEntry::PERM_DELETE, LogEntry::PERM_UPDATE),
   );
-
+  
   /**
    * Convert Database value to JSON object value
    */
   protected static function db2json(array $feature, mixed $val): mixed {
     if ($feature['type'] == 'bool') {
       $obj = $val == "1";
-    } elseif ($feature['type'] == 'dict') {
+    }
+    elseif ($feature['type'] == 'dict') {
       $obj = json_decode($val, true, 512, JSON_OBJECT_AS_ARRAY);
       // During encoding of the data, the data is saved as an empty array
       // An empty array is something different in json and in python.
@@ -478,9 +473,11 @@ abstract class AbstractBaseAPI
       if (empty($obj)) {
         $obj = (object)[];
       }
-    } elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
+    }
+    elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
       $obj = array_map('intval', preg_split("/,/", $val, -1, PREG_SPLIT_NO_EMPTY));
-    } elseif (str_starts_with($feature['type'], 'str') && $val !== null) {
+    }
+    elseif (str_starts_with($feature['type'], 'str') && $val !== null) {
       $obj = html_entity_decode($val, ENT_COMPAT, "UTF-8");
     }
     else {
@@ -489,29 +486,35 @@ abstract class AbstractBaseAPI
     }
     return $obj;
   }
-
+  
   /**
    * Convert JSON object value to DB insert value, supported by DBA
    */
   protected static function json2db(array $feature, mixed $obj): ?string {
-    if($feature['null'] && is_null($obj)) {
+    if ($feature['null'] && is_null($obj)) {
       return null;
-    } elseif ($feature['type'] == 'bool') {
+    }
+    elseif ($feature['type'] == 'bool') {
       $val = ($obj) ? "1" : "0";
-    } elseif ($feature['type'] == 'int' && is_null($obj)){
+    }
+    elseif ($feature['type'] == 'int' && is_null($obj)) {
       $val = $obj;
-    } elseif (str_starts_with($feature['type'], 'str')) {
+    }
+    elseif (str_starts_with($feature['type'], 'str')) {
       $val = htmlentities($obj, ENT_QUOTES, "UTF-8");
-    } elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
+    }
+    elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
       $val = implode(",", $obj);
-    } elseif ($feature['type'] == 'dict' && $feature['subtype'] == 'bool') {
+    }
+    elseif ($feature['type'] == 'dict' && $feature['subtype'] == 'bool') {
       $val = serialize($obj);
-    } else {
+    }
+    else {
       $val = strval($obj);
     }
     return $val;
   }
-
+  
   /**
    * Convert JSON object value to DB insert value, supported by DBA
    * @throws NotFoundExceptionInterface
@@ -521,13 +524,13 @@ abstract class AbstractBaseAPI
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
-
+    
     $item = [];
-
+    
     $apiClass = $this->container->get('classMapper')->get(get_class($obj));
     $item['_id'] = $obj->getId();
     $item['_self'] = $this->routeParser->urlFor($apiClass . ':getOne', ['id' => $item['_id']]);
-
+    
     foreach ($features as $name => $feature) {
       // If a attribute is set to private, it should be hidden and not returned.
       // Example of this is the password hash.
@@ -538,7 +541,7 @@ abstract class AbstractBaseAPI
     }
     return $item;
   }
-
+  
   /**
    * Convert DB object JSON:API Resource Object
    * @throws NotFoundExceptionInterface
@@ -548,13 +551,13 @@ abstract class AbstractBaseAPI
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
-
+    
     $apiClass = $this->container->get('classMapper')->get(get_class($obj));
     $linkSelf = $this->routeParser->urlFor($apiClass . ':getOne', ['id' => $obj->getId()]);
-
+    
     $attributes = [];
     $relationships = [];
-
+    
     /* Collect attributes */
     foreach ($features as $name => $feature) {
       // If a attribute is set to private, it should be hidden and not returned.
@@ -567,54 +570,54 @@ abstract class AbstractBaseAPI
         continue;
       }
       
-      if (is_array($this->publicAttributeFilterClasses) && in_array($obj::class, $this->publicAttributeFilterClasses) && $feature['public'] !== true){
+      if (is_array($this->publicAttributeFilterClasses) && in_array($obj::class, $this->publicAttributeFilterClasses) && $feature['public'] !== true) {
         continue;
       }
       
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
-
+    
     //TODO: only aggregate data when it has been included
     $aggregatedData = $apiClass::aggregateData($obj);
     $attributes = array_merge($attributes, $aggregatedData);
-
+    
     /* Build JSON::API relationship resource */
     $toManyRelationships = $apiClass::getToManyRelationships();
     $toOneRelationships = $apiClass::getToOneRelationships();
-
+    
     $relationshipsNames = array_merge(array_keys($toOneRelationships), array_keys($toManyRelationships));
     sort($relationshipsNames);
     foreach ($relationshipsNames as $relationshipName) {
       $relationships[$relationshipName] = [
-        "links"  => [
+        "links" => [
           "self" => $linkSelf . "/relationships/" . $relationshipName,
           "related" => $linkSelf . "/" . $relationshipName,
         ]
       ];
     }
-
+    
     /* Generate to-many relationships entries */
     foreach ($toManyRelationships as $relationshipName => $toManyRelationship) {
       // Build (optional) compound document resource linkage
       if (array_key_exists($relationshipName, $expandResult)) {
         $relationships[$relationshipName]["data"] = [];
-
+        
         // Empty to-many relationship
         if (array_key_exists($obj->getId(), $expandResult[$relationshipName]) === false) {
           continue;
         }
-
+        
         // Fetch to-many-objects
         $expandObjects = $expandResult[$relationshipName][$obj->getId()];
-        foreach($expandObjects as $relationObject) {
+        foreach ($expandObjects as $relationObject) {
           $relationships[$relationshipName]["data"][] = [
-              "type" => $this->getObjectTypeName($relationObject),
-              "id" => $relationObject->getId()
+            "type" => $this->getObjectTypeName($relationObject),
+            "id" => $relationObject->getId()
           ];
         }
       }
     }
-
+    
     /* Generate to-one relationships entries */
     foreach ($toOneRelationships as $relationshipName => $toOneRelationship) {
       // Build (optional) compound document resource linkage
@@ -624,18 +627,18 @@ abstract class AbstractBaseAPI
           $relationships[$relationshipName]["data"] = null;
           continue;
         }
-
+        
         // Fetch to-one-objects
         $expandObject = $expandResult[$relationshipName][$obj->getId()];
-
+        
         $relationships[$relationshipName]["data"] = [
-            "type" => $this->getObjectTypeName($expandObject),
-            "id" => $expandObject->getId()
+          "type" => $this->getObjectTypeName($expandObject),
+          "id" => $expandObject->getId()
         ];
       }
     }
-
-
+    
+    
     $newObject = [
       "type" => $this->getObjectTypeName($obj),
       "id" => $obj->getId(),
@@ -644,14 +647,14 @@ abstract class AbstractBaseAPI
         "self" => $linkSelf,
       ],
     ];
-
+    
     if (sizeof($relationships) > 0) {
       $newObject['relationships'] = $relationships;
     }
-
+    
     return $newObject;
   }
-
+  
   /**
    * Quick to resolve objects via ManyToMany relation table
    * @throws NotFoundExceptionInterface
@@ -660,14 +663,14 @@ abstract class AbstractBaseAPI
   protected function joinQuery(mixed $objFactory, DBA\QueryFilter $qF, DBA\JoinFilter $jF): array {
     $joined = $objFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     $objects = $joined[$objFactory->getModelName()];
-
+    
     $ret = [];
     foreach ($objects as $object) {
       $ret[] = $this->obj2Array($object);
     }
     return $ret;
   }
-
+  
   /**
    * Quick to resolve objects via ForeignKey relation table
    * @throws NotFoundExceptionInterface
@@ -675,7 +678,7 @@ abstract class AbstractBaseAPI
    */
   protected function filterQuery(mixed $objFactory, DBA\QueryFilter $qF): array {
     $objects = $objFactory->filter([Factory::FILTER => $qF]);
-
+    
     $ret = [];
     foreach ($objects as $object) {
       $ret[] = $this->obj2Array($object);
@@ -698,18 +701,21 @@ abstract class AbstractBaseAPI
         $newObject[$expand] = [];
         continue;
       }
-
+      
       $expandObject = $expandResult[$expand][$object->getId()];
       if (is_array($expandObject)) {
-        $newObject[$expand] = array_map(function($object) { return $this->obj2Array($object); }, $expandObject);
-      } else {
+        $newObject[$expand] = array_map(function ($object) {
+          return $this->obj2Array($object);
+        }, $expandObject);
+      }
+      else {
         $newObject[$expand] = $this->obj2Array($expandObject);
       }
     }
-
+    
     /* Ensure sorted, for easy debugging of fields */
     ksort($newObject);
-
+    
     return $newObject;
   }
   
@@ -718,14 +724,13 @@ abstract class AbstractBaseAPI
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function object2Array(object $object, array $expands = []): array
-  {
+  protected function object2Array(object $object, array $expands = []): array {
     $expandResult = [];
     foreach ($expands as $expand) {
       $apiClass = $this->container->get('classMapper')->get(get_class($object));
       $expandResult[$expand] = $apiClass::fetchExpandObjects([$object], $expand);
-      }
-
+    }
+    
     return $this->applyExpansions($object, $expands, $expandResult);
   }
   
@@ -745,12 +750,11 @@ abstract class AbstractBaseAPI
    * @throws JsonException
    * @throws NotFoundExceptionInterface
    */
-  protected function object2JSON(object $object): string
-  {
+  protected function object2JSON(object $object): string {
     $item = $this->object2Array($object, []);
     return $this->ret2json($item);
   }
-
+  
   /**
    * Convert incoming (JSON) data to DB values
    */
@@ -776,7 +780,7 @@ abstract class AbstractBaseAPI
     if (!array_key_exists($key, $features)) {
       throw new HttpError("Key '$key' does not exists!");
     }
-
+    
     if ($features[$key]['read_only']) {
       throw new HttpForbidden("Key '$key' is immutable");
     }
@@ -799,20 +803,22 @@ abstract class AbstractBaseAPI
         if (is_null($value)) {
           throw new HttpError("Key '$key' cannot be null.");
         }
-      } else {
+      }
+      else {
         if (is_null($value)) {
           // Key can be null and is null, so skip type checking.
           continue;
         }
       }
-
+      
       // Perform type mapping
       if ($features[$key]['type'] == 'bool') {
         if (!is_bool($value)) {
           throw new HttpError("Key '$key' is not of type boolean");
         }
         // Int
-      } elseif (str_starts_with($features[$key]['type'], 'int')) {
+      }
+      elseif (str_starts_with($features[$key]['type'], 'int')) {
         if (!is_integer($value)) {
           throw new HttpError("Key '$key' is not of type integer");
         }
@@ -821,19 +827,21 @@ abstract class AbstractBaseAPI
           throw new HttpError("The value exceeds the limit for a {$features[$key]['type']} integer.");
         }
         // Str
-      } elseif (str_starts_with($features[$key]['type'], 'str')) {
+      }
+      elseif (str_starts_with($features[$key]['type'], 'str')) {
         if (!is_string($value)) {
           throw new HttpError("Key '$key' is not of type string");
         }
         if (preg_match('/str\((\d+)\)/', $features[$key]['type'], $matches)) {
-          $max_string_len = (int) $matches[1];
+          $max_string_len = (int)$matches[1];
           if (strlen($value) > $max_string_len) {
             throw new HttpError("The string value: '$value' is too long. The max size is '$max_string_len'");
           }
         }
         // TODO: Length validation
         // Array
-      } elseif (str_starts_with($features[$key]['type'], 'array')) {
+      }
+      elseif (str_starts_with($features[$key]['type'], 'array')) {
         if (!is_array($value)) {
           throw new HttpError("Key '$key' is not of type array");
         }
@@ -844,7 +852,8 @@ abstract class AbstractBaseAPI
           }
         }
         // Dict
-      } elseif (str_starts_with($features[$key]['type'], 'dict')) {
+      }
+      elseif (str_starts_with($features[$key]['type'], 'dict')) {
         if (!is_array($value)) {
           throw new HttpError("Key '$key' is not of type dict");
         }
@@ -854,22 +863,24 @@ abstract class AbstractBaseAPI
             throw new HttpError("Key '$key' dict contains non-boolean values");
           }
         }
-      } else {
+      }
+      else {
         throw new HttpError("Typemapping error for key '$key' ");
       }
-
+      
       // Validate values limited by choices
       if (is_array($features[$key]['choices'])) {
         if (!array_key_exists($value, $features[$key]['choices'])) {
           throw new HttpError("Key '$key' value is not valid, choices=[" .
-                                       join(",", array_keys($features[$key]['choices'])) .
-                                       "], choices_details=['" .
-                                       join("', '", array_values($features[$key]['choices'])) . "']");
+            join(",", array_keys($features[$key]['choices'])) .
+            "], choices_details=['" .
+            join("', '", array_values($features[$key]['choices'])) . "']"
+          );
         }
       }
     }
   }
-
+  
   //function for automatic swagger doc generation
   function getAllPostParameters(array $features): array {
     return array_filter($features, function ($value) {
@@ -886,7 +897,7 @@ abstract class AbstractBaseAPI
     $validFeatures = [];
     // Features which MUST be present
     $requiredFeatures = [];
-    foreach($allFeatures as $key => $value) {
+    foreach ($allFeatures as $key => $value) {
       if (!$value['protected'] and !$value['private']) {
         $validFeatures[] = $key;
       }
@@ -894,7 +905,7 @@ abstract class AbstractBaseAPI
         $requiredFeatures[] = $key;
       }
     }
-
+    
     // Find keys which are invalid
     $invalidKeys = array_diff(array_keys($data), $validFeatures);
     if (sizeof($invalidKeys) > 0) {
@@ -902,15 +913,16 @@ abstract class AbstractBaseAPI
       ksort($invalidKeys);
       ksort($validFeatures);
       throw new HttpError("Parameter(s) '" . join(", ", $invalidKeys) . "' not valid input " .
-                            "(valid key(s) : '" . join(", ", $validFeatures) . ")'", 403);
+        "(valid key(s) : '" . join(", ", $validFeatures) . ")'", 403
+      );
     }
-
+    
     // Find out about mandatory parameters which are not provided
     $missingKeys = array_diff($requiredFeatures, array_keys($data));
     if (count($missingKeys) > 0) {
       // Ensure debugging response lists are in sorted order
       ksort($missingKeys);
-      throw new HttpError("Required parameter(s) '" .  join(", ", $missingKeys) . "' not specified");
+      throw new HttpError("Required parameter(s) '" . join(", ", $missingKeys) . "' not specified");
     }
   }
   
@@ -924,27 +936,27 @@ abstract class AbstractBaseAPI
   protected function makeExpandables(Request $request, array $validExpandables): array {
     $data = $request->getParsedBody();
     $queryExpands = (array_key_exists('include', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['include']) : [];
-
+    
     foreach ($queryExpands as $expand) {
       if (!in_array($expand, $validExpandables)) {
         throw new HttpError("Parameter '" . $expand . "' is not valid expand key (valid keys are: " . join(", ", array_values($validExpandables)) . ")");
       }
     }
-
+    
     /* Validate expand parameters for required permissions */
     $required_perms = [];
     $permsExpandMatching = [];
     foreach ($queryExpands as $expand) {
-        $expandedPerms = self::getExpandPermissions($expand);
-        foreach($expandedPerms as $expandedPerm) {
-          if (!isset($permsExpandMatching[$expandedPerm])){
-            $permsExpandMatching[$expandedPerm] = [$expand];
-          }
-          else{
-            $permsExpandMatching[$expandedPerm][] = $expand;
-          }
+      $expandedPerms = self::getExpandPermissions($expand);
+      foreach ($expandedPerms as $expandedPerm) {
+        if (!isset($permsExpandMatching[$expandedPerm])) {
+          $permsExpandMatching[$expandedPerm] = [$expand];
         }
-        array_push($required_perms, ...$expandedPerms);
+        else {
+          $permsExpandMatching[$expandedPerm][] = $expand;
+        }
+      }
+      array_push($required_perms, ...$expandedPerms);
     }
     $permissionResponse = $this->validatePermissions($required_perms, $permsExpandMatching);
     if ($permissionResponse === FALSE) {
@@ -960,14 +972,14 @@ abstract class AbstractBaseAPI
   protected function getPrimaryKey(): string {
     $features = $this->getFeatures();
     # Work-around required since getPrimaryKey is not static in dba/models/*.php
-    foreach($features as $key => $value) {
+    foreach ($features as $key => $value) {
       if ($value['pk']) {
         return $key;
       }
     }
     throw new InternalError("Internal error: no primary key found");
   }
-
+  
   function getFilters(Request $request): array {
     return $this->getQueryParameterFamily($request, 'filter');
   }
@@ -982,23 +994,23 @@ abstract class AbstractBaseAPI
     $features = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
     foreach ($filters as $filter => $value) {
-
+      
       if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith|__in|__nin)$/', $filter, $matches) == 0) {
         throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid");
       }
-
+      
       // Special filtering of _id to use for uniform access to model primary key
       $cast_key = $matches['key'] == '_id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
       
       if (!array_key_exists($cast_key, $features)) {
         throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid (key not valid field)");
       };
-
+      
       $valueList = explode(",", $value);
- 
+      
       // TODO Merge/Combine with validate parameters 
-      foreach($valueList as &$value) {
-        switch($features[$cast_key]['type']) {
+      foreach ($valueList as &$value) {
+        switch ($features[$cast_key]['type']) {
           case 'bool':
             $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
             if (is_null($value)) {
@@ -1013,15 +1025,15 @@ abstract class AbstractBaseAPI
         }
       }
       unset($value);
-
+      
       // We need to remap any aliased key to the key as it appears in the database.
       $remappedKey = $features[$cast_key]['dbname'];
-
+      
       $amount_values = count($valueList);
       $single_val = $valueList[0];
       $operator = $matches['operator'];
       $query_operator = "";
-      switch(true) {
+      switch (true) {
         case (($operator == '__eq' | $operator == '') && $amount_values == 1):
           $query_operator = '=';
           break;
@@ -1068,11 +1080,12 @@ abstract class AbstractBaseAPI
         default:
           assert(False, "Operator '" . $operator . "' not implemented");
       }
-
+      
       if ($query_operator) {
         if (array_key_exists($single_val, $features)) {
           $qFs[] = new ComparisonFilter($remappedKey, $single_val, $query_operator, $factory);
-        } else {
+        }
+        else {
           $qFs[] = new QueryFilter($remappedKey, $single_val, $query_operator, $factory);
         }
       }
@@ -1088,7 +1101,7 @@ abstract class AbstractBaseAPI
    */
   protected function makeOrderFilterTemplates(Request $request, array $features, $defaultSort = 'ASC'): array {
     $orderTemplates = [];
-
+    
     $orderings = $this->getQueryParameterAsList($request, 'sort');
     $contains_primary_key = false;
     foreach ($orderings as $order) {
@@ -1101,19 +1114,21 @@ abstract class AbstractBaseAPI
         if (array_key_exists($cast_key, $features)) {
           $remappedKey = $features[$cast_key]['dbname'];
           $orderTemplates[] = ['by' => $remappedKey, 'type' => ($matches['operator'] == '-') ? "DESC" : "ASC"];
-        } else {
+        }
+        else {
           throw new HttpForbidden("Ordering parameter '" . $order . "' is not valid");
         }
-      } else {
+      }
+      else {
         throw new HttpForbidden("Ordering parameter '" . $order . "' is not valid");
       }
     }
-
+    
     //when no primary key has been added in the sort parameter, add the default case of sorting on primary key as last sort
     if (!$contains_primary_key) {
       $orderTemplates[] = ['by' => $this->getPrimaryKey(), 'type' => $defaultSort];
     }
-
+    
     return $orderTemplates;
   }
   
@@ -1123,24 +1138,25 @@ abstract class AbstractBaseAPI
    * @throws HttpForbidden
    * @throws ResourceNotFoundError
    */
-  protected function validateHashlistAccess(Request $request, User $user, String $hashlistId): Hashlist {
+  protected function validateHashlistAccess(Request $request, User $user, string $hashlistId): Hashlist {
     // TODO: Fix permissions
     if (!AccessControl::getInstance($user)->hasPermission(DAccessControl::MANAGE_HASHLIST_ACCESS)) {
       throw new HttpForbidden("No '" . DAccessControl::getDescription(DAccessControl::MANAGE_HASHLIST_ACCESS) . "' permission");
     }
-
+    
     try {
       $hashlist = HashlistUtils::getHashlist($hashlistId);
-    } catch (HTException $ex) {
+    }
+    catch (HTException $ex) {
       throw new ResourceNotFoundError($ex->getMessage());
     }
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HttpForbidden("No access to hashlist!");
     }
-
+    
     return $hashlist;
   }
-
+  
   /**
    * Validate permissions
    */
@@ -1151,30 +1167,31 @@ abstract class AbstractBaseAPI
     if ($group->getPermissions() == 'ALL') {
       // Special (legacy) case for administrative access, enable all available permissions
       $all_perms = array_keys(self::$acl_mapping);
-      $rightgroup_perms = array_combine($all_perms, array_fill(0,count($all_perms), true));
-    } else {
+      $rightgroup_perms = array_combine($all_perms, array_fill(0, count($all_perms), true));
+    }
+    else {
       $rightgroup_perms = json_decode($group->getPermissions(), true);
     }
-
+    
     // Validate if no undefined permissions are set in $acl_mapping
     assert(count(array_diff(array_keys($rightgroup_perms), array_keys(self::$acl_mapping))) == 0);
-
+    
     // Create listing of available permissions for user
     $user_available_perms = array();
-    foreach($rightgroup_perms as $rightgroup_perm => $permission_set) {
+    foreach ($rightgroup_perms as $rightgroup_perm => $permission_set) {
       if ($permission_set) {
         $user_available_perms = array_unique(array_merge($user_available_perms, self::$acl_mapping[$rightgroup_perm]));
       }
     };
-
+    
     // Sort to display values in a unified format for user and debugging
     sort($required_perms);
     sort($user_available_perms);
-
+    
     // Find if all permissions are matched
     $missing_permissions = array_diff($required_perms, $user_available_perms);
     if (count($missing_permissions) > 0) {
-      if($this instanceof AbstractModelAPI) {
+      if ($this instanceof AbstractModelAPI) {
         $features = $this->getFeatures();
         foreach ($features as $key => $arr) {
           if ($arr['public']) {
@@ -1215,19 +1232,20 @@ abstract class AbstractBaseAPI
           return TRUE;
         }
       }
-      $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" .join(", ", $required_perms). "', user_permissions='" . join(", ", $user_available_perms) . "']");
+      $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" . join(", ", $required_perms) . "', user_permissions='" . join(", ", $user_available_perms) . "']");
       return FALSE;
-    } else {
+    }
+    else {
       $this->permissionErrors = array();
       return TRUE;
     }
   }
   
   protected function addPublicAttributeClass($class): void {
-    if(!is_array($this->publicAttributeFilterClasses)){
+    if (!is_array($this->publicAttributeFilterClasses)) {
       $this->publicAttributeFilterClasses = [];
     }
-    if(!in_array($class, $this->publicAttributeFilterClasses)){
+    if (!in_array($class, $this->publicAttributeFilterClasses)) {
       $this->publicAttributeFilterClasses[] = $class;
     }
   }
@@ -1237,11 +1255,10 @@ abstract class AbstractBaseAPI
    * @throws HTException
    * @throws HttpForbidden
    */
-  protected function preCommon(Request $request): void
-  {
+  protected function preCommon(Request $request): void {
     $userId = $request->getAttribute(('userId'));
     $this->user = UserUtils::getUser($userId);
-
+    
     # 'Initiate' AccessControl class, by requesting instance with parameter of logged-in user.
     # This will cause the AccessControl class to initiate it's static 'instance' parameter,
     # which is in turn used at later stages (e.g. src/inc/utils/NotificationUtils.class.php) to
@@ -1250,30 +1267,32 @@ abstract class AbstractBaseAPI
     # At some point we might want to remove this strange behaviour always pass the $user object
     # to the AccessControl class when requested. 
     AccessControl::getInstance($this->user);
-
+    
     $routeContext = RouteContext::fromRequest($request);
     $this->routeParser = $routeContext->getRouteParser();
     
     try {
       $required_perms = $this->getRequiredPermissions($request->getMethod());
-    } catch (HTException $e) {
+    }
+    catch (HTException $e) {
       # Annotate error message, with suitable candidates
       throw new HttpForbidden($e->getMessage() .
-                            "(valid methods are for model are: " . join(",", $this->getAvailableMethods()) . ")");
+        "(valid methods are for model are: " . join(",", $this->getAvailableMethods()) . ")"
+      );
     }
     
     if ($this->validatePermissions($required_perms) === FALSE) {
       throw new HttpForbidden(join('||', $this->permissionErrors));
     }
   }
-
+  
   /* 
    * Return requested parameter, prioritize query parameter over inline payload parameter 
    */
   protected function getParam(Request $request, string $param, int $default): int {
     $queryParams = $request->getQueryParams();
     $bodyParams = $request->getParsedBody();
-
+    
     // Check query parameters and make sure it is an array
     if (array_key_exists($param, $queryParams)) {
       return intval($queryParams[$param]);
@@ -1281,22 +1300,24 @@ abstract class AbstractBaseAPI
     // Check body parameters and make sure it is an array
     elseif (is_array($bodyParams) && array_key_exists($param, $bodyParams)) {
       return intval($bodyParams[$param]);
-    // Return default value if parameter not found
-    } else {
+      // Return default value if parameter not found
+    }
+    else {
       return $default;
     }
   }
-
+  
   protected function getQueryParameterAsList(Request $request, string $name): array {
     $queryParams = $request->getQueryParams();
     if (array_key_exists($name, $queryParams)) {
       return preg_split("/[,\ ]+/", $queryParams[$name]);
-    } else {
+    }
+    else {
       return [];
     }
   }
-
-
+  
+  
   /* 
    * Return requested parameter, prioritize query parameter over inline payload parameter 
    */
@@ -1306,11 +1327,11 @@ abstract class AbstractBaseAPI
     if (array_key_exists($family, $queryParams) && array_key_exists($member, $queryParams[$family])) {
       return $queryParams[$family][$member];
     }
-
+    
     return null;
   }
-
-
+  
+  
   /* 
    * Return requested parameter, prioritize query parameter over inline payload parameter 
    */
@@ -1321,73 +1342,74 @@ abstract class AbstractBaseAPI
       // TODO: Enhance validation
       return $queryParams[$family];
     }
-
+    
     return $retval;
   }
-
+  
   static function createJsonResponse(array $data = [], array $links = [], array $included = [], array $meta = []): array {
     $response = [
-        "jsonapi" => [
-          "version" => "1.1",
-          "ext" => [
-            "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
-          ],
+      "jsonapi" => [
+        "version" => "1.1",
+        "ext" => [
+          "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
         ],
+      ],
     ];
     
     if (!empty($links)) {
       $response["links"] = $links;
     }
-
-    if(!empty($meta)) {
+    
+    if (!empty($meta)) {
       $response["meta"] = $meta;
     }
-
+    
     $response["data"] = $data;
-
+    
     if (!empty($included)) {
       $response["included"] = $included;
     }
-
+    
     return $response;
-}
-
-   /**
+  }
+  
+  /**
    * Get single Resource
    */
-  protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode=200): Response {
+  protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode = 200): Response {
     $apiClass->preCommon($request);
-
+    
     $validExpandables = $apiClass->getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);
-   
+    
     $objects = [$object];
-
+    
     /* Resolve all expandables */
     $expandResult = [];
     foreach ($expands as $expand) {
       // mapping from $objectId -> result objects in
       $expandResult[$expand] = $apiClass->fetchExpandObjects($objects, $expand);
     }
-
+    
     /* Convert objects to JSON:API */
     $dataResources = [];
     $includedResources = [];
-
+    
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object
       $newObject = $apiClass->obj2Resource($object, $expandResult);
-
+      
       // For compound document, included resources
       foreach ($expands as $expand) {
         if (array_key_exists($object->getId(), $expandResult[$expand])) {
           $expandResultObject = $expandResult[$expand][$object->getId()];
           if (is_array($expandResultObject)) {
-            foreach($expandResultObject as $expandObject) {
+            foreach ($expandResultObject as $expandObject) {
               $includedResources[] = $apiClass->obj2Resource($expandObject);
             }
-          } else {
+          }
+          else {
             if ($expandResultObject === null) {
               // to-only relation which is nullable
               continue;
@@ -1396,7 +1418,7 @@ abstract class AbstractBaseAPI
           }
         }
       }
-
+      
       // Add to result output
       $dataResources[] = $newObject;
     }
@@ -1404,35 +1426,35 @@ abstract class AbstractBaseAPI
     $selfParams = $request->getQueryParams();
     $linksQuery = urldecode(http_build_query($selfParams));
     
-    $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' .  $linksQuery : '');
+    $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' . $linksQuery : '');
     $links = ["self" => $linksSelf];
-
+    
     // Generate JSON:API GET output
     $ret = self::createJsonResponse($dataResources[0], $links, $includedResources);
-
+    
     $body = $response->getBody();
     $body->write($apiClass->ret2json($ret));
-
+    
     return $response->withStatus($statusCode)
       ->withHeader("Content-Type", "application/vnd.api+json")
       ->withHeader("Location", $dataResources[0]["links"]["self"]);
-      //for location we use links value from $dataresources because if we use $linksSelf, the wrong location gets returned in
-      //case of a POST request
+    //for location we use links value from $dataresources because if we use $linksSelf, the wrong location gets returned in
+    //case of a POST request
   }
-
+  
   //Meta response for helper functions that do not respond with resource records
   
   /**
    * @throws JsonException
    */
-  protected static function getMetaResponse(array $meta, Request $request, Response $response, int $statusCode=200): MessageInterface|Response {
+  protected static function getMetaResponse(array $meta, Request $request, Response $response, int $statusCode = 200): MessageInterface|Response {
     $ret = self::createJsonResponse(meta: $meta);
     $body = $response->getBody();
     $body->write(self::ret2json($ret));
-
+    
     return $response->withStatus($statusCode)->withHeader("Content-Type", "application/vnd.api+json");
   }
-
+  
   /**
    * Override-able activated methods
    */
