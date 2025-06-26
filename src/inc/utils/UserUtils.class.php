@@ -177,9 +177,13 @@ class UserUtils {
    * @param string $email
    * @param int $rightGroupId
    * @param User $adminUser
+   * @param bool $isValid
+   * @return User
+   * @throws HTException
+   * @throws HttpConflict
    * @throws HttpError
    */
-  public static function createUser($username, $email, $rightGroupId, $adminUser) {
+  public static function createUser(string $username, string $email, int $rightGroupId, User $adminUser, bool $isValid = true): User {
     $username = htmlentities($username, ENT_QUOTES, "UTF-8");
     $group = AccessControlUtils::getGroup($rightGroupId);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) == 0) {
@@ -199,7 +203,7 @@ class UserUtils {
     $newPass = Util::randomString(10);
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPass, $newSalt);
-    $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
+    $user = new User(null, $username, $email, $newHash, $newSalt, $isValid ? 1: 0, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
     Factory::getUserFactory()->save($user);
     
     // add user to default group
@@ -207,14 +211,18 @@ class UserUtils {
     $groupMember = new AccessGroupUser(null, $group->getId(), $user->getId());
     Factory::getAccessGroupUserFactory()->save($groupMember);
     
+    // send email with generated password to user email
     $tmpl = new Template("email/creation");
     $tmplPlain = new Template("email/creation.plain");
     $obj = array('username' => $username, 'password' => $newPass, 'url' => Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL));
     Util::sendMail($email, "Account at " . APP_NAME, $tmpl->render($obj), $tmplPlain->render($obj));
     
+    // create log entry and check if notification sending is needed
     Util::createLogEntry("User", $adminUser->getId(), DLogEntry::INFO, "New User created: " . $user->getUsername());
     $payload = new DataSet(array(DPayloadKeys::USER => $user));
     NotificationHandler::checkNotifications(DNotificationType::USER_CREATED, $payload);
+    
+    return $user;
   }
   
   /**

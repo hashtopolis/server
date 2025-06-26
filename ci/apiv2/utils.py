@@ -189,6 +189,7 @@ def do_create_user(global_permission_group_id=1):
         name=f'test-{stamp}',
         email='test@example.com',
         globalPermissionGroupId=global_permission_group_id,
+        isValid=True,
     )
     obj = User(**payload)
     obj.save()
