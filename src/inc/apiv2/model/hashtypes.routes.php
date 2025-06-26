@@ -12,8 +12,11 @@ class HashTypeAPI extends AbstractModelAPI {
     public static function getDBAclass(): string {
       return HashType::class;
     }
-
-    protected function createObject(array $data): int {
+  
+  /**
+   * @throws HTException
+   */
+  protected function createObject(array $data): int {
       HashtypeUtils::addHashtype(
         $data[HashType::HASH_TYPE_ID],
         $data[HashType::DESCRIPTION],
@@ -24,8 +27,11 @@ class HashTypeAPI extends AbstractModelAPI {
 
       return $data[HashType::HASH_TYPE_ID];
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       HashtypeUtils::deleteHashtype($object->getId());
     }
 }

@@ -11,6 +11,7 @@ use DBA\QueryFilter;
 use DBA\Task;
 use DBA\TaskWrapper;
 use DBA\User;
+use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -96,9 +97,8 @@ class TaskWrapperAPI extends AbstractModelAPI {
     }
 
 
-    protected function createObject(array $data): int {
+    #[NoReturn] protected function createObject(array $data): int {
       assert(False, "TaskWrappers cannot be created via API");
-      return -1;
     }
 
     protected function getUpdateHandlers($id, $current_user): array {
@@ -106,8 +106,11 @@ class TaskWrapperAPI extends AbstractModelAPI {
         Taskwrapper::PRIORITY => fn ($value) => TaskwrapperUtils::updatePriority($id, $value, $current_user),
       ];
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       switch ($object->getTaskType()) {
         case DTaskTypes::NORMAL:
           $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $object->getId(), "=", Factory::getTaskWrapperFactory());

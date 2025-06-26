@@ -39,31 +39,37 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
 
     function getAllPostParameters(array $features): array {
 
-      //for documentation purposes isChunkingAVailable has to be removed
-      // because it is currently not setable by the user
+      //for documentation purposes isChunkingAvailable has to be removed
+      // because it is currently not settable by the user
       $features = parent::getAllPostParameters($features);
       unset($features[CrackerBinaryType::IS_CHUNKING_AVAILABLE]);
       return $features;
     }
   
-    protected function createObject(array $data): int {
+  /**
+   * @throws HTException
+   */
+  protected function createObject(array $data): int {
       CrackerUtils::createBinaryType($data[CrackerBinaryType::TYPE_NAME]);
 
-      /* On succesfully insert, return ID */
+      /* On successfully insert, return ID */
       $qFs = [
         new QueryFilter(CrackerBinaryType::TYPE_NAME, $data[CrackerBinaryType::TYPE_NAME], '=')
       ];
 
-      /* Hackish way to retreive object since Id is not returned on creation */
+      /* Hackish way to retrieve object since Id is not returned on creation */
       $oF = new OrderFilter(CrackerBinaryType::CRACKER_BINARY_TYPE_ID, "DESC");
       $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
       assert(count($objects) == 1);
       
       return $objects[0]->getId();
     }
-
-
-    protected function deleteObject(object $object): void {
+  
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       CrackerUtils::deleteBinaryType($object->getId());
     }
 }

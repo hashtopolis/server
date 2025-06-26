@@ -13,6 +13,7 @@ use DBA\Chunk;
 use DBA\JoinFilter;
 use DBA\Task;
 use DBA\User;
+use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -105,12 +106,14 @@ class AgentAPI extends AbstractModelAPI {
       ];
     }
    
-    protected function createObject(array $data): int {
+    #[NoReturn] protected function createObject(array $data): int {
       assert(False, "Agents cannot be created via API");
-      return -1;
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       AgentUtils::delete($object->getId(), $this->getCurrentUser());
     }
 }

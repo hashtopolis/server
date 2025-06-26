@@ -1,6 +1,5 @@
 <?php
 
-use DBA\AccessGroupAgent;
 use DBA\ContainFilter;
 use DBA\Factory;
 
@@ -128,8 +127,11 @@ class TaskAPI extends AbstractModelAPI {
         "files" => ['type' => 'array', 'subtype' => 'int'],
       ];
     }
-
-    protected function createObject(array $data): int {
+  
+  /**
+   * @throws HttpError
+   */
+  protected function createObject(array $data): int {
       /* Parameter is used as primary key in database */
 
       $object = TaskUtils::createTask(

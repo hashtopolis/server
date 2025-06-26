@@ -1,6 +1,4 @@
 <?php
-use DBA\Factory;
-
 use DBA\User;
 use DBA\RightGroup;
 
@@ -29,7 +27,7 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
 
     /** 
      * Rewrite permissions DB values to CRUD field values
-     * Temponary exception until old API is removed and we 
+     * Temporary exception until old API is removed and we
      * are allowed to write CRUD permissions to database
      */
     protected static function db2json(array $feature, mixed $val): mixed {
@@ -40,8 +38,13 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
         return parent::db2json($feature, $val);
       }
     }
-   
-    protected function createObject(array $data): int {
+  
+  /**
+   * @throws ResourceNotFoundError
+   * @throws HttpForbidden
+   * @throws HttpError
+   */
+  protected function createObject(array $data): int {
       $group = AccessControlUtils::createGroup($data[RightGroup::GROUP_NAME]);
       $id = $group->getId();
 
@@ -52,8 +55,11 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
       
       return $id;
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HttpError
+   */
+  protected function deleteObject(object $object): void {
       AccessControlUtils::deleteGroup($object->getId());
     }
 
@@ -62,11 +68,12 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
         RightGroup::PERMISSIONS => fn ($value) => $this->updatePermissions($id, $value)
       ];
     }
-
-    /**
-     * NOTE: If ANY CRUD-permission is satisfied the corresponding OLD-permission is set
-     */
-    private function updatePermissions($id, $value) {
+  
+  /**
+   * NOTE: If ANY CRUD-permission is satisfied the corresponding OLD-permission is set
+   * @throws HTException
+   */
+    private function updatePermissions($id, $value): void {
       $permissions = unserialize($value);
       // Build reverse mapping to speed-up lookups for CRUD-permission to OLD-permission
       $c2o = array();

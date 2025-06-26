@@ -1,6 +1,4 @@
 <?php
-use DBA\Factory;
-
 use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
 use DBA\AccessGroupUser;
@@ -43,14 +41,20 @@ class AccessGroupAPI extends AbstractModelAPI {
         ],
       ];
     }
-
-
-    protected function createObject(array $data): int {
+  
+  
+  /**
+   * @throws HTException
+   */
+  protected function createObject(array $data): int {
       $object = AccessGroupUtils::createGroup($data[AccessGroup::GROUP_NAME]);
       return $object->getId();
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       AccessGroupUtils::deleteGroup($object->getId());
     }
 }

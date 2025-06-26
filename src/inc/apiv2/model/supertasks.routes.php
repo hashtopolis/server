@@ -51,12 +51,12 @@ class SupertaskAPI extends AbstractModelAPI {
         $this->db2json($this->getFeatures()['pretasks'], $data["pretasks"])
       );
 
-      /* On succesfully insert, return ID */
+      /* On successfully insert, return ID */
       $qFs = [
         new QueryFilter(Supertask::SUPERTASK_NAME, $data[Supertask::SUPERTASK_NAME], '=')
       ];
 
-      /* Hackish way to retreive object since Id is not returned on creation */
+      /* Hackish way to retrieve object since Id is not returned on creation */
       $oF = new OrderFilter(Supertask::SUPERTASK_ID, "DESC");
       $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
       /* No unique properties set on columns, thus multiple entries could exists, pick the latest (DESC ordering used) */
@@ -64,8 +64,12 @@ class SupertaskAPI extends AbstractModelAPI {
 
       return $objects[0]->getId();      
     }
-
-    public function updateToManyRelationship(Request $request, array $data, array $args): void {
+  
+  /**
+   * @throws HttpError
+   * @throws HTException
+   */
+  public function updateToManyRelationship(Request $request, array $data, array $args): void {
         $id = $args['id'];
         $wantedPretasks = [];
         foreach($data as $pretask) {
@@ -100,8 +104,11 @@ class SupertaskAPI extends AbstractModelAPI {
           throw new HttpError("Was not able to update to many relationship");
         }
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       SupertaskUtils::deleteSupertask($object->getId());
     }
 }

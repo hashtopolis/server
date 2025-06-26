@@ -50,29 +50,29 @@ class UserAPI extends AbstractModelAPI {
       array_walk($objects, function($obj) { assert($obj instanceof User); });
 
       /* Expand requested section */
-      switch($expand) {
-        case 'accessGroups':
-          return self::getManyToManyRelationViaIntermediate(
-            $objects,
-            User::USER_ID,
-            Factory::getAccessGroupUserFactory(),
-            AccessGroupUser::USER_ID,
-            Factory::getAccessGroupFactory(),
-            AccessGroup::ACCESS_GROUP_ID
-          );
-        case 'globalPermissionGroup':
-          return self::getForeignKeyRelation(
-            $objects,
-            User::RIGHT_GROUP_ID,
-            Factory::getRightGroupFactory(),
-            RightGroup::RIGHT_GROUP_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
-    }  
-
-    protected function createObject($data): int {
+      return match ($expand) {
+        'accessGroups' => self::getManyToManyRelationViaIntermediate(
+          $objects,
+          User::USER_ID,
+          Factory::getAccessGroupUserFactory(),
+          AccessGroupUser::USER_ID,
+          Factory::getAccessGroupFactory(),
+          AccessGroup::ACCESS_GROUP_ID
+        ),
+        'globalPermissionGroup' => self::getForeignKeyRelation(
+          $objects,
+          User::RIGHT_GROUP_ID,
+          Factory::getRightGroupFactory(),
+          RightGroup::RIGHT_GROUP_ID
+        ),
+        default => throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!"),
+      };
+    }
+  
+  /**
+   * @throws HttpError
+   */
+  protected function createObject($data): int {
       UserUtils::createUser(
           $data[User::USERNAME],
           $data[User::EMAIL],
@@ -80,7 +80,7 @@ class UserAPI extends AbstractModelAPI {
           $this->getCurrentUser()
       );
 
-      /* Hackish way to retreive object since Id is not returned on creation */
+      /* Hackish way to retrieve object since Id is not returned on creation */
       $qFs = [
         new QueryFilter(User::USERNAME, $data[USER::USERNAME], '='),
         new QueryFilter(User::EMAIL, $data[User::EMAIL], '='),
@@ -100,12 +100,18 @@ class UserAPI extends AbstractModelAPI {
       unset($features[User::IS_VALID]);
       return $features;
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       UserUtils::deleteUser($object->getId(), $this->getCurrentUser());
     }
-
-    private function toggleValidityUser($userId, $isValid, $current_user) {
+  
+  /**
+   * @throws HTException
+   */
+  private function toggleValidityUser($userId, $isValid, $current_user): void {
       if ($isValid) {
         UserUtils::enableUser($userId);
       } else {

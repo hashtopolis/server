@@ -71,7 +71,11 @@ class FileAPI extends AbstractModelAPI {
     /* Includes: 
      * Experimental support for renaming import file to target file 
      */
-    protected function createObject(array $data): int {
+  /**
+   * @throws HTException
+   * @throws HttpError
+   */
+  protected function createObject(array $data): int {
       /* Validate target filename */  
       $realname = str_replace(" ", "_", htmlentities(basename($data[File::FILENAME]), ENT_QUOTES, "UTF-8"));
       if ($data[File::FILENAME] != $realname) {
@@ -109,9 +113,9 @@ class FileAPI extends AbstractModelAPI {
           /* We are renaming sourceData file to filename file, check if filename is not there already 
              this can be skipped if they are the same */
           if (file_exists($this->getImportPath() . $data[File::FILENAME]) && $data[File::FILENAME] != $data["sourceData"]) {
-            throw new HttpError("File required temponary file '" . $data[File::FILENAME] . "' exists import folder, cannot continue");
+            throw new HttpError("File required temporary file '" . $data[File::FILENAME] . "' exists import folder, cannot continue");
           }
-          /* Since we are renaming the file _before_ import the name is temponary changed */
+          /* Since we are renaming the file _before_ import the name is temporary changed */
           $dummyPost["imfile"] = [$data[File::FILENAME]];
           break;
         default:
@@ -163,7 +167,7 @@ class FileAPI extends AbstractModelAPI {
       /* Manually set secret, since it not set when adding file */
       FileUtils::switchSecret($objects[0]->getId(), ($data[File::IS_SECRET]) ? 1 : 0, $this->getCurrentUser());
 
-      /* On succesfully insert, return ID */
+      /* On successfully insert, return ID */
       return $objects[0]->getId();
     }
 
@@ -172,9 +176,12 @@ class FileAPI extends AbstractModelAPI {
         File::FILE_TYPE => fn ($value) => FileUtils::setFileType($id, $value, $current_user)
       ];
     }
-
-
-    protected function deleteObject(object $object): void {
+  
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       FileUtils::delete($object->getId(), $this->getCurrentUser());
     }
 }

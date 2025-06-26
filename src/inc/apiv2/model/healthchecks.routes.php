@@ -1,6 +1,4 @@
 <?php
-use DBA\Factory;
-
 use DBA\CrackerBinary;
 use DBA\HashType;
 use DBA\HealthCheck;
@@ -46,8 +44,11 @@ class HealthCheckAPI extends AbstractModelAPI {
         ],
       ];
     }
-
-    protected function createObject(array $data): int {
+  
+  /**
+   * @throws HttpError
+   */
+  protected function createObject(array $data): int {
       $obj = HealthUtils::createHealthCheck(
         $data[HealthCheck::HASHTYPE_ID],
         $data[HealthCheck::CHECK_TYPE],
@@ -56,8 +57,11 @@ class HealthCheckAPI extends AbstractModelAPI {
 
       return $obj->getId();
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       HealthUtils::deleteHealthCheck($object->getId());
     }
 }

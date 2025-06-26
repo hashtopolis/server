@@ -41,8 +41,11 @@ class CrackerBinaryAPI extends AbstractModelAPI {
         ],
       ];
     }
-
-    protected function createObject(array $data): int {
+  
+  /**
+   * @throws HttpError
+   */
+  protected function createObject(array $data): int {
       CrackerUtils::createBinary(
         $data[CrackerBinary::VERSION],
         $data[CrackerBinary::BINARY_NAME],
@@ -50,7 +53,7 @@ class CrackerBinaryAPI extends AbstractModelAPI {
         $data[CrackerBinary::CRACKER_BINARY_TYPE_ID]
       );
 
-      /* On succesfully insert, return ID */
+      /* On successfully insert, return ID */
       $qFs = [
         new QueryFilter(CrackerBinary::VERSION, $data[CrackerBinary::VERSION], '='),
         new QueryFilter(CrackerBinary::BINARY_NAME, $data[CrackerBinary::BINARY_NAME], '='),
@@ -59,7 +62,7 @@ class CrackerBinaryAPI extends AbstractModelAPI {
 
       ];
 
-      /* Hackish way to retreive object since Id is not returned on creation */
+      /* Hackish way to retrieve object since Id is not returned on creation */
       $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
       $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
       /* No unique properties set on columns, thus multiple entries could exists, pick the latest (DESC ordering used) */
@@ -67,8 +70,11 @@ class CrackerBinaryAPI extends AbstractModelAPI {
       
       return $objects[0]->getId();
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       CrackerUtils::deleteBinary($object->getId());
     }
 }

@@ -9,6 +9,7 @@ use DBA\HealthCheck;
 use DBA\HealthCheckAgent;
 use DBA\JoinFilter;
 use DBA\User;
+use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -64,17 +65,15 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
       ];
     }
     
-    protected function createObject(array $object): int {
-       /* Dummy code to implement abstract functions */
+    #[NoReturn] protected function createObject(array $object): int {
        assert(False, "HealthCheckAgents cannot be created via API");
-       return -1;
     }
 
-    public function updateObject(int $objectId, array $data): void {
+    #[NoReturn] public function updateObject(int $objectId, array $data): void {
       assert(False, "HealthCheckAgents cannot be updated via API");
    }
 
-    protected function deleteObject(object $object): void {
+    #[NoReturn] protected function deleteObject(object $object): void {
       /* Dummy code to implement abstract functions */
       assert(False, "HealthCheckAgents cannot be deleted via API");
     }

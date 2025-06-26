@@ -99,8 +99,12 @@ class HashlistAPI extends AbstractModelAPI {
         "sourceData" => ['type' => 'str'],
       ];
     }
-
-    protected function createObject(array $data): int {
+  
+  /**
+   * @throws HttpErrorException
+   * @throws HTException
+   */
+  protected function createObject(array $data): int {
       // Cast to createHashlist compatible upload format
       $dummyPost = [];
       switch ($data["sourceType"]) {
@@ -152,8 +156,11 @@ class HashlistAPI extends AbstractModelAPI {
 
       return $hashlist->getId();
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       HashlistUtils::delete($object->getId(), $this->getCurrentUser());
     }
 

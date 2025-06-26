@@ -9,6 +9,7 @@ use DBA\AgentError;
 use DBA\Factory;
 use DBA\TaskWrapper;
 use DBA\User;
+use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -62,12 +63,11 @@ class AgentErrorAPI extends AbstractModelAPI {
       ];
     }
    
-    protected function createObject(array $data): int {
+    #[NoReturn] protected function createObject(array $data): int {
       assert(False, "AgentErrors cannot be created via API");
-      return -1;
     }
 
-    public function updateObject(int $objectId, array $data): void {
+    #[NoReturn] public function updateObject(int $objectId, array $data): void {
       assert(False, "AgentErrors cannot be updated via API");
     }
 

@@ -15,9 +15,12 @@ class AgentBinaryAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return AgentBinary::class;
-    }    
+    }
   
-    protected function createObject(array $data): int {
+  /**
+   * @throws HTException
+   */
+  protected function createObject(array $data): int {
       AgentBinaryUtils::newBinary(
         $data[AgentBinary::TYPE],
         $data[AgentBinary::OPERATING_SYSTEMS],
@@ -27,13 +30,13 @@ class AgentBinaryAPI extends AbstractModelAPI {
         $this->getCurrentUser()
       );
 
-      /* On succesfully insert, return ID */
+      /* On successfully insert, return ID */
       $qFs = [
         new QueryFilter(AgentBinary::FILENAME, $data[AgentBinary::FILENAME], '='),
         new QueryFilter(AgentBinary::VERSION, $data[AgentBinary::VERSION], '='),
       ];
 
-      /* Hackish way to retreive object since Id is not returned on creation */
+      /* Hackish way to retrieve object since Id is not returned on creation */
       $oF = new OrderFilter(AgentBinary::AGENT_BINARY_ID, "DESC");
       $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
       /* No unique properties set on columns, thus multiple entries could exists, pick the latest (DESC ordering used) */
@@ -41,8 +44,11 @@ class AgentBinaryAPI extends AbstractModelAPI {
       
       return $objects[0]->getId();
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       AgentBinaryUtils::deleteBinary($object->getId());
     }
 

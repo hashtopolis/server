@@ -11,6 +11,7 @@ use DBA\Speed;
 use DBA\Task;
 use DBA\TaskWrapper;
 use DBA\User;
+use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -87,16 +88,15 @@ class SpeedAPI extends AbstractModelAPI {
       ];
     }
 
-    protected function createObject(array $data): int {
+    #[NoReturn] protected function createObject(array $data): int {
       assert(False, "Speeds cannot be created via API");
-      return -1;
    }
 
-  public function updateObject(int $objectId, array $data): void {
+  #[NoReturn] public function updateObject(int $objectId, array $data): void {
     assert(False, "Speeds cannot be updated via API");
    }
 
-   protected function deleteObject(object $object): void {
+   #[NoReturn] protected function deleteObject(object $object): void {
      assert(False, "Speeds cannot be deleted via API");
    }
 }

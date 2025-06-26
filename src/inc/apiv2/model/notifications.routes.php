@@ -37,8 +37,11 @@ class NotificationSettingAPI extends AbstractModelAPI {
     public function getFormFields(): array {
       return  ['actionFilter' => ['type' => 'str(256)']];
     }
-
-    protected function createObject(array $data): int {
+  
+  /**
+   * @throws HTException
+   */
+  protected function createObject(array $data): int {
       $dummyPost = [];
       switch (DNotificationType::getObjectType($data[NotificationSetting::ACTION])) {
         case DNotificationObjectType::USER:
@@ -64,14 +67,14 @@ class NotificationSettingAPI extends AbstractModelAPI {
         $this->getCurrentUser(),
       );
 
-      /* On succesfully insert, return ID */
+      /* On successfully insert, return ID */
       $qFs = [
         new QueryFilter(NotificationSetting::ACTION, $data[NotificationSetting::ACTION], '='),
         new QueryFilter(NotificationSetting::NOTIFICATION, $data[NotificationSetting::NOTIFICATION], '='),
         new QueryFilter(NotificationSetting::RECEIVER, $data[NotificationSetting::RECEIVER], '='),
       ];
 
-      /* Hackish way to retreive object since Id is not returned on creation */
+      /* Hackish way to retrieve object since Id is not returned on creation */
       $oF = new OrderFilter(NotificationSetting::NOTIFICATION_SETTING_ID, "DESC");
       $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
       /* No unique properties set on columns, thus multiple entries could exists, pick the latest (DESC ordering used) */
@@ -79,8 +82,11 @@ class NotificationSettingAPI extends AbstractModelAPI {
       
       return $objects[0]->getId();
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       NotificationUtils::delete($object->getId(), $this->getCurrentUser());
     }
 

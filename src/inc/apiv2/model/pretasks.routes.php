@@ -1,6 +1,5 @@
 <?php
 use DBA\Factory;
-use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
 
@@ -41,8 +40,11 @@ class PreTaskAPI extends AbstractModelAPI {
         "files" => ['type' => 'array', 'subtype' => 'int']
       ];
     }
-
-    protected function createObject(array $data): int {
+  
+  /**
+   * @throws HttpError
+   */
+  protected function createObject(array $data): int {
       /* Use quirk on 'files' since this is casted to DB representation  */
       PretaskUtils::createPretask(
         $data[PreTask::TASK_NAME],
@@ -59,13 +61,13 @@ class PreTaskAPI extends AbstractModelAPI {
         $data[PreTask::PRIORITY]
       );
 
-      /* On succesfully insert, return ID */
+      /* On successfully insert, return ID */
       $qFs = [
         new QueryFilter(PreTask::TASK_NAME, $data[PreTask::TASK_NAME], '='),
         new QueryFilter(PreTask::ATTACK_CMD, $data[PreTask::ATTACK_CMD], '=')
       ];
 
-      /* Hackish way to retreive object since Id is not returned on creation */
+      /* Hackish way to retrieve object since Id is not returned on creation */
       $oF = new OrderFilter(PreTask::PRETASK_ID, "DESC");
       $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
       assert(count($objects) >= 1);
@@ -79,8 +81,11 @@ class PreTaskAPI extends AbstractModelAPI {
         Pretask::COLOR => fn ($value) => PretaskUtils::setColor($id, $value),
       ];
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       PretaskUtils::deletePretask($object->getId());
     }
 }

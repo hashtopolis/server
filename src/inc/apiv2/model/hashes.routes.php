@@ -8,6 +8,7 @@ use DBA\Hash;
 use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\User;
+use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -62,18 +63,15 @@ class HashAPI extends AbstractModelAPI {
       ];
     }
 
-    protected function createObject(array $data): int {
-      /* Dummy code to implement abstract functions */
+    #[NoReturn] protected function createObject(array $data): int {
       assert(False, "Hashes cannot be created via API");
-      return -1;
     }
 
-    public function updateObject(int $objectId, array $data): void {
+    #[NoReturn] public function updateObject(int $objectId, array $data): void {
        assert(False, "Hashes cannot be updated via API");
     }
 
-    protected function deleteObject(object $object): void {
-      /* Dummy code to implement abstract functions */
+    #[NoReturn] protected function deleteObject(object $object): void {
       assert(False, "Hashes cannot be deleted via API");
     }
 }

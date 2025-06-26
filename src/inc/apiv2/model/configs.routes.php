@@ -1,8 +1,7 @@
 <?php
-use DBA\Factory;
-
 use DBA\Config;
 use DBA\ConfigSection;
+use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -31,18 +30,18 @@ class ConfigAPI extends AbstractModelAPI {
       ];
     }
  
-    protected function createObject(array $data): int {
-       /* Dummy code to implement abstract functions */
+    #[NoReturn] protected function createObject(array $data): int {
        assert(False, "Configs cannot be created via API");
-       return -1;
     }
 
-    protected function deleteObject(object $object): void {
-      /* Dummy code to implement abstract functions */
+    #[NoReturn] protected function deleteObject(object $object): void {
       assert(False, "Configs cannot be deleted via API");
     }
-
-    protected function updateObjects(array $objects): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function updateObjects(array $objects): void {
       ConfigUtils::updateConfigs($objects);
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-use DBA\AbstractModel;
 use DBA\AccessGroupAgent;
 use DBA\ContainFilter;
 use DBA\Factory;
@@ -71,17 +70,20 @@ class AgentAssignmentAPI extends AbstractModelAPI {
           'relationKey' => Task::TASK_ID,
         ],
       ];
-    }    
-
-    protected function createObject(array $data): int {
+    }
+  
+  /**
+   * @throws HTException
+   */
+  protected function createObject(array $data): int {
       AgentUtils::assign($data[Assignment::AGENT_ID], $data[Assignment::TASK_ID], $this->getCurrentUser());
-      /* On succesfully insert, return ID */
+      /* On successfully insert, return ID */
       $qFs = [
         new QueryFilter(Assignment::AGENT_ID, $data[Assignment::AGENT_ID], '='),
         new QueryFilter(Assignment::TASK_ID, $data[Assignment::TASK_ID], '=')
       ];
 
-      /* Hackish way to retreive object since Id is not returned on creation */
+      /* Hackish way to retrieve object since Id is not returned on creation */
       $oF = new OrderFilter(Assignment::ASSIGNMENT_ID, "DESC");
       $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
       assert(count($objects) >= 1);
@@ -94,8 +96,11 @@ class AgentAssignmentAPI extends AbstractModelAPI {
         Assignment::BENCHMARK => fn ($value) => assignmentUtils::setBenchmark($id, $value, $current_user)
       ];
     }
-
-    protected function deleteObject(object $object): void {
+  
+  /**
+   * @throws HTException
+   */
+  protected function deleteObject(object $object): void {
       AgentUtils::assign($object->getAgentId(), 0, $this->getCurrentUser());
     }
 }
