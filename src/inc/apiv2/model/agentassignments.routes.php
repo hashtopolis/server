@@ -74,21 +74,14 @@ class AgentAssignmentAPI extends AbstractModelAPI {
   
   /**
    * @throws HTException
+   * @throws HttpError
    */
   protected function createObject(array $data): int {
-    AgentUtils::assign($data[Assignment::AGENT_ID], $data[Assignment::TASK_ID], $this->getCurrentUser());
-    /* On successfully insert, return ID */
-    $qFs = [
-      new QueryFilter(Assignment::AGENT_ID, $data[Assignment::AGENT_ID], '='),
-      new QueryFilter(Assignment::TASK_ID, $data[Assignment::TASK_ID], '=')
-    ];
+    $assignment = AgentUtils::assign($data[Assignment::AGENT_ID], $data[Assignment::TASK_ID], $this->getCurrentUser());
     
-    /* Hackish way to retrieve object since Id is not returned on creation */
-    $oF = new OrderFilter(Assignment::ASSIGNMENT_ID, "DESC");
-    $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-    assert(count($objects) >= 1);
+    assert($assignment !== null);
     
-    return $objects[0]->getId();
+    return $assignment->getId();
   }
   
   protected function getUpdateHandlers($id, $current_user): array {

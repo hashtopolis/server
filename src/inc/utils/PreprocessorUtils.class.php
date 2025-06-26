@@ -9,15 +9,17 @@ require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 class PreprocessorUtils {
   
   /**
-   * @param $name
-   * @param $binaryName
-   * @param $url
-   * @param $keyspaceCommand
-   * @param $skipCommand
-   * @param $limitCommand
+   * @param string $name
+   * @param string $binaryName
+   * @param string $url
+   * @param string $keyspaceCommand
+   * @param string $skipCommand
+   * @param string $limitCommand
+   * @return Preprocessor
+   * @throws HttpConflict
    * @throws HttpError
    */
-  public static function addPreprocessor($name, $binaryName, $url, $keyspaceCommand, $skipCommand, $limitCommand) {
+  public static function addPreprocessor(string $name, string $binaryName, string $url, string $keyspaceCommand, string $skipCommand, string $limitCommand): Preprocessor {
     $qF = new QueryFilter(Preprocessor::NAME, $name, "=");
     $check = Factory::getPreprocessorFactory()->filter([Factory::FILTER => $qF], true);
     if ($check !== null) {
@@ -56,7 +58,7 @@ class PreprocessorUtils {
     }
     
     $preprocessor = new Preprocessor(null, $name, $url, $binaryName, $keyspaceCommand, $skipCommand, $limitCommand);
-    Factory::getPreprocessorFactory()->save($preprocessor);
+    return Factory::getPreprocessorFactory()->save($preprocessor);
   }
   
   /**

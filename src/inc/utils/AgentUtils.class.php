@@ -363,14 +363,15 @@ class AgentUtils {
     Factory::getAgentFactory()->delete($agent);
     return true;
   }
-
+  
   /**
    * @param int $agentId
    * @param int $taskId
    * @param User $user
    * @throws HTException
+   * @throws HttpError
    */
-  public static function assign($agentId, $taskId, $user) {
+  public static function assign(int $agentId, int $taskId, User $user): ?Assignment {
     $agent = AgentUtils::getAgent($agentId, $user);
 
     if ($taskId == 0 || empty($taskId)) { // unassign
@@ -380,7 +381,7 @@ class AgentUtils {
         header("Location: tasks.php?id=" . intval($_GET['task']));
         die();
       }
-      return;
+      return null;
     }
 
     $task = Factory::getTaskFactory()->get(intval($taskId));
@@ -414,12 +415,13 @@ class AgentUtils {
     }
     else {
       $assignment = new Assignment(null, $task->getId(), $agent->getId(), $benchmark);
-      Factory::getAssignmentFactory()->save($assignment);
+      $assignment = Factory::getAssignmentFactory()->save($assignment);
     }
     if (isset($_GET['task'])) {
       header("Location: tasks.php?id=" . intval($_GET['task']));
       die();
     }
+    return $assignment;
   }
 
   /**
@@ -532,12 +534,13 @@ class AgentUtils {
     }
     Factory::getAgentFactory()->set($agent, Agent::IS_ACTIVE, $set);
   }
-
+  
   /**
    * @param string $newVoucher
-   * @throws HTException
+   * @return RegVoucher
+   * @throws HttpConflict
    */
-  public static function createVoucher($newVoucher) {
+  public static function createVoucher(string $newVoucher): RegVoucher {
     $qF = new QueryFilter(RegVoucher::VOUCHER, $newVoucher, "=");
     $check = Factory::getRegVoucherFactory()->filter([Factory::FILTER => $qF]);
     if ($check != null) {
@@ -546,7 +549,7 @@ class AgentUtils {
 
     $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");
     $voucher = new RegVoucher(null, $key, time());
-    Factory::getRegVoucherFactory()->save($voucher);
+    return Factory::getRegVoucherFactory()->save($voucher);
   }
 
   /**

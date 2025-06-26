@@ -134,7 +134,7 @@ class TaskAPI extends AbstractModelAPI {
   protected function createObject(array $data): int {
     /* Parameter is used as primary key in database */
     
-    $object = TaskUtils::createTask(
+    $task = TaskUtils::createTask(
       $data["hashlistId"],
       $data[Task::TASK_NAME],
       $data[Task::ATTACK_CMD],
@@ -157,7 +157,7 @@ class TaskAPI extends AbstractModelAPI {
       $data[Task::CHUNK_SIZE]
     );
     
-    return $object->getId();
+    return $task->getId();
   }
   
   //TODO make aggregate data queryable and not included by default

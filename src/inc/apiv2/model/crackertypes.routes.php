@@ -48,22 +48,14 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
   }
   
   /**
-   * @throws HTException
+   * @param array $data
+   * @return int
+   * @throws HttpConflict
+   * @throws HttpError
    */
   protected function createObject(array $data): int {
-    CrackerUtils::createBinaryType($data[CrackerBinaryType::TYPE_NAME]);
-    
-    /* On successfully insert, return ID */
-    $qFs = [
-      new QueryFilter(CrackerBinaryType::TYPE_NAME, $data[CrackerBinaryType::TYPE_NAME], '=')
-    ];
-    
-    /* Hackish way to retrieve object since Id is not returned on creation */
-    $oF = new OrderFilter(CrackerBinaryType::CRACKER_BINARY_TYPE_ID, "DESC");
-    $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-    assert(count($objects) == 1);
-    
-    return $objects[0]->getId();
+    $binaryType = CrackerUtils::createBinaryType($data[CrackerBinaryType::TYPE_NAME]);
+    return $binaryType->getId();
   }
   
   

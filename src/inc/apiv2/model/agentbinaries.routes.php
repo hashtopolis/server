@@ -19,10 +19,10 @@ class AgentBinaryAPI extends AbstractModelAPI {
   }
   
   /**
-   * @throws HTException
+   * @throws HttpError
    */
   protected function createObject(array $data): int {
-    AgentBinaryUtils::newBinary(
+    $agentBinary = AgentBinaryUtils::newBinary(
       $data[AgentBinary::TYPE],
       $data[AgentBinary::OPERATING_SYSTEMS],
       $data[AgentBinary::FILENAME],
@@ -30,20 +30,7 @@ class AgentBinaryAPI extends AbstractModelAPI {
       $data[AgentBinary::UPDATE_TRACK],
       $this->getCurrentUser()
     );
-    
-    /* On successfully insert, return ID */
-    $qFs = [
-      new QueryFilter(AgentBinary::FILENAME, $data[AgentBinary::FILENAME], '='),
-      new QueryFilter(AgentBinary::VERSION, $data[AgentBinary::VERSION], '='),
-    ];
-    
-    /* Hackish way to retrieve object since Id is not returned on creation */
-    $oF = new OrderFilter(AgentBinary::AGENT_BINARY_ID, "DESC");
-    $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-    /* No unique properties set on columns, thus multiple entries could exists, pick the latest (DESC ordering used) */
-    assert(count($objects) >= 1);
-    
-    return $objects[0]->getId();
+    return $agentBinary->getId();
   }
   
   /**

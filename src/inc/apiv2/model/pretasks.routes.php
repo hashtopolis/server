@@ -47,7 +47,7 @@ class PreTaskAPI extends AbstractModelAPI {
    */
   protected function createObject(array $data): int {
     /* Use quirk on 'files' since this is casted to DB representation  */
-    PretaskUtils::createPretask(
+    $pretask = PretaskUtils::createPretask(
       $data[PreTask::TASK_NAME],
       $data[PreTask::ATTACK_CMD],
       $data[PreTask::CHUNK_TIME],
@@ -61,19 +61,7 @@ class PreTaskAPI extends AbstractModelAPI {
       $data[PreTask::MAX_AGENTS],
       $data[PreTask::PRIORITY]
     );
-    
-    /* On successfully insert, return ID */
-    $qFs = [
-      new QueryFilter(PreTask::TASK_NAME, $data[PreTask::TASK_NAME], '='),
-      new QueryFilter(PreTask::ATTACK_CMD, $data[PreTask::ATTACK_CMD], '=')
-    ];
-    
-    /* Hackish way to retrieve object since Id is not returned on creation */
-    $oF = new OrderFilter(PreTask::PRETASK_ID, "DESC");
-    $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-    assert(count($objects) >= 1);
-    
-    return $objects[0]->getId();
+    return $pretask->getId();
   }
   
   protected function getUpdateHandlers($id, $current_user): array {

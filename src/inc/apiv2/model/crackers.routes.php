@@ -44,31 +44,16 @@ class CrackerBinaryAPI extends AbstractModelAPI {
   
   /**
    * @throws HttpError
+   * @throws HTException
    */
   protected function createObject(array $data): int {
-    CrackerUtils::createBinary(
+    $binary = CrackerUtils::createBinary(
       $data[CrackerBinary::VERSION],
       $data[CrackerBinary::BINARY_NAME],
       $data[CrackerBinary::DOWNLOAD_URL],
       $data[CrackerBinary::CRACKER_BINARY_TYPE_ID]
     );
-    
-    /* On successfully insert, return ID */
-    $qFs = [
-      new QueryFilter(CrackerBinary::VERSION, $data[CrackerBinary::VERSION], '='),
-      new QueryFilter(CrackerBinary::BINARY_NAME, $data[CrackerBinary::BINARY_NAME], '='),
-      new QueryFilter(CrackerBinary::DOWNLOAD_URL, $data[CrackerBinary::DOWNLOAD_URL], '='),
-      new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $data[CrackerBinary::CRACKER_BINARY_TYPE_ID], '='),
-    
-    ];
-    
-    /* Hackish way to retrieve object since Id is not returned on creation */
-    $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
-    $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-    /* No unique properties set on columns, thus multiple entries could exists, pick the latest (DESC ordering used) */
-    assert(count($objects) >= 1);
-    
-    return $objects[0]->getId();
+    return $binary->getId();
   }
   
   /**

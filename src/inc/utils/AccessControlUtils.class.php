@@ -86,8 +86,9 @@ class AccessControlUtils {
    * @param string $groupName
    * @return RightGroup
    * @throws HttpError
+   * @throws HttpConflict
    */
-  public static function createGroup($groupName) {
+  public static function createGroup(string $groupName): RightGroup {
     if (strlen($groupName) == 0 || strlen($groupName) > DLimits::ACCESS_GROUP_MAX_LENGTH) {
       throw new HttpError("Permission group name is too short or too long!");
     }
@@ -98,8 +99,7 @@ class AccessControlUtils {
       throw new HttpConflict("There is already an permission group with the same name!");
     }
     $group = new RightGroup(null, $groupName, "[]");
-    $group = Factory::getRightGroupFactory()->save($group);
-    return $group;
+    return Factory::getRightGroupFactory()->save($group);
   }
   
   /**

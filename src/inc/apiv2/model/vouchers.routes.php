@@ -19,22 +19,11 @@ class VoucherAPI extends AbstractModelAPI {
   }
   
   /**
-   * @throws HTException
+   * @throws HttpConflict
    */
   protected function createObject(array $data): int {
-    AgentUtils::createVoucher($data[RegVoucher::VOUCHER]);
-    
-    /* On successfully insert, return ID */
-    $qFs = [
-      new QueryFilter(RegVoucher::VOUCHER, $data[RegVoucher::VOUCHER], '=')
-    ];
-    
-    /* Hackish way to retrieve object since Id is not returned on creation */
-    $oF = new OrderFilter(RegVoucher::REG_VOUCHER_ID, "DESC");
-    $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-    assert(count($objects) == 1);
-    
-    return $objects[0]->getId();
+    $voucher = AgentUtils::createVoucher($data[RegVoucher::VOUCHER]);
+    return $voucher->getId();
   }
   
   /**
