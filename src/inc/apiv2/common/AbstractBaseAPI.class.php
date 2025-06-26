@@ -93,6 +93,7 @@ abstract class AbstractBaseAPI
   public function __construct(ContainerInterface $container)
   {
     $this->container = $container;
+    $this->publicAttributeFilterClasses = [];
   }
   
   /**
