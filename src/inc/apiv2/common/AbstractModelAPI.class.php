@@ -1156,14 +1156,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $factory = $this->getFactory();
     $object = $this->doFetch(intval($args['id']));
     if ($data == null) {
-      $factory->DatabaseSet($object, $relationKey, null);
+      $this->DatabaseSet($object, $relationKey, null);
     }
     elseif (!$this->validateResourceRecord($data)) {
       throw new HttpError('No valid resource identifier object was given as data!');
     }
     else {
       //TODO check if foreign key exists befor inserting
-      $factory->DatabaseSet($object, $relationKey, $data["id"]);
+      $this->DatabaseSet($object, $relationKey, $data["id"]);
     }
     
     return $response->withStatus(201)
