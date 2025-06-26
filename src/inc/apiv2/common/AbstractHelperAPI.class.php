@@ -1,6 +1,8 @@
 <?php
 require_once(dirname(__FILE__) . "/AbstractBaseAPI.class.php");
 
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -17,7 +19,20 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
   public function getParamsSwagger(): array {
     return [];
   }
-  /* Chunk API endpoint specific call to abort chunk */
+  
+  /**
+   * Chunk API endpoint specific call to abort chunk
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws JsonException
+   * @throws ContainerExceptionInterface
+   * @throws NotFoundExceptionInterface
+   */
   public function processPost(Request $request, Response $response, array $args): Response 
   {
     /* Required calls for all custom requests */
@@ -41,7 +56,7 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     }
 
 
-    /* Succesful executed action of create */
+    /* Successful executed action of create */
     if (is_object($newObject)) {
       $apiClass = new ($this->container->get('classMapper')->get($newObject::class))($this->container);
       return self::getOneResource($apiClass, $newObject, $request, $response);
@@ -49,13 +64,13 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     } elseif (is_array($newObject)) {
       return self::getMetaResponse($newObject, $request, $response);
     }
+    throw new HttpError("Unable to process request!");
   }  
 
   /**
    * Override-able registering of options
    */
-  static public function register($app): void
-  {
+  static public function register($app): void {
     $me = get_called_class();
     $baseUri = $me::getBaseUri();
 
