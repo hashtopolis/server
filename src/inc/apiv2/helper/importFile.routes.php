@@ -3,10 +3,11 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+use Random\RandomException;
 use Slim\Routing\RouteCollectorProxy;
 use DBA\Factory;
 /* Default timeout interval for considering an upload stale/incomplete */
-define('DEFAULT_UPLOAD_EXPIRES_TIMEOUT', 3600);
+const DEFAULT_UPLOAD_EXPIRES_TIMEOUT = 3600;
 require_once(dirname(__FILE__) . "/../../load.php");
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
@@ -35,13 +36,11 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   }
 
   static function getUploadPath(string $id): string {
-    $filename = "/tmp/" . $id . '.part';
-    return $filename;
+    return "/tmp/" . $id . '.part';
   }
 
   static function getMetaPath(string $id): string {
-    $filename = "/tmp/" . $id . '.meta';
-    return $filename;
+    return "/tmp/" . $id . '.meta';
   }
   
   /**
@@ -53,8 +52,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
 
 
   static function getImportPath(string $id): string {
-    $filename = Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $id;
-    return $filename;
+    return Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $id;
   }
 
   static function getChecksumAlgorithm(): array {
@@ -62,12 +60,10 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   }
 
 
-  /* Database quick for temponary storage during upload */
+  /* Database quick for temporary storage during upload */
   static function getMetaStorage(string $id): array {
     $metaPath = self::getMetaPath($id);
-    $ds = file_exists($metaPath) ? (array)json_decode(file_get_contents($metaPath), true) : array();
-
-    return $ds;
+    return file_exists($metaPath) ? (array)json_decode(file_get_contents($metaPath), true) : array();
   }
 
   static function updateStorage(string $id, array $update): void {
@@ -78,7 +74,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     file_put_contents($metaPath, json_encode($newDs));
   }
 
-  //register is overriden so no actionPost needed
+  //register is overridden so no actionPost needed
   function actionPost(array $data): object|array|null
   {
     return null;
@@ -109,15 +105,14 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     } else {
       $newResponse2 = $newResponse;
     }
-
+    
+    $cors_headers = $newResponse->getHeaderLine("Access-Control-Expose-Headers");
     if ($ds["upload_defer_length"] === true) {
-      $cors_headers = $newResponse->getHeaderLine("Access-Control-Expose-Headers");
       return $newResponse2
         ->withHeader("Upload-Defer-Length", "1")
         ->withHeader("Access-Control-Expose-Headers", $cors_headers . ", Upload-Defer-Length")
       ;
     } else {
-      $cors_headers = $newResponse->getHeaderLine("Access-Control-Expose-Headers");
       return $newResponse2
         ->withHeader("Upload-Length", strval($ds["upload_length"]))
         ->withHeader("Access-Control-Expose-Headers", $cors_headers . ", Upload-Length")
@@ -131,22 +126,23 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   public static function getResponse(): null {
     return null;
   }
-
+  
   /**  File import API
-  *    Based on TUS protocol: https://tus.io/protocols/resumable-upload.html
-  * 
-  *  1) Client 'Announce' file at ./api/v2/helper/importFile'
-  *      - Ensure Upload-Metadata: filename= base64-encoded-filename is set
-  *  2) Server checks filename does not exists yet:
-  *     - Checked not part of ongoing transfer (<uuid>.part / <uuid>.metatadata in import directory)
-  *     - Checked not uploaded yet (import/<filename>)
-  *     If all conditions are met, upload is created and user informed about UUID to push to.
-  *  3) Client pushes parts to ./api/v2/ui/files/<uuid>
-  *     - Checked if upload timeout is not expired
-  *  4) Server check if upload is completed
-  *     - Checked if not present yet (import/<filename>)
-  *     - Marks file and stores as import/<filename>
-  */ 
+   *    Based on TUS protocol: https://tus.io/protocols/resumable-upload.html
+   *
+   *  1) Client 'Announce' file at ./api/v2/helper/importFile'
+   *      - Ensure Upload-Metadata: filename= base64-encoded-filename is set
+   *  2) Server checks filename does not exists yet:
+   *     - Checked not part of ongoing transfer (<uuid>.part / <uuid>.metatadata in import directory)
+   *     - Checked not uploaded yet (import/<filename>)
+   *     If all conditions are met, upload is created and user informed about UUID to push to.
+   *  3) Client pushes parts to ./api/v2/ui/files/<uuid>
+   *     - Checked if upload timeout is not expired
+   *  4) Server check if upload is completed
+   *     - Checked if not present yet (import/<filename>)
+   *     - Marks file and stores as import/<filename>
+   * @throws RandomException
+   */
   function processPost(Request $request, Response $response, array $args): Response
   {
     $update = [];
@@ -196,7 +192,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
       $update["upload_defer_length"] = false;
     }
 
-    /* Give user fix amount of time to upload file, before temponary files are removed */
+    /* Give user fix amount of time to upload file, before temporary files are removed */
     $update["upload_expires"] = (new DateTime())->getTimestamp() + DEFAULT_UPLOAD_EXPIRES_TIMEOUT;
 
     self::updateStorage($id, $update);
@@ -214,7 +210,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
    */
   function processPatch(Request $request, Response $response, array $args): Response {
     // Check for Content-Type: application/offset+octet-stream or return 415
-    if (($request->hasHeader('Content-Type') == false) || 
+    if (!$request->hasHeader('Content-Type') ||
         ($request->getHeader('Content-Type')[0] != "application/offset+octet-stream")) {
       $response->getBody()->write('Unsupported Media Type');
       return $response->withStatus(415);
@@ -230,7 +226,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
 
     /* Offset mismatch check and 409 Conflict */
     $currentSize = filesize($filename);
-    if ($request->hasHeader('Upload-Offset') == false) {
+    if (!$request->hasHeader('Upload-Offset')) {
       $response->getBody()->write('Conflict (Upload-Offset header missing)');
       return $response->withStatus(409);
     } else {
@@ -286,7 +282,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
             $chunkHash = base64_encode(crc32($chunk, true));
             break;
           default:
-            /* Since algoritms are checked in regex, this should never happen */
+            /* Since algorithms are checked in regex, this should never happen */
             assert(False);
         }
 

@@ -36,6 +36,7 @@ class AssignAgentHelperAPI extends AbstractHelperAPI {
   
   /**
    * This endpoint is responsible for assigning a task to a specific agent.
+   * @throws HTException
    */
   public function actionPost($data): object|array|null {
     AgentUtils::assign($data[Agent::AGENT_ID], $data[Task::TASK_ID], $this->getCurrentUser());

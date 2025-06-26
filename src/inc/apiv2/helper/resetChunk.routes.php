@@ -1,6 +1,5 @@
 <?php
 use DBA\Chunk;
-use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
@@ -30,9 +29,10 @@ class ResetChunkHelperAPI extends AbstractHelperAPI {
   public static function getResponse(): array {
     return ["Reset" => "Success"];
   }
-
+  
   /**
    * Endpoint to reset a chunk.
+   * @throws HTException
    */
   public function actionPost(array $data): object|array|null {
     $chunk = self::getChunk($data[Chunk::CHUNK_ID]);

@@ -45,6 +45,7 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to import cracked hashes into a hashlist.
+   * @throws HTException
    */
   public function actionPost($data): object|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);

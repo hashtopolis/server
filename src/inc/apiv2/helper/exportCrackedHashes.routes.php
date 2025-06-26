@@ -32,15 +32,15 @@ class ExportCrackedHashesHelperAPI extends AbstractHelperAPI {
   public static function getResponse(): string {
     return "File";
   }
-
+  
   /**
    * Endpoint to export cracked hashes.
+   * @throws HTException
    */
   public function actionPost($data): object|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     
-    $file = HashlistUtils::export($hashlist->getId(), $this->getCurrentUser());
-    return $file;
+    return HashlistUtils::export($hashlist->getId(), $this->getCurrentUser());
   }
 }
 

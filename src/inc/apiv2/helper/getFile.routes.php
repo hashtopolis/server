@@ -1,5 +1,6 @@
 <?php
 use DBA\File;
+use JetBrains\PhpStorm\NoReturn;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use DBA\Factory;
@@ -23,19 +24,22 @@ class GetFileHelperAPI extends AbstractHelperAPI {
   }
 
   /**
-   * geTfile is different because it returns actual binary data.
+   * getfile is different because it returns actual binary data.
    */
   public static function getResponse(): null {
     return null;
   }
 
 
-  public function actionPost(array $data): object|array|null
+  #[NoReturn] public function actionPost(array $data): object|array|null
   {
     assert(False, "GetFile has no POST");
   }
-
-  public function validateFile($request, $file_id) {
+  
+  /**
+   * @throws HTException
+   */
+  public function validateFile($request, $file_id): string {
     if (!is_numeric($file_id)) {
       throw new HTException("Invalid file id given: " . $file_id);
     }
@@ -79,7 +83,7 @@ class GetFileHelperAPI extends AbstractHelperAPI {
     
     list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
     
-    if (strpos($range, ',') !== false) {
+    if (str_contains($range, ',')) {
       return false;
     }
     if ($range == '-') {
@@ -125,9 +129,15 @@ class GetFileHelperAPI extends AbstractHelperAPI {
     ]
     ];
   }
-
+  
   /**
    * Endpoint to download files
+   * @param Request $request
+   * @param Response $response
+   * @return Response
+   * @throws HTException
+   * @throws HttpErrorException
+   * @throws HttpForbidden
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);

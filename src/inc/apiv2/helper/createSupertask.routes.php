@@ -26,7 +26,7 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
   }
 
   /**
-   * supertaskTemplateId is the the Id of the supertakstemplate of which you want to create a supertask of.
+   * supertaskTemplateId is the the Id of the supertasktemplate of which you want to create a supertask of.
    * hashlistId is the Id of the hashlist that has to be used for the supertask.
    * crackerVersionId is the Id of the crackerversion that is used for the created supertask.
    */
@@ -42,9 +42,10 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
   public static function getResponse(): string {
     return "TaskWrapper";
   }
-
+  
   /**
    * Endpoint to create a supertask from a supertask template
+   * @throws HTException
    */
   public function actionPost($data): object|array|null {
     $supertaskTemplate = self::getSupertask($data["supertaskTemplateId"]);

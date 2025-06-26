@@ -3,11 +3,7 @@ use DBA\Factory;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 
-use DBA\CrackerBinary;
 use DBA\Hashlist;
-use DBA\Supertask;
-use DBA\Task;
-use DBA\TaskWrapper;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 require_once(dirname(__FILE__) . "/../model/hashlists.routes.php");
@@ -41,15 +37,16 @@ class CreateSuperHashlistHelperAPI extends AbstractHelperAPI {
   public static function getResponse(): string {
     return "Hashlist";
   }
-
+  
   /**
    * Endpoint to create a super hashlist from multiple hashlists
+   * @throws HTException
    */
   public function actionPost($data): object|array|null {
     /* Validate incoming hashlists */
     $hashlistIds = [];
     foreach($data["hashlistIds"] as $hashlistId) {
-      array_push($hashlistIds, self::getHashlist($hashlistId)->getId());
+      $hashlistIds[] = self::getHashlist($hashlistId)->getId();
     }
 
     /* Execute helper */
@@ -63,7 +60,7 @@ class CreateSuperHashlistHelperAPI extends AbstractHelperAPI {
     $objects = self::getModelFactory(Hashlist::class)->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
     assert(count($objects) > 0);
 
-    /* TODO: Make it bit more transparant and auto-expands hashlists by default */
+    /* TODO: Make it bit more transparent and auto-expands hashlists by default */
     return $objects[0];
 
   }

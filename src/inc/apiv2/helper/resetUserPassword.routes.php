@@ -33,6 +33,9 @@ class ResetUserPasswordHelperAPI extends AbstractHelperAPI {
     ];
   }
   
+  /**
+   * @throws HTException
+   */
   public function actionPost($data): array|null {
     UserUtils::userForgotPassword($data[User::USERNAME], $data[User::EMAIL]);
     

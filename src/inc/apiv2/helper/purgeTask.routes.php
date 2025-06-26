@@ -31,9 +31,10 @@ class PurgeTaskHelperAPI extends AbstractHelperAPI {
   public static function getResponse(): array {
     return ["Purge" => "Success"];
   }
-
+  
   /**
    * Endpoint to purge a task. Meaning all chunks of a task will be deleted and keyspace and progress will be set to 0.
+   * @throws HTException
    */
   public function actionPost($data): object|array|null {
     $task = self::getTask($data[Task::TASK_ID]);

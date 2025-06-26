@@ -1,5 +1,7 @@
 <?php
 use DBA\File;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
@@ -30,9 +32,14 @@ class RecountFileLinesHelperAPI extends AbstractHelperAPI {
   public static function getResponse(): string {
     return "File";
   }
-
+  
   /**
    * Endpoint to recount files for when there is size mismatch
+   * @param $data
+   * @return object|array|null
+   * @throws HTException
+   * @throws ContainerExceptionInterface
+   * @throws NotFoundExceptionInterface
    */
   public function actionPost($data): object|array|null {
     // first retrieve the file, as fileCountLines does not check any permissions, therfore to be sure call getFile() first, even if it is not required technically

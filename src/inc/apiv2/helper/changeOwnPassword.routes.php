@@ -1,8 +1,4 @@
 <?php
-use DBA\Chunk;
-use DBA\Factory;
-
-use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
@@ -38,9 +34,10 @@ class ChangeOwnPasswordHelperAPI extends AbstractHelperAPI {
   public static function getResponse(): array {
     return ["Change password" => "Password succesfully updated!"];
   }
-
+  
   /**
    * Endpoint to set a password of an user.
+   * @throws HTException
    */
   public function actionPost($data): object|array|null {
     $user = $this->getCurrentUser();

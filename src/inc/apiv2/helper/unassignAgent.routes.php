@@ -33,6 +33,7 @@ class UnassignAgentHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to unassign an agent.
+   * @throws HTException
    */
   public function actionPost($data): object|array|null {
     AgentUtils::assign($data[Agent::AGENT_ID], 0, $this->getCurrentUser());
