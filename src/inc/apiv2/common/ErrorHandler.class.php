@@ -1,21 +1,20 @@
 <?php
+
 use Crell\ApiProblem\ApiProblem;
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Handlers\ErrorHandler;
-use Slim\Exception\HttpMethodNotAllowedException;
 
 /* Quirk to display error JSON style */
-function errorResponse(Response $response, $message, $status = 401)
-{
-    $problem = new ApiProblem($message, "about:blank");
-    $problem->setStatus($status);
-
-    $body = $response->getBody();
-    $body->write($problem->asJson(true));
-
-    return $response
-        ->withHeader("Content-type", "application/problem+json")
-        ->withStatus($status);
+function errorResponse(Response $response, $message, $status = 401): MessageInterface|Response {
+  $problem = new ApiProblem($message, "about:blank");
+  $problem->setStatus($status);
+  
+  $body = $response->getBody();
+  $body->write($problem->asJson(true));
+  
+  return $response
+    ->withHeader("Content-type", "application/problem+json")
+    ->withStatus($status);
 }
 
 class ResourceNotFoundError extends Exception {
@@ -47,5 +46,3 @@ class InternalError extends Exception {
     parent::__construct($message, $code);
   }
 }
-
-?>

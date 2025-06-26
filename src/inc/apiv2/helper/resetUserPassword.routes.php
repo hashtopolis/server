@@ -21,7 +21,7 @@ class ResetUserPasswordHelperAPI extends AbstractHelperAPI {
   public function preCommon(ServerRequestInterface $request): void {
     // nothing, there is no user for this request as it is an unauthenticated request
   }
-
+  
   public static function getResponse(): array {
     return ["Reset" => "Success"];
   }
@@ -33,6 +33,9 @@ class ResetUserPasswordHelperAPI extends AbstractHelperAPI {
     ];
   }
   
+  /**
+   * @throws HTException
+   */
   public function actionPost($data): array|null {
     UserUtils::userForgotPassword($data[User::USERNAME], $data[User::EMAIL]);
     

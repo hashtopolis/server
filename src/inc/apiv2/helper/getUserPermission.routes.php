@@ -1,6 +1,9 @@
 <?php
 
 use DBA\Factory;
+use JetBrains\PhpStorm\NoReturn;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -10,21 +13,26 @@ class GetUserPermissionHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
     return "/api/v2/helper/getUserPermission";
   }
-
+  
   public static function getAvailableMethods(): array {
     return ['GET'];
   }
-
-  public function getRequiredPermissions(string $method): array
-  {
+  
+  public function getRequiredPermissions(string $method): array {
     return [];
   }
-
-  public function getFormFields(): array 
-  {
+  
+  public function getFormFields(): array {
     return [];
   }
-
+  
+  /**
+   * @throws HttpForbidden
+   * @throws NotFoundExceptionInterface
+   * @throws ContainerExceptionInterface
+   * @throws HTException
+   * @throws JsonException
+   */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
     $user = $this->getCurrentUser();
@@ -39,8 +47,8 @@ class GetUserPermissionHelperAPI extends AbstractHelperAPI {
     return $response->withStatus(200)
       ->withHeader("Content-Type", 'application/vnd.api+json;');
   }
-
-  public function actionPost($data): object|array|null {
+  
+  #[NoReturn] public function actionPost($data): object|array|null {
     assert(False, "GetAccessGroups has no POST");
   }
   
