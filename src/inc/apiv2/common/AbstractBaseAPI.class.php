@@ -1205,12 +1205,21 @@ abstract class AbstractBaseAPI {
           foreach ($missing_permissions as $missing_permission) {
             $expands = $permsExpandMatching[$missing_permission];
             foreach ($expands as $expand) {
-              $classType = $this->getToManyRelationships()[$expand]['relationType'];
-              $features = $this->getFeaturesOther($classType);
+              $classType = null;
+              if (isset($this->getToManyRelationships()[$expand])) {
+                $classType = $this->getToManyRelationships()[$expand]['relationType'];
+              }
+              elseif (isset($this->getToOneRelationships()[$expand])) {
+                $classType = $this->getToOneRelationships()[$expand]['relationType'];
+              }
+              
               $expandPublicAttributes = [];
-              foreach ($features as $key => $arr) {
-                if ($arr['public']) {
-                  $expandPublicAttributes[] = $key;
+              if ($classType != null) {
+                $features = $this->getFeaturesOther($classType);
+                foreach ($features as $key => $arr) {
+                  if ($arr['public']) {
+                    $expandPublicAttributes[] = $key;
+                  }
                 }
               }
               if (count($expandPublicAttributes) == 0) {
