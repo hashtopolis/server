@@ -9,6 +9,9 @@ use Middlewares\Utils\HttpErrorException;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
+/**
+ * @throws HttpErrorException
+ */
 function typeLookup($feature): array {
   $type_format = null;
   $type_enum = null;
@@ -39,25 +42,23 @@ function typeLookup($feature): array {
   if (is_array($feature['choices'])) {
     $type_enum = array_keys($feature['choices']);
   }
-
-  $result = [
+  
+  return [
      "type" => $type,
       "type_format" => $type_format,
       "type_enum" => $type_enum,
       "subtype" => $sub_type
   ];
-
-  return $result;
 };
 
-function parsePhpDoc($doc) {
+function parsePhpDoc($doc): array|string|null {
   $cleanedDoc = preg_replace([
     '/^\/\*\*/',   // Remove opening /**
     '/\*\/$/',      // Remove closing */
     '/^\s*\*\s?/m'  // Remove leading * on each line
   ], '', $doc);
-  $cleanedDoc = str_replace("\n", "<br />", $cleanedDoc); //markdown friendly line end
-  return $cleanedDoc;
+  //markdown friendly line end
+  return str_replace("\n", "<br />", $cleanedDoc);
 }
 
 
@@ -127,8 +128,7 @@ function makeRelationships($class, $uri): array {
   foreach ($relationshipsNames as $relationshipName) {
     $self = $uri . "/relationships/" . $relationshipName;
     $related = $uri . "/" . $relationshipName;
-    array_push($properties,
-    [
+    $properties[] = [
       "properties" => [
         $relationshipName => [
           "type" => "object",
@@ -148,9 +148,9 @@ function makeRelationships($class, $uri): array {
             ]
           ]
         ]
-
+      
       ]
-    ]);
+    ];
   }
   return $properties;
 }
@@ -173,35 +173,32 @@ function makeExpandables($class, $container): array {
   foreach ($expandables as $expand => $expandVal) {
       $expandClass = $expandVal["relationType"];
       $expandApiClass = new ($container->get('classMapper')->get($expandClass))($container);
-      array_push($properties,
-        [ 
-          "properties" => [ 
-            "id" => [
-              "type" => "integer"
-            ],
-            "type" => [
-              "type" => "string",
-              "default" => $expand
-            ],
-            "attributes" => [
-              "type" => "object",
-              "properties" => makeProperties($expandApiClass->getAliasedFeatures())
-            ]
-          ]
+    $properties[] = [
+      "properties" => [
+        "id" => [
+          "type" => "integer"
+        ],
+        "type" => [
+          "type" => "string",
+          "default" => $expand
+        ],
+        "attributes" => [
+          "type" => "object",
+          "properties" => makeProperties($expandApiClass->getAliasedFeatures())
         ]
-      );
+      ]
+    ];
   };
   return $properties;
 }
 
 function mapToProperties($map): array {
-  $properties = [];
-  foreach ($map as $key => $value) {
-    $properties[$key] = [
-        "type" => "string",
-        "default" => $value,
+  $properties = array_map(function ($value) {
+    return [
+      "type" => "string",
+      "default" => $value,
     ];
-  }
+  }, $map);
   return [
     "type" => "array",
     "items" => [
@@ -211,6 +208,9 @@ function mapToProperties($map): array {
   ];
 }
 
+/**
+ * @throws HttpErrorException
+ */
 function makeProperties($features, $skipPK=false): array {
   $propertyVal = [];
   foreach ($features as $feature) {
@@ -306,9 +306,9 @@ function makeDescription($isRelation, $method, $singleObject): string {
     case "post":
       if ($isRelation) {
         if ($singleObject) {
-          "POST request to create a to-one relationship link.";
+          $description = "POST request to create a to-one relationship link.";
         } else {
-          "POST request to create a to-many relationship link.";
+          $description = "POST request to create a to-many relationship link.";
         }
       } else {
         $description = "POST request to create a new object. The request must contain the resource record as data with the attributes of the new object." 
@@ -318,9 +318,9 @@ function makeDescription($isRelation, $method, $singleObject): string {
     case "patch":
       if ($isRelation) {
         if ($singleObject) {
-          "PATCH request to update a to one relationship.";
+          $description = "PATCH request to update a to one relationship.";
         } else {
-          "PATCH request to update a to-many relationship link.";
+          $description = "PATCH request to update a to-many relationship link.";
         }
       } else {
         $description = "PATCH request to update attributes of a single object." ;
@@ -416,7 +416,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
     /* Iterate over routes */
     $routes = $app->getRouteCollector()->getRoutes();
     foreach ($routes as $route) {
-      /* Quirck to receive className, since it is hidden in a protected variable */
+      /* Quirk to receive className, since it is hidden in a protected variable */
       $reflectionOfRoute = new \ReflectionObject($route);
       $protectedCallable =  $reflectionOfRoute->getProperty('callable');
       $protectedCallable->setAccessible(true);
@@ -428,7 +428,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       $path = $route->getPattern();
       $method = strtolower($route->getMethods()[0]);
 
-      if (is_string($reflectionCallable) == false) {
+      if (!is_string($reflectionCallable)) {
         /* OPTIONS (CORS) have an function callable, ignore for now */
         continue;
       }
@@ -515,7 +515,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       /**
        * Create component objects
        */
-      if (array_key_exists($name, $components) == false) {
+      if (!array_key_exists($name, $components)) {
         $properties_return_post_patch = [
           "data" => [
             "type" => "array",
@@ -675,7 +675,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       if ($isRelation && in_array($method, ["post", "patch", "delete"], true)) {
         $paths[$path][$method]["responses"]["204"] = 
         [
-          "description" => "Succesfull operation"
+          "description" => "Successfull operation"
         ];
       }
       if ($singleObject) {
@@ -886,16 +886,15 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ]
           ]];
 
-        if ($method == 'get' && !str_contains($path, "relation:")){
-          array_push($parameters, 
-          [
+        if (!str_contains($path, "relation:")){
+          $parameters[] = [
             "name" => "include",
             "in" => "query",
             "schema" => [
               "type" => "string"
             ],
             "description" => "Items to include. Comma seperated"
-          ]);
+          ];
         };
       } else {
         if ($method == 'get') {
@@ -1140,7 +1139,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
     ];
 
     $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["head"]["responses"]["200"] = [
-      "description" => "sucessful request",
+      "description" => "successful request",
       "headers" => [
         "Tus-Resumable" => getTUSheader(),
         "Upload-Offset" => [
@@ -1171,7 +1170,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
     ];
 
     $paths["/api/v2/helper/importFile"]["post"]["responses"]["201"] = [
-      "description" => "succesful operation",
+      "description" => "successful operation",
       "headers" => [
         "Tus-Resumable" => getTUSheader(),
         "Location" => [
