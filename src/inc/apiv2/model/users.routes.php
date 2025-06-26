@@ -73,28 +73,22 @@ class UserAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param $data
+   * @return int
+   * @throws HTException
+   * @throws HttpConflict
    * @throws HttpError
    */
   protected function createObject($data): int {
-    UserUtils::createUser(
+    $user = UserUtils::createUser(
       $data[User::USERNAME],
       $data[User::EMAIL],
       $data[User::RIGHT_GROUP_ID],
-      $this->getCurrentUser()
+      $this->getCurrentUser(),
+      $data[User::IS_VALID] ?? false,
     );
     
-    /* Hackish way to retrieve object since Id is not returned on creation */
-    $qFs = [
-      new QueryFilter(User::USERNAME, $data[USER::USERNAME], '='),
-      new QueryFilter(User::EMAIL, $data[User::EMAIL], '='),
-      new QueryFilter(User::RIGHT_GROUP_ID, $data[User::RIGHT_GROUP_ID], '=')
-    ];
-    
-    $oF = new OrderFilter(User::USER_ID, "DESC");
-    $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-    assert(count($objects) == 1);
-    
-    return $objects[0]->getId();
+    return $user->getId();
   }
   
   function getAllPostParameters(array $features): array {
