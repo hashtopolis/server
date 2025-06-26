@@ -14,9 +14,10 @@ class AgentBinaryUtils {
    * @param string $version
    * @param string $updateTrack
    * @param User $user
-   * @throws HTException
+   * @return AgentBinary
+   * @throws HttpError
    */
-  public static function newBinary($type, $os, $filename, $version, $updateTrack, $user) {
+  public static function newBinary(string $type, string $os, string $filename, string $version, string $updateTrack, User $user): AgentBinary {
     if (strlen($version) == 0) {
       throw new HttpError("Version cannot be empty!");
     }
@@ -29,8 +30,10 @@ class AgentBinaryUtils {
       throw new HttpError("You cannot have two binaries with the same type!");
     }
     $agentBinary = new AgentBinary(null, $type, $version, $os, $filename, $updateTrack, '');
-    Factory::getAgentBinaryFactory()->save($agentBinary);
+    $agentBinary = Factory::getAgentBinaryFactory()->save($agentBinary);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "New Binary " . $agentBinary->getFilename() . " was added!");
+    
+    return $agentBinary;
   }
   
   /**

@@ -363,14 +363,15 @@ class AgentUtils {
     Factory::getAgentFactory()->delete($agent);
     return true;
   }
-
+  
   /**
    * @param int $agentId
    * @param int $taskId
    * @param User $user
    * @throws HTException
+   * @throws HttpError
    */
-  public static function assign($agentId, $taskId, $user) {
+  public static function assign(int $agentId, int $taskId, User $user): ?Assignment {
     $agent = AgentUtils::getAgent($agentId, $user);
 
     if ($taskId == 0 || empty($taskId)) { // unassign
@@ -380,7 +381,7 @@ class AgentUtils {
         header("Location: tasks.php?id=" . intval($_GET['task']));
         die();
       }
-      return;
+      return null;
     }
 
     $task = Factory::getTaskFactory()->get(intval($taskId));
@@ -414,12 +415,13 @@ class AgentUtils {
     }
     else {
       $assignment = new Assignment(null, $task->getId(), $agent->getId(), $benchmark);
-      Factory::getAssignmentFactory()->save($assignment);
+      $assignment = Factory::getAssignmentFactory()->save($assignment);
     }
     if (isset($_GET['task'])) {
       header("Location: tasks.php?id=" . intval($_GET['task']));
       die();
     }
+    return $assignment;
   }
 
   /**
