@@ -1145,10 +1145,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     $data = $jsonBody['data'];
     
-    $relationKey = $this->getToOneRelationships()[$args['relation']]['relationKey'];
-    if ($relationKey == null) {
+    $relation = $this->getToOneRelationships()[$args['relation']];
+    if ($relation == null) {
       throw new HttpError("Relation does not exist!");
     }
+    $relationKey = $relation['relationKey'];
+    $relationType = $relation['relationType'];
     
     $features = $this->getFeatures();
     $this->isAllowedToMutate($features, $relationKey);
@@ -1156,6 +1158,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $factory = $this->getFactory();
     $object = $this->doFetch(intval($args['id']));
     if ($data == null) {
+      // TODO: check if it is allowed to set to null
       $this->DatabaseSet($object, $relationKey, null);
     }
     elseif (!$this->validateResourceRecord($data)) {
@@ -1163,7 +1166,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     else {
       // check if foreign key exists before inserting
-      $check = $factory->get($data["id"]);
+      $otherFactory = self::getModelFactory($relationType);
+      $check = $otherFactory->get($data["id"]);
       if ($check == null){
         throw new HttpError("Provided foreign key to patch to does not exist!");
       }
