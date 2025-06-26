@@ -83,6 +83,12 @@ abstract class AbstractBaseAPI
    * validatePermissions function call
   */
   private $permissionErrors;
+  
+  /**
+   * @var array list of model classes which will need to be filtered for public attributes because
+   * no read access on the whole model exists
+   */
+  protected $publicAttributeFilterClasses;
 
   /**
    * Constructor receives container instance
@@ -533,8 +539,7 @@ abstract class AbstractBaseAPI
   /** 
    * Convert DB object JSON:API Resource Object
    */
-  protected function obj2Resource(object $obj, array $expandResult = [])
-  {
+  protected function obj2Resource(object $obj, array $expandResult = []): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -556,6 +561,11 @@ abstract class AbstractBaseAPI
       if ($feature['pk'] === true) {
         continue;
       }
+      
+      if (is_array($this->publicAttributeFilterClasses) && in_array($obj::class, $this->publicAttributeFilterClasses) && $feature['public'] !== true){
+        continue;
+      }
+      
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
 
@@ -912,13 +922,23 @@ abstract class AbstractBaseAPI
 
     /* Validate expand parameters for required permissions */
     $required_perms = [];
+    $permsExpandMatching = [];
     foreach ($queryExpands as $expand) {
-        array_push($required_perms, ...self::getExpandPermissions($expand));
+        $expandedPerms = self::getExpandPermissions($expand);
+        foreach($expandedPerms as $expandedPerm) {
+          if (!isset($permsExpandMatching[$expandedPerm])){
+            $permsExpandMatching[$expandedPerm] = [$expand];
+          }
+          else{
+            $permsExpandMatching[$expandedPerm][] = $expand;
+          }
+        }
+        array_push($required_perms, ...$expandedPerms);
     }
-    if ($this->validatePermissions($required_perms) === FALSE) {
+    $permissionResponse = $this->validatePermissions($required_perms, $permsExpandMatching);
+    if ($permissionResponse === FALSE) {
       throw new HttpError('Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
     }
-
     return $queryExpands;
   }
 
@@ -1110,11 +1130,10 @@ abstract class AbstractBaseAPI
   /** 
    * Validate permissions
    */
-  protected function validatePermissions(array $required_perms): bool {
+  protected function validatePermissions(array $required_perms, array $permsExpandMatching = []): bool|array {
     // Retrieve permissions from RightGroup part of the User
     $group = Factory::getRightGroupFactory()->get($this->user->getRightGroupId());
     
-  
     if ($group->getPermissions() == 'ALL') {
       // Special (legacy) case for administative access, enable all available permissions
       $all_perms = array_keys(self::$acl_mapping);
@@ -1141,11 +1160,61 @@ abstract class AbstractBaseAPI
     // Find if all permissions are matched
     $missing_permissions = array_diff($required_perms, $user_available_perms);
     if (count($missing_permissions) > 0) {
+      if($this instanceof AbstractModelAPI) {
+        $features = $this->getFeatures();
+        foreach ($features as $key => $arr) {
+          if ($arr['public']) {
+            $this->addPublicAttributeClass($this->getDBAClass());
+          }
+        }
+        
+        $missingPermissionMatching = true;
+        // if we also have permissions from expanded entries we need to check them as well
+        if (count($permsExpandMatching) && $this instanceof AbstractModelAPI) {
+          foreach ($missing_permissions as $missing_permission) {
+            $expands = $permsExpandMatching[$missing_permission];
+            foreach ($expands as $expand) {
+              $classType = $this->getToManyRelationships()[$expand]['relationType'];
+              $features = $this->getFeaturesOther($classType);
+              $expandPublicAttributes = [];
+              foreach ($features as $key => $arr) {
+                if ($arr['public']) {
+                  $expandPublicAttributes[] = $key;
+                }
+              }
+              if (count($expandPublicAttributes) == 0) {
+                $missingPermissionMatching = false;
+                break;
+              }
+              else {
+                $this->addPublicAttributeClass($classType);
+              }
+            }
+          }
+        }
+        if (!$missingPermissionMatching) {
+          $this->publicAttributeFilterClasses = [];
+        }
+        
+        if (count($this->publicAttributeFilterClasses) > 0) {
+          // if there are public attributes we don't return false, but the list of classes which needs to be filtered is saved in the attribteFilterClasses list
+          return TRUE;
+        }
+      }
       $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" .join(", ", $required_perms). "', user_permissions='" . join(", ", $user_available_perms) . "']");
       return FALSE;
     } else {
       $this->permissionErrors = array();
       return TRUE;
+    }
+  }
+  
+  protected function addPublicAttributeClass($class): void {
+    if(!is_array($this->publicAttributeFilterClasses)){
+      $this->publicAttributeFilterClasses = [];
+    }
+    if(!in_array($class, $this->publicAttributeFilterClasses)){
+      $this->publicAttributeFilterClasses[] = $class;
     }
   }
 
@@ -1176,8 +1245,7 @@ abstract class AbstractBaseAPI
       throw new HttpForbidden($e->getMessage() . 
                             "(valid methods are for model are: " . join(",", $this->getAvailableMethods()) . ")");  
     }
-
-
+    
     if ($this->validatePermissions($required_perms) === FALSE) {
       throw new HttpForbidden(join('||', $this->permissionErrors));
     }
