@@ -26,7 +26,7 @@ class UnassignAgentHelperAPI extends AbstractHelperAPI {
       Agent::AGENT_ID => ["type" => "int"],
     ];
   }
-
+  
   public static function getResponse(): array {
     return ["Unassign" => "Success"];
   }

@@ -1,4 +1,5 @@
 <?php
+
 use DBA\File;
 use JetBrains\PhpStorm\NoReturn;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -22,17 +23,16 @@ class GetFileHelperAPI extends AbstractHelperAPI {
   public function getRequiredPermissions(string $method): array {
     return [File::PERM_READ];
   }
-
+  
   /**
    * getfile is different because it returns actual binary data.
    */
   public static function getResponse(): null {
     return null;
   }
-
-
-  #[NoReturn] public function actionPost(array $data): object|array|null
-  {
+  
+  
+  #[NoReturn] public function actionPost(array $data): object|array|null {
     assert(False, "GetFile has no POST");
   }
   
@@ -55,17 +55,17 @@ class GetFileHelperAPI extends AbstractHelperAPI {
     if (!is_readable($filename)) {
       throw new HttpForbiddenException($request, "Not allowed to read file");
     }
-
+    
     return $filename;
   }
-
+  
   /**
    * Handles HTTP range requests for partial content delivery
-   * 
+   *
    * This method processes the `Range` header from the HTTP request
    * to determine the start and end byte positions for the response,
    * ensuring the range is valid and updates the file pointer accordingly.
-   * 
+   *
    * @param int &$start A reference to the starting byte of the range. This value will be updated.
    * @param int &$end A reference to the ending byte of the range. This value will be updated.
    * @param int &$size The total size of the content in bytes.
@@ -76,8 +76,8 @@ class GetFileHelperAPI extends AbstractHelperAPI {
    *
    * @note This function assumes the presence of the `HTTP_RANGE` header in the `$_SERVER` superglobal.
    */
-  protected function handleRangeRequest(int &$start, int &$end,  int &$size, &$fp): bool {
-
+  protected function handleRangeRequest(int &$start, int &$end, int &$size, &$fp): bool {
+    
     $c_start = $start;
     $c_end = $end;
     
@@ -110,23 +110,23 @@ class GetFileHelperAPI extends AbstractHelperAPI {
     fseek($fp, $start);
     return true;
   }
-
+  
   /**
    * Description of get params for swagger.
    */
   public function getParamsSwagger(): array {
     return [
       [
-      "in" => "query",
-      "name" => "file",
-      "schema" => [
-        "type" => "integer",
-        "format" => "int32"
-      ],
-      "required" => true,
-      "example" => 1,
-      "description" => "The ID of the file to download."
-    ]
+        "in" => "query",
+        "name" => "file",
+        "schema" => [
+          "type" => "integer",
+          "format" => "int32"
+        ],
+        "required" => true,
+        "example" => 1,
+        "description" => "The ID of the file to download."
+      ]
     ];
   }
   
@@ -145,56 +145,58 @@ class GetFileHelperAPI extends AbstractHelperAPI {
     if ($fileParam == null) {
       throw new HttpErrorException("No File query param has been provided");
     }
-    $file_id = intval($fileParam); 
-
+    $file_id = intval($fileParam);
+    
     $filename = $this->validateFile($request, $file_id);
-
-    $size = Util::filesize($filename); 
+    
+    $size = Util::filesize($filename);
     $lastModified = filemtime($filename);
-
+    
     $etag = md5($lastModified . $size);
     $ifNoneMatch = $request->getHeaderLine('If-None-Match');
     if ($ifNoneMatch === $etag) {
-        return $response->withStatus(304);
+      return $response->withStatus(304);
     }
-
+    
     $exp = explode(".", $filename);
     if ($exp[sizeof($exp) - 1] == '7z') {
       $contentType = "application/x-7z-compressed";
-    } else {
+    }
+    else {
       $contentType = "application/force-download";
     }
     $fp = @fopen($filename, "rb");
-
+    
     if (!$fp) {
       throw new HttpForbiddenException($request, "Can't open the file");
     }
-
+    
     $start = 0;          // Start byte
     $end = $size - 1;    // End byte
-
+    
     $status = 200;
     if (isset($_SERVER['HTTP_RANGE'])) {
-      if(!$this->handleRangeRequest($start, $end, $size, $fp)) {
+      if (!$this->handleRangeRequest($start, $end, $size, $fp)) {
         fclose($fp);
         return $response->withStatus(416)
-          ->withHeader("Content-Range",  "bytes $start-$end/$size");
-      } else {
+          ->withHeader("Content-Range", "bytes $start-$end/$size");
+      }
+      else {
         $status = 206;
       }
     }
-
+    
     $length = $end - $start + 1; //content-length
     $buffer = 1024 * 100;
     $stream = $response->getBody();
     while (!feof($fp) && ($p = ftell($fp)) <= $end) {
       if ($p + $buffer > $end) {
-          $buffer = $end - $p + 1;
+        $buffer = $end - $p + 1;
       }
-      $stream->write(fread($fp, $buffer));    
+      $stream->write(fread($fp, $buffer));
     }
     fclose($fp);
-
+    
     return $response->withStatus($status)
       ->withHeader("Content-Type", $contentType)
       ->withHeader("Content-Description", $filename)
@@ -204,11 +206,10 @@ class GetFileHelperAPI extends AbstractHelperAPI {
       ->withHeader("Content-Length", $length)
       ->withHeader("ETag", $etag);
   }
-
-  static public function register($app): void
-  {
+  
+  static public function register($app): void {
     $baseUri = GetFileHelperAPI::getBaseUri();
-
+    
     /* Allow CORS preflight requests */
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;

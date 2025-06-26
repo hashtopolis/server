@@ -13,18 +13,16 @@ class GetUserPermissionHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
     return "/api/v2/helper/getUserPermission";
   }
-
+  
   public static function getAvailableMethods(): array {
     return ['GET'];
   }
-
-  public function getRequiredPermissions(string $method): array
-  {
+  
+  public function getRequiredPermissions(string $method): array {
     return [];
   }
-
-  public function getFormFields(): array 
-  {
+  
+  public function getFormFields(): array {
     return [];
   }
   
@@ -49,7 +47,7 @@ class GetUserPermissionHelperAPI extends AbstractHelperAPI {
     return $response->withStatus(200)
       ->withHeader("Content-Type", 'application/vnd.api+json;');
   }
-
+  
   #[NoReturn] public function actionPost($data): object|array|null {
     assert(False, "GetAccessGroups has no POST");
   }

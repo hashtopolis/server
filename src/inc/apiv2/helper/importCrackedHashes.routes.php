@@ -30,7 +30,7 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
       "separator" => ['type' => 'str'],
     ];
   }
-
+  
   public static function getResponse(): array {
     return [
       "totalLines" => 100,

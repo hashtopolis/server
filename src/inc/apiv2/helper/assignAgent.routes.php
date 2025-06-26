@@ -29,7 +29,7 @@ class AssignAgentHelperAPI extends AbstractHelperAPI {
       Task::TASK_ID => ["type" => "int"],
     ];
   }
-
+  
   public static function getResponse(): array {
     return ["Assign" => "Success"];
   }
