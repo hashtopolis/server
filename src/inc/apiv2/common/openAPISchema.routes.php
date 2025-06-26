@@ -18,38 +18,48 @@ function typeLookup($feature): array {
   $sub_type = null;
   if ($feature['type'] == 'int') {
     $type = "integer";
-  } elseif ($feature['type'] == 'uint64') {
+  }
+  elseif ($feature['type'] == 'uint64') {
     /* TODO: Specify integer ranges */
     $type = "integer";
-  } elseif ($feature['type'] == 'int64') {
+  }
+  elseif ($feature['type'] == 'int64') {
     $type = "integer";
     $type_format = "int64";
-  } elseif ($feature['type'] == 'dict') {
+  }
+  elseif ($feature['type'] == 'dict') {
     $type = "object";
-  } elseif ($feature['type'] == 'array') {
+  }
+  elseif ($feature['type'] == 'array') {
     $type = "array";
     $sub_type = "integer"; //TODO: subtype is hardcoded because we only have int arrays
-  } elseif ($feature['type'] == 'bool') {
+  }
+  elseif ($feature['type'] == 'bool') {
     $type = "boolean";
-  } elseif (str_starts_with($feature['type'], 'str(')) {
+  }
+  elseif (str_starts_with($feature['type'], 'str(')) {
     $type = "string";
-  } elseif ($feature['type'] ==  'str') {
+  }
+  elseif ($feature['type'] == 'str') {
     $type = "string";
-  } else {
+  }
+  else {
     throw new HttpErrorException("Cast for type  '" . $feature['type'] . "' not implemented");
   }
-
+  
   if (is_array($feature['choices'])) {
     $type_enum = array_keys($feature['choices']);
   }
   
   return [
-     "type" => $type,
-      "type_format" => $type_format,
-      "type_enum" => $type_enum,
-      "subtype" => $sub_type
+    "type" => $type,
+    "type_format" => $type_format,
+    "type_enum" => $type_enum,
+    "subtype" => $sub_type
   ];
-};
+}
+
+;
 
 function parsePhpDoc($doc): array|string|null {
   $cleanedDoc = preg_replace([
@@ -81,7 +91,8 @@ function makeJsonApiHeader(): array {
         "default" => "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
       ]
     ]
-  ]];
+  ]
+  ];
 }
 
 // "links": {
@@ -117,7 +128,8 @@ function makeLinks($uri): array {
         "default" => $self . "&page[before]=25"
       ]
     ]
-  ]];
+  ]
+  ];
 }
 
 //TODO relationship array is unnecessarily indexed in the swagger UI 
@@ -157,12 +169,12 @@ function makeRelationships($class, $uri): array {
 
 function getTUSheader(): array {
   return [
-      "description" => "Indicates the TUS version the server supports.
+    "description" => "Indicates the TUS version the server supports.
         Must always be set to `1.0.0` in compliant servers.",
-      "schema" => [
-        "type" => "string",
-        "enum" => "enum: ['1.0.0']"
-      ] 
+    "schema" => [
+      "type" => "string",
+      "enum" => "enum: ['1.0.0']"
+    ]
   ];
 }
 
@@ -171,8 +183,8 @@ function makeExpandables($class, $container): array {
   $properties = [];
   $expandables = array_merge($class->getToOneRelationships(), $class->getToManyRelationships());
   foreach ($expandables as $expand => $expandVal) {
-      $expandClass = $expandVal["relationType"];
-      $expandApiClass = new ($container->get('classMapper')->get($expandClass))($container);
+    $expandClass = $expandVal["relationType"];
+    $expandApiClass = new ($container->get('classMapper')->get($expandClass))($container);
     $properties[] = [
       "properties" => [
         "id" => [
@@ -211,7 +223,7 @@ function mapToProperties($map): array {
 /**
  * @throws HttpErrorException
  */
-function makeProperties($features, $skipPK=false): array {
+function makeProperties($features, $skipPK = false): array {
   $propertyVal = [];
   foreach ($features as $feature) {
     if ($skipPK && $feature['pk']) {
@@ -230,24 +242,26 @@ function makeProperties($features, $skipPK=false): array {
     }
   }
   return $propertyVal;
-};
+}
 
-function buildPatchPost($properties, $name, $id=null): array {
+;
+
+function buildPatchPost($properties, $name, $id = null): array {
   $result = ["data" => [
-      "type" => "object",
-      "properties" => [
-        "type" => [
-          "type" => "string",
-          "default" => $name
-        ],
-        "attributes" => [
-          "type" => "object",
-          "properties" => $properties
-          ]
+    "type" => "object",
+    "properties" => [
+      "type" => [
+        "type" => "string",
+        "default" => $name
+      ],
+      "attributes" => [
+        "type" => "object",
+        "properties" => $properties
       ]
-    ]  
+    ]
+  ]
   ];
-
+  
   if ($id) {
     $result["data"]["properties"]["id"] = [
       "type" => "integer",
@@ -259,28 +273,29 @@ function buildPatchPost($properties, $name, $id=null): array {
 /**
  * This function builds the post/patch attributes for a relationship. When $istomany is false,
  * it would build the attributes for a to one relationship. If it is true it will build it for a too many relationship.
- * */ 
+ * */
 function buildPostPatchRelation($name, $isToMany): array {
   $resourceRecord = [
-      "type" => "object",
-      "properties" => [
-        "type" => [
-          "type" => "string",
-          "default" => $name
-        ],
-        "id" => [
-          "type" => "integer",
-          "default" => 1
-        ]
+    "type" => "object",
+    "properties" => [
+      "type" => [
+        "type" => "string",
+        "default" => $name
+      ],
+      "id" => [
+        "type" => "integer",
+        "default" => 1
       ]
+    ]
   ];
   if ($isToMany) {
     return ["data" => [
       "type" => "array",
-      "items" => $resourceRecord    
-      ]
+      "items" => $resourceRecord
+    ]
     ];
-  } else {
+  }
+  else {
     return ["data" => $resourceRecord];
   }
 }
@@ -290,15 +305,18 @@ function makeDescription($isRelation, $method, $singleObject): string {
   switch ($method) {
     case "get":
       if ($isRelation) {
-        if($singleObject) {
+        if ($singleObject) {
           $description = "GET request for  for a to-one relationship link. Returns the resource record of the object that is part of the specified relation.";
-        } else {
+        }
+        else {
           $description = "GET request for a to-many relationship link. Returns a list of resource records of objects that are part of the specified relation.";
         }
-      } else {
+      }
+      else {
         if ($singleObject) {
           $description = "GET request to retrieve a single object.";
-        } else {
+        }
+        else {
           $description = "GET many request to retrieve multiple objects.";
         }
       }
@@ -307,24 +325,28 @@ function makeDescription($isRelation, $method, $singleObject): string {
       if ($isRelation) {
         if ($singleObject) {
           $description = "POST request to create a to-one relationship link.";
-        } else {
+        }
+        else {
           $description = "POST request to create a to-many relationship link.";
         }
-      } else {
-        $description = "POST request to create a new object. The request must contain the resource record as data with the attributes of the new object." 
+      }
+      else {
+        $description = "POST request to create a new object. The request must contain the resource record as data with the attributes of the new object."
           . "To add relationships, a relationships object can be added with the resource records of the relations that are part of this object.";
-        }
+      }
       break;
     case "patch":
       if ($isRelation) {
         if ($singleObject) {
           $description = "PATCH request to update a to one relationship.";
-        } else {
+        }
+        else {
           $description = "PATCH request to update a to-many relationship link.";
         }
-      } else {
-        $description = "PATCH request to update attributes of a single object." ;
-        }        
+      }
+      else {
+        $description = "PATCH request to update attributes of a single object.";
+      }
   }
   return $description;
 }
@@ -334,11 +356,11 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
   $group->options('', function (Request $request, Response $response): Response {
     return $response;
   });
-
+  
   $group->get('', function (Request $request, Response $response) use ($app): Response {
     /* Hold collection of all scopes discovered */
     $all_scopes = [];
-
+    
     $paths = [];
     $components["ListResponse"] = [
       "type" => "object",
@@ -412,34 +434,34 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         ]
       ]
     ];
-
+    
     /* Iterate over routes */
     $routes = $app->getRouteCollector()->getRoutes();
     foreach ($routes as $route) {
       /* Quirk to receive className, since it is hidden in a protected variable */
       $reflectionOfRoute = new \ReflectionObject($route);
-      $protectedCallable =  $reflectionOfRoute->getProperty('callable');
+      $protectedCallable = $reflectionOfRoute->getProperty('callable');
       $protectedCallable->setAccessible(true);
       $reflectionCallable = ($protectedCallable->getValue($route));
-
+      
       /* Assume only one method per route call */
       assert(sizeof($route->getMethods()) == 1, "More than 1 methods found for this route");
       /* Path relative to basePath */
       $path = $route->getPattern();
       $method = strtolower($route->getMethods()[0]);
-
+      
       if (!is_string($reflectionCallable)) {
         /* OPTIONS (CORS) have an function callable, ignore for now */
         continue;
       }
-
+      
       /* Retrieve parameters */
       $explodedCallable = explode(':', $reflectionCallable);
       $apiClassName = $explodedCallable[0];
       $apiMethod = $explodedCallable[1];
       $class = new $apiClassName($app->getContainer());
-
-      if (!($class instanceof AbstractModelAPI)){
+      
+      if (!($class instanceof AbstractModelAPI)) {
         $name = $class::class;
         $apiMethod = ($apiMethod == "processPost" && $name !== "ImportFileHelperAPI") ? "actionPost" : $apiMethod;
         $reflectionApiMethod = new ReflectionMethod($name, $apiMethod);
@@ -451,7 +473,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             "type" => "object",
             "properties" => $properties,
           ];
-        if($method == "post") {
+        if ($method == "post") {
           $reflectionMethodFormFields = new ReflectionMethod($name, "getFormFields");
           $bodyDescription = parsePhpDoc($reflectionMethodFormFields->getDocComment());
           $paths[$path][$method]["requestBody"] = [
@@ -460,11 +482,13 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             "content" => [
               "application/json" => [
                 "schema" => [
-                  '$ref' => "#/components/schemas/" . $name 
+                  '$ref' => "#/components/schemas/" . $name
                 ],
-              ]        
-          ]];
-        } elseif($method == "get") {
+              ]
+            ]
+          ];
+        }
+        elseif ($method == "get") {
           $paths[$path][$method]["parameters"] = $class->getParamsSwagger();
         }
         $request_response = $class->getResponse();
@@ -473,44 +497,47 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           $responseProperties = mapToProperties($request_response);
           $components[$name . "response"] = $responseProperties;
           $ref = "#/components/schemas/" . $name . "Response";
-        } else if (is_string($request_response)) {
+        }
+        else if (is_string($request_response)) {
           $ref = "#/components/schemas/" . $request_response . "SingleResponse";
-        } else if ($name == "ImportFileHelperAPI"){
+        }
+        else if ($name == "ImportFileHelperAPI") {
           //ImportFileHelperAPI is hardcoded, because its different than other helpers.
           continue;
         }
         if (isset($ref)) {
-        $paths[$path][$method]["responses"]["200"] = [
-          "description" => "successful operation",
-          "content" => [
-            "application/json" => [
-              "schema" => [
-                '$ref' => $ref
+          $paths[$path][$method]["responses"]["200"] = [
+            "description" => "successful operation",
+            "content" => [
+              "application/json" => [
+                "schema" => [
+                  '$ref' => $ref
+                ]
               ]
             ]
-          ]
-        ];
-      } else {
-        $paths[$path][$method]["responses"]["200"] = [
-          "description" => "successful operation",
-        ];
-      }
+          ];
+        }
+        else {
+          $paths[$path][$method]["responses"]["200"] = [
+            "description" => "successful operation",
+          ];
+        }
         continue;
       };
-
+      
       /* Quick to find out if single parameter object is used */
       $singleObject = ((strstr($path, '/{id:')) !== false);
       $name = substr($class->getDBAClass(), 4);
       $uri = $class->getBaseUri();
-
-      $isRelation = (strstr($path , "/relationships/")) !== false;
+      
+      $isRelation = (strstr($path, "/relationships/")) !== false;
       if (str_contains($path, "relation:")) {
         $relation = rtrim(explode("relation:", $path)[1], "}");
         $isToMany = array_key_exists($relation, $class::getToManyRelationships());
         $isToOne = array_key_exists($relation, $class::getToOneRelationships());
         assert(!($isToMany && $isToOne), "An relationship cant be a to one and to many at the same time.");
       }
-
+      
       $expandables = implode(",", $class->getExpandables());
       /**
        * Create component objects
@@ -525,7 +552,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
                 "id" => [
                   "type" => "integer",
                 ],
-                "type" => [ 
+                "type" => [
                   "type" => "string",
                   "default" => $name
                 ],
@@ -537,23 +564,23 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ]
           ]
         ];
-
-        $relationships = ["relationships" =>[
+        
+        $relationships = ["relationships" => [
           "type" => "object",
           "properties" => makeRelationships($class, $uri)
         ]
         ];
-        $included = ["included" => [ 
+        $included = ["included" => [
           "type" => "array",
           "items" => [
             "type" => "object",
             "properties" => makeExpandables($class, $app->getContainer())
           ],
-          ]
+        ]
         ];
-
+        
         $properties_get_single = array_merge($properties_return_post_patch, $relationships, $included);
-
+        
         $json_api_header = makeJsonApiHeader();
         $links = makeLinks($uri);
         $properties_return_post_patch = array_merge($json_api_header, $properties_return_post_patch);
@@ -562,13 +589,13 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         $properties_patch = buildPatchPost(makeProperties($class->getPatchValidFeatures(), true), $name);
         $properties_patch_post_relation = buildPostPatchRelation($relation, ($isToMany && !$isToOne));
         $responseGetRelation = $properties_patch_post_relation;
-
+        
         $components[$name . "Create"] =
           [
             "type" => "object",
             "properties" => $properties_create,
           ];
-
+        
         $components[$name . "Patch"] =
           [
             "type" => "object",
@@ -581,30 +608,30 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             "properties" => $properties_get,
           ];
         
-        $components[$name . "Relation" . ucfirst($relation)] = 
+        $components[$name . "Relation" . ucfirst($relation)] =
           [
             "type" => "object",
             "properties" => $properties_patch_post_relation,
           ];
-
+        
         $components[$name . "Relation" . ucfirst($relation) . "GetResponse"] =
-        [
-          "type" => "object",
-          "properties" => $responseGetRelation 
-        ];
-
+          [
+            "type" => "object",
+            "properties" => $responseGetRelation
+          ];
+        
         $components[$name . "SingleResponse"] =
           [
             "type" => "object",
             "properties" => $properties_get_single
           ];
-
+        
         $components[$name . "PostPatchResponse"] =
           [
             "type" => "object",
             "properties" => $properties_return_post_patch
           ];
-
+        
         $components[$name . "ListResponse"] =
           [
             "allOf" => [
@@ -625,21 +652,21 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ]
           ];
       }
-
+      
       /**
        * Create path objects
        */
-
+      
       /* Determine the scopes required for the call */
       $required_scopes = $class->getRequiredPermissions($method);
       array_push($all_scopes, ...$required_scopes);
-
+      
       $paths[$path][$method] = [
         "tags" => [
           $name . 's'
         ],
         "responses" => [
-
+          
           "400" => [
             "description" => "Invalid request",
             "content" => [
@@ -668,30 +695,30 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ]
           ]
         ]
-      ]; 
-
+      ];
+      
       $paths[$path][$method]["description"] = makeDescription($isRelation, $method, $singleObject);
-
+      
       if ($isRelation && in_array($method, ["post", "patch", "delete"], true)) {
-        $paths[$path][$method]["responses"]["204"] = 
-        [
-          "description" => "Successfull operation"
-        ];
+        $paths[$path][$method]["responses"]["204"] =
+          [
+            "description" => "Successfull operation"
+          ];
       }
       if ($singleObject) {
         /* Single objects could not exists */
         $paths[$path][$method]["responses"]["404"] =
-        [
-          "description" => "Not Found",
-          "content" => [
-            "application/json" => [
-              "schema" => [
-                '$ref' => "#/components/schemas/NotFoundResponse"
+          [
+            "description" => "Not Found",
+            "content" => [
+              "application/json" => [
+                "schema" => [
+                  '$ref' => "#/components/schemas/NotFoundResponse"
+                ]
               ]
             ]
-          ]
-        ];
-
+          ];
+        
         /* Method specific responses and requests for single objects */
         if ($method == 'get') {
           if (!$isRelation && str_contains($path, "relation:")) {
@@ -701,12 +728,13 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
                 "application/json" => [
                   "schema" => [
                     '$ref' => "#/components/schemas/" . $name . "Relation" . ucfirst($relation) . "GetResponse"
-
+                  
                   ]
                 ]
               ]
             ];
-          } else {
+          }
+          else {
             $paths[$path][$method]["responses"]["200"] = [
               "description" => "successful operation",
               "content" => [
@@ -718,7 +746,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
               ]
             ];
           }
-
+          
           /* Supported by client, not by browser, disabled for APIdocs */
           // /* JSON object required */
           // $paths[$path][$method]["requestBody"] = [
@@ -730,8 +758,9 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           //       ],
           //     ],     
           // ]];
-         
-        } elseif ($method == 'patch') {
+          
+        }
+        elseif ($method == 'patch') {
           if ($isRelation) {
             $paths[$path][$method]["requestBody"] = [
               "required" => true,
@@ -740,9 +769,11 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
                   "schema" => [
                     '$ref' => "#/components/schemas/" . $name . "Relation" . ucfirst($relation)
                   ],
-                ],     
-            ]];
-          } else {
+                ],
+              ]
+            ];
+          }
+          else {
             $paths[$path][$method]["requestBody"] = [
               "required" => true,
               "content" => [
@@ -750,25 +781,27 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
                   "schema" => [
                     '$ref' => "#/components/schemas/" . $name . "Patch"
                   ],
-                ],     
-            ]];
-
-          $paths[$path][$method]["responses"]["200"] = [
-            "description" => "successful operation",
-            "content" => [
-              "application/json" => [
-                "schema" => [
-                  '$ref' => "#/components/schemas/" . $name . "PostPatchResponse"
+                ],
+              ]
+            ];
+            
+            $paths[$path][$method]["responses"]["200"] = [
+              "description" => "successful operation",
+              "content" => [
+                "application/json" => [
+                  "schema" => [
+                    '$ref' => "#/components/schemas/" . $name . "PostPatchResponse"
+                  ]
                 ]
               ]
-            ]
-          ];
+            ];
           }
-        } elseif ($method == 'delete') {
+        }
+        elseif ($method == 'delete') {
           $paths[$path][$method]["responses"]["204"] = [
             "description" => "successfully deleted",
           ];
-
+          
           if ($isRelation) {
             $paths[$path][$method]["requestBody"] = [
               "required" => true,
@@ -777,31 +810,38 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
                   "schema" => [
                     '$ref' => "#/components/schemas/" . $name . "Relation" . ucfirst($relation)
                   ],
-                ],     
-            ]];
-          } else {
+                ],
+              ]
+            ];
+          }
+          else {
             /* Empty JSON object required */
             $paths[$path][$method]["requestBody"] = [
               "required" => true,
               "content" => [
-                "application/json" => [],     
-            ]];
+                "application/json" => [],
+              ]
+            ];
           }
-        } elseif ($method == 'post') {
+        }
+        elseif ($method == 'post') {
           $paths[$path][$method]["responses"]["204"] = [
             "description" => "successfully created",
           ];
-
-                    /* Empty JSON object required */
-                    $paths[$path][$method]["requestBody"] = [
-                      "required" => true,
-                      "content" => [
-                        "application/json" => [],     
-                    ]];
-        } else {
+          
+          /* Empty JSON object required */
+          $paths[$path][$method]["requestBody"] = [
+            "required" => true,
+            "content" => [
+              "application/json" => [],
+            ]
+          ];
+        }
+        else {
           throw new HttpErrorException("Method '$method' not implemented");
         }
-      } else {
+      }
+      else {
         /* Model API entry point */
         if ($method == 'get') {
           $paths[$path][$method]["responses"]["200"] = [
@@ -816,8 +856,8 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
                 ]
               ]
             ]
-          ]; 
-
+          ];
+          
           /* Supported by client, not by browser, disabled for APIdocs */
           // $paths[$path][$method]["requestBody"] = [
           //   "content" => [
@@ -827,9 +867,10 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           //       ],
           //     ]        
           // ]];
-
-
-        } elseif ($method == 'post') {
+          
+          
+        }
+        elseif ($method == 'post') {
           $paths[$path][$method]["responses"]["201"] = [
             "description" => "successful operation",
             "content" => [
@@ -840,7 +881,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
               ]
             ]
           ];
-
+          
           if ($isRelation) {
             $paths[$path][$method]["requestBody"] = [
               "required" => true,
@@ -849,9 +890,11 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
                   "schema" => [
                     '$ref' => "#/components/schemas/" . $name . "Relation" . ucfirst($relation)
                   ],
-                ],     
-            ]];
-          } else {
+                ],
+              ]
+            ];
+          }
+          else {
             $paths[$path][$method]["requestBody"] = [
               "required" => true,
               "content" => [
@@ -859,20 +902,23 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
                   "schema" => [
                     '$ref' => "#/components/schemas/" . $name . "Create"
                   ],
-                ]        
-            ]];
+                ]
+              ]
+            ];
           }
-
-        }  elseif ($method == 'patch') {
+          
+        }
+        elseif ($method == 'patch') {
           // TODO add patch many here
-        } elseif ($method == 'delete') {
+        }
+        elseif ($method == 'delete') {
           // TODO add delete many here
         }
-        else { 
+        else {
           throw new HttpErrorException("Method '$method' not implemented");
         }
       }
-
+      
       if ($singleObject && $method == 'get') {
         $parameters = [
           [
@@ -884,9 +930,10 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
               "format" => "int32",
               "example" => 10,
             ]
-          ]];
-
-        if (!str_contains($path, "relation:")){
+          ]
+        ];
+        
+        if (!str_contains($path, "relation:")) {
           $parameters[] = [
             "name" => "include",
             "in" => "query",
@@ -896,7 +943,8 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             "description" => "Items to include. Comma seperated"
           ];
         };
-      } else {
+      }
+      else {
         if ($method == 'get') {
           $parameters = [
             [
@@ -938,7 +986,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
                 "type" => "object",
               ],
               "description" => "Filters results using a query",
-              "example" => '"filter[hashlistId__gt]": 200' 
+              "example" => '"filter[hashlistId__gt]": 200'
             ],
             [
               "name" => "include",
@@ -949,14 +997,15 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
               "description" => "Items to include, comma seperated. Possible options: " . $expandables
             ]
           ];
-        } else {
+        }
+        else {
           $parameters = [];
         }
       }
       $paths[$path][$method]["parameters"] = $parameters;
     };
-
-    /** 
+    
+    /**
      * Build static entries
      */
     $paths["/api/v2/auth/token"] = [
@@ -965,14 +1014,14 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           "Login"
         ],
         "requestBody" => [
-            "required" => true,
-            "content" => [
-              "application/json" =>[
-                "schema" => [
-                  '$ref' => "#/components/schemas/TokenRequest"
-                ]
+          "required" => true,
+          "content" => [
+            "application/json" => [
+              "schema" => [
+                '$ref' => "#/components/schemas/TokenRequest"
               ]
             ]
+          ]
         ],
         "responses" => [
           "200" => [
@@ -1013,7 +1062,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         ]
       ]
     ];
-
+    
     $components["Token"] = [
       "type" => "object",
       "properties" => [
@@ -1033,7 +1082,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         "example" => "role.all"
       ]
     ];
-
+    
     $components["ObjectRequest"] = [
       "type" => "object",
       "properties" => [
@@ -1046,7 +1095,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       ],
       "additionalProperties" => false
     ];
-
+    
     $components["ObjectListRequest"] = [
       "type" => "object",
       "properties" => [
@@ -1101,7 +1150,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           Value must be `1`. If present, `Upload-Length` must be omitted."
       ]
     ];
-
+    
     $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["patch"]["parameters"] = [
       [
         "name" => "Upload-Offset",
@@ -1137,7 +1186,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         ]
       ]
     ];
-
+    
     $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["head"]["responses"]["200"] = [
       "description" => "successful request",
       "headers" => [
@@ -1168,7 +1217,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         ]
       ]
     ];
-
+    
     $paths["/api/v2/helper/importFile"]["post"]["responses"]["201"] = [
       "description" => "successful operation",
       "headers" => [
@@ -1234,10 +1283,10 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         ]
       ],
     ];
-
+    
     $body = $response->getBody();
     $body->write(json_encode($result, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
-
+    
     return $response->withStatus(200)
       ->withHeader("Content-Type", "application/json");
   });
