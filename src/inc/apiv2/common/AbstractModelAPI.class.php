@@ -1153,12 +1153,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $relationType = $relation['relationType'];
     
     $features = $this->getFeatures();
-    $this->isAllowedToMutate($features, $relationKey);
+    $this->isAllowedToMutate($features, $relationKey, $data == null);
     
     $factory = $this->getFactory();
     $object = $this->doFetch(intval($args['id']));
     if ($data == null) {
-      // TODO: check if it is allowed to set to null
       $this->DatabaseSet($object, $relationKey, null);
     }
     elseif (!$this->validateResourceRecord($data)) {
