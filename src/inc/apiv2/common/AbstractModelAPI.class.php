@@ -1124,9 +1124,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   
   /**
    * API endpoint to patch a to one relationship link
-   * TODO: This works as intended but it can give weird behaviour. ex. it allows you to put an MD5 hash to a SHA1 hashlist
-   * by patching the foreign key. Simple fix could be to make foreignkey immutable for cases like this.
-   * Or just like with the patch many, create an overrideable function to add more logic in child
    * @param Request $request
    * @param Response $response
    * @param array $args
