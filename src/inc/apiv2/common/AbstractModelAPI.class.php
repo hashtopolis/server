@@ -1162,8 +1162,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       throw new HttpError('No valid resource identifier object was given as data!');
     }
     else {
-      //TODO check if foreign key exists befor inserting
-      $this->DatabaseSet($object, $relationKey, $data["id"]);
+      // check if foreign key exists before inserting
+      $check = $factory->get($data["id"]);
+      if ($check == null){
+        throw new HttpError("Provided foreign key to patch to does not exist!");
+      }
+      $this->DatabaseSet($object, $relationKey, $check->getId());
     }
     
     return $response->withStatus(201)
