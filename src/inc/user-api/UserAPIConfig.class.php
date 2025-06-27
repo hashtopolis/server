@@ -74,7 +74,7 @@ class UserAPIConfig extends UserAPIBasic {
         }
         # Workaround, inserting 'false' into text field will cause an empty field.
         if ($config->getValue() === false) {
-          $config->setValue(0);
+          $config->setValue('0');
         }
         break;
       case DConfigType::SELECT:
