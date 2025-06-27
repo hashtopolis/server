@@ -76,6 +76,9 @@ class UserAPIConfig extends UserAPIBasic {
         if ($config->getValue() === false) {
           $config->setValue('0');
         }
+        else{
+          $config->setValue('1');
+        }
         break;
       case DConfigType::SELECT:
         if (!in_array($config->getValue(), DConfig::getSelection($config->getItem())->getKeys())) {
