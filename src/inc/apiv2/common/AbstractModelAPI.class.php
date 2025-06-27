@@ -778,7 +778,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $count = $factory->countFilter($aFs);
     $meta = ["count" => $count];
     
-    $include_total = $request->getQueryParams()['include_total'];
+    $include_total = $request->getQueryParams()['include_total'] ?? false;
     if ($include_total == "true") {
       $meta["total_count"] = $factory->countFilter([]);
     }

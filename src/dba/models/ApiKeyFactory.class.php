@@ -3,28 +3,27 @@
 namespace DBA;
 
 class ApiKeyFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "ApiKey";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "ApiKey";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return ApiKey
    */
-  function getNullObject() {
-    $o = new ApiKey(-1, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): ApiKey {
+    return new ApiKey(-1, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class ApiKeyFactory extends AbstractModelFactory {
    * @param array $dict
    * @return ApiKey
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new ApiKey($dict['apiKeyId'], $dict['startValid'], $dict['endValid'], $dict['accessKey'], $dict['accessCount'], $dict['userId'], $dict['apiGroupId']);
-    return $o;
+  function createObjectFromDict($pk, $dict): ApiKey {
+    return new ApiKey($dict['apiKeyId'], $dict['startValid'], $dict['endValid'], $dict['accessKey'], $dict['accessCount'], $dict['userId'], $dict['apiGroupId']);
   }
   
   /**
@@ -66,9 +64,9 @@ class ApiKeyFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return ApiKey
+   * @return ?ApiKey
    */
-  function get($pk) {
+  function get($pk): ?ApiKey {
     return Util::cast(parent::get($pk), ApiKey::class);
   }
   
@@ -76,7 +74,7 @@ class ApiKeyFactory extends AbstractModelFactory {
    * @param ApiKey $model
    * @return ApiKey
    */
-  function save($model) {
+  function save($model): ApiKey {
     return Util::cast(parent::save($model), ApiKey::class);
   }
 }

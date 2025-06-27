@@ -3,15 +3,15 @@
 namespace DBA;
 
 class ConfigSection extends AbstractModel {
-  private $configSectionId;
-  private $sectionName;
+  private ?int $configSectionId;
+  private ?string $sectionName;
   
-  function __construct($configSectionId, $sectionName) {
+  function __construct(?int $configSectionId, ?string $sectionName) {
     $this->configSectionId = $configSectionId;
     $this->sectionName = $sectionName;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['configSectionId'] = $this->configSectionId;
     $dict['sectionName'] = $this->sectionName;
@@ -19,7 +19,7 @@ class ConfigSection extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['configSectionId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "configSectionId", "public" => False];
     $dict['sectionName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "sectionName", "public" => False];
@@ -27,19 +27,19 @@ class ConfigSection extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "configSectionId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): int {
     return $this->configSectionId;
   }
   
-  function getId() {
+  function getId(): int {
     return $this->configSectionId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->configSectionId = $id;
   }
   
@@ -47,15 +47,15 @@ class ConfigSection extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getSectionName() {
+  function getSectionName(): ?string {
     return $this->sectionName;
   }
   
-  function setSectionName($sectionName) {
+  function setSectionName(?string $sectionName): void {
     $this->sectionName = $sectionName;
   }
   

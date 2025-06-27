@@ -9,33 +9,33 @@ class __MODEL_NAME__ extends AbstractModel {
     __MODEL_PARAMS_INIT__
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     __MODEL_KEY_VAL__
     
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     __MODEL_FEATURES__
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "__MODEL_PK__";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): __MODEL_PK_TYPE__ {
     return $this->__MODEL_PK__;
   }
   
-  function getId() {
+  function getId(): __MODEL_PK_TYPE__ {
     return $this->__MODEL_PK__;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->__MODEL_PK__ = $id;
   }
   
@@ -43,7 +43,7 @@ class __MODEL_NAME__ extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   

@@ -3,23 +3,23 @@
 namespace DBA;
 
 class Hashlist extends AbstractModel {
-  private $hashlistId;
-  private $hashlistName;
-  private $format;
-  private $hashTypeId;
-  private $hashCount;
-  private $saltSeparator;
-  private $cracked;
-  private $isSecret;
-  private $hexSalt;
-  private $isSalted;
-  private $accessGroupId;
-  private $notes;
-  private $brainId;
-  private $brainFeatures;
-  private $isArchived;
+  private ?int $hashlistId;
+  private ?string $hashlistName;
+  private ?int $format;
+  private ?int $hashTypeId;
+  private ?int $hashCount;
+  private ?string $saltSeparator;
+  private ?int $cracked;
+  private ?bool $isSecret;
+  private ?bool $hexSalt;
+  private ?bool $isSalted;
+  private ?int $accessGroupId;
+  private ?string $notes;
+  private ?bool $brainId;
+  private ?int $brainFeatures;
+  private ?bool $isArchived;
   
-  function __construct($hashlistId, $hashlistName, $format, $hashTypeId, $hashCount, $saltSeparator, $cracked, $isSecret, $hexSalt, $isSalted, $accessGroupId, $notes, $brainId, $brainFeatures, $isArchived) {
+  function __construct(?int $hashlistId, ?string $hashlistName, ?int $format, ?int $hashTypeId, ?int $hashCount, ?string $saltSeparator, ?int $cracked, ?bool $isSecret, ?bool $hexSalt, ?bool $isSalted, ?int $accessGroupId, ?string $notes, ?bool $brainId, ?int $brainFeatures, ?bool $isArchived) {
     $this->hashlistId = $hashlistId;
     $this->hashlistName = $hashlistName;
     $this->format = $format;
@@ -37,7 +37,7 @@ class Hashlist extends AbstractModel {
     $this->isArchived = $isArchived;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['hashlistId'] = $this->hashlistId;
     $dict['hashlistName'] = $this->hashlistName;
@@ -58,7 +58,7 @@ class Hashlist extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashlistId", "public" => False];
     $dict['hashlistName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "name", "public" => False];
@@ -79,19 +79,19 @@ class Hashlist extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "hashlistId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): int {
     return $this->hashlistId;
   }
   
-  function getId() {
+  function getId(): int {
     return $this->hashlistId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->hashlistId = $id;
   }
   
@@ -99,119 +99,119 @@ class Hashlist extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getHashlistName() {
+  function getHashlistName(): ?string {
     return $this->hashlistName;
   }
   
-  function setHashlistName($hashlistName) {
+  function setHashlistName(?string $hashlistName): void {
     $this->hashlistName = $hashlistName;
   }
   
-  function getFormat() {
+  function getFormat(): ?int {
     return $this->format;
   }
   
-  function setFormat($format) {
+  function setFormat(?int $format): void {
     $this->format = $format;
   }
   
-  function getHashTypeId() {
+  function getHashTypeId(): ?int {
     return $this->hashTypeId;
   }
   
-  function setHashTypeId($hashTypeId) {
+  function setHashTypeId(?int $hashTypeId): void {
     $this->hashTypeId = $hashTypeId;
   }
   
-  function getHashCount() {
+  function getHashCount(): ?int {
     return $this->hashCount;
   }
   
-  function setHashCount($hashCount) {
+  function setHashCount(?int $hashCount): void {
     $this->hashCount = $hashCount;
   }
   
-  function getSaltSeparator() {
+  function getSaltSeparator(): ?string {
     return $this->saltSeparator;
   }
   
-  function setSaltSeparator($saltSeparator) {
+  function setSaltSeparator(?string $saltSeparator): void {
     $this->saltSeparator = $saltSeparator;
   }
   
-  function getCracked() {
+  function getCracked(): ?int {
     return $this->cracked;
   }
   
-  function setCracked($cracked) {
+  function setCracked(?int $cracked): void {
     $this->cracked = $cracked;
   }
   
-  function getIsSecret() {
+  function getIsSecret(): ?bool {
     return $this->isSecret;
   }
   
-  function setIsSecret($isSecret) {
+  function setIsSecret(?bool $isSecret): void {
     $this->isSecret = $isSecret;
   }
   
-  function getHexSalt() {
+  function getHexSalt(): ?bool {
     return $this->hexSalt;
   }
   
-  function setHexSalt($hexSalt) {
+  function setHexSalt(?bool $hexSalt): void {
     $this->hexSalt = $hexSalt;
   }
   
-  function getIsSalted() {
+  function getIsSalted(): ?bool {
     return $this->isSalted;
   }
   
-  function setIsSalted($isSalted) {
+  function setIsSalted(?bool $isSalted): void {
     $this->isSalted = $isSalted;
   }
   
-  function getAccessGroupId() {
+  function getAccessGroupId(): ?int {
     return $this->accessGroupId;
   }
   
-  function setAccessGroupId($accessGroupId) {
+  function setAccessGroupId(?int $accessGroupId): void {
     $this->accessGroupId = $accessGroupId;
   }
   
-  function getNotes() {
+  function getNotes(): ?string {
     return $this->notes;
   }
   
-  function setNotes($notes) {
+  function setNotes(?string $notes): void {
     $this->notes = $notes;
   }
   
-  function getBrainId() {
+  function getBrainId(): ?bool {
     return $this->brainId;
   }
   
-  function setBrainId($brainId) {
+  function setBrainId(?bool $brainId): void {
     $this->brainId = $brainId;
   }
   
-  function getBrainFeatures() {
+  function getBrainFeatures(): ?int {
     return $this->brainFeatures;
   }
   
-  function setBrainFeatures($brainFeatures) {
+  function setBrainFeatures(?int $brainFeatures): void {
     $this->brainFeatures = $brainFeatures;
   }
   
-  function getIsArchived() {
+  function getIsArchived(): ?bool {
     return $this->isArchived;
   }
   
-  function setIsArchived($isArchived) {
+  function setIsArchived(?bool $isArchived): void {
     $this->isArchived = $isArchived;
   }
   

@@ -3,24 +3,24 @@
 namespace DBA;
 
 class Agent extends AbstractModel {
-  private $agentId;
-  private $agentName;
-  private $uid;
-  private $os;
-  private $devices;
-  private $cmdPars;
-  private $ignoreErrors;
-  private $isActive;
-  private $isTrusted;
-  private $token;
-  private $lastAct;
-  private $lastTime;
-  private $lastIp;
-  private $userId;
-  private $cpuOnly;
-  private $clientSignature;
+  private ?int $agentId;
+  private ?string $agentName;
+  private ?string $uid;
+  private ?int $os;
+  private ?string $devices;
+  private ?string $cmdPars;
+  private ?int $ignoreErrors;
+  private ?bool $isActive;
+  private ?bool $isTrusted;
+  private ?string $token;
+  private ?string $lastAct;
+  private ?int $lastTime;
+  private ?string $lastIp;
+  private ?int $userId;
+  private ?bool $cpuOnly;
+  private ?string $clientSignature;
   
-  function __construct($agentId, $agentName, $uid, $os, $devices, $cmdPars, $ignoreErrors, $isActive, $isTrusted, $token, $lastAct, $lastTime, $lastIp, $userId, $cpuOnly, $clientSignature) {
+  function __construct(?int $agentId, ?string $agentName, ?string $uid, ?int $os, ?string $devices, ?string $cmdPars, ?int $ignoreErrors, ?bool $isActive, ?bool $isTrusted, ?string $token, ?string $lastAct, ?int $lastTime, ?string $lastIp, ?int $userId, ?bool $cpuOnly, ?string $clientSignature) {
     $this->agentId = $agentId;
     $this->agentName = $agentName;
     $this->uid = $uid;
@@ -39,7 +39,7 @@ class Agent extends AbstractModel {
     $this->clientSignature = $clientSignature;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['agentId'] = $this->agentId;
     $dict['agentName'] = $this->agentName;
@@ -61,7 +61,7 @@ class Agent extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentId", "public" => False];
     $dict['agentName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "agentName", "public" => False];
@@ -83,19 +83,19 @@ class Agent extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "agentId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): int {
     return $this->agentId;
   }
   
-  function getId() {
+  function getId(): int {
     return $this->agentId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->agentId = $id;
   }
   
@@ -103,127 +103,127 @@ class Agent extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getAgentName() {
+  function getAgentName(): ?string {
     return $this->agentName;
   }
   
-  function setAgentName($agentName) {
+  function setAgentName(?string $agentName): void {
     $this->agentName = $agentName;
   }
   
-  function getUid() {
+  function getUid(): ?string {
     return $this->uid;
   }
   
-  function setUid($uid) {
+  function setUid(?string $uid): void {
     $this->uid = $uid;
   }
   
-  function getOs() {
+  function getOs(): ?int {
     return $this->os;
   }
   
-  function setOs($os) {
+  function setOs(?int $os): void {
     $this->os = $os;
   }
   
-  function getDevices() {
+  function getDevices(): ?string {
     return $this->devices;
   }
   
-  function setDevices($devices) {
+  function setDevices(?string $devices): void {
     $this->devices = $devices;
   }
   
-  function getCmdPars() {
+  function getCmdPars(): ?string {
     return $this->cmdPars;
   }
   
-  function setCmdPars($cmdPars) {
+  function setCmdPars(?string $cmdPars): void {
     $this->cmdPars = $cmdPars;
   }
   
-  function getIgnoreErrors() {
+  function getIgnoreErrors(): ?int {
     return $this->ignoreErrors;
   }
   
-  function setIgnoreErrors($ignoreErrors) {
+  function setIgnoreErrors(?int $ignoreErrors): void {
     $this->ignoreErrors = $ignoreErrors;
   }
   
-  function getIsActive() {
+  function getIsActive(): ?bool {
     return $this->isActive;
   }
   
-  function setIsActive($isActive) {
+  function setIsActive(?bool $isActive): void {
     $this->isActive = $isActive;
   }
   
-  function getIsTrusted() {
+  function getIsTrusted(): ?bool {
     return $this->isTrusted;
   }
   
-  function setIsTrusted($isTrusted) {
+  function setIsTrusted(?bool $isTrusted): void {
     $this->isTrusted = $isTrusted;
   }
   
-  function getToken() {
+  function getToken(): ?string {
     return $this->token;
   }
   
-  function setToken($token) {
+  function setToken(?string $token): void {
     $this->token = $token;
   }
   
-  function getLastAct() {
+  function getLastAct(): ?string {
     return $this->lastAct;
   }
   
-  function setLastAct($lastAct) {
+  function setLastAct(?string $lastAct): void {
     $this->lastAct = $lastAct;
   }
   
-  function getLastTime() {
+  function getLastTime(): ?int {
     return $this->lastTime;
   }
   
-  function setLastTime($lastTime) {
+  function setLastTime(?int $lastTime): void {
     $this->lastTime = $lastTime;
   }
   
-  function getLastIp() {
+  function getLastIp(): ?string {
     return $this->lastIp;
   }
   
-  function setLastIp($lastIp) {
+  function setLastIp(?string $lastIp): void {
     $this->lastIp = $lastIp;
   }
   
-  function getUserId() {
+  function getUserId(): ?int {
     return $this->userId;
   }
   
-  function setUserId($userId) {
+  function setUserId(?int $userId): void {
     $this->userId = $userId;
   }
   
-  function getCpuOnly() {
+  function getCpuOnly(): ?bool {
     return $this->cpuOnly;
   }
   
-  function setCpuOnly($cpuOnly) {
+  function setCpuOnly(?bool $cpuOnly): void {
     $this->cpuOnly = $cpuOnly;
   }
   
-  function getClientSignature() {
+  function getClientSignature(): ?string {
     return $this->clientSignature;
   }
   
-  function setClientSignature($clientSignature) {
+  function setClientSignature(?string $clientSignature): void {
     $this->clientSignature = $clientSignature;
   }
   

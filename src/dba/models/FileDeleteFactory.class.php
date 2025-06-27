@@ -3,28 +3,27 @@
 namespace DBA;
 
 class FileDeleteFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "FileDelete";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "FileDelete";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return FileDelete
    */
-  function getNullObject() {
-    $o = new FileDelete(-1, null, null);
-    return $o;
+  function getNullObject(): FileDelete {
+    return new FileDelete(-1, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class FileDeleteFactory extends AbstractModelFactory {
    * @param array $dict
    * @return FileDelete
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new FileDelete($dict['fileDeleteId'], $dict['filename'], $dict['time']);
-    return $o;
+  function createObjectFromDict($pk, $dict): FileDelete {
+    return new FileDelete($dict['fileDeleteId'], $dict['filename'], $dict['time']);
   }
   
   /**
@@ -66,9 +64,9 @@ class FileDeleteFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return FileDelete
+   * @return ?FileDelete
    */
-  function get($pk) {
+  function get($pk): ?FileDelete {
     return Util::cast(parent::get($pk), FileDelete::class);
   }
   
@@ -76,7 +74,7 @@ class FileDeleteFactory extends AbstractModelFactory {
    * @param FileDelete $model
    * @return FileDelete
    */
-  function save($model) {
+  function save($model): FileDelete {
     return Util::cast(parent::save($model), FileDelete::class);
   }
 }

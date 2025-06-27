@@ -3,15 +3,15 @@
 namespace DBA;
 
 class NotificationSetting extends AbstractModel {
-  private $notificationSettingId;
-  private $action;
-  private $objectId;
-  private $notification;
-  private $userId;
-  private $receiver;
-  private $isActive;
+  private ?int $notificationSettingId;
+  private ?string $action;
+  private ?int $objectId;
+  private ?string $notification;
+  private ?int $userId;
+  private ?string $receiver;
+  private ?bool $isActive;
   
-  function __construct($notificationSettingId, $action, $objectId, $notification, $userId, $receiver, $isActive) {
+  function __construct(?int $notificationSettingId, ?string $action, ?int $objectId, ?string $notification, ?int $userId, ?string $receiver, ?bool $isActive) {
     $this->notificationSettingId = $notificationSettingId;
     $this->action = $action;
     $this->objectId = $objectId;
@@ -21,7 +21,7 @@ class NotificationSetting extends AbstractModel {
     $this->isActive = $isActive;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['notificationSettingId'] = $this->notificationSettingId;
     $dict['action'] = $this->action;
@@ -34,7 +34,7 @@ class NotificationSetting extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['notificationSettingId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "notificationSettingId", "public" => False];
     $dict['action'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "action", "public" => False];
@@ -47,19 +47,19 @@ class NotificationSetting extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "notificationSettingId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): int {
     return $this->notificationSettingId;
   }
   
-  function getId() {
+  function getId(): int {
     return $this->notificationSettingId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->notificationSettingId = $id;
   }
   
@@ -67,55 +67,55 @@ class NotificationSetting extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getAction() {
+  function getAction(): ?string {
     return $this->action;
   }
   
-  function setAction($action) {
+  function setAction(?string $action): void {
     $this->action = $action;
   }
   
-  function getObjectId() {
+  function getObjectId(): ?int {
     return $this->objectId;
   }
   
-  function setObjectId($objectId) {
+  function setObjectId(?int $objectId): void {
     $this->objectId = $objectId;
   }
   
-  function getNotification() {
+  function getNotification(): ?string {
     return $this->notification;
   }
   
-  function setNotification($notification) {
+  function setNotification(?string $notification): void {
     $this->notification = $notification;
   }
   
-  function getUserId() {
+  function getUserId(): ?int {
     return $this->userId;
   }
   
-  function setUserId($userId) {
+  function setUserId(?int $userId): void {
     $this->userId = $userId;
   }
   
-  function getReceiver() {
+  function getReceiver(): ?string {
     return $this->receiver;
   }
   
-  function setReceiver($receiver) {
+  function setReceiver(?string $receiver): void {
     $this->receiver = $receiver;
   }
   
-  function getIsActive() {
+  function getIsActive(): ?bool {
     return $this->isActive;
   }
   
-  function setIsActive($isActive) {
+  function setIsActive(?bool $isActive): void {
     $this->isActive = $isActive;
   }
   

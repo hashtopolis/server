@@ -3,17 +3,17 @@
 namespace DBA;
 
 class AccessGroupUser extends AbstractModel {
-  private $accessGroupUserId;
-  private $accessGroupId;
-  private $userId;
+  private ?int $accessGroupUserId;
+  private ?int $accessGroupId;
+  private ?int $userId;
   
-  function __construct($accessGroupUserId, $accessGroupId, $userId) {
+  function __construct(?int $accessGroupUserId, ?int $accessGroupId, ?int $userId) {
     $this->accessGroupUserId = $accessGroupUserId;
     $this->accessGroupId = $accessGroupId;
     $this->userId = $userId;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['accessGroupUserId'] = $this->accessGroupUserId;
     $dict['accessGroupId'] = $this->accessGroupId;
@@ -22,7 +22,7 @@ class AccessGroupUser extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['accessGroupUserId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "accessGroupUserId", "public" => False];
     $dict['accessGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "accessGroupId", "public" => False];
@@ -31,19 +31,19 @@ class AccessGroupUser extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "accessGroupUserId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): int {
     return $this->accessGroupUserId;
   }
   
-  function getId() {
+  function getId(): int {
     return $this->accessGroupUserId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->accessGroupUserId = $id;
   }
   
@@ -51,23 +51,23 @@ class AccessGroupUser extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getAccessGroupId() {
+  function getAccessGroupId(): ?int {
     return $this->accessGroupId;
   }
   
-  function setAccessGroupId($accessGroupId) {
+  function setAccessGroupId(?int $accessGroupId): void {
     $this->accessGroupId = $accessGroupId;
   }
   
-  function getUserId() {
+  function getUserId(): ?int {
     return $this->userId;
   }
   
-  function setUserId($userId) {
+  function setUserId(?int $userId): void {
     $this->userId = $userId;
   }
   

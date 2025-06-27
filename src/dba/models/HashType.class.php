@@ -3,19 +3,19 @@
 namespace DBA;
 
 class HashType extends AbstractModel {
-  private $hashTypeId;
-  private $description;
-  private $isSalted;
-  private $isSlowHash;
+  private ?int $hashTypeId;
+  private ?string $description;
+  private ?bool $isSalted;
+  private ?bool $isSlowHash;
   
-  function __construct($hashTypeId, $description, $isSalted, $isSlowHash) {
+  function __construct(?int $hashTypeId, ?string $description, ?bool $isSalted, ?bool $isSlowHash) {
     $this->hashTypeId = $hashTypeId;
     $this->description = $description;
     $this->isSalted = $isSalted;
     $this->isSlowHash = $isSlowHash;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['hashTypeId'] = $this->hashTypeId;
     $dict['description'] = $this->description;
@@ -25,7 +25,7 @@ class HashType extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => False, "private" => False, "alias" => "hashTypeId", "public" => False];
     $dict['description'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "description", "public" => False];
@@ -35,19 +35,19 @@ class HashType extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "hashTypeId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): int {
     return $this->hashTypeId;
   }
   
-  function getId() {
+  function getId(): int {
     return $this->hashTypeId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->hashTypeId = $id;
   }
   
@@ -55,31 +55,31 @@ class HashType extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getDescription() {
+  function getDescription(): ?string {
     return $this->description;
   }
   
-  function setDescription($description) {
+  function setDescription(?string $description): void {
     $this->description = $description;
   }
   
-  function getIsSalted() {
+  function getIsSalted(): ?bool {
     return $this->isSalted;
   }
   
-  function setIsSalted($isSalted) {
+  function setIsSalted(?bool $isSalted): void {
     $this->isSalted = $isSalted;
   }
   
-  function getIsSlowHash() {
+  function getIsSlowHash(): ?bool {
     return $this->isSlowHash;
   }
   
-  function setIsSlowHash($isSlowHash) {
+  function setIsSlowHash(?bool $isSlowHash): void {
     $this->isSlowHash = $isSlowHash;
   }
   

@@ -3,13 +3,13 @@
 namespace DBA;
 
 class Zap extends AbstractModel {
-  private $zapId;
-  private $hash;
-  private $solveTime;
-  private $agentId;
-  private $hashlistId;
+  private ?int $zapId;
+  private ?string $hash;
+  private ?int $solveTime;
+  private ?int $agentId;
+  private ?int $hashlistId;
   
-  function __construct($zapId, $hash, $solveTime, $agentId, $hashlistId) {
+  function __construct(?int $zapId, ?string $hash, ?int $solveTime, ?int $agentId, ?int $hashlistId) {
     $this->zapId = $zapId;
     $this->hash = $hash;
     $this->solveTime = $solveTime;
@@ -17,7 +17,7 @@ class Zap extends AbstractModel {
     $this->hashlistId = $hashlistId;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['zapId'] = $this->zapId;
     $dict['hash'] = $this->hash;
@@ -28,7 +28,7 @@ class Zap extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['zapId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "zapId", "public" => False];
     $dict['hash'] = ['read_only' => True, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "hash", "public" => False];
@@ -39,19 +39,19 @@ class Zap extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "zapId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): int {
     return $this->zapId;
   }
   
-  function getId() {
+  function getId(): int {
     return $this->zapId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->zapId = $id;
   }
   
@@ -59,39 +59,39 @@ class Zap extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getHash() {
+  function getHash(): ?string {
     return $this->hash;
   }
   
-  function setHash($hash) {
+  function setHash(?string $hash): void {
     $this->hash = $hash;
   }
   
-  function getSolveTime() {
+  function getSolveTime(): ?int {
     return $this->solveTime;
   }
   
-  function setSolveTime($solveTime) {
+  function setSolveTime(?int $solveTime): void {
     $this->solveTime = $solveTime;
   }
   
-  function getAgentId() {
+  function getAgentId(): ?int {
     return $this->agentId;
   }
   
-  function setAgentId($agentId) {
+  function setAgentId(?int $agentId): void {
     $this->agentId = $agentId;
   }
   
-  function getHashlistId() {
+  function getHashlistId(): ?int {
     return $this->hashlistId;
   }
   
-  function setHashlistId($hashlistId) {
+  function setHashlistId(?int $hashlistId): void {
     $this->hashlistId = $hashlistId;
   }
   

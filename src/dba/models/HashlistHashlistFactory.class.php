@@ -3,28 +3,27 @@
 namespace DBA;
 
 class HashlistHashlistFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "HashlistHashlist";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "HashlistHashlist";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return HashlistHashlist
    */
-  function getNullObject() {
-    $o = new HashlistHashlist(-1, null, null);
-    return $o;
+  function getNullObject(): HashlistHashlist {
+    return new HashlistHashlist(-1, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class HashlistHashlistFactory extends AbstractModelFactory {
    * @param array $dict
    * @return HashlistHashlist
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new HashlistHashlist($dict['hashlistHashlistId'], $dict['parentHashlistId'], $dict['hashlistId']);
-    return $o;
+  function createObjectFromDict($pk, $dict): HashlistHashlist {
+    return new HashlistHashlist($dict['hashlistHashlistId'], $dict['parentHashlistId'], $dict['hashlistId']);
   }
   
   /**
@@ -66,9 +64,9 @@ class HashlistHashlistFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return HashlistHashlist
+   * @return ?HashlistHashlist
    */
-  function get($pk) {
+  function get($pk): ?HashlistHashlist {
     return Util::cast(parent::get($pk), HashlistHashlist::class);
   }
   
@@ -76,7 +74,7 @@ class HashlistHashlistFactory extends AbstractModelFactory {
    * @param HashlistHashlist $model
    * @return HashlistHashlist
    */
-  function save($model) {
+  function save($model): HashlistHashlist {
     return Util::cast(parent::save($model), HashlistHashlist::class);
   }
 }

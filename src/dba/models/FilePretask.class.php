@@ -3,17 +3,17 @@
 namespace DBA;
 
 class FilePretask extends AbstractModel {
-  private $filePretaskId;
-  private $fileId;
-  private $pretaskId;
+  private ?int $filePretaskId;
+  private ?int $fileId;
+  private ?int $pretaskId;
   
-  function __construct($filePretaskId, $fileId, $pretaskId) {
+  function __construct(?int $filePretaskId, ?int $fileId, ?int $pretaskId) {
     $this->filePretaskId = $filePretaskId;
     $this->fileId = $fileId;
     $this->pretaskId = $pretaskId;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['filePretaskId'] = $this->filePretaskId;
     $dict['fileId'] = $this->fileId;
@@ -22,7 +22,7 @@ class FilePretask extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['filePretaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "filePretaskId", "public" => False];
     $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "fileId", "public" => False];
@@ -31,19 +31,19 @@ class FilePretask extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "filePretaskId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): int {
     return $this->filePretaskId;
   }
   
-  function getId() {
+  function getId(): int {
     return $this->filePretaskId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->filePretaskId = $id;
   }
   
@@ -51,23 +51,23 @@ class FilePretask extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getFileId() {
+  function getFileId(): ?int {
     return $this->fileId;
   }
   
-  function setFileId($fileId) {
+  function setFileId(?int $fileId): void {
     $this->fileId = $fileId;
   }
   
-  function getPretaskId() {
+  function getPretaskId(): ?int {
     return $this->pretaskId;
   }
   
-  function setPretaskId($pretaskId) {
+  function setPretaskId(?int $pretaskId): void {
     $this->pretaskId = $pretaskId;
   }
   

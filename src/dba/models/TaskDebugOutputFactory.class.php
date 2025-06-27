@@ -3,28 +3,27 @@
 namespace DBA;
 
 class TaskDebugOutputFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "TaskDebugOutput";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "TaskDebugOutput";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return TaskDebugOutput
    */
-  function getNullObject() {
-    $o = new TaskDebugOutput(-1, null, null);
-    return $o;
+  function getNullObject(): TaskDebugOutput {
+    return new TaskDebugOutput(-1, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
    * @param array $dict
    * @return TaskDebugOutput
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new TaskDebugOutput($dict['taskDebugOutputId'], $dict['taskId'], $dict['output']);
-    return $o;
+  function createObjectFromDict($pk, $dict): TaskDebugOutput {
+    return new TaskDebugOutput($dict['taskDebugOutputId'], $dict['taskId'], $dict['output']);
   }
   
   /**
@@ -66,9 +64,9 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return TaskDebugOutput
+   * @return ?TaskDebugOutput
    */
-  function get($pk) {
+  function get($pk): ?TaskDebugOutput {
     return Util::cast(parent::get($pk), TaskDebugOutput::class);
   }
   
@@ -76,7 +74,7 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
    * @param TaskDebugOutput $model
    * @return TaskDebugOutput
    */
-  function save($model) {
+  function save($model): TaskDebugOutput {
     return Util::cast(parent::save($model), TaskDebugOutput::class);
   }
 }

@@ -3,28 +3,27 @@
 namespace DBA;
 
 class FileTaskFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "FileTask";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "FileTask";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return FileTask
    */
-  function getNullObject() {
-    $o = new FileTask(-1, null, null);
-    return $o;
+  function getNullObject(): FileTask {
+    return new FileTask(-1, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class FileTaskFactory extends AbstractModelFactory {
    * @param array $dict
    * @return FileTask
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new FileTask($dict['fileTaskId'], $dict['fileId'], $dict['taskId']);
-    return $o;
+  function createObjectFromDict($pk, $dict): FileTask {
+    return new FileTask($dict['fileTaskId'], $dict['fileId'], $dict['taskId']);
   }
   
   /**
@@ -66,9 +64,9 @@ class FileTaskFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return FileTask
+   * @return ?FileTask
    */
-  function get($pk) {
+  function get($pk): ?FileTask {
     return Util::cast(parent::get($pk), FileTask::class);
   }
   
@@ -76,7 +74,7 @@ class FileTaskFactory extends AbstractModelFactory {
    * @param FileTask $model
    * @return FileTask
    */
-  function save($model) {
+  function save($model): FileTask {
     return Util::cast(parent::save($model), FileTask::class);
   }
 }

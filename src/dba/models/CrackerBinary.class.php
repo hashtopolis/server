@@ -3,13 +3,13 @@
 namespace DBA;
 
 class CrackerBinary extends AbstractModel {
-  private $crackerBinaryId;
-  private $crackerBinaryTypeId;
-  private $version;
-  private $downloadUrl;
-  private $binaryName;
+  private ?int $crackerBinaryId;
+  private ?int $crackerBinaryTypeId;
+  private ?string $version;
+  private ?string $downloadUrl;
+  private ?string $binaryName;
   
-  function __construct($crackerBinaryId, $crackerBinaryTypeId, $version, $downloadUrl, $binaryName) {
+  function __construct(?int $crackerBinaryId, ?int $crackerBinaryTypeId, ?string $version, ?string $downloadUrl, ?string $binaryName) {
     $this->crackerBinaryId = $crackerBinaryId;
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
     $this->version = $version;
@@ -17,7 +17,7 @@ class CrackerBinary extends AbstractModel {
     $this->binaryName = $binaryName;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['crackerBinaryId'] = $this->crackerBinaryId;
     $dict['crackerBinaryTypeId'] = $this->crackerBinaryTypeId;
@@ -28,7 +28,7 @@ class CrackerBinary extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['crackerBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "crackerBinaryId", "public" => False];
     $dict['crackerBinaryTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "crackerBinaryTypeId", "public" => False];
@@ -39,19 +39,19 @@ class CrackerBinary extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "crackerBinaryId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): int {
     return $this->crackerBinaryId;
   }
   
-  function getId() {
+  function getId(): int {
     return $this->crackerBinaryId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->crackerBinaryId = $id;
   }
   
@@ -59,39 +59,39 @@ class CrackerBinary extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getCrackerBinaryTypeId() {
+  function getCrackerBinaryTypeId(): ?int {
     return $this->crackerBinaryTypeId;
   }
   
-  function setCrackerBinaryTypeId($crackerBinaryTypeId) {
+  function setCrackerBinaryTypeId(?int $crackerBinaryTypeId): void {
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
   }
   
-  function getVersion() {
+  function getVersion(): ?string {
     return $this->version;
   }
   
-  function setVersion($version) {
+  function setVersion(?string $version): void {
     $this->version = $version;
   }
   
-  function getDownloadUrl() {
+  function getDownloadUrl(): ?string {
     return $this->downloadUrl;
   }
   
-  function setDownloadUrl($downloadUrl) {
+  function setDownloadUrl(?string $downloadUrl): void {
     $this->downloadUrl = $downloadUrl;
   }
   
-  function getBinaryName() {
+  function getBinaryName(): ?string {
     return $this->binaryName;
   }
   
-  function setBinaryName($binaryName) {
+  function setBinaryName(?string $binaryName): void {
     $this->binaryName = $binaryName;
   }
   
