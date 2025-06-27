@@ -11,6 +11,7 @@ use DBA\Factory;
 use DBA\ContainFilter;
 use DBA\LimitFilter;
 use DBA\OrderFilter;
+use DBA\PaginationFilter;
 use DBA\QueryFilter;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -460,6 +461,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $relatedResources;
   }
 
+  //TODO: This should calculate the next secondary cursor when the primary cursor is not unique
   protected static function calculate_next_cursor(string|int $element) {
     if (is_int($element)) {
       return $element + 1;
@@ -478,6 +480,68 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       }
     } else {
       throw new HttpError("Internal error", 500);
+    }
+  }
+  /**
+   * The cursor is base64 encoded in the following json format:
+   * {"primary":{"isSlowHash":0},"secondary":{"hashTypeId":10810}}
+   * This containts a primary filter which is the main sorting filter, but to handle duplicates, it has an optional
+   * secondary filter for when the primary filter is not unique. This way there is an unique secondary filter to
+   * handle tie breaks.
+   * 
+   * @param mixed $primaryFilter The main filter that is sorted on
+   * @param mixed $primaryId the value of the primaryFilter
+   * @param bool $hasSecondaryFilter This is a boolean to set whether there is a secondary filter
+   * @param mixed $secondaryFilter An unique secondary filter to use as a tiebreaker when the main filter is not unique
+   * @param object $secondaryId The value of the secondary filter
+
+   * @return string a base64 encoded json string that contains the filters. 
+   */
+  protected static function build_cursor($primaryFilter, $primaryId, $hasSecondaryFilter = false, 
+   $secondaryFilter= null, $secondaryId = null) {
+    $cursor = ["primary" => [$primaryFilter => $primaryId]];
+    if ($hasSecondaryFilter) {
+      assert($secondaryId != null && $secondaryFilter != null,
+       "Secondary id and filter should be set");
+      //Add the primary key as a secondary cursor to guarantee the cursor is unique
+      $cursor["secondary"] = [$secondaryFilter => $secondaryId];
+    }
+    //TODO '=' is not URL safe, should be removed and replaced based on the length of the base64, or it should be url encoded
+    //or url encode everything and also dont touch the /?
+    $json = json_encode($cursor);
+    return strtr(base64_encode($json), '+/', '-_');
+    // return urlencode($json);
+  }
+
+  /**
+   * Function to decode the cursor from base64 format
+   * 
+   * @param string $encoded_cursor in base64 format
+   * 
+   * @return string the decoded cursor in a json string format 
+   */
+  protected static function decode_cursor(string $encoded_cursor) {
+    $json = base64_decode(strtr($encoded_cursor, '-_', '+/'));
+    $cursor = json_decode($json, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      throw new HttpError("Invallid pagination cursor");
+    }
+    return $cursor;
+  }
+
+  protected static function compare_keys($key1, $key2, $isNegativeSort) {
+    if (is_string($key1) && is_string($key2)) {
+      if ($isNegativeSort){
+        return strcmp($key2, $key1);
+      } else {
+        return strcmp($key1, $key2);
+      }
+    } else {
+      if ($isNegativeSort) {
+        return $key2 > $key1;
+      } else {
+        return $key1 > $key2;
+      }
     }
   }
 
@@ -500,7 +564,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after');
     $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
-    if ($pageSize < 0) {
+    if (!is_numeric($pageSize) || $pageSize < 0) {
       throw new HttpError("Invalid parameter, page[size] must be a positive integer");
     } elseif ($pageSize > $maxPageSize) {
       throw new HttpError(sprintf("You requested a size of %d, but %d is the maximum.", $pageSize, $maxPageSize));
@@ -574,23 +638,52 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
 
+    $primaryKey = $apiClass->getPrimaryKey();
+    //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
+    $primaryKeyIsNotPrimaryFilter = $primaryFilter != $primaryKey;
     //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
     //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
     //if this query is too expensive for big tables, it can be removed
     $agg1 = new Aggregation($primaryFilter, Aggregation::MAX, $factory);
     $agg2 = new Aggregation($primaryFilter, Aggregation::MIN, $factory);
     $agg3 = new Aggregation($primaryFilter, Aggregation::COUNT, $factory);
-    $aggregation_results = $factory->multicolAggregationFilter($finalFs, [$agg1, $agg2, $agg3]);
+    $aggregations = [$agg1, $agg2, $agg3];
+    if ($primaryKeyIsNotPrimaryFilter) {
+      $agg4 = new Aggregation($primaryKey, Aggregation::MAX, $factory);
+      $agg5 = new Aggregation($primaryKey, Aggregation::MIN, $factory);
+      array_push($aggregations, $agg4, $agg5);
+    }
+    $aggregation_results = $factory->multicolAggregationFilter($finalFs, $aggregations);
 
+    //TODO these should be calculated, based on the acls of the user. it should only show the max, for the max this user is allowed to see
     $max = $aggregation_results[$agg1->getName()];
     $min = $aggregation_results[$agg2->getName()];
     $total = $aggregation_results[$agg3->getName()];
+    if ($isNegativeSort) {
+      [$min, $max] = [$max, $min];
+    }
+
+    if ($primaryKeyIsNotPrimaryFilter) {
+      $secondary_max = $aggregation_results[$agg4->getName()]; //This is the max primary key, when the primary key is not the main filter
+      $secondary_min = $aggregation_results[$agg5->getName()];
+      if ($isNegativeSort) {
+        [$secondary_min, $secondary_max] = [$secondary_max, $secondary_min];
+      }
+    }
 
     //pagination filters need to be added after max has been calculated
     $finalFs[Factory::LIMIT] = new LimitFilter($pageSize);
 
     if (isset($paginationCursor)) {
-      $finalFs[Factory::FILTER][] = new QueryFilter($primaryFilter, $paginationCursor, $operator, $factory);
+      $decoded_cursor = $apiClass->decode_cursor($paginationCursor);
+      $primary_cursor = $decoded_cursor["primary"];
+      $secondary_cursor = $decoded_cursor["secondary"];
+      if ($secondary_cursor) {
+        $finalFs[Factory::FILTER][] = new PaginationFilter(key($primary_cursor), current($primary_cursor), 
+                                                            $operator, key($secondary_cursor), current($secondary_cursor));
+      } else {
+        $finalFs[Factory::FILTER][] = new QueryFilter(key($primary_cursor), current($primary_cursor), $operator, $factory);
+      }
     }
 
     /* Request objects */
@@ -648,7 +741,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $lastParams = $request->getQueryParams();
     unset($lastParams['page']['after']);
     $lastParams['page']['size'] = $pageSize;
-    $lastParams['page']['before'] = urlencode(self::calculate_next_cursor($max));
+    //Todo build last cursor
+    // $next_cursor = $apiClass::build_cursor($primaryFilter, $nextId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $nextPrimaryKey);
+    // $nextParams['page']['after'] = $next_cursor;
+    // $lastParams['page']['before'] = $apiClass::encode_cursor(self::calculate_next_cursor($max));
     $linksLast = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($lastParams));
 
     // Build self link
@@ -659,36 +755,53 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $linksNext = null;
     $linksPrev = null;
 
-    // Build next link
     if (!empty($objects)) {
       // retrieve last object in page and retrieve the attribute based on the filter
-      $prevId = $objects[0]->expose()[$primaryFilter];
-      $nextId = end($objects)->expose()[$primaryFilter];
+      $firstObject = $objects[0]->expose();
+      $lastObject = end($objects)->expose();
+      $prevId = $firstObject[$primaryFilter];
+      $nextId = $lastObject[$primaryFilter];
+      $nextPrimaryKey = $lastObject[$primaryKey];
+      $previousPrimaryKey = $firstObject[$primaryKey];
 
-      if ($nextId < $max) { //only set next page when its not the last page
+      // there is next page when either, it is filtered on an unique key and the unique key is smaller than the highest returned key
+      // or if there is non unique key, that is equal and there is a higher tie breaker secondary key.
+      //  ex. (HashType.isSalted < 1) OR (HashType.isSalted = 1 and HashType.hashTypeId < 12600)
+      //  where salted is primary and hashTypeId is secondary 
+      //only set next page when its not the last page
+      if ($apiClass::compare_keys($max, $nextId, $isNegativeSort) || ($primaryKeyIsNotPrimaryFilter && $nextId == $max && $apiClass::compare_keys($secondary_max, $nextPrimaryKey, $isNegativeSort))) { 
         $nextParams = $selfParams;
-        $nextParams['page']['after'] = urlencode($nextId);
+        // $nextParams['page']['after'] = urlencode($nextId);
+        $next_cursor = $apiClass::build_cursor($primaryFilter, $nextId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $nextPrimaryKey);
+        $nextParams['page']['after'] = $next_cursor;
         unset($nextParams['page']['before']);
         $linksNext = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
       }
       // Build prev link 
-      if ($prevId != $min) { //only set previous page when its not the first page
+      //only set previous page when its not the first page
+      error_log("previous id: ". $prevId);
+      error_log("previous min: ". $min);
+      error_log($apiClass::compare_keys($prevId, $min, $isNegativeSort));
+      if ($apiClass::compare_keys($prevId, $min, $isNegativeSort) || ($primaryKeyIsNotPrimaryFilter && $prevId == $min && $apiClass::compare_keys($previousPrimaryKey, $secondary_min, $isNegativeSort))) { 
+        error_log("check");
         $prevParams = $selfParams;
-        $prevParams['page']['before'] = urlencode($prevId);
+        $previous_cursor = $apiClass::build_cursor($primaryFilter, $prevId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $firstObject[$primaryKey]);
+        $prevParams['page']['before'] = $previous_cursor;
         unset($prevParams['page']['after']);
         $linksPrev = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($prevParams));
       }
     }
 
     //build first link
-    // $firstParams = $request->getQueryParams();
-    // unset($firstParams['page']['before']);
-    // $firstParams['page']['size'] = $pageSize;
+    $firstParams = $request->getQueryParams();
+    unset($firstParams['page']['before']);
+    $firstParams['page']['size'] = $pageSize;
     // $firstParams['page']['after'] = urlencode($min);
-    // $linksFirst = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($firstParams));
+    unset($firstParams['page']['after']);
+    $linksFirst = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($firstParams));
     $links = [
         "self" => $linksSelf,
-        // "first" => $linksFirst,
+        "first" => $linksFirst,
         "last" => $linksLast,
         "next" => $linksNext,
         "prev" => $linksPrev,
