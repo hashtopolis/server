@@ -3,17 +3,17 @@
 namespace DBA;
 
 class Hash extends AbstractModel {
-  private $hashId;
-  private $hashlistId;
-  private $hash;
-  private $salt;
-  private $plaintext;
-  private $timeCracked;
-  private $chunkId;
-  private $isCracked;
-  private $crackPos;
+  private ?int $hashId;
+  private ?int $hashlistId;
+  private ?string $hash;
+  private ?string $salt;
+  private ?string $plaintext;
+  private ?int $timeCracked;
+  private ?int $chunkId;
+  private ?int $isCracked;
+  private ?int $crackPos;
   
-  function __construct($hashId, $hashlistId, $hash, $salt, $plaintext, $timeCracked, $chunkId, $isCracked, $crackPos) {
+  function __construct(?int $hashId, ?int $hashlistId, ?string $hash, ?string $salt, ?string $plaintext, ?int $timeCracked, ?int $chunkId, ?int $isCracked, ?int $crackPos) {
     $this->hashId = $hashId;
     $this->hashlistId = $hashlistId;
     $this->hash = $hash;
@@ -25,7 +25,7 @@ class Hash extends AbstractModel {
     $this->crackPos = $crackPos;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['hashId'] = $this->hashId;
     $dict['hashlistId'] = $this->hashlistId;
@@ -40,7 +40,7 @@ class Hash extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['hashId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashId", "public" => False];
     $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashlistId", "public" => False];
@@ -55,19 +55,19 @@ class Hash extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "hashId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->hashId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->hashId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->hashId = $id;
   }
   
@@ -75,71 +75,71 @@ class Hash extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getHashlistId() {
+  function getHashlistId(): ?int {
     return $this->hashlistId;
   }
   
-  function setHashlistId($hashlistId) {
+  function setHashlistId(?int $hashlistId): void {
     $this->hashlistId = $hashlistId;
   }
   
-  function getHash() {
+  function getHash(): ?string {
     return $this->hash;
   }
   
-  function setHash($hash) {
+  function setHash(?string $hash): void {
     $this->hash = $hash;
   }
   
-  function getSalt() {
+  function getSalt(): ?string {
     return $this->salt;
   }
   
-  function setSalt($salt) {
+  function setSalt(?string $salt): void {
     $this->salt = $salt;
   }
   
-  function getPlaintext() {
+  function getPlaintext(): ?string {
     return $this->plaintext;
   }
   
-  function setPlaintext($plaintext) {
+  function setPlaintext(?string $plaintext): void {
     $this->plaintext = $plaintext;
   }
   
-  function getTimeCracked() {
+  function getTimeCracked(): ?int {
     return $this->timeCracked;
   }
   
-  function setTimeCracked($timeCracked) {
+  function setTimeCracked(?int $timeCracked): void {
     $this->timeCracked = $timeCracked;
   }
   
-  function getChunkId() {
+  function getChunkId(): ?int {
     return $this->chunkId;
   }
   
-  function setChunkId($chunkId) {
+  function setChunkId(?int $chunkId): void {
     $this->chunkId = $chunkId;
   }
   
-  function getIsCracked() {
+  function getIsCracked(): ?int {
     return $this->isCracked;
   }
   
-  function setIsCracked($isCracked) {
+  function setIsCracked(?int $isCracked): void {
     $this->isCracked = $isCracked;
   }
   
-  function getCrackPos() {
+  function getCrackPos(): ?int {
     return $this->crackPos;
   }
   
-  function setCrackPos($crackPos) {
+  function setCrackPos(?int $crackPos): void {
     $this->crackPos = $crackPos;
   }
   

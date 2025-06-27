@@ -3,28 +3,27 @@
 namespace DBA;
 
 class CrackerBinaryFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "CrackerBinary";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "CrackerBinary";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return CrackerBinary
    */
-  function getNullObject() {
-    $o = new CrackerBinary(-1, null, null, null, null);
-    return $o;
+  function getNullObject(): CrackerBinary {
+    return new CrackerBinary(-1, null, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class CrackerBinaryFactory extends AbstractModelFactory {
    * @param array $dict
    * @return CrackerBinary
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new CrackerBinary($dict['crackerBinaryId'], $dict['crackerBinaryTypeId'], $dict['version'], $dict['downloadUrl'], $dict['binaryName']);
-    return $o;
+  function createObjectFromDict($pk, $dict): CrackerBinary {
+    return new CrackerBinary($dict['crackerBinaryId'], $dict['crackerBinaryTypeId'], $dict['version'], $dict['downloadUrl'], $dict['binaryName']);
   }
   
   /**
@@ -66,9 +64,9 @@ class CrackerBinaryFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return CrackerBinary
+   * @return ?CrackerBinary
    */
-  function get($pk) {
+  function get($pk): ?CrackerBinary {
     return Util::cast(parent::get($pk), CrackerBinary::class);
   }
   
@@ -76,7 +74,7 @@ class CrackerBinaryFactory extends AbstractModelFactory {
    * @param CrackerBinary $model
    * @return CrackerBinary
    */
-  function save($model) {
+  function save($model): CrackerBinary {
     return Util::cast(parent::save($model), CrackerBinary::class);
   }
 }

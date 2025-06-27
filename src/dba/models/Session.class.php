@@ -3,15 +3,15 @@
 namespace DBA;
 
 class Session extends AbstractModel {
-  private $sessionId;
-  private $userId;
-  private $sessionStartDate;
-  private $lastActionDate;
-  private $isOpen;
-  private $sessionLifetime;
-  private $sessionKey;
+  private ?int $sessionId;
+  private ?int $userId;
+  private ?int $sessionStartDate;
+  private ?int $lastActionDate;
+  private ?int $isOpen;
+  private ?int $sessionLifetime;
+  private ?string $sessionKey;
   
-  function __construct($sessionId, $userId, $sessionStartDate, $lastActionDate, $isOpen, $sessionLifetime, $sessionKey) {
+  function __construct(?int $sessionId, ?int $userId, ?int $sessionStartDate, ?int $lastActionDate, ?int $isOpen, ?int $sessionLifetime, ?string $sessionKey) {
     $this->sessionId = $sessionId;
     $this->userId = $userId;
     $this->sessionStartDate = $sessionStartDate;
@@ -21,7 +21,7 @@ class Session extends AbstractModel {
     $this->sessionKey = $sessionKey;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['sessionId'] = $this->sessionId;
     $dict['userId'] = $this->userId;
@@ -34,7 +34,7 @@ class Session extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['sessionId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "sessionId", "public" => False];
     $dict['userId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "userId", "public" => False];
@@ -47,19 +47,19 @@ class Session extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "sessionId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->sessionId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->sessionId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->sessionId = $id;
   }
   
@@ -67,55 +67,55 @@ class Session extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getUserId() {
+  function getUserId(): ?int {
     return $this->userId;
   }
   
-  function setUserId($userId) {
+  function setUserId(?int $userId): void {
     $this->userId = $userId;
   }
   
-  function getSessionStartDate() {
+  function getSessionStartDate(): ?int {
     return $this->sessionStartDate;
   }
   
-  function setSessionStartDate($sessionStartDate) {
+  function setSessionStartDate(?int $sessionStartDate): void {
     $this->sessionStartDate = $sessionStartDate;
   }
   
-  function getLastActionDate() {
+  function getLastActionDate(): ?int {
     return $this->lastActionDate;
   }
   
-  function setLastActionDate($lastActionDate) {
+  function setLastActionDate(?int $lastActionDate): void {
     $this->lastActionDate = $lastActionDate;
   }
   
-  function getIsOpen() {
+  function getIsOpen(): ?int {
     return $this->isOpen;
   }
   
-  function setIsOpen($isOpen) {
+  function setIsOpen(?int $isOpen): void {
     $this->isOpen = $isOpen;
   }
   
-  function getSessionLifetime() {
+  function getSessionLifetime(): ?int {
     return $this->sessionLifetime;
   }
   
-  function setSessionLifetime($sessionLifetime) {
+  function setSessionLifetime(?int $sessionLifetime): void {
     $this->sessionLifetime = $sessionLifetime;
   }
   
-  function getSessionKey() {
+  function getSessionKey(): ?string {
     return $this->sessionKey;
   }
   
-  function setSessionKey($sessionKey) {
+  function setSessionKey(?string $sessionKey): void {
     $this->sessionKey = $sessionKey;
   }
   

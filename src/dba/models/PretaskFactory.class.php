@@ -3,28 +3,27 @@
 namespace DBA;
 
 class PretaskFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Pretask";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Pretask";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Pretask
    */
-  function getNullObject() {
-    $o = new Pretask(-1, null, null, null, null, null, null, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): Pretask {
+    return new Pretask(-1, null, null, null, null, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class PretaskFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Pretask
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Pretask($dict['pretaskId'], $dict['taskName'], $dict['attackCmd'], $dict['chunkTime'], $dict['statusTimer'], $dict['color'], $dict['isSmall'], $dict['isCpuTask'], $dict['useNewBench'], $dict['priority'], $dict['maxAgents'], $dict['isMaskImport'], $dict['crackerBinaryTypeId']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Pretask {
+    return new Pretask($dict['pretaskId'], $dict['taskName'], $dict['attackCmd'], $dict['chunkTime'], $dict['statusTimer'], $dict['color'], $dict['isSmall'], $dict['isCpuTask'], $dict['useNewBench'], $dict['priority'], $dict['maxAgents'], $dict['isMaskImport'], $dict['crackerBinaryTypeId']);
   }
   
   /**
@@ -66,9 +64,9 @@ class PretaskFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Pretask
+   * @return ?Pretask
    */
-  function get($pk) {
+  function get($pk): ?Pretask {
     return Util::cast(parent::get($pk), Pretask::class);
   }
   
@@ -76,7 +74,7 @@ class PretaskFactory extends AbstractModelFactory {
    * @param Pretask $model
    * @return Pretask
    */
-  function save($model) {
+  function save($model): Pretask {
     return Util::cast(parent::save($model), Pretask::class);
   }
 }

@@ -3,17 +3,17 @@
 namespace DBA;
 
 class RegVoucher extends AbstractModel {
-  private $regVoucherId;
-  private $voucher;
-  private $time;
+  private ?int $regVoucherId;
+  private ?string $voucher;
+  private ?int $time;
   
-  function __construct($regVoucherId, $voucher, $time) {
+  function __construct(?int $regVoucherId, ?string $voucher, ?int $time) {
     $this->regVoucherId = $regVoucherId;
     $this->voucher = $voucher;
     $this->time = $time;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['regVoucherId'] = $this->regVoucherId;
     $dict['voucher'] = $this->voucher;
@@ -22,7 +22,7 @@ class RegVoucher extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['regVoucherId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "regVoucherId", "public" => False];
     $dict['voucher'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "voucher", "public" => False];
@@ -31,19 +31,19 @@ class RegVoucher extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "regVoucherId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->regVoucherId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->regVoucherId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->regVoucherId = $id;
   }
   
@@ -51,23 +51,23 @@ class RegVoucher extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getVoucher() {
+  function getVoucher(): ?string {
     return $this->voucher;
   }
   
-  function setVoucher($voucher) {
+  function setVoucher(?string $voucher): void {
     $this->voucher = $voucher;
   }
   
-  function getTime() {
+  function getTime(): ?int {
     return $this->time;
   }
   
-  function setTime($time) {
+  function setTime(?int $time): void {
     $this->time = $time;
   }
   

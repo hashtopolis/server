@@ -3,28 +3,27 @@
 namespace DBA;
 
 class HashTypeFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "HashType";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "HashType";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return HashType
    */
-  function getNullObject() {
-    $o = new HashType(-1, null, null, null);
-    return $o;
+  function getNullObject(): HashType {
+    return new HashType(-1, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class HashTypeFactory extends AbstractModelFactory {
    * @param array $dict
    * @return HashType
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new HashType($dict['hashTypeId'], $dict['description'], $dict['isSalted'], $dict['isSlowHash']);
-    return $o;
+  function createObjectFromDict($pk, $dict): HashType {
+    return new HashType($dict['hashTypeId'], $dict['description'], $dict['isSalted'], $dict['isSlowHash']);
   }
   
   /**
@@ -66,9 +64,9 @@ class HashTypeFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return HashType
+   * @return ?HashType
    */
-  function get($pk) {
+  function get($pk): ?HashType {
     return Util::cast(parent::get($pk), HashType::class);
   }
   
@@ -76,7 +74,7 @@ class HashTypeFactory extends AbstractModelFactory {
    * @param HashType $model
    * @return HashType
    */
-  function save($model) {
+  function save($model): HashType {
     return Util::cast(parent::save($model), HashType::class);
   }
 }

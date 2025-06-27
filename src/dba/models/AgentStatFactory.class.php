@@ -3,28 +3,27 @@
 namespace DBA;
 
 class AgentStatFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "AgentStat";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "AgentStat";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return AgentStat
    */
-  function getNullObject() {
-    $o = new AgentStat(-1, null, null, null, null);
-    return $o;
+  function getNullObject(): AgentStat {
+    return new AgentStat(-1, null, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class AgentStatFactory extends AbstractModelFactory {
    * @param array $dict
    * @return AgentStat
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new AgentStat($dict['agentStatId'], $dict['agentId'], $dict['statType'], $dict['time'], $dict['value']);
-    return $o;
+  function createObjectFromDict($pk, $dict): AgentStat {
+    return new AgentStat($dict['agentStatId'], $dict['agentId'], $dict['statType'], $dict['time'], $dict['value']);
   }
   
   /**
@@ -66,9 +64,9 @@ class AgentStatFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return AgentStat
+   * @return ?AgentStat
    */
-  function get($pk) {
+  function get($pk): ?AgentStat {
     return Util::cast(parent::get($pk), AgentStat::class);
   }
   
@@ -76,7 +74,7 @@ class AgentStatFactory extends AbstractModelFactory {
    * @param AgentStat $model
    * @return AgentStat
    */
-  function save($model) {
+  function save($model): AgentStat {
     return Util::cast(parent::save($model), AgentStat::class);
   }
 }

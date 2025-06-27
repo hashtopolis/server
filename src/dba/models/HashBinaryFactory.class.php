@@ -3,28 +3,27 @@
 namespace DBA;
 
 class HashBinaryFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "HashBinary";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "HashBinary";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return HashBinary
    */
-  function getNullObject() {
-    $o = new HashBinary(-1, null, null, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): HashBinary {
+    return new HashBinary(-1, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class HashBinaryFactory extends AbstractModelFactory {
    * @param array $dict
    * @return HashBinary
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new HashBinary($dict['hashBinaryId'], $dict['hashlistId'], $dict['essid'], $dict['hash'], $dict['plaintext'], $dict['timeCracked'], $dict['chunkId'], $dict['isCracked'], $dict['crackPos']);
-    return $o;
+  function createObjectFromDict($pk, $dict): HashBinary {
+    return new HashBinary($dict['hashBinaryId'], $dict['hashlistId'], $dict['essid'], $dict['hash'], $dict['plaintext'], $dict['timeCracked'], $dict['chunkId'], $dict['isCracked'], $dict['crackPos']);
   }
   
   /**
@@ -66,9 +64,9 @@ class HashBinaryFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return HashBinary
+   * @return ?HashBinary
    */
-  function get($pk) {
+  function get($pk): ?HashBinary {
     return Util::cast(parent::get($pk), HashBinary::class);
   }
   
@@ -76,7 +74,7 @@ class HashBinaryFactory extends AbstractModelFactory {
    * @param HashBinary $model
    * @return HashBinary
    */
-  function save($model) {
+  function save($model): HashBinary {
     return Util::cast(parent::save($model), HashBinary::class);
   }
 }

@@ -3,14 +3,14 @@
 namespace DBA;
 
 class LogEntry extends AbstractModel {
-  private $logEntryId;
-  private $issuer;
-  private $issuerId;
-  private $level;
-  private $message;
-  private $time;
+  private ?int $logEntryId;
+  private ?string $issuer;
+  private ?string $issuerId;
+  private ?string $level;
+  private ?string $message;
+  private ?int $time;
   
-  function __construct($logEntryId, $issuer, $issuerId, $level, $message, $time) {
+  function __construct(?int $logEntryId, ?string $issuer, ?string $issuerId, ?string $level, ?string $message, ?int $time) {
     $this->logEntryId = $logEntryId;
     $this->issuer = $issuer;
     $this->issuerId = $issuerId;
@@ -19,7 +19,7 @@ class LogEntry extends AbstractModel {
     $this->time = $time;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['logEntryId'] = $this->logEntryId;
     $dict['issuer'] = $this->issuer;
@@ -31,7 +31,7 @@ class LogEntry extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['logEntryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "logEntryId", "public" => False];
     $dict['issuer'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "issuer", "public" => False];
@@ -43,19 +43,19 @@ class LogEntry extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "logEntryId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->logEntryId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->logEntryId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->logEntryId = $id;
   }
   
@@ -63,47 +63,47 @@ class LogEntry extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getIssuer() {
+  function getIssuer(): ?string {
     return $this->issuer;
   }
   
-  function setIssuer($issuer) {
+  function setIssuer(?string $issuer): void {
     $this->issuer = $issuer;
   }
   
-  function getIssuerId() {
+  function getIssuerId(): ?string {
     return $this->issuerId;
   }
   
-  function setIssuerId($issuerId) {
+  function setIssuerId(?string $issuerId): void {
     $this->issuerId = $issuerId;
   }
   
-  function getLevel() {
+  function getLevel(): ?string {
     return $this->level;
   }
   
-  function setLevel($level) {
+  function setLevel(?string $level): void {
     $this->level = $level;
   }
   
-  function getMessage() {
+  function getMessage(): ?string {
     return $this->message;
   }
   
-  function setMessage($message) {
+  function setMessage(?string $message): void {
     $this->message = $message;
   }
   
-  function getTime() {
+  function getTime(): ?int {
     return $this->time;
   }
   
-  function setTime($time) {
+  function setTime(?int $time): void {
     $this->time = $time;
   }
   

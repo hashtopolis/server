@@ -3,17 +3,17 @@
 namespace DBA;
 
 class FileDelete extends AbstractModel {
-  private $fileDeleteId;
-  private $filename;
-  private $time;
+  private ?int $fileDeleteId;
+  private ?string $filename;
+  private ?int $time;
   
-  function __construct($fileDeleteId, $filename, $time) {
+  function __construct(?int $fileDeleteId, ?string $filename, ?int $time) {
     $this->fileDeleteId = $fileDeleteId;
     $this->filename = $filename;
     $this->time = $time;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['fileDeleteId'] = $this->fileDeleteId;
     $dict['filename'] = $this->filename;
@@ -22,7 +22,7 @@ class FileDelete extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['fileDeleteId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileDeleteId", "public" => False];
     $dict['filename'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "filename", "public" => False];
@@ -31,19 +31,19 @@ class FileDelete extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "fileDeleteId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->fileDeleteId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->fileDeleteId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->fileDeleteId = $id;
   }
   
@@ -51,23 +51,23 @@ class FileDelete extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getFilename() {
+  function getFilename(): ?string {
     return $this->filename;
   }
   
-  function setFilename($filename) {
+  function setFilename(?string $filename): void {
     $this->filename = $filename;
   }
   
-  function getTime() {
+  function getTime(): ?int {
     return $this->time;
   }
   
-  function setTime($time) {
+  function setTime(?int $time): void {
     $this->time = $time;
   }
   

@@ -3,28 +3,27 @@
 namespace DBA;
 
 class ZapFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Zap";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Zap";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Zap
    */
-  function getNullObject() {
-    $o = new Zap(-1, null, null, null, null);
-    return $o;
+  function getNullObject(): Zap {
+    return new Zap(-1, null, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class ZapFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Zap
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Zap($dict['zapId'], $dict['hash'], $dict['solveTime'], $dict['agentId'], $dict['hashlistId']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Zap {
+    return new Zap($dict['zapId'], $dict['hash'], $dict['solveTime'], $dict['agentId'], $dict['hashlistId']);
   }
   
   /**
@@ -66,9 +64,9 @@ class ZapFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Zap
+   * @return ?Zap
    */
-  function get($pk) {
+  function get($pk): ?Zap {
     return Util::cast(parent::get($pk), Zap::class);
   }
   
@@ -76,7 +74,7 @@ class ZapFactory extends AbstractModelFactory {
    * @param Zap $model
    * @return Zap
    */
-  function save($model) {
+  function save($model): Zap {
     return Util::cast(parent::save($model), Zap::class);
   }
 }

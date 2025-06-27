@@ -3,13 +3,13 @@
 namespace DBA;
 
 class Speed extends AbstractModel {
-  private $speedId;
-  private $agentId;
-  private $taskId;
-  private $speed;
-  private $time;
+  private ?int $speedId;
+  private ?int $agentId;
+  private ?int $taskId;
+  private ?int $speed;
+  private ?int $time;
   
-  function __construct($speedId, $agentId, $taskId, $speed, $time) {
+  function __construct(?int $speedId, ?int $agentId, ?int $taskId, ?int $speed, ?int $time) {
     $this->speedId = $speedId;
     $this->agentId = $agentId;
     $this->taskId = $taskId;
@@ -17,7 +17,7 @@ class Speed extends AbstractModel {
     $this->time = $time;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['speedId'] = $this->speedId;
     $dict['agentId'] = $this->agentId;
@@ -28,7 +28,7 @@ class Speed extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['speedId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "speedId", "public" => False];
     $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId", "public" => False];
@@ -39,19 +39,19 @@ class Speed extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "speedId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->speedId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->speedId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->speedId = $id;
   }
   
@@ -59,39 +59,39 @@ class Speed extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getAgentId() {
+  function getAgentId(): ?int {
     return $this->agentId;
   }
   
-  function setAgentId($agentId) {
+  function setAgentId(?int $agentId): void {
     $this->agentId = $agentId;
   }
   
-  function getTaskId() {
+  function getTaskId(): ?int {
     return $this->taskId;
   }
   
-  function setTaskId($taskId) {
+  function setTaskId(?int $taskId): void {
     $this->taskId = $taskId;
   }
   
-  function getSpeed() {
+  function getSpeed(): ?int {
     return $this->speed;
   }
   
-  function setSpeed($speed) {
+  function setSpeed(?int $speed): void {
     $this->speed = $speed;
   }
   
-  function getTime() {
+  function getTime(): ?int {
     return $this->time;
   }
   
-  function setTime($time) {
+  function setTime(?int $time): void {
     $this->time = $time;
   }
   

@@ -3,17 +3,17 @@
 namespace DBA;
 
 class RightGroup extends AbstractModel {
-  private $rightGroupId;
-  private $groupName;
-  private $permissions;
+  private ?int $rightGroupId;
+  private ?string $groupName;
+  private ?string $permissions;
   
-  function __construct($rightGroupId, $groupName, $permissions) {
+  function __construct(?int $rightGroupId, ?string $groupName, ?string $permissions) {
     $this->rightGroupId = $rightGroupId;
     $this->groupName = $groupName;
     $this->permissions = $permissions;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['rightGroupId'] = $this->rightGroupId;
     $dict['groupName'] = $this->groupName;
@@ -22,7 +22,7 @@ class RightGroup extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['rightGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "id", "public" => False];
     $dict['groupName'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "name", "public" => False];
@@ -31,19 +31,19 @@ class RightGroup extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "rightGroupId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->rightGroupId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->rightGroupId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->rightGroupId = $id;
   }
   
@@ -51,23 +51,23 @@ class RightGroup extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getGroupName() {
+  function getGroupName(): ?string {
     return $this->groupName;
   }
   
-  function setGroupName($groupName) {
+  function setGroupName(?string $groupName): void {
     $this->groupName = $groupName;
   }
   
-  function getPermissions() {
+  function getPermissions(): ?string {
     return $this->permissions;
   }
   
-  function setPermissions($permissions) {
+  function setPermissions(?string $permissions): void {
     $this->permissions = $permissions;
   }
   

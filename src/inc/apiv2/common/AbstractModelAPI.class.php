@@ -778,7 +778,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $count = $factory->countFilter($aFs);
     $meta = ["count" => $count];
     
-    $include_total = $request->getQueryParams()['include_total'];
+    $include_total = $request->getQueryParams()['include_total'] ?? false;
     if ($include_total == "true") {
       $meta["total_count"] = $factory->countFilter([]);
     }
@@ -823,33 +823,35 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws ResourceNotFoundError
    */
   public function patchOne(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
-    $objectId = $args['id'];
-    // $object = $this->doFetch($args['id']);
+    
+    // use doFetch to also have additional checks completed
+    $object = $this->doFetch($args['id']);
     
     $data = $request->getParsedBody()['data'];
     if (!$this->validateResourceRecord($data)) {
       return errorResponse($response, "No valid resource identifier object was given as data!", 403);
     }
-    $aliasedfeatures = $this->getAliasedFeatures();
+    $aliasedFeatures = $this->getAliasedFeatures();
     $attributes = $data['attributes'];
     
     // Validate incoming data
     foreach (array_keys($attributes) as $key) {
       // Ensure key can be updated 
-      $this->isAllowedToMutate($aliasedfeatures, $key);
+      $this->isAllowedToMutate($aliasedFeatures, $key);
     }
     // Validate input data if it matches the correct type or subtype
-    $this->validateData($attributes, $aliasedfeatures);
+    $this->validateData($attributes, $aliasedFeatures);
     
     // This does the real things, patch the values that were sent in the data.
-    $mappedData = $this->unaliasData($attributes, $aliasedfeatures);
-    $this->updateObject($objectId, $mappedData);
+    $mappedData = $this->unaliasData($attributes, $aliasedFeatures);
+    $this->updateObject($object->getId(), $mappedData);
     
     // Return updated object
-    $newObject = $this->getFactory()->get($objectId);
+    $newObject = $this->getFactory()->get($object->getId());
     return self::getOneResource($this, $newObject, $request, $response, 200);
   }
   

@@ -3,28 +3,27 @@
 namespace DBA;
 
 class SessionFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Session";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Session";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Session
    */
-  function getNullObject() {
-    $o = new Session(-1, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): Session {
+    return new Session(-1, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class SessionFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Session
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Session($dict['sessionId'], $dict['userId'], $dict['sessionStartDate'], $dict['lastActionDate'], $dict['isOpen'], $dict['sessionLifetime'], $dict['sessionKey']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Session {
+    return new Session($dict['sessionId'], $dict['userId'], $dict['sessionStartDate'], $dict['lastActionDate'], $dict['isOpen'], $dict['sessionLifetime'], $dict['sessionKey']);
   }
   
   /**
@@ -66,9 +64,9 @@ class SessionFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Session
+   * @return ?Session
    */
-  function get($pk) {
+  function get($pk): ?Session {
     return Util::cast(parent::get($pk), Session::class);
   }
   
@@ -76,7 +74,7 @@ class SessionFactory extends AbstractModelFactory {
    * @param Session $model
    * @return Session
    */
-  function save($model) {
+  function save($model): Session {
     return Util::cast(parent::save($model), Session::class);
   }
 }

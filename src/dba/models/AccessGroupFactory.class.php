@@ -3,28 +3,27 @@
 namespace DBA;
 
 class AccessGroupFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "AccessGroup";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "AccessGroup";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return AccessGroup
    */
-  function getNullObject() {
-    $o = new AccessGroup(-1, null);
-    return $o;
+  function getNullObject(): AccessGroup {
+    return new AccessGroup(-1, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class AccessGroupFactory extends AbstractModelFactory {
    * @param array $dict
    * @return AccessGroup
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new AccessGroup($dict['accessGroupId'], $dict['groupName']);
-    return $o;
+  function createObjectFromDict($pk, $dict): AccessGroup {
+    return new AccessGroup($dict['accessGroupId'], $dict['groupName']);
   }
   
   /**
@@ -66,9 +64,9 @@ class AccessGroupFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return AccessGroup
+   * @return ?AccessGroup
    */
-  function get($pk) {
+  function get($pk): ?AccessGroup {
     return Util::cast(parent::get($pk), AccessGroup::class);
   }
   
@@ -76,7 +74,7 @@ class AccessGroupFactory extends AbstractModelFactory {
    * @param AccessGroup $model
    * @return AccessGroup
    */
-  function save($model) {
+  function save($model): AccessGroup {
     return Util::cast(parent::save($model), AccessGroup::class);
   }
 }

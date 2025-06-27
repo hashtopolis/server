@@ -3,28 +3,27 @@
 namespace DBA;
 
 class FileFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "File";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "File";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return File
    */
-  function getNullObject() {
-    $o = new File(-1, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): File {
+    return new File(-1, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class FileFactory extends AbstractModelFactory {
    * @param array $dict
    * @return File
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new File($dict['fileId'], $dict['filename'], $dict['size'], $dict['isSecret'], $dict['fileType'], $dict['accessGroupId'], $dict['lineCount']);
-    return $o;
+  function createObjectFromDict($pk, $dict): File {
+    return new File($dict['fileId'], $dict['filename'], $dict['size'], $dict['isSecret'], $dict['fileType'], $dict['accessGroupId'], $dict['lineCount']);
   }
   
   /**
@@ -66,9 +64,9 @@ class FileFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return File
+   * @return ?File
    */
-  function get($pk) {
+  function get($pk): ?File {
     return Util::cast(parent::get($pk), File::class);
   }
   
@@ -76,7 +74,7 @@ class FileFactory extends AbstractModelFactory {
    * @param File $model
    * @return File
    */
-  function save($model) {
+  function save($model): File {
     return Util::cast(parent::save($model), File::class);
   }
 }

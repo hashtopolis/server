@@ -3,19 +3,19 @@
 namespace DBA;
 
 class Config extends AbstractModel {
-  private $configId;
-  private $configSectionId;
-  private $item;
-  private $value;
+  private ?int $configId;
+  private ?int $configSectionId;
+  private ?string $item;
+  private ?string $value;
   
-  function __construct($configId, $configSectionId, $item, $value) {
+  function __construct(?int $configId, ?int $configSectionId, ?string $item, ?string $value) {
     $this->configId = $configId;
     $this->configSectionId = $configSectionId;
     $this->item = $item;
     $this->value = $value;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['configId'] = $this->configId;
     $dict['configSectionId'] = $this->configSectionId;
@@ -25,7 +25,7 @@ class Config extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
     $dict['configId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "configId", "public" => False];
     $dict['configSectionId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "configSectionId", "public" => False];
@@ -35,19 +35,19 @@ class Config extends AbstractModel {
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "configId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->configId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->configId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->configId = $id;
   }
   
@@ -55,31 +55,31 @@ class Config extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getConfigSectionId() {
+  function getConfigSectionId(): ?int {
     return $this->configSectionId;
   }
   
-  function setConfigSectionId($configSectionId) {
+  function setConfigSectionId(?int $configSectionId): void {
     $this->configSectionId = $configSectionId;
   }
   
-  function getItem() {
+  function getItem(): ?string {
     return $this->item;
   }
   
-  function setItem($item) {
+  function setItem(?string $item): void {
     $this->item = $item;
   }
   
-  function getValue() {
+  function getValue(): ?string {
     return $this->value;
   }
   
-  function setValue($value) {
+  function setValue(?string $value): void {
     $this->value = $value;
   }
   

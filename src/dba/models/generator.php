@@ -13,21 +13,21 @@ require_once(dirname(__FILE__) . "/../../inc/defines/tasks.php");
 // Field choice declarations
 // 
 $FieldIgnoreErrorsChoices = [
-  [ 'key' => DAgentIgnoreErrors::NO, 'label' => 'Deactivate agent on error'],
-  [ 'key' => DAgentIgnoreErrors::IGNORE_SAVE, 'label' => 'Keep agent running, but save errors'],
-  [ 'key' => DAgentIgnoreErrors::IGNORE_NOSAVE, 'label' => 'Keep agent running and discard errors'],
+  ['key' => DAgentIgnoreErrors::NO, 'label' => 'Deactivate agent on error'],
+  ['key' => DAgentIgnoreErrors::IGNORE_SAVE, 'label' => 'Keep agent running, but save errors'],
+  ['key' => DAgentIgnoreErrors::IGNORE_NOSAVE, 'label' => 'Keep agent running and discard errors'],
 ];
 
 $FieldTaskTypeChoices = [
-  [ 'key' => DTaskTypes::NORMAL, 'label' => 'TaskType is Task'],
-  [ 'key' => DTaskTypes::SUPERTASK, 'label' => 'TaskType is Supertask'],
+  ['key' => DTaskTypes::NORMAL, 'label' => 'TaskType is Task'],
+  ['key' => DTaskTypes::SUPERTASK, 'label' => 'TaskType is Supertask'],
 ];
 
 $FieldHashlistFormatChoices = [
-  [ 'key' => DHashlistFormat::PLAIN, 'label' => 'Hashlist format is PLAIN'],
-  [ 'key' => DHashlistFormat::WPA, 'label' => 'Hashlist format is WPA'],
-  [ 'key' => DHashlistFormat::BINARY, 'label' => 'Hashlist format is BINARY'],
-  [ 'key' => DHashlistFormat::SUPERHASHLIST, 'label' => 'Hashlist is SUPERHASHLIST'],
+  ['key' => DHashlistFormat::PLAIN, 'label' => 'Hashlist format is PLAIN'],
+  ['key' => DHashlistFormat::WPA, 'label' => 'Hashlist format is WPA'],
+  ['key' => DHashlistFormat::BINARY, 'label' => 'Hashlist format is BINARY'],
+  ['key' => DHashlistFormat::SUPERHASHLIST, 'label' => 'Hashlist is SUPERHASHLIST'],
 ];
 
 // Type: describes what kind of type the attribute is
@@ -438,7 +438,7 @@ $CONF['User'] = [
     ['name' => 'lastLoginDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'registeredSince', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'sessionLifetime', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int', 'alias' => 'globalPermissionGroupId', 'relation' => 'RightGroup' ],
+    ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int', 'alias' => 'globalPermissionGroupId', 'relation' => 'RightGroup'],
     ['name' => 'yubikey', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
     ['name' => 'otp1', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
     ['name' => 'otp2', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
@@ -495,11 +495,30 @@ $CONF['SupertaskPretask'] = [
 ];
 $CONF['HashlistHashlist'] = [
   'columns' => [
-    ['name' => 'hashlistHashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True],    
+    ['name' => 'hashlistHashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'parentHashlistId', 'read_only' => True, 'type' => 'int', 'relation' => 'Hashlist'],
     ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'relation' => 'Hashlist'],
   ],
 ];
+
+/**
+ * @throws Exception
+ */
+function getTypingType($str, $nullable = false): string {
+  if ($str == 'int' || $str == 'int64' || $str == 'uint64') {
+    return ($nullable ? '?' : '') . 'int';
+  }
+  if (str_starts_with($str, "str(")) {
+    return ($nullable ? '?' : '') . 'string';
+  }
+  if ($str == 'bool') {
+    return ($nullable ? '?' : '') . 'int';
+  }
+  if ($str == 'array' || $str == 'dict') {
+    return ($nullable ? '?' : '') . 'string';
+  }
+  throw new Exception("Cannot convert type " . $str);
+}
 
 foreach ($CONF as $NAME => $MODEL_CONF) {
   $COLUMNS = $MODEL_CONF['columns'];
@@ -509,6 +528,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $init = array();
   $keyVal = array();
   $class = str_replace("__MODEL_PK__", $COLUMNS[0]['name'], $class);
+  $class = str_replace("__MODEL_PK_TYPE__", getTypingType($COLUMNS[0]['type'], false), $class);
   $features = array();
   $functions = array();
   $params = array();
@@ -516,38 +536,40 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $crud_defines = array();
   foreach ($COLUMNS as $COLUMN) {
     $col = $COLUMN['name'];
+    $type = getTypingType($COLUMN['type'], !((isset($COLUMN['null']) && !$COLUMN['null'])));
     if (sizeof($vars) > 0) {
-      $getter = "function get" . strtoupper($col[0]) . substr($col, 1) . "() {\n    return \$this->$col;\n  }";
-      $setter = "function set" . strtoupper($col[0]) . substr($col, 1) . "(\$$col) {\n    \$this->$col = \$$col;\n  }";
+      $getter = "function get" . strtoupper($col[0]) . substr($col, 1) . "(): $type {\n    return \$this->$col;\n  }";
+      $setter = "function set" . strtoupper($col[0]) . substr($col, 1) . "($type \$$col): void {\n    \$this->$col = \$$col;\n  }";
       $functions[] = $getter;
       $functions[] = $setter;
     }
-    $params[] = "\$$col";
-    $vars[] = "private \$$col;";
+    $params[] = "$type \$$col";
+    $vars[] = "private $type \$$col;";
     $init[] = "\$this->$col = \$$col;";
-
-    if (array_key_exists("choices", $COLUMN)) { 
+    
+    if (array_key_exists("choices", $COLUMN)) {
       $choicesVal = '[';
       foreach ($COLUMN['choices'] as $CHOICE) {
         $choicesVal .= $CHOICE['key'] . ' => "' . $CHOICE['label'] . '", ';
       }
       $choicesVal .= ']';
       
-    } else {
+    }
+    else {
       $choicesVal = '"unset"';
     }
-
-    $features[] = "\$dict['$col'] = ['read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', ' . 
-                                     '"type" => "' . $COLUMN['type'] . '", ' .
-                                     '"subtype" => "' . (array_key_exists("subtype", $COLUMN) ? $COLUMN['subtype'] : 'unset') . '", ' .
-                                     '"choices" => ' . $choicesVal . ', ' .
-                                     '"null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . ', ' .
-                                     '"pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . ', ' .
-                                     '"protected" => ' . (array_key_exists("protected", $COLUMN) ? ($COLUMN['protected'] ? 'True' : 'False') : 'False') . ', ' .
-                                     '"private" => ' . (array_key_exists("private", $COLUMN) ? ($COLUMN['private'] ? 'True' : 'False') : 'False') . ', ' .
-                                     '"alias" => "' . (array_key_exists("alias", $COLUMN) ? $COLUMN['alias']  : $COLUMN['name']) . '", ' .
-                                     '"public" => ' . (array_key_exists("public", $COLUMN) ? ($COLUMN['public'] ? 'True' : 'False') : 'False') .
-                                    '];';
+    
+    $features[] = "\$dict['$col'] = ['read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', ' .
+      '"type" => "' . $COLUMN['type'] . '", ' .
+      '"subtype" => "' . (array_key_exists("subtype", $COLUMN) ? $COLUMN['subtype'] : 'unset') . '", ' .
+      '"choices" => ' . $choicesVal . ', ' .
+      '"null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . ', ' .
+      '"pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . ', ' .
+      '"protected" => ' . (array_key_exists("protected", $COLUMN) ? ($COLUMN['protected'] ? 'True' : 'False') : 'False') . ', ' .
+      '"private" => ' . (array_key_exists("private", $COLUMN) ? ($COLUMN['private'] ? 'True' : 'False') : 'False') . ', ' .
+      '"alias" => "' . (array_key_exists("alias", $COLUMN) ? $COLUMN['alias'] : $COLUMN['name']) . '", ' .
+      '"public" => ' . (array_key_exists("public", $COLUMN) ? ($COLUMN['public'] ? 'True' : 'False') : 'False') .
+      '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
     $variables[] = "const " . makeConstant($col) . " = \"$col\";";
     
@@ -557,7 +579,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $crud_defines[] = "const PERM_READ = \"perm" . $crud_prefix . "Read\";";
   $crud_defines[] = "const PERM_UPDATE = \"perm" . $crud_prefix . "Update\";";
   $crud_defines[] = "const PERM_DELETE = \"perm" . $crud_prefix . "Delete\";";
-
+  
   $class = str_replace("__MODEL_PARAMS__", implode(", ", $params), $class);
   $class = str_replace("__MODEL_VARS__", implode("\n  ", $vars), $class);
   $class = str_replace("__MODEL_PARAMS_INIT__", implode("\n    ", $init), $class);
@@ -567,9 +589,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $class = str_replace("__MODEL_VARIABLE_NAMES__", implode("\n  ", $variables), $class);
   $class = str_replace("__MODEL_PERMISSION_DEFINES__", implode("\n  ", $crud_defines), $class);
   
-  if (true || !file_exists(dirname(__FILE__) . "/" . $NAME . ".class.php")) {
-    file_put_contents(dirname(__FILE__) . "/" . $NAME . ".class.php", $class);
-  }
+  file_put_contents(dirname(__FILE__) . "/" . $NAME . ".class.php", $class);
   
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModelFactory.template.txt");
   $class = str_replace("__MODEL_NAME__", $NAME, $class);
@@ -589,9 +609,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $class = str_replace("__MODEL_DICT__", implode(", ", $dict), $class);
   $class = str_replace("__MODEL__DICT2__", implode(", ", $dict2), $class);
   
-  if (true || !file_exists(dirname(__FILE__) . "/" . $NAME . "Factory.class.php")) {
-    file_put_contents(dirname(__FILE__) . "/" . $NAME . "Factory.class.php", $class);
-  }
+  file_put_contents(dirname(__FILE__) . "/" . $NAME . "Factory.class.php", $class);
 }
 
 $class = file_get_contents(dirname(__FILE__) . "/Factory.template.txt");

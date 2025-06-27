@@ -3,28 +3,27 @@
 namespace DBA;
 
 class ConfigFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Config";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Config";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Config
    */
-  function getNullObject() {
-    $o = new Config(-1, null, null, null);
-    return $o;
+  function getNullObject(): Config {
+    return new Config(-1, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class ConfigFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Config
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Config($dict['configId'], $dict['configSectionId'], $dict['item'], $dict['value']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Config {
+    return new Config($dict['configId'], $dict['configSectionId'], $dict['item'], $dict['value']);
   }
   
   /**
@@ -66,9 +64,9 @@ class ConfigFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Config
+   * @return ?Config
    */
-  function get($pk) {
+  function get($pk): ?Config {
     return Util::cast(parent::get($pk), Config::class);
   }
   
@@ -76,7 +74,7 @@ class ConfigFactory extends AbstractModelFactory {
    * @param Config $model
    * @return Config
    */
-  function save($model) {
+  function save($model): Config {
     return Util::cast(parent::save($model), Config::class);
   }
 }
