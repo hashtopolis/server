@@ -73,7 +73,7 @@ class UserAPIConfig extends UserAPIBasic {
           throw new HTException("Value most be boolean!");
         }
         # Workaround, inserting 'false' into text field will cause an empty field.
-        if ($config->getValue() === false) {
+        if (!$config->getValue()) {
           $config->setValue('0');
         }
         else{
