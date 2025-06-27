@@ -769,13 +769,14 @@ abstract class AbstractBaseAPI {
   /**
    * Validate the Permission of a DBA column and check if it key may be altered
    *
-   * @param string $key Field to use as base for $objects
    * @param array $features The features of the DBA object of the child
+   * @param string $key Field to use as base for $objects
+   * @param bool $toNull set this to true if it should be checked if the value can be set to null
    * @return void
    * @throws HttpError
    * @throws HttpForbidden when it is not allowed to alter the key
    */
-  protected function isAllowedToMutate(array $features, string $key): void {
+  protected function isAllowedToMutate(array $features, string $key, bool $toNull = false): void {
     // Ensure key exists in target array
     if (!array_key_exists($key, $features)) {
       throw new HttpError("Key '$key' does not exists!");
@@ -789,6 +790,9 @@ abstract class AbstractBaseAPI {
     }
     if ($features[$key]['private']) {
       throw new HttpForbidden("Key '$key' is private");
+    }
+    if ($toNull && $features[$key]['null'] == false){
+      throw new HttpForbidden("Key '$key' can not be set to NULL!");
     }
   }
   

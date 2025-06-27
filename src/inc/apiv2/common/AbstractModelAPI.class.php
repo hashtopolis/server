@@ -396,12 +396,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws ResourceNotFoundError
    * @throws HttpForbidden
    */
-  protected function doFetch(string $pk): mixed {
-    $object = $this->getFactory()->get($pk);
+  protected function doFetch(string $pk, AbstractModelFactory $otherFactory = null): mixed {
+    if ($otherFactory != null) {
+      $object = $otherFactory->get($pk);
+    }
+    else {
+      $object = $this->getFactory()->get($pk);
+    }
+    
     if ($object === null) {
       throw new ResourceNotFoundError();
     }
-    if ($this->getSingleACL($this->getCurrentUser(), $object) === false) {
+    if ($otherFactory == null && $this->getSingleACL($this->getCurrentUser(), $object) === false) {
       throw new HttpForbidden("No access to this object!", 403);
     }
     
@@ -1124,9 +1130,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   
   /**
    * API endpoint to patch a to one relationship link
-   * TODO: This works as intended but it can give weird behaviour. ex. it allows you to put an MD5 hash to a SHA1 hashlist
-   * by patching the foreign key. Simple fix could be to make foreignkey immutable for cases like this.
-   * Or just like with the patch many, create an overrideable function to add more logic in child
    * @param Request $request
    * @param Response $response
    * @param array $args
@@ -1145,25 +1148,32 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     $data = $jsonBody['data'];
     
-    $relationKey = $this->getToOneRelationships()[$args['relation']]['relationKey'];
-    if ($relationKey == null) {
+    $relation = $this->getToOneRelationships()[$args['relation']];
+    if ($relation == null) {
       throw new HttpError("Relation does not exist!");
     }
+    $relationKey = $relation['relationKey'];
+    $relationType = $relation['relationType'];
     
     $features = $this->getFeatures();
-    $this->isAllowedToMutate($features, $relationKey);
+    $this->isAllowedToMutate($features, $relationKey, $data == null);
     
     $factory = $this->getFactory();
     $object = $this->doFetch(intval($args['id']));
     if ($data == null) {
-      $factory->DatabaseSet($object, $relationKey, null);
+      $this->DatabaseSet($object, $relationKey, null);
     }
     elseif (!$this->validateResourceRecord($data)) {
       throw new HttpError('No valid resource identifier object was given as data!');
     }
     else {
-      //TODO check if foreign key exists befor inserting
-      $factory->DatabaseSet($object, $relationKey, $data["id"]);
+      // check if foreign key exists before inserting
+      $otherFactory = self::getModelFactory($relationType);
+      $check = $otherFactory->get($data["id"]);
+      if ($check == null) {
+        throw new HttpError("Provided foreign key to patch to does not exist!");
+      }
+      $this->DatabaseSet($object, $relationKey, $check->getId());
     }
     
     return $response->withStatus(201)
@@ -1286,6 +1296,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws InternalError
    */
   public function patchToManyRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1370,6 +1381,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HttpError
    * @throws HttpForbidden
    * @throws InternalError
+   * @throws ResourceNotFoundError
+   * @throws HttpConflict
    */
   public function postToManyRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1386,6 +1399,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       throw new HttpError("Relation does not exist!");
     }
     
+    // check if the object queried exists
+    $baseItem = $this->doFetch($args["id"]);
+    
     // TODO this ia an abstract way of adding to junction tables. This only works for intermediate tables
     // that have 3 fields (1 primary key and 2 foreign keys to link the tables) for models that have intermediate
     // tables with more than 3 fields, the postToManyRelationshipLink() function should be overridden.
@@ -1394,22 +1410,32 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       $primaryKey = $this->getPrimaryKeyOther($relationType);
       //Add to junction table if not exist.
       $factory = self::getModelFactory($relationType);
+      $factory->getDB()->beginTransaction();
       foreach ($data as $item) {
         if (!$this->validateResourceRecord($item)) {
           $encoded_item = json_encode($item);
           throw new HttpError('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
         }
-        $junction_table_entry = $factory->getNullObject();
-        $junction_table_entry->setId(null);
-        $setMethod1 = "set" . ucfirst($relation["junctionTableFilterField"]);
-        $setMethod2 = "set" . ucfirst($relation["junctionTableJoinField"]);
-        if (!method_exists($junction_table_entry, $setMethod1) || !method_exists($junction_table_entry, $setMethod2)) {
-          throw new InternalError("Internal error, set function not found");
+        $otherFactory = self::getModelFactory($relation["relationType"]);
+        $relationItem = $this->doFetch($item["id"], $otherFactory);
+        
+        // check if the relation already exists
+        $qF1 = new QueryFilter($relation["junctionTableFilterField"], $baseItem->getId(), "=");
+        $qF2 = new QueryFilter($relation["junctionTableJoinField"], $relationItem->getId(), "=");
+        $check = $factory->filter([Factory::FILTER => [$qF1, $qF2]], true);
+        if ($check != null) {
+          throw new HttpConflict("Relation " . $relation['junctionTableType'] . " of " . $baseItem->getId() . " to " . $relationItem->getId() . " already exists");
         }
-        $junction_table_entry->$setMethod1($args["id"]);
-        $junction_table_entry->$setMethod2($item["id"]);
-        $factory->save($junction_table_entry);
+        
+        $table_entry_dict = [
+          $primaryKey => -1,
+          $relation["junctionTableFilterField"] => $baseItem->getId(),
+          $relation["junctionTableJoinField"] => $relationItem->getId(),
+        ];
+        $table_entry = $factory->createObjectFromDict(-1, $table_entry_dict);
+        $factory->save($table_entry);
       }
+      $factory->getDB()->commit();
     }
     else {
       $relationType = $relation['relationType'];
@@ -1417,8 +1443,25 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       $features = $this->getFeaturesOther($relationType);
       $this->isAllowedToMutate($features, $relationKey);
       $factory = self::getModelFactory($relationType);
-      $updates = self::ResourceRecordArrayToUpdateArray($data, $args["id"]);
+      
+      $factory->getDB()->beginTransaction();
+      $updates = self::ResourceRecordArrayToUpdateArray($data, $baseItem->getId());
+      
+      // check that all the IDs exist
+      $updateIds = [];
+      foreach ($updates as $update) {
+        $updateIds[] = $update->getMatchValue();
+      }
+      $qF = new ContainFilter($primaryKey, $updateIds);
+      $check = $factory->countFilter([Factory::FILTER => $qF]);
+      if ($check != count($updateIds)) {
+        // in order to be efficient we only do a count query, but this has the effect that we cannot
+        // exactly tell which item is missing
+        throw new ResourceNotFoundError("Not all requested items to update exist!");
+      }
+      
       $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
+      $factory->getDB()->commit();
     }
     
     return $response->withStatus(201)
