@@ -69,7 +69,7 @@ class UserAPIConfig extends UserAPIBasic {
         }
         break;
       case DConfigType::TICKBOX:
-        if (!is_bool($config->getValue())) {
+        if ($config->getValue() != '1' && $config->getValue()) {
           throw new HTException("Value most be boolean!");
         }
         # Workaround, inserting 'false' into text field will cause an empty field.
