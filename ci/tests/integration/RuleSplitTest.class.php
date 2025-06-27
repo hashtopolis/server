@@ -82,8 +82,8 @@ class RuleSplitTest extends HashtopolisTest {
     }
 
     # Enable rulesplit
-    $this->setConfig('ruleSplitDisable', false);
-    $this->setConfig('ruleSplitAlways', true);
+    $this->setConfig('ruleSplitDisable', 0);
+    $this->setConfig('ruleSplitAlways', 1);
 
     # Create agent
     $agent = $this->createAgent("agent-1");
