@@ -11,9 +11,9 @@ use Slim\Exception\HttpForbiddenException;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
-class GetFileHelperAPI extends AbstractHelperAPI {
+class GetAgentBinaryHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
-    return "/api/v2/helper/getFile";
+    return "/api/v2/helper/getAgentBinary";
   }
   
   public static function getAvailableMethods(): array {
@@ -21,11 +21,11 @@ class GetFileHelperAPI extends AbstractHelperAPI {
   }
   
   public function getRequiredPermissions(string $method): array {
-    return [File::PERM_READ];
+    return [];
   }
   
   /**
-   * getfile is different because it returns actual binary data.
+   * getAgentBinary is different because it returns actual binary data.
    */
   public static function getResponse(): null {
     return null;
@@ -33,24 +33,20 @@ class GetFileHelperAPI extends AbstractHelperAPI {
   
   
   #[NoReturn] public function actionPost(array $data): object|array|null {
-    assert(False, "GetFile has no POST");
+    assert(False, "getAgentBinary has no POST");
   }
   
   /**
    * @throws HTException
    */
-  public function validateFile($request, $file_id): string {
-    if (!is_numeric($file_id)) {
-      throw new HTException("Invalid file id given: " . $file_id);
+  public function validateAgent($request, int $agentBinaryId): string {
+    $agentBinary = Factory::getAgentBinaryFactory()->get($agentBinaryId);
+    if ($agentBinary == null) {
+      throw new HttpNotFoundException($request, "No agent binary with id: " . $agentBinaryId);
     }
-    $file = Factory::getFileFactory()->get($file_id);
-    if (!$file) {
-      throw new HttpNotFoundException($request, "No file with id: " . $file_id);
-    }
-    $filename = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename();
-    //checks below should never trigger 
+    $filename = dirname(__FILE__) . "/../../../bin/" . $agentBinary->getFilename();
     if (!file_exists($filename)) {
-      throw new HttpNotFoundException($request, "File not found at filesystem");
+      throw new HTException("Agent Binary not present on server!");
     }
     if (!is_readable($filename)) {
       throw new HttpForbiddenException($request, "Not allowed to read file");
@@ -66,14 +62,14 @@ class GetFileHelperAPI extends AbstractHelperAPI {
     return [
       [
         "in" => "query",
-        "name" => "file",
+        "name" => "agent",
         "schema" => [
           "type" => "integer",
           "format" => "int32"
         ],
         "required" => true,
         "example" => 1,
-        "description" => "The ID of the file to download."
+        "description" => "The ID of the agent zip to download."
       ]
     ];
   }
@@ -89,26 +85,25 @@ class GetFileHelperAPI extends AbstractHelperAPI {
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
-    $fileParam = $request->getQueryParams()['file'];
-    if ($fileParam == null) {
-      throw new HttpErrorException("No File query param has been provided");
+    $agentParam = $request->getQueryParams()['agent'];
+    if ($agentParam == null) {
+      throw new HttpErrorException("No AgentBinary query param has been provided");
     }
-    $file_id = intval($fileParam);
-    
-    $filename = $this->validateFile($request, $file_id);
+    $agentBinaryId = intval($agentParam);
+    $filename = $this->validateAgent($request, $agentBinaryId);
     
     return $this->startDownload($request, $response, $filename);
   }
   
   static public function register($app): void {
-    $baseUri = GetFileHelperAPI::getBaseUri();
+    $baseUri = GetAgentBinaryHelperAPI::getBaseUri();
     
     /* Allow CORS preflight requests */
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "getFileHelperAPI:handleGet");
+    $app->get($baseUri, "getAgentBinaryHelperAPI:handleGet");
   }
 }
 
-GetFileHelperAPI::register($app);
+GetAgentBinaryHelperAPI::register($app);
