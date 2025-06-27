@@ -1443,8 +1443,25 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       $features = $this->getFeaturesOther($relationType);
       $this->isAllowedToMutate($features, $relationKey);
       $factory = self::getModelFactory($relationType);
+      
+      $factory->getDB()->beginTransaction();
       $updates = self::ResourceRecordArrayToUpdateArray($data, $baseItem->getId());
+      
+      // check that all the IDs exist
+      $updateIds = [];
+      foreach ($updates as $update) {
+        $updateIds[] = $update->getMatchValue();
+      }
+      $qF = new ContainFilter($primaryKey, $updateIds);
+      $check = $factory->countFilter([Factory::FILTER => $qF]);
+      if ($check != count($updateIds)) {
+        // in order to be efficient we only do a count query, but this has the effect that we cannot
+        // exactly tell which item is missing
+        throw new ResourceNotFoundError("Not all requested items to update exist!");
+      }
+      
       $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
+      $factory->getDB()->commit();
     }
     
     return $response->withStatus(201)
