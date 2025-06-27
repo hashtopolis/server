@@ -208,7 +208,7 @@ $CONF['FileDownload'] = [
 $CONF['Hash'] = [
   'columns' => [
     ['name' => 'hashId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'hashlistId', 'read_only' => False, 'type' => 'int', 'relation' => 'Hashlist'],
+    ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'relation' => 'Hashlist'],
     ['name' => 'hash', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'salt', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'plaintext', 'read_only' => False, 'type' => 'str(256)'],
