@@ -35,11 +35,11 @@ class AccessGroupUser extends AbstractModel {
     return "accessGroupUserId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->accessGroupUserId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->accessGroupUserId;
   }
   

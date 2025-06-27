@@ -51,11 +51,11 @@ class ApiKey extends AbstractModel {
     return "apiKeyId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->apiKeyId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->apiKeyId;
   }
   

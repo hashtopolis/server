@@ -35,11 +35,11 @@ class RightGroup extends AbstractModel {
     return "rightGroupId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->rightGroupId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->rightGroupId;
   }
   

@@ -47,11 +47,11 @@ class AgentError extends AbstractModel {
     return "agentErrorId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->agentErrorId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->agentErrorId;
   }
   

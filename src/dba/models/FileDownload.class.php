@@ -39,11 +39,11 @@ class FileDownload extends AbstractModel {
     return "fileDownloadId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->fileDownloadId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->fileDownloadId;
   }
   

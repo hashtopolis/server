@@ -6,12 +6,12 @@ class File extends AbstractModel {
   private ?int $fileId;
   private ?string $filename;
   private ?int $size;
-  private ?bool $isSecret;
+  private ?int $isSecret;
   private ?int $fileType;
   private ?int $accessGroupId;
   private ?int $lineCount;
   
-  function __construct(?int $fileId, ?string $filename, ?int $size, ?bool $isSecret, ?int $fileType, ?int $accessGroupId, ?int $lineCount) {
+  function __construct(?int $fileId, ?string $filename, ?int $size, ?int $isSecret, ?int $fileType, ?int $accessGroupId, ?int $lineCount) {
     $this->fileId = $fileId;
     $this->filename = $filename;
     $this->size = $size;
@@ -51,11 +51,11 @@ class File extends AbstractModel {
     return "fileId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->fileId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->fileId;
   }
   
@@ -87,11 +87,11 @@ class File extends AbstractModel {
     $this->size = $size;
   }
   
-  function getIsSecret(): ?bool {
+  function getIsSecret(): ?int {
     return $this->isSecret;
   }
   
-  function setIsSecret(?bool $isSecret): void {
+  function setIsSecret(?int $isSecret): void {
     $this->isSecret = $isSecret;
   }
   

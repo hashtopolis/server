@@ -31,11 +31,11 @@ class ConfigSection extends AbstractModel {
     return "configSectionId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->configSectionId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->configSectionId;
   }
   

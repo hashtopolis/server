@@ -8,8 +8,8 @@ class User extends AbstractModel {
   private ?string $email;
   private ?string $passwordHash;
   private ?string $passwordSalt;
-  private ?bool $isValid;
-  private ?bool $isComputedPassword;
+  private ?int $isValid;
+  private ?int $isComputedPassword;
   private ?int $lastLoginDate;
   private ?int $registeredSince;
   private ?int $sessionLifetime;
@@ -20,7 +20,7 @@ class User extends AbstractModel {
   private ?string $otp3;
   private ?string $otp4;
   
-  function __construct(?int $userId, ?string $username, ?string $email, ?string $passwordHash, ?string $passwordSalt, ?bool $isValid, ?bool $isComputedPassword, ?int $lastLoginDate, ?int $registeredSince, ?int $sessionLifetime, ?int $rightGroupId, ?string $yubikey, ?string $otp1, ?string $otp2, ?string $otp3, ?string $otp4) {
+  function __construct(?int $userId, ?string $username, ?string $email, ?string $passwordHash, ?string $passwordSalt, ?int $isValid, ?int $isComputedPassword, ?int $lastLoginDate, ?int $registeredSince, ?int $sessionLifetime, ?int $rightGroupId, ?string $yubikey, ?string $otp1, ?string $otp2, ?string $otp3, ?string $otp4) {
     $this->userId = $userId;
     $this->username = $username;
     $this->email = $email;
@@ -87,11 +87,11 @@ class User extends AbstractModel {
     return "userId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->userId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->userId;
   }
   
@@ -139,19 +139,19 @@ class User extends AbstractModel {
     $this->passwordSalt = $passwordSalt;
   }
   
-  function getIsValid(): ?bool {
+  function getIsValid(): ?int {
     return $this->isValid;
   }
   
-  function setIsValid(?bool $isValid): void {
+  function setIsValid(?int $isValid): void {
     $this->isValid = $isValid;
   }
   
-  function getIsComputedPassword(): ?bool {
+  function getIsComputedPassword(): ?int {
     return $this->isComputedPassword;
   }
   
-  function setIsComputedPassword(?bool $isComputedPassword): void {
+  function setIsComputedPassword(?int $isComputedPassword): void {
     $this->isComputedPassword = $isComputedPassword;
   }
   

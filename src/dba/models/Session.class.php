@@ -7,11 +7,11 @@ class Session extends AbstractModel {
   private ?int $userId;
   private ?int $sessionStartDate;
   private ?int $lastActionDate;
-  private ?bool $isOpen;
+  private ?int $isOpen;
   private ?int $sessionLifetime;
   private ?string $sessionKey;
   
-  function __construct(?int $sessionId, ?int $userId, ?int $sessionStartDate, ?int $lastActionDate, ?bool $isOpen, ?int $sessionLifetime, ?string $sessionKey) {
+  function __construct(?int $sessionId, ?int $userId, ?int $sessionStartDate, ?int $lastActionDate, ?int $isOpen, ?int $sessionLifetime, ?string $sessionKey) {
     $this->sessionId = $sessionId;
     $this->userId = $userId;
     $this->sessionStartDate = $sessionStartDate;
@@ -51,11 +51,11 @@ class Session extends AbstractModel {
     return "sessionId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->sessionId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->sessionId;
   }
   
@@ -95,11 +95,11 @@ class Session extends AbstractModel {
     $this->lastActionDate = $lastActionDate;
   }
   
-  function getIsOpen(): ?bool {
+  function getIsOpen(): ?int {
     return $this->isOpen;
   }
   
-  function setIsOpen(?bool $isOpen): void {
+  function setIsOpen(?int $isOpen): void {
     $this->isOpen = $isOpen;
   }
   

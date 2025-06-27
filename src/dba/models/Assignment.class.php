@@ -39,11 +39,11 @@ class Assignment extends AbstractModel {
     return "assignmentId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->assignmentId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->assignmentId;
   }
   

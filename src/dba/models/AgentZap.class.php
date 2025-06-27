@@ -35,11 +35,11 @@ class AgentZap extends AbstractModel {
     return "agentZapId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->agentZapId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->agentZapId;
   }
   

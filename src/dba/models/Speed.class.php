@@ -43,11 +43,11 @@ class Speed extends AbstractModel {
     return "speedId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->speedId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->speedId;
   }
   

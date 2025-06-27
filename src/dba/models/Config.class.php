@@ -39,11 +39,11 @@ class Config extends AbstractModel {
     return "configId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->configId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->configId;
   }
   

@@ -9,15 +9,15 @@ class Pretask extends AbstractModel {
   private ?int $chunkTime;
   private ?int $statusTimer;
   private ?string $color;
-  private ?bool $isSmall;
-  private ?bool $isCpuTask;
-  private ?bool $useNewBench;
+  private ?int $isSmall;
+  private ?int $isCpuTask;
+  private ?int $useNewBench;
   private ?int $priority;
   private ?int $maxAgents;
-  private ?bool $isMaskImport;
+  private ?int $isMaskImport;
   private ?int $crackerBinaryTypeId;
   
-  function __construct(?int $pretaskId, ?string $taskName, ?string $attackCmd, ?int $chunkTime, ?int $statusTimer, ?string $color, ?bool $isSmall, ?bool $isCpuTask, ?bool $useNewBench, ?int $priority, ?int $maxAgents, ?bool $isMaskImport, ?int $crackerBinaryTypeId) {
+  function __construct(?int $pretaskId, ?string $taskName, ?string $attackCmd, ?int $chunkTime, ?int $statusTimer, ?string $color, ?int $isSmall, ?int $isCpuTask, ?int $useNewBench, ?int $priority, ?int $maxAgents, ?int $isMaskImport, ?int $crackerBinaryTypeId) {
     $this->pretaskId = $pretaskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -75,11 +75,11 @@ class Pretask extends AbstractModel {
     return "pretaskId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->pretaskId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->pretaskId;
   }
   
@@ -135,27 +135,27 @@ class Pretask extends AbstractModel {
     $this->color = $color;
   }
   
-  function getIsSmall(): ?bool {
+  function getIsSmall(): ?int {
     return $this->isSmall;
   }
   
-  function setIsSmall(?bool $isSmall): void {
+  function setIsSmall(?int $isSmall): void {
     $this->isSmall = $isSmall;
   }
   
-  function getIsCpuTask(): ?bool {
+  function getIsCpuTask(): ?int {
     return $this->isCpuTask;
   }
   
-  function setIsCpuTask(?bool $isCpuTask): void {
+  function setIsCpuTask(?int $isCpuTask): void {
     $this->isCpuTask = $isCpuTask;
   }
   
-  function getUseNewBench(): ?bool {
+  function getUseNewBench(): ?int {
     return $this->useNewBench;
   }
   
-  function setUseNewBench(?bool $useNewBench): void {
+  function setUseNewBench(?int $useNewBench): void {
     $this->useNewBench = $useNewBench;
   }
   
@@ -175,11 +175,11 @@ class Pretask extends AbstractModel {
     $this->maxAgents = $maxAgents;
   }
   
-  function getIsMaskImport(): ?bool {
+  function getIsMaskImport(): ?int {
     return $this->isMaskImport;
   }
   
-  function setIsMaskImport(?bool $isMaskImport): void {
+  function setIsMaskImport(?int $isMaskImport): void {
     $this->isMaskImport = $isMaskImport;
   }
   

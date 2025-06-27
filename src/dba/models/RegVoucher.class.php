@@ -35,11 +35,11 @@ class RegVoucher extends AbstractModel {
     return "regVoucherId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->regVoucherId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->regVoucherId;
   }
   

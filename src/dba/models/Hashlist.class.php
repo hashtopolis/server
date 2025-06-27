@@ -10,16 +10,16 @@ class Hashlist extends AbstractModel {
   private ?int $hashCount;
   private ?string $saltSeparator;
   private ?int $cracked;
-  private ?bool $isSecret;
-  private ?bool $hexSalt;
-  private ?bool $isSalted;
+  private ?int $isSecret;
+  private ?int $hexSalt;
+  private ?int $isSalted;
   private ?int $accessGroupId;
   private ?string $notes;
-  private ?bool $brainId;
+  private ?int $brainId;
   private ?int $brainFeatures;
-  private ?bool $isArchived;
+  private ?int $isArchived;
   
-  function __construct(?int $hashlistId, ?string $hashlistName, ?int $format, ?int $hashTypeId, ?int $hashCount, ?string $saltSeparator, ?int $cracked, ?bool $isSecret, ?bool $hexSalt, ?bool $isSalted, ?int $accessGroupId, ?string $notes, ?bool $brainId, ?int $brainFeatures, ?bool $isArchived) {
+  function __construct(?int $hashlistId, ?string $hashlistName, ?int $format, ?int $hashTypeId, ?int $hashCount, ?string $saltSeparator, ?int $cracked, ?int $isSecret, ?int $hexSalt, ?int $isSalted, ?int $accessGroupId, ?string $notes, ?int $brainId, ?int $brainFeatures, ?int $isArchived) {
     $this->hashlistId = $hashlistId;
     $this->hashlistName = $hashlistName;
     $this->format = $format;
@@ -83,11 +83,11 @@ class Hashlist extends AbstractModel {
     return "hashlistId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->hashlistId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->hashlistId;
   }
   
@@ -151,27 +151,27 @@ class Hashlist extends AbstractModel {
     $this->cracked = $cracked;
   }
   
-  function getIsSecret(): ?bool {
+  function getIsSecret(): ?int {
     return $this->isSecret;
   }
   
-  function setIsSecret(?bool $isSecret): void {
+  function setIsSecret(?int $isSecret): void {
     $this->isSecret = $isSecret;
   }
   
-  function getHexSalt(): ?bool {
+  function getHexSalt(): ?int {
     return $this->hexSalt;
   }
   
-  function setHexSalt(?bool $hexSalt): void {
+  function setHexSalt(?int $hexSalt): void {
     $this->hexSalt = $hexSalt;
   }
   
-  function getIsSalted(): ?bool {
+  function getIsSalted(): ?int {
     return $this->isSalted;
   }
   
-  function setIsSalted(?bool $isSalted): void {
+  function setIsSalted(?int $isSalted): void {
     $this->isSalted = $isSalted;
   }
   
@@ -191,11 +191,11 @@ class Hashlist extends AbstractModel {
     $this->notes = $notes;
   }
   
-  function getBrainId(): ?bool {
+  function getBrainId(): ?int {
     return $this->brainId;
   }
   
-  function setBrainId(?bool $brainId): void {
+  function setBrainId(?int $brainId): void {
     $this->brainId = $brainId;
   }
   
@@ -207,11 +207,11 @@ class Hashlist extends AbstractModel {
     $this->brainFeatures = $brainFeatures;
   }
   
-  function getIsArchived(): ?bool {
+  function getIsArchived(): ?int {
     return $this->isArchived;
   }
   
-  function setIsArchived(?bool $isArchived): void {
+  function setIsArchived(?int $isArchived): void {
     $this->isArchived = $isArchived;
   }
   

@@ -31,11 +31,11 @@ class StoredValue extends AbstractModel {
     return "storedValueId";
   }
   
-  function getPrimaryKeyValue(): string {
+  function getPrimaryKeyValue(): ?string {
     return $this->storedValueId;
   }
   
-  function getId(): string {
+  function getId(): ?string {
     return $this->storedValueId;
   }
   

@@ -35,11 +35,11 @@ class AccessGroupAgent extends AbstractModel {
     return "accessGroupAgentId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->accessGroupAgentId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->accessGroupAgentId;
   }
   

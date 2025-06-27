@@ -43,11 +43,11 @@ class Zap extends AbstractModel {
     return "zapId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->zapId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->zapId;
   }
   

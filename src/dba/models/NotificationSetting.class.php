@@ -9,9 +9,9 @@ class NotificationSetting extends AbstractModel {
   private ?string $notification;
   private ?int $userId;
   private ?string $receiver;
-  private ?bool $isActive;
+  private ?int $isActive;
   
-  function __construct(?int $notificationSettingId, ?string $action, ?int $objectId, ?string $notification, ?int $userId, ?string $receiver, ?bool $isActive) {
+  function __construct(?int $notificationSettingId, ?string $action, ?int $objectId, ?string $notification, ?int $userId, ?string $receiver, ?int $isActive) {
     $this->notificationSettingId = $notificationSettingId;
     $this->action = $action;
     $this->objectId = $objectId;
@@ -51,11 +51,11 @@ class NotificationSetting extends AbstractModel {
     return "notificationSettingId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->notificationSettingId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->notificationSettingId;
   }
   
@@ -111,11 +111,11 @@ class NotificationSetting extends AbstractModel {
     $this->receiver = $receiver;
   }
   
-  function getIsActive(): ?bool {
+  function getIsActive(): ?int {
     return $this->isActive;
   }
   
-  function setIsActive(?bool $isActive): void {
+  function setIsActive(?int $isActive): void {
     $this->isActive = $isActive;
   }
   

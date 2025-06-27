@@ -35,11 +35,11 @@ class ApiGroup extends AbstractModel {
     return "apiGroupId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->apiGroupId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->apiGroupId;
   }
   

@@ -27,11 +27,11 @@ class __MODEL_NAME__ extends AbstractModel {
     return "__MODEL_PK__";
   }
   
-  function getPrimaryKeyValue(): __MODEL_PK_TYPE__ {
+  function getPrimaryKeyValue(): ?__MODEL_PK_TYPE__ {
     return $this->__MODEL_PK__;
   }
   
-  function getId(): __MODEL_PK_TYPE__ {
+  function getId(): ?__MODEL_PK_TYPE__ {
     return $this->__MODEL_PK__;
   }
   

@@ -35,11 +35,11 @@ class FileDelete extends AbstractModel {
     return "fileDeleteId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->fileDeleteId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->fileDeleteId;
   }
   

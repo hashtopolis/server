@@ -5,10 +5,10 @@ namespace DBA;
 class HashType extends AbstractModel {
   private ?int $hashTypeId;
   private ?string $description;
-  private ?bool $isSalted;
-  private ?bool $isSlowHash;
+  private ?int $isSalted;
+  private ?int $isSlowHash;
   
-  function __construct(?int $hashTypeId, ?string $description, ?bool $isSalted, ?bool $isSlowHash) {
+  function __construct(?int $hashTypeId, ?string $description, ?int $isSalted, ?int $isSlowHash) {
     $this->hashTypeId = $hashTypeId;
     $this->description = $description;
     $this->isSalted = $isSalted;
@@ -39,11 +39,11 @@ class HashType extends AbstractModel {
     return "hashTypeId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->hashTypeId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->hashTypeId;
   }
   
@@ -67,19 +67,19 @@ class HashType extends AbstractModel {
     $this->description = $description;
   }
   
-  function getIsSalted(): ?bool {
+  function getIsSalted(): ?int {
     return $this->isSalted;
   }
   
-  function setIsSalted(?bool $isSalted): void {
+  function setIsSalted(?int $isSalted): void {
     $this->isSalted = $isSalted;
   }
   
-  function getIsSlowHash(): ?bool {
+  function getIsSlowHash(): ?int {
     return $this->isSlowHash;
   }
   
-  function setIsSlowHash(?bool $isSlowHash): void {
+  function setIsSlowHash(?int $isSlowHash): void {
     $this->isSlowHash = $isSlowHash;
   }
   

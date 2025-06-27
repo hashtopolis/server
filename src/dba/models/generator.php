@@ -512,7 +512,7 @@ function getTypingType($str, $nullable = false): string {
     return ($nullable ? '?' : '') . 'string';
   }
   if ($str == 'bool') {
-    return ($nullable ? '?' : '') . 'bool';
+    return ($nullable ? '?' : '') . 'int';
   }
   if ($str == 'array' || $str == 'dict') {
     return ($nullable ? '?' : '') . 'string';

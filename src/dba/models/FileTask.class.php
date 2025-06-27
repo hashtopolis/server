@@ -35,11 +35,11 @@ class FileTask extends AbstractModel {
     return "fileTaskId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->fileTaskId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->fileTaskId;
   }
   

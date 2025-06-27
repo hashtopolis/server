@@ -35,11 +35,11 @@ class HashlistHashlist extends AbstractModel {
     return "hashlistHashlistId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->hashlistHashlistId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->hashlistHashlistId;
   }
   

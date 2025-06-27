@@ -59,11 +59,11 @@ class HealthCheckAgent extends AbstractModel {
     return "healthCheckAgentId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->healthCheckAgentId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->healthCheckAgentId;
   }
   

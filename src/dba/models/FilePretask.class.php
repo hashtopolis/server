@@ -35,11 +35,11 @@ class FilePretask extends AbstractModel {
     return "filePretaskId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->filePretaskId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->filePretaskId;
   }
   

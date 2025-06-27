@@ -47,11 +47,11 @@ class LogEntry extends AbstractModel {
     return "logEntryId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->logEntryId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->logEntryId;
   }
   

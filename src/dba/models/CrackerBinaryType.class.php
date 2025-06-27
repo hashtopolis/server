@@ -5,9 +5,9 @@ namespace DBA;
 class CrackerBinaryType extends AbstractModel {
   private ?int $crackerBinaryTypeId;
   private ?string $typeName;
-  private ?bool $isChunkingAvailable;
+  private ?int $isChunkingAvailable;
   
-  function __construct(?int $crackerBinaryTypeId, ?string $typeName, ?bool $isChunkingAvailable) {
+  function __construct(?int $crackerBinaryTypeId, ?string $typeName, ?int $isChunkingAvailable) {
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
     $this->typeName = $typeName;
     $this->isChunkingAvailable = $isChunkingAvailable;
@@ -35,11 +35,11 @@ class CrackerBinaryType extends AbstractModel {
     return "crackerBinaryTypeId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->crackerBinaryTypeId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->crackerBinaryTypeId;
   }
   
@@ -63,11 +63,11 @@ class CrackerBinaryType extends AbstractModel {
     $this->typeName = $typeName;
   }
   
-  function getIsChunkingAvailable(): ?bool {
+  function getIsChunkingAvailable(): ?int {
     return $this->isChunkingAvailable;
   }
   
-  function setIsChunkingAvailable(?bool $isChunkingAvailable): void {
+  function setIsChunkingAvailable(?int $isChunkingAvailable): void {
     $this->isChunkingAvailable = $isChunkingAvailable;
   }
   

@@ -43,11 +43,11 @@ class AgentStat extends AbstractModel {
     return "agentStatId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->agentStatId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->agentStatId;
   }
   

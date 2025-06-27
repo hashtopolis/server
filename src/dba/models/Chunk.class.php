@@ -71,11 +71,11 @@ class Chunk extends AbstractModel {
     return "chunkId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->chunkId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->chunkId;
   }
   

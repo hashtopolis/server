@@ -13,22 +13,22 @@ class Task extends AbstractModel {
   private ?int $priority;
   private ?int $maxAgents;
   private ?string $color;
-  private ?bool $isSmall;
-  private ?bool $isCpuTask;
-  private ?bool $useNewBench;
+  private ?int $isSmall;
+  private ?int $isCpuTask;
+  private ?int $useNewBench;
   private ?int $skipKeyspace;
   private ?int $crackerBinaryId;
   private ?int $crackerBinaryTypeId;
   private ?int $taskWrapperId;
-  private ?bool $isArchived;
+  private ?int $isArchived;
   private ?string $notes;
   private ?int $staticChunks;
   private ?int $chunkSize;
-  private ?bool $forcePipe;
+  private ?int $forcePipe;
   private ?int $usePreprocessor;
   private ?string $preprocessorCommand;
   
-  function __construct(?int $taskId, ?string $taskName, ?string $attackCmd, ?int $chunkTime, ?int $statusTimer, ?int $keyspace, ?int $keyspaceProgress, ?int $priority, ?int $maxAgents, ?string $color, ?bool $isSmall, ?bool $isCpuTask, ?bool $useNewBench, ?int $skipKeyspace, ?int $crackerBinaryId, ?int $crackerBinaryTypeId, ?int $taskWrapperId, ?bool $isArchived, ?string $notes, ?int $staticChunks, ?int $chunkSize, ?bool $forcePipe, ?int $usePreprocessor, ?string $preprocessorCommand) {
+  function __construct(?int $taskId, ?string $taskName, ?string $attackCmd, ?int $chunkTime, ?int $statusTimer, ?int $keyspace, ?int $keyspaceProgress, ?int $priority, ?int $maxAgents, ?string $color, ?int $isSmall, ?int $isCpuTask, ?int $useNewBench, ?int $skipKeyspace, ?int $crackerBinaryId, ?int $crackerBinaryTypeId, ?int $taskWrapperId, ?int $isArchived, ?string $notes, ?int $staticChunks, ?int $chunkSize, ?int $forcePipe, ?int $usePreprocessor, ?string $preprocessorCommand) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -119,11 +119,11 @@ class Task extends AbstractModel {
     return "taskId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->taskId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->taskId;
   }
   
@@ -211,27 +211,27 @@ class Task extends AbstractModel {
     $this->color = $color;
   }
   
-  function getIsSmall(): ?bool {
+  function getIsSmall(): ?int {
     return $this->isSmall;
   }
   
-  function setIsSmall(?bool $isSmall): void {
+  function setIsSmall(?int $isSmall): void {
     $this->isSmall = $isSmall;
   }
   
-  function getIsCpuTask(): ?bool {
+  function getIsCpuTask(): ?int {
     return $this->isCpuTask;
   }
   
-  function setIsCpuTask(?bool $isCpuTask): void {
+  function setIsCpuTask(?int $isCpuTask): void {
     $this->isCpuTask = $isCpuTask;
   }
   
-  function getUseNewBench(): ?bool {
+  function getUseNewBench(): ?int {
     return $this->useNewBench;
   }
   
-  function setUseNewBench(?bool $useNewBench): void {
+  function setUseNewBench(?int $useNewBench): void {
     $this->useNewBench = $useNewBench;
   }
   
@@ -267,11 +267,11 @@ class Task extends AbstractModel {
     $this->taskWrapperId = $taskWrapperId;
   }
   
-  function getIsArchived(): ?bool {
+  function getIsArchived(): ?int {
     return $this->isArchived;
   }
   
-  function setIsArchived(?bool $isArchived): void {
+  function setIsArchived(?int $isArchived): void {
     $this->isArchived = $isArchived;
   }
   
@@ -299,11 +299,11 @@ class Task extends AbstractModel {
     $this->chunkSize = $chunkSize;
   }
   
-  function getForcePipe(): ?bool {
+  function getForcePipe(): ?int {
     return $this->forcePipe;
   }
   
-  function setForcePipe(?bool $forcePipe): void {
+  function setForcePipe(?int $forcePipe): void {
     $this->forcePipe = $forcePipe;
   }
   

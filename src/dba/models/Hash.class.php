@@ -10,10 +10,10 @@ class Hash extends AbstractModel {
   private ?string $plaintext;
   private ?int $timeCracked;
   private ?int $chunkId;
-  private ?bool $isCracked;
+  private ?int $isCracked;
   private ?int $crackPos;
   
-  function __construct(?int $hashId, ?int $hashlistId, ?string $hash, ?string $salt, ?string $plaintext, ?int $timeCracked, ?int $chunkId, ?bool $isCracked, ?int $crackPos) {
+  function __construct(?int $hashId, ?int $hashlistId, ?string $hash, ?string $salt, ?string $plaintext, ?int $timeCracked, ?int $chunkId, ?int $isCracked, ?int $crackPos) {
     $this->hashId = $hashId;
     $this->hashlistId = $hashlistId;
     $this->hash = $hash;
@@ -59,11 +59,11 @@ class Hash extends AbstractModel {
     return "hashId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->hashId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->hashId;
   }
   
@@ -127,11 +127,11 @@ class Hash extends AbstractModel {
     $this->chunkId = $chunkId;
   }
   
-  function getIsCracked(): ?bool {
+  function getIsCracked(): ?int {
     return $this->isCracked;
   }
   
-  function setIsCracked(?bool $isCracked): void {
+  function setIsCracked(?int $isCracked): void {
     $this->isCracked = $isCracked;
   }
   

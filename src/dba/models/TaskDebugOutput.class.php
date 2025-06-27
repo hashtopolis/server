@@ -35,11 +35,11 @@ class TaskDebugOutput extends AbstractModel {
     return "taskDebugOutputId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->taskDebugOutputId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->taskDebugOutputId;
   }
   

@@ -51,11 +51,11 @@ class Preprocessor extends AbstractModel {
     return "preprocessorId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->preprocessorId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->preprocessorId;
   }
   

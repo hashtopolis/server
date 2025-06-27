@@ -35,11 +35,11 @@ class SupertaskPretask extends AbstractModel {
     return "supertaskPretaskId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->supertaskPretaskId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->supertaskPretaskId;
   }
   

@@ -10,10 +10,10 @@ class TaskWrapper extends AbstractModel {
   private ?int $hashlistId;
   private ?int $accessGroupId;
   private ?string $taskWrapperName;
-  private ?bool $isArchived;
+  private ?int $isArchived;
   private ?int $cracked;
   
-  function __construct(?int $taskWrapperId, ?int $priority, ?int $maxAgents, ?int $taskType, ?int $hashlistId, ?int $accessGroupId, ?string $taskWrapperName, ?bool $isArchived, ?int $cracked) {
+  function __construct(?int $taskWrapperId, ?int $priority, ?int $maxAgents, ?int $taskType, ?int $hashlistId, ?int $accessGroupId, ?string $taskWrapperName, ?int $isArchived, ?int $cracked) {
     $this->taskWrapperId = $taskWrapperId;
     $this->priority = $priority;
     $this->maxAgents = $maxAgents;
@@ -59,11 +59,11 @@ class TaskWrapper extends AbstractModel {
     return "taskWrapperId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->taskWrapperId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->taskWrapperId;
   }
   
@@ -127,11 +127,11 @@ class TaskWrapper extends AbstractModel {
     $this->taskWrapperName = $taskWrapperName;
   }
   
-  function getIsArchived(): ?bool {
+  function getIsArchived(): ?int {
     return $this->isArchived;
   }
   
-  function setIsArchived(?bool $isArchived): void {
+  function setIsArchived(?int $isArchived): void {
     $this->isArchived = $isArchived;
   }
   

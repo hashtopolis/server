@@ -10,10 +10,10 @@ class HashBinary extends AbstractModel {
   private ?string $plaintext;
   private ?int $timeCracked;
   private ?int $chunkId;
-  private ?bool $isCracked;
+  private ?int $isCracked;
   private ?int $crackPos;
   
-  function __construct(?int $hashBinaryId, ?int $hashlistId, ?string $essid, ?string $hash, ?string $plaintext, ?int $timeCracked, ?int $chunkId, ?bool $isCracked, ?int $crackPos) {
+  function __construct(?int $hashBinaryId, ?int $hashlistId, ?string $essid, ?string $hash, ?string $plaintext, ?int $timeCracked, ?int $chunkId, ?int $isCracked, ?int $crackPos) {
     $this->hashBinaryId = $hashBinaryId;
     $this->hashlistId = $hashlistId;
     $this->essid = $essid;
@@ -59,11 +59,11 @@ class HashBinary extends AbstractModel {
     return "hashBinaryId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->hashBinaryId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->hashBinaryId;
   }
   
@@ -127,11 +127,11 @@ class HashBinary extends AbstractModel {
     $this->chunkId = $chunkId;
   }
   
-  function getIsCracked(): ?bool {
+  function getIsCracked(): ?int {
     return $this->isCracked;
   }
   
-  function setIsCracked(?bool $isCracked): void {
+  function setIsCracked(?int $isCracked): void {
     $this->isCracked = $isCracked;
   }
   

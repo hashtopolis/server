@@ -10,17 +10,17 @@ class Agent extends AbstractModel {
   private ?string $devices;
   private ?string $cmdPars;
   private ?int $ignoreErrors;
-  private ?bool $isActive;
-  private ?bool $isTrusted;
+  private ?int $isActive;
+  private ?int $isTrusted;
   private ?string $token;
   private ?string $lastAct;
   private ?int $lastTime;
   private ?string $lastIp;
   private ?int $userId;
-  private ?bool $cpuOnly;
+  private ?int $cpuOnly;
   private ?string $clientSignature;
   
-  function __construct(?int $agentId, ?string $agentName, ?string $uid, ?int $os, ?string $devices, ?string $cmdPars, ?int $ignoreErrors, ?bool $isActive, ?bool $isTrusted, ?string $token, ?string $lastAct, ?int $lastTime, ?string $lastIp, ?int $userId, ?bool $cpuOnly, ?string $clientSignature) {
+  function __construct(?int $agentId, ?string $agentName, ?string $uid, ?int $os, ?string $devices, ?string $cmdPars, ?int $ignoreErrors, ?int $isActive, ?int $isTrusted, ?string $token, ?string $lastAct, ?int $lastTime, ?string $lastIp, ?int $userId, ?int $cpuOnly, ?string $clientSignature) {
     $this->agentId = $agentId;
     $this->agentName = $agentName;
     $this->uid = $uid;
@@ -87,11 +87,11 @@ class Agent extends AbstractModel {
     return "agentId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->agentId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->agentId;
   }
   
@@ -155,19 +155,19 @@ class Agent extends AbstractModel {
     $this->ignoreErrors = $ignoreErrors;
   }
   
-  function getIsActive(): ?bool {
+  function getIsActive(): ?int {
     return $this->isActive;
   }
   
-  function setIsActive(?bool $isActive): void {
+  function setIsActive(?int $isActive): void {
     $this->isActive = $isActive;
   }
   
-  function getIsTrusted(): ?bool {
+  function getIsTrusted(): ?int {
     return $this->isTrusted;
   }
   
-  function setIsTrusted(?bool $isTrusted): void {
+  function setIsTrusted(?int $isTrusted): void {
     $this->isTrusted = $isTrusted;
   }
   
@@ -211,11 +211,11 @@ class Agent extends AbstractModel {
     $this->userId = $userId;
   }
   
-  function getCpuOnly(): ?bool {
+  function getCpuOnly(): ?int {
     return $this->cpuOnly;
   }
   
-  function setCpuOnly(?bool $cpuOnly): void {
+  function setCpuOnly(?int $cpuOnly): void {
     $this->cpuOnly = $cpuOnly;
   }
   

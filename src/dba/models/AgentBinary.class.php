@@ -51,11 +51,11 @@ class AgentBinary extends AbstractModel {
     return "agentBinaryId";
   }
   
-  function getPrimaryKeyValue(): int {
+  function getPrimaryKeyValue(): ?int {
     return $this->agentBinaryId;
   }
   
-  function getId(): int {
+  function getId(): ?int {
     return $this->agentBinaryId;
   }
   
