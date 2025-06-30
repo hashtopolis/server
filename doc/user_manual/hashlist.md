@@ -1,23 +1,24 @@
 # Hashlists
-Hashtopolis utilizes hashlists to store password hashes you want to crack. These lists can be in plain text, HCCAPX, or binary format. Some hashes might include additional information like salts, depending on the format.
-This section details the creation of a hashlist within the Hashtopolis interface. Note that at least one hashlist is required for creating tasks.
-Refer to the Hashcat documentation for detailed information on supported hash types and their expected formats. You can also use the example hashes provided there as a test to create your first hashlist.
+Hashtopolis uses **hashlists** to store password hashes you want to crack. These lists can be in **plain text**, **HCCAPX**, or **binary format**. Some hashes might include additional information like **salts**, depending on the format.
+
+This section explains how to create a hashlist using the Hashtopolis web interface. 
+
+For a full list of supported hash types and expected formats, refer to the [Hashcat documentation](https://hashcat.net/wiki/doku.php?id=example_hashes). You can also use example hashes from Hashcat website to test your setup by creating your first hashlist.
 
 ## Create a hashlist
-In the Hashtopolis web interface, navigate to *Hashlists* and click on the button *+ New Hashlist*. You will get the following window:
+In the Hashtopolis web interface, go to **Hashlists**, then click on the button **+ New Hashlist**. The following window will appear:
 
 <figure markdown="span">
     ![screenshot_create_hashlist](../assets/images/create_hashlist.png)
 </figure>
 
-Here is how to fill in the different fields: 
-
-1. **Name**: Provide a descriptive name for your hashlist.
-2. **Hash Type**: Select the appropriate hash type from the dropdown menu. Suggestions will appear as you enter text.
+Fill out the fields as follows: 
+1. **Name**: Enter a descriptive name for your hashlist.
+2. **Hash Type**: Choose the correct hash type from the dropdown menu. Suggestions will appear as you type in the menu, or just scroll to select the desired one.
 3. **Hashlist Format**: Choose the format for your hashlist:
-    - Text File: Paste or upload a plain text file containing one hash per line.
+    - Text File: Paste or upload plain text with one hash per line.
     - HCCAPX/PMKID: Upload a HCCAPX file containing password hashes.
-    - Binary File: Upload a binary file containing password hashes.
+    - Binary File: Upload a binary-formatted hash file (e.g. a legacy Veracrypt extracted with `dd`).
 4. **Salted Hashes**: Tick the box related to salted hashes if appropriate and provide the correct separator for your hashlist. The flag is enabled/disabled according to the settings defined in the [Hashtype section](./settings_and_configuration.md#hashtypes). If the provided salt(s) is in hex, the following flag needs to be enabled otherwise the salt will be interpreted as a UTF8 value. 
 5. **Hash source**: Select one of the following hash source types. 
 6. **Providing the hash**: The last field of the form will automatically adapt depending on the chosen source type. You’ll be asked to provide additional details:

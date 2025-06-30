@@ -93,7 +93,7 @@ The task will automatically be assigned to available agents if it has the highes
 
 Once the task is active, you can track its status and results:
 
-- Go to the **"Tasks"** page to see overall task progress, speed, and number of passwords retrieved.
+- Go to the **"Tasks"** page to see overall task progress, speed, and number of passwords recovered.
 - Click on the task to view detailed progress and more information.
 - Cracked passwords will appear in the task view.
 

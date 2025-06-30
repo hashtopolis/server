@@ -124,9 +124,9 @@ The same information than those of a task are displayed. The *copy to Pretask* a
     ![screenshot_import_file](../assets/images/supertasks_subtasks.png)
 </figure>
 
-## Import Super Task
+## SuperTask Builder
 
-The Import Super Task menu offers functionalities to create SuperTasks and the related pre-configured task in an easy manner. There exist two different ways to create those supertasks, *Masks* and *Wordlist/Rule bulk*.
+The **SuperTask Builder** menu offers functionalities to create SuperTasks and the related pre-configured task in an easy manner. There exist two different ways to create those supertasks, *Masks* and *Wordlist/Rule bulk*.
 
 ### Masks
 
@@ -144,7 +144,7 @@ This functionality allows the user to create a supertask from a mask file or a s
 A subtask will be created for each line of the the *Insert masks* text zone and they will be grouped in a supertask. The subtasks are pre-configured task from the database point of view, however they are not displayed in the *Preconfigured Tasks* page. The subtasks that will be generated in this supertasks will be ordered accordingly to their order in the *Insert masks* text zone giving the highest priority to the first line.
 
 > [!NOTE]
-> Note that the options above will be applied to all the pre-configured tasks that will be created during the generation of the supertasks from this import.
+> Note that the options above will be applied to all the pre-configured tasks that will be created during the generation of the supertasks from this build.
 
 ### Wordlist/Rule bulk
 
@@ -154,7 +154,7 @@ Most of the options are identical to those of the Mask supertask creation. The m
 
 Multiple files are expected to be selected as "Iterate". They should be of the same type (rules/wordlists/other), yet this functionality allows to select different type of files. The placeholder **FILE** should be manually placed by the user. During creation of the supertask, one subtask is created for each file selected as iterate replacing the FILE placeholder by one of the "Iterate File". 
 
-Similarly to a regular task, any hashcat parameter can be added to the command line. For example, if the user wants that the Optimized Kernel option (-O) is used, it should be added. That is the reason why this option is not offered to the user among the options contrary to the *Import Masks*.
+Similarly to a regular task, any hashcat parameter can be added to the command line. For example, if the user wants that the Optimized Kernel option (-O) is used, it should be added. That is the reason why this option is not offered to the user among the options contrary to the *Build Masks*.
 
 
 **MAKE AN EXAMPLE WITH SOME FIGURES**

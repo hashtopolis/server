@@ -5,8 +5,8 @@
 
 There are multiple ways to migrate data from a non-Docker setup to Docker. You can start fresh, but if you want to keep your data, several migration options are available.
 
-### Existing database
-You can reuse your old database server or also migrate the database to a docker container.
+### Importing the existing database in docker
+You can reuse your old database server or also migrate the database within a docker container.
 
 1. [Install docker](https://docs.docker.com/engine/install/ubuntu/) to your system
 2. Create a database backup using
@@ -99,7 +99,7 @@ Becomes */usr/local/share/hashtopolis/config/config.json*:
 docker compose down && docker compose up
 ```
 
-### New database 
+### Preserving the existing database 
 
 Repeat the above steps, but you do not need to export or import the database. Just ensure the .env file points to your database server and that it is reachable from the container.
 

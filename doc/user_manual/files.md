@@ -47,7 +47,7 @@ Line count: Reprocess the file and update the line count with the number of line
 For each category, new files can be added to the server by pressing "New Wordlist/Rules/File" button. Files are uploaded using one of the following methods:
 
 - **Upload from your computer** – Directly upload files stored on your local machine.
-- **Import from an import directory** – Use files that have been preloaded into the server’s import directory. Note that this functionality is obsolete in the new front-end.
+<!-- - **Import from an import directory** – Use files that have been preloaded into the server’s import directory. Note that this functionality is obsolete in the new front-end. [OBSOLETE]-->
 - **Download from a URL** – Provide a URL to fetch files from an external source.
 Detailed instructions for each upload method are provided in the following subsections.
 

@@ -36,6 +36,77 @@ Continue with the normal docker installation described in the [basic installatio
 > [!CAUTION]
 > Hashtopolis is pre-configured with a hashcat cracker. However, the binary package is not loaded within the docker image. A URL is provided so that the agent can download the binary when required. Obviously this does not work in an offline environment. Please check the [binaries cracker section](../user_manual/crackers_binary.md#adding-a-new-version) for details about how to handle such situation. 
 
+## Local webserver for cracker binaries
+
+If you want to use a custom binary or a different version of hashcat (for example with custom modules), you need to supply an URL for a ZIP-file containing that binary, that the agents can reach. You may want to store all your binaries within a local webserver, especially if your environment is offline/air-gapped.
+
+
+If your Hashtopolis-instance is running, stop it, before you make any changes:
+``` shell
+docker compose down
+```
+
+### docker-compose.yml
+
+In your docker-compose.yml-file you have to add an additional container:
+``` docker-compose.yml
+  file-download:
+    container_name: file-download
+    image: nginx
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./data:/var/www/html
+    ports:
+      - 8081:80
+
+```
+Adapt the configuration as needed. In this example you have to put your binary-ZIP-files in the `./data`-folder, where your docker-compose.yml is located and the webserver listens on port 8081.
+
+!!! note "Note:" 
+    If your environment is offline, keep in mind that you need to export and import the nginx image first following a similar process than for the hashtopolis images as described [previously](./advanced_install.md#installation-in-an-offline-environment). 
+
+### nginx.conf
+
+For the webserver, which serves the binaries, you need a custom nginx.conf located in the folder, where your docker-compose.yml is located. 
+
+``` nginx.conf
+events {
+    worker_connections 1024;
+}
+
+http {
+	server {
+    		listen       80;
+    		listen  [::]:80;
+    		server_name  localhost;
+
+    		location / {
+        		root   /var/www/html;
+        		index  index.html index.htm;
+    		}
+	}
+}
+```
+
+Adapt this config to your liking and to your setup. You can configure the path to the nginx.conf in the docker-compose.yml.
+
+If you are using a nginx-server for the SSL/TLS Setup, it is recommended  to use a separate nginx.conf for the SSL/TLS Setup and for the local webserver. Change your config-names accordingly and the paths in the docker-compose.yml.
+
+### Usage
+
+The local webserver starts with your regular hashtopolis-instance:
+
+```docker compose up --detach ```
+
+Put the ZIP-file for your custom binary in the `./data`-folder.
+
+When registering a [new binary in the UI](../user_manual/crackers_binary.md#binaries) enter your `Download URL`:
+`http://<hashtopolis-ip>:8081/<filename>.zip`
+
+Your agents should now be able to download the new binary, if you create a task using that binary.
+
+
 ## Build Hashtopolis images yourself
 The Docker images can be built from source following these steps.
 
