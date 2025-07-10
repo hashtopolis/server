@@ -62,4 +62,4 @@ This manual aims to describe all the functionalities and settings existing in Ha
 - [**Installation Guidelines**](./installation_guidelines/basic_install.md): Covers basic installation steps to deploy a Hashtopolis instance. It also contains advanced installation procedures for air-gapped environments, HTTPS configuration, as well as many other advanced features.
 - [**User Manual**](./user_manual/agents.md): goes deeper than the basic workflow into each aspect of Hashtopolis. This aims to cover all the existing features and settings. 
 - [**FAQ and Tips**](./faq_tips/faq.md): gathers most of the questions that were asked on different channels (discord, wiki, etc.).
-- [**API Reference**](./apiv2.md): contains all the details related to the API in case you need to automate some processes or want to develop your own front end. 
+- [**API Reference**](./api.md): contains all the details related to the API in case you need to automate some processes or want to develop your own front end. 
