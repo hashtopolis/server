@@ -501,7 +501,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    $secondaryFilter= null, $secondaryId = null) {
     $cursor = ["primary" => [$primaryFilter => $primaryId]];
     if ($hasSecondaryFilter) {
-      assert($secondaryId != null && $secondaryFilter != null,
+      assert($secondaryId !== null && $secondaryFilter !== null,
        "Secondary id and filter should be set");
       //Add the primary key as a secondary cursor to guarantee the cursor is unique
       $cursor["secondary"] = [$secondaryFilter => $secondaryId];
@@ -543,6 +543,19 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         return $key1 > $key2;
       }
     }
+  }
+
+  protected static function getMinMaxCursor($apiClass, string $sort, array $filters, $request, $aliasedfeatures) {
+    $filters[Factory::LIMIT] = new LimitFilter(1);
+    $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $sort);
+    $orderTemplates[0]["type"] = $sort;
+    $orderFilters = [];
+    foreach ($orderTemplates as $orderTemplate) {
+      $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
+    }
+    $filters[Factory::ORDER] = $orderFilters;
+    $factory = $apiClass->getFactory();
+    return $factory->filter($filters)[0];
   }
 
   /**
@@ -595,6 +608,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     //this is used to reverse the array to show the data correctly for the user 
     $reverseArray = false;
 
+    $lastCursorObject = $apiClass->getMinMaxCursor($apiClass, "DESC", $aFs, $request, $aliasedfeatures);
+    $firstCursorObject = $apiClass->getMinMaxCursor($apiClass, "ASC", $aFs, $request, $aliasedfeatures);
+
+    if ($isNegativeSort){
+      [$firstCursorObject, $lastCursorObject] = [$lastCursorObject, $firstCursorObject];
+    }
+
     if (!$isNegativeSort && !isset($pageBefore) && isset($pageAfter)) {
       // this happens when going to the next page while having an ascending sort
       $defaultSort = "ASC";
@@ -627,13 +647,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     }
 
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $defaultSort);
-    // var_dump($orderTemplates);
-    //min calculation
-    // $orderTemplates[0]["type"] = "DESC";
-    // $min_order_filters = [];
-    // foreach ($orderTemplates as $orderTemplate) {
-    //   $min_order_filters[Factory::ORDER][] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
-    // }
     $orderTemplates[0]["type"] = $defaultSort;
     $primaryFilter = $orderTemplates[0]['by'];
     $orderFilters = [];
@@ -643,8 +656,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       // $aFs[Factory::ORDER][] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
       $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
     }
-    // $aFs[Factory::ORDER] = $orderFilters;
-    // var_dump($aFs);
+    $aFs[Factory::ORDER] = $orderFilters;
 
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
@@ -653,59 +665,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
     //But this probably needs to be added in getFeatures() then.
     $primaryKeyIsNotPrimaryFilter = $primaryFilter != $primaryKey;
-    //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
-    //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
-    //if this query is too expensive for big tables, it can be removed
-    //TODO: you cant get the min and max with an aggregation query.
-
-    // $agg1 = new Aggregation($primaryFilter, Aggregation::MAX, $factory);
-    // $agg2 = new Aggregation($primaryFilter, Aggregation::MIN, $factory);
-    // $agg3 = new Aggregation($primaryFilter, Aggregation::COUNT, $factory);
-    // $aggregations = [$agg3];
-    // $aggregations = [$agg1, $agg2, $agg3];
-    // if ($primaryKeyIsNotPrimaryFilter) {
-    //   $agg4 = new Aggregation($primaryKey, Aggregation::MAX, $factory);
-    //   $agg5 = new Aggregation($primaryKey, Aggregation::MIN, $factory);
-    //   array_push($aggregations, $agg4, $agg5);
-    // }
-    // $aggregation_results = $factory->multicolAggregationFilter($finalFs, $aggregations);
     $total = $factory->countFilter($finalFs);
-
-    //limit filter of 1 to retrieve first and last cursor
-    $finalFs[Factory::LIMIT] = new LimitFilter(1);
-    $oppositeSort = ($defaultSort == "ASC") ? "DESC" : "ASC";
-    $orderTemplatesOpposite = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $oppositeSort);
-    $orderTemplatesOpposite[0]["type"] = $oppositeSort;
-    $orderFiltersOpposite = [];
-    foreach ($orderTemplatesOpposite as $orderTemplate) {
-      // $aFs[Factory::ORDER][] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
-      $orderFiltersOpposite[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
-    }
-    $finalFs[Factory::ORDER] = $orderFiltersOpposite;
-    $lastCursorObject = $factory->filter($finalFs)[0];
-    $finalFs[Factory::ORDER] = $orderFilters;
-    $firstCursorObject = $factory->filter($finalFs)[0];
-    if ($isNegativeSort){
-      [$firstCursorObject, $lastCursorObject] = [$lastCursorObject, $firstCursorObject];
-    }
-
-    // var_dump($firstCursorObject);
-    // var_dump($lastCursorObject);
-    //TODO these should be calculated, based on the acls of the user. it should only show the max, for the max this user is allowed to see
-    // $max = $aggregation_results[$agg1->getName()];
-    // $min = $aggregation_results[$agg2->getName()];
-    // $total = $aggregation_results[$agg3->getName()];
-    // if ($isNegativeSort) {
-    //   [$min, $max] = [$max, $min];
-    // }
-
-    // if ($primaryKeyIsNotPrimaryFilter) {
-    //   $secondary_max = $aggregation_results[$agg4->getName()]; //This is the max primary key, when the primary key is not the main filter
-    //   $secondary_min = $aggregation_results[$agg5->getName()];
-    //   if ($isNegativeSort) {
-    //     [$secondary_min, $secondary_max] = [$secondary_max, $secondary_min];
-    //   }
-    // }
 
     //pagination filters need to be added after max has been calculated
     $finalFs[Factory::LIMIT] = new LimitFilter($pageSize);
@@ -796,24 +756,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $firstObject = $objects[0]->expose();
       $lastObject = end($objects)->expose();
       $prevId = $firstObject[$primaryFilter];
-      // $prevId = $objects[0]->getId();
       $nextId = $lastObject[$primaryFilter];
       $nextPrimaryKey = $lastObject[$primaryKey];
       $previousPrimaryKey = $firstObject[$primaryKey];
 
-      $min = $firstCursorObject->expose()[$primaryFilter];
-      $secondary_min = $firstCursorObject->expose()[$primaryFilter];
-      $max = $lastCursorObject->expose()[$primaryKey];
-      $secondary_max = $lastCursorObject->expose()[$primaryKey];
-
-      // there is next page when either, it is filtered on an unique key and the unique key is smaller than the highest returned key
-      // or if there is non unique key, that is equal and there is a higher tie breaker secondary key.
-      //  ex. (HashType.isSalted < 1) OR (HashType.isSalted = 1 and HashType.hashTypeId < 12600)
-      //  where salted is primary and hashTypeId is secondary 
       //only set next page when its not the last page
-      // if ($apiClass::compare_keys($max, $nextId, $isNegativeSort) || ($primaryKeyIsNotPrimaryFilter && $nextId == $max && $apiClass::compare_keys($secondary_max, $nextPrimaryKey, $isNegativeSort))) { 
-      error_log("next primary key: " . $nextPrimaryKey);
-      error_log("Last cursor id: " . $lastCursorObject->getId());
       if ($nextPrimaryKey !== $lastCursorObject->getId()) {
         $nextParams = $selfParams;
         // $nextParams['page']['after'] = urlencode($nextId);
@@ -824,21 +771,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       }
       // Build prev link 
       //only set previous page when its not the first page
-      error_log("previous id: ". $previousPrimaryKey);
-      error_log("first id: " . $firstCursorObject->getId());
-      // error_log("min: ". $min);
-      // error_log("previous primaryKey: " . $previousPrimaryKey);
-      // error_log("secondary min: ". $secondary_min);
-      // error_log($apiClass::compare_keys($prevId, $min, $isNegativeSort));
-      // error_log($apiClass::compare_keys($previousPrimaryKey, $secondary_min, $isNegativeSort));
-      //TODO this check is totally wrong because the secondary key will be the total min/max 
-      // if ($apiClass::compare_keys($prevId, $min, $isNegativeSort) || ($primaryKeyIsNotPrimaryFilter && $prevId == $min && $apiClass::compare_keys($previousPrimaryKey, $secondary_min, $isNegativeSort))) { 
       if ($previousPrimaryKey !== $firstCursorObject->getId()) { 
         //build page before
-        //TODO building cursor is wrong
-        error_log("check");
         $prevParams = $selfParams;
-        $previous_cursor = $apiClass::build_cursor($primaryFilter, $prevId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $firstObject[$primaryKey]);
+        $previous_cursor = $apiClass::build_cursor($primaryFilter, $prevId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $previousPrimaryKey);
         $prevParams['page']['before'] = $previous_cursor;
         unset($prevParams['page']['after']);
         $linksPrev = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($prevParams));
