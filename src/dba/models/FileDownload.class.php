@@ -3,19 +3,19 @@
 namespace DBA;
 
 class FileDownload extends AbstractModel {
-  private $fileDownloadId;
-  private $time;
-  private $fileId;
-  private $status;
+  private ?int $fileDownloadId;
+  private ?int $time;
+  private ?int $fileId;
+  private ?int $status;
   
-  function __construct($fileDownloadId, $time, $fileId, $status) {
+  function __construct(?int $fileDownloadId, ?int $time, ?int $fileId, ?int $status) {
     $this->fileDownloadId = $fileDownloadId;
     $this->time = $time;
     $this->fileId = $fileId;
     $this->status = $status;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['fileDownloadId'] = $this->fileDownloadId;
     $dict['time'] = $this->time;
@@ -25,29 +25,29 @@ class FileDownload extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['fileDownloadId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileDownloadId"];
-    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time"];
-    $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "fileId"];
-    $dict['status'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "status"];
+    $dict['fileDownloadId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileDownloadId", "public" => False];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time", "public" => False];
+    $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "fileId", "public" => False];
+    $dict['status'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "status", "public" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "fileDownloadId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->fileDownloadId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->fileDownloadId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->fileDownloadId = $id;
   }
   
@@ -55,31 +55,31 @@ class FileDownload extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getTime() {
+  function getTime(): ?int {
     return $this->time;
   }
   
-  function setTime($time) {
+  function setTime(?int $time): void {
     $this->time = $time;
   }
   
-  function getFileId() {
+  function getFileId(): ?int {
     return $this->fileId;
   }
   
-  function setFileId($fileId) {
+  function setFileId(?int $fileId): void {
     $this->fileId = $fileId;
   }
   
-  function getStatus() {
+  function getStatus(): ?int {
     return $this->status;
   }
   
-  function setStatus($status) {
+  function setStatus(?int $status): void {
     $this->status = $status;
   }
   

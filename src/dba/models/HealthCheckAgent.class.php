@@ -3,17 +3,17 @@
 namespace DBA;
 
 class HealthCheckAgent extends AbstractModel {
-  private $healthCheckAgentId;
-  private $healthCheckId;
-  private $agentId;
-  private $status;
-  private $cracked;
-  private $numGpus;
-  private $start;
-  private $end;
-  private $errors;
+  private ?int $healthCheckAgentId;
+  private ?int $healthCheckId;
+  private ?int $agentId;
+  private ?int $status;
+  private ?int $cracked;
+  private ?int $numGpus;
+  private ?int $start;
+  private ?int $end;
+  private ?string $errors;
   
-  function __construct($healthCheckAgentId, $healthCheckId, $agentId, $status, $cracked, $numGpus, $start, $end, $errors) {
+  function __construct(?int $healthCheckAgentId, ?int $healthCheckId, ?int $agentId, ?int $status, ?int $cracked, ?int $numGpus, ?int $start, ?int $end, ?string $errors) {
     $this->healthCheckAgentId = $healthCheckAgentId;
     $this->healthCheckId = $healthCheckId;
     $this->agentId = $agentId;
@@ -25,7 +25,7 @@ class HealthCheckAgent extends AbstractModel {
     $this->errors = $errors;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['healthCheckAgentId'] = $this->healthCheckAgentId;
     $dict['healthCheckId'] = $this->healthCheckId;
@@ -40,34 +40,34 @@ class HealthCheckAgent extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['healthCheckAgentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "healthCheckAgentId"];
-    $dict['healthCheckId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "healthCheckId"];
-    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId"];
-    $dict['status'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "status"];
-    $dict['cracked'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "cracked"];
-    $dict['numGpus'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "numGpus"];
-    $dict['start'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "start"];
-    $dict['end'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "end"];
-    $dict['errors'] = ['read_only' => True, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "errors"];
+    $dict['healthCheckAgentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "healthCheckAgentId", "public" => False];
+    $dict['healthCheckId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "healthCheckId", "public" => False];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId", "public" => False];
+    $dict['status'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "status", "public" => False];
+    $dict['cracked'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "cracked", "public" => False];
+    $dict['numGpus'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "numGpus", "public" => False];
+    $dict['start'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "start", "public" => False];
+    $dict['end'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "end", "public" => False];
+    $dict['errors'] = ['read_only' => True, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "errors", "public" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "healthCheckAgentId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->healthCheckAgentId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->healthCheckAgentId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->healthCheckAgentId = $id;
   }
   
@@ -75,71 +75,71 @@ class HealthCheckAgent extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getHealthCheckId() {
+  function getHealthCheckId(): ?int {
     return $this->healthCheckId;
   }
   
-  function setHealthCheckId($healthCheckId) {
+  function setHealthCheckId(?int $healthCheckId): void {
     $this->healthCheckId = $healthCheckId;
   }
   
-  function getAgentId() {
+  function getAgentId(): ?int {
     return $this->agentId;
   }
   
-  function setAgentId($agentId) {
+  function setAgentId(?int $agentId): void {
     $this->agentId = $agentId;
   }
   
-  function getStatus() {
+  function getStatus(): ?int {
     return $this->status;
   }
   
-  function setStatus($status) {
+  function setStatus(?int $status): void {
     $this->status = $status;
   }
   
-  function getCracked() {
+  function getCracked(): ?int {
     return $this->cracked;
   }
   
-  function setCracked($cracked) {
+  function setCracked(?int $cracked): void {
     $this->cracked = $cracked;
   }
   
-  function getNumGpus() {
+  function getNumGpus(): ?int {
     return $this->numGpus;
   }
   
-  function setNumGpus($numGpus) {
+  function setNumGpus(?int $numGpus): void {
     $this->numGpus = $numGpus;
   }
   
-  function getStart() {
+  function getStart(): ?int {
     return $this->start;
   }
   
-  function setStart($start) {
+  function setStart(?int $start): void {
     $this->start = $start;
   }
   
-  function getEnd() {
+  function getEnd(): ?int {
     return $this->end;
   }
   
-  function setEnd($end) {
+  function setEnd(?int $end): void {
     $this->end = $end;
   }
   
-  function getErrors() {
+  function getErrors(): ?string {
     return $this->errors;
   }
   
-  function setErrors($errors) {
+  function setErrors(?string $errors): void {
     $this->errors = $errors;
   }
   

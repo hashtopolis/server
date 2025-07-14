@@ -1,6 +1,4 @@
 <?php
-use DBA\Chunk;
-use DBA\Factory;
 
 use DBA\User;
 
@@ -10,38 +8,37 @@ class SetUserPasswordHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
     return "/api/v2/helper/setUserPassword";
   }
-
+  
   public static function getAvailableMethods(): array {
     return ['POST'];
   }
-
-  public function getRequiredPermissions(string $method): array
-  {
+  
+  public function getRequiredPermissions(string $method): array {
     return [User::PERM_UPDATE];
   }
-
+  
   /**
    * userId is the id of the user of which you want to change the password.
    * password is the new password that you want to set.
    */
-  public function getFormFields(): array 
-  {
-    return  [
+  public function getFormFields(): array {
+    return [
       User::USER_ID => ["type" => "int"],
       "password" => ["type" => "str"]
     ];
   }
-
+  
   public static function getResponse(): array {
     return ["Set password" => "Success"];
   }
-
+  
   /**
    * Endpoint to set a password of an user.
+   * @throws HTException
    */
   public function actionPost($data): object|array|null {
     $user = self::getUser($data[User::USER_ID]);
-
+    
     /* Set user password if provided */
     UserUtils::setPassword(
       $user->getId(),
@@ -50,6 +47,6 @@ class SetUserPasswordHelperAPI extends AbstractHelperAPI {
     );
     return $this->getResponse();
   }
-}  
+}
 
 SetUserPasswordHelperAPI::register($app);

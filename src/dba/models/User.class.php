@@ -3,24 +3,24 @@
 namespace DBA;
 
 class User extends AbstractModel {
-  private $userId;
-  private $username;
-  private $email;
-  private $passwordHash;
-  private $passwordSalt;
-  private $isValid;
-  private $isComputedPassword;
-  private $lastLoginDate;
-  private $registeredSince;
-  private $sessionLifetime;
-  private $rightGroupId;
-  private $yubikey;
-  private $otp1;
-  private $otp2;
-  private $otp3;
-  private $otp4;
+  private ?int $userId;
+  private ?string $username;
+  private ?string $email;
+  private ?string $passwordHash;
+  private ?string $passwordSalt;
+  private ?int $isValid;
+  private ?int $isComputedPassword;
+  private ?int $lastLoginDate;
+  private ?int $registeredSince;
+  private ?int $sessionLifetime;
+  private ?int $rightGroupId;
+  private ?string $yubikey;
+  private ?string $otp1;
+  private ?string $otp2;
+  private ?string $otp3;
+  private ?string $otp4;
   
-  function __construct($userId, $username, $email, $passwordHash, $passwordSalt, $isValid, $isComputedPassword, $lastLoginDate, $registeredSince, $sessionLifetime, $rightGroupId, $yubikey, $otp1, $otp2, $otp3, $otp4) {
+  function __construct(?int $userId, ?string $username, ?string $email, ?string $passwordHash, ?string $passwordSalt, ?int $isValid, ?int $isComputedPassword, ?int $lastLoginDate, ?int $registeredSince, ?int $sessionLifetime, ?int $rightGroupId, ?string $yubikey, ?string $otp1, ?string $otp2, ?string $otp3, ?string $otp4) {
     $this->userId = $userId;
     $this->username = $username;
     $this->email = $email;
@@ -39,7 +39,7 @@ class User extends AbstractModel {
     $this->otp4 = $otp4;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['userId'] = $this->userId;
     $dict['username'] = $this->username;
@@ -61,41 +61,41 @@ class User extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['userId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "id"];
-    $dict['username'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "name"];
-    $dict['email'] = ['read_only' => False, "type" => "str(150)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "email"];
-    $dict['passwordHash'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => True, "alias" => "passwordHash"];
-    $dict['passwordSalt'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => True, "alias" => "passwordSalt"];
-    $dict['isValid'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "isValid"];
-    $dict['isComputedPassword'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "isComputedPassword"];
-    $dict['lastLoginDate'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastLoginDate"];
-    $dict['registeredSince'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "registeredSince"];
-    $dict['sessionLifetime'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "sessionLifetime"];
-    $dict['rightGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "globalPermissionGroupId"];
-    $dict['yubikey'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "yubikey"];
-    $dict['otp1'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "otp1"];
-    $dict['otp2'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "otp2"];
-    $dict['otp3'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "otp3"];
-    $dict['otp4'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "otp4"];
+    $dict['userId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "id", "public" => True];
+    $dict['username'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "name", "public" => True];
+    $dict['email'] = ['read_only' => False, "type" => "str(150)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "email", "public" => False];
+    $dict['passwordHash'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => True, "alias" => "passwordHash", "public" => False];
+    $dict['passwordSalt'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => True, "alias" => "passwordSalt", "public" => False];
+    $dict['isValid'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "isValid", "public" => False];
+    $dict['isComputedPassword'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "isComputedPassword", "public" => False];
+    $dict['lastLoginDate'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastLoginDate", "public" => False];
+    $dict['registeredSince'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "registeredSince", "public" => False];
+    $dict['sessionLifetime'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "sessionLifetime", "public" => False];
+    $dict['rightGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "globalPermissionGroupId", "public" => False];
+    $dict['yubikey'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "yubikey", "public" => False];
+    $dict['otp1'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "otp1", "public" => False];
+    $dict['otp2'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "otp2", "public" => False];
+    $dict['otp3'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "otp3", "public" => False];
+    $dict['otp4'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "otp4", "public" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "userId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->userId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->userId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->userId = $id;
   }
   
@@ -103,127 +103,127 @@ class User extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getUsername() {
+  function getUsername(): ?string {
     return $this->username;
   }
   
-  function setUsername($username) {
+  function setUsername(?string $username): void {
     $this->username = $username;
   }
   
-  function getEmail() {
+  function getEmail(): ?string {
     return $this->email;
   }
   
-  function setEmail($email) {
+  function setEmail(?string $email): void {
     $this->email = $email;
   }
   
-  function getPasswordHash() {
+  function getPasswordHash(): ?string {
     return $this->passwordHash;
   }
   
-  function setPasswordHash($passwordHash) {
+  function setPasswordHash(?string $passwordHash): void {
     $this->passwordHash = $passwordHash;
   }
   
-  function getPasswordSalt() {
+  function getPasswordSalt(): ?string {
     return $this->passwordSalt;
   }
   
-  function setPasswordSalt($passwordSalt) {
+  function setPasswordSalt(?string $passwordSalt): void {
     $this->passwordSalt = $passwordSalt;
   }
   
-  function getIsValid() {
+  function getIsValid(): ?int {
     return $this->isValid;
   }
   
-  function setIsValid($isValid) {
+  function setIsValid(?int $isValid): void {
     $this->isValid = $isValid;
   }
   
-  function getIsComputedPassword() {
+  function getIsComputedPassword(): ?int {
     return $this->isComputedPassword;
   }
   
-  function setIsComputedPassword($isComputedPassword) {
+  function setIsComputedPassword(?int $isComputedPassword): void {
     $this->isComputedPassword = $isComputedPassword;
   }
   
-  function getLastLoginDate() {
+  function getLastLoginDate(): ?int {
     return $this->lastLoginDate;
   }
   
-  function setLastLoginDate($lastLoginDate) {
+  function setLastLoginDate(?int $lastLoginDate): void {
     $this->lastLoginDate = $lastLoginDate;
   }
   
-  function getRegisteredSince() {
+  function getRegisteredSince(): ?int {
     return $this->registeredSince;
   }
   
-  function setRegisteredSince($registeredSince) {
+  function setRegisteredSince(?int $registeredSince): void {
     $this->registeredSince = $registeredSince;
   }
   
-  function getSessionLifetime() {
+  function getSessionLifetime(): ?int {
     return $this->sessionLifetime;
   }
   
-  function setSessionLifetime($sessionLifetime) {
+  function setSessionLifetime(?int $sessionLifetime): void {
     $this->sessionLifetime = $sessionLifetime;
   }
   
-  function getRightGroupId() {
+  function getRightGroupId(): ?int {
     return $this->rightGroupId;
   }
   
-  function setRightGroupId($rightGroupId) {
+  function setRightGroupId(?int $rightGroupId): void {
     $this->rightGroupId = $rightGroupId;
   }
   
-  function getYubikey() {
+  function getYubikey(): ?string {
     return $this->yubikey;
   }
   
-  function setYubikey($yubikey) {
+  function setYubikey(?string $yubikey): void {
     $this->yubikey = $yubikey;
   }
   
-  function getOtp1() {
+  function getOtp1(): ?string {
     return $this->otp1;
   }
   
-  function setOtp1($otp1) {
+  function setOtp1(?string $otp1): void {
     $this->otp1 = $otp1;
   }
   
-  function getOtp2() {
+  function getOtp2(): ?string {
     return $this->otp2;
   }
   
-  function setOtp2($otp2) {
+  function setOtp2(?string $otp2): void {
     $this->otp2 = $otp2;
   }
   
-  function getOtp3() {
+  function getOtp3(): ?string {
     return $this->otp3;
   }
   
-  function setOtp3($otp3) {
+  function setOtp3(?string $otp3): void {
     $this->otp3 = $otp3;
   }
   
-  function getOtp4() {
+  function getOtp4(): ?string {
     return $this->otp4;
   }
   
-  function setOtp4($otp4) {
+  function setOtp4(?string $otp4): void {
     $this->otp4 = $otp4;
   }
   

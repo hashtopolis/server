@@ -321,10 +321,11 @@ class SupertaskUtils {
   /**
    * @param string $name
    * @param int[] $pretasks
+   * @return Supertask
    * @throws HttpError
    */
-  public static function createSupertask($name, $pretasks) {
-    if (!is_array($pretasks) || sizeof($pretasks) == 0) {
+  public static function createSupertask(string $name, array $pretasks): Supertask {
+    if (sizeof($pretasks) == 0) {
       throw new HttpError("Cannot create empty supertask!");
     }
     $tasks = [];
@@ -346,6 +347,7 @@ class SupertaskUtils {
     }
     
     Factory::getAgentFactory()->getDB()->commit();
+    return Factory::getSupertaskFactory()->get($supertask->getId());
   }
   
   /**

@@ -3,28 +3,27 @@
 namespace DBA;
 
 class FileDownloadFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "FileDownload";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "FileDownload";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return FileDownload
    */
-  function getNullObject() {
-    $o = new FileDownload(-1, null, null, null);
-    return $o;
+  function getNullObject(): FileDownload {
+    return new FileDownload(-1, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class FileDownloadFactory extends AbstractModelFactory {
    * @param array $dict
    * @return FileDownload
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new FileDownload($dict['fileDownloadId'], $dict['time'], $dict['fileId'], $dict['status']);
-    return $o;
+  function createObjectFromDict($pk, $dict): FileDownload {
+    return new FileDownload($dict['fileDownloadId'], $dict['time'], $dict['fileId'], $dict['status']);
   }
   
   /**
@@ -66,9 +64,9 @@ class FileDownloadFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return FileDownload
+   * @return ?FileDownload
    */
-  function get($pk) {
+  function get($pk): ?FileDownload {
     return Util::cast(parent::get($pk), FileDownload::class);
   }
   
@@ -76,7 +74,7 @@ class FileDownloadFactory extends AbstractModelFactory {
    * @param FileDownload $model
    * @return FileDownload
    */
-  function save($model) {
+  function save($model): FileDownload {
     return Util::cast(parent::save($model), FileDownload::class);
   }
 }

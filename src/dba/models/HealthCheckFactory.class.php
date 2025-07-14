@@ -3,28 +3,27 @@
 namespace DBA;
 
 class HealthCheckFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "HealthCheck";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "HealthCheck";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return HealthCheck
    */
-  function getNullObject() {
-    $o = new HealthCheck(-1, null, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): HealthCheck {
+    return new HealthCheck(-1, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class HealthCheckFactory extends AbstractModelFactory {
    * @param array $dict
    * @return HealthCheck
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new HealthCheck($dict['healthCheckId'], $dict['time'], $dict['status'], $dict['checkType'], $dict['hashtypeId'], $dict['crackerBinaryId'], $dict['expectedCracks'], $dict['attackCmd']);
-    return $o;
+  function createObjectFromDict($pk, $dict): HealthCheck {
+    return new HealthCheck($dict['healthCheckId'], $dict['time'], $dict['status'], $dict['checkType'], $dict['hashtypeId'], $dict['crackerBinaryId'], $dict['expectedCracks'], $dict['attackCmd']);
   }
   
   /**
@@ -66,9 +64,9 @@ class HealthCheckFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return HealthCheck
+   * @return ?HealthCheck
    */
-  function get($pk) {
+  function get($pk): ?HealthCheck {
     return Util::cast(parent::get($pk), HealthCheck::class);
   }
   
@@ -76,7 +74,7 @@ class HealthCheckFactory extends AbstractModelFactory {
    * @param HealthCheck $model
    * @return HealthCheck
    */
-  function save($model) {
+  function save($model): HealthCheck {
     return Util::cast(parent::save($model), HealthCheck::class);
   }
 }

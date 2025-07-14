@@ -13,21 +13,21 @@ require_once(dirname(__FILE__) . "/../../inc/defines/tasks.php");
 // Field choice declarations
 // 
 $FieldIgnoreErrorsChoices = [
-  [ 'key' => DAgentIgnoreErrors::NO, 'label' => 'Deactivate agent on error'],
-  [ 'key' => DAgentIgnoreErrors::IGNORE_SAVE, 'label' => 'Keep agent running, but save errors'],
-  [ 'key' => DAgentIgnoreErrors::IGNORE_NOSAVE, 'label' => 'Keep agent running and discard errors'],
+  ['key' => DAgentIgnoreErrors::NO, 'label' => 'Deactivate agent on error'],
+  ['key' => DAgentIgnoreErrors::IGNORE_SAVE, 'label' => 'Keep agent running, but save errors'],
+  ['key' => DAgentIgnoreErrors::IGNORE_NOSAVE, 'label' => 'Keep agent running and discard errors'],
 ];
 
 $FieldTaskTypeChoices = [
-  [ 'key' => DTaskTypes::NORMAL, 'label' => 'TaskType is Task'],
-  [ 'key' => DTaskTypes::SUPERTASK, 'label' => 'TaskType is Supertask'],
+  ['key' => DTaskTypes::NORMAL, 'label' => 'TaskType is Task'],
+  ['key' => DTaskTypes::SUPERTASK, 'label' => 'TaskType is Supertask'],
 ];
 
 $FieldHashlistFormatChoices = [
-  [ 'key' => DHashlistFormat::PLAIN, 'label' => 'Hashlist format is PLAIN'],
-  [ 'key' => DHashlistFormat::WPA, 'label' => 'Hashlist format is WPA'],
-  [ 'key' => DHashlistFormat::BINARY, 'label' => 'Hashlist format is BINARY'],
-  [ 'key' => DHashlistFormat::SUPERHASHLIST, 'label' => 'Hashlist is SUPERHASHLIST'],
+  ['key' => DHashlistFormat::PLAIN, 'label' => 'Hashlist format is PLAIN'],
+  ['key' => DHashlistFormat::WPA, 'label' => 'Hashlist format is WPA'],
+  ['key' => DHashlistFormat::BINARY, 'label' => 'Hashlist format is BINARY'],
+  ['key' => DHashlistFormat::SUPERHASHLIST, 'label' => 'Hashlist is SUPERHASHLIST'],
 ];
 
 // Type: describes what kind of type the attribute is
@@ -128,9 +128,9 @@ $CONF['Assignment'] = [
   'permission_alias' => 'AgentAssignment',
   'columns' => [
     ['name' => 'assignmentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'taskId', 'read_only' => False, 'type' => 'int', 'relation' => 'Task'],
-    ['name' => 'agentId', 'read_only' => False, 'type' => 'int', 'relation' => 'Agent'],
-    ['name' => 'benchmark', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'relation' => 'Task'],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'relation' => 'Agent'],
+    ['name' => 'benchmark', 'read_only' => False, 'type' => 'str(50)', 'null' => True],
   ],
 ];
 $CONF['Chunk'] = [
@@ -152,7 +152,7 @@ $CONF['Chunk'] = [
 $CONF['Config'] = [
   'columns' => [
     ['name' => 'configId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'configSectionId', 'read_only' => False, 'type' => 'int', 'relation' => 'ConfigSecion'],
+    ['name' => 'configSectionId', 'read_only' => True, 'type' => 'int', 'relation' => 'ConfigSection'],
     ['name' => 'item', 'read_only' => False, 'type' => 'str(128)'],
     ['name' => 'value', 'read_only' => False, 'type' => 'str(65535)'],
   ],
@@ -166,7 +166,7 @@ $CONF['ConfigSection'] = [
 $CONF['CrackerBinary'] = [
   'columns' => [
     ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'crackerBinaryTypeId', 'read_only' => False, 'type' => 'int', 'relation' => 'CrackerBinaryType'],
+    ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinaryType'],
     ['name' => 'version', 'read_only' => False, 'type' => 'str(20)'],
     ['name' => 'downloadUrl', 'read_only' => False, 'type' => 'str(150)'],
     ['name' => 'binaryName', 'read_only' => False, 'type' => 'str(50)'],
@@ -208,7 +208,7 @@ $CONF['FileDownload'] = [
 $CONF['Hash'] = [
   'columns' => [
     ['name' => 'hashId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'hashlistId', 'read_only' => False, 'type' => 'int', 'relation' => 'Hashlist'],
+    ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'relation' => 'Hashlist'],
     ['name' => 'hash', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'salt', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'plaintext', 'read_only' => False, 'type' => 'str(256)'],
@@ -221,7 +221,7 @@ $CONF['Hash'] = [
 $CONF['HashBinary'] = [
   'columns' => [
     ['name' => 'hashBinaryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'hashlistId', 'read_only' => False, 'type' => 'int', 'relation' => 'Hashlist'],
+    ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'relation' => 'Hashlist'],
     ['name' => 'essid', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'hash', 'read_only' => False, 'type' => 'str(4294967295)'],
     ['name' => 'plaintext', 'read_only' => False, 'type' => 'str(1024)'],
@@ -239,11 +239,11 @@ $CONF['Hashlist'] = [
     ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'HashType'],
     ['name' => 'hashCount', 'read_only' => True, 'type' => 'int'],
     ['name' => 'saltSeparator', 'read_only' => True, 'type' => 'str(10)', 'null' => True, 'alias' => UQueryHashlist::HASHLIST_SEPARATOR],
-    ['name' => 'cracked', 'read_only' => true, 'type' => 'int', 'protected' => True],
+    ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'isSecret', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'hexSalt', 'read_only' => True, 'type' => 'bool', 'alias' => UQueryHashlist::HASHLIST_HEX_SALTED],
     ['name' => 'isSalted', 'read_only' => True, 'type' => 'bool'],
-    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', , 'relation' => 'AccessGroup'],
+    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', 'relation' => 'AccessGroup'],
     ['name' => 'notes', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'brainId', 'read_only' => True, 'type' => 'bool', 'alias' => UQueryHashlist::HASHLIST_USE_BRAIN],
     ['name' => 'brainFeatures', 'read_only' => True, 'type' => 'int'],
@@ -264,8 +264,8 @@ $CONF['HealthCheck'] = [
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'checkType', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'hashtypeId', 'read_only' => False, 'type' => 'int', 'relation' => 'HashType'],
-    ['name' => 'crackerBinaryId', 'read_only' => False, 'type' => 'int', 'relation' => 'CrackerBinary'],
+    ['name' => 'hashtypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'HashType'],
+    ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinary'],
     ['name' => 'expectedCracks', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'attackCmd', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
   ],
@@ -349,7 +349,7 @@ $CONF['RightGroup'] = [
 $CONF['Session'] = [
   'columns' => [
     ['name' => 'sessionId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, , 'relation' => 'User'],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'User'],
     ['name' => 'sessionStartDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'lastActionDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'isOpen', 'read_only' => True, 'type' => 'bool', 'protected' => True],
@@ -396,7 +396,7 @@ $CONF['Task'] = [
     ['name' => 'skipKeyspace', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinary'],
     ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinaryType'],
-    ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True, , 'relation' => 'TaskWrapper'],
+    ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'TaskWrapper'],
     ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'notes', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'staticChunks', 'read_only' => True, 'type' => 'int'],
@@ -423,13 +423,13 @@ $CONF['TaskWrapper'] = [
     ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', 'relation' => 'AccessGroup'],
     ['name' => 'taskWrapperName', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool'],
-    ['name' => 'cracked', 'read_only' => False, 'type' => 'int', 'protected' => True],
+    ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ],
 ];
 $CONF['User'] = [
   'columns' => [
-    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id'],
-    ['name' => 'username', 'read_only' => False, 'type' => 'str(100)', 'alias' => 'name'],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id', 'public' => True],
+    ['name' => 'username', 'read_only' => False, 'type' => 'str(100)', 'alias' => 'name', 'public' => True],
     ['name' => 'email', 'read_only' => False, 'type' => 'str(150)'],
     ['name' => 'passwordHash', 'read_only' => True, 'type' => 'str(256)', 'protected' => True, 'private' => True],
     ['name' => 'passwordSalt', 'read_only' => True, 'protected' => True, 'type' => 'str(256)', 'private' => True],
@@ -438,7 +438,7 @@ $CONF['User'] = [
     ['name' => 'lastLoginDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'registeredSince', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'sessionLifetime', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int', 'alias' => 'globalPermissionGroupId', 'relation' => 'RightGroup' ],
+    ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int', 'alias' => 'globalPermissionGroupId', 'relation' => 'RightGroup'],
     ['name' => 'yubikey', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
     ['name' => 'otp1', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
     ['name' => 'otp2', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
@@ -495,11 +495,30 @@ $CONF['SupertaskPretask'] = [
 ];
 $CONF['HashlistHashlist'] = [
   'columns' => [
-    ['name' => 'hashlistHashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True],    
+    ['name' => 'hashlistHashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'parentHashlistId', 'read_only' => True, 'type' => 'int', 'relation' => 'Hashlist'],
     ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'relation' => 'Hashlist'],
   ],
 ];
+
+/**
+ * @throws Exception
+ */
+function getTypingType($str, $nullable = false): string {
+  if ($str == 'int' || $str == 'int64' || $str == 'uint64') {
+    return ($nullable ? '?' : '') . 'int';
+  }
+  if (str_starts_with($str, "str(")) {
+    return ($nullable ? '?' : '') . 'string';
+  }
+  if ($str == 'bool') {
+    return ($nullable ? '?' : '') . 'int';
+  }
+  if ($str == 'array' || $str == 'dict') {
+    return ($nullable ? '?' : '') . 'string';
+  }
+  throw new Exception("Cannot convert type " . $str);
+}
 
 foreach ($CONF as $NAME => $MODEL_CONF) {
   $COLUMNS = $MODEL_CONF['columns'];
@@ -509,6 +528,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $init = array();
   $keyVal = array();
   $class = str_replace("__MODEL_PK__", $COLUMNS[0]['name'], $class);
+  $class = str_replace("__MODEL_PK_TYPE__", getTypingType($COLUMNS[0]['type'], false), $class);
   $features = array();
   $functions = array();
   $params = array();
@@ -516,37 +536,40 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $crud_defines = array();
   foreach ($COLUMNS as $COLUMN) {
     $col = $COLUMN['name'];
+    $type = getTypingType($COLUMN['type'], !((isset($COLUMN['null']) && !$COLUMN['null'])));
     if (sizeof($vars) > 0) {
-      $getter = "function get" . strtoupper($col[0]) . substr($col, 1) . "() {\n    return \$this->$col;\n  }";
-      $setter = "function set" . strtoupper($col[0]) . substr($col, 1) . "(\$$col) {\n    \$this->$col = \$$col;\n  }";
+      $getter = "function get" . strtoupper($col[0]) . substr($col, 1) . "(): $type {\n    return \$this->$col;\n  }";
+      $setter = "function set" . strtoupper($col[0]) . substr($col, 1) . "($type \$$col): void {\n    \$this->$col = \$$col;\n  }";
       $functions[] = $getter;
       $functions[] = $setter;
     }
-    $params[] = "\$$col";
-    $vars[] = "private \$$col;";
+    $params[] = "$type \$$col";
+    $vars[] = "private $type \$$col;";
     $init[] = "\$this->$col = \$$col;";
-
-    if (array_key_exists("choices", $COLUMN)) { 
+    
+    if (array_key_exists("choices", $COLUMN)) {
       $choicesVal = '[';
       foreach ($COLUMN['choices'] as $CHOICE) {
         $choicesVal .= $CHOICE['key'] . ' => "' . $CHOICE['label'] . '", ';
       }
       $choicesVal .= ']';
       
-    } else {
+    }
+    else {
       $choicesVal = '"unset"';
     }
-
-    $features[] = "\$dict['$col'] = ['read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', ' . 
-                                     '"type" => "' . $COLUMN['type'] . '", ' .
-                                     '"subtype" => "' . (array_key_exists("subtype", $COLUMN) ? $COLUMN['subtype'] : 'unset') . '", ' .
-                                     '"choices" => ' . $choicesVal . ', ' .
-                                     '"null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . ', ' .
-                                     '"pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . ', ' .
-                                     '"protected" => ' . (array_key_exists("protected", $COLUMN) ? ($COLUMN['protected'] ? 'True' : 'False') : 'False') . ', ' .
-                                     '"private" => ' . (array_key_exists("private", $COLUMN) ? ($COLUMN['private'] ? 'True' : 'False') : 'False') . ', ' .
-                                     '"alias" => "' . (array_key_exists("alias", $COLUMN) ? $COLUMN['alias']  : $COLUMN['name']) . '"' . 
-                                    '];';
+    
+    $features[] = "\$dict['$col'] = ['read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', ' .
+      '"type" => "' . $COLUMN['type'] . '", ' .
+      '"subtype" => "' . (array_key_exists("subtype", $COLUMN) ? $COLUMN['subtype'] : 'unset') . '", ' .
+      '"choices" => ' . $choicesVal . ', ' .
+      '"null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . ', ' .
+      '"pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . ', ' .
+      '"protected" => ' . (array_key_exists("protected", $COLUMN) ? ($COLUMN['protected'] ? 'True' : 'False') : 'False') . ', ' .
+      '"private" => ' . (array_key_exists("private", $COLUMN) ? ($COLUMN['private'] ? 'True' : 'False') : 'False') . ', ' .
+      '"alias" => "' . (array_key_exists("alias", $COLUMN) ? $COLUMN['alias'] : $COLUMN['name']) . '", ' .
+      '"public" => ' . (array_key_exists("public", $COLUMN) ? ($COLUMN['public'] ? 'True' : 'False') : 'False') .
+      '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
     $variables[] = "const " . makeConstant($col) . " = \"$col\";";
     
@@ -556,7 +579,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $crud_defines[] = "const PERM_READ = \"perm" . $crud_prefix . "Read\";";
   $crud_defines[] = "const PERM_UPDATE = \"perm" . $crud_prefix . "Update\";";
   $crud_defines[] = "const PERM_DELETE = \"perm" . $crud_prefix . "Delete\";";
-
+  
   $class = str_replace("__MODEL_PARAMS__", implode(", ", $params), $class);
   $class = str_replace("__MODEL_VARS__", implode("\n  ", $vars), $class);
   $class = str_replace("__MODEL_PARAMS_INIT__", implode("\n    ", $init), $class);
@@ -566,9 +589,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $class = str_replace("__MODEL_VARIABLE_NAMES__", implode("\n  ", $variables), $class);
   $class = str_replace("__MODEL_PERMISSION_DEFINES__", implode("\n  ", $crud_defines), $class);
   
-  if (true || !file_exists(dirname(__FILE__) . "/" . $NAME . ".class.php")) {
-    file_put_contents(dirname(__FILE__) . "/" . $NAME . ".class.php", $class);
-  }
+  file_put_contents(dirname(__FILE__) . "/" . $NAME . ".class.php", $class);
   
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModelFactory.template.txt");
   $class = str_replace("__MODEL_NAME__", $NAME, $class);
@@ -588,9 +609,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $class = str_replace("__MODEL_DICT__", implode(", ", $dict), $class);
   $class = str_replace("__MODEL__DICT2__", implode(", ", $dict2), $class);
   
-  if (true || !file_exists(dirname(__FILE__) . "/" . $NAME . "Factory.class.php")) {
-    file_put_contents(dirname(__FILE__) . "/" . $NAME . "Factory.class.php", $class);
-  }
+  file_put_contents(dirname(__FILE__) . "/" . $NAME . "Factory.class.php", $class);
 }
 
 $class = file_get_contents(dirname(__FILE__) . "/Factory.template.txt");

@@ -11,10 +11,13 @@ class NotificationUtils {
    * @param string $notification
    * @param string $receiver
    * @param array $post
+   * @param User|null $user
+   * @return NotificationSetting
    * @throws HTException
+   * @throws HttpError
    */
 
-  public static function createNotificaton($actionType, $notification, $receiver, $post, $user = null) {
+  public static function createNotification(string $actionType, string $notification, string $receiver, array $post, User $user = null): NotificationSetting {
     if ($user == null) {
       $user = Login::getInstance()->getUser();
     };
@@ -68,7 +71,7 @@ class NotificationUtils {
     }
 
     $notificationSetting = new NotificationSetting(null, $actionType, $objectId, $notification, $user->getId(), $receiver, 1);
-    Factory::getNotificationSettingFactory()->save($notificationSetting);
+    return Factory::getNotificationSettingFactory()->save($notificationSetting);
   }
   
   /**

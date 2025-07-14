@@ -7,17 +7,17 @@
         "router",
         "psr7"
     ],
-    "homepage": "http://github.com/hashtopolis/server",
+    "homepage": "https://github.com/hashtopolis/server",
     "license": "MIT",
     "authors": [
         {
             "name": "Various Authors",
             "email": "noreply@example.org",
-            "homepage": "http://example.org"
+            "homepage": "https://example.org"
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.0",
         "ext-json": "*",
         "ext-pdo": "*",
         "crell/api-problem": "^3.6",

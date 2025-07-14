@@ -3,28 +3,27 @@
 namespace DBA;
 
 class RegVoucherFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "RegVoucher";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "RegVoucher";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return RegVoucher
    */
-  function getNullObject() {
-    $o = new RegVoucher(-1, null, null);
-    return $o;
+  function getNullObject(): RegVoucher {
+    return new RegVoucher(-1, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class RegVoucherFactory extends AbstractModelFactory {
    * @param array $dict
    * @return RegVoucher
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new RegVoucher($dict['regVoucherId'], $dict['voucher'], $dict['time']);
-    return $o;
+  function createObjectFromDict($pk, $dict): RegVoucher {
+    return new RegVoucher($dict['regVoucherId'], $dict['voucher'], $dict['time']);
   }
   
   /**
@@ -66,9 +64,9 @@ class RegVoucherFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return RegVoucher
+   * @return ?RegVoucher
    */
-  function get($pk) {
+  function get($pk): ?RegVoucher {
     return Util::cast(parent::get($pk), RegVoucher::class);
   }
   
@@ -76,7 +74,7 @@ class RegVoucherFactory extends AbstractModelFactory {
    * @param RegVoucher $model
    * @return RegVoucher
    */
-  function save($model) {
+  function save($model): RegVoucher {
     return Util::cast(parent::save($model), RegVoucher::class);
   }
 }

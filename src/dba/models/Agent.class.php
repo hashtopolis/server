@@ -3,24 +3,24 @@
 namespace DBA;
 
 class Agent extends AbstractModel {
-  private $agentId;
-  private $agentName;
-  private $uid;
-  private $os;
-  private $devices;
-  private $cmdPars;
-  private $ignoreErrors;
-  private $isActive;
-  private $isTrusted;
-  private $token;
-  private $lastAct;
-  private $lastTime;
-  private $lastIp;
-  private $userId;
-  private $cpuOnly;
-  private $clientSignature;
+  private ?int $agentId;
+  private ?string $agentName;
+  private ?string $uid;
+  private ?int $os;
+  private ?string $devices;
+  private ?string $cmdPars;
+  private ?int $ignoreErrors;
+  private ?int $isActive;
+  private ?int $isTrusted;
+  private ?string $token;
+  private ?string $lastAct;
+  private ?int $lastTime;
+  private ?string $lastIp;
+  private ?int $userId;
+  private ?int $cpuOnly;
+  private ?string $clientSignature;
   
-  function __construct($agentId, $agentName, $uid, $os, $devices, $cmdPars, $ignoreErrors, $isActive, $isTrusted, $token, $lastAct, $lastTime, $lastIp, $userId, $cpuOnly, $clientSignature) {
+  function __construct(?int $agentId, ?string $agentName, ?string $uid, ?int $os, ?string $devices, ?string $cmdPars, ?int $ignoreErrors, ?int $isActive, ?int $isTrusted, ?string $token, ?string $lastAct, ?int $lastTime, ?string $lastIp, ?int $userId, ?int $cpuOnly, ?string $clientSignature) {
     $this->agentId = $agentId;
     $this->agentName = $agentName;
     $this->uid = $uid;
@@ -39,7 +39,7 @@ class Agent extends AbstractModel {
     $this->clientSignature = $clientSignature;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['agentId'] = $this->agentId;
     $dict['agentName'] = $this->agentName;
@@ -61,41 +61,41 @@ class Agent extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentId"];
-    $dict['agentName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "agentName"];
-    $dict['uid'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "uid"];
-    $dict['os'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "os"];
-    $dict['devices'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "devices"];
-    $dict['cmdPars'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "cmdPars"];
-    $dict['ignoreErrors'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => [0 => "Deactivate agent on error", 1 => "Keep agent running, but save errors", 2 => "Keep agent running and discard errors", ], "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "ignoreErrors"];
-    $dict['isActive'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isActive"];
-    $dict['isTrusted'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isTrusted"];
-    $dict['token'] = ['read_only' => False, "type" => "str(30)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "token"];
-    $dict['lastAct'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastAct"];
-    $dict['lastTime'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastTime"];
-    $dict['lastIp'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastIp"];
-    $dict['userId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "userId"];
-    $dict['cpuOnly'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "cpuOnly"];
-    $dict['clientSignature'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "clientSignature"];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentId", "public" => False];
+    $dict['agentName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "agentName", "public" => False];
+    $dict['uid'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "uid", "public" => False];
+    $dict['os'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "os", "public" => False];
+    $dict['devices'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "devices", "public" => False];
+    $dict['cmdPars'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "cmdPars", "public" => False];
+    $dict['ignoreErrors'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => [0 => "Deactivate agent on error", 1 => "Keep agent running, but save errors", 2 => "Keep agent running and discard errors", ], "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "ignoreErrors", "public" => False];
+    $dict['isActive'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isActive", "public" => False];
+    $dict['isTrusted'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isTrusted", "public" => False];
+    $dict['token'] = ['read_only' => False, "type" => "str(30)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "token", "public" => False];
+    $dict['lastAct'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastAct", "public" => False];
+    $dict['lastTime'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastTime", "public" => False];
+    $dict['lastIp'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastIp", "public" => False];
+    $dict['userId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "userId", "public" => False];
+    $dict['cpuOnly'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "cpuOnly", "public" => False];
+    $dict['clientSignature'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "clientSignature", "public" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "agentId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->agentId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->agentId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->agentId = $id;
   }
   
@@ -103,127 +103,127 @@ class Agent extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getAgentName() {
+  function getAgentName(): ?string {
     return $this->agentName;
   }
   
-  function setAgentName($agentName) {
+  function setAgentName(?string $agentName): void {
     $this->agentName = $agentName;
   }
   
-  function getUid() {
+  function getUid(): ?string {
     return $this->uid;
   }
   
-  function setUid($uid) {
+  function setUid(?string $uid): void {
     $this->uid = $uid;
   }
   
-  function getOs() {
+  function getOs(): ?int {
     return $this->os;
   }
   
-  function setOs($os) {
+  function setOs(?int $os): void {
     $this->os = $os;
   }
   
-  function getDevices() {
+  function getDevices(): ?string {
     return $this->devices;
   }
   
-  function setDevices($devices) {
+  function setDevices(?string $devices): void {
     $this->devices = $devices;
   }
   
-  function getCmdPars() {
+  function getCmdPars(): ?string {
     return $this->cmdPars;
   }
   
-  function setCmdPars($cmdPars) {
+  function setCmdPars(?string $cmdPars): void {
     $this->cmdPars = $cmdPars;
   }
   
-  function getIgnoreErrors() {
+  function getIgnoreErrors(): ?int {
     return $this->ignoreErrors;
   }
   
-  function setIgnoreErrors($ignoreErrors) {
+  function setIgnoreErrors(?int $ignoreErrors): void {
     $this->ignoreErrors = $ignoreErrors;
   }
   
-  function getIsActive() {
+  function getIsActive(): ?int {
     return $this->isActive;
   }
   
-  function setIsActive($isActive) {
+  function setIsActive(?int $isActive): void {
     $this->isActive = $isActive;
   }
   
-  function getIsTrusted() {
+  function getIsTrusted(): ?int {
     return $this->isTrusted;
   }
   
-  function setIsTrusted($isTrusted) {
+  function setIsTrusted(?int $isTrusted): void {
     $this->isTrusted = $isTrusted;
   }
   
-  function getToken() {
+  function getToken(): ?string {
     return $this->token;
   }
   
-  function setToken($token) {
+  function setToken(?string $token): void {
     $this->token = $token;
   }
   
-  function getLastAct() {
+  function getLastAct(): ?string {
     return $this->lastAct;
   }
   
-  function setLastAct($lastAct) {
+  function setLastAct(?string $lastAct): void {
     $this->lastAct = $lastAct;
   }
   
-  function getLastTime() {
+  function getLastTime(): ?int {
     return $this->lastTime;
   }
   
-  function setLastTime($lastTime) {
+  function setLastTime(?int $lastTime): void {
     $this->lastTime = $lastTime;
   }
   
-  function getLastIp() {
+  function getLastIp(): ?string {
     return $this->lastIp;
   }
   
-  function setLastIp($lastIp) {
+  function setLastIp(?string $lastIp): void {
     $this->lastIp = $lastIp;
   }
   
-  function getUserId() {
+  function getUserId(): ?int {
     return $this->userId;
   }
   
-  function setUserId($userId) {
+  function setUserId(?int $userId): void {
     $this->userId = $userId;
   }
   
-  function getCpuOnly() {
+  function getCpuOnly(): ?int {
     return $this->cpuOnly;
   }
   
-  function setCpuOnly($cpuOnly) {
+  function setCpuOnly(?int $cpuOnly): void {
     $this->cpuOnly = $cpuOnly;
   }
   
-  function getClientSignature() {
+  function getClientSignature(): ?string {
     return $this->clientSignature;
   }
   
-  function setClientSignature($clientSignature) {
+  function setClientSignature(?string $clientSignature): void {
     $this->clientSignature = $clientSignature;
   }
   

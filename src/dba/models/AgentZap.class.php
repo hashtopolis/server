@@ -3,17 +3,17 @@
 namespace DBA;
 
 class AgentZap extends AbstractModel {
-  private $agentZapId;
-  private $agentId;
-  private $lastZapId;
+  private ?int $agentZapId;
+  private ?int $agentId;
+  private ?string $lastZapId;
   
-  function __construct($agentZapId, $agentId, $lastZapId) {
+  function __construct(?int $agentZapId, ?int $agentId, ?string $lastZapId) {
     $this->agentZapId = $agentZapId;
     $this->agentId = $agentId;
     $this->lastZapId = $lastZapId;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['agentZapId'] = $this->agentZapId;
     $dict['agentId'] = $this->agentId;
@@ -22,28 +22,28 @@ class AgentZap extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['agentZapId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentZapId"];
-    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId"];
-    $dict['lastZapId'] = ['read_only' => True, "type" => "str(128)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastZapId"];
+    $dict['agentZapId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentZapId", "public" => False];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId", "public" => False];
+    $dict['lastZapId'] = ['read_only' => True, "type" => "str(128)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastZapId", "public" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "agentZapId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->agentZapId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->agentZapId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->agentZapId = $id;
   }
   
@@ -51,23 +51,23 @@ class AgentZap extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getAgentId() {
+  function getAgentId(): ?int {
     return $this->agentId;
   }
   
-  function setAgentId($agentId) {
+  function setAgentId(?int $agentId): void {
     $this->agentId = $agentId;
   }
   
-  function getLastZapId() {
+  function getLastZapId(): ?string {
     return $this->lastZapId;
   }
   
-  function setLastZapId($lastZapId) {
+  function setLastZapId(?string $lastZapId): void {
     $this->lastZapId = $lastZapId;
   }
   

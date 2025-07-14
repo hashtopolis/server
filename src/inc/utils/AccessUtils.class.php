@@ -34,6 +34,37 @@ class AccessUtils {
   }
   
   /**
+   * @param $val permission as they are stored in the legacy way in the DB in the RightGroup table
+   * @return array
+   */
+  public static function getPermissionArrayConverted($val) {
+    $all_perms = array_unique(array_merge(...array_values(AbstractBaseAPI::$acl_mapping)));
+    
+    if ($val == 'ALL') {
+      // Special case ALL should set all permissions to true
+      $retval_perms = array_combine($all_perms, array_fill(0,count($all_perms), true));
+    }
+    else {
+      // Create listing of enabled permissions based on permission set in database
+      $user_available_perms = array();
+      foreach(json_decode($val) as $rightgroup_perm => $permission_set) {
+        if ($permission_set) {
+          $user_available_perms = array_unique(array_merge($user_available_perms, AbstractBaseAPI::$acl_mapping[$rightgroup_perm]));
+        }
+      }
+      
+      // Create output document
+      $retval_perms = array_combine($all_perms, array_fill(0,count($all_perms), false));
+      foreach($user_available_perms as $perm) {
+        $retval_perms[$perm] = True;
+      }
+    }
+    // Ensure output is sorted for easy debugging
+    ksort($retval_perms);
+    return $retval_perms;
+  }
+  
+  /**
    * @param $agent Agent
    * @param $user User
    * @return bool true if user has access to agent
@@ -114,10 +145,10 @@ class AccessUtils {
   }
   
   /**
-   * @param $agent Agent
+   * @param Agent $agent
    * @return AccessGroup[]
    */
-  public static function getAccessGroupsOfAgent($agent) {
+  public static function getAccessGroupsOfAgent(Agent $agent): array {
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
     $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);

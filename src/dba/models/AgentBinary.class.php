@@ -3,15 +3,15 @@
 namespace DBA;
 
 class AgentBinary extends AbstractModel {
-  private $agentBinaryId;
-  private $type;
-  private $version;
-  private $operatingSystems;
-  private $filename;
-  private $updateTrack;
-  private $updateAvailable;
+  private ?int $agentBinaryId;
+  private ?string $type;
+  private ?string $version;
+  private ?string $operatingSystems;
+  private ?string $filename;
+  private ?string $updateTrack;
+  private ?string $updateAvailable;
   
-  function __construct($agentBinaryId, $type, $version, $operatingSystems, $filename, $updateTrack, $updateAvailable) {
+  function __construct(?int $agentBinaryId, ?string $type, ?string $version, ?string $operatingSystems, ?string $filename, ?string $updateTrack, ?string $updateAvailable) {
     $this->agentBinaryId = $agentBinaryId;
     $this->type = $type;
     $this->version = $version;
@@ -21,7 +21,7 @@ class AgentBinary extends AbstractModel {
     $this->updateAvailable = $updateAvailable;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['agentBinaryId'] = $this->agentBinaryId;
     $dict['type'] = $this->type;
@@ -34,32 +34,32 @@ class AgentBinary extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['agentBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentBinaryId"];
-    $dict['type'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "type"];
-    $dict['version'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "version"];
-    $dict['operatingSystems'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "operatingSystems"];
-    $dict['filename'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "filename"];
-    $dict['updateTrack'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "updateTrack"];
-    $dict['updateAvailable'] = ['read_only' => True, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "updateAvailable"];
+    $dict['agentBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentBinaryId", "public" => False];
+    $dict['type'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "type", "public" => False];
+    $dict['version'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "version", "public" => False];
+    $dict['operatingSystems'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "operatingSystems", "public" => False];
+    $dict['filename'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "filename", "public" => False];
+    $dict['updateTrack'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "updateTrack", "public" => False];
+    $dict['updateAvailable'] = ['read_only' => True, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "updateAvailable", "public" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "agentBinaryId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->agentBinaryId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->agentBinaryId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->agentBinaryId = $id;
   }
   
@@ -67,55 +67,55 @@ class AgentBinary extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getType() {
+  function getType(): ?string {
     return $this->type;
   }
   
-  function setType($type) {
+  function setType(?string $type): void {
     $this->type = $type;
   }
   
-  function getVersion() {
+  function getVersion(): ?string {
     return $this->version;
   }
   
-  function setVersion($version) {
+  function setVersion(?string $version): void {
     $this->version = $version;
   }
   
-  function getOperatingSystems() {
+  function getOperatingSystems(): ?string {
     return $this->operatingSystems;
   }
   
-  function setOperatingSystems($operatingSystems) {
+  function setOperatingSystems(?string $operatingSystems): void {
     $this->operatingSystems = $operatingSystems;
   }
   
-  function getFilename() {
+  function getFilename(): ?string {
     return $this->filename;
   }
   
-  function setFilename($filename) {
+  function setFilename(?string $filename): void {
     $this->filename = $filename;
   }
   
-  function getUpdateTrack() {
+  function getUpdateTrack(): ?string {
     return $this->updateTrack;
   }
   
-  function setUpdateTrack($updateTrack) {
+  function setUpdateTrack(?string $updateTrack): void {
     $this->updateTrack = $updateTrack;
   }
   
-  function getUpdateAvailable() {
+  function getUpdateAvailable(): ?string {
     return $this->updateAvailable;
   }
   
-  function setUpdateAvailable($updateAvailable) {
+  function setUpdateAvailable(?string $updateAvailable): void {
     $this->updateAvailable = $updateAvailable;
   }
   

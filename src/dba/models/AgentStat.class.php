@@ -3,13 +3,13 @@
 namespace DBA;
 
 class AgentStat extends AbstractModel {
-  private $agentStatId;
-  private $agentId;
-  private $statType;
-  private $time;
-  private $value;
+  private ?int $agentStatId;
+  private ?int $agentId;
+  private ?int $statType;
+  private ?int $time;
+  private ?string $value;
   
-  function __construct($agentStatId, $agentId, $statType, $time, $value) {
+  function __construct(?int $agentStatId, ?int $agentId, ?int $statType, ?int $time, ?string $value) {
     $this->agentStatId = $agentStatId;
     $this->agentId = $agentId;
     $this->statType = $statType;
@@ -17,7 +17,7 @@ class AgentStat extends AbstractModel {
     $this->value = $value;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['agentStatId'] = $this->agentStatId;
     $dict['agentId'] = $this->agentId;
@@ -28,30 +28,30 @@ class AgentStat extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['agentStatId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentStatId"];
-    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId"];
-    $dict['statType'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "statType"];
-    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time"];
-    $dict['value'] = ['read_only' => True, "type" => "array", "subtype" => "int", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "value"];
+    $dict['agentStatId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentStatId", "public" => False];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId", "public" => False];
+    $dict['statType'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "statType", "public" => False];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time", "public" => False];
+    $dict['value'] = ['read_only' => True, "type" => "array", "subtype" => "int", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "value", "public" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "agentStatId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->agentStatId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->agentStatId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->agentStatId = $id;
   }
   
@@ -59,39 +59,39 @@ class AgentStat extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getAgentId() {
+  function getAgentId(): ?int {
     return $this->agentId;
   }
   
-  function setAgentId($agentId) {
+  function setAgentId(?int $agentId): void {
     $this->agentId = $agentId;
   }
   
-  function getStatType() {
+  function getStatType(): ?int {
     return $this->statType;
   }
   
-  function setStatType($statType) {
+  function setStatType(?int $statType): void {
     $this->statType = $statType;
   }
   
-  function getTime() {
+  function getTime(): ?int {
     return $this->time;
   }
   
-  function setTime($time) {
+  function setTime(?int $time): void {
     $this->time = $time;
   }
   
-  function getValue() {
+  function getValue(): ?string {
     return $this->value;
   }
   
-  function setValue($value) {
+  function setValue(?string $value): void {
     $this->value = $value;
   }
   
