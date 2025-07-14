@@ -461,23 +461,37 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $relatedResources;
   }
 
-  //TODO: This should calculate the next secondary cursor when the primary cursor is not unique
-  protected static function calculate_next_cursor(string|int $element) {
-    if (is_int($element)) {
-      return $element + 1;
-    } elseif (is_string($element)) {
-      $len = strlen($element);
-      if ($len == 0) {
-        return '~';
-      }
-
-      $lastChar = $element[$len - 1];
-      $ord = ord($lastChar);
-      if ($ord < 126) {
-        return substr($element, 0, $len-1) . chr($ord + 1);
+  protected static function calculate_next_cursor(string|int $cursor, bool $ascending=true) {
+    if (is_int($cursor)) {
+      if ($ascending) {
+        return $cursor + 1;
       } else {
-        return $element . '!'; // '!' is lowest printable ascii
+        return $cursor - 1;
       }
+    } elseif (is_string($cursor)) {
+        $len = strlen($cursor);
+        $lastChar = $cursor[$len - 1];
+        $ord = ord($lastChar);
+        if ($ascending) {
+          if ($len == 0) {
+            return '~';
+          }
+
+          if ($ord < 126) {
+            return substr($cursor, 0, $len-1) . chr($ord + 1);
+          } else {
+            return $cursor . '!'; // '!' is lowest printable ascii
+          } 
+        }else {
+          var_dump($ord);
+          if ($len == 0) {
+            return "";
+          }
+          if ($ord > 33) {
+            return substr($cursor, 0, $len-1) . chr($ord - 1);
+          } else 
+          return substr($cursor, 0, $len-1);
+        }
     } else {
       throw new HttpError("Internal error", 500);
     }
@@ -739,8 +753,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $lastParams['page']['size'] = $pageSize;
     //Todo build last cursor
     // $next_cursor = $apiClass::build_cursor($primaryFilter, $nextId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $nextPrimaryKey);
-    // $nextParams['page']['after'] = $next_cursor;
     // $lastParams['page']['before'] = $apiClass::encode_cursor(self::calculate_next_cursor($max));
+    if ($primaryKeyIsNotPrimaryFilter) {
+      $new_secondary_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
+      $last_cursor = $apiClass::build_cursor($primaryFilter, $lastCursorObject->expose()[$primaryFilter], $primaryKeyIsNotPrimaryFilter, $primaryKey, $new_secondary_cursor);
+    } else {
+      $new_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
+      $last_cursor = $apiClass::build_cursor($primaryFilter, $new_cursor);
+    }
+    $lastParams['page']['before'] = $last_cursor;
     $linksLast = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($lastParams));
 
     // Build self link
