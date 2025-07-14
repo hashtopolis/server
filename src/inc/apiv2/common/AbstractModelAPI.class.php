@@ -496,6 +496,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       throw new HttpError("Internal error", 500);
     }
   }
+
   /**
    * The cursor is base64 encoded in the following json format:
    * {"primary":{"isSlowHash":0},"secondary":{"hashTypeId":10810}}
@@ -520,11 +521,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       //Add the primary key as a secondary cursor to guarantee the cursor is unique
       $cursor["secondary"] = [$secondaryFilter => $secondaryId];
     }
-    //TODO '=' is not URL safe, should be removed and replaced based on the length of the base64, or it should be url encoded
-    //or url encode everything and also dont touch the /?
     $json = json_encode($cursor);
-    return strtr(base64_encode($json), '+/', '-_');
-    // return urlencode($json);
+    return urlencode(base64_encode($json));
   }
 
   /**
@@ -535,7 +533,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    * @return string the decoded cursor in a json string format 
    */
   protected static function decode_cursor(string $encoded_cursor) {
-    $json = base64_decode(strtr($encoded_cursor, '-_', '+/'));
+    $json = base64_decode($encoded_cursor);
     $cursor = json_decode($json, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
       throw new HttpError("Invallid pagination cursor");
