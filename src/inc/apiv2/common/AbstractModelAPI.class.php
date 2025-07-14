@@ -757,7 +757,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $lastParams = $request->getQueryParams();
     unset($lastParams['page']['after']);
     $lastParams['page']['size'] = $pageSize;
-    //Todo build last cursor
     // $next_cursor = $apiClass::build_cursor($primaryFilter, $nextId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $nextPrimaryKey);
     // $lastParams['page']['before'] = $apiClass::encode_cursor(self::calculate_next_cursor($max));
     if ($primaryKeyIsNotPrimaryFilter) {
@@ -772,6 +771,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     // Build self link
     $selfParams = $request->getQueryParams();
+
+    if (isset($selfParams['page']['after'])) {
+      $selfParams['page']['after'] = urlencode($selfParams['page']['after']);
+    }
+    if (isset($selfParams['page']['before'])) {
+      $selfParams['page']['before'] = urlencode($selfParams['page']['before']);
+    }
+
     $selfParams['page']['size'] = $pageSize;
     $linksSelf = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($selfParams));
 
