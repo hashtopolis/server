@@ -576,32 +576,31 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    */
   public static function getManyResources(object $apiClass, Request $request, Response $response, array $relationFs = []): Response {
     $apiClass->preCommon($request);
-    
+
     $aliasedfeatures = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
-    
+
     $defaultPageSize = 10000;
     $maxPageSize = 50000;
     // TODO: if 0.14.4 release has happened, following parameters can be retrieved from config
     // $defaultPageSize = SConfig::getInstance()->getVal(DConfig::DEFAULT_PAGE_SIZE);
     // $maxPageSize = SConfig::getInstance()->getVal(DConfig::MAX_PAGE_SIZE);
-    
+
     $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after');
     $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
     if (!is_numeric($pageSize) || $pageSize < 0) {
       throw new HttpError("Invalid parameter, page[size] must be a positive integer");
-    }
-    elseif ($pageSize > $maxPageSize) {
+    } elseif ($pageSize > $maxPageSize) {
       throw new HttpError(sprintf("You requested a size of %d, but %d is the maximum.", $pageSize, $maxPageSize));
     }
-    
+
     $validExpandables = $apiClass::getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);
-    
+
     /* Object filter definition */
     $aFs = [];
-    
+
     /* Generate filters */
     $filters = $apiClass->getFilters($request);
     $qFs_Filter = $apiClass->makeFilter($filters, $apiClass);
@@ -617,13 +616,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if (count($qFs_Filter) > 0) {
       $aFs[Factory::FILTER] = $qFs_Filter;
     }
-    
+
     /**
      * Create pagination
-     *
+     * 
      * TODO: Deny pagination with un-stable sorting
      */
-
     $sortList = $apiClass->getQueryParameterAsList($request, 'sort');
     $isNegativeSort = $sortList != null && $sortList[0][0] == '-';
     //this is used to reverse the array to show the data correctly for the user 
@@ -677,10 +675,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       // $aFs[Factory::ORDER][] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
       $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
     }
+    $aFs[Factory::ORDER] = $orderFilters;
 
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
-    
+
     $primaryKey = $apiClass->getPrimaryKey();
     //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
     //But this probably needs to be added in getFeatures() then.
@@ -701,13 +700,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $finalFs[Factory::FILTER][] = new QueryFilter(key($primary_cursor), current($primary_cursor), $operator, $factory);
       }
     }
-    
+
     /* Request objects */
     $filterObjects = $factory->filter($finalFs);
-    if ($defaultSort == 'DESC') {
-      $filterObjects = array_reverse($filterObjects);
-    }
-    
+
     /* JOIN statements will return related modules as well, discard for now */
     if (array_key_exists(Factory::JOIN, $finalFs)) {
       $objects = $filterObjects[$factory->getModelname()];
@@ -715,7 +711,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     else {
       $objects = $filterObjects;
     }
-
     if ($reverseArray) {
       $objects = array_reverse($objects);
     }
@@ -726,16 +721,16 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       // mapping from $objectId -> result objects in
       $expandResult[$expand] = $apiClass->fetchExpandObjects($objects, $expand);
     }
-    
+
     /* Convert objects to JSON:API */
     $dataResources = [];
     $includedResources = [];
-    
+
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object  
       $newObject = $apiClass->obj2Resource($object, $expandResult);
-      
+
       // For compound document, included resources
       foreach ($expands as $expand) {
         if (array_key_exists($object->getId(), $expandResult[$expand])) {
@@ -744,8 +739,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
             foreach ($expandResultObject as $expandObject) {
               $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject));
             }
-          }
-          else {
+          } else {
             if ($expandResultObject === null) {
               // to-only relation which is nullable
               continue;
@@ -754,18 +748,16 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           }
         }
       }
-      
+
       // Add to result output
       $dataResources[] = $newObject;
     }
-
     $baseUrl = Util::buildServerUrl();
-
     //build last link
     $lastParams = $request->getQueryParams();
     unset($lastParams['page']['after']);
     $lastParams['page']['size'] = $pageSize;
-
+    //Todo build last cursor
     // $next_cursor = $apiClass::build_cursor($primaryFilter, $nextId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $nextPrimaryKey);
     // $lastParams['page']['before'] = $apiClass::encode_cursor(self::calculate_next_cursor($max));
     if ($primaryKeyIsNotPrimaryFilter) {
@@ -815,7 +807,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $linksPrev = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($prevParams));
       }
     }
-    
+
     //build first link
     $firstParams = $request->getQueryParams();
     unset($firstParams['page']['before']);
@@ -834,10 +826,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $metadata = ["page" => ["total_elements" => $total]];
     // Generate JSON:API GET output
     $ret = self::createJsonResponse($dataResources, $links, $includedResources, $metadata);
-    
+
     $body = $response->getBody();
     $body->write($apiClass->ret2json($ret));
-    
+
     return $response->withStatus(200)
       ->withHeader("Content-Type", 'application/vnd.api+json; ext="https://jsonapi.org/profiles/ethanresnick/cursor-pagination"');
   }
