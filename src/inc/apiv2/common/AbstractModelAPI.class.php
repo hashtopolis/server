@@ -692,12 +692,17 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if (isset($paginationCursor)) {
       $decoded_cursor = $apiClass->decode_cursor($paginationCursor);
       $primary_cursor = $decoded_cursor["primary"];
+      $primary_cursor_key = key($primary_cursor);
+      // Special filtering of _id to use for uniform access to model primary key
+      $primary_cursor_key = $primary_cursor_key == '_id' ? array_column($aliasedfeatures, 'alias', 'dbname')[$apiClass->getPrimaryKey()] : $primary_cursor_key;
       $secondary_cursor = $decoded_cursor["secondary"];
       if ($secondary_cursor) {
-        $finalFs[Factory::FILTER][] = new PaginationFilter(key($primary_cursor), current($primary_cursor), 
-                                                            $operator, key($secondary_cursor), current($secondary_cursor));
+      $secondary_cursor_key = key($secondary_cursor);
+      $secondary_cursor_key = $secondary_cursor_key == '_id' ? array_column($aliasedfeatures, 'alias', 'dbname')[$apiClass->getPrimaryKey()] : $secondary_cursor_key;
+        $finalFs[Factory::FILTER][] = new PaginationFilter($primary_cursor_key, current($primary_cursor), 
+                                                            $operator, $secondary_cursor_key, current($secondary_cursor));
       } else {
-        $finalFs[Factory::FILTER][] = new QueryFilter(key($primary_cursor), current($primary_cursor), $operator, $factory);
+        $finalFs[Factory::FILTER][] = new QueryFilter($primary_cursor_key, current($primary_cursor), $operator, $factory);
       }
     }
 
@@ -759,10 +764,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $lastParams['page']['size'] = $pageSize;
     // $next_cursor = $apiClass::build_cursor($primaryFilter, $nextId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $nextPrimaryKey);
     // $lastParams['page']['before'] = $apiClass::encode_cursor(self::calculate_next_cursor($max));
-    if ($primaryKeyIsNotPrimaryFilter) {
+    if ($primaryKeyIsNotPrimaryFilter && isset($lastCursorObject)) {
       $new_secondary_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
       $last_cursor = $apiClass::build_cursor($primaryFilter, $lastCursorObject->expose()[$primaryFilter], $primaryKeyIsNotPrimaryFilter, $primaryKey, $new_secondary_cursor);
-    } else {
+    } else if (isset($lastCursorObject)){
       $new_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
       $last_cursor = $apiClass::build_cursor($primaryFilter, $new_cursor);
     }

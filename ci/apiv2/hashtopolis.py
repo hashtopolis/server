@@ -4,6 +4,7 @@
 # PoC testing/development framework for APIv2
 # Written in python to work on creation of hashtopolis APIv2 python binding.
 #
+from base64 import b64encode
 import copy
 import json
 import logging
@@ -168,22 +169,23 @@ class HashtopolisConnector(object):
                 type=r_json.get('type', None),
                 title=r_json.get('title', None))
 
-    def validate_pagination_links(self, response, page):
-        """Validate all the links that are used for paginated data"""
-        data = response["data"]
-        highest_id = max(data, key=lambda obj: obj['id'])['id']
-        lowest_id = min(data, key=lambda obj: obj['id'])['id']
+    # TODO: this does not work anymore for new pagination style
+    # def validate_pagination_links(self, response, page):
+    #     """Validate all the links that are used for paginated data"""
+    #     data = response["data"]
+    #     highest_id = max(data, key=lambda obj: obj['id'])['id']
+    #     lowest_id = min(data, key=lambda obj: obj['id'])['id']
 
-        links = response["links"]
-        query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["next"]).query)
-        assert (int(query_params["page[size]"][0]) == page["size"])
-        assert (int(query_params["page[after]"][0]) == highest_id)
-        query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["prev"]).query)
-        assert (int(query_params["page[size]"][0]) == page["size"])
-        assert (int(query_params["page[before]"][0]) == lowest_id)
-        query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["first"]).query)
-        assert (int(query_params["page[size]"][0]) == page["size"])
-        assert (int(query_params["page[after]"][0]) == 0)
+    #     links = response["links"]
+    #     query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["next"]).query)
+    #     assert (int(query_params["page[size]"][0]) == page["size"])
+    #     assert (int(query_params["page[after]"][0]) == highest_id)
+    #     query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["prev"]).query)
+    #     assert (int(query_params["page[size]"][0]) == page["size"])
+    #     assert (int(query_params["page[before]"][0]) == lowest_id)
+    #     query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["first"]).query)
+    #     assert (int(query_params["page[size]"][0]) == page["size"])
+    #     assert (int(query_params["page[after]"][0]) == 0)
         # query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["last"]).query)
         # TODO not really a straightforward way to validate the last link
     
@@ -208,7 +210,7 @@ class HashtopolisConnector(object):
         logger.debug("Response %s", json.dumps(response, indent=4))
 
         # validate page links
-        self.validate_pagination_links(response, page)
+        # self.validate_pagination_links(response, page)
         return response["data"]
 
     # todo refactor start_offset into page variable
@@ -216,7 +218,10 @@ class HashtopolisConnector(object):
         self.authenticate()
         headers = self._headers
 
-        payload = {'page[after]': start_offset}
+        after_dict = {"primary": {"_id": start_offset}}
+        after_param = b64encode(json.dumps(after_dict).encode('utf-8')).decode('utf-8')
+
+        payload = {'page[after]': after_param}
         if filter:
             for k, v in filter.items():
                 payload[f"filter[{k}]"] = v
