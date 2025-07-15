@@ -567,7 +567,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     $filters[Factory::ORDER] = $orderFilters;
     $factory = $apiClass->getFactory();
-    return $factory->filter($filters)[0];
+    $result = $factory->filter($filters);
+    //handle joined queries
+    if (array_key_exists(Factory::JOIN, $filters)) {
+      $result = $result[$factory->getModelname()];
+    }
+    return $result[0];
   }
 
   /**
@@ -800,7 +805,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       $previousPrimaryKey = $firstObject[$primaryKey];
 
       //only set next page when its not the last page
-      if ($nextPrimaryKey !== $lastCursorObject->getId()) {
+      if (isset($lastCursorObject) && $nextPrimaryKey !== $lastCursorObject->getId()) {
         $nextParams = $selfParams;
         // $nextParams['page']['after'] = urlencode($nextId);
         $next_cursor = $apiClass::build_cursor($primaryFilter, $nextId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $nextPrimaryKey);
@@ -810,7 +815,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
       // Build prev link 
       //only set previous page when its not the first page
-      if ($previousPrimaryKey !== $firstCursorObject->getId()) { 
+      if (isset($firstCursorObject) && $previousPrimaryKey !== $firstCursorObject->getId()) {
         //build page before
         $prevParams = $selfParams;
         $previous_cursor = $apiClass::build_cursor($primaryFilter, $prevId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $previousPrimaryKey);
