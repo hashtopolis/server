@@ -634,6 +634,9 @@ abstract class AbstractModelFactory {
     }
     $query .= $this->applyOrder($options['order']);
     
+    if (array_key_exists("limit", $options)) {
+      $query .= $this->applyLimit($options['limit']);
+    }
     
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
