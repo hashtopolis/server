@@ -188,10 +188,19 @@ class TaskUtils {
   public static function toggleArchiveTask($taskId, $taskState, $user) {
     $task = TaskUtils::getTask($taskId, $user);
     $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $user);
-    if ($taskWrapper->getTaskType() == DTaskTypes::NORMAL) {
-      Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::IS_ARCHIVED, $taskState);
+    switch ($taskWrapper->getTaskType()) {
+      case DTaskTypes::NORMAL:
+        Factory::getTaskFactory()->set($task, Task::IS_ARCHIVED, $taskState);
+        break;
+      case DTaskTypes::SUPERTASK:
+        $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+        $uS = new UpdateSet(Task::IS_ARCHIVED, $taskState);
+        Factory::getTaskFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+        break;
+      default:
+        throw new HTException("Invalid task type for archiving!");
     }
-    Factory::getTaskFactory()->set($task, Task::IS_ARCHIVED, $taskState);
+    Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::IS_ARCHIVED, $taskState);
   }
   
   /**

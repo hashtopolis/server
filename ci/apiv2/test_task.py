@@ -87,7 +87,7 @@ class TaskTest(BaseTest):
 
         obj = TaskWrapper.objects.get(pk=task.taskWrapperId)
         self.assertEqual(new_priority, obj.priority)
-   
+  
     def test_task_update_maxagent(self):
         task = self.create_test_object()
         obj = TaskWrapper.objects.get(pk=task.taskWrapperId)
@@ -104,3 +104,34 @@ class TaskTest(BaseTest):
         tasks = [self.create_test_object() for i in range(5)]
         active_attributes = [True for i in range(5)]
         Task.objects.patch_many(tasks, active_attributes, "isArchived")
+
+    def test_toggle_archive_task(self):
+        # Test normal task archiving
+        task = self.create_test_object()
+
+        # Initially task should not be archived
+        self.assertFalse(task.isArchived)
+
+        # Archive the task
+        task.isArchived = True
+        task.save()
+
+        # Verify task is archived
+        obj = Task.objects.get(taskId=task.id)
+        self.assertTrue(obj.isArchived)
+
+        # Verify taskwrapper is also archived for normal tasks
+        wrapper = TaskWrapper.objects.get(pk=task.taskWrapperId)
+        self.assertTrue(wrapper.isArchived)
+
+        # Unarchive the task
+        task.isArchived = False
+        task.save()
+
+        # Verify task is unarchived
+        obj = Task.objects.get(taskId=task.id)
+        self.assertFalse(obj.isArchived)
+
+        # Verify taskwrapper is also unarchived
+        wrapper = TaskWrapper.objects.get(pk=task.taskWrapperId)
+        self.assertFalse(wrapper.isArchived)
