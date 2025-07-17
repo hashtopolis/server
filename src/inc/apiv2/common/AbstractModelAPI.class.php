@@ -483,7 +483,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
             return $cursor . '!'; // '!' is lowest printable ascii
           } 
         }else {
-          var_dump($ord);
           if ($len == 0) {
             return "";
           }
@@ -559,8 +558,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
   protected static function getMinMaxCursor($apiClass, string $sort, array $filters, $request, $aliasedfeatures) {
     $filters[Factory::LIMIT] = new LimitFilter(1);
-    $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $sort);
-    $orderTemplates[0]["type"] = $sort;
+
+    // Descending queries are used to retrieve the last element. For this all sorts have to be reversed, since
+    // if all order quereis are reversed and limit to 1, you will retrieve the last element.
+    $reverseSort = ($sort == "DESC") ? true : false;
+    $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $sort, $reverseSort);
     $orderFilters = [];
     foreach ($orderTemplates as $orderTemplate) {
       $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
@@ -632,12 +634,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     //this is used to reverse the array to show the data correctly for the user 
     $reverseArray = false;
 
-    $lastCursorObject = $apiClass->getMinMaxCursor($apiClass, "DESC", $aFs, $request, $aliasedfeatures);
     $firstCursorObject = $apiClass->getMinMaxCursor($apiClass, "ASC", $aFs, $request, $aliasedfeatures);
-
-    if ($isNegativeSort){
-      [$firstCursorObject, $lastCursorObject] = [$lastCursorObject, $firstCursorObject];
-    }
+    $lastCursorObject = $apiClass->getMinMaxCursor($apiClass, "DESC", $aFs, $request, $aliasedfeatures);
 
     if (!$isNegativeSort && !isset($pageBefore) && isset($pageAfter)) {
       // this happens when going to the next page while having an ascending sort

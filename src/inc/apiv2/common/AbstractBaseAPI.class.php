@@ -1103,7 +1103,8 @@ abstract class AbstractBaseAPI {
    * @throws InternalError
    * @throws HttpForbidden
    */
-  protected function makeOrderFilterTemplates(Request $request, array $features, $defaultSort = 'ASC'): array {
+  protected function makeOrderFilterTemplates(Request $request, array $features, string $defaultSort = 'ASC',
+     bool $reverseSort = false): array {
     $orderTemplates = [];
     
     $orderings = $this->getQueryParameterAsList($request, 'sort');
@@ -1117,7 +1118,11 @@ abstract class AbstractBaseAPI {
         }
         if (array_key_exists($cast_key, $features)) {
           $remappedKey = $features[$cast_key]['dbname'];
-          $orderTemplates[] = ['by' => $remappedKey, 'type' => ($matches['operator'] == '-') ? "DESC" : "ASC"];
+          $type = ($matches['operator'] == '-') ? "DESC" : "ASC";
+          if ($reverseSort) {
+            $type = ($type == "ASC") ? "DESC" : "ASC";
+          }
+          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type];
         }
         else {
           throw new HttpForbidden("Ordering parameter '" . $order . "' is not valid");
