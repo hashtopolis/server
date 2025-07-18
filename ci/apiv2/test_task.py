@@ -140,34 +140,34 @@ class TaskTest(BaseTest):
         """Test toggleArchiveTask functionality for normal tasks"""
         # Create a normal task
         task = self.create_test_object()
-           
+        
         # Get the task wrapper
         wrapper = TaskWrapper.objects.get(pk=task.taskWrapperId)
-
+        
         # Verify this is a normal task (taskType = 0)
         self.assertEqual(wrapper.taskType, 0)  # DTaskTypes::NORMAL
-
+        
         # Test the data model for normal task archiving
         # Initially task should not be archived
         self.assertFalse(task.isArchived)
         self.assertFalse(wrapper.isArchived)
-
+        
         # Verify the relationship between task and wrapper
         self.assertEqual(task.taskWrapperId, wrapper.id)
-
+        
         # Test that we can modify the archive status
         # (The actual archiving logic is handled by the PHP backend)
         task.isArchived = True
         task.save()
-
+        
         # Verify the change was saved
         updated_task = Task.objects.get(taskId=task.id)
         self.assertTrue(updated_task.isArchived)
-
+        
         # Reset for cleanup
         task.isArchived = False
         task.save()
-
+        
         # This test validates the structure needed for the PHP toggleArchiveTask function:
         # 1. Normal tasks have taskType = 0 in their TaskWrapper
         # 2. The PHP function would call: Factory::getTaskFactory()->set($task, Task::IS_ARCHIVED, $taskState)
@@ -190,7 +190,7 @@ class TaskTest(BaseTest):
             
             # Get all tasks under this supertask wrapper
             tasks = Task.objects.filter(taskWrapperId=wrapper.id)
-            tasks[0].save()  # Ensure tasks are saved
+            
             # This scenario tests the mass update behavior:
             # case DTaskTypes::SUPERTASK:
             #   $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
@@ -226,6 +226,9 @@ class TaskTest(BaseTest):
             self.assertEqual(len(matching_tasks), len(tasks),
                              "Should be able to find all tasks by wrapper ID")
             
+            print(f"✓ Validated supertask wrapper {wrapper.id} with {len(tasks)} tasks")
+            print("✓ Mass update query pattern validated")
+            
         else:
             # If no supertask wrappers exist, create a scenario that simulates the structure
             # This validates the data model requirements for mass update
@@ -251,6 +254,8 @@ class TaskTest(BaseTest):
             self.assertEqual(len(task2_filtered), 1)
             self.assertEqual(task1_filtered[0].id, task1.id)
             self.assertEqual(task2_filtered[0].id, task2.id)
+            
+            print("✓ Validated supertask data model structure")
         
         # This test demonstrates the key requirements for the PHP supertask logic:
         # 1. Tasks can be filtered by taskWrapperId (QueryFilter implementation)
