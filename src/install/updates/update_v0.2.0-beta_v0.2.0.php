@@ -17,7 +17,7 @@ Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HashBinary` CHANGE `pla
 echo "OK\n";
 
 echo "Check csharp binary... ";
-$qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
+$qF = new QueryFilter(AgentBinary::BINARY_TYPE, "csharp", "=");
 $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
 if ($binary != null) {
   if (Util::versionComparison($binary->getVersion(), "0.40") == 1) {

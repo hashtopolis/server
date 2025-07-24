@@ -24,7 +24,7 @@ class AgentBinaryUtils {
     else if (!file_exists(dirname(__FILE__) . "/../../bin/" . basename($filename))) {
       throw new HttpError("Provided filename does not exist!");
     }
-    $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
+    $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");
     $result = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($result != null) {
       throw new HttpError("You cannot have two binaries with the same type!");
@@ -55,7 +55,7 @@ class AgentBinaryUtils {
     }
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     
-    $qF1 = new QueryFilter(AgentBinary::TYPE, $type, "=");
+    $qF1 = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");
     $qF2 = new QueryFilter(AgentBinary::AGENT_BINARY_ID, $agentBinary->getId(), "<>");
     $result = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
     if ($result != null) {
@@ -66,7 +66,7 @@ class AgentBinaryUtils {
       Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::UPDATE_AVAILABLE, '');
     }
     Factory::getAgentBinaryFactory()->mset($agentBinary, [
-        AgentBinary::TYPE => $type,
+        AgentBinary::BINARY_TYPE => $type,
         AgentBinary::OPERATING_SYSTEMS => $os,
         AgentBinary::FILENAME => $filename,
         AgentBinary::VERSION => $version,
@@ -80,15 +80,15 @@ class AgentBinaryUtils {
   public static function editUpdateTracker($binaryId, $updateTracker, $user) {
     $binary = AgentBinaryUtils::getBinary($binaryId);
     if ($updateTracker != $binary->getUpdateTrack()) {
-      Factory::getAgentBinaryFactory()->mset($agentBinary, [
+      Factory::getAgentBinaryFactory()->mset($binary, [
         AgentBinary::UPDATE_AVAILABLE => '',
         AgentBinary::UPDATE_TRACK => $updateTracker
       ]
     );
     } else {
-      Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::UPDATE_TRACK, $updateTracker);
+      Factory::getAgentBinaryFactory()->set($binary, AgentBinary::UPDATE_TRACK, $updateTracker);
     }
-    Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
+    Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $binary->getFilename() . " was updated!");
   }
 
   public static function editName($binaryId, $filename, $user) {
@@ -103,13 +103,13 @@ class AgentBinaryUtils {
   public static function editType($binaryId, $type, $user) {
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     
-    $qF1 = new QueryFilter(AgentBinary::TYPE, $type, "=");
+    $qF1 = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");
     $qF2 = new QueryFilter(AgentBinary::AGENT_BINARY_ID, $agentBinary->getId(), "<>");
     $result = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
     if ($result != null) {
       throw new HTException("You cannot have two binaries with the same type!");
     }
-    Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::TYPE, $type);
+    Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::BINARY_TYPE, $type);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
   }
   
@@ -151,10 +151,10 @@ class AgentBinaryUtils {
     $extension = Util::extractFileExtension($agentBinary->getFilename());
     
     // download file to tmp directory
-    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/$track/" . $agentBinary->getUpdateAvailable() . "." . $extension, "/tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
+    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getBinaryType() . "/$track/" . $agentBinary->getUpdateAvailable() . "." . $extension, "/tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
     
     // download checksum
-    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/$track/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256", "/tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256");
+    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getBinaryType() . "/$track/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256", "/tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256");
     
     // check checksum
     $sum = hash_file("sha256", "/tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
@@ -181,7 +181,7 @@ class AgentBinaryUtils {
    */
   public static function checkUpdate($binaryId) {
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
-    $update = AgentBinaryUtils::getAgentUpdate($agentBinary->getType(), $agentBinary->getUpdateTrack());
+    $update = AgentBinaryUtils::getAgentUpdate($agentBinary->getBinaryType(), $agentBinary->getUpdateTrack());
     Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::UPDATE_AVAILABLE, ($update) ? $update : '');
     return $update;
   }
@@ -217,7 +217,7 @@ class AgentBinaryUtils {
    * @throws HTException
    */
   public static function getAgentUpdate($agent, $track) {
-    $qF = new QueryFilter(AgentBinary::TYPE, $agent, "=");
+    $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $agent, "=");
     $agent = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($agent == null) {
       throw new HTException("Invalid agent binary type!");
