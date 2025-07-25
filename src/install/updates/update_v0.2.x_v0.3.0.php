@@ -37,7 +37,7 @@ echo "OK\n";
 echo "New zapping changes applied!\n";
 
 echo "Check csharp binary... ";
-$qF = new QueryFilter(AgentBinary::BINARY_TYPE, "csharp", "=");
+$qF = new QueryFilter("type", "csharp", "=");
 $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
 if ($binary != null) {
   if (Util::versionComparison($binary->getVersion(), "0.43") == 1) {
