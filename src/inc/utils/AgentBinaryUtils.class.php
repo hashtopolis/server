@@ -222,7 +222,7 @@ class AgentBinaryUtils {
     if ($agent == null) {
       throw new HTException("Invalid agent binary type!");
     }
-    $latest = AgentBinaryUtils::getLatestVersion($agent->getType(), $track);
+    $latest = AgentBinaryUtils::getLatestVersion($agent->getBinaryType(), $track);
     if (strlen($latest) == 0) {
       throw new HTException("Failed to retrieve latest version!");
     }
