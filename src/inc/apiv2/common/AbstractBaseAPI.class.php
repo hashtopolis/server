@@ -1112,7 +1112,7 @@ abstract class AbstractBaseAPI {
     foreach ($orderings as $order) {
       if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z]+)$/', $order, $matches)) {
         // Special filtering of _id to use for uniform access to model primary key
-        $cast_key = $matches['key'] == '_id' ? $this->getPrimaryKey() : $matches['key'];
+        $cast_key = $matches['key'] == 'id' ? $this->getPrimaryKey() : $matches['key'];
         if ($cast_key == $this->getPrimaryKey()) {
           $contains_primary_key = true;
         }

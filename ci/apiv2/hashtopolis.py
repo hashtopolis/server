@@ -218,7 +218,7 @@ class HashtopolisConnector(object):
         self.authenticate()
         headers = self._headers
 
-        after_dict = {"primary": {"_id": start_offset}}
+        after_dict = {"primary": {"id": start_offset}}
         after_param = b64encode(json.dumps(after_dict).encode('utf-8')).decode('utf-8')
 
         payload = {}
@@ -427,7 +427,7 @@ class QuerySet():
         else:
             filters = self.filters.copy()
             if 'pk' in filters:
-                filters['_id'] = filters['pk']
+                filters['id'] = filters['pk']
                 del filters['pk']
 
         filter_generator = self.cls.get_conn().filter(self.include, self.ordering, filters, start_offset=cursor)
