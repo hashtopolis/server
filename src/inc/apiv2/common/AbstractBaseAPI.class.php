@@ -1004,7 +1004,7 @@ abstract class AbstractBaseAPI {
       }
       
       // Special filtering of _id to use for uniform access to model primary key
-      $cast_key = $matches['key'] == '_id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
+      $cast_key = $matches['key'] == 'id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
       
       if (!array_key_exists($cast_key, $features)) {
         throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid (key not valid field)");
