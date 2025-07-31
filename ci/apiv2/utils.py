@@ -57,7 +57,7 @@ def do_create_dummy_agent():
     dummy_agent.update_information()
 
     # Validate automatically deleted when an test-agent claims the voucher
-    assert list(Voucher.objects.filter(_id=voucher.id)) == []
+    assert list(Voucher.objects.filter(id=voucher.id)) == []
 
     agent = Agent.objects.get(agentName=dummy_agent.name)
     return (dummy_agent, agent)
@@ -219,8 +219,8 @@ def find_stale_test_objects():
     test_objs.extend(File.objects.all())
     test_objs.extend(User.objects.filter(id__gt=1))
     test_objs.extend(GlobalPermissionGroup.objects.filter(id__gt=1))
-    test_objs.extend(Cracker.objects.filter(_id__gt=1))
-    test_objs.extend(CrackerType.objects.filter(_id__gt=1))
+    test_objs.extend(Cracker.objects.filter(id__gt=1))
+    test_objs.extend(CrackerType.objects.filter(id__gt=1))
     return test_objs
 
 

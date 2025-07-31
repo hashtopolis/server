@@ -4,6 +4,7 @@
 # PoC testing/development framework for APIv2
 # Written in python to work on creation of hashtopolis APIv2 python binding.
 #
+from base64 import b64encode
 import copy
 import json
 import logging
@@ -39,7 +40,7 @@ class HashtopolisError(Exception):
         self.title = kwargs.get("title", "")
         self.type = kwargs.get("type", "")
         self.status = kwargs.get("status", None)
-        
+
         # TODO: These are the old exception details, if all exceptions have been refactored,
         # these following lines can be removed. 
         self.exception_details = kwargs.get('exception_details', [])
@@ -124,7 +125,7 @@ class HashtopolisConnector(object):
         self._headers = {
             'Authorization': 'Bearer ' + self._token
         }
-    
+
     def create_to_many_payload(self, objects, attributes, field):
         records = []
         for obj, attribute in zip(objects, attributes):
@@ -168,25 +169,26 @@ class HashtopolisConnector(object):
                 type=r_json.get('type', None),
                 title=r_json.get('title', None))
 
-    def validate_pagination_links(self, response, page):
-        """Validate all the links that are used for paginated data"""
-        data = response["data"]
-        highest_id = max(data, key=lambda obj: obj['id'])['id']
-        lowest_id = min(data, key=lambda obj: obj['id'])['id']
+    # TODO: this does not work anymore for new pagination style
+    # def validate_pagination_links(self, response, page):
+    #     """Validate all the links that are used for paginated data"""
+    #     data = response["data"]
+    #     highest_id = max(data, key=lambda obj: obj['id'])['id']
+    #     lowest_id = min(data, key=lambda obj: obj['id'])['id']
 
-        links = response["links"]
-        query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["next"]).query)
-        assert (int(query_params["page[size]"][0]) == page["size"])
-        assert (int(query_params["page[after]"][0]) == highest_id)
-        query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["prev"]).query)
-        assert (int(query_params["page[size]"][0]) == page["size"])
-        assert (int(query_params["page[before]"][0]) == lowest_id)
-        query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["first"]).query)
-        assert (int(query_params["page[size]"][0]) == page["size"])
-        assert (int(query_params["page[after]"][0]) == 0)
+    #     links = response["links"]
+    #     query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["next"]).query)
+    #     assert (int(query_params["page[size]"][0]) == page["size"])
+    #     assert (int(query_params["page[after]"][0]) == highest_id)
+    #     query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["prev"]).query)
+    #     assert (int(query_params["page[size]"][0]) == page["size"])
+    #     assert (int(query_params["page[before]"][0]) == lowest_id)
+    #     query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["first"]).query)
+    #     assert (int(query_params["page[size]"][0]) == page["size"])
+    #     assert (int(query_params["page[after]"][0]) == 0)
         # query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["last"]).query)
         # TODO not really a straightforward way to validate the last link
-    
+
     def get_single_page(self, page, filter):
         """Gets a single page by using the page parameters"""
         self.authenticate()
@@ -208,7 +210,7 @@ class HashtopolisConnector(object):
         logger.debug("Response %s", json.dumps(response, indent=4))
 
         # validate page links
-        self.validate_pagination_links(response, page)
+        # self.validate_pagination_links(response, page)
         return response["data"]
 
     # todo refactor start_offset into page variable
@@ -216,7 +218,12 @@ class HashtopolisConnector(object):
         self.authenticate()
         headers = self._headers
 
-        payload = {'page[after]': start_offset}
+        after_dict = {"primary": {"id": start_offset}}
+        after_param = b64encode(json.dumps(after_dict).encode('utf-8')).decode('utf-8')
+
+        payload = {}
+        if (start_offset):
+            payload['page[after]'] = after_param
         if filter:
             for k, v in filter.items():
                 payload[f"filter[{k}]"] = v
@@ -243,7 +250,7 @@ class HashtopolisConnector(object):
 
             if 'links' not in response or 'next' not in response['links'] or not response['links']['next']:
                 break
-            request_uri = self._hashtopolis_uri + response['links']['next']
+            request_uri = response['links']['next']
 
     def get_one(self, pk, include):
         self.authenticate()
@@ -257,7 +264,7 @@ class HashtopolisConnector(object):
         r = requests.get(uri, headers=headers, data=payload)
         self.validate_status_code(r, [200], "Get single object failed")
         return self.resp_to_json(r)
-    
+
     def delete_many(self, objects):
         self.authenticate()
         uri = self._api_endpoint + self._model_uri
@@ -308,7 +315,7 @@ class HashtopolisConnector(object):
         for k, v in obj.diff().items():
             logger.debug("Going to patch object '%s' property '%s' from '%s' to '%s'", obj, k, v[0], v[1])
             attributes[k] = v[1]
-        
+
         payload = self.create_payload(obj, attributes, id=obj.id)
         logger.debug("Sending PATCH payload: %s to %s", json.dumps(payload), uri)
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))
@@ -402,7 +409,7 @@ class QuerySet():
 
         if isinstance(k, slice):
             return self.filter_(k.start or 0, k.stop or sys.maxsize, k.step or 1)
-    
+
     def get_pagination(self):
         objs = self.cls.get_conn().get_single_page(self.pages, self.filters)
         parsed_objs = []
@@ -420,7 +427,7 @@ class QuerySet():
         else:
             filters = self.filters.copy()
             if 'pk' in filters:
-                filters['_id'] = filters['pk']
+                filters['id'] = filters['pk']
                 del filters['pk']
 
         filter_generator = self.cls.get_conn().filter(self.include, self.ordering, filters, start_offset=cursor)
@@ -453,7 +460,7 @@ class QuerySet():
     def filter(self, **filters):
         self.filters = filters
         return self
-    
+
     def page(self, **pages):
         self.pages = pages
         return self
@@ -512,7 +519,7 @@ class ManagerBase(type):
     @classmethod
     def patch_many(cls, objects, attributes, field):
         cls.get_conn().patch_many(objects, attributes, field)
-    
+
     @classmethod
     def delete_many(cls, objects):
         cls.get_conn().delete_many(objects)
@@ -536,11 +543,11 @@ class ManagerBase(type):
     @classmethod
     def get(cls, **filters):
         return QuerySet(cls, filters=filters).get()
-    
+
     @classmethod
     def count(cls, **filters):
         return cls.get_conn().count(filter=filters)
-        
+
     @classmethod
     def paginate(cls, **pages):
         return QuerySet(cls, pages=pages)
@@ -710,7 +717,7 @@ class Model(metaclass=ModelBase):
                 # Use ID of ojbects as new current/update identifiers
                 if sorted(v_innitial_ids) != sorted(v_current_ids):
                     diffs.append((innitial_name, (v_innitial_ids, v_current_ids)))
-        
+
         return dict(diffs)
 
     def has_changed(self):

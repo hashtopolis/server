@@ -13,6 +13,7 @@ use DBA\Factory;
 use DBA\ContainFilter;
 use DBA\LimitFilter;
 use DBA\OrderFilter;
+use DBA\PaginationFilter;
 use DBA\QueryFilter;
 
 abstract class AbstractModelAPI extends AbstractBaseAPI {
@@ -459,38 +460,157 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     return $relatedResources;
   }
-  
+
+  protected static function calculate_next_cursor(string|int $cursor, bool $ascending=true) {
+    if (is_int($cursor)) {
+      if ($ascending) {
+        return $cursor + 1;
+      } else {
+        return $cursor - 1;
+      }
+    } elseif (is_string($cursor)) {
+        $len = strlen($cursor);
+        $lastChar = $cursor[$len - 1];
+        $ord = ord($lastChar);
+        if ($ascending) {
+          if ($len == 0) {
+            return '~';
+          }
+
+          if ($ord < 126) {
+            return substr($cursor, 0, $len-1) . chr($ord + 1);
+          } else {
+            return $cursor . '!'; // '!' is lowest printable ascii
+          } 
+        }else {
+          if ($len == 0) {
+            return "";
+          }
+          if ($ord > 33) {
+            return substr($cursor, 0, $len-1) . chr($ord - 1);
+          } else 
+          return substr($cursor, 0, $len-1);
+        }
+    } else {
+      throw new HttpError("Internal error", 500);
+    }
+  }
+
+  /**
+   * The cursor is base64 encoded in the following json format:
+   * {"primary":{"isSlowHash":0},"secondary":{"hashTypeId":10810}}
+   * This containts a primary filter which is the main sorting filter, but to handle duplicates, it has an optional
+   * secondary filter for when the primary filter is not unique. This way there is an unique secondary filter to
+   * handle tie breaks.
+   * 
+   * @param mixed $primaryFilter The main filter that is sorted on
+   * @param mixed $primaryId the value of the primaryFilter
+   * @param bool $hasSecondaryFilter This is a boolean to set whether there is a secondary filter
+   * @param mixed $secondaryFilter An unique secondary filter to use as a tiebreaker when the main filter is not unique
+   * @param object $secondaryId The value of the secondary filter
+
+   * @return string a base64 encoded json string that contains the filters. 
+   */
+  protected static function build_cursor($primaryFilter, $primaryId, $hasSecondaryFilter = false, 
+   $secondaryFilter= null, $secondaryId = null) {
+    $cursor = ["primary" => [$primaryFilter => $primaryId]];
+    if ($hasSecondaryFilter) {
+      assert($secondaryId !== null && $secondaryFilter !== null,
+       "Secondary id and filter should be set");
+      //Add the primary key as a secondary cursor to guarantee the cursor is unique
+      $cursor["secondary"] = [$secondaryFilter => $secondaryId];
+    }
+    $json = json_encode($cursor);
+    return urlencode(base64_encode($json));
+  }
+
+  /**
+   * Function to decode the cursor from base64 format
+   * 
+   * @param string $encoded_cursor in base64 format
+   * 
+   * @return string the decoded cursor in a json string format 
+   */
+  protected static function decode_cursor(string $encoded_cursor) {
+    $json = base64_decode($encoded_cursor);
+    if ($json == false) {
+      throw new HttpError("Invallid pagination cursor, cursor has to be base64 encoded");
+    }
+    $cursor = json_decode($json, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      throw new HttpError("Invallid pagination cursor, it has to be a valid json string");
+    }
+    return $cursor;
+  }
+
+  protected static function compare_keys($key1, $key2, $isNegativeSort) {
+    if (is_string($key1) && is_string($key2)) {
+      if ($isNegativeSort){
+        return strcmp($key2, $key1);
+      } else {
+        return strcmp($key1, $key2);
+      }
+    } else {
+      if ($isNegativeSort) {
+        return $key2 > $key1;
+      } else {
+        return $key1 > $key2;
+      }
+    }
+  }
+
+  protected static function getMinMaxCursor($apiClass, string $sort, array $filters, $request, $aliasedfeatures) {
+    $filters[Factory::LIMIT] = new LimitFilter(1);
+
+    // Descending queries are used to retrieve the last element. For this all sorts have to be reversed, since
+    // if all order quereis are reversed and limit to 1, you will retrieve the last element.
+    $reverseSort = ($sort == "DESC") ? true : false;
+    $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $sort, $reverseSort);
+    $orderFilters = [];
+    foreach ($orderTemplates as $orderTemplate) {
+      $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
+    }
+    $filters[Factory::ORDER] = $orderFilters;
+    $factory = $apiClass->getFactory();
+    $result = $factory->filter($filters);
+    //handle joined queries
+    if (array_key_exists(Factory::JOIN, $filters)) {
+      $result = $result[$factory->getModelname()];
+    }
+    return $result[0];
+  }
+
   /**
    * API entry point for requesting multiple objects
    * @throws HttpError
    */
   public static function getManyResources(object $apiClass, Request $request, Response $response, array $relationFs = []): Response {
     $apiClass->preCommon($request);
-    
+
     $aliasedfeatures = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
-    
+
     $defaultPageSize = 10000;
     $maxPageSize = 50000;
     // TODO: if 0.14.4 release has happened, following parameters can be retrieved from config
     // $defaultPageSize = SConfig::getInstance()->getVal(DConfig::DEFAULT_PAGE_SIZE);
     // $maxPageSize = SConfig::getInstance()->getVal(DConfig::MAX_PAGE_SIZE);
-    
+
     $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after');
+    $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
-    if ($pageSize < 0) {
+    if (!is_numeric($pageSize) || $pageSize < 0) {
       throw new HttpError("Invalid parameter, page[size] must be a positive integer");
-    }
-    elseif ($pageSize > $maxPageSize) {
+    } elseif ($pageSize > $maxPageSize) {
       throw new HttpError(sprintf("You requested a size of %d, but %d is the maximum.", $pageSize, $maxPageSize));
     }
-    
+
     $validExpandables = $apiClass::getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);
-    
+
     /* Object filter definition */
     $aFs = [];
-    
+
     /* Generate filters */
     $filters = $apiClass->getFilters($request);
     $qFs_Filter = $apiClass->makeFilter($filters, $apiClass);
@@ -506,54 +626,95 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if (count($qFs_Filter) > 0) {
       $aFs[Factory::FILTER] = $qFs_Filter;
     }
-    
+
     /**
      * Create pagination
-     *
+     * 
      * TODO: Deny pagination with un-stable sorting
      */
-    $defaultSort = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') == null &&
-    $apiClass->getQueryParameterFamilyMember($request, 'page', 'before') != null ? 'DESC' : 'ASC';
+    $sortList = $apiClass->getQueryParameterAsList($request, 'sort');
+    $isNegativeSort = $sortList != null && $sortList[0][0] == '-';
+    //this is used to reverse the array to show the data correctly for the user 
+    $reverseArray = false;
+
+    $firstCursorObject = $apiClass->getMinMaxCursor($apiClass, "ASC", $aFs, $request, $aliasedfeatures);
+    $lastCursorObject = $apiClass->getMinMaxCursor($apiClass, "DESC", $aFs, $request, $aliasedfeatures);
+
+    if (!$isNegativeSort && !isset($pageBefore) && isset($pageAfter)) {
+      // this happens when going to the next page while having an ascending sort
+      $defaultSort = "ASC";
+      $reverseArray = false;
+      $operator = ">";
+      $paginationCursor = $pageAfter;
+    } else if (!$isNegativeSort && isset($pageBefore) && !isset($pageAfter)) {
+      // this happens when going to the previous page while having an ascending sort
+      $defaultSort = "DESC";
+      $reverseArray = true;
+      $operator = "<";
+      $paginationCursor = $pageBefore;
+    } else if ($isNegativeSort && (isset($pageBefore) && !isset($pageAfter))) { 
+      // this happens when going to the previous page while having a descending sort
+      $defaultSort = "ASC";
+      $reverseArray = true;
+      $operator = ">";
+      $paginationCursor = $pageBefore;
+    } else if ($isNegativeSort && isset($pageAfter) && !isset($pageBefore)) {
+      // this happens when going to the next page while having an ascending sort
+      $defaultSort = "DESC";
+      $reverseArray = false;
+      $operator = "<";
+      $paginationCursor = $pageAfter;
+    } else if ($isNegativeSort) {
+      //the default negative case to retrieve the first elements in a descending way
+      $defaultSort = "DESC";
+    } else {
+      $defaultSort = "ASC";
+    }
+
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $defaultSort);
-    
+    $orderTemplates[0]["type"] = $defaultSort;
+    $primaryFilter = $orderTemplates[0]['by'];
+    $orderFilters = [];
+
     // Build actual order filters
     foreach ($orderTemplates as $orderTemplate) {
-      $aFs[Factory::ORDER][] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
+      // $aFs[Factory::ORDER][] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
+      $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
     }
-    
+    $aFs[Factory::ORDER] = $orderFilters;
+
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
-    
+
     $primaryKey = $apiClass->getPrimaryKey();
-    //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
-    //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
-    //if this query is too expensive for big tables, it can be removed
-    $agg1 = new Aggregation($primaryKey, Aggregation::MAX, $factory);
-    $agg2 = new Aggregation($primaryKey, Aggregation::MIN, $factory);
-    $agg3 = new Aggregation($primaryKey, Aggregation::COUNT, $factory);
-    $aggregation_results = $factory->multicolAggregationFilter($finalFs, [$agg1, $agg2, $agg3]);
-    
-    $max = $aggregation_results[$agg1->getName()];
-    $min = $aggregation_results[$agg2->getName()];
-    $total = $aggregation_results[$agg3->getName()];
-    
+    //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
+    //But this probably needs to be added in getFeatures() then.
+    $primaryKeyIsNotPrimaryFilter = $primaryFilter != $primaryKey;
+    $total = $factory->countFilter($finalFs);
+
     //pagination filters need to be added after max has been calculated
     $finalFs[Factory::LIMIT] = new LimitFilter($pageSize);
-    
-    if (isset($pageAfter)) {
-      $finalFs[Factory::FILTER][] = new QueryFilter($primaryKey, $pageAfter, '>', $factory);
+
+    if (isset($paginationCursor)) {
+      $decoded_cursor = $apiClass->decode_cursor($paginationCursor);
+      $primary_cursor = $decoded_cursor["primary"];
+      $primary_cursor_key = key($primary_cursor);
+      // Special filtering of id to use for uniform access to model primary key
+      $primary_cursor_key = $primary_cursor_key == 'id' ? array_column($aliasedfeatures, 'alias', 'dbname')[$apiClass->getPrimaryKey()] : $primary_cursor_key;
+      $secondary_cursor = $decoded_cursor["secondary"];
+      if ($secondary_cursor) {
+      $secondary_cursor_key = key($secondary_cursor);
+      $secondary_cursor_key = $secondary_cursor_key == '_id' ? array_column($aliasedfeatures, 'alias', 'dbname')[$apiClass->getPrimaryKey()] : $secondary_cursor_key;
+        $finalFs[Factory::FILTER][] = new PaginationFilter($primary_cursor_key, current($primary_cursor), 
+                                                            $operator, $secondary_cursor_key, current($secondary_cursor));
+      } else {
+        $finalFs[Factory::FILTER][] = new QueryFilter($primary_cursor_key, current($primary_cursor), $operator, $factory);
+      }
     }
-    $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
-    if (isset($pageBefore)) {
-      $finalFs[Factory::FILTER][] = new QueryFilter($primaryKey, $pageBefore, '<', $factory);
-    }
-    
+
     /* Request objects */
     $filterObjects = $factory->filter($finalFs);
-    if ($defaultSort == 'DESC') {
-      $filterObjects = array_reverse($filterObjects);
-    }
-    
+
     /* JOIN statements will return related modules as well, discard for now */
     if (array_key_exists(Factory::JOIN, $finalFs)) {
       $objects = $filterObjects[$factory->getModelname()];
@@ -561,23 +722,26 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     else {
       $objects = $filterObjects;
     }
-    
+    if ($reverseArray) {
+      $objects = array_reverse($objects);
+    }
+
     /* Resolve all expandables */
     $expandResult = [];
     foreach ($expands as $expand) {
       // mapping from $objectId -> result objects in
       $expandResult[$expand] = $apiClass->fetchExpandObjects($objects, $expand);
     }
-    
+
     /* Convert objects to JSON:API */
     $dataResources = [];
     $includedResources = [];
-    
+
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object  
       $newObject = $apiClass->obj2Resource($object, $expandResult);
-      
+
       // For compound document, included resources
       foreach ($expands as $expand) {
         if (array_key_exists($object->getId(), $expandResult[$expand])) {
@@ -586,8 +750,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
             foreach ($expandResultObject as $expandObject) {
               $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject));
             }
-          }
-          else {
+          } else {
             if ($expandResultObject === null) {
               // to-only relation which is nullable
               continue;
@@ -596,77 +759,95 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           }
         }
       }
-      
+
       // Add to result output
       $dataResources[] = $newObject;
     }
-    
+    $baseUrl = Util::buildServerUrl();
     //build last link
     $lastParams = $request->getQueryParams();
     unset($lastParams['page']['after']);
     $lastParams['page']['size'] = $pageSize;
-    $lastParams['page']['before'] = $max + 1;
-    $linksLast = $request->getUri()->getPath() . '?' . urldecode(http_build_query($lastParams));
-    
+    // $next_cursor = $apiClass::build_cursor($primaryFilter, $nextId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $nextPrimaryKey);
+    // $lastParams['page']['before'] = $apiClass::encode_cursor(self::calculate_next_cursor($max));
+    if ($primaryKeyIsNotPrimaryFilter && isset($lastCursorObject)) {
+      $new_secondary_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
+      $last_cursor = $apiClass::build_cursor($primaryFilter, $lastCursorObject->expose()[$primaryFilter], $primaryKeyIsNotPrimaryFilter, $primaryKey, $new_secondary_cursor);
+    } else if (isset($lastCursorObject)){
+      $new_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
+      $last_cursor = $apiClass::build_cursor($primaryFilter, $new_cursor);
+    }
+    $lastParams['page']['before'] = $last_cursor;
+    $linksLast = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($lastParams));
+
     // Build self link
     $selfParams = $request->getQueryParams();
+
+    if (isset($selfParams['page']['after'])) {
+      $selfParams['page']['after'] = urlencode($selfParams['page']['after']);
+    }
+    if (isset($selfParams['page']['before'])) {
+      $selfParams['page']['before'] = urlencode($selfParams['page']['before']);
+    }
+
     $selfParams['page']['size'] = $pageSize;
-    $linksSelf = $request->getUri()->getPath() . '?' . urldecode(http_build_query($selfParams));
-    
+    $linksSelf = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($selfParams));
+
     $linksNext = null;
     $linksPrev = null;
-    
-    // Build next link
+
     if (!empty($objects)) {
-      $minId = $maxId = $objects[0]->getId() ?? null;
-      foreach ($objects as $obj) {
-        $cur_id = $obj->getId();
-        if ($cur_id < $minId) {
-          $minId = $cur_id;
-        }
-        if ($cur_id > $maxId) {
-          $maxId = $cur_id;
-        }
-      }
-      $nextId = $defaultSort == "ASC" ? $maxId : $minId;
-      
-      if ($nextId < $max) { //only set next page when its not the last page
+      // retrieve last object in page and retrieve the attribute based on the filter
+      $firstObject = $objects[0]->expose();
+      $lastObject = end($objects)->expose();
+      $prevId = $firstObject[$primaryFilter];
+      $nextId = $lastObject[$primaryFilter];
+      $nextPrimaryKey = $lastObject[$primaryKey];
+      $previousPrimaryKey = $firstObject[$primaryKey];
+
+      //only set next page when its not the last page
+      if (isset($lastCursorObject) && $nextPrimaryKey !== $lastCursorObject->getId()) {
         $nextParams = $selfParams;
-        $nextParams['page']['after'] = $nextId;
+        // $nextParams['page']['after'] = urlencode($nextId);
+        $next_cursor = $apiClass::build_cursor($primaryFilter, $nextId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $nextPrimaryKey);
+        $nextParams['page']['after'] = $next_cursor;
         unset($nextParams['page']['before']);
-        $linksNext = $request->getUri()->getPath() . '?' . urldecode(http_build_query($nextParams));
+        $linksNext = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
       }
       // Build prev link 
-      $prevId = $defaultSort == "DESC" ? $maxId : $minId;
-      if ($prevId != $min) { //only set previous page when its not the first page
+      //only set previous page when its not the first page
+      if (isset($firstCursorObject) && $previousPrimaryKey !== $firstCursorObject->getId()) {
+        //build page before
         $prevParams = $selfParams;
-        $prevParams['page']['before'] = $prevId;
+        $previous_cursor = $apiClass::build_cursor($primaryFilter, $prevId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $previousPrimaryKey);
+        $prevParams['page']['before'] = $previous_cursor;
         unset($prevParams['page']['after']);
-        $linksPrev = $request->getUri()->getPath() . '?' . urldecode(http_build_query($prevParams));
+        $linksPrev = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($prevParams));
       }
     }
-    
+
     //build first link
     $firstParams = $request->getQueryParams();
     unset($firstParams['page']['before']);
     $firstParams['page']['size'] = $pageSize;
-    $firstParams['page']['after'] = $min;
-    $linksFirst = $request->getUri()->getPath() . '?' . urldecode(http_build_query($firstParams));
+    // $firstParams['page']['after'] = urlencode($min);
+    unset($firstParams['page']['after']);
+    $linksFirst = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($firstParams));
     $links = [
-      "self" => $linksSelf,
-      "first" => $linksFirst,
-      "last" => $linksLast,
-      "next" => $linksNext,
-      "prev" => $linksPrev,
-    ];
-    
+        "self" => $linksSelf,
+        "first" => $linksFirst,
+        "last" => $linksLast,
+        "next" => $linksNext,
+        "prev" => $linksPrev,
+      ];
+
     $metadata = ["page" => ["total_elements" => $total]];
     // Generate JSON:API GET output
     $ret = self::createJsonResponse($dataResources, $links, $includedResources, $metadata);
-    
+
     $body = $response->getBody();
     $body->write($apiClass->ret2json($ret));
-    
+
     return $response->withStatus(200)
       ->withHeader("Content-Type", 'application/vnd.api+json; ext="https://jsonapi.org/profiles/ethanresnick/cursor-pagination"');
   }

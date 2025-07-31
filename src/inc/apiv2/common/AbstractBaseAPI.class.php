@@ -1004,7 +1004,7 @@ abstract class AbstractBaseAPI {
       }
       
       // Special filtering of _id to use for uniform access to model primary key
-      $cast_key = $matches['key'] == '_id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
+      $cast_key = $matches['key'] == 'id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
       
       if (!array_key_exists($cast_key, $features)) {
         throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid (key not valid field)");
@@ -1103,7 +1103,8 @@ abstract class AbstractBaseAPI {
    * @throws InternalError
    * @throws HttpForbidden
    */
-  protected function makeOrderFilterTemplates(Request $request, array $features, $defaultSort = 'ASC'): array {
+  protected function makeOrderFilterTemplates(Request $request, array $features, string $defaultSort = 'ASC',
+     bool $reverseSort = false): array {
     $orderTemplates = [];
     
     $orderings = $this->getQueryParameterAsList($request, 'sort');
@@ -1111,13 +1112,17 @@ abstract class AbstractBaseAPI {
     foreach ($orderings as $order) {
       if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z]+)$/', $order, $matches)) {
         // Special filtering of _id to use for uniform access to model primary key
-        $cast_key = $matches['key'] == '_id' ? $this->getPrimaryKey() : $matches['key'];
+        $cast_key = $matches['key'] == 'id' ? $this->getPrimaryKey() : $matches['key'];
         if ($cast_key == $this->getPrimaryKey()) {
           $contains_primary_key = true;
         }
         if (array_key_exists($cast_key, $features)) {
           $remappedKey = $features[$cast_key]['dbname'];
-          $orderTemplates[] = ['by' => $remappedKey, 'type' => ($matches['operator'] == '-') ? "DESC" : "ASC"];
+          $type = ($matches['operator'] == '-') ? "DESC" : "ASC";
+          if ($reverseSort) {
+            $type = ($type == "ASC") ? "DESC" : "ASC";
+          }
+          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type];
         }
         else {
           throw new HttpForbidden("Ordering parameter '" . $order . "' is not valid");
