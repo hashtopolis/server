@@ -23,7 +23,7 @@ class AgentBinaryAPI extends AbstractModelAPI {
    */
   protected function createObject(array $data): int {
     $agentBinary = AgentBinaryUtils::newBinary(
-      $data[AgentBinary::TYPE],
+      $data[AgentBinary::BINARY_TYPE],
       $data[AgentBinary::OPERATING_SYSTEMS],
       $data[AgentBinary::FILENAME],
       $data[AgentBinary::VERSION],
@@ -42,7 +42,7 @@ class AgentBinaryAPI extends AbstractModelAPI {
   
   protected function getUpdateHandlers($id, $current_user): array {
     return [
-      AgentBinary::TYPE => fn($value) => AgentBinaryUtils::editType($id, $value, $current_user),
+      AgentBinary::BINARY_TYPE => fn($value) => AgentBinaryUtils::editType($id, $value, $current_user),
       AgentBinary::FILENAME => fn($value) => AgentBinaryUtils::editName($id, $value, $current_user),
       AgentBinary::UPDATE_TRACK => fn($value) => AgentBinaryUtils::editUpdateTracker($id, $value, $current_user),
     ];

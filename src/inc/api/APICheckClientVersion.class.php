@@ -15,7 +15,7 @@ class APICheckClientVersion extends APIBasic {
     $version = $QUERY[PQueryCheckClientVersion::VERSION];
     $type = $QUERY[PQueryCheckClientVersion::TYPE];
     
-    $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
+    $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");
     $result = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($result == null) {
       DServerLog::log(DServerLog::WARNING, "Agent " . $this->agent->getId() . " sent unknown client type: " . $type);

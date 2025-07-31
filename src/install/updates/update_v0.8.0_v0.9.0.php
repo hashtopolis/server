@@ -28,7 +28,7 @@ if (!isset($TEST)) {
   echo "OK\n";
 
   echo "Check agent binaries... ";
-  $qF = new QueryFilter(AgentBinary::TYPE, "python", "=");
+  $qF = new QueryFilter("type", "python", "=");
   $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
   if ($binary != null) {
     if (Util::versionComparison($binary->getVersion(), "0.3.0") == 1) {

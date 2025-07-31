@@ -54,7 +54,7 @@
         <table class="table table-bordered">
           <tr>
             <th>Type</th>
-            <td><input type="text" name="type" class="form-control" value="[[bin.getType()]]" title="Type"></td>
+            <td><input type="text" name="type" class="form-control" value="[[bin.getBinaryType()]]" title="Type"></td>
           </tr>
           <tr>
             <th>Operating Systems</th>
@@ -108,7 +108,7 @@
 		  {{FOREACH binary;[[binaries]]}}
 			  <tr>
           <td>[[binary.getId()]]</td>
-          <td>[[binary.getType()]]</td>
+          <td>[[binary.getBinaryType()]]</td>
           <td>[[binary.getOperatingSystems()]]</td>
           <td><code>[[binary.getFilename()]]</code></td>
           <td>[[binary.getVersion()]]</td>

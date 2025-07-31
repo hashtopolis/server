@@ -72,7 +72,7 @@ $CONF['Agent'] = [
 $CONF['AgentBinary'] = [
   'columns' => [
     ['name' => 'agentBinaryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'type', 'read_only' => False, 'type' => 'str(20)'],
+    ['name' => 'binaryType', 'read_only' => False, 'type' => 'str(20)'],
     ['name' => 'version', 'read_only' => False, 'type' => 'str(20)'],
     ['name' => 'operatingSystems', 'read_only' => False, 'type' => 'str(50)'],
     ['name' => 'filename', 'read_only' => False, 'type' => 'str(50)'],

@@ -4,16 +4,16 @@ namespace DBA;
 
 class AgentBinary extends AbstractModel {
   private ?int $agentBinaryId;
-  private ?string $type;
+  private ?string $binaryType;
   private ?string $version;
   private ?string $operatingSystems;
   private ?string $filename;
   private ?string $updateTrack;
   private ?string $updateAvailable;
   
-  function __construct(?int $agentBinaryId, ?string $type, ?string $version, ?string $operatingSystems, ?string $filename, ?string $updateTrack, ?string $updateAvailable) {
+  function __construct(?int $agentBinaryId, ?string $binaryType, ?string $version, ?string $operatingSystems, ?string $filename, ?string $updateTrack, ?string $updateAvailable) {
     $this->agentBinaryId = $agentBinaryId;
-    $this->type = $type;
+    $this->binaryType = $binaryType;
     $this->version = $version;
     $this->operatingSystems = $operatingSystems;
     $this->filename = $filename;
@@ -24,7 +24,7 @@ class AgentBinary extends AbstractModel {
   function getKeyValueDict(): array {
     $dict = array();
     $dict['agentBinaryId'] = $this->agentBinaryId;
-    $dict['type'] = $this->type;
+    $dict['binaryType'] = $this->binaryType;
     $dict['version'] = $this->version;
     $dict['operatingSystems'] = $this->operatingSystems;
     $dict['filename'] = $this->filename;
@@ -37,7 +37,7 @@ class AgentBinary extends AbstractModel {
   static function getFeatures(): array {
     $dict = array();
     $dict['agentBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentBinaryId", "public" => False];
-    $dict['type'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "type", "public" => False];
+    $dict['binaryType'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "binaryType", "public" => False];
     $dict['version'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "version", "public" => False];
     $dict['operatingSystems'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "operatingSystems", "public" => False];
     $dict['filename'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "filename", "public" => False];
@@ -71,12 +71,12 @@ class AgentBinary extends AbstractModel {
     return get_object_vars($this);
   }
   
-  function getType(): ?string {
-    return $this->type;
+  function getBinaryType(): ?string {
+    return $this->binaryType;
   }
   
-  function setType(?string $type): void {
-    $this->type = $type;
+  function setBinaryType(?string $binaryType): void {
+    $this->binaryType = $binaryType;
   }
   
   function getVersion(): ?string {
@@ -120,7 +120,7 @@ class AgentBinary extends AbstractModel {
   }
   
   const AGENT_BINARY_ID = "agentBinaryId";
-  const TYPE = "type";
+  const BINARY_TYPE = "binaryType";
   const VERSION = "version";
   const OPERATING_SYSTEMS = "operatingSystems";
   const FILENAME = "filename";

@@ -191,7 +191,7 @@ class Util {
    * @param bool $silent
    */
   public static function checkAgentVersion($type, $version, $silent = false) {
-    $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
+    $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");
     $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($binary != null) {
       if (Util::versionComparison($binary->getVersion(), $version) == 1) {
