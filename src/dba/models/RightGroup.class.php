@@ -24,7 +24,7 @@ class RightGroup extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['rightGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "id", "public" => False];
+    $dict['rightGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "rightGroupId", "public" => False];
     $dict['groupName'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "name", "public" => False];
     $dict['permissions'] = ['read_only' => False, "type" => "dict", "subtype" => "bool", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "permissions", "public" => False];
 
