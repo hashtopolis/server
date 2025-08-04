@@ -1611,7 +1611,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         }
         
         $table_entry_dict = [
-          $primaryKey => -1,
+          $primaryKey => null,
           $relation["junctionTableFilterField"] => $baseItem->getId(),
           $relation["junctionTableJoinField"] => $relationItem->getId(),
         ];
