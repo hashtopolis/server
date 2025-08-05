@@ -192,6 +192,10 @@ class Util {
    */
   public static function checkAgentVersion($type, $version, $silent = false) {
     $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");
+    if (Util::databaseColumnExists("AgentBinary", "type")) {
+      // This check is needed for older updates when agentbinary column still got old 'type' name
+      $qF = new QueryFilter("type", $type, "=");
+    }
     $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($binary != null) {
       if (Util::versionComparison($binary->getVersion(), $version) == 1) {
