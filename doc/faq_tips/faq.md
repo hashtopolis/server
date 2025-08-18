@@ -323,6 +323,78 @@ This lets you debug API interactions manually without needing a live cracking jo
 
   
 
+❓ PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted - What can I do now?
+
+  
+This guide shows how to raise PHP's memory limit in a Dockerized setup using a `custom.ini` file mounted into the PHP container. It also includes example `docker-compose.yml` snippets for common images.
+
+1) **Create `custom.ini` next to your `docker-compose.yml`**
+
+Add your PHP overrides (uppercase `M` is conventional, PHP is case-insensitive here):
+
+  
+```ini
+
+; custom.ini
+
+memory_limit = 256M
+
+upload_max_filesize = 256M
+
+max_execution_time = 60
+
+```
+
+- Adjust `memory_limit` to your needs (e.g., `512M`, `1G`).
+
+- The other two values are optional and not directly related to the memory issue.
+
+ 2) **Mount `custom.ini` into the PHP container**
+
+  Add this to your **backend** service’s `volumes:` list in `docker-compose.yml`:
+
+
+```yaml
+
+- ./custom.ini:/usr/local/etc/php/conf.d/custom.ini
+
+```
+
+  
+> The path `/usr/local/etc/php/conf.d/` is correct for official PHP images (`php:*`).
+
+  
+
+ 3) **Recreate or restart the container**
+
+Make sure the container reloads the INI:
+
+  
+
+```bash
+
+# Start or recreate after changes
+
+docker compose up -d
+
+  
+
+# or, if the stack is already running and only the ini changed:
+
+docker compose restart backend
+
+```
+
+
+**Done!** Your PHP container will now use the memory settings from `custom.ini`.
+
+
+
+
+---
+
+
+
 ## Hashcat Questions
 
   
