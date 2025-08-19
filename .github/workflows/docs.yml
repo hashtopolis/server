@@ -3,7 +3,7 @@ name: Generate MkDocs and upload
 on:
   push:
     branches:
-      - docs
+      - dev
 jobs:
   build:
     runs-on: ubuntu-latest
