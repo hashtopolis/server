@@ -912,7 +912,7 @@ class Meta(HashtopolisConnector):
     def get_meta(self):
         self.authenticate()
         uri = self._api_endpoint + self._model_uri
-        r = requests.get(uri)
+        r = requests.get(uri, headers={"Accept-Encoding": "gzip"})
         self.validate_status_code(r, [200], "Unable to retrieve Meta definitions")
         return self.resp_to_json(r)
 
