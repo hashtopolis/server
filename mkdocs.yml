@@ -30,7 +30,7 @@ nav:
 
 theme:
   name: material
-  custom_dir: overrides
+  custom_dir: doc/overrides
   logo: assets/images/logo.png
   palette:
     - scheme: default
