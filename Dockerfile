@@ -48,9 +48,14 @@ RUN apt-get update \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     # Enable URL rewriting using .htaccess
-    && a2enmod rewrite
+    && a2enmod rewrite \
+    # Enable headers
+    && a2enmod headers
 
 RUN sed -i 's/KeepAliveTimeout 5/KeepAliveTimeout 10/' /etc/apache2/apache2.conf
+RUN echo "ServerTokens Prod" >> /etc/apache2/apache2.conf \
+    && echo "ServerSignature Off" >> /etc/apache2/apache2.conf
+
 
 RUN mkdir -p ${HASHTOPOLIS_DOCUMENT_ROOT} \
     && mkdir ${HASHTOPOLIS_DOCUMENT_ROOT}/../../.git/ \
