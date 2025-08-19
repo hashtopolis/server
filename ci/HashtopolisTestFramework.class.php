@@ -73,7 +73,7 @@ private function backupDatabase() {
   HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Backup database to " . $this->dbBackupFile . "...");
 
   // Note that the '-y' option avoids requirement on 'PROCESS' privilege for the 'hashtopolis' user!
-  exec("mysqldump hashtopolis -y -h".$CONN['server'] . " -P".$CONN['port'] . " -u".$CONN['user'] . " -p".$CONN['pass'] ." > " . $this->dbBackupFile, $output, $status);
+  exec("mysqldump hashtopolis -y -h".$CONN['server'] . " -P".$CONN['port'] . " -u".$CONN['user'] . " -p".$CONN['pass'] ." --skip-ssl > " . $this->dbBackupFile, $output, $status);
   if ($status != 0) {
     $this->dbBackupFile = "";
 
