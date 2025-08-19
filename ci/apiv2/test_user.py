@@ -54,3 +54,8 @@ class UserTest(BaseTest):
         helper = Helper()
         helper.set_user_password(user, newPassword)
         helper._test_authentication(user.name, newPassword)
+
+    def test_bulk_deactivate(self):
+        users = [self.create_test_object() for i in range(5)]
+        active_attributes = [False for i in range(5)]
+        User.objects.patch_many(users, active_attributes, "isValid")

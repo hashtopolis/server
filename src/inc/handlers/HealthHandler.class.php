@@ -24,7 +24,7 @@ class HealthHandler implements Handler {
           throw new HTException("Invalid action!");
       }
     }
-    catch (HTException $e) {
+    catch (Exception $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

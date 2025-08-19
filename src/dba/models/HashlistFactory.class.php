@@ -3,28 +3,27 @@
 namespace DBA;
 
 class HashlistFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Hashlist";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Hashlist";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Hashlist
    */
-  function getNullObject() {
-    $o = new Hashlist(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): Hashlist {
+    return new Hashlist(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class HashlistFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Hashlist
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Hashlist($dict['hashlistId'], $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['isSecret'], $dict['hexSalt'], $dict['isSalted'], $dict['accessGroupId'], $dict['notes'], $dict['brainId'], $dict['brainFeatures'], $dict['isArchived']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Hashlist {
+    return new Hashlist($dict['hashlistId'], $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['isSecret'], $dict['hexSalt'], $dict['isSalted'], $dict['accessGroupId'], $dict['notes'], $dict['brainId'], $dict['brainFeatures'], $dict['isArchived']);
   }
   
   /**
@@ -66,9 +64,9 @@ class HashlistFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Hashlist
+   * @return ?Hashlist
    */
-  function get($pk) {
+  function get($pk): ?Hashlist {
     return Util::cast(parent::get($pk), Hashlist::class);
   }
   
@@ -76,7 +74,7 @@ class HashlistFactory extends AbstractModelFactory {
    * @param Hashlist $model
    * @return Hashlist
    */
-  function save($model) {
+  function save($model): Hashlist {
     return Util::cast(parent::save($model), Hashlist::class);
   }
 }

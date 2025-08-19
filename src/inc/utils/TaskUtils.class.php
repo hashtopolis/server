@@ -25,6 +25,8 @@ use DBA\AccessGroupUser;
 use DBA\TaskDebugOutput;
 use DBA\Factory;
 use DBA\Speed;
+use DBA\Aggregation;
+require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class TaskUtils {
   /**
@@ -175,6 +177,30 @@ class TaskUtils {
       Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::IS_ARCHIVED, 1);
     }
     Factory::getTaskFactory()->set($task, Task::IS_ARCHIVED, 1);
+  }
+
+  /**
+   * @param int $taskId
+   * @param bool $taskState
+   * @param User $user
+   * @throws HTException
+   */
+  public static function toggleArchiveTask($taskId, $taskState, $user) {
+    $task = TaskUtils::getTask($taskId, $user);
+    $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $user);
+    switch ($taskWrapper->getTaskType()) {
+      case DTaskTypes::NORMAL:
+        Factory::getTaskFactory()->set($task, Task::IS_ARCHIVED, $taskState);
+        break;
+      case DTaskTypes::SUPERTASK:
+        $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+        $uS = new UpdateSet(Task::IS_ARCHIVED, $taskState);
+        Factory::getTaskFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+        break;
+      default:
+        throw new HTException("Invalid task type for archiving!");
+    }
+    Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::IS_ARCHIVED, $taskState);
   }
   
   /**
@@ -733,15 +759,15 @@ class TaskUtils {
    * @param int $staticChunking
    * @param int $chunkSize
    * @return Task
-   * @throws HTException
+   * @throws HttpError
    */
   public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $usePreprocessor, $preprocessorCommand, $skip, $priority, $maxAgents, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
     $hashlist = Factory::getHashlistFactory()->get($hashlistId);
     if ($hashlist == null) {
-      throw new HTException("Invalid hashlist ID!");
+      throw new HttpError("Invalid hashlist ID!");
     }
     else if ($hashlist->getIsArchived()) {
-      throw new HTException("You cannot create a task for an archived hashlist!");
+      throw new HttpError("You cannot create a task for an archived hashlist!");
     }
     
     if (strlen($name) == 0) {
@@ -752,38 +778,38 @@ class TaskUtils {
     $qF2 = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=");
     $accessGroupUser = Factory::getAccessGroupUserFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
     if ($accessGroupUser == null) {
-      throw new HTException("You have no access to this hashlist!");
+      throw new HttpForbidden("You have no access to this hashlist!");
     }
     $cracker = Factory::getCrackerBinaryFactory()->get($crackerVersionId);
     if ($cracker == null) {
-      throw new HTException("Invalid cracker ID!");
+      throw new HttpError("Invalid cracker ID!");
     }
     else if (strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
-      throw new HTException("Attack command does not contain hashlist alias!");
+      throw new HttpError("Attack command does not contain hashlist alias!");
     }
     else if (strlen($attackCmd) > 65535) {
-      throw new HTException("Attack command is too long (max 65535 characters)!");
+      throw new HttpError("Attack command is too long (max 65535 characters)!");
     }
     else if ($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS) {
-      throw new HTException("Invalid static chunk setting!");
+      throw new HttpError("Invalid static chunk setting!");
     }
     else if ($staticChunking > DTaskStaticChunking::NORMAL && $chunkSize <= 0) {
-      throw new HTException("Invalid chunk size / number of chunks for static chunking!");
+      throw new HttpError("Invalid chunk size / number of chunks for static chunking!");
     }
     else if (Util::containsBlacklistedChars($attackCmd)) {
-      throw new HTException("Attack command contains blacklisted characters!");
+      throw new HttpError("Attack command contains blacklisted characters!");
     }
     else if (Util::containsBlacklistedChars($preprocessorCommand)) {
-      throw new HTException("Preprocessor command contains blacklisted characters!");
+      throw new HttpError("Preprocessor command contains blacklisted characters!");
     }
     else if (!is_numeric($chunkTime) || $chunkTime < 1) {
-      throw new HTException("Invalid chunk size!");
+      throw new HttpError("Invalid chunk size!");
     }
     else if (!is_numeric($status) || $status < 1) {
-      throw new HTException("Invalid status timer!");
+      throw new HttpError("Invalid status timer!");
     }
     else if ($benchtype != 'speed' && $benchtype != 'runtime') {
-      throw new HTException("Invalid benchmark type!");
+      throw new HttpError("Invalid benchmark type!");
     }
     $benchtype = ($benchtype == 'speed') ? 1 : 0;
     if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
@@ -1392,5 +1418,15 @@ class TaskUtils {
     $numAssignments = self::numberOfOtherAssignedAgents($task, $agent);
     return ($task->getIsSmall() == 1 && $numAssignments > 0) || // at least one agent is already assigned here
       ($task->getMaxAgents() > 0 && $numAssignments >= $task->getMaxAgents()); // at least maxAgents agents are already assigned
+  }
+
+  public static function getTaskProgress($task) {
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    
+    $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
+    $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2]);
+    $progress = $results[$agg1->getName()] - $results[$agg2->getName()];
+    return $progress;
   }
 }

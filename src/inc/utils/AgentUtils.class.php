@@ -18,6 +18,7 @@ use DBA\Factory;
 use DBA\HealthCheckAgent;
 use DBA\Speed;
 
+require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 class AgentUtils {
   /**
    * @param AgentStat $deviceUtil
@@ -362,14 +363,15 @@ class AgentUtils {
     Factory::getAgentFactory()->delete($agent);
     return true;
   }
-
+  
   /**
    * @param int $agentId
    * @param int $taskId
    * @param User $user
    * @throws HTException
+   * @throws HttpError
    */
-  public static function assign($agentId, $taskId, $user) {
+  public static function assign(int $agentId, int $taskId, User $user): ?Assignment {
     $agent = AgentUtils::getAgent($agentId, $user);
 
     if ($taskId == 0 || empty($taskId)) { // unassign
@@ -379,26 +381,26 @@ class AgentUtils {
         header("Location: tasks.php?id=" . intval($_GET['task']));
         die();
       }
-      return;
+      return null;
     }
 
     $task = Factory::getTaskFactory()->get(intval($taskId));
     if ($task == null) {
-      throw new HTException("Invalid task!");
+      throw new HttpError("Invalid task!");
     }
     else if (!AccessUtils::agentCanAccessTask($agent, $task)) {
-      throw new HTException("This agent cannot access this task - either group mismatch, or agent is not configured as Trusted to access secret tasks");
+      throw new HttpError("This agent cannot access this task - either group mismatch, or agent is not configured as Trusted to access secret tasks");
     }
 
     $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
-      throw new HTException("No access to this task!");
+      throw new HttpError("No access to this task!");
     }
 
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignments = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
     if ($task->getIsSmall() && sizeof($assignments) > 0) {
-      throw new HTException("You cannot assign agent to this task as the limit of assignments is reached!");
+      throw new HttpError("You cannot assign agent to this task as the limit of assignments is reached!");
     }
 
     $qF = new QueryFilter(Agent::AGENT_ID, $agent->getId(), "=");
@@ -413,12 +415,13 @@ class AgentUtils {
     }
     else {
       $assignment = new Assignment(null, $task->getId(), $agent->getId(), $benchmark);
-      Factory::getAssignmentFactory()->save($assignment);
+      $assignment = Factory::getAssignmentFactory()->save($assignment);
     }
     if (isset($_GET['task'])) {
       header("Location: tasks.php?id=" . intval($_GET['task']));
       die();
     }
+    return $assignment;
   }
 
   /**
@@ -531,21 +534,22 @@ class AgentUtils {
     }
     Factory::getAgentFactory()->set($agent, Agent::IS_ACTIVE, $set);
   }
-
+  
   /**
    * @param string $newVoucher
-   * @throws HTException
+   * @return RegVoucher
+   * @throws HttpConflict
    */
-  public static function createVoucher($newVoucher) {
+  public static function createVoucher(string $newVoucher): RegVoucher {
     $qF = new QueryFilter(RegVoucher::VOUCHER, $newVoucher, "=");
     $check = Factory::getRegVoucherFactory()->filter([Factory::FILTER => $qF]);
     if ($check != null) {
-      throw new HTException("Same voucher already exists!");
+      throw new HttpConflict("Same voucher already exists!");
     }
 
     $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");
     $voucher = new RegVoucher(null, $key, time());
-    Factory::getRegVoucherFactory()->save($voucher);
+    return Factory::getRegVoucherFactory()->save($voucher);
   }
 
   /**

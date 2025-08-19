@@ -3,15 +3,15 @@
 namespace DBA;
 
 class Supertask extends AbstractModel {
-  private $supertaskId;
-  private $supertaskName;
+  private ?int $supertaskId;
+  private ?string $supertaskName;
   
-  function __construct($supertaskId, $supertaskName) {
+  function __construct(?int $supertaskId, ?string $supertaskName) {
     $this->supertaskId = $supertaskId;
     $this->supertaskName = $supertaskName;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['supertaskId'] = $this->supertaskId;
     $dict['supertaskName'] = $this->supertaskName;
@@ -19,27 +19,27 @@ class Supertask extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['supertaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "supertaskId"];
-    $dict['supertaskName'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "supertaskName"];
+    $dict['supertaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "supertaskId", "public" => False];
+    $dict['supertaskName'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "supertaskName", "public" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "supertaskId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->supertaskId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->supertaskId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->supertaskId = $id;
   }
   
@@ -47,15 +47,15 @@ class Supertask extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getSupertaskName() {
+  function getSupertaskName(): ?string {
     return $this->supertaskName;
   }
   
-  function setSupertaskName($supertaskName) {
+  function setSupertaskName(?string $supertaskName): void {
     $this->supertaskName = $supertaskName;
   }
   

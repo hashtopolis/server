@@ -3,28 +3,27 @@
 namespace DBA;
 
 class NotificationSettingFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "NotificationSetting";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "NotificationSetting";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return NotificationSetting
    */
-  function getNullObject() {
-    $o = new NotificationSetting(-1, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): NotificationSetting {
+    return new NotificationSetting(-1, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class NotificationSettingFactory extends AbstractModelFactory {
    * @param array $dict
    * @return NotificationSetting
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new NotificationSetting($dict['notificationSettingId'], $dict['action'], $dict['objectId'], $dict['notification'], $dict['userId'], $dict['receiver'], $dict['isActive']);
-    return $o;
+  function createObjectFromDict($pk, $dict): NotificationSetting {
+    return new NotificationSetting($dict['notificationSettingId'], $dict['action'], $dict['objectId'], $dict['notification'], $dict['userId'], $dict['receiver'], $dict['isActive']);
   }
   
   /**
@@ -66,9 +64,9 @@ class NotificationSettingFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return NotificationSetting
+   * @return ?NotificationSetting
    */
-  function get($pk) {
+  function get($pk): ?NotificationSetting {
     return Util::cast(parent::get($pk), NotificationSetting::class);
   }
   
@@ -76,7 +74,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
    * @param NotificationSetting $model
    * @return NotificationSetting
    */
-  function save($model) {
+  function save($model): NotificationSetting {
     return Util::cast(parent::save($model), NotificationSetting::class);
   }
 }

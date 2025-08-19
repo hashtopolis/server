@@ -3,17 +3,17 @@
 namespace DBA;
 
 class CrackerBinaryType extends AbstractModel {
-  private $crackerBinaryTypeId;
-  private $typeName;
-  private $isChunkingAvailable;
+  private ?int $crackerBinaryTypeId;
+  private ?string $typeName;
+  private ?int $isChunkingAvailable;
   
-  function __construct($crackerBinaryTypeId, $typeName, $isChunkingAvailable) {
+  function __construct(?int $crackerBinaryTypeId, ?string $typeName, ?int $isChunkingAvailable) {
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
     $this->typeName = $typeName;
     $this->isChunkingAvailable = $isChunkingAvailable;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['crackerBinaryTypeId'] = $this->crackerBinaryTypeId;
     $dict['typeName'] = $this->typeName;
@@ -22,28 +22,28 @@ class CrackerBinaryType extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['crackerBinaryTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "crackerBinaryTypeId"];
-    $dict['typeName'] = ['read_only' => False, "type" => "str(30)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "typeName"];
-    $dict['isChunkingAvailable'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isChunkingAvailable"];
+    $dict['crackerBinaryTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "crackerBinaryTypeId", "public" => False];
+    $dict['typeName'] = ['read_only' => False, "type" => "str(30)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "typeName", "public" => False];
+    $dict['isChunkingAvailable'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isChunkingAvailable", "public" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "crackerBinaryTypeId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->crackerBinaryTypeId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->crackerBinaryTypeId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->crackerBinaryTypeId = $id;
   }
   
@@ -51,23 +51,23 @@ class CrackerBinaryType extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getTypeName() {
+  function getTypeName(): ?string {
     return $this->typeName;
   }
   
-  function setTypeName($typeName) {
+  function setTypeName(?string $typeName): void {
     $this->typeName = $typeName;
   }
   
-  function getIsChunkingAvailable() {
+  function getIsChunkingAvailable(): ?int {
     return $this->isChunkingAvailable;
   }
   
-  function setIsChunkingAvailable($isChunkingAvailable) {
+  function setIsChunkingAvailable(?int $isChunkingAvailable): void {
     $this->isChunkingAvailable = $isChunkingAvailable;
   }
   

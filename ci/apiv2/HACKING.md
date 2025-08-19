@@ -28,7 +28,10 @@ Shortcut for testing within development setup:
 cd ~/src/hashtopolis/server/ci/apiv2
 pytest --exitfirst --last-failed
 ```
-
+Run a specific test from the terminal
+```
+cd /var/www/html/ci/apiv2 && python3 -m pytest test_task.py::TaskTest::test_toggle_archive_task_supertask_type -v -s
+```
 ### paper flipchart scribbles
 
 #### v2 beta

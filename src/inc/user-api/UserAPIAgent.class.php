@@ -56,7 +56,7 @@ class UserAPIAgent extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch (HTException $e) {
+    catch (Exception $e) {
       $this->sendErrorResponse($QUERY[UQuery::SECTION], $QUERY[UQuery::REQUEST], $e->getMessage());
     }
   }
@@ -262,7 +262,7 @@ class UserAPIAgent extends UserAPIBasic {
     $binaries = Factory::getAgentBinaryFactory()->filter([]);
     foreach ($binaries as $binary) {
       $arr[] = array(
-        UResponseAgent::BINARIES_NAME => $binary->getType(),
+        UResponseAgent::BINARIES_NAME => $binary->getBinayType(),
         UResponseAgent::BINARIES_OS => $binary->getOperatingSystems(),
         UResponseAgent::BINARIES_URL => $baseUrl . $binary->getId(),
         UResponseAgent::BINARIES_VERSION => $binary->getVersion(),

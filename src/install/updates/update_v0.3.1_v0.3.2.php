@@ -13,7 +13,7 @@ Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Zap` CHANGE `agentId` `
 echo "OK\n";
 
 echo "Check csharp binary... ";
-$qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
+$qF = new QueryFilter("type", "csharp", "=");
 $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
 if ($binary != null) {
   if (Util::versionComparison($binary->getVersion(), "0.43.13") == 1) {

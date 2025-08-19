@@ -3,14 +3,14 @@
 namespace DBA;
 
 class AgentError extends AbstractModel {
-  private $agentErrorId;
-  private $agentId;
-  private $taskId;
-  private $chunkId;
-  private $time;
-  private $error;
+  private ?int $agentErrorId;
+  private ?int $agentId;
+  private ?int $taskId;
+  private ?int $chunkId;
+  private ?int $time;
+  private ?string $error;
   
-  function __construct($agentErrorId, $agentId, $taskId, $chunkId, $time, $error) {
+  function __construct(?int $agentErrorId, ?int $agentId, ?int $taskId, ?int $chunkId, ?int $time, ?string $error) {
     $this->agentErrorId = $agentErrorId;
     $this->agentId = $agentId;
     $this->taskId = $taskId;
@@ -19,7 +19,7 @@ class AgentError extends AbstractModel {
     $this->error = $error;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['agentErrorId'] = $this->agentErrorId;
     $dict['agentId'] = $this->agentId;
@@ -31,31 +31,31 @@ class AgentError extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['agentErrorId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentErrorId"];
-    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId"];
-    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "taskId"];
-    $dict['chunkId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "chunkId"];
-    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time"];
-    $dict['error'] = ['read_only' => True, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "error"];
+    $dict['agentErrorId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentErrorId", "public" => False];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId", "public" => False];
+    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "taskId", "public" => False];
+    $dict['chunkId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "chunkId", "public" => False];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time", "public" => False];
+    $dict['error'] = ['read_only' => True, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "error", "public" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "agentErrorId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->agentErrorId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->agentErrorId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->agentErrorId = $id;
   }
   
@@ -63,47 +63,47 @@ class AgentError extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getAgentId() {
+  function getAgentId(): ?int {
     return $this->agentId;
   }
   
-  function setAgentId($agentId) {
+  function setAgentId(?int $agentId): void {
     $this->agentId = $agentId;
   }
   
-  function getTaskId() {
+  function getTaskId(): ?int {
     return $this->taskId;
   }
   
-  function setTaskId($taskId) {
+  function setTaskId(?int $taskId): void {
     $this->taskId = $taskId;
   }
   
-  function getChunkId() {
+  function getChunkId(): ?int {
     return $this->chunkId;
   }
   
-  function setChunkId($chunkId) {
+  function setChunkId(?int $chunkId): void {
     $this->chunkId = $chunkId;
   }
   
-  function getTime() {
+  function getTime(): ?int {
     return $this->time;
   }
   
-  function setTime($time) {
+  function setTime(?int $time): void {
     $this->time = $time;
   }
   
-  function getError() {
+  function getError(): ?string {
     return $this->error;
   }
   
-  function setError($error) {
+  function setError(?string $error): void {
     $this->error = $error;
   }
   

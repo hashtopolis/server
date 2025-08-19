@@ -36,7 +36,7 @@ else if (isset($_GET['edit'])) {
   if ($bin == null) {
     UI::printError("ERROR", "Invalid agent binary ID!");
   }
-  UI::add('pageTitle', "Edit Agent Binary of type " . $bin->getType());
+  UI::add('pageTitle', "Edit Agent Binary of type " . $bin->getBinaryType());
   UI::add('editBinary', true);
   UI::add('bin', $bin);
 }

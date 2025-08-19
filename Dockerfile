@@ -39,6 +39,7 @@ RUN apt-get update \
     && apt-get -y install git iproute2 procps lsb-release \
     && apt-get -y install mariadb-client \
     && apt-get -y install libpng-dev \
+    && apt-get -y install ssmtp \
 \
     # Install extensions (optional)
     && docker-php-ext-install pdo_mysql gd \
@@ -47,9 +48,14 @@ RUN apt-get update \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     # Enable URL rewriting using .htaccess
-    && a2enmod rewrite
+    && a2enmod rewrite \
+    # Enable headers
+    && a2enmod headers
 
 RUN sed -i 's/KeepAliveTimeout 5/KeepAliveTimeout 10/' /etc/apache2/apache2.conf
+RUN echo "ServerTokens Prod" >> /etc/apache2/apache2.conf \
+    && echo "ServerSignature Off" >> /etc/apache2/apache2.conf
+
 
 RUN mkdir -p ${HASHTOPOLIS_DOCUMENT_ROOT} \
     && mkdir ${HASHTOPOLIS_DOCUMENT_ROOT}/../../.git/ \
@@ -93,7 +99,7 @@ ENTRYPOINT [ "docker-entrypoint.sh" ]
 FROM hashtopolis-server-base as hashtopolis-server-dev
 
 # Setting up development requirements, install xdebug
-RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
+RUN yes | pecl install xdebug-3.4.0beta1 && docker-php-ext-enable xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.mode = debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.start_with_request = yes" >> /usr/local/etc/php/conf.d/xdebug.ini \

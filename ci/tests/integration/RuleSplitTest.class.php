@@ -107,7 +107,7 @@ class RuleSplitTest extends HashtopolisTest {
     if (!is_array($response)) {
       $this->testFailed("RuleSplitTest:testRuleSplit()", sprintf("Expected benchmark to return OK."));
     } else {
-      if (!$this->getTask('task-1 (From Rule Split)') === false) {
+      if ($this->getTask('task-1 (From Rule Split)')) {
         $this->testSuccess("RuleSplitTest:testRuleSplit()");
       } else {
         $this->testFailed("RuleSplitTest:testRuleSplit()", sprintf("Couldn't find the created supertask"));

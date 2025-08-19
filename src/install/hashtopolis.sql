@@ -46,7 +46,7 @@ CREATE TABLE `Agent` (
 
 CREATE TABLE `AgentBinary` (
   `agentBinaryId`    INT(11)     NOT NULL,
-  `type`             VARCHAR(20) NOT NULL,
+  `binaryType`             VARCHAR(20) NOT NULL,
   `version`          VARCHAR(20) NOT NULL,
   `operatingSystems` VARCHAR(50) NOT NULL,
   `filename`         VARCHAR(50) NOT NULL,
@@ -54,8 +54,8 @@ CREATE TABLE `AgentBinary` (
   `updateAvailable`  VARCHAR(20) NOT NULL
 ) ENGINE = InnoDB;
 
-INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
-  (1, 'python', '0.7.2', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
+INSERT INTO `AgentBinary` (`agentBinaryId`, `binaryType`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
+  (1, 'python', '0.7.3', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
 
 CREATE TABLE `AgentError` (
   `agentErrorId` INT(11) NOT NULL,

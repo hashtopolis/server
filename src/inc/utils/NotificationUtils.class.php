@@ -4,38 +4,42 @@ use DBA\NotificationSetting;
 use DBA\User;
 use DBA\Factory;
 
+require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 class NotificationUtils {
   /**
    * @param string $actionType
    * @param string $notification
    * @param string $receiver
    * @param array $post
+   * @param User|null $user
+   * @return NotificationSetting
    * @throws HTException
+   * @throws HttpError
    */
 
-  public static function createNotificaton($actionType, $notification, $receiver, $post, $user = null) {
+  public static function createNotification(string $actionType, string $notification, string $receiver, array $post, User $user = null): NotificationSetting {
     if ($user == null) {
       $user = Login::getInstance()->getUser();
     };
 
     $receiver = trim($receiver);
     if (!isset(HashtopolisNotification::getInstances()[$notification])) {
-      throw new HTException("This notification is not available!");
+      throw new HttpError("This notification is not available!");
     }
     else if (!in_array($actionType, DNotificationType::getAll())) {
-      throw new HTException("This actionType is not available!");
+      throw new HttpError("This actionType is not available!");
     }
     else if (strlen($receiver) == 0) {
-      throw new HTException("You need to fill in a receiver!");
+      throw new HttpError("You need to fill in a receiver!");
     }
     else if (!AccessControl::getInstance()->hasPermission(DNotificationType::getRequiredPermission($actionType))) {
-            throw new HTException("You are not allowed to use this action type!");
+            throw new HttpError("You are not allowed to use this action type!");
     }
     $objectId = null;
     switch (DNotificationType::getObjectType($actionType)) {
       case DNotificationObjectType::USER:
         if (!AccessControl::getInstance()->hasPermission(DAccessControl::USER_CONFIG_ACCESS)) {
-          throw new HTException("You are not allowed to use user action types!");
+          throw new HttpError("You are not allowed to use user action types!");
         }
         if ($post['users'] == "ALL") {
           break;
@@ -67,7 +71,7 @@ class NotificationUtils {
     }
 
     $notificationSetting = new NotificationSetting(null, $actionType, $objectId, $notification, $user->getId(), $receiver, 1);
-    Factory::getNotificationSettingFactory()->save($notificationSetting);
+    return Factory::getNotificationSettingFactory()->save($notificationSetting);
   }
   
   /**

@@ -21,6 +21,7 @@ use DBA\Zap;
 use DBA\AgentZap;
 use DBA\Factory;
 use DBA\Speed;
+require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class HashlistUtils {
   /**
@@ -772,25 +773,25 @@ class HashlistUtils {
     $brainFeatures = intval($brainFeatures);
     
     if ($format < DHashlistFormat::PLAIN || $format > DHashlistFormat::BINARY) {
-      throw new HTException("Invalid hashlist format!");
+      throw new HttpError("Invalid hashlist format!");
     }
     else if ($accessGroup == null) {
-      throw new HTException("Invalid access group selected!");
+      throw new HttpError("Invalid access group selected!");
     }
     else if (sizeof(AccessUtils::intersection(array($accessGroup), AccessUtils::getAccessGroupsOfUser($user))) == 0) {
-      throw new HTException("Access group with no rights selected!");
+      throw new HttpError("Access group with no rights selected!");
     }
     else if (strlen($name) == 0) {
-      throw new HTException("Hashlist name cannot be empty!");
+      throw new HttpError("Hashlist name cannot be empty!");
     }
     else if ($salted == '1' && strlen($saltSeparator) == 0) {
-      throw new HTException("Salt separator cannot be empty when hashes are salted!");
+      throw new HttpError("Salt separator cannot be empty when hashes are salted!");
     }
     else if ($brainId && !SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_ENABLE)) {
-      throw new HTException("Hashcat brain cannot be used if not enabled in config!");
+      throw new HttpError("Hashcat brain cannot be used if not enabled in config!");
     }
     else if ($brainId && $brainFeatures < 1 || $brainFeatures > 3) {
-      throw new HTException("Invalid brain features selected!");
+      throw new HttpError("Invalid brain features selected!");
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
@@ -815,20 +816,20 @@ class HashlistUtils {
     $tmpfile = "/tmp/hashlist_" . $hashlist->getId();
     if (!Util::uploadFile($tmpfile, $source, $dataSource) && file_exists($tmpfile)) {
       Factory::getAgentFactory()->getDB()->rollback();
-      throw new HTException("Failed to process file!");
+      throw new HttpError("Failed to process file!");
     }
     else if (!file_exists($tmpfile)) {
       Factory::getAgentFactory()->getDB()->rollback();
-      throw new HTException("Required file does not exist!");
+      throw new HttpError("Required file does not exist!");
     }
     // replace countLines with fileLineCount? Seems like a better option, not OS-dependent
     else if (Util::countLines($tmpfile) > SConfig::getInstance()->getVal(DConfig::MAX_HASHLIST_SIZE)) {
       Factory::getAgentFactory()->getDB()->rollback();
-      throw new HTException("Hashlist has too many lines!");
+      throw new HttpError("Hashlist has too many lines!");
     }
     $file = fopen($tmpfile, "rb");
     if (!$file) {
-      throw new HTException("Failed to open file!");
+      throw new HttpError("Failed to open file!");
     }
     Factory::getAgentFactory()->getDB()->commit();
     $added = 0;
@@ -841,7 +842,7 @@ class HashlistUtils {
           rewind($file);
           $bufline = stream_get_line($file, 1024);
           if (strpos($bufline, $saltSeparator) === false) {
-            throw new HTException("Salted hashes separator not found in file!");
+            throw new HttpError("Salted hashes separator not found in file!");
           }
         }
         else {

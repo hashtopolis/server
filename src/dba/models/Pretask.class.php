@@ -3,21 +3,21 @@
 namespace DBA;
 
 class Pretask extends AbstractModel {
-  private $pretaskId;
-  private $taskName;
-  private $attackCmd;
-  private $chunkTime;
-  private $statusTimer;
-  private $color;
-  private $isSmall;
-  private $isCpuTask;
-  private $useNewBench;
-  private $priority;
-  private $maxAgents;
-  private $isMaskImport;
-  private $crackerBinaryTypeId;
+  private ?int $pretaskId;
+  private ?string $taskName;
+  private ?string $attackCmd;
+  private ?int $chunkTime;
+  private ?int $statusTimer;
+  private ?string $color;
+  private ?int $isSmall;
+  private ?int $isCpuTask;
+  private ?int $useNewBench;
+  private ?int $priority;
+  private ?int $maxAgents;
+  private ?int $isMaskImport;
+  private ?int $crackerBinaryTypeId;
   
-  function __construct($pretaskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $color, $isSmall, $isCpuTask, $useNewBench, $priority, $maxAgents, $isMaskImport, $crackerBinaryTypeId) {
+  function __construct(?int $pretaskId, ?string $taskName, ?string $attackCmd, ?int $chunkTime, ?int $statusTimer, ?string $color, ?int $isSmall, ?int $isCpuTask, ?int $useNewBench, ?int $priority, ?int $maxAgents, ?int $isMaskImport, ?int $crackerBinaryTypeId) {
     $this->pretaskId = $pretaskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -33,7 +33,7 @@ class Pretask extends AbstractModel {
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['pretaskId'] = $this->pretaskId;
     $dict['taskName'] = $this->taskName;
@@ -52,38 +52,38 @@ class Pretask extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['pretaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "pretaskId"];
-    $dict['taskName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskName"];
-    $dict['attackCmd'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "attackCmd"];
-    $dict['chunkTime'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "chunkTime"];
-    $dict['statusTimer'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "statusTimer"];
-    $dict['color'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "color"];
-    $dict['isSmall'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSmall"];
-    $dict['isCpuTask'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isCpuTask"];
-    $dict['useNewBench'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "useNewBench"];
-    $dict['priority'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "priority"];
-    $dict['maxAgents'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "maxAgents"];
-    $dict['isMaskImport'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isMaskImport"];
-    $dict['crackerBinaryTypeId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "crackerBinaryTypeId"];
+    $dict['pretaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "pretaskId", "public" => False];
+    $dict['taskName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskName", "public" => False];
+    $dict['attackCmd'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "attackCmd", "public" => False];
+    $dict['chunkTime'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "chunkTime", "public" => False];
+    $dict['statusTimer'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "statusTimer", "public" => False];
+    $dict['color'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "color", "public" => False];
+    $dict['isSmall'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSmall", "public" => False];
+    $dict['isCpuTask'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isCpuTask", "public" => False];
+    $dict['useNewBench'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "useNewBench", "public" => False];
+    $dict['priority'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "priority", "public" => False];
+    $dict['maxAgents'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "maxAgents", "public" => False];
+    $dict['isMaskImport'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isMaskImport", "public" => False];
+    $dict['crackerBinaryTypeId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "crackerBinaryTypeId", "public" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "pretaskId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->pretaskId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->pretaskId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->pretaskId = $id;
   }
   
@@ -91,103 +91,103 @@ class Pretask extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getTaskName() {
+  function getTaskName(): ?string {
     return $this->taskName;
   }
   
-  function setTaskName($taskName) {
+  function setTaskName(?string $taskName): void {
     $this->taskName = $taskName;
   }
   
-  function getAttackCmd() {
+  function getAttackCmd(): ?string {
     return $this->attackCmd;
   }
   
-  function setAttackCmd($attackCmd) {
+  function setAttackCmd(?string $attackCmd): void {
     $this->attackCmd = $attackCmd;
   }
   
-  function getChunkTime() {
+  function getChunkTime(): ?int {
     return $this->chunkTime;
   }
   
-  function setChunkTime($chunkTime) {
+  function setChunkTime(?int $chunkTime): void {
     $this->chunkTime = $chunkTime;
   }
   
-  function getStatusTimer() {
+  function getStatusTimer(): ?int {
     return $this->statusTimer;
   }
   
-  function setStatusTimer($statusTimer) {
+  function setStatusTimer(?int $statusTimer): void {
     $this->statusTimer = $statusTimer;
   }
   
-  function getColor() {
+  function getColor(): ?string {
     return $this->color;
   }
   
-  function setColor($color) {
+  function setColor(?string $color): void {
     $this->color = $color;
   }
   
-  function getIsSmall() {
+  function getIsSmall(): ?int {
     return $this->isSmall;
   }
   
-  function setIsSmall($isSmall) {
+  function setIsSmall(?int $isSmall): void {
     $this->isSmall = $isSmall;
   }
   
-  function getIsCpuTask() {
+  function getIsCpuTask(): ?int {
     return $this->isCpuTask;
   }
   
-  function setIsCpuTask($isCpuTask) {
+  function setIsCpuTask(?int $isCpuTask): void {
     $this->isCpuTask = $isCpuTask;
   }
   
-  function getUseNewBench() {
+  function getUseNewBench(): ?int {
     return $this->useNewBench;
   }
   
-  function setUseNewBench($useNewBench) {
+  function setUseNewBench(?int $useNewBench): void {
     $this->useNewBench = $useNewBench;
   }
   
-  function getPriority() {
+  function getPriority(): ?int {
     return $this->priority;
   }
   
-  function setPriority($priority) {
+  function setPriority(?int $priority): void {
     $this->priority = $priority;
   }
   
-  function getMaxAgents() {
+  function getMaxAgents(): ?int {
     return $this->maxAgents;
   }
   
-  function setMaxAgents($maxAgents) {
+  function setMaxAgents(?int $maxAgents): void {
     $this->maxAgents = $maxAgents;
   }
   
-  function getIsMaskImport() {
+  function getIsMaskImport(): ?int {
     return $this->isMaskImport;
   }
   
-  function setIsMaskImport($isMaskImport) {
+  function setIsMaskImport(?int $isMaskImport): void {
     $this->isMaskImport = $isMaskImport;
   }
   
-  function getCrackerBinaryTypeId() {
+  function getCrackerBinaryTypeId(): ?int {
     return $this->crackerBinaryTypeId;
   }
   
-  function setCrackerBinaryTypeId($crackerBinaryTypeId) {
+  function setCrackerBinaryTypeId(?int $crackerBinaryTypeId): void {
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
   }
   

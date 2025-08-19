@@ -3,28 +3,27 @@
 namespace DBA;
 
 class SupertaskPretaskFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "SupertaskPretask";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "SupertaskPretask";
   }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return SupertaskPretask
    */
-  function getNullObject() {
-    $o = new SupertaskPretask(-1, null, null);
-    return $o;
+  function getNullObject(): SupertaskPretask {
+    return new SupertaskPretask(-1, null, null);
   }
   
   /**
@@ -32,9 +31,8 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
    * @param array $dict
    * @return SupertaskPretask
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new SupertaskPretask($dict['supertaskPretaskId'], $dict['supertaskId'], $dict['pretaskId']);
-    return $o;
+  function createObjectFromDict($pk, $dict): SupertaskPretask {
+    return new SupertaskPretask($dict['supertaskPretaskId'], $dict['supertaskId'], $dict['pretaskId']);
   }
   
   /**
@@ -66,9 +64,9 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return SupertaskPretask
+   * @return ?SupertaskPretask
    */
-  function get($pk) {
+  function get($pk): ?SupertaskPretask {
     return Util::cast(parent::get($pk), SupertaskPretask::class);
   }
   
@@ -76,7 +74,7 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
    * @param SupertaskPretask $model
    * @return SupertaskPretask
    */
-  function save($model) {
+  function save($model): SupertaskPretask {
     return Util::cast(parent::save($model), SupertaskPretask::class);
   }
 }

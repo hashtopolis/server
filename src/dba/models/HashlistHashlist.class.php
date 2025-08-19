@@ -3,17 +3,17 @@
 namespace DBA;
 
 class HashlistHashlist extends AbstractModel {
-  private $hashlistHashlistId;
-  private $parentHashlistId;
-  private $hashlistId;
+  private ?int $hashlistHashlistId;
+  private ?int $parentHashlistId;
+  private ?int $hashlistId;
   
-  function __construct($hashlistHashlistId, $parentHashlistId, $hashlistId) {
+  function __construct(?int $hashlistHashlistId, ?int $parentHashlistId, ?int $hashlistId) {
     $this->hashlistHashlistId = $hashlistHashlistId;
     $this->parentHashlistId = $parentHashlistId;
     $this->hashlistId = $hashlistId;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['hashlistHashlistId'] = $this->hashlistHashlistId;
     $dict['parentHashlistId'] = $this->parentHashlistId;
@@ -22,28 +22,28 @@ class HashlistHashlist extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['hashlistHashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashlistHashlistId"];
-    $dict['parentHashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "parentHashlistId"];
-    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashlistId"];
+    $dict['hashlistHashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashlistHashlistId", "public" => False];
+    $dict['parentHashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "parentHashlistId", "public" => False];
+    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashlistId", "public" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "hashlistHashlistId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->hashlistHashlistId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->hashlistHashlistId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->hashlistHashlistId = $id;
   }
   
@@ -51,23 +51,23 @@ class HashlistHashlist extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getParentHashlistId() {
+  function getParentHashlistId(): ?int {
     return $this->parentHashlistId;
   }
   
-  function setParentHashlistId($parentHashlistId) {
+  function setParentHashlistId(?int $parentHashlistId): void {
     $this->parentHashlistId = $parentHashlistId;
   }
   
-  function getHashlistId() {
+  function getHashlistId(): ?int {
     return $this->hashlistId;
   }
   
-  function setHashlistId($hashlistId) {
+  function setHashlistId(?int $hashlistId): void {
     $this->hashlistId = $hashlistId;
   }
   

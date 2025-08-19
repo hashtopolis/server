@@ -425,6 +425,9 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
+    if (array_key_exists('join', $options)) {
+      $query .= $this->applyJoins($options['join']);
+    }
     if (array_key_exists("filter", $options)) {
       $query .= $this->applyFilters($vals, $options['filter']);
     }
@@ -631,6 +634,9 @@ abstract class AbstractModelFactory {
     }
     $query .= $this->applyOrder($options['order']);
     
+    if (array_key_exists("limit", $options)) {
+      $query .= $this->applyLimit($options['limit']);
+    }
     
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);

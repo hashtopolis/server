@@ -15,11 +15,16 @@ class GlobalPermissionGroupTest(BaseTest):
     def test_patch(self):
         model_obj = self.create_test_object()
 
-        attr = 'permRightGroupCreate'
-        model_obj.permissions[attr] = True
+        # with how the current testing framework, works, multiple permissions have to be set, otherwise conflicting
+        # permissions, will be set to false by default
+        attributes = ["permUserDelete", "permUserRead", "permUserUpdate", "permUserCreate", "permRightGroupCreate",
+                      "permRightGroupDelete", "permRightGroupRead", "permRightGroupUpdate"]
+        for attr in attributes:
+            model_obj.permissions[attr] = True
         model_obj.save()
 
         # Request object from backend and validate PATCHed permission
+        attr = 'permRightGroupCreate'
         obj = self.model_class.objects.get(pk=model_obj.id)
         self.assertTrue(obj.permissions[attr])
 
