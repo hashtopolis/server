@@ -1,0 +1,87 @@
+site_name: Hashtopolis
+site_url: https://docs.hashtopolis.org
+repo_url: https://github.com/hashtopolis/server
+docs_dir: doc
+
+nav:
+  - index.md
+  - user_manual/basic_workflow.md
+  - Installation Guidelines:
+      - installation_guidelines/basic_install.md
+      - installation_guidelines/advanced_install.md
+      - installation_guidelines/update.md 
+      - installation_guidelines/tls.md 
+      - installation_guidelines/docker.md
+  - User Manual:
+      - user_manual/agents.md
+      - user_manual/tasks.md
+      - user_manual/hashlist.md
+      - user_manual/files.md
+      - user_manual/crackers_binary.md
+      - user_manual/settings_and_configuration.md
+      - user_manual/users.md
+      - user_manual/user-settings.md
+  - FAQ and Tips:
+      - faq_tips/faq.md
+      - faq_tips/tips.md
+  - changelog.md
+  - API Reference:
+      - APIv2: api.md
+
+theme:
+  name: material
+  custom_dir: overrides
+  logo: assets/images/logo.png
+  palette:
+    - scheme: default
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo  # or custom color
+      accent: light blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - content.code.copy
+    - content.action.edit
+    - navigation.tabs
+    - navigation.indexes
+    - navigation.sections
+    - header.autohide
+    - navigation.top
+    - toc.integrate
+    - navigation.footer
+    - content.tabs.link
+
+edit_uri: blob/docs/doc/
+
+markdown_extensions:
+  - github-callouts
+  - sane_lists
+  - attr_list
+  - md_in_html
+  - admonition
+
+extra_css:
+  - assets/stylesheets/hero.css
+  - assets/stylesheets/redoc-dark.css
+  
+
+extra:
+  font:
+    text: Roboto
+    code: Fira Code
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+  - git-revision-date-localized:
+      fallback_to_build_date: true
+
+extra_javascript:
+  - https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js
