@@ -1,7 +1,8 @@
-# v0.14.4 -> vx.x.x
+# v0.14.4 -> v0.14.5
 
 ## Enhancements
 
+- Include new agent compatible with hashcat 7.0.0+
 - Added three more indexes in MySQL to improve the task view drastically (Note: these are not created on update due to performance issues, only on new installs)
 - Added an additional multi-column index in MySQL on the chunk table to increase performance for agents getting tasks (Note: these are not created on update due to performance issues, only on new installs)
 
