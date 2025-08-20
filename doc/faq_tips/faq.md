@@ -4,17 +4,15 @@
 
   
 
-❓ How do I install Hashtopolis?
+<span style="font-size:1.2em; font-weight:bold;">❓ How do I install Hashtopolis? </span>
 
-**Answer**: To install Hashtopolis, you typically clone the GitHub repository, configure the backend using Apache/PHP/MySQL, and set up the frontend via a web browser. For step-by-step instructions, refer to the official documentation. Make sure your system meets the minimum requirements (Linux server, PHP 7.4+, MySQL/MariaDB, Apache/Nginx).
-
-  
+**Answer**: The easiest way to install Hashtopolis is with the Docker images that can be retrieved from the [Docker Hub](https://hub.docker.com/u/hashtopolis). Follow the instructions from the [documentation](../installation_guidelines/basic_install.md).
 
 ---
 
   
 
-❓ Can I run Hashtopolis on a server already running something else (e.g. Homebridge)?
+<span style="font-size:1.2em; font-weight:bold;">❓ Can I run Hashtopolis on a server already running something else (e.g. Homebridge)?</span>
 
 **Answer**: Yes, as long as the server has enough resources.
 
@@ -24,7 +22,7 @@
 
   
 
-❓ How do I make the agent start automatically on Ubuntu?
+<span style="font-size:1.2em; font-weight:bold;">❓ How do I make the agent start automatically on Ubuntu?</span>
 
 **Answer**: To auto-start the agent on boot, create a `systemd` service file in `/etc/systemd/system/hashtopolis-agent.service` that runs the agent script with Python. Enable it using `systemctl enable hashtopolis-agent` and start it with `systemctl start hashtopolis-agent`. Ensure your agent configuration (`config.json`) is correctly set before enabling.
 
@@ -34,7 +32,7 @@
 
 
 
-❓ How can I mount folders (import, files, binaries) to a local directory instead of using a Docker volume?
+<span style="font-size:1.2em; font-weight:bold;">❓ How can I mount folders (import, files, binaries) to a local directory instead of using a Docker volume?</span>
 
 **Answer**: By default (when using the standard `docker-compose` setup), Hashtopolis stores folders like `import`, `files`, and `binaries` in a Docker volume. You can list this volume using `docker volume ls` and access it inside the container at `/usr/local/share/hashtopolis`.
 
@@ -113,7 +111,7 @@ Finally, copy your data back into the corresponding folders.
 
 
 
-❓ How can I debug MySQL queries?
+<span style="font-size:1.2em; font-weight:bold;">❓ How can I debug MySQL queries?</span>
 
 **Answer**: If you're encountering unusual issues and want to understand what queries Hashtopolis is executing on the database, you can enable query logging in MySQL.
 
@@ -139,7 +137,7 @@ This enables the general query log, which logs all incoming SQL statements. You 
 
 
 
-❓ Why does Hashtopolis fail and how can I debug errors?
+<span style="font-size:1.2em; font-weight:bold;">❓ Why does Hashtopolis fail and how can I debug errors?</span>
 
 **Answer**: Troubleshooting Hashtopolis can sometimes be challenging. A common error you might encounter is:
 
@@ -191,7 +189,7 @@ This should help reveal any specific errors or misconfigurations in the command 
 
 
 
-❓ Can I fake an agent for debugging the server API?
+<span style="font-size:1.2em; font-weight:bold;">❓ Can I fake an agent for debugging the server API?</span>
 
 **Answer**: Yes, you can simulate an agent to test how the Hashtopolis server API behaves. This is especially useful for replicating hard-to-reproduce production issues.
 
@@ -269,7 +267,7 @@ This lets you debug API interactions manually without needing a live cracking jo
 
 
 
-❓ Is internet access required to run Hashtopolis?
+<span style="font-size:1.2em; font-weight:bold;">❓ Is internet access required to run Hashtopolis?</span>
 
 **Answer**: No.
 
@@ -279,7 +277,7 @@ This lets you debug API interactions manually without needing a live cracking jo
 
   
 
-❓ Can I run Hashtopolis on ARM (e.g., Raspberry Pi)?
+<span style="font-size:1.2em; font-weight:bold;">❓ Can I run Hashtopolis on ARM (e.g., Raspberry Pi)?</span>
 
 **Answer**: Not officially supported. ARM builds must be custom-built.
 
@@ -293,7 +291,7 @@ This lets you debug API interactions manually without needing a live cracking jo
 
   
 
-❓ Why does Apache show only a directory or a 500 error?
+<span style="font-size:1.2em; font-weight:bold;">❓ Why does Apache show only a directory or a 500 error?</span>
 
 **Answer**: A 500 error or directory index display usually indicates PHP is either not installed, disabled, or misconfigured. Ensure that `libapache2-mod-php` is installed and enabled. Also, verify that your `php.ini` and `.htaccess` files don't contain invalid directives. Check Apache error logs at `/var/log/apache2/error.log` for more specific issues.
 
@@ -303,7 +301,7 @@ This lets you debug API interactions manually without needing a live cracking jo
 
   
 
-❓ How to fix a failed first login in Docker?
+<span style="font-size:1.2em; font-weight:bold;">❓ How to fix a failed first login in Docker?</span>
 
 **Answer**: Check if the backend logs show “initialization successful”. Docker environment variables must be set correctly.
 
@@ -313,7 +311,7 @@ This lets you debug API interactions manually without needing a live cracking jo
 
   
 
-❓ How to upgrade Hashtopolis without data loss?
+<span style="font-size:1.2em; font-weight:bold;">❓ How to upgrade Hashtopolis without data loss?</span>
 
 **Answer**: Back up the database, pull the latest version from Git, and apply the update through the upgrade feature.
 
@@ -323,7 +321,7 @@ This lets you debug API interactions manually without needing a live cracking jo
 
   
 
-❓ PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted - What can I do now?
+<span style="font-size:1.2em; font-weight:bold;">❓ PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted - What can I do now?</span>
 
   
 This guide shows how to raise PHP's memory limit in a Dockerized setup using a `custom.ini` file mounted into the PHP container. It also includes example `docker-compose.yml` snippets for common images.
@@ -399,7 +397,7 @@ docker compose restart backend
 
   
 
-❓ Is `--increment` supported?
+<span style="font-size:1.2em; font-weight:bold;">❓ Is `--increment` supported?</span>
 
 **Answer**: No, not directly. Workaround: create individual masks or use “Import Supertask” for manual mask input.
 
@@ -409,7 +407,7 @@ docker compose restart backend
 
   
 
-❓ Can Hashtopolis use custom Hashcat builds?
+<span style="font-size:1.2em; font-weight:bold;">❓ Can Hashtopolis use custom Hashcat builds?</span>
 
 **Answer**: Yes, upload them through the admin interface as separate binaries.
 
@@ -419,7 +417,7 @@ docker compose restart backend
 
   
 
-❓ What if a client only uses one of multiple GPUs?
+<span style="font-size:1.2em; font-weight:bold;">❓ What if a client only uses one of multiple GPUs?</span>
 
 **Answer**: This is likely due to small chunk size or a single hash. Larger workloads will utilize more GPUs.
 
@@ -429,7 +427,7 @@ docker compose restart backend
 
   
 
-❓ How do you deal with huge wordlists (e.g. 20–50 GB)?
+<span style="font-size:1.2em; font-weight:bold;">❓ How do you deal with huge wordlists (e.g. 20–50 GB)?</span>
 
 **Answer**: Split files, SCP them to the server or serve them via Python’s HTTP server.
 
@@ -443,7 +441,7 @@ docker compose restart backend
 
   
 
-❓ How are tasks split across clients?
+<span style="font-size:1.2em; font-weight:bold;">❓ How are tasks split across clients?</span>
 
 **Answer**: Based on keyspace ranges (e.g. Client A: AAAA–BBBB, Client B: CCCC–DDDD).
 
@@ -453,7 +451,7 @@ docker compose restart backend
 
   
 
-❓ Can I assign specific agents to specific users or tasks?
+<span style="font-size:1.2em; font-weight:bold;">❓ Can I assign specific agents to specific users or tasks?</span>
 
 **Answer**: Admins can manage this in task settings or manually configure allowed agents.
 
@@ -463,7 +461,7 @@ docker compose restart backend
 
   
 
-❓ How are tasks prioritized?
+<span style="font-size:1.2em; font-weight:bold;">❓ How are tasks prioritized?</span>
 
 **Answer**: Tasks are prioritized numerically.
 
@@ -476,7 +474,7 @@ docker compose restart backend
 ## Interface & Features
 
   
-❓ Does Hashtopolis support notifications (e.g. Telegram, Discord)?
+<span style="font-size:1.2em; font-weight:bold;">❓ Does Hashtopolis support notifications (e.g. Telegram, Discord)?</span>
 
 **Answer**: Yes, Discord and Telegram bot notifications are supported but require manual setup.
 
@@ -490,7 +488,7 @@ docker compose restart backend
 
   
 
-❓ Can large wordlists be remotely deleted from agents?
+<span style="font-size:1.2em; font-weight:bold;">❓ Can large wordlists be remotely deleted from agents?</span>
 
 **Answer**: Requires manual script or reconfiguration.
 
@@ -504,7 +502,7 @@ docker compose restart backend
 
   
 
-❓ Why is only 4 GB of VRAM used on a 10 GB RTX 3080?
+<span style="font-size:1.2em; font-weight:bold;">❓ Why is only 4 GB of VRAM used on a 10 GB RTX 3080?</span>
 
 **Answer**: Hashcat uses only as much memory as needed. More memory ≠ more speed.
 
@@ -514,7 +512,7 @@ docker compose restart backend
 
   
 
-❓ What are “zaps” in status logs?
+<span style="font-size:1.2em; font-weight:bold;">❓ What are “zaps” in status logs?</span>
 
 **Answer**: Notification that another client already cracked a hash, allowing the client to skip it.
 
@@ -528,7 +526,7 @@ docker compose restart backend
 
   
 
-❓ Is there a way to trust all agents by default?
+<span style="font-size:1.2em; font-weight:bold;">❓ Is there a way to trust all agents by default?</span>
 
 **Answer**: No, but there’s an open feature request for it: [GitHub Issue #721](https://github.com/hashtopolis/server/issues/721)
 
@@ -538,7 +536,7 @@ docker compose restart backend
 
   
 
-❓ Can an API token be shared across multiple agents?
+<span style="font-size:1.2em; font-weight:bold;">❓ Can an API token be shared across multiple agents?</span>
 
 **Answer**: Yes, using the same token is fine for basic usage.
 

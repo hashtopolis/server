@@ -14,7 +14,7 @@ This page displays some basic information about all the crackers configured in h
 
 ### Creating a New Cracker
 
-As mentioned above, Hashtopolis supports other cracker than Hashcat. To deploy a new cracker, two steps are required, first the creation of the type of cracker and then adding a version for it. 
+As mentioned above, Hashtopolis supports other crackers than Hashcat. To deploy a new cracker, two steps are required, first the creation of the type of cracker and then adding a version for it. 
 
 By clicking on the ``*New Cracker*'' button, a new page opens in which you can set the name for the new cracker and declare if the chunking is available for this cracker. In order to be compatible with chunking, a cracker must have the following features:
 
