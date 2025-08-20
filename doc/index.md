@@ -1,10 +1,5 @@
 # What is Hashtopolis?
 
-<!-- > [!CAUTION]
-> This is the new documentation of Hashtopolis. It is work in progress, so use with care!
->
-> You can find the old documentation still inside this folder, please check the [Hashtopolis Communication Protocol (V2)](protocol.pdf) docs. The user api documentation can be found here: [Hashtopolis User API (V1)](user-api/user-api.pdf). -->
-
 **Hashtopolis** is an open-source platform designed to distribute and manage password cracking tasks across multiple machines. 
 Password cracking is a *pleasantly parallel* problem, meaning it can be divided into many independent subtasks that run simultaneously without needing to communicate with each other. Each agent can work on a different portion of the attack without waiting for others. This makes cracking highly scalable: the more resources you have, the faster the overall process will run. Hashtopolis takes full advantage of this by coordinating multiple agents to work in parallel, maximizing resource utilization and significantly reducing cracking time.
 
@@ -62,4 +57,4 @@ This manual aims to describe all the functionalities and settings existing in Ha
 - [**Installation Guidelines**](./installation_guidelines/basic_install.md): Covers basic installation steps to deploy a Hashtopolis instance. It also contains advanced installation procedures for air-gapped environments, HTTPS configuration, as well as many other advanced features.
 - [**User Manual**](./user_manual/agents.md): goes deeper than the basic workflow into each aspect of Hashtopolis. This aims to cover all the existing features and settings. 
 - [**FAQ and Tips**](./faq_tips/faq.md): gathers most of the questions that were asked on different channels (discord, wiki, etc.).
-- [**API Reference**](./api.md): contains all the details related to the API in case you need to automate some processes or want to develop your own front end. 
+- [**API Reference**](./api.md): contains all the details related to the API in case you need to automate some processes or want to develop your own front end.
