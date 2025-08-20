@@ -1,4 +1,4 @@
-name: Generate MkDocs and upload
+name: Generate MkDocs
 
 on:
   pull_request:
