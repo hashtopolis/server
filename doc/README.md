@@ -1,6 +1,6 @@
 ## MKDocs Local Setup
 
-1. Make sure you are in the root of the server project and setup a virtual enviroment there.
+1. Make sure you are in the root of the server project and setup a virtual environment there.
 2. Install mkdocs
 3. Install required mkdocs extensions
 4. Start the server
