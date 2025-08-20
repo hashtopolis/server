@@ -3,26 +3,26 @@
 
 ## v0.14.4 -> vx.x.x
 
-<span style="font-size:1.2em;">Enhancements</span>
+**Enhancements**
 
 - Updated OpenAPI docs to latest API updates
 
 ## v0.14.3 -> v0.14.4
 
 
-<span style="font-size:1.2em;">Enhancements</span>
+**Enhancements**
 
 - Use utf8mb4 as default encoding in order to support the full unicode range
 - Log hashes when they are skipped. This way the administrator can detect when Hashcat rebuilds the hashes incorrectly 
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Fixed a bug where creating a new preprocessor would copy the configured limit command over the configured skip command
 - Implemented sending emails inside docker container
 
 ## v0.14.2 -> v0.14.3
 
-<span style="font-size:1.2em;">Tech Preview New API</span>
+**Tech Preview New API**
 Release 0.14.3 comes with an update to the tech preview of the new API. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
 
 Changes/Bugfixes on new UI:
@@ -36,7 +36,7 @@ Changes/Bugfixes on new UI:
 - The hashlists are now displayed correctly according to the tasks on the tasks page
 - Encoding bug fixed, Unicode characters were displayed incorrectly
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Fixed a bug in the user API where a hash in binary format did not return the plain text when cracked
 - Increase the limit of the attack command length
@@ -44,59 +44,59 @@ Changes/Bugfixes on new UI:
 
 ## v0.14.1 -> v0.14.2
 
-<span style="font-size:1.2em;">Tech Preview New API</span>
+**Tech Preview New API**
 Release 0.14.2 comes with an update to the tech preview of APIv2. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 - Setting maxAgent after creating doesn't update the maxAgents of the taskwrapper. This only causes issues when the maxAgents was set at creation time. #1013
 
 
 ## v0.14.0 -> v0.14.1
 
-<span style="font-size:1.2em;">Tech Preview New API</span>
+**Tech Preview New API**
 Release 0.14.1 comes with an update to the tech preview of APIv2. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 - Clicking pretask in Supertask create screen now directs correctly to the pretask and not a task with the same id (#945)
 - Pretask attackCmd parameter was not checked for maximum length of 256 on creation (#963)
 - Creating supertask fails when provided crackerType != pretask.crackerType (#969)
 - Searching for hashes and plaintext now also searches non archived hashlists (#974)
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 - Number of agents per supertask/taskwrapper can be limited (#769).
 
 
 ## v0.13.1 -> v0.14.0
 
-<span style="font-size:1.2em;">Tech Preview New API</span>
+**Tech Preview New API**
 Release 0.14.0 comes with a tech preview of APIv2. This is the starting point of the seperating of the frontend and the backend and gives 
 insight into what the future brings for Hashtopolis. We invite you to test it with the new web-ui and provide us with feedback. Be aware, 
 it is a preview, it contains bugs and it will change; also it does not contain any permission checking. To use it, please see 
 https://github.com/hashtopolis/server/wiki/Installation.
 
-<span style="font-size:1.2em;">Default installation method changed to Dockerimage</span>
+**Default installation method changed to Dockerimage**
 
 With the release 0.14.0 the default installation method changed to Docker. Docker images are now available at https://hub.docker.com/u/hashtopolis
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 - Setting 'Salt is in hex' during Hashlist creation will not set the --hex-salt flag (#892)
 
 ## v0.13.0 -> v0.13.1
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - When deleting a supertask that was created from an import, pretasks that were removed from this supertask should also be deleted (issue #865).
 - Setting config values to false using the user API now works as intended.
 - When using the rulesplit function an internal server error was thrown. (#836)
 - Deleting the last Hashlist resulted in an fatal error issue #888.
 
-<span style="font-size:1.2em;">Enhancements</span>
+**Enhancements**
 
 - Hash.hash is now of type MEDIUMTEXT to avoid issues with longer hashes (e.g. LUKS, issue #851).
 
 ## v0.12.0 -> v0.13.0
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 
 - Added monitoring of CPU utilization of agents.
 - Cracked hashes for all hashlists can be shown together (caution: only use when having smaller hashlists).
@@ -108,7 +108,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Added hashtype dropdown autocompletion for creating new hashlists (pull request #781).
 - Allow agents to register as CPU agents only (feature request #805).
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Fixed search hash function.
 - Fixed possible path traversal vulnerability on filename check.
@@ -132,7 +132,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Added check for max length of the attack command (issue #668).
 - Fixed missing flag isArchived on User API getTask requests (issue #794).
 
-<span style="font-size:1.2em;">Enhancements</span>
+**Enhancements**
 
 - Cracker version and name are shown on task details.
 - Task notes and cracker version are copied.
@@ -149,12 +149,12 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.11.0 -> v0.12.0
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 
 - Generic preprocessor integration to allow inclusion of any preprocessor supporting chunking.
 - Dark mode added.
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Fixed increasing the superhashlist cracked count if there are cracks running one of the hashlists alone.
 - Fixed hidden superhashlists on task creation page due to filtering.
@@ -164,7 +164,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed discord notification to work again.
 - Fixed missing index structure on speed measurements table.
 
-<span style="font-size:1.2em;">Enhancements</span>
+**Enhancements**
 
 - Agents can be assigned to tasks via user API.
 - Server can be configured to provide 'isComplete' flag on the user API when requesting all tasks.
@@ -180,7 +180,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.10.1 -> v0.11.0
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Fixed wrong task speed summation for task overview page.
 - Fixed error on hashlist hash retrieval.
@@ -193,7 +193,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed missing update of cracked count for superhashlists.
 - Fixed listing of hashlists and hashes of lists which should not be accessible by user.
 
-<span style="font-size:1.2em;">Enhancements</span>
+**Enhancements**
 
 - Temperature and util thresholds for agent status page can be configured.
 - User API can provide all cracks for a given task.
@@ -203,7 +203,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.10.0 -> v0.10.1
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Fixed createHashlist API call with wrong brain parameter conversion.
 - Fixed createUser API call with wrong amount of parameters.
@@ -212,7 +212,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.9.0 -> v0.10.0
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 
 - Integration of Hashcat Brain feature.
 - Speed data is kept and can be shown in graphs for tasks.
@@ -220,20 +220,20 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Agent updates can now automatically be retrieved, based on selected update track.
 - Update scripts in the future can be handled differently. Applying updates is easier as there is a build number.
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Fixed wrong percentage in case of big tasks where percentage was close to 0.
 - Rule splitting can only happen if at least two subparts get created afterwards.
 - Fixed filesize calculation for temporary files after rule splitting.
 
-<span style="font-size:1.2em;">Enhancements</span>
+**Enhancements**
 
 - In case of client errors the corresponding chunk now also is saved if available.
 - Make more clear naming on rule splitting tasks, rules have an empty line at the end to increase readability.
 
 ## v0.8.0 -> v0.9.0
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 
 - The server saves the crackpos for hash founds given by hashcat.
 - Trimming of chunks can be disabled so a chunk is always run fully again (or splitted if it is too large).
@@ -243,13 +243,13 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Slow hashes are marked, so the client can decide if piping could make sense for this hash type.
 - Agents can run health checks to determine if all agents are running correctly.
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Fixed GPU data graph when having multiple agents.
 - Fixed assignment issue with subtasks of supertasks if they were in the same supertask.
 - Fixed that cracker types cannot be deleted when there are supertasks using this type.
 
-<span style="font-size:1.2em;">Enhancements</span>
+**Enhancements**
 
 - Telegram notifications can now completely be configured via server config and also can be used through proxies.
 - Peppers of Encryption.class.php and CSRF.class.php were moved out of the files to make updating easier.
@@ -261,7 +261,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.7.1 -> v0.8.0
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 
 - The server can store sent debug output from Hashcat sent by the agent.
 - Files now also are associated to an Access Group to control the visibility of files.
@@ -274,14 +274,14 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - To make sure rules are applied before rejecting, piping can be enforced.
 - Added Notification type for Slack.
 
-<span style="font-size:1.2em;">Enhancements</span>
+**Enhancements**
 
 - Task attack commands can be changed after creation, e.g. to fix typos
 - Switch between tasks and archived ones is easier
 - Archived tasks can be deleted at once
 - Task priority can now be set directly in the task creation form.
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - New task creation page now also shows the other file type.
 - New file creation with the user API now takes the right file type.
@@ -291,7 +291,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.7.0 -> v0.7.1
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Fixed permission check for file downloads with URLs from the user API
 - Fixed issue with creating supertasks from preconfigured task list
@@ -301,7 +301,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.6.0 -> v0.7.0
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 
 - Tasks which are recognized containing large rule files and not giving good benchmarks result in splitting into subtasks
 - Most of the tables can now be easily ordered and searched with the datatables plugin
@@ -311,13 +311,13 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - File types can be edited of existing files.
 - Tasks can now be archived instead of being deleted.
 
-<span style="font-size:1.2em;">Enhancements</span>
+**Enhancements**
 
 - Width of the container is increased to have more space on large screens.
 - Standard buttons have now icons instead of text to use less space.
 - Hashcat is configured already as crack to make it easier for users to get started.
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Using correct function to get superhashlistId on zapping from webinterface.
 - Zapping from the website will now also issue zaps for non-salted hashlists.
@@ -325,21 +325,21 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.5.1 -> v0.6.0
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 
 - Added autofocus for login field
 - Added fine grained permission management
 - Updated Bootstrap and jQuery to newest versions
 - Added Icons instead of images
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Export of founds of binary hashlists fixed
 - DB Connection check during installation is now tested correctly
 
 ## v0.5.0 -> v0.5.1
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Fixed missing file assignments when applying preconfigured tasks from hashlists view (issue #354)
 - Fixed cracker binary relation error when applying supertasks from hashlist view
@@ -351,7 +351,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.4.3 -> v0.5.0
 
-<span style="font-size:1.2em;">Large Update</span>
+**Large Update**
 
 - Complete task management backend rewritten
 - Improved performance when handling cracked hashes
@@ -361,11 +361,11 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - More configuration options added
 - Cracker version management changed
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 
 - Tasks now have a cracks per minute performance based on total spent time
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Fixed dependency problem on user deletion
 - Fixed issue when agents got deleted which had completed at least one chunk
@@ -375,17 +375,17 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.4.2 -> v0.4.3
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 
 - Added telegram bot notification
 - Supertasks can now also be applied when viewing hashlist details (similar to preconfigured tasks)
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Notification display fixed
 - Updated problem where agents were looping when tasks go over 100%
 
-<span style="font-size:1.2em;">Technical</span>
+**Technical**
 
 - Fixed warnings during found import
 - Fixed edge case where it could happen that agents started to loop after a task when no new task was available
@@ -394,15 +394,15 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.4.1 -> v0.4.2
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 
 - Supertask imports can now be set to be small tasks for every subtask
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Fixed broken agent download
 
-<span style="font-size:1.2em;">Technical</span>
+**Technical**
 
 - Typos in constants fixed
 - Tasks can also be deleted from the detailed view
@@ -414,17 +414,17 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.4.0 -> v0.4.1
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - Various vulnerabilities (CVE-2017-11680, CVE-2017-11681, CVE-2017-11682) fixed, see [issue #241](https://github.com/hashtopolis/server/issues/241)
 
-<span style="font-size:1.2em;">Technical</span>
+**Technical**
 
 - Improved code handling, constants can be used in templates.
 
 ## v0.3.2 -> v0.4.0
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 
 - Renewed status page, gives now JSON formatted information which can be parsed however the user wants to.
 - added search page to search for hashes and plains
@@ -435,7 +435,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Supertasks added
 - HCmask style can be imported
 
-<span style="font-size:1.2em;">Technical</span>
+**Technical**
 
 - DB connection details now are stored in a file which is not in repository (a template is provided instead). This avoids conflicts on updates in `inc/load.php`
 - Hash length is increased to 1024 (old 512)
@@ -443,7 +443,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Added new hashtypes from Hashcat
 - Server hostname can be overridden in config
 
-<span style="font-size:1.2em;">Client</span>
+**Client**
 
 - Client updated to version 0.43.19 
 - Fixed debug not showing hashcat parameters on calls
@@ -454,11 +454,11 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 ## v0.3.1 -> v0.3.2
 
-<span style="font-size:1.2em;">Client</span>
+**Client**
 
 - Client updated to version 0.43.13
 
-<span style="font-size:1.2em;">Bugfixes</span>
+**Bugfixes**
 
 - fixed not sending notifications when using pre-task creation from hashlist details view
 - 'Delete Finished' button now deletes also tasks of hashlists which are completely cracked
@@ -468,12 +468,12 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - fixed problem that on small tasks multiple agents got assigned and assignments were deleted immediately
 - fixed issue that some agents suddenly got a very large chunk
 
-<span style="font-size:1.2em;">Features</span>
+**Features**
 
 - Added possibility to change isCpuOnly and isSmall on tasks after creation
 - DB details are now saved separately to the other loading part, so conflicts on updates are avoided
 
-<span style="font-size:1.2em;">Technical</span>
+**Technical**
 
 - removed old installation code which was used to upgrade Hashtopus to Hashtopolis 0.1.0
 - reduced size of task progress image
