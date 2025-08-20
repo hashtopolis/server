@@ -29,6 +29,7 @@
 Release 0.14.3 comes with an update to the tech preview of the new API. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
 
 Changes/Bugfixes on new UI:
+
 - After updating a task, the tasks table is also updated
 - Files can now be deleted via the context menu of the files-table
 - Step sequence corrected according to agent registration
