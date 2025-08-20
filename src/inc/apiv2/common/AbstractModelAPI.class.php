@@ -408,7 +408,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if ($object === null) {
       throw new ResourceNotFoundError();
     }
-    if ($otherFactory == null && $this->getSingleACL($this->getCurrentUser(), $object) === false) {
+    $group = Factory::getRightGroupFactory()->get($this->getCurrentUser()->getRightGroupId());
+    if ($group->getPermissions() !== 'ALL' && $otherFactory == null && $this->getSingleACL($this->getCurrentUser(),
+         $object) === false) {
       throw new HttpForbidden("No access to this object!", 403);
     }
     
@@ -614,13 +616,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     /* Generate filters */
     $filters = $apiClass->getFilters($request);
     $qFs_Filter = $apiClass->makeFilter($filters, $apiClass);
-    
-    $aFs_ACL = $apiClass->getFilterACL();
-    if (isset($aFs_ACL[Factory::FILTER])) {
-      $qFs_Filter = array_merge($aFs_ACL[Factory::FILTER], $qFs_Filter);
-    }
-    if (isset($aFs_ACL[Factory::JOIN])) {
-      $aFs[Factory::JOIN] = $aFs_ACL[Factory::JOIN];
+    $group = Factory::getRightGroupFactory()->get($apiClass->getCurrentUser()->getRightGroupId());
+    if ($group->getPermissions() !== 'ALL') { // Only add permission filters when no admin user
+      $aFs_ACL = $apiClass->getFilterACL();
+      if (isset($aFs_ACL[Factory::FILTER])) {
+        $qFs_Filter = array_merge($aFs_ACL[Factory::FILTER], $qFs_Filter);
+      }
+      if (isset($aFs_ACL[Factory::JOIN])) {
+        $aFs[Factory::JOIN] = $aFs_ACL[Factory::JOIN];
+      }
     }
     
     if (count($qFs_Filter) > 0) {
