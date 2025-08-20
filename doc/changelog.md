@@ -23,6 +23,7 @@
 ## v0.14.2 -> v0.14.3
 
 **Tech Preview New API**
+
 Release 0.14.3 comes with an update to the tech preview of the new API. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
 
 Changes/Bugfixes on new UI:
@@ -45,30 +46,36 @@ Changes/Bugfixes on new UI:
 ## v0.14.1 -> v0.14.2
 
 **Tech Preview New API**
+
 Release 0.14.2 comes with an update to the tech preview of APIv2. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
 
 **Bugfixes**
+
 - Setting maxAgent after creating doesn't update the maxAgents of the taskwrapper. This only causes issues when the maxAgents was set at creation time. #1013
 
 
 ## v0.14.0 -> v0.14.1
 
 **Tech Preview New API**
+
 Release 0.14.1 comes with an update to the tech preview of APIv2. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
 
 **Bugfixes**
+
 - Clicking pretask in Supertask create screen now directs correctly to the pretask and not a task with the same id (#945)
 - Pretask attackCmd parameter was not checked for maximum length of 256 on creation (#963)
 - Creating supertask fails when provided crackerType != pretask.crackerType (#969)
 - Searching for hashes and plaintext now also searches non archived hashlists (#974)
 
 **Features**
+
 - Number of agents per supertask/taskwrapper can be limited (#769).
 
 
 ## v0.13.1 -> v0.14.0
 
 **Tech Preview New API**
+
 Release 0.14.0 comes with a tech preview of APIv2. This is the starting point of the seperating of the frontend and the backend and gives 
 insight into what the future brings for Hashtopolis. We invite you to test it with the new web-ui and provide us with feedback. Be aware, 
 it is a preview, it contains bugs and it will change; also it does not contain any permission checking. To use it, please see 
@@ -79,6 +86,7 @@ https://github.com/hashtopolis/server/wiki/Installation.
 With the release 0.14.0 the default installation method changed to Docker. Docker images are now available at https://hub.docker.com/u/hashtopolis
 
 **Bugfixes**
+
 - Setting 'Salt is in hex' during Hashlist creation will not set the --hex-salt flag (#892)
 
 ## v0.13.0 -> v0.13.1
