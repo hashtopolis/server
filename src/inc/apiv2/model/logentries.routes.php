@@ -22,7 +22,7 @@ class LogEntryAPI extends AbstractModelAPI {
   }
   
   protected function deleteObject(object $object): void {
-    Factory::getLogEntryFactory()->delete($object);
+    assert(False, "Logentries cannot be deleted via API");
   }
 }
 

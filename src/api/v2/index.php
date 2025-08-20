@@ -242,7 +242,7 @@ $customErrorHandler = function (
   //Quirck to handle HTexceptions without status code, this can be removed when all HTexceptions have been migrated
   error_log($exception->getMessage());
   $code = $exception->getCode();
-  if ($code == 0) {
+  if ($code == 0 || $code == 1) {
     $code = 500;
   }
   
