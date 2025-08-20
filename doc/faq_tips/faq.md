@@ -6,7 +6,7 @@
 
 <span style="font-size:1.2em; font-weight:bold;">❓ How do I install Hashtopolis? </span>
 
-**Answer**: The easiest way to install Hashtopolis is with the Docker images that can be retrieved from the [Docker Hub](https://hub.docker.com/u/hashtopolis). Follow the instructions from the [documentation](../installation_guidelines/basic_install.md).
+**Answer**: The easiest way to install Hashtopolis is with the Docker images that can be retrieved from the [Docker Hub](https://hub.docker.com/u/hashtopolis). Follow the instructions from the [documentation](/installation_guidelines/basic_install.md).
 
 ---
 
