@@ -272,7 +272,7 @@ It is not officially supported and there are no pre-built docker images availabl
 
 <span style="font-size:1.2em; font-weight:bold;">❓ Why does Apache show only a directory or a 500 error?</span>
 
-A 500 error or directory index ususally indicates PHP is either not installed, disabled, or misconfigured.
+A 500 error or directory index usually indicates PHP is either not installed, disabled, or misconfigured.
 Ensure that `libapache2-mod-php` is installed and enabled.
 Also, verify that your `php.ini` and `.htaccess` files don't contain invalid directives.
 When encountering 500 Internal Server Errors, check Apache error logs at `/var/log/apache2/error.log` for information about the error.
