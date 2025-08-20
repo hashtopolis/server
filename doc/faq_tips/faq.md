@@ -24,7 +24,7 @@
 
 **Answer**: By default (when using the standard `docker-compose` setup), Hashtopolis stores folders like `import`, `files`, and `binaries` in a Docker volume. You can list this volume using `docker volume ls` and access it inside the container at `/usr/local/share/hashtopolis`.
 
-To use host directories instead of Docker volumes, you can change the mount paths in your `docker-compose.yml` file like this:
+To use host directories instead of Docker volumes, you can change the mount paths in your `docker-compose.yml` file like this (in this example the folders would then be mounted into `/opt/hashtopolis/` on the host:
 
 ```
 version: '3.7'
@@ -32,7 +32,6 @@ services:
   hashtopolis-backend:
     container_name: hashtopolis-backend
     image: hashtopolis/backend:latest
-    restart: always
     volumes:
       - /opt/hashtopolis/config:/usr/local/share/hashtopolis/config:Z
       - /opt/hashtopolis/log:/usr/local/share/hashtopolis/log:Z
@@ -54,7 +53,6 @@ services:
   db:
     container_name: db
     image: mysql:8.0
-    restart: always
     volumes:
       - db:/var/lib/mysql
     environment:
@@ -67,30 +65,25 @@ services:
     image: hashtopolis/frontend:latest
     environment:
       HASHTOPOLIS_BACKEND_URL: $HASHTOPOLIS_BACKEND_URL
-    restart: always
     depends_on:
       - hashtopolis-backend
     ports:
       - 4200:80
 volumes:
   db:
-  hashtopolis:
 ```
 
-Before recreating the containers, make sure to copy data out of the Docker volume:
-
+Before recreating the containers, make sure to copy data out of the Docker volume (if you have already used hashtopolis with the volume):
 ```
-docker cp hashtopolis-backend:/usr/local/share/hashtopolis <local-directory>
+docker cp hashtopolis-backend:/usr/local/share/hashtopolis /opt/hashtopolis
 ```
 
 Then shut down and bring the containers back up:
 
 ```
 docker compose down
-docker compose up
+docker compose up -d
 ```
-
-Finally, copy your data back into the corresponding folders.
 
 ---
 
