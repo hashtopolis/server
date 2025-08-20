@@ -137,16 +137,16 @@ class UserUtils {
    */
   public static function changePassword($user, $oldPassword, $newPassword, $confirmPassword) {
     if (!Encryption::passwordVerify($oldPassword, $user->getPasswordSalt(), $user->getPasswordHash())) {
-      throw new HTException("Your old password is wrong!");
+      throw new HttpError("Your old password is wrong!");
     }
     else if (strlen($newPassword) < 4) {
-      throw new HTException("Your password is too short!");
+      throw new HttpError("Your password is too short!");
     }
     else if ($newPassword != $confirmPassword) {
-      throw new HTException("Your new passwords do not match!");
+      throw new HttpError("Your new passwords do not match!");
     }
     else if ($newPassword == $oldPassword) {
-      throw new HTException("Your new password is the same as the old one!");
+      throw new HttpError("Your new password is the same as the old one!");
     }
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPassword, $newSalt);
