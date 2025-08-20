@@ -60,7 +60,7 @@ print("  $hashTypes = [")
 for hashType in new_hashtypes:
     print(f'    new HashType( {hashType.hashType}, "{hashType.description}", {int(hashType.salted)}, {int(hashType.slowHash)}),')
 print("   ];")
-print('  foreach ($hashtypes as $hashtype) {')
+print('  foreach ($hashTypes as $hashtype) {')
 print('    $check = Factory::getHashTypeFactory()->get($hashtype->getId());')
 print('    if ($check === null) {')
 print('      Factory::getHashTypeFactory()->save($hashtype);')

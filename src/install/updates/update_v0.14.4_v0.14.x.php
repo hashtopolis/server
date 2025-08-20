@@ -120,7 +120,7 @@ if (!isset($PRESENT["v0.14.x_update_hashtypes"])){
     new HashType( 72000, "Generic Hash [Bridged: Python Interpreter free-threading]", 0, 1),
     new HashType( 73000, "Generic Hash [Bridged: Python Interpreter with GIL]", 0, 1),
   ];
-  foreach ($hashtypes as $hashtype) {
+  foreach ($hashTypes as $hashtype) {
     $check = Factory::getHashTypeFactory()->get($hashtype->getId());
     if ($check === null) {
       Factory::getHashTypeFactory()->save($hashtype);
