@@ -14,3 +14,5 @@ pip3 install mkdocs
 pip3 install $(mkdocs get-deps)
 mkdocs server
 ```
+
+When testing the API reference you need to retrieve the openapi.json file from the Hashtopolis server (e.g. via `http://localhost:8080/api/v2/openapi.json) and place it inside this folder.
