@@ -1,14 +1,15 @@
 
 # Changelog
 
+
 ## v0.14.4 -> vx.x.x
 
 **Enhancements**
 
 - Updated OpenAPI docs to latest API updates
 
-## v0.14.3 -> v0.14.4
 
+## v0.14.3 -> v0.14.4
 
 **Enhancements**
 
@@ -19,6 +20,7 @@
 
 - Fixed a bug where creating a new preprocessor would copy the configured limit command over the configured skip command
 - Implemented sending emails inside docker container
+
 
 ## v0.14.2 -> v0.14.3
 
@@ -89,6 +91,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 - Setting 'Salt is in hex' during Hashlist creation will not set the --hex-salt flag (#892)
 
+
 ## v0.13.0 -> v0.13.1
 
 **Bugfixes**
@@ -101,6 +104,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 **Enhancements**
 
 - Hash.hash is now of type MEDIUMTEXT to avoid issues with longer hashes (e.g. LUKS, issue #851).
+
 
 ## v0.12.0 -> v0.13.0
 
@@ -155,6 +159,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Agents overview page and agent detail page now show counter for repeating devices.
 - Increase size of database column for storing agentstats.
 
+
 ## v0.11.0 -> v0.12.0
 
 **Features**
@@ -186,6 +191,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Adjusted to new format of Hashcat printing cracked WPA hashes.
 - Adjusted to PMKID handling of Hashcat.
 
+
 ## v0.10.1 -> v0.11.0
 
 **Bugfixes**
@@ -209,6 +215,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - User API can provide all cracks for a given hashlist.
 - Support for new Hashcat versions without 32/64-bit naming.
 
+
 ## v0.10.0 -> v0.10.1
 
 **Bugfixes**
@@ -217,6 +224,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed createUser API call with wrong amount of parameters.
 - Fixed applying supertasks directly from hashlist view.
 - Fixed wrong saving of build number if it didn't exist.
+
 
 ## v0.9.0 -> v0.10.0
 
@@ -238,6 +246,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 
 - In case of client errors the corresponding chunk now also is saved if available.
 - Make more clear naming on rule splitting tasks, rules have an empty line at the end to increase readability.
+
 
 ## v0.8.0 -> v0.9.0
 
@@ -266,6 +275,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Changed type of the hash column to TEXT to make sure to handle all the long hashes. It should not affect speed as long as there is not a multi-million hashlist.
 - Preconfigured task attack commands can be edited after creation.
 - If needed it can be set that the server should also distribute tasks with priority 0.
+
 
 ## v0.7.1 -> v0.8.0
 
@@ -297,6 +307,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Disabling rule splitting when having a prince task.
 - Fixed non-working secret checkbox for hashlists.
 
+
 ## v0.7.0 -> v0.7.1
 
 **Bugfixes**
@@ -306,6 +317,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed creation of tasks from preconfigured tasks out of the hashlist view
 - Fixed mask import
 - Fixed hiding of mask imports in preconfigured task list on hashlist page
+
 
 ## v0.6.0 -> v0.7.0
 
@@ -331,6 +343,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Zapping from the website will now also issue zaps for non-salted hashlists.
 - Fixed zapping querying on progress sending from agent to also match for agent null values.
 
+
 ## v0.5.1 -> v0.6.0
 
 **Features**
@@ -345,6 +358,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Export of founds of binary hashlists fixed
 - DB Connection check during installation is now tested correctly
 
+
 ## v0.5.0 -> v0.5.1
 
 **Bugfixes**
@@ -356,6 +370,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed file upload which allowed upload of file:// data and reading it
 - Fixed renaming of files which allowed renaming them to other directories and execute them
 - Fixed renaming/uploading of files which allowed to override hidden files (e.g. .htaccess file)
+
 
 ## v0.4.3 -> v0.5.0
 
@@ -381,6 +396,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed ETA and spent time for tasks
 - Error message which was always shown when adding new hash types fixed
 
+
 ## v0.4.2 -> v0.4.3
 
 **Features**
@@ -399,6 +415,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed edge case where it could happen that agents started to loop after a task when no new task was available
 - Pre-crack import warns when too long plaintexts are in the import file
 - Implemented missing ownAgentError notification execution
+
 
 ## v0.4.1 -> v0.4.2
 
@@ -420,6 +437,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed additional vulnerabilities reported
 - Fixed remaining fragments when deleting finished supertasks
 
+
 ## v0.4.0 -> v0.4.1
 
 **Bugfixes**
@@ -429,6 +447,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 **Technical**
 
 - Improved code handling, constants can be used in templates.
+
 
 ## v0.3.2 -> v0.4.0
 
@@ -459,6 +478,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Added more information for task assigning, client will now display task and hashlist on task get
 - Fixed slow file downloading issue
 - Changed the way hashcat version is queried (should work properly on linux/mac)
+
 
 ## v0.3.1 -> v0.3.2
 
