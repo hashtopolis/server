@@ -39,7 +39,7 @@ WantedBy=multi-user.target
 ```
 
 Make sure you adjust the running user and paths to your needs.
-Reload the confis with `systemctl daemon-reload`.
+Reload the configs with `systemctl daemon-reload`.
 Enable it using `systemctl enable hashtopolis-agent` and start it with `systemctl start hashtopolis-agent`.
 Ensure your agent configuration (`config.json`) is correctly set before enabling.
 
