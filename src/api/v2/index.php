@@ -248,7 +248,6 @@ $customErrorHandler = function (
   
   return errorResponse($response, $exception->getMessage(), $code);
 };
-$errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 $app->addRoutingMiddleware(); //Routing middleware has to be added after the default error handler
 $errorMiddlewareMethodNotAllowed = $app->addErrorMiddleware(true, true, true);
 $errorMiddlewareMethodNotAllowed->setErrorHandler(HttpMethodNotAllowedException::class, function (
@@ -298,6 +297,7 @@ require __DIR__ . "/../../inc/apiv2/model/vouchers.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/abortChunk.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/assignAgent.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/changeOwnPassword.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/currentUser.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/createSupertask.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/createSuperHashlist.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/exportCrackedHashes.routes.php";
@@ -305,7 +305,6 @@ require __DIR__ . "/../../inc/apiv2/helper/exportLeftHashes.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/exportWordlist.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getAccessGroups.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getAgentBinary.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/getCurrentUser.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getFile.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getUserPermission.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/importCrackedHashes.routes.php";

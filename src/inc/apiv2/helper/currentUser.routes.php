@@ -8,13 +8,13 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
-class getCurrentUserHelperAPI extends AbstractHelperAPI {
+class currentUserHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
-    return "/api/v2/helper/getCurrentUser";
+    return "/api/v2/helper/currentUser";
   }
   
   public static function getAvailableMethods(): array {
-    return ['GET'];
+    return ['GET', 'PATCH'];
   }
   
   public function getRequiredPermissions(string $method): array {
@@ -50,26 +50,40 @@ class getCurrentUserHelperAPI extends AbstractHelperAPI {
    * @param $data
    * @return object|array|null
    */
-  #[NoReturn] public function actionPost($data): object|array|null {
-    assert(False, "GetCurrentUser has no POST");
+  public function actionPost($data): object|array|null {
+    assert(False, "GetCurrentUser has no actionPOST");
   }
   
+  // PATCH endpoint in order to patch attributes of own user, even when user doesnt have permissions to alter users
+  public function actionPatch(Request $request, Response $response, array $args): Response
+  {
+    $data = $request->getParsedBody()['data'];
+    $this->preCommon($request);
+    $user = $this->getCurrentUser();
+    $userRoute = new UserAPI($this->container);
+    // Since User has to be able to patch own attributes, the user attribute has to be set manually without calling precommon()
+    // because that will validate the permissions.
+    $userRoute->setCurrentUser($user);
+    return $userRoute->patchSingleObject($request, $response, $user, $data);
+  }
+
   static public function register($app): void {
-    $baseUri = getCurrentUserHelperAPI::getBaseUri();
+    $baseUri = currentUserHelperAPI::getBaseUri();
     
     /* Allow CORS preflight requests */
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "getCurrentUserHelperAPI:handleGet");
+    $app->get($baseUri, "CurrentUserHelperAPI:handleGet");
+    $app->patch($baseUri, "CurrentUserHelperAPI:actionPatch");
   }
   
   /**
-   * getAccessGroups is different because it returns via another function
+   * getCurrentUser is different because it returns via another function
    */
   public static function getResponse(): array|string|null {
     return null;
   }
 }
 
-getCurrentUserHelperAPI::register($app);
+currentUserHelperAPI::register($app);
