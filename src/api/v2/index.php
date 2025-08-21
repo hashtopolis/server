@@ -248,6 +248,7 @@ $customErrorHandler = function (
   
   return errorResponse($response, $exception->getMessage(), $code);
 };
+$errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 $app->addRoutingMiddleware(); //Routing middleware has to be added after the default error handler
 $errorMiddlewareMethodNotAllowed = $app->addErrorMiddleware(true, true, true);
 $errorMiddlewareMethodNotAllowed->setErrorHandler(HttpMethodNotAllowedException::class, function (
