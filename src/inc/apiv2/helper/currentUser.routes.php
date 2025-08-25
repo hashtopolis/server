@@ -61,8 +61,6 @@ class currentUserHelperAPI extends AbstractHelperAPI {
     $this->preCommon($request);
     $user = $this->getCurrentUser();
     $userRoute = new UserAPI($this->container);
-    // Since User has to be able to patch own attributes, the user attribute has to be set manually without calling precommon()
-    // because that will validate the permissions.
     $userRoute->setCurrentUser($user);
     return $userRoute->patchSingleObject($request, $response, $user, $data);
   }
