@@ -371,7 +371,7 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (2600,  'md5(md5($pass))', 0, 0),
   (2611,  'vBulletin < v3.8.5', 1, 0),
   (2612,  'PHPS', 0, 0),
-  (2630,   'md5(md5($pass.$salt))', 1, 0),
+  (2630,  'md5(md5($pass.$salt))', 1, 0),
   (2711,  'vBulletin >= v3.8.5', 1, 0),
   (2811,  'IPB2+, MyBB1.2+', 1, 0),
   (3000,  'LM', 0, 0),
