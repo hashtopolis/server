@@ -54,8 +54,8 @@ CREATE TABLE `AgentBinary` (
   `updateAvailable`  VARCHAR(20) NOT NULL
 ) ENGINE = InnoDB;
 
-INSERT INTO `AgentBinary` (`agentBinaryId`, `binaryType`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
-  (1, 'python', '0.7.3', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
+INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
+  (1, 'python', '0.7.4', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
 
 CREATE TABLE `AgentError` (
   `agentErrorId` INT(11) NOT NULL,
@@ -198,7 +198,7 @@ CREATE TABLE `CrackerBinary` (
 ) ENGINE = InnoDB;
 
 INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
-  (1, 1, '6.2.6', 'https://hashcat.net/files/hashcat-6.2.6.7z', 'hashcat');
+  (1, 1, '7.1.2', 'https://hashcat.net/files/hashcat-7.1.2.7z', 'hashcat');
 
 CREATE TABLE `CrackerBinaryType` (
   `crackerBinaryTypeId` INT(11)     NOT NULL,
@@ -374,7 +374,7 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (2600,  'md5(md5($pass))', 0, 0),
   (2611,  'vBulletin < v3.8.5', 1, 0),
   (2612,  'PHPS', 0, 0),
-  (2630,   'md5(md5($pass.$salt))', 1, 0),
+  (2630,  'md5(md5($pass.$salt))', 1, 0),
   (2711,  'vBulletin >= v3.8.5', 1, 0),
   (2811,  'IPB2+, MyBB1.2+', 1, 0),
   (3000,  'LM', 0, 0),
@@ -1141,7 +1141,9 @@ ALTER TABLE `Assignment`
 ALTER TABLE `Chunk`
   ADD PRIMARY KEY (`chunkId`),
   ADD KEY `taskId` (`taskId`),
-  ADD KEY `agentId` (`agentId`);
+  ADD KEY `progress` (`progress`),
+  ADD KEY `agentId` (`agentId`),
+  ADD KEY `idx_task_progress_length` (`taskId`, `progress`, `length`);
 
 ALTER TABLE `Config`
   ADD PRIMARY KEY (`configId`),
@@ -1252,6 +1254,8 @@ ALTER TABLE `TaskDebugOutput`
 ALTER TABLE `TaskWrapper`
   ADD PRIMARY KEY (`taskWrapperId`),
   ADD KEY `hashlistId` (`hashlistId`),
+  ADD KEY `priority` (`priority`),
+  ADD KEY `isArchived` (`isArchived`),
   ADD KEY `accessGroupId` (`accessGroupId`);
 
 ALTER TABLE `User`
