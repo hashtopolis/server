@@ -298,6 +298,7 @@ require __DIR__ . "/../../inc/apiv2/model/vouchers.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/abortChunk.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/assignAgent.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/changeOwnPassword.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/currentUser.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/createSupertask.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/createSuperHashlist.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/exportCrackedHashes.routes.php";

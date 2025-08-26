@@ -997,8 +997,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     return self::getOneResource($this, $object, $request, $response);
   }
-  
-  
+
   /**
    * API entry point for modification of single object
    * @param Request $request
@@ -1010,18 +1009,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HttpForbidden
    * @throws ResourceNotFoundError
    */
-  public function patchOne(Request $request, Response $response, array $args): Response {
-    $this->preCommon($request);
-    
-    // use doFetch to also have additional checks completed
-    $object = $this->doFetch($args['id']);
-    
-    $data = $request->getParsedBody()['data'];
+  public function patchSingleObject(Request $request, Response $response, mixed $object, mixed $data) {
     if (!$this->validateResourceRecord($data)) {
       return errorResponse($response, "No valid resource identifier object was given as data!", 403);
     }
-    $aliasedFeatures = $this->getAliasedFeatures();
+
     $attributes = $data['attributes'];
+    $aliasedFeatures = $this->getAliasedFeatures();
     
     // Validate incoming data
     foreach (array_keys($attributes) as $key) {
@@ -1037,7 +1031,23 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     // Return updated object
     $newObject = $this->getFactory()->get($object->getId());
-    return self::getOneResource($this, $newObject, $request, $response, 200);
+    return $this->getOneResource($this, $newObject, $request, $response, 200);
+  }
+  
+  /**
+   * API entry point for modification of single object
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   */
+  public function patchOne(Request $request, Response $response, array $args): Response {
+    $this->preCommon($request);
+    
+    // use doFetch to also have additional checks completed
+    $object = $this->doFetch($args['id']);
+    
+    $data = $request->getParsedBody()['data'];
+    return $this->patchSingleObject($request, $response, $object, $data);
   }
   
   //follows style of bulk methods: https://github.com/json-api/json-api/blob/9c7a03dbc37f80f6ca81b16d444c960e96dd7a57/extensions/bulk/index.md

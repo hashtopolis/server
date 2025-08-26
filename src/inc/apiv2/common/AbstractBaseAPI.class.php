@@ -180,6 +180,10 @@ abstract class AbstractBaseAPI {
   final protected function getCurrentUser(): User {
     return $this->user;
   }
+
+  public function setCurrentUser(User $user): void {
+    $this->user = $user;
+  }
   
   
   protected static function getModelFactory(string $model): object {
