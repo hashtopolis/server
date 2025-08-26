@@ -11,7 +11,7 @@ for path in ${paths[@]}; do
 done
 
 echo "Testing database."
-MYSQL="mysql -u${HASHTOPOLIS_DB_USER} -p${HASHTOPOLIS_DB_PASS} -h ${HASHTOPOLIS_DB_HOST}"
+MYSQL="mysql -u${HASHTOPOLIS_DB_USER} -p${HASHTOPOLIS_DB_PASS} -h ${HASHTOPOLIS_DB_HOST} --skip-ssl"
 $MYSQL -e "SELECT 1" > /dev/null 2>&1
 ERROR=$?
 
