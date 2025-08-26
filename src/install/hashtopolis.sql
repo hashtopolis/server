@@ -54,7 +54,7 @@ CREATE TABLE `AgentBinary` (
   `updateAvailable`  VARCHAR(20) NOT NULL
 ) ENGINE = InnoDB;
 
-INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
+INSERT INTO `AgentBinary` (`agentBinaryId`, `binaryType`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
   (1, 'python', '0.7.4', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
 
 CREATE TABLE `AgentError` (
