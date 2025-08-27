@@ -1,0 +1,78 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Search Vast.AI</h2>
+{{IF [[vastApiKey]] === '' }}<h5><strong>Error: </strong>Missing Vast.ai API Key, add one <a href="config.php?view=8">here</a></h5>{{ENDIF}}
+{{IF [[infoMessage]] != '' }}<h5><strong>Info:</strong> [[infoMessage]] {{ENDIF}}
+{{IF [[apiError]] != '' }}<h5><strong>Vast.ai API Error:</strong> [[apiError]] {{ENDIF}}
+{%TEMPLATE->struct/vastaifilter%}
+{%TEMPLATE->struct/messages%}
+        <form action="vastaiAgentsRent.php" method="POST" onSubmit="if (!confirm('Please note this will charge the Vast.ai account associated with the account. Please see the instances page to view additional costs associated with each rented instance.')) return false;">
+        <div style="display: flex; align-items: center;">
+        <input class="btn btn-warning" style="margin-right: 10px" type="submit" value="Rent Checked"/>
+        <strong><label style="padding: 8px 12px;" size="10">Disk Size (GB): </label></strong>
+        <input type="text" class="form-control" name="disk" value="8" style="width: 60px;margin-right: 10px;" maxlength="8">
+        </div>
+
+        <input type="hidden" name="csrf" value="[[csrf]]" />
+        <input type="hidden" name="rent" value="bulk"/>
+        <br /> <br />
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered table-sm" id="agents">
+      <thead>
+        <tr>
+          <th>Rent</th>
+          <th>ID</th>
+          <th>Total Cost ($/hr)</th>
+          <th>Reliability</th>
+          <th>GPU(s) Name</th>
+          <th>GPU #</th>
+          <th>GPU RAM (MB)</th>
+          <th>CPU Name</th>
+          <th>CPU Threads</th>
+          <th>CPU RAM (MB)</th>
+          <th>Verification Status</th>
+          <th>Interruptible</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{FOREACH gpu;[[gpus]]}}
+          <tr>
+            {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]]}} 
+              <td style="text-align: center; vertical-align: middle;">
+                <input type="checkbox" name="vastid-[[gpu.getVal('id')]]">
+              </td>
+            {{ELSE}}
+              <td>&nbsp;</td>
+            {{ENDIF}}
+            <td><a title="See Details" href="vastaiAgentsRent.php?rent=[[gpu.getVal('id')]]">[[gpu.getVal('id')]]</a></td>
+            <td>[[gpu.getVal('dph_total')]]</td>
+            <td>[[gpu.getFloatVal100('reliability2',0)]] %</td>
+            <td>[[gpu.getVal('gpu_name')]]</td>
+            <td>[[gpu.getVal('num_gpus')]]</td>
+            <td>[[gpu.getVal('gpu_ram')]]</td>
+            <td>[[gpu.getVal('cpu_name')]]</td>
+            <td>[[gpu.getVal('cpu_cores')]]</td>
+            <td>[[gpu.getVal('cpu_ram')]]</td>
+            <td>[[gpu.getVal('verification')]]</td>
+            <td>{{IF [[gpu.getVal('is_bid')]]}} True {{ELSE}} False {{ENDIF}}</td>
+          </tr>
+        {{ENDFOREACH}}
+        </form> 
+      </tbody>
+    </table>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#agents').DataTable({
+          pageLength: 50,
+          "order": [ [0, 'asc'] ],
+          "columnDefs": [
+            { "orderable": false, "targets": [] },
+            { "orderable": true, "targets": [0, 1, 2, 3, 4, 5, 6, 7] }
+          ]
+        });
+      });
+    </script>
+  </div>
+</div>
+{%TEMPLATE->struct/foot%}
