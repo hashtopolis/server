@@ -206,9 +206,11 @@ class FileUtils {
         break;
       case "url":
         // from url
-        $realname = str_replace(" ", "_", htmlentities(basename($post["url"]), ENT_QUOTES, "UTF-8"));
+        $realname = (isset($post["filename"])) ? $post["filename"] :
+                    str_replace(" ", "_", htmlentities(basename($post["url"]), ENT_QUOTES, "UTF-8"));
+    
         if (strlen($realname) == 0) {
-          throw new HttpError("Empty URL provided!");
+          throw new HttpError("Empty URL/name provided!");
         }
         else if ($realname[0] == '.') {
           $realname[0] = "_";
