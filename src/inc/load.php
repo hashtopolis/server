@@ -12,6 +12,8 @@ ini_set("display_errors", "0");
 
 session_start();
 
+require_once(dirname(__FILE__) . "/../../vendor/autoload.php");
+
 require_once(dirname(__FILE__) . "/info.php");
 
 include(dirname(__FILE__) . "/confv2.php");

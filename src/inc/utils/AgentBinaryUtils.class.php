@@ -4,8 +4,10 @@ use DBA\AgentBinary;
 use DBA\QueryFilter;
 use DBA\User;
 use DBA\Factory;
+use Composer\Semver\Comparator;
 
-require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
+require_once(__DIR__ . "/../apiv2/common/ErrorHandler.class.php");
+
 class AgentBinaryUtils {
   /**
    * @param string $type
@@ -226,7 +228,7 @@ class AgentBinaryUtils {
     if (strlen($latest) == 0) {
       throw new HTException("Failed to retrieve latest version!");
     }
-    if (Util::versionComparison($agent->getVersion(), $latest) > 0) {
+    if (Comparator::lessThan($agent->getVersion(), $latest) > 0) {
       return $latest;
     }
     return false;

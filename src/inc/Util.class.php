@@ -27,6 +27,7 @@ use DBA\AgentStat;
 use DBA\FileDelete;
 use DBA\Factory;
 use DBA\Speed;
+use Composer\Semver\Comparator;
 
 /**
  *
@@ -198,7 +199,7 @@ class Util {
     }
     $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($binary != null) {
-      if (Util::versionComparison($binary->getVersion(), $version) == 1) {
+      if (Comparator::lessThan($binary->getVersion(), $version) == 1) {
         if (!$silent) {
           echo "update $type version... ";
         }
@@ -941,35 +942,7 @@ class Util {
    * @return int
    */
   public static function versionComparisonBinary($binary1, $binary2) {
-    return Util::versionComparison($binary1->getVersion(), $binary2->getVersion());
-  }
-  
-  /**
-   * @param string $version1
-   * @param string $version2
-   * @return int 1 if version2 is newer, 0 if equal and -1 if version1 is newer
-   */
-  public static function versionComparison($version1, $version2) {
-    $version1 = explode(".", $version1);
-    $version2 = explode(".", $version2);
-    
-    for ($i = 0; $i < sizeof($version1) && $i < sizeof($version2); $i++) {
-      $num1 = (int)$version1[$i];
-      $num2 = (int)$version2[$i];
-      if ($num1 > $num2) {
-        return -1;
-      }
-      else if ($num1 < $num2) {
-        return 1;
-      }
-    }
-    if (sizeof($version1) > sizeof($version2)) {
-      return -1;
-    }
-    else if (sizeof($version1) < sizeof($version2)) {
-      return 1;
-    }
-    return 0;
+    return Comparator::lessThan($binary1->getVersion(), $binary2->getVersion());
   }
   
   /**
@@ -984,7 +957,7 @@ class Util {
     $version1 = substr($versionString1, 8, strpos($versionString1, "_", 7) - 8);
     $version2 = substr($versionString2, 8, strpos($versionString2, "_", 7) - 8);
     
-    return Util::versionComparison($version2, $version1);
+    return Comparator::lessThan($version2, $version1);
   }
   
   /**

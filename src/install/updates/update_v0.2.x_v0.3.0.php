@@ -4,6 +4,7 @@ use DBA\AgentBinary;
 use DBA\Config;
 use DBA\QueryFilter;
 use DBA\Factory;
+use Composer\Semver\Comparator;
 
 require_once(dirname(__FILE__) . "/../../inc/load.php");
 
@@ -40,7 +41,7 @@ echo "Check csharp binary... ";
 $qF = new QueryFilter("type", "csharp", "=");
 $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
 if ($binary != null) {
-  if (Util::versionComparison($binary->getVersion(), "0.43") == 1) {
+  if (Comparator::lessThan($binary->getVersion(), "0.43")) {
     echo "update version... ";
     $binary->setVersion("0.43");
     Factory::getAgentBinaryFactory()->update($binary);

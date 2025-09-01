@@ -3,6 +3,7 @@
 use DBA\AgentBinary;
 use DBA\QueryFilter;
 use DBA\Factory;
+use Composer\Semver\Comparator;
 
 class APICheckClientVersion extends APIBasic {
   public function execute($QUERY = array()) {
@@ -23,7 +24,7 @@ class APICheckClientVersion extends APIBasic {
     }
     
     $this->updateAgent(PActions::CHECK_CLIENT_VERSION);
-    if (Util::versionComparison($result->getVersion(), $version) == -1) {
+    if (Comparator::lessThan($result->getVersion(), $version) == -1) {
       DServerLog::log(DServerLog::DEBUG, "Agent " . $this->agent->getId() . " got notified about client update");
       $this->sendResponse(array(
           PResponseClientUpdate::ACTION => PActions::CHECK_CLIENT_VERSION,

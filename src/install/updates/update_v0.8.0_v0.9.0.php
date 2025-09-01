@@ -6,6 +6,7 @@ use DBA\Config;
 use DBA\QueryFilter;
 use DBA\HashType;
 use DBA\AgentBinary;
+use Composer\Semver\Comparator;
 
 if (!isset($TEST)) {
   /** @noinspection PhpIncludeInspection */
@@ -31,7 +32,7 @@ if (!isset($TEST)) {
   $qF = new QueryFilter("type", "python", "=");
   $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
   if ($binary != null) {
-    if (Util::versionComparison($binary->getVersion(), "0.3.0") == 1) {
+    if (Comparator::lessThan($binary->getVersion(), "0.3.0")) {
       echo "update python version... ";
       $binary->setVersion("0.3.0");
       Factory::getAgentBinaryFactory()->update($binary);
