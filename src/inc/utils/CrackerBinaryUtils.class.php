@@ -3,6 +3,7 @@
 use DBA\CrackerBinary;
 use DBA\QueryFilter;
 use DBA\Factory;
+use Composer\Semver\Comparator;
 
 class CrackerBinaryUtils {
   /**
@@ -16,7 +17,7 @@ class CrackerBinaryUtils {
     /** @var $newest CrackerBinary */
     $newest = null;
     foreach ($binaries as $binary) {
-      if ($newest == null || Util::versionComparison($binary->getVersion(), $newest->getVersion()) < 0) {
+      if ($newest == null || Comparator::greaterThan($binary->getVersion(), $newest->getVersion())) {
         $newest = $binary;
       }
     }

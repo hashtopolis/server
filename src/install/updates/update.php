@@ -3,6 +3,7 @@
 use DBA\LikeFilterInsensitive;
 use DBA\StoredValue;
 use DBA\Factory;
+use Composer\Semver\Comparator;
 
 /*
  * This script should automatically determine the current base function and go through
@@ -46,10 +47,9 @@ if ($upgradePossible) { // we can actually check if there are upgrades to be app
   usort($allFiles, array("Util", "updateVersionComparison"));
   foreach ($allFiles as $file) {
     if (Util::startsWith($file, "update_v")) {
-      // check version
-      $minor = Util::getMinorVersion(substr($file, 8, strpos($file, "_", 7) - 8));
-      if (Util::versionComparison($minor, Util::getMinorVersion($storedVersion->getVal())) < 1) {
-        // script needs to be checked
+      $startVersion = substr($file, 8, strpos($file, "_", 7) - 8);
+      if (Comparator::greaterThanOrEqualTo($startVersion, $storedVersion->getVal())) {
+        // script needs to be executed
         include(dirname(__FILE__) . "/" . $file);
       }
     }

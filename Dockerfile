@@ -1,4 +1,4 @@
-FROM alpine/git as preprocess
+FROM alpine/git AS preprocess
 
 COPY .gi[t] /.git
 
@@ -6,7 +6,7 @@ RUN cd / && git rev-parse --short HEAD > /HEAD; exit 0
 
 # BASE image
 # ----BEGIN----
-FROM php:8-apache as hashtopolis-server-base
+FROM php:8-apache AS hashtopolis-server-base
 
 # Enable possible build args for injecting user commands
 ARG CONTAINER_USER_CMD_PRE
@@ -96,7 +96,7 @@ ENTRYPOINT [ "docker-entrypoint.sh" ]
 
 # DEVELOPMENT Image
 # ----BEGIN----
-FROM hashtopolis-server-base as hashtopolis-server-dev
+FROM hashtopolis-server-base AS hashtopolis-server-dev
 
 # Setting up development requirements, install xdebug
 RUN yes | pecl install xdebug-3.4.0beta1 && docker-php-ext-enable xdebug \
@@ -143,9 +143,12 @@ USER vscode
 
 # PRODUCTION Image
 # ----BEGIN----
-FROM hashtopolis-server-base as hashtopolis-server-prod
+FROM hashtopolis-server-base AS hashtopolis-server-prod
 
 COPY --chown=www-data:www-data ./src/ $HASHTOPOLIS_DOCUMENT_ROOT
+
+# protect install/update directory
+RUN echo "Order deny,allow\nDeny from all" > "${HASHTOPOLIS_DOCUMENT_ROOT}/install/.htaccess"
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \

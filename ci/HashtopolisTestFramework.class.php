@@ -1,6 +1,7 @@
 <?php
 
 use DBA\Factory;
+use Composer\Semver\Comparator;
 
 class HashtopolisTestFramework {
   const REQUEST_CLIENT = 0;
@@ -104,11 +105,11 @@ private function isTestIncluded($instance, $version, $testNames, $runType, $upgr
   if (!empty($testNames) && !in_array(get_class($instance), $testNames)) {
     return false;
   }
-  if (!$upgrade && $version != 'master' && (Util::versionComparison($version, $instance->getMinVersion()) > 0 || $instance->getMinVersion() == 'master')) {
+  if (!$upgrade && $version != 'master' && (Comparator::lessThan($version, $instance->getMinVersion()) || $instance->getMinVersion() == 'master')) {
     echo "Ignoring " . $instance->getTestName() . ": minimum " . $instance->getMinVersion() . " required, but testing $version...\n";
     return false;
   }
-  if ($instance->getMaxVersion() != 'master' && (Util::versionComparison($version, $instance->getMaxVersion()) < 0 || $version == 'master')) { 
+  if ($instance->getMaxVersion() != 'master' && (Comparator::greaterThan($version, $instance->getMaxVersion()) || $version == 'master')) { 
     echo "Ignoring " . $instance->getTestName() . ": maximum " . $instance->getMaxVersion() . " required, but testing $version...\n";
     return false;
   }

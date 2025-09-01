@@ -10,6 +10,13 @@ if (!isset($PRESENT["v0.14.4_agentBinaries"])) {
   $EXECUTED["v0.14.4_agentBinaries"] = true;
 }
 
+if (!isset($PRESENT["v0.14.4_update_agent_binary"])) {
+  if (Util::databaseColumnExists("AgentBinary", "type")) {
+    Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` RENAME COLUMN `type` to `binaryType`;");
+    $EXECUTED["v0.14.4_update_agent_binary"] = true;
+  }
+}
+
 if (!isset($PRESENT["v0.14.4_update_hashtypes"])){
   $hashTypes = [
     new HashType( 1310, "sha224($pass.$salt)", 1, 0),

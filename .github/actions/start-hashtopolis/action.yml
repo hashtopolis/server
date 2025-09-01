@@ -8,6 +8,9 @@ runs:
       working-directory: .devcontainer
       run: docker compose up -d
       shell: bash
+    - name: Install composer dependencies packages
+      run: docker exec hashtopolis-server-dev composer install --working-dir=/var/www/html/
+      shell: bash
     - name: Wait until entrypoint is finished and Hashtopolis is started
       run: bash .github/scripts/await-hashtopolis-startup.sh
       shell: bash
