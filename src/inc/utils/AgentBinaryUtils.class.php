@@ -228,7 +228,7 @@ class AgentBinaryUtils {
     if (strlen($latest) == 0) {
       throw new HTException("Failed to retrieve latest version!");
     }
-    if (Comparator::lessThan($agent->getVersion(), $latest) > 0) {
+    if (Comparator::lessThan($agent->getVersion(), $latest)) {
       return $latest;
     }
     return false;

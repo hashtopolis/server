@@ -199,7 +199,7 @@ class Util {
     }
     $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($binary != null) {
-      if (Comparator::lessThan($binary->getVersion(), $version) == 1) {
+      if (Comparator::lessThan($binary->getVersion(), $version)) {
         if (!$silent) {
           echo "update $type version... ";
         }
@@ -942,7 +942,13 @@ class Util {
    * @return int
    */
   public static function versionComparisonBinary($binary1, $binary2) {
-    return Comparator::lessThan($binary1->getVersion(), $binary2->getVersion());
+    if (Comparator::greaterThan($binary1->getVersion(), $binary2->getVersion()){
+      return 1;
+    }
+    else if (Comparator::lessThan($binary1->getVersion(), $binary2->getVersion()){
+      return -1;
+    }
+    return 0;
   }
   
   /**
@@ -957,7 +963,13 @@ class Util {
     $version1 = substr($versionString1, 8, strpos($versionString1, "_", 7) - 8);
     $version2 = substr($versionString2, 8, strpos($versionString2, "_", 7) - 8);
     
-    return Comparator::lessThan($version2, $version1);
+    if(Comparator::greaterThan($version2, $version1)){
+      return 1;
+    }
+    else if(Comparator::lessThan($version2, $version1)){
+      return -1;
+    }
+    return 0;
   }
   
   /**

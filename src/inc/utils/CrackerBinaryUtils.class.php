@@ -17,7 +17,7 @@ class CrackerBinaryUtils {
     /** @var $newest CrackerBinary */
     $newest = null;
     foreach ($binaries as $binary) {
-      if ($newest == null || Comparator::lessThan($binary->getVersion(), $newest->getVersion()) < 0) {
+      if ($newest == null || Comparator::greaterThan($binary->getVersion(), $newest->getVersion())) {
         $newest = $binary;
       }
     }

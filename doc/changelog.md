@@ -5,6 +5,11 @@
 **Enhancements**
 
 - Updated OpenAPI docs to latest API updates
+- Improved version comparison to avoid update script issues
+
+**Bugfixes**
+
+- Fixed missing .htaccess to avoid access to install directory on docker setups
 
 
 ## v0.14.4 -> v0.14.5
