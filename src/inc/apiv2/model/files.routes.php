@@ -116,9 +116,12 @@ class FileAPI extends AbstractModelAPI {
         /* Since we are renaming the file _before_ import the name is temporary changed */
         $dummyPost["imfile"] = [$data[File::FILENAME]];
         break;
+      case "url":
+        $dummyPost["url"] = $data["sourceData"];
+        break;
       default:
         // TODO: Choice validation are model based checks
-        throw new HttpError("sourceType value '" . $data["sourceType"] . "' is not supported (choices inline, import");
+        throw new HttpError("sourceType value '" . $data["sourceType"] . "' is not supported (choices inline, import, url");
     }
     
     /* TODO: Hackish view to revert back to required (hardcoded) view */
@@ -144,7 +147,7 @@ class FileAPI extends AbstractModelAPI {
     }
     catch (Exception $e) {
       /* In case of errors, ensure old state is restored */
-      if (($data["sourceType"] == "import") && ($data[File::FILENAME] != $data["sourceData"])) {
+      if ($doRenameImport) {
         rename(
           $this->getImportPath() . $data[File::FILENAME],
           $this->getImportPath() . $data["sourceData"]
