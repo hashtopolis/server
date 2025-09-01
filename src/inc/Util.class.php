@@ -942,10 +942,10 @@ class Util {
    * @return int
    */
   public static function versionComparisonBinary($binary1, $binary2) {
-    if (Comparator::greaterThan($binary1->getVersion(), $binary2->getVersion()){
+    if (Comparator::greaterThan($binary1->getVersion(), $binary2->getVersion())){
       return 1;
     }
-    else if (Comparator::lessThan($binary1->getVersion(), $binary2->getVersion()){
+    else if (Comparator::lessThan($binary1->getVersion(), $binary2->getVersion())){
       return -1;
     }
     return 0;
