@@ -16,8 +16,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Install composer dependencies packages
-        run: docker exec hashtopolis-server-dev composer install --working-dir=/var/www/html/
       - name: Start Hashtopolis server
         uses: ./.github/actions/start-hashtopolis
       - name: Give Apache permissions on necessary directories # for the tests, only src/files and src/inc/utils/locks seem necessary
