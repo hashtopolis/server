@@ -44,6 +44,9 @@ RUN apt-get update \
     # Install extensions (optional)
     && docker-php-ext-install pdo_mysql gd \
     \
+    # Install Composer
+    curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer \
     # Enable URL rewriting using .htaccess
     && a2enmod rewrite \
     # Enable headers
@@ -83,10 +86,7 @@ COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 
 # Install composer
 COPY composer.json ${HASHTOPOLIS_DOCUMENT_ROOT}/../
-RUN curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/local/bin/composer \
-    && composer install --working-dir=${HASHTOPOLIS_DOCUMENT_ROOT}/.. \
-    && rm /usr/local/bin/composer
+RUN composer install --working-dir=${HASHTOPOLIS_DOCUMENT_ROOT}/..
 
 ENV DEBIAN_FRONTEND=dialog
 COPY docker-entrypoint.sh /usr/local/bin
