@@ -40,17 +40,21 @@ RUN apt-get update \
     && apt-get -y install mariadb-client \
     && apt-get -y install libpng-dev \
     && apt-get -y install ssmtp \
-\
+    \
     # Install extensions (optional)
     && docker-php-ext-install pdo_mysql gd \
-\
-    # Install composer
+    \
+    # Install Composer
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     # Enable URL rewriting using .htaccess
     && a2enmod rewrite \
     # Enable headers
-    && a2enmod headers
+    && a2enmod headers \
+    # Clean Up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN sed -i 's/KeepAliveTimeout 5/KeepAliveTimeout 10/' /etc/apache2/apache2.conf
 RUN echo "ServerTokens Prod" >> /etc/apache2/apache2.conf \
@@ -80,6 +84,7 @@ RUN mkdir -p ${HASHTOPOLIS_DOCUMENT_ROOT} \
 
 COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 
+# Install composer
 COPY composer.json ${HASHTOPOLIS_DOCUMENT_ROOT}/../
 RUN composer install --working-dir=${HASHTOPOLIS_DOCUMENT_ROOT}/..
 
@@ -122,12 +127,6 @@ RUN apt-get update \
 #TODO: Should source from ./ci/apiv2/requirements.txt
 RUN pip3 install click click_log confidence pytest tuspy --break-system-packages
 
-# Clean up
-RUN apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
-
-
 # Adding VSCode user and fixing permissions
 RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \
     && chown -R vscode:www-data /var/www \
@@ -154,12 +153,7 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
     && echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
-    && echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
-    \
-    # Clean up
-    && apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+    && echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini
 
 USER www-data
 # ----END----
