@@ -45,7 +45,7 @@ RUN apt-get update \
     && docker-php-ext-install pdo_mysql gd \
     \
     # Install Composer
-    curl -sS https://getcomposer.org/installer | php \
+    && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     # Enable URL rewriting using .htaccess
     && a2enmod rewrite \
