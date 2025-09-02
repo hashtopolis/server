@@ -70,18 +70,14 @@ class TaskExtraDetailsHelper extends AbstractHelperAPI {
     }
     $task = Factory::getTaskFactory()->get($taskId);
     $estimatedTime = round($timeSpent / ($cProgress / $task->getKeyspace()) - $timeSpent);
-      // $body = $response->getBody();
-      // $body->write($this->ret2json($ret));
+    $currentSpeed = ($currentSpeed > 0) ? Util::nicenum($currentSpeed, 10000, 1000) . "H/s" : 0;
     $responseObject = [
       "estimatedTime" => $estimatedTime,
       "timeSpent" => $timeSpent,
-      "currentSpeed" => Util::nicenum($currentSpeed, 10000, 1000) . "H/s",
+      "currentSpeed" => $currentSpeed,
     ];
       
     return self::getMetaResponse($responseObject, $request, $response);
-    // return $response->withStatus(200)
-    //   ->withHeader("Content-Type", 'application/vnd.api+json;');
-    // }
     }
   }
   
