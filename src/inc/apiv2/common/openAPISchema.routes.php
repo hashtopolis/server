@@ -495,7 +495,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         $ref = null;
         if (is_array($request_response)) {
           $responseProperties = mapToProperties($request_response);
-          $components[$name . "response"] = $responseProperties;
+          $components[$name . "Response"] = $responseProperties;
           $ref = "#/components/schemas/" . $name . "Response";
         }
         else if (is_string($request_response)) {
