@@ -50,7 +50,7 @@ In an effort to make the Hashtopussy project conform to a more politically neutr
 
 ## Setup and Usage
 
-Please visit the [wiki](https://github.com/hashtopolis/server/wiki) for more information on setup and upgrade.
+Please visit the [wiki](https://github.com/hashtopolis/server/wiki) and the documentation webpage [https://docs.hashtopolis.org/](https://docs.hashtopolis.org/) for more information on setup and upgrade.
 
 Some screenshots of Hashtopolis (by winxp5421 and s3in!c): [Imgur1](http://imgur.com/gallery/Fj0s0) [Imgur2](http://imgur.com/gallery/LzTsI)
 
