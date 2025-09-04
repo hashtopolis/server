@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.14.5 -> vx.x.x
+## v0.14.6 -> vx.x.x
 
 **Enhancements**
 
@@ -11,6 +11,11 @@
 
 - Fixed missing .htaccess to avoid access to install directory on docker setups
 
+## v0.14.5 -> v0.14.6
+
+**Bugfixes**
+
+- Fixed upate script v0.14.4 -> v0.14.5 where some hash types were incorrectly named due to double quotes and dollar signs in names
 
 ## v0.14.4 -> v0.14.5
 
