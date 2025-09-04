@@ -405,12 +405,12 @@ class AgentUtils {
 
     $qF = new QueryFilter(Agent::AGENT_ID, $agent->getId(), "=");
     $assignments = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
-    if ($assignments[0]->getTaskId() === $taskId) {
-      throw new HttpError("Agent is already assigned to this task");
-    }
 
     $benchmark = 0;
     if (sizeof($assignments) > 0) {
+      if ($assignments[0]->getTaskId() === $taskId) {
+        throw new HttpError("Agent is already assigned to this task");
+      }
       for ($i = 1; $i < sizeof($assignments); $i++) { // clean up if required
         Factory::getAssignmentFactory()->delete($assignments[$i]);
       }
