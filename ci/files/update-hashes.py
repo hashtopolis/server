@@ -58,7 +58,7 @@ print("Add the following to the update script:")
 print('if (!isset($PRESENT["PLACEHOLDER"])){')
 print("  $hashTypes = [")
 for hashType in new_hashtypes:
-    print(f'    new HashType( {hashType.hashType}, "{hashType.description}", {int(hashType.salted)}, {int(hashType.slowHash)}),')
+    print(f"    new HashType( {hashType.hashType}, '{hashType.description}', {int(hashType.salted)}, {int(hashType.slowHash)}),")
 print("   ];")
 print('  foreach ($hashTypes as $hashtype) {')
 print('    $check = Factory::getHashTypeFactory()->get($hashtype->getId());')
