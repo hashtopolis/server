@@ -1,3 +1,9 @@
+# v0.14.5 -> vx.x.x
+
+## Bugfixes
+
+- Fixed upate script v0.14.4 -> v0.14.5 where some hash types were incorrectly named due to double quotes and dollar signs in names
+
 # v0.14.4 -> v0.14.5
 
 ## Enhancements
