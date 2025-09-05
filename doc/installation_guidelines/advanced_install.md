@@ -222,3 +222,42 @@ docker compose up
 ```
 
 Finally, copy the data back into the appropriate folders after recreating the containers.
+
+## Backup and Restore
+
+What the best way to backup and restore your hashtopolis instance depends heavily on the way the instance is set up and what configurations are made.
+Therefore, there is no guide available for backing up / restoring which works for everyone, but some considerations which need to be taken into account:
+
+- Depending on the amount of data (files, database size, etc.) in the hashtopolis instance, a complete backup can become quite large. If it is needed to just be able to restore information about executed tasks, progress etc. (e.g. in case of a fatal failure of the system) it is enough to just back up the database, but of course this would not allow a easy restore to a previous state.
+- If you plan to do a backup in a way to be able to completely restore it to the previous state (files, logs, database, users, etc.), you need to be careful to include all required items into your backup and when restoring make sure that nothing gets left out during that process, otherwise you may end up with a semi-broken or non-functional hashtopolis instance.
+- In case you have set up your hashtopolis instance only using volumes (one for the database, one for all the hashtopolis data), backup up the complete content of these volumes is enough to have all data backed up.
+- Restoring only parts (some tasks, only users, other database parts) from a backup is very tricky and should only be done by experts and very easily goes wrong when primary keys are not sequential and not updated for auto increment in the database.
+
+## Set up a fresh and clean instance
+
+When there is the need for a complete reset/clean setup (e.g. for testing), you can do following steps to completely remove all data.
+
+> [!CAUTION]
+> The following steps will delete all data in your hashtopolis instance (including the database, users, tasks, agents, etc.)!
+
+These steps assume that you have set up your hashtopolis instance using a `docker-compose.yml` file.
+
+First stop all running all containers and clean them up:
+
+```
+cd <directory-containing-docker-compose.yml>
+docker compose down
+```
+
+In case you have mounted directories for files and other data instead of using a docker volume, clean these directories by removing all files within (wordlists, rules, etc.).
+
+Delete the docker volumes for the database and hashtopolis data (if you don't have the folders mounted otherwise).
+Use `docker volume ls` to determine which volumes exist (typically they are prefixed with the name of the folder containing the `docker-compose.yml`).
+
+For each of the relevant volume, delete it by using `docker volume rm <volume-name>`.
+
+Afterwards, you can start up the containers again which should then be in a complete clean state and a freshly set up instance:
+
+```
+docker compose up -d
+```
