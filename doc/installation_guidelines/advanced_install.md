@@ -249,14 +249,14 @@ cd <directory-containing-docker-compose.yml>
 docker compose down
 ```
 
-In case you have mounted directories for files and other data instead of using a docker volume, clean these directories by removing all files inside (wordlists, rules, etc.).
+In case you have mounted directories for files and other data instead of using a docker volume, clean these directories by removing all files within (wordlists, rules, etc.).
 
 Delete the docker volumes for the database and hashtopolis data (if you don't have the folders mounted otherwise).
 Use `docker volume ls` to determine which volumes exist (typically they are prefixed with the name of the folder containing the `docker-compose.yml`).
 
 For each of the relevant volume, delete it by using `docker volume rm <volume-name>`.
 
-Afterwards, you can start up the dockers again which should then be in a complete clean state and a freshly set up instance:
+Afterwards, you can start up the containers again which should then be in a complete clean state and a freshly set up instance:
 
 ```
 docker compose up -d
