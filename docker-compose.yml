@@ -1,4 +1,3 @@
-version: '3.7'
 services:
   hashtopolis-backend:
     container_name: hashtopolis-backend
