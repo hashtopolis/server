@@ -1,5 +1,6 @@
 <?php
 
+use DBA\Aggregation;
 use DBA\Chunk;
 use DBA\Factory;
 use DBA\QueryFilter;
@@ -52,6 +53,7 @@ class TaskExtraDetailsHelper extends AbstractHelperAPI {
       $cProgress += $chunk->getCheckpoint() - $chunk->getSkip();
       if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
         $currentSpeed += $chunk->getSpeed();
+      }
     }
       
     $timeChunks = $chunks;
@@ -69,8 +71,8 @@ class TaskExtraDetailsHelper extends AbstractHelperAPI {
       }
     }
     $task = Factory::getTaskFactory()->get($taskId);
-    $estimatedTime = round($timeSpent / ($cProgress / $task->getKeyspace()) - $timeSpent);
-    $currentSpeed = ($currentSpeed > 0) ? Util::nicenum($currentSpeed, 10000, 1000) . "H/s" : 0;
+    $keyspace = $task->getKeyspace();
+    $estimatedTime = ($keyspace > 0) ? round($timeSpent / ($cProgress / $keyspace) - $timeSpent) : 0;
     $responseObject = [
       "estimatedTime" => $estimatedTime,
       "timeSpent" => $timeSpent,
@@ -78,7 +80,6 @@ class TaskExtraDetailsHelper extends AbstractHelperAPI {
     ];
       
     return self::getMetaResponse($responseObject, $request, $response);
-    }
   }
   
   #[NoReturn] public function actionPost($data): object|array|null {
