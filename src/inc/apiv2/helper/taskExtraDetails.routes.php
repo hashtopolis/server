@@ -37,12 +37,16 @@ class TaskExtraDetailsHelper extends AbstractHelperAPI {
     $this->preCommon($request);
 
     $taskId = $request->getQueryParams()['task'];
-    if ($taskId == null) {
+    if ($taskId === null) {
       throw new HttpErrorException("No task query param has been provided");
     }
     $taskId = intval($taskId);
     if ($taskId === 0) {
       throw new HttpErrorException("No valid integer provided as task");
+    }
+    $task = Factory::getTaskFactory()->get($taskId);
+    if ($task === null) {
+      throw new HttpErrorException("No task found for provided task ID");
     }
 
     $qF = new QueryFilter(Chunk::TASK_ID, $taskId, "=");
@@ -70,9 +74,8 @@ class TaskExtraDetailsHelper extends AbstractHelperAPI {
         $current = $c->getSolveTime();
       }
     }
-    $task = Factory::getTaskFactory()->get($taskId);
     $keyspace = $task->getKeyspace();
-    $estimatedTime = ($keyspace > 0) ? round($timeSpent / ($cProgress / $keyspace) - $timeSpent) : 0;
+    $estimatedTime = ($keyspace > 0 && $cProgress > 0) ? round($timeSpent / ($cProgress / $keyspace) - $timeSpent) : 0;
     $responseObject = [
       "estimatedTime" => $estimatedTime,
       "timeSpent" => $timeSpent,
@@ -83,7 +86,7 @@ class TaskExtraDetailsHelper extends AbstractHelperAPI {
   }
   
   #[NoReturn] public function actionPost($data): object|array|null {
-    assert(False, "TaskExtraDetails has no POST");
+    assert(false, "TaskExtraDetails has no POST");
   }
   
   static public function register($app): void {
