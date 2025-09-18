@@ -1526,6 +1526,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if ($relationKey == null) {
       throw new HttpError("Relation does not exist!");
     }
+    if ($relation["readonly"] === true) {
+      throw new HttpError("This relationship is readonly");
+    }
     
     $relationType = $relation['relationType'];
     $features = $this->getFeaturesOther($relationType);
@@ -1593,7 +1596,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $relation = $this->getToManyRelationships()[$args['relation']];
     $relationKey = $relation['relationKey'];
     if ($relationKey == null) {
-      throw new HttpError("Relation does not exist!");
+      throw new HttpError('Relation does not exist!');
+    }
+    if ($relation['readonly'] === true) {
+      throw new HttpError('This relationship is readonly');
     }
     
     // check if the object queried exists

@@ -92,6 +92,7 @@ class TaskWrapperAPI extends AbstractModelAPI {
         
         'relationType' => Task::class,
         'relationKey' => Task::TASK_WRAPPER_ID,
+        'readonly' => true // Not allowed to change tasks of a taskwrapper 
       ],
     ];
   }
