@@ -4,6 +4,7 @@ use DBA\TaskWrapper;
 use DBA\Task;
 use DBA\QueryFilter;
 use DBA\JoinFilter;
+require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class TaskwrapperUtils {
 
@@ -31,6 +32,9 @@ class TaskwrapperUtils {
         $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
         $joined = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
         $task = $joined[Factory::getTaskFactory()->getModelName()][0];
+        if ($task === null) {
+          throw new HttpError("Invallid task, Taskwrapper does not have a task");
+        }
     
         TaskUtils::updatePriority($task->getId(), $priority, $user);
         break;
