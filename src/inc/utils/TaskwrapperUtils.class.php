@@ -33,7 +33,7 @@ class TaskwrapperUtils {
         $joined = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
         $task = $joined[Factory::getTaskFactory()->getModelName()][0];
         if ($task === null) {
-          throw new HttpError("Invallid task, Taskwrapper does not have a task");
+          throw new HttpError("Invalid task, Taskwrapper does not have a task");
         }
     
         TaskUtils::updatePriority($task->getId(), $priority, $user);
