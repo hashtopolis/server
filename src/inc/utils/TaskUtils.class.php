@@ -1140,6 +1140,11 @@ class TaskUtils {
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     Factory::getChunkFactory()->massDeletion([Factory::FILTER => $qF]);
     Factory::getTaskFactory()->delete($task);
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    // If last task of taskwrapper has been deleted, delete taskwrapper aswell
+    if (count(self::getTasksOfWrapper($taskWrapper->getId())) === 0) {
+      Factory::getTaskWrapperFactory()->delete($taskWrapper);
+    }
     LockUtils::deleteLockFile($task->getId());
   }
   
