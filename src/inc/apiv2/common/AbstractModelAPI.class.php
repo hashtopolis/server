@@ -710,7 +710,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       $secondary_cursor_key = key($secondary_cursor);
       $secondary_cursor_key = $secondary_cursor_key == '_id' ? array_column($aliasedfeatures, 'alias', 'dbname')[$apiClass->getPrimaryKey()] : $secondary_cursor_key;
         $finalFs[Factory::FILTER][] = new PaginationFilter($primary_cursor_key, current($primary_cursor), 
-                                                            $operator, $secondary_cursor_key, current($secondary_cursor));
+                                                            $operator, $secondary_cursor_key, current($secondary_cursor), $qFs_Filter);
       } else {
         $finalFs[Factory::FILTER][] = new QueryFilter($primary_cursor_key, current($primary_cursor), $operator, $factory);
       }
