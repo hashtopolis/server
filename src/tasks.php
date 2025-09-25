@@ -413,7 +413,7 @@ else if (isset($_GET['new'])) {
   $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
   UI::add('binaries', Factory::getCrackerBinaryTypeFactory()->filter([]));
   $versions = Factory::getCrackerBinaryFactory()->filter([Factory::ORDER => $oF]);
-  usort($versions, ["Util", "versionComparisonBinary"]);
+  array_reverse(usort($versions, ["Util", "versionComparisonBinary"]));
   UI::add('versions', $versions);
   UI::add('pageTitle', "Create Task");
 }
