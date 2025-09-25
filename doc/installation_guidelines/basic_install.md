@@ -53,7 +53,9 @@ docker compose up --detach
 
 
 ## Agent installation
+
 ### Prerequisites
+
 To install the agent, ensure that the following prerequisites are met:
 
 1. Python: Python 3 must be installed on the agent system. If Python 3 is not installed, refer to the official Python installation guide. You can verify the installation by running the following command in your terminal:
@@ -80,11 +82,18 @@ pip install requests psutil
 ```
 
 ### Download the Hashtopolis agent
+
 1. Connect to the Hashtopolis server: ```http://<server-ip-address>:8080``` and log in. Navigate to the page *Agents > Show Agents* and click on the button *'+ New Agent'*. 
 2. On that page you can click on "..." and choose to download the agent binary or copy the URL of the agent binary and download the agent using wget/curl:
 
 ```
 curl -o hashtopolis.zip "http://<server-ip-address>:8080/agents.php?download=1"
+```
+
+or
+
+```
+wget --content-disposition "http://<server-ip-address>:8080/agents.php?download=1"
 ```
 
 ### Start and register a new agent
