@@ -846,6 +846,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       ];
 
     $metadata = ["page" => ["total_elements" => $total]];
+    if ($apiClass->permissionErrors !== null) {
+      $metadata["Include errors"] = $apiClass->permissionErrors;
+    }
     // Generate JSON:API GET output
     $ret = self::createJsonResponse($dataResources, $links, $includedResources, $metadata);
 
