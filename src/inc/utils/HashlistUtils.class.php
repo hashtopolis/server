@@ -1112,7 +1112,7 @@ class HashlistUtils {
         }
         $buffer .= "\n";
       }
-      $numEntries += sizeof($numEntries);
+      $numEntries += sizeof($entries);
       fputs($file, $buffer);
     }
     fclose($file);
