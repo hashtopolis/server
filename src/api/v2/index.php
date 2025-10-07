@@ -91,7 +91,7 @@ $container->set("HttpBasicAuthentication", function (\Psr\Container\ContainerInt
     "path" => "/api/v2/auth/token",
     "secure" => false,
     "error" => function ($response, $arguments) {
-      return errorResponse($response, $arguments["message"], 401);
+      return errorResponse($response, "Invalid credentials. Please check your username and password.", 401);
     },
     "authenticator" => new HashtopolisAuthenticator,
     "before" => function ($request, $arguments) {
