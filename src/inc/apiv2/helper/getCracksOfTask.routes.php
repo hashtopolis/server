@@ -55,13 +55,11 @@ class getCracksOfTaskHelper extends AbstractHelperAPI {
   }
   
   /**
-   * Endpoint to download files
+   * Endpoint to get the cracked hashes of a certain task
    * @param Request $request
    * @param Response $response
    * @return Response
-   * @throws HTException
    * @throws HttpErrorException
-   * @throws HttpForbidden
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
