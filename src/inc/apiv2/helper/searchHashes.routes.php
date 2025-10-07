@@ -64,7 +64,7 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
   }
   
   /**
-   * Endpoint to import cracked hashes into a hashlist.
+   * Endpoint to search for hashes in accessible hashlists.
    * @throws HttpError
    */
   public function actionPost($data): object|array|null {
