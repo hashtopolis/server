@@ -314,6 +314,7 @@ require __DIR__ . "/../../inc/apiv2/helper/purgeTask.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/recountFileLines.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/resetChunk.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/resetUserPassword.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/searchHashes.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/setUserPassword.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/taskExtraDetails.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/unassignAgent.routes.php";
