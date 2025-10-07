@@ -579,6 +579,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if (array_key_exists(Factory::JOIN, $filters)) {
       $result = $result[$factory->getModelname()];
     }
+    if (sizeof($result) == 0) {
+      return null;
+    }
     return $result[0];
   }
 
