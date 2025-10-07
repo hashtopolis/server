@@ -24,7 +24,7 @@ class APICheckClientVersion extends APIBasic {
     }
     
     $this->updateAgent(PActions::CHECK_CLIENT_VERSION);
-    if (Comparator::lessThan($result->getVersion(), $version)) {
+    if (Comparator::greaterThan($result->getVersion(), $version)) {
       DServerLog::log(DServerLog::DEBUG, "Agent " . $this->agent->getId() . " got notified about client update");
       $this->sendResponse(array(
           PResponseClientUpdate::ACTION => PActions::CHECK_CLIENT_VERSION,
