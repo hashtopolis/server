@@ -149,4 +149,4 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
   }
 }
 
-ImportCrackedHashesHelperAPI::register($app);
+SearchHashesHelperAPI::register($app);
