@@ -291,14 +291,14 @@ class PretaskUtils {
    * @param int $cpuOnly
    * @param int $isSmall
    * @param int $benchmarkType
-   * @param array $files
+   * @param array|null $files
    * @param int $crackerBinaryTypeId
-   * @param int $maxAgents
+   * @param int|null $maxAgents
    * @param int $priority
    * @return Pretask
    * @throws HttpError
    */
-  public static function createPretask(string $name, string $cmdLine, int $chunkTime, int $statusTimer, string $color, int $cpuOnly, int $isSmall, int $benchmarkType, array $files, int $crackerBinaryTypeId, int $maxAgents, int $priority = 0): Pretask {
+  public static function createPretask(string $name, string $cmdLine, int $chunkTime, int $statusTimer, string $color, int $cpuOnly, int $isSmall, int $benchmarkType, array|null $files, int $crackerBinaryTypeId, int|null $maxAgents, int $priority = 0): Pretask {
     $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     
     if (strlen($name) == 0) {
