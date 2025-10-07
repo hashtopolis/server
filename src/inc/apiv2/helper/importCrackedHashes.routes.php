@@ -50,7 +50,9 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
   public function actionPost($data): object|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     
-    $result = HashlistUtils::processZap($hashlist->getId(), $data["separator"], "paste", ["hashfield" => $data["sourceData"]], [], $this->getCurrentUser());
+    $importData = base64_decode($data["sourceData"]);
+    
+    $result = HashlistUtils::processZap($hashlist->getId(), $data["separator"], "paste", ["hashfield" => $importData], [], $this->getCurrentUser());
     
     return [
       "totalLines" => $result[0],
