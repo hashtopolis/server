@@ -128,7 +128,7 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
       $resultEntry = [];
       /** @var $hashes Hash[] */
       $hashes = $joined[Factory::getHashFactory()->getModelName()];
-      if (sizeof($hashes) == 0) {
+      if (empty($hashes)) {
         $resultEntry["found"] = false;
         $resultEntry["query"] = $searchEntry;
       }
