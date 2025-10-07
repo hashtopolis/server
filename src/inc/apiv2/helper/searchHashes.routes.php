@@ -33,10 +33,10 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
   
   public static function getResponse(): array {
     return [
-      ["found" => False,
+      ["found" => false,
        "query" => "12345678",
       ],
-      ["found" => True,
+      ["found" => true,
        "query" => "54321",
        "matches" => [[
                        "hashlistId" => 4,
