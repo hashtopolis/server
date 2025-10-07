@@ -213,7 +213,7 @@ class HashlistUtils {
     fclose($wordlistFile);
     
     //add file to files list
-    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId(), $wordCount);
+    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), DFileType::WORDLIST, $hashlist->getAccessGroupId(), $wordCount);
     $file = Factory::getFileFactory()->save($file);
     # TODO: returning wordCount and wordlistName are not really required here as the name and the count are already given in the file object
     return [$wordCount, $wordlistName, $file];
@@ -711,6 +711,7 @@ class HashlistUtils {
       $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
     $separator = SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR);
+    $numEntries = 0;
     for ($x = 0; $x * $pagingSize < $count; $x++) {
       $oF = new OrderFilter($orderObject, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
       $entries = $factory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
@@ -733,12 +734,13 @@ class HashlistUtils {
             break;
         }
       }
+      $numEntries += sizeof($entries);
       fputs($file, $buffer);
     }
     fclose($file);
     usleep(1000000);
     
-    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId(), null);
+    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), DFileType::OTHER, $hashlist->getAccessGroupId(), $numEntries);
     $file = Factory::getFileFactory()->save($file);
     return $file;
   }
@@ -1098,6 +1100,7 @@ class HashlistUtils {
     if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
       $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
+    $numEntries = 0;
     for ($x = 0; $x * $pagingSize < $count; $x++) {
       $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
       $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
@@ -1109,12 +1112,13 @@ class HashlistUtils {
         }
         $buffer .= "\n";
       }
+      $numEntries += sizeof($entries);
       fputs($file, $buffer);
     }
     fclose($file);
     usleep(1000000);
     
-    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId(), null);
+    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), DFileType::OTHER, $hashlist->getAccessGroupId(), $numEntries);
     return Factory::getFileFactory()->save($file);
   }
   
