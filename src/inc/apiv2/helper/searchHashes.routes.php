@@ -85,8 +85,8 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
     $search = str_replace("\r\n", "\n", $search);
     $search = explode("\n", $search);
     $resultEntries = array();
-    $userHashlists = HashlistUtils::getHashlists(Login::getInstance()->getUser(), false);
-    $userHashlists += HashlistUtils::getHashlists(Login::getInstance()->getUser(), true);
+    $userHashlists = HashlistUtils::getHashlists(self::getCurrentUser(), false);
+    $userHashlists += HashlistUtils::getHashlists(self::getCurrentUser(), true);
     foreach ($search as $searchEntry) {
       if (strlen($searchEntry) == 0) {
         continue;
