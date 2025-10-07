@@ -306,6 +306,7 @@ require __DIR__ . "/../../inc/apiv2/helper/exportLeftHashes.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/exportWordlist.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getAccessGroups.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getAgentBinary.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/getCracksOfTask.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getFile.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getUserPermission.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/importCrackedHashes.routes.php";
@@ -318,6 +319,5 @@ require __DIR__ . "/../../inc/apiv2/helper/searchHashes.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/setUserPassword.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/taskExtraDetails.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/unassignAgent.routes.php";
-
 
 $app->run();
