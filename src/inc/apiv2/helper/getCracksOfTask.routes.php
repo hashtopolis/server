@@ -7,13 +7,14 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use DBA\Factory;
 use DBA\Hash;
+use DBA\Hashlist;
 use DBA\QueryFilter;
 use DBA\Task;
 use Middlewares\Utils\HttpErrorException;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
-class getCracksOfTaskHelper extends AbstractHelperAPI {
+class GetCracksOfTaskHelper extends AbstractHelperAPI {
   public static function getBaseUri(): string {
     return "/api/v2/helper/getCracksOfTask";
   }
@@ -23,7 +24,7 @@ class getCracksOfTaskHelper extends AbstractHelperAPI {
   }
   
   public function getRequiredPermissions(string $method): array {
-    return [Hash::PERM_READ, Task::PERM_READ];
+    return [Hashlist::PERM_READ, Hash::PERM_READ, Task::PERM_READ];
   }
   
   public static function getResponse(): null {
@@ -63,7 +64,7 @@ class getCracksOfTaskHelper extends AbstractHelperAPI {
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
-    $task = Factory::getTaskFactory()->get($_GET['task']);
+    $task = Factory::getTaskFactory()->get($request->getQueryParams()['task']);
     if ($task == null) {
       throw new HttpError("No task has been found with provided task id");
     }
@@ -98,7 +99,7 @@ class getCracksOfTaskHelper extends AbstractHelperAPI {
   }
   
   static public function register($app): void {
-    $baseUri = getCracksOfTaskHelper::getBaseUri();
+    $baseUri = GetCracksOfTaskHelper::getBaseUri();
     
     /* Allow CORS preflight requests */
     $app->options($baseUri, function (Request $request, Response $response): Response {
@@ -108,4 +109,4 @@ class getCracksOfTaskHelper extends AbstractHelperAPI {
   }
 }
 
-getCracksOfTaskHelper::register($app);
+GetCracksOfTaskHelper::register($app);
