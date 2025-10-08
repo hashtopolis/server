@@ -4,6 +4,7 @@
 # PoC testing/development framework for APIv2
 # Written in python to work on creation of hashtopolis APIv2 python binding.
 #
+import base64
 from base64 import b64encode
 import copy
 import json
@@ -1022,10 +1023,10 @@ class Helper(HashtopolisConnector):
         response = self._helper_request("exportWordlist", payload)
         return File(**response['data'])
 
-    def import_cracked_hashes(self, hashlist, source_data, separator):
+    def import_cracked_hashes(self, hashlist, source_data: str, separator):
         payload = {
             'hashlistId': hashlist.id,
-            'sourceData': source_data,
+            'sourceData': base64.b64encode(source_data.encode()).decode(),
             'separator': separator,
         }
         response = self._helper_request("importCrackedHashes", payload)
