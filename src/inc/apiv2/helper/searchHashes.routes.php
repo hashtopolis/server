@@ -39,25 +39,67 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
       ["found" => true,
        "query" => "54321",
        "matches" => [[
-                       "hashlistId" => 4,
-                       "hash" => "5432173922",
-                       "salt" => "",
-                       "plaintext" => "plain",
-                       "timeCracked" => 0,
-                       "chunkId" => null,
-                       "isCracked" => true,
-                       "crackPos" => 0,
+                       "type" => "hash",
+                       "id" => 552,
+                       "attributes" => [
+                         "hashlistId" => 5,
+                         "hash" => "7682543218768",
+                         "salt" => "",
+                         "plaintext" => "",
+                         "timeCracked" => 0,
+                         "chunkId" => null,
+                         "isCracked" => false,
+                         "crackPos" => 0
+                       ],
+                       "links" => [
+                         "self" => "/api/v2/ui/hashes/552"
+                       ],
+                       "relationships" => [
+                         "chunk" => [
+                           "links" => [
+                             "self" => "/api/v2/ui/hashes/552/relationships/chunk",
+                             "related" => "/api/v2/ui/hashes/552/chunk"
+                           ]
+                         ],
+                         "hashlist" => [
+                           "links" => [
+                             "self" => "/api/v2/ui/hashes/552/relationships/hashlist",
+                             "related" => "/api/v2/ui/hashes/552/hashlist"
+                           ]
+                         ]
+                       ]
                      ],
                      [
-                       "hashlistId" => 4,
-                       "hash" => "12345654321",
-                       "salt" => "",
-                       "plaintext" => "",
-                       "timeCracked" => 0,
-                       "chunkId" => null,
-                       "isCracked" => false,
-                       "crackPos" => 0,
-                     ]
+                       "type" => "hash",
+                       "id" => 1,
+                       "attributes" => [
+                         "hashlistId" => 5,
+                         "hash" => "54321768671",
+                         "salt" => "",
+                         "plaintext" => "",
+                         "timeCracked" => 0,
+                         "chunkId" => null,
+                         "isCracked" => false,
+                         "crackPos" => 0
+                       ],
+                       "links" => [
+                         "self" => "/api/v2/ui/hashes/1"
+                       ],
+                       "relationships" => [
+                         "chunk" => [
+                           "links" => [
+                             "self" => "/api/v2/ui/hashes/1/relationships/chunk",
+                             "related" => "/api/v2/ui/hashes/1/chunk"
+                           ]
+                         ],
+                         "hashlist" => [
+                           "links" => [
+                             "self" => "/api/v2/ui/hashes/1/relationships/hashlist",
+                             "related" => "/api/v2/ui/hashes/1/hashlist"
+                           ]
+                         ]
+                       ]
+                     ],
        ],
       ]
     ];
@@ -139,7 +181,7 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
         for ($i = 0; $i < sizeof($hashes); $i++) {
           /** @var $hash Hash */
           $hash = $joined[Factory::getHashFactory()->getModelName()][$i];
-          $matches[] = $hash;
+          $matches[] = self::obj2Resource($hash);;
         }
         $resultEntry["matches"] = $matches;
       }
