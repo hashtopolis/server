@@ -1,15 +1,17 @@
 # Changelog
 
-## v0.14.6 -> vx.x.x
+## v0.14.6 -> v1.0.0-rainbow
 
 **Enhancements**
 
 - Updated OpenAPI docs to latest API updates
 - Improved version comparison to avoid update script issues
+- Many more enhancements to improve functionality on new frontend
 
 **Bugfixes**
 
 - Fixed missing .htaccess to avoid access to install directory on docker setups
+- Many more bugfixes to work correctly with the new frontend
 
 ## v0.14.5 -> v0.14.6
 
