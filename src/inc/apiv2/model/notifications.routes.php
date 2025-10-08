@@ -47,7 +47,7 @@ class NotificationSettingAPI extends AbstractModelAPI {
     $dummyPost = [];
     switch (DNotificationType::getObjectType($data[NotificationSetting::ACTION])) {
       case DNotificationObjectType::USER:
-        $dummyPost['user'] = $data['actionFilter'];
+        $dummyPost['users'] = $data['actionFilter'];
         break;
       case DNotificationObjectType::AGENT:
         $dummyPost['agents'] = $data['actionFilter'];
