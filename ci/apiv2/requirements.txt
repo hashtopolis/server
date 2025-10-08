@@ -1,5 +1,5 @@
 click
 click_log
-confidence
+confidence==0.17
 pytest
 tuspy
