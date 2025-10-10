@@ -307,6 +307,7 @@ require __DIR__ . "/../../inc/apiv2/helper/exportWordlist.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getAccessGroups.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getAgentBinary.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getCracksOfTask.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/getTaskSpeeds.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getFile.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getUserPermission.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/importCrackedHashes.routes.php";
