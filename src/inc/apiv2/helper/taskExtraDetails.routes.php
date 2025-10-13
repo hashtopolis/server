@@ -80,6 +80,7 @@ class TaskExtraDetailsHelper extends AbstractHelperAPI {
       "estimatedTime" => $estimatedTime,
       "timeSpent" => $timeSpent,
       "currentSpeed" => $currentSpeed,
+      "cprogress" => $cProgress,
     ];
       
     return self::getMetaResponse($responseObject, $request, $response);
