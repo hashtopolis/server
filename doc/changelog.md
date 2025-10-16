@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.0.0-rainbow -> v1.0.0-rainbow2
+
+**Enhancements**
+
+- Return cprogress from TaskExtraDetailHelper, required for frontend's Visual Graph component (#1674)
+
+**Bugfixes**
+
+- Fixed searchHashes helper to return the objects properly (#1662)
+
 ## v0.14.6 -> v1.0.0-rainbow
 
 **Enhancements**
