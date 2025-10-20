@@ -79,7 +79,9 @@ abstract class AbstractBaseAPI {
   /** @var mixed|null $permissionErrors contained detailed results of last
    * validatePermissions function call
    */
-  private mixed $permissionErrors;
+  protected mixed $permissionErrors = null;
+
+  protected mixed $missing_permissions = [];
   
   /**
    * @var array|null list of model classes which will need to be filtered for public attributes because
@@ -967,9 +969,17 @@ abstract class AbstractBaseAPI {
       array_push($required_perms, ...$expandedPerms);
     }
     $permissionResponse = $this->validatePermissions($required_perms, $permsExpandMatching);
-    if ($permissionResponse === FALSE) {
-      throw new HttpError('Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
+    $expands_to_remove = [];
+
+    // remove expands with missing permissions
+    foreach($this->missing_permissions as $missing_permission) {
+      $expands_to_remove = array_merge($expands_to_remove, $permsExpandMatching[$missing_permission]);
     }
+    $queryExpands = array_diff($queryExpands, $expands_to_remove);
+
+    // if ($permissionResponse === FALSE) {
+    //   throw new HttpError('Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
+    // }
     return $queryExpands;
   }
   
@@ -1255,6 +1265,7 @@ abstract class AbstractBaseAPI {
         }
       }
       $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" . join(", ", $required_perms) . "', user_permissions='" . join(", ", $user_available_perms) . "']");
+      $this->missing_permissions = $missing_permissions;
       return FALSE;
     }
     else {
@@ -1451,8 +1462,12 @@ abstract class AbstractBaseAPI {
     $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' . $linksQuery : '');
     $links = ["self" => $linksSelf];
     
+    $metaData = [];
+    if ($apiClass->permissionErrors !== null) {
+      $metadata["Include errors"] = $apiClass->permissionErrors;
+    }
     // Generate JSON:API GET output
-    $ret = self::createJsonResponse($dataResources[0], $links, $includedResources);
+    $ret = self::createJsonResponse($dataResources[0], $links, $includedResources, $metaData);
     
     $body = $response->getBody();
     $body->write($apiClass->ret2json($ret));
