@@ -422,7 +422,7 @@ class SupertaskUtils {
       }
       $cmd = str_replace("COMMA_PLACEHOLDER", "\\,", $cmd);
       $cmd = str_replace("HASH_PLACEHOLDER", "\\#", $cmd);
-      $preTaskName = implode(",", $mask);
+      $preTaskName = $pattern;
       $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
       $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
       
