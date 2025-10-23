@@ -747,7 +747,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object  
-      $newObject = $apiClass->obj2Resource($object, $expandResult);
+      $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null);
 
       // For compound document, included resources
       foreach ($expands as $expand) {
@@ -755,14 +755,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $expandResultObject = $expandResult[$expand][$object->getId()];
           if (is_array($expandResultObject)) {
             foreach ($expandResultObject as $expandObject) {
-              $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject));
+              $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject, [], $request->getQueryParams()['fields'] ?? null));
             }
           } else {
             if ($expandResultObject === null) {
               // to-only relation which is nullable
               continue;
             }
-            $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandResultObject));
+            $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandResultObject, [], $request->getQueryParams()['fields'] ?? null));
           }
         }
       }
@@ -770,6 +770,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       // Add to result output
       $dataResources[] = $newObject;
     }
+
     $baseUrl = Util::buildServerUrl();
     //build last link
     $lastParams = $request->getQueryParams();

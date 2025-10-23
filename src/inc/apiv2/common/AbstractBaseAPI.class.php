@@ -551,7 +551,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function obj2Resource(object $obj, array $expandResult = []): array {
+  protected function obj2Resource(object $obj, array $expandResult = [], array $sparseFieldsets = null): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -569,6 +569,16 @@ abstract class AbstractBaseAPI {
       if ($feature['private'] === true) {
         continue;
       }
+
+      // If sparse fieldsets (https://jsonapi.org/format/#fetching-sparse-fieldsets) is used, return only the requested data
+      if (is_array($sparseFieldsets)) { 
+        if (array_key_exists($this->getObjectTypeName($obj), $sparseFieldsets)) {
+          if (!in_array($feature['alias'], $sparseFieldsets[$this->getObjectTypeName($obj)])) {
+            continue;
+          }
+        }
+      }
+
       // Hide the primaryKey from the attributes since this is used as indentifier (id) in response
       if ($feature['pk'] === true) {
         continue;
@@ -1420,7 +1430,7 @@ abstract class AbstractBaseAPI {
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object
-      $newObject = $apiClass->obj2Resource($object, $expandResult);
+      $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null);
       
       // For compound document, included resources
       foreach ($expands as $expand) {
@@ -1428,7 +1438,7 @@ abstract class AbstractBaseAPI {
           $expandResultObject = $expandResult[$expand][$object->getId()];
           if (is_array($expandResultObject)) {
             foreach ($expandResultObject as $expandObject) {
-              $includedResources[] = $apiClass->obj2Resource($expandObject);
+              $includedResources[] = $apiClass->obj2Resource($expandObject, [], $request->getQueryParams()['fields'] ?? null);
             }
           }
           else {
@@ -1436,7 +1446,7 @@ abstract class AbstractBaseAPI {
               // to-only relation which is nullable
               continue;
             }
-            $includedResources[] = $apiClass->obj2Resource($expandResultObject);
+            $includedResources[] = $apiClass->obj2Resource($expandResultObject, [], $request->getQueryParams()['fields'] ?? null);
           }
         }
       }
