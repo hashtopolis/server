@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.0.0-rainbow2 -> v1.0.0-rainbow3
+
+**Enhancements**
+
+- No hard error when permission is missing from includes (#1627)
+
+**Bugfixes**
+
+- Only use the mask as subtask name in supertask import to avoid too long names (#1681)
+- Fixed error in tests by removing deprecated {extension} from new confidence version (#1677)
+
 ## v1.0.0-rainbow -> v1.0.0-rainbow2
 
 **Enhancements**
