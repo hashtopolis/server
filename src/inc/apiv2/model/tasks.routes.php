@@ -160,35 +160,46 @@ class TaskAPI extends AbstractModelAPI {
     return $task->getId();
   }
   
-  //TODO make aggregate data queryable and not included by default
-  static function aggregateData(object $object): array {
+  //TODO make aggregate data queryable
+  static function aggregateData(object $object, array $sparseFieldsets = null): array {
+    $aggregatedData = [];
     $keyspace = $object->getKeyspace();
     $keyspaceProgress = $object->getKeyspaceProgress();
     
-    $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
-    $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
-    
-    $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-    
-    $activeAgents = [];
-    foreach ($chunks as $chunk) {
-      if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
-        $activeAgents[$chunk->getAgentId()] = true;
+    if(is_array($sparseFieldsets) && array_key_exists('task', $sparseFieldsets) && in_array("dispatched", $sparseFieldsets['task']) ) {
+      $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
+    }
+
+    if(is_array($sparseFieldsets) && array_key_exists('task', $sparseFieldsets) && in_array("searched", $sparseFieldsets['task']) ) {
+      $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
+    }
+
+    if(is_array($sparseFieldsets) && array_key_exists('task', $sparseFieldsets) && in_array("activeAgents", $sparseFieldsets['task']) ) {
+      $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+      $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+      
+      $activeAgents = [];
+      foreach ($chunks as $chunk) {
+        if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
+          $activeAgents[$chunk->getAgentId()] = true;
+        }
       }
+      
+      $aggregatedData["activeAgents"] = array_keys($activeAgents);
     }
-    
-    //status 1 is running, 2 is idle and 3 is completed
-    $status = 2;
-    if ($keyspaceProgress >= $keyspace && $keyspaceProgress > 0) {
-      $status = 3;
+
+    if(is_array($sparseFieldsets) && array_key_exists('task', $sparseFieldsets) && in_array("searched", $sparseFieldsets['task']) ) {
+      //status 1 is running, 2 is idle and 3 is completed
+      $status = 2;
+      if ($keyspaceProgress >= $keyspace && $keyspaceProgress > 0) {
+        $status = 3;
+      }
+      elseif (count($activeAgents) > 0) {
+        $status = 1;
+      }
+      
+      $aggregatedData["status"] = $status;
     }
-    elseif (count($activeAgents) > 0) {
-      $status = 1;
-    }
-    
-    $aggregatedData["activeAgents"] = array_keys($activeAgents);
-    $aggregatedData["status"] = $status;
     
     return $aggregatedData;
   }

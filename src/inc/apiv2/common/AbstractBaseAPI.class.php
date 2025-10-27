@@ -151,7 +151,7 @@ abstract class AbstractBaseAPI {
    * Overridable function to aggregate data in the object. Currently only used for Tasks
    * returns the aggregated data in key value pairs
    */
-  public static function aggregateData(object $object): array {
+  public static function aggregateData(object $object, array $sparseFieldsets = null): array {
     return [];
   }
   
@@ -591,8 +591,7 @@ abstract class AbstractBaseAPI {
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
     
-    //TODO: only aggregate data when it has been included
-    $aggregatedData = $apiClass::aggregateData($obj);
+    $aggregatedData = $apiClass::aggregateData($obj, $sparseFieldsets);
     $attributes = array_merge($attributes, $aggregatedData);
     
     /* Build JSON::API relationship resource */
