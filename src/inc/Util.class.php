@@ -195,7 +195,7 @@ class Util {
     $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");
     if (Util::databaseColumnExists("AgentBinary", "type")) {
       // This check is needed for older updates when agentbinary column still got old 'type' name
-      $qF = new QueryFilter("type", $type, "=");
+      Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` RENAME COLUMN `type` to `binaryType`;");
     }
     $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($binary != null) {
