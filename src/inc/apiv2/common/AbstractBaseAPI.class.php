@@ -551,7 +551,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function obj2Resource(object $obj, array $expandResult = [], array $sparseFieldsets = null): array {
+  protected function obj2Resource(object $obj, array $expandResult = [], array $sparseFieldsets = null, array $aggregateFieldsets = null): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -571,12 +571,8 @@ abstract class AbstractBaseAPI {
       }
 
       // If sparse fieldsets (https://jsonapi.org/format/#fetching-sparse-fieldsets) is used, return only the requested data
-      if (is_array($sparseFieldsets)) { 
-        if (array_key_exists($this->getObjectTypeName($obj), $sparseFieldsets)) {
-          if (!in_array($feature['alias'], $sparseFieldsets[$this->getObjectTypeName($obj)])) {
-            continue;
-          }
-        }
+      if (is_array($sparseFieldsets) && array_key_exists($this->getObjectTypeName($obj), $sparseFieldsets) && !in_array($feature['alias'], $sparseFieldsets[$this->getObjectTypeName($obj)])) {
+        continue;
       }
 
       // Hide the primaryKey from the attributes since this is used as indentifier (id) in response
@@ -590,8 +586,8 @@ abstract class AbstractBaseAPI {
       
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
-    
-    $aggregatedData = $apiClass::aggregateData($obj, $sparseFieldsets);
+
+    $aggregatedData = $apiClass::aggregateData($obj, $aggregateFieldsets);
     $attributes = array_merge($attributes, $aggregatedData);
     
     /* Build JSON::API relationship resource */
@@ -1429,7 +1425,7 @@ abstract class AbstractBaseAPI {
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object
-      $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null);
+      $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
       
       // For compound document, included resources
       foreach ($expands as $expand) {
@@ -1437,7 +1433,7 @@ abstract class AbstractBaseAPI {
           $expandResultObject = $expandResult[$expand][$object->getId()];
           if (is_array($expandResultObject)) {
             foreach ($expandResultObject as $expandObject) {
-              $includedResources[] = $apiClass->obj2Resource($expandObject, [], $request->getQueryParams()['fields'] ?? null);
+              $includedResources[] = $apiClass->obj2Resource($expandObject, [], $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
             }
           }
           else {
@@ -1445,7 +1441,7 @@ abstract class AbstractBaseAPI {
               // to-only relation which is nullable
               continue;
             }
-            $includedResources[] = $apiClass->obj2Resource($expandResultObject, [], $request->getQueryParams()['fields'] ?? null);
+            $includedResources[] = $apiClass->obj2Resource($expandResultObject, [], $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
           }
         }
       }
