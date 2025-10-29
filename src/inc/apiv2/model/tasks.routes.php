@@ -4,6 +4,7 @@ use DBA\ContainFilter;
 use DBA\Factory;
 
 use DBA\Agent;
+use DBA\Aggregation;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\CrackerBinary;
@@ -162,32 +163,35 @@ class TaskAPI extends AbstractModelAPI {
   
   //TODO make aggregate data queryable and not included by default
   static function aggregateData(object $object): array {
+    $qF = new QueryFilter(Assignment::TASK_ID, $object->getId(), "=");
+    $activeAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
+    $aggregatedData["activeAgents"] = $activeAgents;
+
     $keyspace = $object->getKeyspace();
     $keyspaceProgress = $object->getKeyspaceProgress();
     
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+    $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
+    $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
+    $agg3 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::MAX);
+    $agg4 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::MAX);
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2, $agg3, $agg4]);
+
+    $progress = $results[$agg1->getName()] - $results[$agg2->getName()];
+    $maxTime = max($results[$agg3->getName()], $results[$agg4->getName()]);
+
+    //status 1 is running, 2 is idle and 3 is completed
+    $status = 2;
+    if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $object->getKeyspace() || $object->getUsePreprocessor() && $object->getKeyspace() == DPrince::PRINCE_KEYSPACE)) { 
+      $status = 1;
+    }
     $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
     $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
     
-    $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-    
-    $activeAgents = [];
-    foreach ($chunks as $chunk) {
-      if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
-        $activeAgents[$chunk->getAgentId()] = true;
-      }
-    }
-    
-    //status 1 is running, 2 is idle and 3 is completed
-    $status = 2;
     if ($keyspaceProgress >= $keyspace && $keyspaceProgress > 0) {
       $status = 3;
     }
-    elseif (count($activeAgents) > 0) {
-      $status = 1;
-    }
     
-    $aggregatedData["activeAgents"] = array_keys($activeAgents);
     $aggregatedData["status"] = $status;
     
     return $aggregatedData;
