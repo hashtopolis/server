@@ -39,7 +39,7 @@ if (!isset($PRESENT["v0.13.x_hashTypes_1"])) {
 }
 
 if (!isset($PRESENT["v0.13.x_agentBinaries"])) {
-  Util::checkAgentVersion("python", "0.7.1", true);
+  Util::checkAgentVersionLegacy("python", "0.7.1", true);
   $EXECUTED["v0.13.x_agentBinaries"] = true;
 }
 if (!isset($PRESENT["v0.13.x_hash_length"])) {

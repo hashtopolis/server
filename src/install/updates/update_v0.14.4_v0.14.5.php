@@ -5,16 +5,17 @@ use DBA\Factory;
 use DBA\HashType;
 use DBA\QueryFilter;
 
-if (!isset($PRESENT["v0.14.4_agentBinaries"])) {
-  Util::checkAgentVersion("python", "0.7.4", true);
-  $EXECUTED["v0.14.4_agentBinaries"] = true;
-}
 
 if (!isset($PRESENT["v0.14.4_update_agent_binary"])) {
   if (Util::databaseColumnExists("AgentBinary", "type")) {
     Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` RENAME COLUMN `type` to `binaryType`;");
     $EXECUTED["v0.14.4_update_agent_binary"] = true;
   }
+}
+
+if (!isset($PRESENT["v0.14.4_agentBinaries"])) {
+  Util::checkAgentVersion("python", "0.7.4", true);
+  $EXECUTED["v0.14.4_agentBinaries"] = true;
 }
 
 if (!isset($PRESENT["v0.14.4_update_hashtypes"])){

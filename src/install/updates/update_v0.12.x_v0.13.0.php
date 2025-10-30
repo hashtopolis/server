@@ -252,12 +252,12 @@ if (!isset($PRESENT["v0.12.x_hashTypes_5"])) {
 }
 
 if (!isset($PRESENT["v0.12.x_agentBinaries"])) {
-  Util::checkAgentVersion("python", "0.6.0.10", true);
+  Util::checkAgentVersionLegacy("python", "0.6.0.10", true);
   $EXECUTED["v0.12.x_agentBinaries"] = true;
 }
 
 if (!isset($PRESENT["v0.12.x_agentBinaries_1"])) {
-  Util::checkAgentVersion("python", "0.7.0", true);
+  Util::checkAgentVersionLegacy("python", "0.7.0", true);
   $EXECUTED["v0.12.x_agentBinaries_1"] = true;
 }
 

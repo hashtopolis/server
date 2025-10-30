@@ -79,6 +79,6 @@ if (!isset($PRESENT["v0.9.0_agentBinaries"])) {
     Factory::getAgentBinaryFactory()->update($agent);
   }
   
-  Util::checkAgentVersion("python", "0.4.0", true);
+  Util::checkAgentVersionLegacy("python", "0.4.0", true);
   $EXECUTED["v0.9.0_agentBinaries"] = true;
 }

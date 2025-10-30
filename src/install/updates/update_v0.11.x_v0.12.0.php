@@ -24,7 +24,7 @@ if (!isset($PRESENT["v0.11.x_tasks"])) {
 }
 
 if (!isset($PRESENT["v0.11.x_agentBinaries"])) {
-  Util::checkAgentVersion("python", "0.6.0", true);
+  Util::checkAgentVersionLegacy("python", "0.6.0", true);
   $EXECUTED["v0.11.x_agentBinaries"] = true;
 }
 
