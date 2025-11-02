@@ -10,6 +10,6 @@ if (!isset($PRESENT["v0.14.x_maxAgents_taskwrapper"])) {
 }
 
 if (!isset($PRESENT["v0.14.x_agentBinaries"])) {
-  Util::checkAgentVersion("python", "0.7.2", true);
+  Util::checkAgentVersionLegacy("python", "0.7.2", true);
   $EXECUTED["v0.14.x_agentBinaries"] = true;
 }
