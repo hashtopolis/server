@@ -189,11 +189,11 @@ class CorsHackMiddleware implements MiddlewareInterface {
     $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
     
     if (getenv('HASHTOPOLIS_FRONTEND_URLS') !== false) {
-      if(in_array($_SERVER['HTTP_ORIGIN'], explode(',', getenv('HASHTOPOLIS_FRONTEND_URLS')), true)) {
-        $response = $response->withHeader('Access-Control-Allow-Origin', $_SERVER['HTTP_ORIGIN']);
+      if(in_array($request->getHeaderLine('HTTP_ORIGIN'), explode(',', getenv('HASHTOPOLIS_FRONTEND_URLS')), true)) {
+        $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'));
       }
       else {
-        Util::createLogEntry(DLogEntryIssuer::USER, Login::getInstance()->getUserID(), DLogEntry::WARN, "CORS error: Allow-Origin doesn't match. Please make sure to include the used frontend in the .env file.");
+        error_log("CORS error: Allow-Origin doesn't match. Please make sure to include the used frontend in the .env file.");
       }
     }
     else {
