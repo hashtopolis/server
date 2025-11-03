@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.0.0-rainbow3 -> v1.0.0-rainbow4
+
+**Bugfixes**
+
+- Fixed status calculation in backend (#1716)
+- Fixed upgrade of agentbinary to new binaryType (#1722)
+
 ## v1.0.0-rainbow2 -> v1.0.0-rainbow3
 
 **Enhancements**
