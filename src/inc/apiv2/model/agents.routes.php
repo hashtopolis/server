@@ -11,6 +11,7 @@ use DBA\AgentStat;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\JoinFilter;
+use DBA\QueryFilter;
 use DBA\Task;
 use DBA\User;
 use JetBrains\PhpStorm\NoReturn;
@@ -35,6 +36,17 @@ class AgentAPI extends AbstractModelAPI {
     return [
       Agent::IGNORE_ERRORS => fn($value) => AgentUtils::changeIgnoreErrors($id, $value, $current_user),
     ];
+  }
+  
+  static function aggregateData(object $object): array {
+    $qFs = [];
+    $qFs[] = new QueryFilter(Chunk::AGENT_ID, $object->getId(), "=");
+    $qFs[] = new QueryFilter(Chunk::STATE, 2, "=");
+    $active_chunk = Factory::getChunkFactory()->filter([Factory::FILTER => $qFs], true);
+    $aggregatedData["activeChunk"] = $active_chunk->getKeyValueDict();
+
+
+    return $aggregatedData;
   }
   
   protected function getSingleACL(User $user, object $object): bool {
