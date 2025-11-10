@@ -18,8 +18,13 @@ class Hashlist extends AbstractModel {
   private ?int $brainId;
   private ?int $brainFeatures;
   private ?int $isArchived;
+  private ?int $uploadedTotalLines;
+  private ?int $uploadedEmptyLines;
+  private ?int $uploadedValidHashes;
+  private ?int $uploadedValidHashesWithoutExpectedSalt;
+  private ?int $uploadedInvalidHashes;
   
-  function __construct(?int $hashlistId, ?string $hashlistName, ?int $format, ?int $hashTypeId, ?int $hashCount, ?string $saltSeparator, ?int $cracked, ?int $isSecret, ?int $hexSalt, ?int $isSalted, ?int $accessGroupId, ?string $notes, ?int $brainId, ?int $brainFeatures, ?int $isArchived) {
+  function __construct(?int $hashlistId, ?string $hashlistName, ?int $format, ?int $hashTypeId, ?int $hashCount, ?string $saltSeparator, ?int $cracked, ?int $isSecret, ?int $hexSalt, ?int $isSalted, ?int $accessGroupId, ?string $notes, ?int $brainId, ?int $brainFeatures, ?int $isArchived, ?int $uploadedTotalLines, ?int $uploadedEmptyLines, ?int $uploadedValidHashes, ?int $uploadedValidHashesWithoutExpectedSalt, ?int $uploadedInvalidHashes) {
     $this->hashlistId = $hashlistId;
     $this->hashlistName = $hashlistName;
     $this->format = $format;
@@ -35,6 +40,11 @@ class Hashlist extends AbstractModel {
     $this->brainId = $brainId;
     $this->brainFeatures = $brainFeatures;
     $this->isArchived = $isArchived;
+    $this->uploadedTotalLines = $uploadedTotalLines;
+    $this->uploadedEmptyLines = $uploadedEmptyLines;
+    $this->uploadedValidHashes = $uploadedValidHashes;
+    $this->uploadedValidHashesWithoutExpectedSalt = $uploadedValidHashesWithoutExpectedSalt;
+    $this->uploadedInvalidHashes = $uploadedInvalidHashes;
   }
   
   function getKeyValueDict(): array {
@@ -54,6 +64,11 @@ class Hashlist extends AbstractModel {
     $dict['brainId'] = $this->brainId;
     $dict['brainFeatures'] = $this->brainFeatures;
     $dict['isArchived'] = $this->isArchived;
+    $dict['uploadedTotalLines'] = $this->uploadedTotalLines;
+    $dict['uploadedEmptyLines'] = $this->uploadedEmptyLines;
+    $dict['uploadedValidHashes'] = $this->uploadedValidHashes;
+    $dict['uploadedValidHashesWithoutExpectedSalt'] = $this->uploadedValidHashesWithoutExpectedSalt;
+    $dict['uploadedInvalidHashes'] = $this->uploadedInvalidHashes;
     
     return $dict;
   }
@@ -75,6 +90,11 @@ class Hashlist extends AbstractModel {
     $dict['brainId'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "useBrain", "public" => False];
     $dict['brainFeatures'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "brainFeatures", "public" => False];
     $dict['isArchived'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isArchived", "public" => False];
+    $dict['uploadedTotalLines'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "uploadedTotalLines", "public" => False];
+    $dict['uploadedEmptyLines'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "uploadedEmptyLines", "public" => False];
+    $dict['uploadedValidHashes'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "uploadedValidHashes", "public" => False];
+    $dict['uploadedValidHashesWithoutExpectedSalt'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "uploadedValidHashesWithoutExpectedSalt", "public" => False];
+    $dict['uploadedInvalidHashes'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "uploadedInvalidHashes", "public" => False];
 
     return $dict;
   }
@@ -215,6 +235,47 @@ class Hashlist extends AbstractModel {
     $this->isArchived = $isArchived;
   }
   
+  function getUploadedTotalLines(): ?int {
+    return $this->uploadedTotalLines;
+  }
+  
+  function setUploadedTotalLines(?int $uploadedTotalLines): void {
+    $this->uploadedTotalLines = $uploadedTotalLines;
+  }
+
+  function getUploadedEmptyLines(): ?int {
+    return $this->uploadedEmptyLines;
+  }
+  
+  function setUploadedEmptyLines(?int $uploadedEmptyLines): void {
+    $this->uploadedEmptyLines = $uploadedEmptyLines;
+  }
+
+  function getUploadedValidHashes(): ?int {
+    return $this->uploadedValidHashes;
+  }
+  
+  function setUploadedValidHashes(?int $uploadedValidHashes): void {
+    $this->uploadedValidHashes = $uploadedValidHashes;
+  }
+
+  function getUploadedValidHashesWithoutExpectedSalt(): ?int {
+    return $this->uploadedValidHashesWithoutExpectedSalt;
+  }
+  
+  function setUploadedValidHashesWithoutExpectedSalt(?int $uploadedValidHashesWithoutExpectedSalt): void {
+    $this->uploadedValidHashesWithoutExpectedSalt = $uploadedValidHashesWithoutExpectedSalt;
+  }
+
+  function getUploadedInvalidHashes(): ?int {
+    return $this->uploadedInvalidHashes;
+  }
+  
+  function setUploadedInvalidHashes(?int $uploadedInvalidHashes): void {
+    $this->uploadedInvalidHashes = $uploadedInvalidHashes;
+  }
+
+
   const HASHLIST_ID = "hashlistId";
   const HASHLIST_NAME = "hashlistName";
   const FORMAT = "format";
@@ -230,6 +291,11 @@ class Hashlist extends AbstractModel {
   const BRAIN_ID = "brainId";
   const BRAIN_FEATURES = "brainFeatures";
   const IS_ARCHIVED = "isArchived";
+  const UPLOADED_TOTAL_LINES = "uploadedTotalLines";
+  const UPLOADED_EMPTY_LINES = "uploadedEmptyLines";
+  const UPLOADED_VALID_HASHES = "uploadedValidHashes";
+  const UPLOADED_VALID_HASHES_WITHOUT_EXPECTED_SALT = "uploadedValidHashesWithoutExpectedSalt";
+  const UPLOADED_INVALID_HASHES = "uploadedInvalidHashes";
 
   const PERM_CREATE = "permHashlistCreate";
   const PERM_READ = "permHashlistRead";
