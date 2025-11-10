@@ -447,22 +447,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     return $updates;
   }
   
-  protected static function addToRelatedResources(array $relatedResources, array $relatedResource): array {
-    $alreadyExists = false;
-    $searchType = $relatedResource["type"];
-    $searchId = $relatedResource["id"];
-    foreach ($relatedResources as $resource) {
-      if ($resource["id"] == $searchId && $resource["type"] == $searchType) {
-        $alreadyExists = true;
-        break;
-      }
-    }
-    if (!$alreadyExists) {
-      $relatedResources[] = $relatedResource;
-    }
-    return $relatedResources;
-  }
-
   protected static function calculate_next_cursor(string|int $cursor, bool $ascending=true) {
     if (is_int($cursor)) {
       if ($ascending) {
@@ -748,24 +732,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     foreach ($objects as $object) {
       // Create object  
       $newObject = $apiClass->obj2Resource($object, $expandResult);
-
-      // For compound document, included resources
-      foreach ($expands as $expand) {
-        if (array_key_exists($object->getId(), $expandResult[$expand])) {
-          $expandResultObject = $expandResult[$expand][$object->getId()];
-          if (is_array($expandResultObject)) {
-            foreach ($expandResultObject as $expandObject) {
-              $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject));
-            }
-          } else {
-            if ($expandResultObject === null) {
-              // to-only relation which is nullable
-              continue;
-            }
-            $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandResultObject));
-          }
-        }
-      }
+      $includedResources = $apiClass->processExpands($apiClass, $expands, $object, $expandResult, $includedResources);
 
       // Add to result output
       $dataResources[] = $newObject;

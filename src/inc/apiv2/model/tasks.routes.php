@@ -162,7 +162,7 @@ class TaskAPI extends AbstractModelAPI {
   }
   
   //TODO make aggregate data queryable and not included by default
-  static function aggregateData(object $object): array {
+  static function aggregateData(object $object, array &$included_data = []): array {
     $qF = new QueryFilter(Assignment::TASK_ID, $object->getId(), "=");
     $activeAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
     $aggregatedData["activeAgents"] = $activeAgents;

@@ -38,15 +38,18 @@ class AgentAPI extends AbstractModelAPI {
     ];
   }
   
-  static function aggregateData(object $object): array {
+  static function aggregateData(object $object, array &$included_data = []): array {
+    $agentId = $object->getId();
     $qFs = [];
-    $qFs[] = new QueryFilter(Chunk::AGENT_ID, $object->getId(), "=");
+    $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
     $qFs[] = new QueryFilter(Chunk::STATE, 2, "=");
+
     $active_chunk = Factory::getChunkFactory()->filter([Factory::FILTER => $qFs], true);
-    $aggregatedData["activeChunk"] = $active_chunk->getKeyValueDict();
+    if ($active_chunk !== NULL) {
+      $included_data["chunks"][$agentId] = [$active_chunk];
+    }
 
-
-    return $aggregatedData;
+    return [];
   }
   
   protected function getSingleACL(User $user, object $object): bool {
