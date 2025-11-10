@@ -38,11 +38,19 @@ class AgentAPI extends AbstractModelAPI {
     ];
   }
   
+  /**
+   * Overridable function to aggregate data in the object. active chunk of agent is appended to
+   * $included_data.
+   *
+   * @param object $object the agent object were data is aggregated from
+   * @param array &$includedData
+   * @return array not used here 
+   */
   static function aggregateData(object $object, array &$included_data = []): array {
     $agentId = $object->getId();
     $qFs = [];
     $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
-    $qFs[] = new QueryFilter(Chunk::STATE, 2, "=");
+    $qFs[] = new QueryFilter(Chunk::STATE, DHashcatStatus::RUNNING, "=");
 
     $active_chunk = Factory::getChunkFactory()->filter([Factory::FILTER => $qFs], true);
     if ($active_chunk !== NULL) {
