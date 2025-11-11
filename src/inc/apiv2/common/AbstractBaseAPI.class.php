@@ -150,10 +150,18 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * Overridable function to aggregate data in the object. Currently only used for Tasks
-   * returns the aggregated data in key value pairs
+   * Overridable function to aggregate data in the object. Used for Tasks and Agents.
+   *
+   * @param object $object The object to aggregate data from.
+   * @param array &$includedData Array passed by reference; implementations can add related resources
+   *   for inclusion in the response by appending to this array.
+   * @return array Aggregated data as key-value pairs.
+   *
+   * Implementations should use $includedData to collect related resources that should be included
+   * in the API response, such as related entities or additional data.
    */
-  public static function aggregateData(object $object): array {
+  public static function aggregateData(object $object, array &$includedData=[]): array
+  {
     return [];
   }
   
@@ -553,7 +561,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function obj2Resource(object $obj, array $expandResult = []): array {
+  protected function obj2Resource(object $obj, array &$expandResult = []): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -584,7 +592,7 @@ abstract class AbstractBaseAPI {
     }
     
     //TODO: only aggregate data when it has been included
-    $aggregatedData = $apiClass::aggregateData($obj);
+    $aggregatedData = $apiClass::aggregateData($obj, $expandResult);
     $attributes = array_merge($attributes, $aggregatedData);
     
     /* Build JSON::API relationship resource */
@@ -1154,8 +1162,59 @@ abstract class AbstractBaseAPI {
     
     return $orderTemplates;
   }
-  
-  
+
+  protected static function addToRelatedResources(array $relatedResources, array $relatedResource): array {
+    $alreadyExists = false;
+    $searchType = $relatedResource["type"];
+    $searchId = $relatedResource["id"];
+    foreach ($relatedResources as $resource) {
+      if ($resource["id"] == $searchId && $resource["type"] == $searchType) {
+        $alreadyExists = true;
+        break;
+      }
+    }
+    if (!$alreadyExists) {
+      $relatedResources[] = $relatedResource;
+    }
+    return $relatedResources;
+  }
+
+  protected function processExpands(
+    object $apiClass,
+    array $expands,
+    object $object,
+    array $expandResult,
+    array $includedResources
+): array {
+    
+    // Add missing expands to expands in case they have been added in aggregateData()
+    $expandKeys = array_keys($expandResult);
+    $diffs = array_diff($expandKeys, $expands);
+    $expands = array_merge($expands, $diffs);
+
+    foreach ($expands as $expand) {
+      if (!array_key_exists($object->getId(), $expandResult[$expand])) {
+          continue;
+      }
+
+      $expandResultObject = $expandResult[$expand][$object->getId()];
+
+      if (is_array($expandResultObject)) {
+        foreach ($expandResultObject as $expandObject) {
+          $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject));
+        }
+      } else {
+          if ($expandResultObject === null) {
+            // to-only relation which is nullable
+            continue;
+          }
+        $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandResultObject));
+      }
+    }
+
+    return $includedResources;
+  }
+
   /**
    * Validate if user is allowed to access hashlist
    * @throws HttpForbidden
@@ -1432,25 +1491,7 @@ abstract class AbstractBaseAPI {
     foreach ($objects as $object) {
       // Create object
       $newObject = $apiClass->obj2Resource($object, $expandResult);
-      
-      // For compound document, included resources
-      foreach ($expands as $expand) {
-        if (array_key_exists($object->getId(), $expandResult[$expand])) {
-          $expandResultObject = $expandResult[$expand][$object->getId()];
-          if (is_array($expandResultObject)) {
-            foreach ($expandResultObject as $expandObject) {
-              $includedResources[] = $apiClass->obj2Resource($expandObject);
-            }
-          }
-          else {
-            if ($expandResultObject === null) {
-              // to-only relation which is nullable
-              continue;
-            }
-            $includedResources[] = $apiClass->obj2Resource($expandResultObject);
-          }
-        }
-      }
+      $includedResources = $apiClass->processExpands($apiClass, $expands, $object, $expandResult, $includedResources);
       
       // Add to result output
       $dataResources[] = $newObject;
