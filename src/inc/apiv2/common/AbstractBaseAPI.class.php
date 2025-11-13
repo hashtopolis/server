@@ -1505,7 +1505,7 @@ abstract class AbstractBaseAPI {
     
     $metaData = [];
     if ($apiClass->permissionErrors !== null) {
-      $metadata["Include errors"] = $apiClass->permissionErrors;
+      $metaData["Include errors"] = $apiClass->permissionErrors;
     }
     // Generate JSON:API GET output
     $ret = self::createJsonResponse($dataResources[0], $links, $includedResources, $metaData);
