@@ -50,7 +50,7 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
           "type" => "integer",
           "format" => "int32"
         ],
-        "required" => true,
+        "required" => false,
         "example" => 1,
         "description" => "The ID of the supertask where you want to create the progress image of."
       ],
@@ -61,7 +61,7 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
           "type" => "integer",
           "format" => "int32"
         ],
-        "required" => true,
+        "required" => false,
         "example" => 1,
         "description" => "The ID of the task where you want to create the progress image of."
       ]
@@ -86,7 +86,7 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
     if ($task_id) {
       $task = Factory::getTaskFactory()->get($task_id);
       if ($task == null) {
-        throw new HttpNotFoundException($request, "Invalid file");
+        throw new HttpNotFoundException($request, "Invalid task");
       }
       $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
       if ($taskWrapper == null) {
@@ -94,7 +94,7 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
       }
     }
     else if ($supertask_id) {
-      $taskWrapper = Factory::getTaskWrapperFactory()->get($_GET['supertask']);
+      $taskWrapper = Factory::getTaskWrapperFactory()->get($supertask_id);
       if ($taskWrapper == null) {
         throw new HttpError("Invalid task wrapper!");
       }
@@ -201,7 +201,11 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
     }
 
     //send image data to output
+    ob_start($image);
     imagepng($image);
+    $imageData = ob_get_clean();
+    imagedestroy($image);
+    $response->getBody()->write($imageData);
     return $response->withStatus(200)
       ->withHeader("Content-Type", "image/png")
       ->withHeader("Cache-Control", "no-cache");
