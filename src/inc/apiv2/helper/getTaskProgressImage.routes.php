@@ -201,7 +201,7 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
     }
 
     //send image data to output
-    ob_start($image);
+    ob_start();
     imagepng($image);
     $imageData = ob_get_clean();
     imagedestroy($image);
