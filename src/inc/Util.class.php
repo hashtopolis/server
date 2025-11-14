@@ -26,6 +26,7 @@ use DBA\AgentBinary;
 use DBA\AgentStat;
 use DBA\FileDelete;
 use DBA\Factory;
+use DBA\UpdateSet;
 use DBA\Speed;
 use Composer\Semver\Comparator;
 
