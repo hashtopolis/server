@@ -228,21 +228,19 @@ abstract class AbstractModelFactory {
     
     $query = "UPDATE " . $this->getMappedModelTable() . " SET ";
     
+    $values = array_values($dict);
     $keys = self::getMappedModelKeys($model);
-    $values = array();
     
     for ($i = 0; $i < count($keys); $i++) {
       if ($i != count($keys) - 1) {
-        $query = $query . $keys[$i] . "=?,";
-        $values[] = $dict[$keys[$i]];
+        $query .= $keys[$i] . "=?, ";
       }
       else {
-        $query = $query . $keys[$i] . "=?";
-        $values[] = $dict[$keys[$i]];
+        $query .= $keys[$i] . "=?";
       }
     }
     
-    $query = $query . " WHERE " . $model->getPrimaryKey() . "=?";
+    $query .= " WHERE " . $model->getPrimaryKey() . "=?";
     $values[] = $model->getPrimaryKeyValue();
     
     $stmt = $this->getDB()->prepare($query);

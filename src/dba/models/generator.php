@@ -596,8 +596,9 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModelFactory.template.txt");
   $class = str_replace("__MODEL_NAME__", $NAME, $class);
   $class = str_replace("__MODEL_DBA_MAPPING__", (array_key_exists("dba_mapping", $MODEL_CONF) ? ($MODEL_CONF['dba_mapping'] ? 'True' : 'False') : 'False'), $class);
-  $dict = array();
-  $dict2 = array();
+  $dict = [];
+  $dict2 = [];
+  $mapping = [];
   foreach ($COLUMNS as $COLUMN) {
     $col = $COLUMN['name'];
     if (sizeof($dict) == 0) {
@@ -607,10 +608,19 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
     else {
       $dict[] = "null";
       $dict2[] = "\$dict['$col']";
+      if (array_key_exists("dba_mapping", $COLUMN) && $COLUMN['dba_mapping']) {
+        $mapping[] = "\$dict['$col'] = \$dict['htp_$col'];";
+      }
     }
   }
   $class = str_replace("__MODEL_DICT__", implode(", ", $dict), $class);
   $class = str_replace("__MODEL__DICT2__", implode(", ", $dict2), $class);
+  if (count($mapping) > 0) {
+    $class = str_replace("__MODEL_MAPPING_DICT__", "\n    " . implode("\n    ", $mapping), $class);
+  }
+  else {
+    $class = str_replace("__MODEL_MAPPING_DICT__", "", $class);
+  }
   
   file_put_contents(dirname(__FILE__) . "/" . $NAME . "Factory.class.php", $class);
 }

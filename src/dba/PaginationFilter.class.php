@@ -36,7 +36,7 @@ class PaginationFilter extends Filter {
       $table = $factory->getMappedModelTable() . ".";
     }
     
-    $parts = array_map(fn($filter) => $filter->getQueryString(), $this->filters);
+    $parts = array_map(fn($filter) => $filter->getQueryString($factory, true), $this->filters);
     //ex. SELECT hashTypeId, description, isSalted, isSlowHash FROM HashType 
     //    where (HashType.isSalted < 1) OR (HashType.isSalted = 1 and HashType.hashTypeId < 12600) 
     //    ORDER BY HashType.isSalted DESC, HashType.hashTypeId DESC LIMIT 25;

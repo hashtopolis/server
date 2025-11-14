@@ -16,6 +16,7 @@ class UpdateSet {
     if ($includeTable) {
       $table = $factory->getMappedModelTable() . ".";
     }
+    
     return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . "=?";
   }
   

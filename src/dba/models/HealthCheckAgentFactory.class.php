@@ -36,6 +36,7 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
    * @return HealthCheckAgent
    */
   function createObjectFromDict($pk, $dict): HealthCheckAgent {
+    $dict['end'] = $dict['htp_end'];
     return new HealthCheckAgent($dict['healthCheckAgentId'], $dict['healthCheckId'], $dict['agentId'], $dict['status'], $dict['cracked'], $dict['numGpus'], $dict['start'], $dict['end'], $dict['errors']);
   }
   

@@ -35,7 +35,7 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
    * @param array $dict
    * @return __MODEL_NAME__
    */
-  function createObjectFromDict($pk, $dict): __MODEL_NAME__ {
+  function createObjectFromDict($pk, $dict): __MODEL_NAME__ {__MODEL_MAPPING_DICT__
     return new __MODEL_NAME__(__MODEL__DICT2__);
   }
   
