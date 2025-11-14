@@ -14,6 +14,7 @@ use DBA\Zap;
 use DBA\AgentStat;
 use DBA\OrderFilter;
 use DBA\ContainFilter;
+use DBA\UpdateSet;
 use DBA\Factory;
 use DBA\HealthCheckAgent;
 use DBA\Speed;

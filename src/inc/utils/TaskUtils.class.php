@@ -23,6 +23,7 @@ use DBA\User;
 use DBA\Hashlist;
 use DBA\AccessGroupUser;
 use DBA\TaskDebugOutput;
+use DBA\UpdateSet;
 use DBA\Factory;
 use DBA\Speed;
 use DBA\Aggregation;
