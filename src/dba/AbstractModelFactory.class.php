@@ -746,6 +746,9 @@ abstract class AbstractModelFactory {
         array_push($vals, $v);
       }
     }
+    if (sizeof($parts) == 0) {
+      return "";
+    }
     return " WHERE " . implode(" AND ", $parts);
   }
   
