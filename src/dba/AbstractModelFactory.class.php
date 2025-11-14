@@ -2,6 +2,9 @@
 
 namespace DBA;
 
+// this is needed for tests (not really great, but no other way currently)
+use JsonSchema\Constraints\Drafts\Draft06\AnyOfConstraint;
+
 use MassUpdateSet;
 use PDO, PDOStatement, PDOException;
 use UI;
