@@ -37,7 +37,7 @@ class Util {
   public static function createPrefixedString(string $table, array $keys): string {
     $arr = array();
     foreach ($keys as $key) {
-      $arr[] = "$table.$key AS $table.$key";
+      $arr[] = "$table.$key AS '$table.$key'";
     }
     return implode(", ", $arr);
   }
