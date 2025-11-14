@@ -1,5 +1,6 @@
 <?php
 
+use DBA\UpdateSet;
 use DBA\User;
 use DBA\QueryFilter;
 use DBA\AccessGroupUser;
