@@ -10,6 +10,10 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "HealthCheckAgent";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -40,7 +44,7 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
    * @param bool $single
    * @return HealthCheckAgent|HealthCheckAgent[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

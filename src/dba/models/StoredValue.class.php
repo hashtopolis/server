@@ -21,8 +21,8 @@ class StoredValue extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['storedValueId'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "storedValueId", "public" => False];
-    $dict['val'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "val", "public" => False];
+    $dict['storedValueId'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "storedValueId", "public" => False, "dba_mapping" => False];
+    $dict['val'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "val", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }

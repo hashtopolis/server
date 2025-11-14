@@ -10,6 +10,10 @@ class ApiKeyFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "ApiKey";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -40,7 +44,7 @@ class ApiKeyFactory extends AbstractModelFactory {
    * @param bool $single
    * @return ApiKey|ApiKey[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

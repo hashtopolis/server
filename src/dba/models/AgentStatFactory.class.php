@@ -10,6 +10,10 @@ class AgentStatFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "AgentStat";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -40,7 +44,7 @@ class AgentStatFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AgentStat|AgentStat[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

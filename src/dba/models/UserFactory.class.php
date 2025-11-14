@@ -10,6 +10,10 @@ class UserFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "User";
   }
+
+  function isMapping(): bool {
+    return True;
+  }
   
   function isCachable(): bool {
     return false;
@@ -40,7 +44,7 @@ class UserFactory extends AbstractModelFactory {
    * @param bool $single
    * @return User|User[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

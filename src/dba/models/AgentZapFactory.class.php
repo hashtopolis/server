@@ -10,6 +10,10 @@ class AgentZapFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "AgentZap";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -40,7 +44,7 @@ class AgentZapFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AgentZap|AgentZap[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

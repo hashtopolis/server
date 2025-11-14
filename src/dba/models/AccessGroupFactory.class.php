@@ -10,6 +10,10 @@ class AccessGroupFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "AccessGroup";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -40,7 +44,7 @@ class AccessGroupFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AccessGroup|AccessGroup[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

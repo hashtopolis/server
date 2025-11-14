@@ -1,5 +1,7 @@
 <?php
 
+namespace DBA;
+
 class UpdateSet {
   private $key;
   private $value;
@@ -9,8 +11,12 @@ class UpdateSet {
     $this->value = $value;
   }
   
-  function getQuery($table = "") {
-    return $table . $this->key . "=?";
+  function getQuery(AbstractModelFactory $factory, bool $includeTable = false): string {
+    $table = "";
+    if ($includeTable) {
+      $table = $factory->getMappedModelTable() . ".";
+    }
+    return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . "=?";
   }
   
   function getValue() {

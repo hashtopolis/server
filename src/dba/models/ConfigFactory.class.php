@@ -10,6 +10,10 @@ class ConfigFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "Config";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -40,7 +44,7 @@ class ConfigFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Config|Config[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

@@ -10,6 +10,10 @@ class FileDownloadFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "FileDownload";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -40,7 +44,7 @@ class FileDownloadFactory extends AbstractModelFactory {
    * @param bool $single
    * @return FileDownload|FileDownload[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

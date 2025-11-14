@@ -3,5 +3,5 @@
 namespace DBA;
 
 abstract class Group {
-  abstract function getQueryString($table = "");
+  abstract function getQueryString(AbstractModelFactory $factory, bool $includeTable = false);
 }
