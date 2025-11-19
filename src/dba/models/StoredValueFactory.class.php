@@ -36,7 +36,12 @@ class StoredValueFactory extends AbstractModelFactory {
    * @return StoredValue
    */
   function createObjectFromDict($pk, $dict): StoredValue {
-    return new StoredValue($dict['storedValueId'], $dict['val']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new StoredValue($dict['storedvalueid'], $dict['val']);
   }
   
   /**

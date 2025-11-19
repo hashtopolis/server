@@ -36,7 +36,12 @@ class AgentStatFactory extends AbstractModelFactory {
    * @return AgentStat
    */
   function createObjectFromDict($pk, $dict): AgentStat {
-    return new AgentStat($dict['agentStatId'], $dict['agentId'], $dict['statType'], $dict['time'], $dict['value']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AgentStat($dict['agentstatid'], $dict['agentid'], $dict['stattype'], $dict['time'], $dict['value']);
   }
   
   /**

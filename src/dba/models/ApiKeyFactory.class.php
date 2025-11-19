@@ -36,7 +36,12 @@ class ApiKeyFactory extends AbstractModelFactory {
    * @return ApiKey
    */
   function createObjectFromDict($pk, $dict): ApiKey {
-    return new ApiKey($dict['apiKeyId'], $dict['startValid'], $dict['endValid'], $dict['accessKey'], $dict['accessCount'], $dict['userId'], $dict['apiGroupId']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new ApiKey($dict['apikeyid'], $dict['startvalid'], $dict['endvalid'], $dict['accesskey'], $dict['accesscount'], $dict['userid'], $dict['apigroupid']);
   }
   
   /**

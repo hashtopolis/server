@@ -36,7 +36,12 @@ class FileDeleteFactory extends AbstractModelFactory {
    * @return FileDelete
    */
   function createObjectFromDict($pk, $dict): FileDelete {
-    return new FileDelete($dict['fileDeleteId'], $dict['filename'], $dict['time']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new FileDelete($dict['filedeleteid'], $dict['filename'], $dict['time']);
   }
   
   /**

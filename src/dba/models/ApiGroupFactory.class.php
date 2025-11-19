@@ -36,7 +36,12 @@ class ApiGroupFactory extends AbstractModelFactory {
    * @return ApiGroup
    */
   function createObjectFromDict($pk, $dict): ApiGroup {
-    return new ApiGroup($dict['apiGroupId'], $dict['permissions'], $dict['name']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new ApiGroup($dict['apigroupid'], $dict['permissions'], $dict['name']);
   }
   
   /**

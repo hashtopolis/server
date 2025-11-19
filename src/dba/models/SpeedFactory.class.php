@@ -36,7 +36,12 @@ class SpeedFactory extends AbstractModelFactory {
    * @return Speed
    */
   function createObjectFromDict($pk, $dict): Speed {
-    return new Speed($dict['speedId'], $dict['agentId'], $dict['taskId'], $dict['speed'], $dict['time']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Speed($dict['speedid'], $dict['agentid'], $dict['taskid'], $dict['speed'], $dict['time']);
   }
   
   /**

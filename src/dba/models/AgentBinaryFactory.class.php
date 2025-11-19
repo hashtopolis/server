@@ -36,7 +36,12 @@ class AgentBinaryFactory extends AbstractModelFactory {
    * @return AgentBinary
    */
   function createObjectFromDict($pk, $dict): AgentBinary {
-    return new AgentBinary($dict['agentBinaryId'], $dict['binaryType'], $dict['version'], $dict['operatingSystems'], $dict['filename'], $dict['updateTrack'], $dict['updateAvailable']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AgentBinary($dict['agentbinaryid'], $dict['binarytype'], $dict['version'], $dict['operatingsystems'], $dict['filename'], $dict['updatetrack'], $dict['updateavailable']);
   }
   
   /**

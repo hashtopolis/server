@@ -36,7 +36,12 @@ class TaskFactory extends AbstractModelFactory {
    * @return Task
    */
   function createObjectFromDict($pk, $dict): Task {
-    return new Task($dict['taskId'], $dict['taskName'], $dict['attackCmd'], $dict['chunkTime'], $dict['statusTimer'], $dict['keyspace'], $dict['keyspaceProgress'], $dict['priority'], $dict['maxAgents'], $dict['color'], $dict['isSmall'], $dict['isCpuTask'], $dict['useNewBench'], $dict['skipKeyspace'], $dict['crackerBinaryId'], $dict['crackerBinaryTypeId'], $dict['taskWrapperId'], $dict['isArchived'], $dict['notes'], $dict['staticChunks'], $dict['chunkSize'], $dict['forcePipe'], $dict['usePreprocessor'], $dict['preprocessorCommand']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Task($dict['taskid'], $dict['taskname'], $dict['attackcmd'], $dict['chunktime'], $dict['statustimer'], $dict['keyspace'], $dict['keyspaceprogress'], $dict['priority'], $dict['maxagents'], $dict['color'], $dict['issmall'], $dict['iscputask'], $dict['usenewbench'], $dict['skipkeyspace'], $dict['crackerbinaryid'], $dict['crackerbinarytypeid'], $dict['taskwrapperid'], $dict['isarchived'], $dict['notes'], $dict['staticchunks'], $dict['chunksize'], $dict['forcepipe'], $dict['usepreprocessor'], $dict['preprocessorcommand']);
   }
   
   /**

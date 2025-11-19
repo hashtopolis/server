@@ -36,7 +36,12 @@ class AccessGroupFactory extends AbstractModelFactory {
    * @return AccessGroup
    */
   function createObjectFromDict($pk, $dict): AccessGroup {
-    return new AccessGroup($dict['accessGroupId'], $dict['groupName']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AccessGroup($dict['accessgroupid'], $dict['groupname']);
   }
   
   /**

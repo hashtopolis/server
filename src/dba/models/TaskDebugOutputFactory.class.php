@@ -36,7 +36,12 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
    * @return TaskDebugOutput
    */
   function createObjectFromDict($pk, $dict): TaskDebugOutput {
-    return new TaskDebugOutput($dict['taskDebugOutputId'], $dict['taskId'], $dict['output']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new TaskDebugOutput($dict['taskdebugoutputid'], $dict['taskid'], $dict['output']);
   }
   
   /**

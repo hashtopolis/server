@@ -36,7 +36,12 @@ class RegVoucherFactory extends AbstractModelFactory {
    * @return RegVoucher
    */
   function createObjectFromDict($pk, $dict): RegVoucher {
-    return new RegVoucher($dict['regVoucherId'], $dict['voucher'], $dict['time']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new RegVoucher($dict['regvoucherid'], $dict['voucher'], $dict['time']);
   }
   
   /**

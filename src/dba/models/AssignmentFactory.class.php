@@ -36,7 +36,12 @@ class AssignmentFactory extends AbstractModelFactory {
    * @return Assignment
    */
   function createObjectFromDict($pk, $dict): Assignment {
-    return new Assignment($dict['assignmentId'], $dict['taskId'], $dict['agentId'], $dict['benchmark']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Assignment($dict['assignmentid'], $dict['taskid'], $dict['agentid'], $dict['benchmark']);
   }
   
   /**

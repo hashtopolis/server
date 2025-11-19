@@ -36,7 +36,12 @@ class HashlistHashlistFactory extends AbstractModelFactory {
    * @return HashlistHashlist
    */
   function createObjectFromDict($pk, $dict): HashlistHashlist {
-    return new HashlistHashlist($dict['hashlistHashlistId'], $dict['parentHashlistId'], $dict['hashlistId']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new HashlistHashlist($dict['hashlisthashlistid'], $dict['parenthashlistid'], $dict['hashlistid']);
   }
   
   /**

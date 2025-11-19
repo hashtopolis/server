@@ -36,7 +36,12 @@ class AgentErrorFactory extends AbstractModelFactory {
    * @return AgentError
    */
   function createObjectFromDict($pk, $dict): AgentError {
-    return new AgentError($dict['agentErrorId'], $dict['agentId'], $dict['taskId'], $dict['chunkId'], $dict['time'], $dict['error']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AgentError($dict['agenterrorid'], $dict['agentid'], $dict['taskid'], $dict['chunkid'], $dict['time'], $dict['error']);
   }
   
   /**

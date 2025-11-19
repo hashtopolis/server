@@ -36,7 +36,12 @@ class FileTaskFactory extends AbstractModelFactory {
    * @return FileTask
    */
   function createObjectFromDict($pk, $dict): FileTask {
-    return new FileTask($dict['fileTaskId'], $dict['fileId'], $dict['taskId']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new FileTask($dict['filetaskid'], $dict['fileid'], $dict['taskid']);
   }
   
   /**

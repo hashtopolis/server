@@ -600,7 +600,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $dict2 = [];
   $mapping = [];
   foreach ($COLUMNS as $COLUMN) {
-    $col = $COLUMN['name'];
+    $col = strtolower($COLUMN['name']);
     if (sizeof($dict) == 0) {
       $dict[] = "-1";
       $dict2[] = "\$dict['$col']";

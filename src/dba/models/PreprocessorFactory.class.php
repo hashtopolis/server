@@ -36,7 +36,12 @@ class PreprocessorFactory extends AbstractModelFactory {
    * @return Preprocessor
    */
   function createObjectFromDict($pk, $dict): Preprocessor {
-    return new Preprocessor($dict['preprocessorId'], $dict['name'], $dict['url'], $dict['binaryName'], $dict['keyspaceCommand'], $dict['skipCommand'], $dict['limitCommand']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Preprocessor($dict['preprocessorid'], $dict['name'], $dict['url'], $dict['binaryname'], $dict['keyspacecommand'], $dict['skipcommand'], $dict['limitcommand']);
   }
   
   /**
