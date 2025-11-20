@@ -182,7 +182,8 @@ class UserAPIHashlist extends UserAPIBasic {
       'paste',
       ['hashfield' => base64_decode($QUERY[UQueryHashlist::HASHLIST_DATA])],
       [],
-      $this->user
+      $this->user,
+      false
     );
     $response = [
       UResponseHashlist::SECTION => $QUERY[UQueryHashlist::SECTION],

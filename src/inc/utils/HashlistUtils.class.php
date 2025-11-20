@@ -303,10 +303,11 @@ class HashlistUtils {
    * @param array $post
    * @param array $files
    * @param User $user
+   * @param boolean $overwritePlaintext
    * @return int[]
    * @throws HTException
    */
-  public static function processZap($hashlistId, $separator, $source, $post, $files, $user) {
+  public static function processZap($hashlistId, $separator, $source, $post, $files, $user, $overwritePlaintext) {
     // pre-crack hashes processor
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
@@ -427,7 +428,9 @@ class HashlistUtils {
         }
         else if ($hashEntry->getIsCracked() == 1) {
           $alreadyCracked++;
-          continue;
+          if (!$overwritePlaintext) {
+            continue;
+          }
         }
         $plain = str_replace($hash . $separator . $hashEntry->getSalt() . $separator, "", $data);
         if (strlen($plain) > SConfig::getInstance()->getVal(DConfig::PLAINTEXT_MAX_LENGTH)) {
@@ -435,8 +438,12 @@ class HashlistUtils {
           continue;
         }
         $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1, Hash::TIME_CRACKED => time()]);
-        $newCracked++;
-        $crackedIn[$hashEntry->getHashlistId()]++;
+        
+        if ($hashEntry->getIsCracked() != 1) {
+          $newCracked++;
+          $crackedIn[$hashEntry->getHashlistId()]++;
+        }
+
         if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
           $zaps[] = new Zap(null, $hashEntry->getHash(), time(), null, $hashlist->getId());
         }
@@ -469,19 +476,28 @@ class HashlistUtils {
         foreach ($hashEntries as $hashEntry) {
           if ($hashEntry->getIsCracked() == 1) {
             $alreadyCracked++;
-            continue;
+            if (!$overwritePlaintext) {
+              continue;
+            }
           }
+          
           $plain = str_replace($hash . $separator, "", $data);
+          
           if (strlen($plain) > SConfig::getInstance()->getVal(DConfig::PLAINTEXT_MAX_LENGTH)) {
             $tooLong++;
             continue;
           }
+          
           $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1, Hash::TIME_CRACKED => time()]);
-          $crackedIn[$hashEntry->getHashlistId()]++;
+          
+          if ($hashEntry->getIsCracked() != 1) {
+            $newCracked++;
+            $crackedIn[$hashEntry->getHashlistId()]++;
+          }
+
           if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
             $zaps[] = new Zap(null, $hashEntry->getHash(), time(), null, $hashlist->getId());
           }
-          $newCracked++;
         }
       }
       $bufferCount++;

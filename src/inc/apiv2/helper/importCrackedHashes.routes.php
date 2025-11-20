@@ -28,6 +28,7 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
       Hashlist::HASHLIST_ID => ["type" => "int"],
       "sourceData" => ['type' => 'str'],
       "separator" => ['type' => 'str'],
+      "overwrite" => ['type' => 'int'],
     ];
   }
   
@@ -52,7 +53,7 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
     
     $importData = base64_decode($data["sourceData"]);
     
-    $result = HashlistUtils::processZap($hashlist->getId(), $data["separator"], "paste", ["hashfield" => $importData], [], $this->getCurrentUser());
+    $result = HashlistUtils::processZap($hashlist->getId(), $data["separator"], "paste", ["hashfield" => $importData], [], $this->getCurrentUser(), (isset($data["overwrite"]) && intval($data["overwrite"]) == 1) ? true : false);
     
     return [
       "totalLines" => $result[0],
