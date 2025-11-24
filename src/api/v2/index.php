@@ -308,6 +308,7 @@ require __DIR__ . "/../../inc/apiv2/helper/getAccessGroups.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getAgentBinary.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getCracksOfTask.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getFile.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/getTaskProgressImage.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/getUserPermission.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/importCrackedHashes.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/importFile.routes.php";

@@ -6,7 +6,7 @@ RUN cd / && git rev-parse --short HEAD > /HEAD; exit 0
 
 # BASE image
 # ----BEGIN----
-FROM php:8-apache AS hashtopolis-server-base
+FROM php:8.4-apache AS hashtopolis-server-base
 
 # Enable possible build args for injecting user commands
 ARG CONTAINER_USER_CMD_PRE
@@ -104,7 +104,7 @@ ENTRYPOINT [ "docker-entrypoint.sh" ]
 FROM hashtopolis-server-base AS hashtopolis-server-dev
 
 # Setting up development requirements, install xdebug
-RUN yes | pecl install xdebug-3.4.0beta1 && docker-php-ext-enable xdebug \
+RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.mode = debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.start_with_request = yes" >> /usr/local/etc/php/conf.d/xdebug.ini \
