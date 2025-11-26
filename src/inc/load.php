@@ -128,7 +128,7 @@ catch (PDOException $e) {
   $newHash = password_hash($CIPHER, PASSWORD_BCRYPT, $options);
   
   $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
-  Factory::getUserFactory()->save($user);
+  $user = Factory::getUserFactory()->save($user);
   
   // create default group
   $group = AccessUtils::getOrCreateDefaultAccessGroup();
