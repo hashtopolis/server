@@ -23,7 +23,7 @@ class HashlistFactory extends AbstractModelFactory {
    * @return Hashlist
    */
   function getNullObject(): Hashlist {
-    return new Hashlist(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    return new Hashlist(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,7 +32,7 @@ class HashlistFactory extends AbstractModelFactory {
    * @return Hashlist
    */
   function createObjectFromDict($pk, $dict): Hashlist {
-    return new Hashlist($dict['hashlistId'], $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['isSecret'], $dict['hexSalt'], $dict['isSalted'], $dict['accessGroupId'], $dict['notes'], $dict['brainId'], $dict['brainFeatures'], $dict['isArchived'], $dict['uploadedTotalLines'], $dict['uploadedEmptyLines'], $dict['uploadedValidHashes'], $dict['uploadedValidHashesWithoutExpectedSalt'], $dict['uploadedInvalidHashes']);
+    return new Hashlist($dict['hashlistId'], $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['isSecret'], $dict['hexSalt'], $dict['isSalted'], $dict['accessGroupId'], $dict['notes'], $dict['brainId'], $dict['brainFeatures'], $dict['isArchived']);
   }
   
   /**

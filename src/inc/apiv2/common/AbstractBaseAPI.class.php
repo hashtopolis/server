@@ -1409,7 +1409,7 @@ abstract class AbstractBaseAPI {
   /**
    * Get single Resource
    */
-  protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode = 200): Response {
+  protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode = 200, array $creationInformation = null): Response {
     $apiClass->preCommon($request);
     
     $validExpandables = $apiClass->getExpandables();
@@ -1464,8 +1464,12 @@ abstract class AbstractBaseAPI {
     
     $metaData = [];
     if ($apiClass->permissionErrors !== null) {
-      $metadata["Include errors"] = $apiClass->permissionErrors;
+      $metaData["Include errors"] = $apiClass->permissionErrors;
     }
+    if(is_array($creationInformation)) {
+      $metaData["creationInformation"] = $creationInformation;
+    }
+
     // Generate JSON:API GET output
     $ret = self::createJsonResponse($dataResources[0], $links, $includedResources, $metaData);
     

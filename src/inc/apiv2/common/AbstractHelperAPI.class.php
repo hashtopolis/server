@@ -12,8 +12,8 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
   abstract public function actionPost(array $data): object|array|null;
   
   /**
-   * Function in order to create swagger documentation. SHould return either a map of strings that
-   * describes the output ex: ["assign" => "succes"] or if the endpoint returns an object it should return
+   * Function in order to create swagger documentation. Should return either a map of strings that
+   * describes the output ex: ["assign" => "success"] or if the endpoint returns an object it should return
    * the string representation of that object ex: File.
    */
   abstract public static function getResponse(): array|string|null;

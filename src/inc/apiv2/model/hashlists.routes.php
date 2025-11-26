@@ -102,9 +102,19 @@ class HashlistAPI extends AbstractModelAPI {
   
   /**
    * @throws HttpErrorException
+   * @throws HttpError
    * @throws HTException
    */
   protected function createObject(array $data): int {
+    return $this->createObjectAndGetResult($data)["pk"];
+  }
+
+  /**
+   * @throws HttpErrorException
+   * @throws HttpError
+   * @throws HTException
+   */
+  protected function createObjectAndGetResult(array $data): array {
     // Cast to createHashlist compatible upload format
     $dummyPost = [];
     switch ($data["sourceType"]) {
@@ -122,15 +132,16 @@ class HashlistAPI extends AbstractModelAPI {
         throw new HttpErrorException("sourceType value '" . $data["sourceType"] . "' is not supported (choices paste, import, url");
     }
     
-    // TODO: validate input is valid base64 encoded
     if ($data["sourceType"] == "paste") {
       if (strlen($data["sourceData"]) == 0) {
-        // TODO: Should be 400 instead
-        throw new HttpErrorException("sourceType=paste, requires sourceData to be non-empty");
+        throw new HttpError("sourceType=paste, requires sourceData to be non-empty");
+      }
+      else if ($dummyPost["hashfield"] === false) {
+        throw new HttpError("sourceData not valid base64 encoding");
       }
     }
     
-    $hashlist = HashlistUtils::createHashlist(
+    $hashlistData = HashlistUtils::createHashlist(
       $data[Hashlist::HASHLIST_NAME],
       $data[Hashlist::IS_SALTED],
       $data[Hashlist::IS_SECRET],
@@ -150,11 +161,14 @@ class HashlistAPI extends AbstractModelAPI {
     
     // Modify fields not set on hashlist creation
     if (array_key_exists("notes", $data)) {
-      HashlistUtils::editNotes($hashlist->getId(), $data["notes"], $this->getCurrentUser());
-    };
-    HashlistUtils::setArchived($hashlist->getId(), $data[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->getCurrentUser());
+      HashlistUtils::editNotes($hashlistData["hashlist"]->getId(), $data["notes"], $this->getCurrentUser());
+    }
+    HashlistUtils::setArchived($hashlistData["hashlist"]->getId(), $data[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->getCurrentUser());
     
-    return $hashlist->getId();
+    $creationResult["pk"] = $hashlistData["hashlist"]->getId();
+    $creationResult["creationInformation"] = $hashlistData["statistics"];
+
+    return $creationResult;
   }
   
   /**
