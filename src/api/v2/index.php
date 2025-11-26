@@ -68,6 +68,17 @@ $container = new \DI\Container();
 AppFactory::setContainer($container);
 
 
+class JWTBeforeHandler implements BeforeHandlerInterface {
+  /**
+   * @param array{decoded: array<string, mixed>, token: string} $arguments
+   */
+  public function __invoke(ServerRequestInterface $request, array $arguments): ServerRequestInterface
+  {
+    // adds the decoded userId and scope to the request attributes
+    return $request->withAttribute("userId", $arguments["decoded"]["userId"])->withAttribute("scope", $arguments["decoded"]["scope"]);
+  }
+}
+
 /* Authentication middleware for token retrival */
 
 class HashtopolisAuthenticator implements AuthenticatorInterface {
@@ -133,17 +144,6 @@ $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface
   $decoder = new FirebaseDecoder(
       new Secret($PEPPER[0], 'HS256')
   );
-
-  class JWTBeforeHandler implements BeforeHandlerInterface {
-    /**
-     * @param array{decoded: array<string, mixed>, token: string} $arguments
-     */
-    public function __invoke(ServerRequestInterface $request, array $arguments): ServerRequestInterface
-    {
-      // adds the unparsed token to the request
-      return $request->withAttribute("userId", $arguments["decoded"]["userId"])->withAttribute("scope", $arguments["decoded"]["scope"]);
-    }
-  }
 
   $options = new Options(
     isSecure: false,
@@ -267,10 +267,13 @@ $customErrorHandler = function (
 
   $msg = $exception->getMessage();
 
-  if ($exception instanceof AuthorizationException && !isset($msg)) {
+  if ($exception instanceof AuthorizationException && empty($msg)) {
     //the JWT authorization exceptions are wrapped in an outer exception
-    $code = 400;
-    $msg = $exception->getPrevious()->getMessage();
+    $previous = $exception->getPrevious();
+    if ($previous !== null) {
+      $code = 400;
+      $msg = $previous->getMessage();
+    }
   }
 
   
