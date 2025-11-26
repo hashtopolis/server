@@ -110,14 +110,14 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
    * @throws HttpError
    */
   public function actionPost($data): object|array|null {
-    $search = base64_decode($data['searchData']);
+    $search = base64_decode($data['searchData'], true);
     $isSalted = $data['isSalted'];
     $separator = $data['separator'];
     
     if (strlen($search) == 0) {
       throw new HttpError("Search query cannot be empty!");
     }
-    else if ($search === false) {
+    else if ($search === false || mb_check_encoding($search, "UTF-8") == false) {
       throw new HttpError("Search query is not valid base64!");
     }
     else if ($isSalted && strlen($separator) == 0) {
@@ -181,7 +181,12 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
         for ($i = 0; $i < sizeof($hashes); $i++) {
           /** @var $hash Hash */
           $hash = $joined[Factory::getHashFactory()->getModelName()][$i];
-          $matches[] = self::obj2Resource($hash);;
+          $hashlist = $joined[Factory::getHashlistFactory()->getModelName()][$i];
+          $hashResource = self::obj2Resource($hash);
+          $hashlistResource = self::obj2Resource($hashlist);
+          $hashResource["attributes"]["hashlist"] = $hashlistResource["attributes"];
+
+          $matches[] = $hashResource;
         }
         $resultEntry["matches"] = $matches;
       }
