@@ -638,7 +638,7 @@ abstract class AbstractModelFactory {
         $k = strtolower($k);
         foreach ($factories as $factory) {
           if (Util::startsWith($k, strtolower($factory->getMappedModelTable()))) {
-            $column = str_replace(strtolower($factory->getMappedModelTable()) . ".", "", $k);
+            $column = str_replace(strtolower($factory->getMappedModelTable()) . "_", "", $k);
             $values[$factory->getModelTable()][strtolower($column)] = $v;
           }
         }
