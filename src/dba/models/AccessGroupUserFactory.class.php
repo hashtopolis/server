@@ -36,7 +36,12 @@ class AccessGroupUserFactory extends AbstractModelFactory {
    * @return AccessGroupUser
    */
   function createObjectFromDict($pk, $dict): AccessGroupUser {
-    return new AccessGroupUser($dict['accessGroupUserId'], $dict['accessGroupId'], $dict['userId']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AccessGroupUser($dict['accessgroupuserid'], $dict['accessgroupid'], $dict['userid']);
   }
   
   /**

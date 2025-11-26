@@ -36,7 +36,12 @@ class SupertaskFactory extends AbstractModelFactory {
    * @return Supertask
    */
   function createObjectFromDict($pk, $dict): Supertask {
-    return new Supertask($dict['supertaskId'], $dict['supertaskName']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Supertask($dict['supertaskid'], $dict['supertaskname']);
   }
   
   /**

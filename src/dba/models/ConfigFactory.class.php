@@ -36,7 +36,12 @@ class ConfigFactory extends AbstractModelFactory {
    * @return Config
    */
   function createObjectFromDict($pk, $dict): Config {
-    return new Config($dict['configId'], $dict['configSectionId'], $dict['item'], $dict['value']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Config($dict['configid'], $dict['configsectionid'], $dict['item'], $dict['value']);
   }
   
   /**

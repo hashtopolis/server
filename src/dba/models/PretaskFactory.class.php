@@ -36,7 +36,12 @@ class PretaskFactory extends AbstractModelFactory {
    * @return Pretask
    */
   function createObjectFromDict($pk, $dict): Pretask {
-    return new Pretask($dict['pretaskId'], $dict['taskName'], $dict['attackCmd'], $dict['chunkTime'], $dict['statusTimer'], $dict['color'], $dict['isSmall'], $dict['isCpuTask'], $dict['useNewBench'], $dict['priority'], $dict['maxAgents'], $dict['isMaskImport'], $dict['crackerBinaryTypeId']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Pretask($dict['pretaskid'], $dict['taskname'], $dict['attackcmd'], $dict['chunktime'], $dict['statustimer'], $dict['color'], $dict['issmall'], $dict['iscputask'], $dict['usenewbench'], $dict['priority'], $dict['maxagents'], $dict['ismaskimport'], $dict['crackerbinarytypeid']);
   }
   
   /**

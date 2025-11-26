@@ -36,7 +36,12 @@ class FilePretaskFactory extends AbstractModelFactory {
    * @return FilePretask
    */
   function createObjectFromDict($pk, $dict): FilePretask {
-    return new FilePretask($dict['filePretaskId'], $dict['fileId'], $dict['pretaskId']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new FilePretask($dict['filepretaskid'], $dict['fileid'], $dict['pretaskid']);
   }
   
   /**

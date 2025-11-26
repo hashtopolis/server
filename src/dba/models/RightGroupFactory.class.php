@@ -36,7 +36,12 @@ class RightGroupFactory extends AbstractModelFactory {
    * @return RightGroup
    */
   function createObjectFromDict($pk, $dict): RightGroup {
-    return new RightGroup($dict['rightGroupId'], $dict['groupName'], $dict['permissions']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new RightGroup($dict['rightgroupid'], $dict['groupname'], $dict['permissions']);
   }
   
   /**

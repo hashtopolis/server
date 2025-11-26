@@ -36,7 +36,12 @@ class CrackerBinaryFactory extends AbstractModelFactory {
    * @return CrackerBinary
    */
   function createObjectFromDict($pk, $dict): CrackerBinary {
-    return new CrackerBinary($dict['crackerBinaryId'], $dict['crackerBinaryTypeId'], $dict['version'], $dict['downloadUrl'], $dict['binaryName']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new CrackerBinary($dict['crackerbinaryid'], $dict['crackerbinarytypeid'], $dict['version'], $dict['downloadurl'], $dict['binaryname']);
   }
   
   /**

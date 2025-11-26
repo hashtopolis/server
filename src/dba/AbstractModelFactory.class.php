@@ -636,16 +636,17 @@ abstract class AbstractModelFactory {
     
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       foreach ($row as $k => $v) {
+        $k = strtolower($k);
         foreach ($factories as $factory) {
-          if (Util::startsWith($k, $factory->getMappedModelTable())) {
-            $column = str_replace($factory->getMappedModelTable() . ".", "", $k);
-            $values[$factory->getModelTable()][$column] = $v;
+          if (Util::startsWith($k, strtolower($factory->getMappedModelTable()))) {
+            $column = str_replace(strtolower($factory->getMappedModelTable()) . ".", "", $k);
+            $values[$factory->getModelTable()][strtolower($column)] = $v;
           }
         }
       }
       
       foreach ($factories as $factory) {
-        $model = $factory->createObjectFromDict($values[$factory->getModelTable()][$factory->getNullObject()->getPrimaryKey()], $values[$factory->getModelTable()]);
+        $model = $factory->createObjectFromDict($values[$factory->getModelTable()][strtolower($factory->getNullObject()->getPrimaryKey())], $values[$factory->getModelTable()]);
         $res[$factory->getModelTable()][] = $model;
       }
     }
@@ -698,7 +699,12 @@ abstract class AbstractModelFactory {
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       $pkName = $this->getNullObject()->getPrimaryKey();
       
-      $pk = $row[$pkName];
+      if (isset($row[strtolower($pkName)])) {
+        $pk = $row[strtolower($pkName)];
+      }
+      else {
+        $pk = $row[$pkName];
+      }
       $model = $this->createObjectFromDict($pk, $row);
       $objects[] = $model;
     }

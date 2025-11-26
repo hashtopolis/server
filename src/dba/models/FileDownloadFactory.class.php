@@ -36,7 +36,12 @@ class FileDownloadFactory extends AbstractModelFactory {
    * @return FileDownload
    */
   function createObjectFromDict($pk, $dict): FileDownload {
-    return new FileDownload($dict['fileDownloadId'], $dict['time'], $dict['fileId'], $dict['status']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new FileDownload($dict['filedownloadid'], $dict['time'], $dict['fileid'], $dict['status']);
   }
   
   /**
