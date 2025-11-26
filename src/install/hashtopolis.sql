@@ -1183,7 +1183,8 @@ ALTER TABLE `Hash`
   ADD KEY `hashlistId` (`hashlistId`),
   ADD KEY `chunkId` (`chunkId`),
   ADD KEY `isCracked` (`isCracked`),
-  ADD KEY `hash` (`hash`(500));
+  ADD KEY `hash` (`hash`(500)),
+  ADD KEY `timeCracked` (`timeCracked`);
 
 ALTER TABLE `HashBinary`
   ADD PRIMARY KEY (`hashBinaryId`),
