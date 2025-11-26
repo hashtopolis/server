@@ -30,10 +30,15 @@ use Slim\Psr7\Response;
 
 use Skeleton\Domain\Token;
 
-use Tuupola\Middleware\JwtAuthentication;
 use Tuupola\Middleware\HttpBasicAuthentication;
 use Tuupola\Middleware\HttpBasicAuthentication\AuthenticatorInterface;
 use Tuupola\Middleware\CorsMiddleware;
+
+use JimTools\JwtAuth\Decoder\FirebaseDecoder;
+use JimTools\JwtAuth\Middleware\JwtAuthentication;
+use JimTools\JwtAuth\Options;
+use JimTools\JwtAuth\Secret;
+use JimTools\JwtAuth\Exceptions\AuthorizationException;
 
 use Middlewares\DeflateEncoder;
 
@@ -48,6 +53,9 @@ use DBA\QueryFilter;
 use DBA\Session;
 use DBA\User;
 use DBA\Factory;
+use JimTools\JwtAuth\Handlers\BeforeHandlerInterface;
+use JimTools\JwtAuth\Rules\RequestPathRule;
+use Psr\Http\Message\ServerRequestInterface;
 
 require __DIR__ . "/../../../vendor/autoload.php";
 require __DIR__ . "/../../inc/apiv2/common/ErrorHandler.class.php";
@@ -59,6 +67,17 @@ require_once(dirname(__FILE__) . "/../../inc/load.php");
 $container = new \DI\Container();
 AppFactory::setContainer($container);
 
+
+class JWTBeforeHandler implements BeforeHandlerInterface {
+  /**
+   * @param array{decoded: array<string, mixed>, token: string} $arguments
+   */
+  public function __invoke(ServerRequestInterface $request, array $arguments): ServerRequestInterface
+  {
+    // adds the decoded userId and scope to the request attributes
+    return $request->withAttribute("userId", $arguments["decoded"]["userId"])->withAttribute("scope", $arguments["decoded"]["scope"]);
+  }
+}
 
 /* Authentication middleware for token retrival */
 
@@ -121,23 +140,23 @@ $container->set("classMapper", function () {
 /* API token validation */
 $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface $container) {
   include(dirname(__FILE__) . '/../../inc/confv2.php');
-  return new JwtAuthentication([
-    "path" => "/",
-    "ignore" => ["/api/v2/auth/token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"],
-    "secret" => $PEPPER[0],
-    "attribute" => false,
-    "secure" => false,
-    "error" => function ($response, $arguments) {
-      return errorResponse($response, $arguments["message"], 401);
-    },
-    "before" => function ($request, $arguments) use ($container) {
-      // TODO: Validate if user is still allowed to login
-      return $request->withAttribute("userId", $arguments["decoded"]["userId"])->withAttribute("scope", $arguments["decoded"]["scope"]);
-    },
-  ]);
+
+  $decoder = new FirebaseDecoder(
+      new Secret($PEPPER[0], 'HS256')
+  );
+
+  $options = new Options(
+    isSecure: false,
+    before: new JWTBeforeHandler,
+    attribute: null
+  );
+
+  $rules = [
+    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"])
+  ];
+  return new JwtAuthentication($options, $decoder, $rules);
 });
-
-
+  
 /* Pre-parse incoming request body */
 
 class JsonBodyParserMiddleware implements MiddlewareInterface {
@@ -245,8 +264,20 @@ $customErrorHandler = function (
   if ($code == 0 || $code == 1 || !is_integer($code)) {
     $code = 500;
   }
+
+  $msg = $exception->getMessage();
+
+  if ($exception instanceof AuthorizationException && empty($msg)) {
+    //the JWT authorization exceptions are wrapped in an outer exception
+    $previous = $exception->getPrevious();
+    if ($previous !== null) {
+      $code = 400;
+      $msg = $previous->getMessage();
+    }
+  }
+
   
-  return errorResponse($response, $exception->getMessage(), $code);
+  return errorResponse($response, $msg, $code);
 };
 $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 $app->addRoutingMiddleware(); //Routing middleware has to be added after the default error handler
