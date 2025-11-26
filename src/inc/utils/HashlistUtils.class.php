@@ -4,6 +4,7 @@ use DBA\Hash;
 use DBA\QueryFilter;
 use DBA\ContainFilter;
 use DBA\OrderFilter;
+use DBA\LimitFilter;
 use DBA\Hashlist;
 use DBA\HashlistHashlist;
 use DBA\HashBinary;
@@ -198,8 +199,9 @@ class HashlistUtils {
       $size = $hashFactory->countFilter([Factory::FILTER => [$qF1, $qF2]]);
       for ($x = 0; $x * $pagingSize < $size; $x++) {
         $buffer = "";
-        $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ", $pagingSize");
-        $hashes = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+        $oF = new OrderFilter(Hash::HASH_ID, "ASC");
+        $lF = new LimitFilter($pagingSize, $x * $pagingSize);
+        $hashes = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF, Factory::LIMIT => $lF]);
         foreach ($hashes as $hash) {
           $plain = $hash->getPlaintext();
           if (strlen($plain) >= 8 && substr($plain, 0, 5) == "\$HEX[" && substr($plain, strlen($plain) - 1, 1) == "]") {
@@ -714,8 +716,9 @@ class HashlistUtils {
     $separator = SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR);
     $numEntries = 0;
     for ($x = 0; $x * $pagingSize < $count; $x++) {
-      $oF = new OrderFilter($orderObject, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
-      $entries = $factory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+      $oF = new OrderFilter($orderObject, "ASC");
+      $lF = new LimitFilter($pagingSize, $x * $pagingSize);
+      $entries = $factory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF, Factory::LIMIT => $lF]);
       $buffer = "";
       foreach ($entries as $entry) {
         switch ($format->getFormat()) {
@@ -1103,8 +1106,9 @@ class HashlistUtils {
     }
     $numEntries = 0;
     for ($x = 0; $x * $pagingSize < $count; $x++) {
-      $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
-      $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+      $oF = new OrderFilter(Hash::HASH_ID, "ASC");
+      $lF = new LimitFilter($pagingSize, $x * $pagingSize);
+      $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF, Factory::LIMIT => $lF]);
       $buffer = "";
       foreach ($entries as $entry) {
         $buffer .= $entry->getHash();

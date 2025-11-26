@@ -49,7 +49,7 @@ switch ($format) {
       $limit = 0;
       $size = SConfig::getInstance()->getVal(DConfig::BATCH_SIZE);
       do {
-        $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
+        $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $size OFFSET $limit");
         $qF1 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
         $qF2 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
         $current = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
