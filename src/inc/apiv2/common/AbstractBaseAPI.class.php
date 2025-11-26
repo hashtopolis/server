@@ -1042,12 +1042,15 @@ abstract class AbstractBaseAPI {
             if (is_null($value)) {
               throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid boolean value");
             }
+            $value = (int)$value;
             break;
           case 'int':
             $value = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
             if (is_null($value)) {
               throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid integer value");
             }
+            $value = (int)$value;
+            break;
         }
       }
       unset($value);
