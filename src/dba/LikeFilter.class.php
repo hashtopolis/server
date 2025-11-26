@@ -9,12 +9,12 @@ class LikeFilter extends Filter {
   /**
    * @var AbstractModelFactory
    */
-  private $factory;
+  private $overrideFactory;
   
-  function __construct($key, $value, $factory = null) {
+  function __construct($key, $value, $overrideFactory = null) {
     $this->key = $key;
     $this->value = $value;
-    $this->factory = $factory;
+    $this->overrideFactory = $overrideFactory;
     $this->match = true;
   }
   
@@ -22,12 +22,13 @@ class LikeFilter extends Filter {
     $this->match = $status;
   }
   
-  function getQueryString($table = "") {
-    if ($table != "") {
-      $table = $table . ".";
+  function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
+    if ($this->overrideFactory != null) {
+      $factory = $this->overrideFactory;
     }
-    if ($this->factory != null) {
-      $table = $this->factory->getModelTable() . ".";
+    $table = "";
+    if ($includeTable) {
+      $table = $factory->getMappedModelTable() . ".";
     }
     
     $inv = "";
@@ -35,14 +36,14 @@ class LikeFilter extends Filter {
       $inv = " NOT";
     }
     
-    return $table . $this->key . $inv . " LIKE BINARY ?";
+    return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $inv . " LIKE BINARY ?";
   }
   
   function getValue() {
     return $this->value;
   }
   
-  function getHasValue() {
+  function getHasValue(): bool {
     return true;
   }
 }

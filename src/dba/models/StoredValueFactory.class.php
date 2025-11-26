@@ -10,6 +10,10 @@ class StoredValueFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "StoredValue";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -40,7 +44,7 @@ class StoredValueFactory extends AbstractModelFactory {
    * @param bool $single
    * @return StoredValue|StoredValue[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

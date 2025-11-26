@@ -216,7 +216,7 @@ class SupertaskUtils {
    */
   public static function getPretasksOfSupertask($supertaskId) {
     $oF = new OrderFilter(Pretask::PRIORITY, "DESC", Factory::getPretaskFactory());
-    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertaskId, "=");
+    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertaskId, "=", Factory::getSupertaskPretaskFactory());
     $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
     $joined = Factory::getPretaskFactory()->filter([Factory::ORDER => $oF, Factory::JOIN => $jF, Factory::FILTER => $qF]);
     return $joined[Factory::getPretaskFactory()->getModelName()];

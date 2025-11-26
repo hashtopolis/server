@@ -10,6 +10,10 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "HealthCheckAgent";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,6 +36,7 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
    * @return HealthCheckAgent
    */
   function createObjectFromDict($pk, $dict): HealthCheckAgent {
+    $dict['end'] = $dict['htp_end'];
     return new HealthCheckAgent($dict['healthCheckAgentId'], $dict['healthCheckId'], $dict['agentId'], $dict['status'], $dict['cracked'], $dict['numGpus'], $dict['start'], $dict['end'], $dict['errors']);
   }
   
@@ -40,7 +45,7 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
    * @param bool $single
    * @return HealthCheckAgent|HealthCheckAgent[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

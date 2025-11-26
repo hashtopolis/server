@@ -31,13 +31,13 @@ class Util {
   /**
    * Used to create the full select string of a table query
    * @param $table string
-   * @param $dict array
+   * @param $keys array
    * @return string
    */
-  public static function createPrefixedString($table, $dict) {
+  public static function createPrefixedString(string $table, array $keys): string {
     $arr = array();
-    foreach ($dict as $key => $val) {
-      $arr[] = "`$table`.`$key` AS `$table.$key`";
+    foreach ($keys as $key) {
+      $arr[] = "$table.$key AS '$table.$key'";
     }
     return implode(", ", $arr);
   }

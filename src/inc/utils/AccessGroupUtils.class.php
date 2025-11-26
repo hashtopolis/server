@@ -4,6 +4,7 @@ use DBA\AccessGroup;
 use DBA\Chunk;
 use DBA\ContainFilter;
 use DBA\TaskWrapper;
+use DBA\UpdateSet;
 use DBA\QueryFilter;
 use DBA\AccessGroupUser;
 use DBA\AccessGroupAgent;

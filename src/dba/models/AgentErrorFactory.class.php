@@ -10,6 +10,10 @@ class AgentErrorFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "AgentError";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -40,7 +44,7 @@ class AgentErrorFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AgentError|AgentError[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

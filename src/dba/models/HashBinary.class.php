@@ -42,15 +42,15 @@ class HashBinary extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['hashBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashBinaryId", "public" => False];
-    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashlistId", "public" => False];
-    $dict['essid'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "essid", "public" => False];
-    $dict['hash'] = ['read_only' => False, "type" => "str(4294967295)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hash", "public" => False];
-    $dict['plaintext'] = ['read_only' => False, "type" => "str(1024)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "plaintext", "public" => False];
-    $dict['timeCracked'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "timeCracked", "public" => False];
-    $dict['chunkId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "chunkId", "public" => False];
-    $dict['isCracked'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isCracked", "public" => False];
-    $dict['crackPos'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "crackPos", "public" => False];
+    $dict['hashBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashBinaryId", "public" => False, "dba_mapping" => False];
+    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashlistId", "public" => False, "dba_mapping" => False];
+    $dict['essid'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "essid", "public" => False, "dba_mapping" => False];
+    $dict['hash'] = ['read_only' => False, "type" => "str(4294967295)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hash", "public" => False, "dba_mapping" => False];
+    $dict['plaintext'] = ['read_only' => False, "type" => "str(1024)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "plaintext", "public" => False, "dba_mapping" => False];
+    $dict['timeCracked'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "timeCracked", "public" => False, "dba_mapping" => False];
+    $dict['chunkId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "chunkId", "public" => False, "dba_mapping" => False];
+    $dict['isCracked'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isCracked", "public" => False, "dba_mapping" => False];
+    $dict['crackPos'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "crackPos", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }

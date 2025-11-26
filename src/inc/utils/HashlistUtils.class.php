@@ -7,6 +7,7 @@ use DBA\OrderFilter;
 use DBA\Hashlist;
 use DBA\HashlistHashlist;
 use DBA\HashBinary;
+use DBA\UpdateSet;
 use DBA\User;
 use DBA\File;
 use DBA\JoinFilter;
