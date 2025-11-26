@@ -26,7 +26,7 @@ class CrackerBinaryType extends AbstractModel {
     $dict = array();
     $dict['crackerBinaryTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "crackerBinaryTypeId", "public" => False];
     $dict['typeName'] = ['read_only' => False, "type" => "str(30)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "typeName", "public" => False];
-    $dict['isChunkingAvailable'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isChunkingAvailable", "public" => False];
+    $dict['isChunkingAvailable'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isChunkingAvailable", "public" => False];
 
     return $dict;
   }
