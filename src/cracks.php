@@ -68,7 +68,7 @@ UI::add('currentPage', $currentPage);
 
 $qF1 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
 $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
-$oF = new OrderFilter(Hash::TIME_CRACKED, "DESC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * ($currentPage - 1)) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
+$oF = new OrderFilter(Hash::TIME_CRACKED, "DESC LIMIT " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) . " OFFSET " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * ($currentPage - 1)));
 $hashes = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
 
 $crackDetailsPrimary = new DataSet();

@@ -32,7 +32,7 @@ if (!isset($_GET['show'])) {
   $numentries = Factory::getChunkFactory()->countFilter([]);
   UI::add('maxpage', floor($numentries / $PAGESIZE));
   $limit = $page * $PAGESIZE;
-  $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $PAGESIZE", Factory::getChunkFactory());
+  $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $PAGESIZE OFFSET $limit", Factory::getChunkFactory());
   UI::add('all', false);
   UI::add('pageTitle', "Chunks Activity (page " . ($page + 1) . ")");
 }
