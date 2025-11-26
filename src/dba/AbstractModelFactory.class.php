@@ -133,7 +133,13 @@ abstract class AbstractModelFactory {
     
     $query = "INSERT INTO " . $this->getMappedModelTable();
     $vals = array_values($dict);
+    
     $keys = self::getMappedModelKeys($model);
+    
+    if($vals[0] === -1 || $vals[0] === null){
+      array_splice($vals, 0, 1);
+      array_splice($keys, 0, 1);
+    }
     
     $query .= " (" . implode(",", $keys) . ") ";
     $placeHolder = " (" . implode(",", array_fill(0, count($keys), "?")) . ")";
@@ -144,16 +150,21 @@ abstract class AbstractModelFactory {
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
-    $id = intval($dbh->lastInsertId());
-    if ($id != 0) {
-      $model->setId($id);
-      return $model;
-    }
-    else if ($model->getId() != 0) {
-      return $model;
+    if ($model->getId() === null || $model->getId() === -1) {
+      $id = intval($dbh->lastInsertId());
+      if ($id != 0) {
+        $model->setId($id);
+        return $model;
+      }
+      else if ($model->getId() != 0) {
+        return $model;
+      }
+      else {
+        return null;
+      }
     }
     else {
-      return null;
+      return $model;
     }
   }
   
@@ -361,6 +372,8 @@ abstract class AbstractModelFactory {
     $keys = self::getMappedModelKeys($models[0]);
     $query = "INSERT INTO " . $this->getMappedModelTable();
     
+    array_splice($keys, 0, 1);
+    
     $query .= " (" . implode(",", $keys) . ") ";
     $placeHolder = " (" . implode(",", array_fill(0, count($keys), "?")) . ")";
     
@@ -371,10 +384,8 @@ abstract class AbstractModelFactory {
       if ($x < sizeof($models) - 1) {
         $query .= ", ";
       }
-      if ($models[$x]->getId() === 0) {
-        $models[$x]->setId(null);
-      }
       $dict = $models[$x]->getKeyValueDict();
+      array_splice($dict, 0, 1);
       foreach ($dict as $val) {
         $vals[] = $val;
       }
