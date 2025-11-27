@@ -56,9 +56,11 @@ class APIGetTask extends APIBasic {
         if ($currentTask == null) {
           // we checked the task and it is completed
           DServerLog::log(DServerLog::TRACE, "No best task available and current assigned task is fullfilled", [$this->agent]);
+          Factory::getAssignmentFactory()->delete($assignment);
           $this->noTask();
         }
         if (TaskUtils::isSaturatedByOtherAgents($currentTask, $this->agent)) {
+          Factory::getAssignmentFactory()->delete($assignment);
           $this->noTask();
         }
         // assignment is still good -> send this task
