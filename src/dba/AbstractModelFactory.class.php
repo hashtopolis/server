@@ -372,7 +372,13 @@ abstract class AbstractModelFactory {
     $keys = self::getMappedModelKeys($models[0]);
     $query = "INSERT INTO " . $this->getMappedModelTable();
     
-    array_splice($keys, 0, 1);
+    $pkInclude = false;
+    if ($models[0]->getId() !== -1 && $models[0]->getId() !== null) {
+      $pkInclude = true;
+    }
+    else {
+      array_splice($keys, 0, 1);
+    }
     
     $query .= " (" . implode(",", $keys) . ") ";
     $placeHolder = " (" . implode(",", array_fill(0, count($keys), "?")) . ")";
@@ -385,7 +391,9 @@ abstract class AbstractModelFactory {
         $query .= ", ";
       }
       $dict = $models[$x]->getKeyValueDict();
-      array_splice($dict, 0, 1);
+      if (!$pkInclude) {
+        array_splice($dict, 0, 1);
+      }
       foreach ($dict as $val) {
         $vals[] = $val;
       }
