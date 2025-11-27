@@ -97,7 +97,7 @@ http {
 }
 ```
 
-3. Update the value of `HASHTOPOLIS_BACKEND_URL` in the `.env` file to reflect the changes done above. 
+3. Update the value of `HASHTOPOLIS_BACKEND_URL` in the `.env` file to reflect the changes done above. If your server name isn't localhost, be sure to also update the comma-separated list of `HASHTOPOLIS_FRONTEND_URLS` to include new https frontend.
 
 4. Start the containers
 ```

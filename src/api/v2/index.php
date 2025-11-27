@@ -192,8 +192,6 @@ class TokenAsParameterMiddleware implements MiddlewareInterface {
 }
 
 
-/* FIXME: CORS wildcard hack should require proper implementation and validation */
-
 /* This middleware will append the response header Access-Control-Allow-Methods with all allowed methods */
 
 class CorsHackMiddleware implements MiddlewareInterface {
@@ -209,7 +207,19 @@ class CorsHackMiddleware implements MiddlewareInterface {
     $methods = $routingResults->getAllowedMethods();
     $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
     
-    $response = $response->withHeader('Access-Control-Allow-Origin', '*');
+    if (getenv('HASHTOPOLIS_FRONTEND_URLS') !== false) {
+      if(in_array($request->getHeaderLine('HTTP_ORIGIN'), explode(',', getenv('HASHTOPOLIS_FRONTEND_URLS')), true)) {
+        $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'));
+      }
+      else {
+        error_log("CORS error: Allow-Origin doesn't match. Please make sure to include the used frontend in the .env file.");
+      }
+    }
+    else {
+      //No frontend URLs given in .env file, switch to default allow all
+      $response = $response->withHeader('Access-Control-Allow-Origin', '*');
+    }
+
     $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
     $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
     
