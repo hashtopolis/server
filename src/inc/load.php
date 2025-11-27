@@ -67,7 +67,7 @@ if (Factory::getUserFactory()->getDB(true) === null) {
   die("Database connection failed!");
 }
 try {
-  Factory::getUserFactory()->filter([], true);
+  Factory::getAgentFactory()->filter([], true);
 }
 catch (PDOException $e) {
   $query = file_get_contents(dirname(__FILE__) . "/../install/hashtopolis.sql");
