@@ -561,6 +561,11 @@ abstract class AbstractBaseAPI {
     
     $attributes = [];
     $relationships = [];
+
+    $sparseFieldsetsForObj = null;
+    if (is_array($sparseFieldsets) && array_key_exists($this->getObjectTypeName($obj), $sparseFieldsets)) {
+      $sparseFieldsetsForObj = explode(",", $sparseFieldsets[$this->getObjectTypeName($obj)]);
+    }
     
     /* Collect attributes */
     foreach ($features as $name => $feature) {
@@ -571,7 +576,7 @@ abstract class AbstractBaseAPI {
       }
 
       // If sparse fieldsets (https://jsonapi.org/format/#fetching-sparse-fieldsets) is used, return only the requested data
-      if (is_array($sparseFieldsets) && array_key_exists($this->getObjectTypeName($obj), $sparseFieldsets) && !in_array($feature['alias'], $sparseFieldsets[$this->getObjectTypeName($obj)])) {
+      if (is_array($sparseFieldsetsForObj) && !in_array($feature['alias'], $sparseFieldsetsForObj)) {
         continue;
       }
 

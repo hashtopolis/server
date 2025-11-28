@@ -166,6 +166,8 @@ class TaskAPI extends AbstractModelAPI {
     $keyspaceProgress = $object->getKeyspaceProgress();
     
     if(is_null($aggregateFieldsets) || (is_array($aggregateFieldsets) && array_key_exists('task', $aggregateFieldsets))) {
+      $aggregateFieldsets['task'] = explode(",", $aggregateFieldsets['task']);
+
       if(is_null($aggregateFieldsets) || in_array("dispatched", $aggregateFieldsets['task'])) {
         $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
       }
@@ -174,11 +176,11 @@ class TaskAPI extends AbstractModelAPI {
         $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
       }
 
+      $activeAgents = [];
       if(is_null($aggregateFieldsets) || in_array("activeAgents", $aggregateFieldsets['task'])) {
         $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
         $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
         
-        $activeAgents = [];
         foreach ($chunks as $chunk) {
           if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
             $activeAgents[$chunk->getAgentId()] = true;
