@@ -1039,8 +1039,53 @@ CREATE TABLE Preprocessor (
 INSERT INTO Preprocessor ( preprocessorId, name, url, binaryName, keyspaceCommand, skipCommand, limitCommand) VALUES
   (1, 'Prince', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z', 'pp', '--keyspace', '--skip', '--limit');
 
--- Add Indexes
+-- Set sequences for all tables with SERIAL
+SELECT pg_catalog.setval(pg_get_serial_sequence('AccessGroup', 'accessgroupid'), MAX(accessGroupId)) from AccessGroup;
+SELECT pg_catalog.setval(pg_get_serial_sequence('AccessGroupAgent', 'accessgroupagentid'), MAX(accessGroupAgentId)) from AccessGroupAgent;
+SELECT pg_catalog.setval(pg_get_serial_sequence('AccessGroupUser', 'accessgroupuserid'), MAX(accessGroupUserId)) from AccessGroupUser;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Agent', 'agentid'), MAX(agentId)) from Agent;
+SELECT pg_catalog.setval(pg_get_serial_sequence('AgentBinary', 'agentbinaryid'), MAX(agentBinaryId)) from AgentBinary;
+SELECT pg_catalog.setval(pg_get_serial_sequence('AgentError', 'agenterrorid'), MAX(agentErrorId)) from AgentError;
+SELECT pg_catalog.setval(pg_get_serial_sequence('AgentStat', 'agentstatid'), MAX(agentStatId)) from AgentStat;
+SELECT pg_catalog.setval(pg_get_serial_sequence('AgentZap', 'agentzapid'), MAX(agentZapId)) from AgentZap;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Assignment', 'assignmentid'), MAX(assignmentId)) from Assignment;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Chunk', 'chunkid'), MAX(chunkId)) from Chunk;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Config', 'configid'), MAX(configId)) from Config;
+SELECT pg_catalog.setval(pg_get_serial_sequence('ConfigSection', 'configsectionid'), MAX(configSectionId)) from ConfigSection;
+SELECT pg_catalog.setval(pg_get_serial_sequence('CrackerBinary', 'crackerbinaryid'), MAX(crackerBinaryId)) from CrackerBinary;
+SELECT pg_catalog.setval(pg_get_serial_sequence('CrackerBinaryType', 'crackerbinarytypeid'), MAX(crackerBinaryTypeId)) from CrackerBinaryType;
+SELECT pg_catalog.setval(pg_get_serial_sequence('File', 'fileid'), MAX(fileId)) from File;
+SELECT pg_catalog.setval(pg_get_serial_sequence('FilePretask', 'filepretaskid'), MAX(filePretaskId)) from FilePretask;
+SELECT pg_catalog.setval(pg_get_serial_sequence('FileTask', 'filetaskid'), MAX(fileTaskId)) from FileTask;
+SELECT pg_catalog.setval(pg_get_serial_sequence('FileDelete', 'filedeleteid'), MAX(fileDeleteId)) from FileDelete;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Hash', 'hashid'), MAX(hashId)) from Hash;
+SELECT pg_catalog.setval(pg_get_serial_sequence('HashBinary', 'hashbinaryid'), MAX(hashBinaryId)) from HashBinary;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Hashlist', 'hashlistid'), MAX(hashlistId)) from Hashlist;
+SELECT pg_catalog.setval(pg_get_serial_sequence('HashlistHashlist', 'hashlisthashlistid'), MAX(hashlistHashlistId)) from HashlistHashlist;
+SELECT pg_catalog.setval(pg_get_serial_sequence('HashType', 'hashtypeid'), MAX(hashTypeId)) from HashType;
+SELECT pg_catalog.setval(pg_get_serial_sequence('LogEntry', 'logentryid'), MAX(logEntryId)) from LogEntry;
+SELECT pg_catalog.setval(pg_get_serial_sequence('NotificationSetting', 'notificationsettingid'), MAX(notificationSettingId)) from NotificationSetting;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Pretask', 'pretaskid'), MAX(pretaskId)) from Pretask;
+SELECT pg_catalog.setval(pg_get_serial_sequence('RegVoucher', 'regvoucherid'), MAX(regVoucherId)) from RegVoucher;
+SELECT pg_catalog.setval(pg_get_serial_sequence('RightGroup', 'rightgroupid'), MAX(rightGroupId)) from RightGroup;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Session', 'sessionid'), MAX(sessionId)) from Session;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Speed', 'speedid'), MAX(speedId)) from Speed;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Supertask', 'supertaskid'), MAX(supertaskId)) from Supertask;
+SELECT pg_catalog.setval(pg_get_serial_sequence('SupertaskPretask', 'supertaskpretaskid'), MAX(supertaskPretaskId)) from SupertaskPretask;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Task', 'taskid'), MAX(taskId)) from Task;
+SELECT pg_catalog.setval(pg_get_serial_sequence('TaskDebugOutput', 'taskdebugoutputid'), MAX(taskDebugOutputId)) from TaskDebugOutput;
+SELECT pg_catalog.setval(pg_get_serial_sequence('TaskWrapper', 'taskwrapperid'), MAX(taskWrapperId)) from TaskWrapper;
+SELECT pg_catalog.setval(pg_get_serial_sequence('htp_User', 'userid'), MAX(userId)) from htp_User;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Zap', 'zapid'), MAX(zapId)) from Zap;
+SELECT pg_catalog.setval(pg_get_serial_sequence('ApiKey', 'apikeyid'), MAX(apiKeyId)) from ApiKey;
+SELECT pg_catalog.setval(pg_get_serial_sequence('ApiGroup', 'apigroupid'), MAX(apiGroupId)) from ApiGroup;
+SELECT pg_catalog.setval(pg_get_serial_sequence('FileDownload', 'filedownloadid'), MAX(fileDownloadId)) from FileDownload;
+SELECT pg_catalog.setval(pg_get_serial_sequence('HealthCheck', 'healthcheckid'), MAX(healthCheckId)) from HealthCheck;
+SELECT pg_catalog.setval(pg_get_serial_sequence('HealthCheckAgent', 'healthcheckagentid'), MAX(healthCheckAgentId)) from HealthCheckAgent;
+SELECT pg_catalog.setval(pg_get_serial_sequence('Preprocessor', 'preprocessorid'), MAX(preprocessorId)) from Preprocessor;
 
+
+-- Add Indexes
 CREATE INDEX IF NOT EXISTS accessGroupId_idx ON AccessGroupAgent (accessGroupId);
 CREATE INDEX IF NOT EXISTS agentId_idx ON AccessGroupAgent (agentId);
 
