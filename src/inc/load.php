@@ -66,13 +66,24 @@ if (Factory::getUserFactory()->getDB(true) === null) {
   //connection not valid
   die("Database connection failed!");
 }
+$initialSetup = false;
 try {
   Factory::getAgentFactory()->filter([], true);
 }
 catch (PDOException $e) {
-  $query = file_get_contents(dirname(__FILE__) . "/../install/hashtopolis.sql");
-  Factory::getAgentFactory()->getDB()->query($query);
-  
+  // initial setup, run only on the very first time
+  // the boolean is stored to later when the database is migrated, some initial queries can be done
+  $initialSetup = true;
+}
+
+
+$database_uri = DBA_TYPE . "://" . DBA_USER . ":" . DBA_PASS . "@" . DBA_SERVER . ":" . DBA_PORT . "/" . DBA_DB;
+exec('/usr/bin/sqlx migrate run --source ' . dirname(__FILE__) . '/../migrations/' . DBA_TYPE . '/ -D ' . $database_uri, $output, $retval);
+if ($retval !== 0) {
+  die("Failed to run migrations: \n" . implode("\n", $output));
+}
+
+if ($initialSetup === true) {
   // determine the base url
   $baseUrl = explode("/", $_SERVER['REQUEST_URI']);
   unset($baseUrl[sizeof($baseUrl) - 1]);

@@ -8,6 +8,7 @@ services:
       - hashtopolis:/usr/local/share/hashtopolis:Z
       # - ./ssmtp.conf:/etc/ssmtp/ssmtp.conf
     environment:
+      HASHTOPOLIS_DB_TYPE: mysql
       HASHTOPOLIS_DB_USER: $MYSQL_USER
       HASHTOPOLIS_DB_PASS: $MYSQL_PASSWORD
       HASHTOPOLIS_DB_HOST: $HASHTOPOLIS_DB_HOST
@@ -36,7 +37,7 @@ services:
     environment:
       HASHTOPOLIS_BACKEND_URL: $HASHTOPOLIS_BACKEND_URL
     restart: always
-    depends_on: 
+    depends_on:
       - hashtopolis-backend
     ports:
       - 4200:80

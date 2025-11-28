@@ -1,3 +1,7 @@
+FROM rust:1.91-trixie AS prebuild
+
+RUN cargo install sqlx-cli --no-default-features --features native-tls,mysql,postgres
+
 FROM alpine/git AS preprocess
 
 COPY .gi[t] /.git
@@ -37,12 +41,12 @@ RUN apt-get update \
     #
     # Install git, procps, lsb-release (useful for CLI installs)
     && apt-get -y install git iproute2 procps lsb-release \
-    && apt-get -y install mariadb-client \
+    && apt-get -y install mariadb-client postgresql-client libpq-dev \
     && apt-get -y install libpng-dev \
     && apt-get -y install ssmtp \
     \
     # Install extensions (optional)
-    && docker-php-ext-install pdo_mysql gd \
+    && docker-php-ext-install pdo_mysql pgsql pdo_pgsql gd \
     \
     # Install Composer
     && curl -sS https://getcomposer.org/installer | php \
@@ -81,6 +85,8 @@ RUN mkdir -p ${HASHTOPOLIS_DOCUMENT_ROOT} \
     && mkdir -p ${HASHTOPOLIS_BINARIES_PATH} \
     && chown www-data:www-data ${HASHTOPOLIS_BINARIES_PATH} \
     && chmod g+w ${HASHTOPOLIS_BINARIES_PATH}
+
+COPY --from=prebuild /usr/local/cargo/bin/sqlx /usr/bin/
 
 COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 

@@ -24,7 +24,25 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
   $CONN['pass'] = getenv('HASHTOPOLIS_DB_PASS');
   $CONN['server'] = getenv('HASHTOPOLIS_DB_HOST');
   $CONN['db'] = getenv('HASHTOPOLIS_DB_DATABASE');
-  $CONN['port'] = 3306;
+  if (getenv('HASHTOPOLIS_DB_TYPE') !== false) {
+    $CONN['type'] = getenv('HASHTOPOLIS_DB_TYPE');
+  }
+  else {
+    $CONN['type'] = 'mysql';
+  }
+  if (getenv('HASHTOPOLIS_DB_PORT') !== false) {
+    $CONN['port'] = getenv('HASHTOPOLIS_DB_PORT');
+  }
+  else {
+    switch($CONN['type']) {
+      case 'mysql':
+        $CONN['port'] = '3306';
+        break;
+      case 'postgres':
+        $CONN['port'] = '5432';
+        break;
+    }
+  }
   
   $DIRECTORIES = [
     "files" => "/usr/local/share/hashtopolis/files",
