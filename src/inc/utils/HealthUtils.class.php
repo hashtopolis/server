@@ -6,7 +6,6 @@ use DBA\HealthCheckAgent;
 use DBA\Factory;
 use DBA\HealthCheck;
 
-require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 class HealthUtils {
   /**
    * @param int $checkAgentId
