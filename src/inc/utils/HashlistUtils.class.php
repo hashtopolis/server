@@ -598,19 +598,8 @@ class HashlistUtils {
     switch ($hashlist->getFormat()) {
       case 0:
         $count = Factory::getHashlistFactory()->countFilter([]);
-        if ($count > 1) {
-          $deleted = 1;
-          $qF = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
-          $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT 20000");
-          while ($deleted > 0) {
-            $result = Factory::getHashFactory()->massDeletion([Factory::FILTER => $qF, Factory::ORDER => $oF]);
-            $deleted = $result->rowCount();
-          }
-        }
-        else {
-          // in case there is only one hashlist to delete, truncate the Hash table.
-          Factory::getAgentFactory()->getDB()->query("TRUNCATE TABLE Hash");
-        }
+        $qF = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
+        Factory::getHashFactory()->massDeletion([Factory::FILTER => $qF]);
         break;
       case 1:
       case 2:
