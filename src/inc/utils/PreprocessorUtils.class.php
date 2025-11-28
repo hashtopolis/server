@@ -4,7 +4,6 @@ use DBA\Factory;
 use DBA\Preprocessor;
 use DBA\QueryFilter;
 use DBA\Task;
-require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class PreprocessorUtils {
   
