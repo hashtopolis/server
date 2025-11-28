@@ -27,7 +27,6 @@ use DBA\UpdateSet;
 use DBA\Factory;
 use DBA\Speed;
 use DBA\Aggregation;
-require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class TaskUtils {
   /**

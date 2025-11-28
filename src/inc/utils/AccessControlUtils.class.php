@@ -5,7 +5,6 @@ use DBA\QueryFilter;
 use DBA\RightGroup;
 use DBA\Factory;
 
-require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 class AccessControlUtils {
   /**
    * @param int $groupId

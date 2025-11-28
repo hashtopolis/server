@@ -9,7 +9,6 @@ use DBA\QueryFilter;
 use DBA\SupertaskPretask;
 use DBA\Factory;
 
-require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 class PretaskUtils {
   /**
    * @param int $pretaskId
