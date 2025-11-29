@@ -12,7 +12,7 @@ runs:
   steps:
     - name: Start application containers
       working-directory: .devcontainer
-      run: docker compose -f docker-compose.${{ github.event.inputs.db_system }}.yml
+      run: docker compose -f docker-compose.${{ inputs.db_system }}.yml
       shell: bash
     - name: Install composer dependencies packages
       run: docker exec hashtopolis-server-dev composer install --working-dir=/var/www/html/
