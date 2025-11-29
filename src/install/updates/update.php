@@ -45,6 +45,7 @@ if ($storedBuild == null) {
 if ($upgradePossible) { // we can actually check if there are upgrades to be applied
   $allFiles = scandir(dirname(__FILE__));
   usort($allFiles, array("Util", "updateVersionComparison"));
+  $allFiles = array_reverse($allFiles);
   foreach ($allFiles as $file) {
     if (Util::startsWith($file, "update_v")) {
       $startVersion = substr($file, 8, strpos($file, "_", 7) - 8);
