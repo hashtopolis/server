@@ -77,6 +77,10 @@ catch (PDOException $e) {
   $initialSetup = true;
 }
 
+// this only needs to be present for the very first upgrade from non-migration to migrations to make sure the last updates are executed before migration
+if (!$initialSetup && !Util::databaseTableExists("_sqlx_migrations")) {
+  include(dirname(__FILE__) . "/../install/updates/update.php");
+}
 
 $database_uri = DBA_TYPE . "://" . DBA_USER . ":" . DBA_PASS . "@" . DBA_SERVER . ":" . DBA_PORT . "/" . DBA_DB;
 exec('/usr/bin/sqlx migrate run --source ' . dirname(__FILE__) . '/../migrations/' . DBA_TYPE . '/ -D ' . $database_uri, $output, $retval);
@@ -170,22 +174,6 @@ else {
   UI::add('toggledarkmode', 0);
 }
 
-$updateExecuted = false;
-// check if update is needed
-// (note if the version was retrieved with git, but the git folder was removed, smaller updates are not recognized because the build value is missing)
-$storedVersion = Factory::getStoredValueFactory()->get("version");
-if ($storedVersion == null || $storedVersion->getVal() != explode("+", $VERSION)[0] && file_exists(dirname(__FILE__) . "/../install/updates/update.php")) {
-  include(dirname(__FILE__) . "/../install/updates/update.php");
-  $updateExecuted = $upgradePossible;
-}
-else { // in case it is not a version upgrade, but the person retrieved a new version via git or copying
-  $storedBuild = Factory::getStoredValueFactory()->get("build");
-  if ($storedBuild == null || ($BUILD != 'repository' && $storedBuild->getVal() != $BUILD) || ($BUILD == 'repository' && strlen(Util::getGitCommit(true)) > 0 && $storedBuild->getVal() != Util::getGitCommit(true)) && file_exists(dirname(__FILE__) . "/../install/updates/update.php")) {
-    include(dirname(__FILE__) . "/../install/updates/update.php");
-    $updateExecuted = $upgradePossible;
-  }
-}
-
 if (strlen(Util::getGitCommit()) == 0) {
   $storedBuild = Factory::getStoredValueFactory()->get("build");
   if ($storedBuild != null) {
@@ -195,10 +183,6 @@ if (strlen(Util::getGitCommit()) == 0) {
 
 UI::add('menu', Menu::get());
 UI::add('messages', []);
-
-if ($updateExecuted) {
-  UI::addMessage(UI::SUCCESS, "An automatic upgrade was executed! " . sizeof($EXECUTED) . " changes applied on DB!");
-}
 
 UI::add('pageTitle', "");
 UI::add('login', Login::getInstance());
