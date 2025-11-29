@@ -76,7 +76,7 @@ abstract class HashtopolisTest {
     
     // load DB
     if ($version == "master") {
-      Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__) ."/../src/install/hashtopolis.sql"));
+      Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__) ."/../src/migrations/mysql/20251127000000_initial.sql"));
     }
     else {
       Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__) . "/files/db_" . $version . ".sql"));
