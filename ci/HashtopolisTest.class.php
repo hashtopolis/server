@@ -89,8 +89,7 @@ abstract class HashtopolisTest {
     $hash = Encryption::passwordHash(HashtopolisTest::USER_PASS, $salt);
     $this->user = new User(null, 'testuser', '', $hash, $salt, 1, 0, 0, 0, 3600, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), 0, '', '', '', '');
     $this->user = Factory::getUserFactory()->save($this->user);*/
-    $accessGroup = new AccessGroupUser(null, 1, 1);
-    Factory::getAccessGroupUserFactory()->save($accessGroup);
+    AccessUtils::getOrCreateDefaultAccessGroup();
     $this->apiKey = new ApiKey(null, 0, time() + 3600, 'mykey', 0, 1, 1);
     $this->apiKey = Factory::getApiKeyFactory()->save($this->apiKey);
     // $versionStore = new StoredValue("version", ($version == 'master') ? explode("+", $VERSION)[0] : $version);
