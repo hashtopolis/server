@@ -11,7 +11,7 @@ runs:
   using: "composite"
   steps:
     - name: Start application containers
-      working-directory: .devcontainer
+      working-directory: .github
       run: docker compose -f docker-compose.${{ inputs.db_system }}.yml up -d
       shell: bash
     - name: Install composer dependencies packages
