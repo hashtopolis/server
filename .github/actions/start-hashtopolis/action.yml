@@ -14,9 +14,10 @@ runs:
       working-directory: .github
       run: docker compose -f docker-compose.${{ inputs.db_system }}.yml up -d
       shell: bash
-    - name: Install composer dependencies packages
-      run: docker exec hashtopolis-server-dev composer install --working-dir=/var/www/html/
-      shell: bash
+# should not be needed anymore as it is installed during build
+#    - name: Install composer dependencies packages
+#      run: docker exec hashtopolis-server-dev composer install --working-dir=/var/www/html/
+#      shell: bash
     - name: Wait until entrypoint is finished and Hashtopolis is started
       run: bash .github/scripts/await-hashtopolis-startup.sh
       shell: bash
