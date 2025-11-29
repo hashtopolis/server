@@ -19,7 +19,7 @@ abstract class HashtopolisTest {
   protected $user;
   protected $apiKey;
   
-  const USER_PASS = "HG78Ghdfs87gh";
+  const USER_PASS = "hashtopolis";
   
   const RUN_FULL = 0;
   const RUN_FAST = 1;
