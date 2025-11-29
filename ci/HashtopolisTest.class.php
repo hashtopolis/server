@@ -70,7 +70,7 @@ abstract class HashtopolisTest {
     global $PEPPER, $VERSION;
     
     // drop old data and create empty DB
-    Factory::getAgentFactory()->getDB()->query("DROP DATABASE IF EXISTS hashtopolis");
+    /*Factory::getAgentFactory()->getDB()->query("DROP DATABASE IF EXISTS hashtopolis");
     Factory::getAgentFactory()->getDB()->query("CREATE DATABASE hashtopolis");
     Factory::getAgentFactory()->getDB()->query("USE hashtopolis");
     
@@ -92,7 +92,7 @@ abstract class HashtopolisTest {
     $accessGroup = new AccessGroupUser(null, 1, $this->user->getId());
     Factory::getAccessGroupUserFactory()->save($accessGroup);
     $this->apiKey = new ApiKey(null, 0, time() + 3600, 'mykey', 0, $this->user->getId(), 1);
-    $this->apiKey = Factory::getApiKeyFactory()->save($this->apiKey);
+    $this->apiKey = Factory::getApiKeyFactory()->save($this->apiKey);*/
     // $versionStore = new StoredValue("version", ($version == 'master') ? explode("+", $VERSION)[0] : $version);
     // Factory::getStoredValueFactory()->save($versionStore);
     // $buildStore = new StoredValue("build", ($version == 'master') ? Util::getGitCommit(true) : $this->RELEASES[$version]);
