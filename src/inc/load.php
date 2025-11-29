@@ -78,7 +78,7 @@ catch (PDOException $e) {
 }
 
 // this only needs to be present for the very first upgrade from non-migration to migrations to make sure the last updates are executed before migration
-if (!$initialSetup && !Util::databaseTableExists("_sqlx_migrations")) {
+if (!$initialSetup && DBA_TYPE == "mysql" && !Util::databaseTableExists("_sqlx_migrations")) {
   include(dirname(__FILE__) . "/../install/updates/update.php");
 }
 
