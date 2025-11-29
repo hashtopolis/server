@@ -38,6 +38,8 @@ services:
       POSTGRES_DB: hashtopolis
       POSTGRES_USER: hashtopolis
       POSTGRES_PASSWORD: hashtopolis
+    networks:
+      - hashtopolis_dev
 
 volumes:
   hashtopolis-db-dev:
