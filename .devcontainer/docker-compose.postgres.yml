@@ -28,19 +28,15 @@ services:
       - hashtopolis_dev
   hashtopolis-db-dev:
     container_name: hashtopolis-db-dev
-    image: mysql:8.0
+    image: postgres:13
     restart: always
-    ports:
-      - "3306:3306"
     volumes:
-      - hashtopolis-db-dev:/var/lib/mysql
+      - db:/var/lib/postgresql/data
     environment:
-      MYSQL_ROOT_PASSWORD: hashtopolis
-      MYSQL_DATABASE: hashtopolis
-      MYSQL_USER: hashtopolis
-      MYSQL_PASSWORD: hashtopolis
-    networks:
-      - hashtopolis_dev
+      POSTGRES_DB: hashtopolis
+      POSTGRES_USER: hashtopolis
+      POSTGRES_PASSWORD: hashtopolis
+
 volumes:
   hashtopolis-db-dev:
   hashtopolis-server-dev:
