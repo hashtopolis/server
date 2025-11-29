@@ -1,12 +1,18 @@
 name: Start Hashtopolis server
 description: Starts application containers and waits for Hashtopolis to be ready.
 
+inputs:
+  db_system:
+    description: "Used to set which DB system should be used"
+    required: true
+    default: "mysql"
+
 runs:
   using: "composite"
   steps:
     - name: Start application containers
       working-directory: .devcontainer
-      run: docker compose up -d
+      run: docker compose up -f docker-compose.${{ env.INPUT_DB_SYSTEM }}.yml
       shell: bash
     - name: Install composer dependencies packages
       run: docker exec hashtopolis-server-dev composer install --working-dir=/var/www/html/

@@ -9,6 +9,7 @@ services:
         - CONTAINER_USER_CMD_PRE
         - CONTAINER_USER_CMD_POST
     environment:
+      HASHTOPOLIS_DB_TYPE: postgres
       HASHTOPOLIS_DB_USER: hashtopolis
       HASHTOPOLIS_DB_PASS: hashtopolis
       HASHTOPOLIS_DB_HOST: hashtopolis-db-dev
