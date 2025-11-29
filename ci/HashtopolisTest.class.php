@@ -82,17 +82,17 @@ abstract class HashtopolisTest {
       Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__) . "/files/db_" . $version . ".sql"));
     }
     
-    sleep(1);
+    sleep(1);*/
     
     // insert user and api key
-    $salt = Util::randomString(30);
+    /*$salt = Util::randomString(30);
     $hash = Encryption::passwordHash(HashtopolisTest::USER_PASS, $salt);
     $this->user = new User(null, 'testuser', '', $hash, $salt, 1, 0, 0, 0, 3600, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), 0, '', '', '', '');
     $this->user = Factory::getUserFactory()->save($this->user);
     $accessGroup = new AccessGroupUser(null, 1, $this->user->getId());
-    Factory::getAccessGroupUserFactory()->save($accessGroup);
-    $this->apiKey = new ApiKey(null, 0, time() + 3600, 'mykey', 0, $this->user->getId(), 1);
-    $this->apiKey = Factory::getApiKeyFactory()->save($this->apiKey);*/
+    Factory::getAccessGroupUserFactory()->save($accessGroup);*/
+    $this->apiKey = new ApiKey(null, 0, time() + 3600, 'mykey', 0, 1, 1);
+    $this->apiKey = Factory::getApiKeyFactory()->save($this->apiKey);
     // $versionStore = new StoredValue("version", ($version == 'master') ? explode("+", $VERSION)[0] : $version);
     // Factory::getStoredValueFactory()->save($versionStore);
     // $buildStore = new StoredValue("build", ($version == 'master') ? Util::getGitCommit(true) : $this->RELEASES[$version]);
