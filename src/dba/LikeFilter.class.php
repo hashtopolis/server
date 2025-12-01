@@ -36,7 +36,12 @@ class LikeFilter extends Filter {
       $inv = " NOT";
     }
     
-    return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $inv . " LIKE ? COLLATE \"C\"";
+    // it is not ideal to have to make a distinction between the DB types here, but currently there does not seem to be another solution to achieve real case-sensitive like filtering
+    $likeStatement = " BINARY LIKE ?";
+    if (DBA_TYPE == 'postgres') {
+      $likeStatement = " LIKE ? COLLATE \"C\"";
+    }
+    return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $inv . $likeStatement;
   }
   
   function getValue() {
