@@ -54,6 +54,7 @@ use DBA\Session;
 use DBA\User;
 use DBA\Factory;
 use JimTools\JwtAuth\Handlers\BeforeHandlerInterface;
+use JimTools\JwtAuth\Rules\RequestMethodRule;
 use JimTools\JwtAuth\Rules\RequestPathRule;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -152,7 +153,8 @@ $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface
   );
 
   $rules = [
-    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"])
+    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"]),
+    new RequestMethodRule(ignore: ["OPTIONS"])
   ];
   return new JwtAuthentication($options, $decoder, $rules);
 });
@@ -207,9 +209,10 @@ class CorsHackMiddleware implements MiddlewareInterface {
     $methods = $routingResults->getAllowedMethods();
     $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
     
-    if (getenv('HASHTOPOLIS_FRONTEND_URLS') !== false) {
-      if(in_array($request->getHeaderLine('HTTP_ORIGIN'), explode(',', getenv('HASHTOPOLIS_FRONTEND_URLS')), true)) {
-        $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'));
+    $frontend_urls = getenv('HASHTOPOLIS_FRONTEND_URLS');
+    if ($frontend_urls !== false) {
+      if(in_array($request->getHeaderLine('Origin'), explode(',', $frontend_urls), true)) {
+        $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('Origin'));
       }
       else {
         error_log("CORS error: Allow-Origin doesn't match. Please make sure to include the used frontend in the .env file.");
