@@ -938,7 +938,6 @@ abstract class AbstractModelFactory {
       return self::$dbh;
     }
     catch (PDOException $e) {
-      echo $e->getMessage()."\n";
       if ($test) {
         return null;
       }
