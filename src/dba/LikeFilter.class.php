@@ -36,7 +36,7 @@ class LikeFilter extends Filter {
       $inv = " NOT";
     }
     
-    return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $inv . " LIKE BINARY ?";
+    return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $inv . " LIKE ? COLLATE \"C\"";
   }
   
   function getValue() {
