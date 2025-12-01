@@ -906,7 +906,7 @@ abstract class AbstractModelFactory {
       $dbHost = @DBA_SERVER;
       $dbPort = @DBA_PORT;
       $dbDB = @DBA_DB;
-      if ($test) { // if the connection is beeing tested, take credentials from legacy global variable
+      if ($test) { // if the connection is being tested, take credentials from legacy global variable
         global $CONN;
         $dbUser = $CONN['user'];
         $dbPass = $CONN['pass'];
