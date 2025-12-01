@@ -427,18 +427,6 @@ abstract class AbstractModelFactory {
       $query .= $this->applyFilters($vals, $options['filter']);
     }
     
-    if (!array_key_exists("order", $options)) {
-      // Add a asc order on the primary keys as a standard
-      $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
-      $orderOptions = array(
-        $oF
-      );
-      $options['order'] = $orderOptions;
-    }
-    if (count($options['order']) != 0) {
-      $query .= $this->applyOrder($this->getOrders($options));
-    }
-    
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
@@ -483,18 +471,6 @@ abstract class AbstractModelFactory {
     
     if (array_key_exists("filter", $options)) {
       $query .= $this->applyFilters($vals, $options['filter']);
-    }
-    
-    if (!array_key_exists("order", $options)) {
-      // Add a asc order on the primary keys as a standard
-      $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
-      $orderOptions = array(
-        $oF
-      );
-      $options['order'] = $orderOptions;
-    }
-    if (count($options['order']) != 0) {
-      $query .= $this->applyOrder($this->getOrders($options));
     }
     
     $dbh = self::getDB();
