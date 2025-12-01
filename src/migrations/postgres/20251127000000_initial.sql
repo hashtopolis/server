@@ -4,6 +4,9 @@ CREATE TABLE AccessGroup (
   groupName     TEXT NOT NULL
 );
 
+INSERT INTO AccessGroup (accessGroupId, groupName) VALUES
+  (1, 'Default Group');
+
 CREATE TABLE AccessGroupAgent (
   accessGroupAgentId SERIAL NOT NULL PRIMARY KEY,
   accessGroupId      INT NOT NULL,

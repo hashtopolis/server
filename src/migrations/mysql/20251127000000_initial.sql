@@ -12,6 +12,9 @@ CREATE TABLE IF NOT EXISTS `AccessGroup` (
   `groupName`     VARCHAR(50) NOT NULL
 ) ENGINE = InnoDB;
 
+INSERT INTO `AccessGroup` (`accessGroupId`, `groupName`) VALUES
+  (1, 'Default Group');
+
 CREATE TABLE IF NOT EXISTS `AccessGroupAgent` (
   `accessGroupAgentId` INT(11) NOT NULL,
   `accessGroupId`      INT(11) NOT NULL,
@@ -1272,7 +1275,8 @@ ALTER TABLE `Preprocessor`
 
 -- Add AUTO_INCREMENT for tables
 ALTER TABLE `AccessGroup`
-  MODIFY `accessGroupId` INT(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `accessGroupId` INT(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 2;
 
 ALTER TABLE `AccessGroupAgent`
   MODIFY `accessGroupAgentId` INT(11) NOT NULL AUTO_INCREMENT;
