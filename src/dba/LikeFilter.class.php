@@ -37,7 +37,7 @@ class LikeFilter extends Filter {
     }
     
     // it is not ideal to have to make a distinction between the DB types here, but currently there does not seem to be another solution to achieve real case-sensitive like filtering
-    $likeStatement = " BINARY LIKE ?";
+    $likeStatement = " LIKE BINARY ?";
     if (DBA_TYPE == 'postgres') {
       $likeStatement = " LIKE ? COLLATE \"C\"";
     }
