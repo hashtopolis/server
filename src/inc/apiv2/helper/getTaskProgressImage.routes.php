@@ -79,8 +79,8 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
-    $task_id = $request->getQueryParams()['task'];
-    $supertask_id = $request->getQueryParams()['supertask'];
+    $task_id = $request->getQueryParams()['task'] ?? null;
+    $supertask_id = $request->getQueryParams()['supertask'] ?? null;
 
     //check if task exists and get information
     if ($task_id) {

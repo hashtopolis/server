@@ -602,7 +602,7 @@ abstract class AbstractBaseAPI {
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
 
-    $aggregatedData = $apiClass::aggregateData($obj, $aggregateFieldsets);
+    $aggregatedData = $apiClass::aggregateData($obj, $expandResult, $aggregateFieldsets);
     $attributes = array_merge($attributes, $aggregatedData);
     
     /* Build JSON::API relationship resource */
@@ -1197,7 +1197,9 @@ abstract class AbstractBaseAPI {
     array $expands,
     object $object,
     array $expandResult,
-    array $includedResources
+    array $includedResources,
+    array $sparseFieldsets = null,
+    array $aggregateFieldsets = null
 ): array {
     
     // Add missing expands to expands in case they have been added in aggregateData()
@@ -1214,14 +1216,16 @@ abstract class AbstractBaseAPI {
 
       if (is_array($expandResultObject)) {
         foreach ($expandResultObject as $expandObject) {
-          $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject));
+          $noFurtherExpands = [];
+          $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject, $noFurtherExpands, $sparseFieldsets, $aggregateFieldsets));
         }
       } else {
           if ($expandResultObject === null) {
             // to-only relation which is nullable
             continue;
           }
-        $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandResultObject));
+        $noFurtherExpands = [];
+        $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandResultObject, $noFurtherExpands, $sparseFieldsets, $aggregateFieldsets));
       }
     }
 
@@ -1503,7 +1507,7 @@ abstract class AbstractBaseAPI {
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object
-x     $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
+      $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
       $includedResources = $apiClass->processExpands($apiClass, $expands, $object, $expandResult, $includedResources, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
       
       // Add to result output
