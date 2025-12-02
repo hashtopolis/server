@@ -27,9 +27,9 @@ jobs:
           db_system: ${{ matrix.db_system }}
       - name: Give Apache permissions on necessary directories # for the tests, only src/files and src/inc/utils/locks seem necessary
         run: docker exec -u root hashtopolis-server-dev bash -c "chown -R www-data:www-data /var/www/html/src && chmod -R g+w /var/www/html/src"
-#      - name: Run test suite
-#        if: ${{ matrix.db_system == 'mysql' }} # the legacy is only supposed to work with mysql
-#        run: docker exec hashtopolis-server-dev php /var/www/html/ci/run.php -vmaster
+      - name: Run test suite
+        if: ${{ matrix.db_system == 'mysql' }} # the legacy is only supposed to work with mysql
+        run: docker exec hashtopolis-server-dev php /var/www/html/ci/run.php -vmaster
       - name: Test with pytest
         run: docker exec hashtopolis-server-dev pytest /var/www/html/ci/apiv2
       - name: Test if pytest is removing all test objects
