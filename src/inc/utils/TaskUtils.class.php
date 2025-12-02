@@ -23,10 +23,10 @@ use DBA\User;
 use DBA\Hashlist;
 use DBA\AccessGroupUser;
 use DBA\TaskDebugOutput;
+use DBA\UpdateSet;
 use DBA\Factory;
 use DBA\Speed;
 use DBA\Aggregation;
-require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class TaskUtils {
   /**
@@ -541,22 +541,34 @@ class TaskUtils {
       throw new HTException("No access to this task!");
     }
     Factory::getAgentFactory()->getDB()->beginTransaction();
+    
+    // reset all benchmarks on assignments
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $uS = new UpdateSet(Assignment::BENCHMARK, 0);
     Factory::getAssignmentFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+    
+    // get all chunk ids of this task
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
     $chunkIds = array();
     foreach ($chunks as $chunk) {
       $chunkIds[] = $chunk->getId();
     }
     if (sizeof($chunkIds) > 0) {
+      // remove relation of all hashes which were cracked with the chunks which are going to be deleted
       $qF2 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
       $uS = new UpdateSet(Hash::CHUNK_ID, null);
       Factory::getHashFactory()->massUpdate([Factory::FILTER => $qF2, Factory::UPDATE => $uS]);
       Factory::getHashBinaryFactory()->massUpdate([Factory::FILTER => $qF2, Factory::UPDATE => $uS]);
     }
+    
+    // delete all chunks and set keyspace and progress of task to 0
     Factory::getChunkFactory()->massDeletion([Factory::FILTER => $qF]);
     Factory::getTaskFactory()->mset($task, [Task::KEYSPACE => 0, Task::KEYSPACE_PROGRESS => 0]);
+    
+    // set cracked count of taskwrapper to 0
+    $taskWrapper->setCracked(0);
+    Factory::getTaskWrapperFactory()->update($taskWrapper);
+    
     Factory::getAgentFactory()->getDB()->commit();
   }
   

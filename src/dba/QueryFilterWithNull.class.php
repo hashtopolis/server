@@ -10,34 +10,35 @@ class QueryFilterWithNull extends Filter {
   /**
    * @var AbstractModelFactory
    */
-  private $factory;
+  private $overrideFactory;
   
-  function __construct($key, $value, $operator, $matchNull, $factory = null) {
+  function __construct($key, $value, $operator, $matchNull, $overrideFactory = null) {
     $this->key = $key;
     $this->value = $value;
     $this->operator = $operator;
-    $this->factory = $factory;
+    $this->overrideFactory = $overrideFactory;
     $this->matchNull = $matchNull;
   }
   
-  function getQueryString($table = "") {
-    if ($table != "") {
-      $table = $table . ".";
+  function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
+    if ($this->overrideFactory != null) {
+      $factory = $this->overrideFactory;
     }
-    if ($this->factory != null) {
-      $table = $this->factory->getModelTable() . ".";
+    $table = "";
+    if ($includeTable) {
+      $table = $factory->getMappedModelTable() . ".";
     }
     
     if ($this->value === null) {
       if ($this->operator == '<>') {
-        return $table . $this->key . " IS NOT NULL ";
+        return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . " IS NOT NULL ";
       }
-      return $table . $this->key . " IS NULL ";
+      return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . " IS NULL ";
     }
     if ($this->matchNull) {
-      return "(" . $table . $this->key . $this->operator . "? OR " . $table . $this->key . " IS NULL)";
+      return "(" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $this->operator . "? OR " . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . " IS NULL)";
     }
-    return "(" . $table . $this->key . $this->operator . "? OR " . $table . $this->key . " IS NOT NULL)";
+    return "(" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $this->operator . "? OR " . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . " IS NOT NULL)";
   }
   
   function getValue() {
@@ -47,7 +48,7 @@ class QueryFilterWithNull extends Filter {
     return $this->value;
   }
   
-  function getHasValue() {
+  function getHasValue(): bool {
     if ($this->value === null) {
       return false;
     }

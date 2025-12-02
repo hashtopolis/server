@@ -10,6 +10,10 @@ class SessionFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "Session";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class SessionFactory extends AbstractModelFactory {
    * @return Session
    */
   function createObjectFromDict($pk, $dict): Session {
-    return new Session($dict['sessionId'], $dict['userId'], $dict['sessionStartDate'], $dict['lastActionDate'], $dict['isOpen'], $dict['sessionLifetime'], $dict['sessionKey']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Session($dict['sessionid'], $dict['userid'], $dict['sessionstartdate'], $dict['lastactiondate'], $dict['isopen'], $dict['sessionlifetime'], $dict['sessionkey']);
   }
   
   /**
@@ -40,7 +49,7 @@ class SessionFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Session|Session[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

@@ -12,8 +12,8 @@ require_once(dirname(__FILE__) . "/../../inc/defines/config.php");
 echo "Apply updates...\n";
 
 echo "Check agent binaries... ";
-Util::checkAgentVersion("python", "0.1.7");
-Util::checkAgentVersion("csharp", "0.52.4");
+Util::checkAgentVersionLegacy("python", "0.1.7");
+Util::checkAgentVersionLegacy("csharp", "0.52.4");
 echo "\n";
 
 echo "Creating User API...";

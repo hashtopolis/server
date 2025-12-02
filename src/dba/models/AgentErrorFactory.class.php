@@ -10,6 +10,10 @@ class AgentErrorFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "AgentError";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class AgentErrorFactory extends AbstractModelFactory {
    * @return AgentError
    */
   function createObjectFromDict($pk, $dict): AgentError {
-    return new AgentError($dict['agentErrorId'], $dict['agentId'], $dict['taskId'], $dict['chunkId'], $dict['time'], $dict['error']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AgentError($dict['agenterrorid'], $dict['agentid'], $dict['taskid'], $dict['chunkid'], $dict['time'], $dict['error']);
   }
   
   /**
@@ -40,7 +49,7 @@ class AgentErrorFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AgentError|AgentError[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

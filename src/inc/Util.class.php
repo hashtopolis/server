@@ -26,6 +26,7 @@ use DBA\AgentBinary;
 use DBA\AgentStat;
 use DBA\FileDelete;
 use DBA\Factory;
+use DBA\UpdateSet;
 use DBA\Speed;
 use Composer\Semver\Comparator;
 
@@ -187,16 +188,49 @@ class Util {
   }
   
   /**
+   * function to check agent version for older update scripts, that still has
+   * the 'type' field in AgentBinary instead of 'binaryType'
+   */
+  public static function checkAgentVersionLegacy($type, $version, $silent = false) {
+    $agentBinaryFactory = Factory::getAgentBinaryFactory();
+    $dict = $agentBinaryFactory->getNullObject()->getKeyValueDict();
+    unset($dict["binaryType"]);
+    $dict["type"] = null;
+    $keys = array_keys($dict);
+    
+    $query = "SELECT " . implode(", ", $keys) . " FROM " . $agentBinaryFactory->getModelTable();
+    $query .= " WHERE type=?";
+    $dbh = $agentBinaryFactory->getDB();
+    $stmt = $dbh->prepare($query);
+    $vals = [$type];
+    $stmt->execute($vals);
+
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if($row != null) {
+      $pkName = $agentBinaryFactory->getNullObject()->getPrimaryKey();
+      $pk = $row[$pkName];
+      $row["binaryType"] = $row["type"];
+      $binary = $agentBinaryFactory->createObjectFromDict($pk, $row);
+
+      if (Comparator::lessThan($binary->getVersion(), $version)) {
+        if (!$silent) {
+          echo "update $type version... ";
+        }
+        Factory::getAgentBinaryFactory()->set($binary, AgentBinary::VERSION, $version);
+        if (!$silent) {
+          echo "OK";
+        }
+      }
+    }
+  }
+
+  /**
    * @param string $type
    * @param string $version
    * @param bool $silent
    */
   public static function checkAgentVersion($type, $version, $silent = false) {
     $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");
-    if (Util::databaseColumnExists("AgentBinary", "type")) {
-      // This check is needed for older updates when agentbinary column still got old 'type' name
-      $qF = new QueryFilter("type", $type, "=");
-    }
     $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($binary != null) {
       if (Comparator::lessThan($binary->getVersion(), $version)) {

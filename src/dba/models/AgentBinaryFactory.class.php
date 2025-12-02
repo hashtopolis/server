@@ -10,6 +10,10 @@ class AgentBinaryFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "AgentBinary";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class AgentBinaryFactory extends AbstractModelFactory {
    * @return AgentBinary
    */
   function createObjectFromDict($pk, $dict): AgentBinary {
-    return new AgentBinary($dict['agentBinaryId'], $dict['binaryType'], $dict['version'], $dict['operatingSystems'], $dict['filename'], $dict['updateTrack'], $dict['updateAvailable']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AgentBinary($dict['agentbinaryid'], $dict['binarytype'], $dict['version'], $dict['operatingsystems'], $dict['filename'], $dict['updatetrack'], $dict['updateavailable']);
   }
   
   /**
@@ -40,7 +49,7 @@ class AgentBinaryFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AgentBinary|AgentBinary[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

@@ -257,7 +257,7 @@ if (isset($_GET['id'])) {
       }
       UI::add('page', $page);
       $limit = $page * $chunkPageSize;
-      $oFp = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $chunkPageSize", Factory::getChunkFactory());
+      $oFp = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $chunkPageSize OFFSET $limit", Factory::getChunkFactory());
       UI::add('chunksPageTitle', "All chunks (page " . ($page + 1) . ")");
       
       $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");

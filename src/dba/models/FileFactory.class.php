@@ -10,6 +10,10 @@ class FileFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "File";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class FileFactory extends AbstractModelFactory {
    * @return File
    */
   function createObjectFromDict($pk, $dict): File {
-    return new File($dict['fileId'], $dict['filename'], $dict['size'], $dict['isSecret'], $dict['fileType'], $dict['accessGroupId'], $dict['lineCount']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new File($dict['fileid'], $dict['filename'], $dict['size'], $dict['issecret'], $dict['filetype'], $dict['accessgroupid'], $dict['linecount']);
   }
   
   /**
@@ -40,7 +49,7 @@ class FileFactory extends AbstractModelFactory {
    * @param bool $single
    * @return File|File[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

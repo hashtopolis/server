@@ -1003,7 +1003,7 @@ CREATE TABLE `TaskWrapper` (
   `cracked`         INT(11)      NOT NULL
 )ENGINE = InnoDB;
 
-CREATE TABLE `User` (
+CREATE TABLE `htp_User` (
   `userId`             INT(11)      NOT NULL,
   `username`           VARCHAR(100) NOT NULL,
   `email`              VARCHAR(150) NOT NULL,
@@ -1075,7 +1075,7 @@ CREATE TABLE `HealthCheckAgent` (
   `cracked`            INT(11)    NOT NULL,
   `numGpus`            INT(11)    NOT NULL,
   `start`              BIGINT(20) NOT NULL,
-  `end`                BIGINT(20) NOT NULL,
+  `htp_end`            BIGINT(20) NOT NULL,
   `errors`             TEXT       NOT NULL
 ) ENGINE=InnoDB;
 
@@ -1183,7 +1183,8 @@ ALTER TABLE `Hash`
   ADD KEY `hashlistId` (`hashlistId`),
   ADD KEY `chunkId` (`chunkId`),
   ADD KEY `isCracked` (`isCracked`),
-  ADD KEY `hash` (`hash`(500));
+  ADD KEY `hash` (`hash`(500)),
+  ADD KEY `timeCracked` (`timeCracked`);
 
 ALTER TABLE `HashBinary`
   ADD PRIMARY KEY (`hashBinaryId`),
@@ -1258,7 +1259,7 @@ ALTER TABLE `TaskWrapper`
   ADD KEY `isArchived` (`isArchived`),
   ADD KEY `accessGroupId` (`accessGroupId`);
 
-ALTER TABLE `User`
+ALTER TABLE `htp_User`
   ADD PRIMARY KEY (`userId`),
   ADD UNIQUE KEY `username` (`username`),
   ADD KEY `rightGroupId` (`rightGroupId`);
@@ -1395,7 +1396,7 @@ ALTER TABLE `TaskDebugOutput`
 ALTER TABLE `TaskWrapper`
   MODIFY `taskWrapperId` INT(11) NOT NULL AUTO_INCREMENT;
 
-ALTER TABLE `User`
+ALTER TABLE `htp_User`
   MODIFY `userId` INT(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `Zap`
@@ -1511,7 +1512,7 @@ ALTER TABLE `TaskWrapper`
   ADD CONSTRAINT `TaskWrapper_ibfk_1` FOREIGN KEY (`hashlistId`)    REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `TaskWrapper_ibfk_2` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`);
 
-ALTER TABLE `User`
+ALTER TABLE `htp_User`
   ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);
 
 ALTER TABLE `Zap`

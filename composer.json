@@ -17,19 +17,19 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.2",
         "ext-json": "*",
         "ext-pdo": "*",
+        "composer/semver": "^3.4",
         "crell/api-problem": "^3.6",
+        "jimtools/jwt-auth": "^2.3",
         "middlewares/encoder": "^2.1",
         "middlewares/negotiation": "^2.1",
         "monolog/monolog": "^2.8",
         "php-di/php-di": "7.0.7",
         "slim/psr7": "^1.5",
         "slim/slim": "^4.10",
-        "tuupola/slim-basic-auth": "^3.3",
-        "tuupola/slim-jwt-auth": "^3.6",
-        "composer/semver": "^3.4"
+        "tuupola/slim-basic-auth": "^3.3"
     },
     "require-dev": {
         "jangregor/phpstan-prophecy": "^1.0.0",
@@ -44,7 +44,10 @@
             "phpstan/extension-installer": true
         },
         "process-timeout": 0,
-        "sort-packages": true
+        "sort-packages": true,
+        "audit": {
+          "block-insecure": false
+        }
     },
     "autoload": {
         "psr-4": {

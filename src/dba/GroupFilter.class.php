@@ -7,22 +7,23 @@ class GroupFilter extends Group {
   /**
    * @var AbstractModelFactory
    */
-  private $factory;
+  private $overrideFactory;
   
-  function __construct($by, $factory = null) {
+  function __construct($by, $overrideFactory = null) {
     $this->by = $by;
-    $this->factory = $factory;
+    $this->overrideFactory = $overrideFactory;
   }
   
-  function getQueryString($table = "") {
-    if ($table != "") {
-      $table = $table . ".";
+  function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
+    if ($this->overrideFactory != null) {
+      $factory = $this->overrideFactory;
     }
-    if ($this->factory != null) {
-      $table = $this->factory->getModelTable() . ".";
+    $table = "";
+    if ($includeTable) {
+      $table = $factory->getMappedModelTable() . ".";
     }
     
-    return $table . $this->by . " ";
+    return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->by) . " ";
   }
 }
 

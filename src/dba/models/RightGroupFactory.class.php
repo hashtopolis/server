@@ -10,6 +10,10 @@ class RightGroupFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "RightGroup";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class RightGroupFactory extends AbstractModelFactory {
    * @return RightGroup
    */
   function createObjectFromDict($pk, $dict): RightGroup {
-    return new RightGroup($dict['rightGroupId'], $dict['groupName'], $dict['permissions']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new RightGroup($dict['rightgroupid'], $dict['groupname'], $dict['permissions']);
   }
   
   /**
@@ -40,7 +49,7 @@ class RightGroupFactory extends AbstractModelFactory {
    * @param bool $single
    * @return RightGroup|RightGroup[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

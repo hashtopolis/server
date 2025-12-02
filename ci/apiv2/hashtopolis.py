@@ -4,6 +4,7 @@
 # PoC testing/development framework for APIv2
 # Written in python to work on creation of hashtopolis APIv2 python binding.
 #
+import base64
 from base64 import b64encode
 import copy
 import json
@@ -51,9 +52,9 @@ class HashtopolisError(Exception):
 class HashtopolisConfig(object):
     def __init__(self):
         # Request access TOKEN, used throughout the test
-        load_order = (str(Path(__file__).parent.joinpath('{name}-defaults.{extension}')),) \
+        load_order = (str(Path(__file__).parent.joinpath('{name}-defaults{suffix}')),) \
                      + confidence.DEFAULT_LOAD_ORDER
-        self._cfg = confidence.load_name('hashtopolis-test', load_order=load_order)
+        self._cfg = confidence.load_name('hashtopolis-test', load_order=load_order, format=confidence.YAML())
         self._hashtopolis_uri = self._cfg['hashtopolis_uri']
         self._api_endpoint = self._hashtopolis_uri + '/api/v2'
         self.username = self._cfg['username']
@@ -1022,10 +1023,10 @@ class Helper(HashtopolisConnector):
         response = self._helper_request("exportWordlist", payload)
         return File(**response['data'])
 
-    def import_cracked_hashes(self, hashlist, source_data, separator):
+    def import_cracked_hashes(self, hashlist, source_data: str, separator):
         payload = {
             'hashlistId': hashlist.id,
-            'sourceData': source_data,
+            'sourceData': base64.b64encode(source_data.encode()).decode(),
             'separator': separator,
         }
         response = self._helper_request("importCrackedHashes", payload)

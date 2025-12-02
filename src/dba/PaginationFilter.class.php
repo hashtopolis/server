@@ -12,38 +12,40 @@ class PaginationFilter extends Filter {
   /**
    * @var AbstractModelFactory
    */
-  private $factory;
+  private $overrideFactory;
   
-  function __construct($key, $value, $operator, $tieBreakerKey, $tieBreakerValue, $filters = [], $factory = null) {
+  function __construct($key, $value, $operator, $tieBreakerKey, $tieBreakerValue, $filters = [], $overrideFactory = null) {
     /**
      * @param QueryFilter[] $filters
      */
     $this->key = $key;
     $this->value = $value;
     $this->operator = $operator;
-    $this->factory = $factory;
+    $this->overrideFactory = $overrideFactory;
     $this->tieBreakerKey = $tieBreakerKey;
     $this->tieBreakerValue = $tieBreakerValue;
     $this->filters = $filters;
   }
   
-  function getQueryString($table = "") {
-    if ($table != "") {
-      $table = $table . ".";
+  function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
+    if ($this->overrideFactory != null) {
+      $factory = $this->overrideFactory;
     }
-    if ($this->factory != null) {
-      $table = $this->factory->getModelTable() . ".";
+    $table = "";
+    if ($includeTable) {
+      $table = $factory->getMappedModelTable() . ".";
     }
-    $parts = array_map(fn($filter) => $filter->getQueryString(), $this->filters);
+    
+    $parts = array_map(fn($filter) => $filter->getQueryString($factory, true), $this->filters);
     //ex. SELECT hashTypeId, description, isSalted, isSlowHash FROM HashType 
     //    where (HashType.isSalted < 1) OR (HashType.isSalted = 1 and HashType.hashTypeId < 12600) 
     //    ORDER BY HashType.isSalted DESC, HashType.hashTypeId DESC LIMIT 25;
-    $queryString = "(" . $table . $this->key . $this->operator . "?" . ") OR (" . $this->key . "=" . "?" 
-    . " AND " . $this->tieBreakerKey . $this->operator . "?";
+    $queryString = "(" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $this->operator . "?" . ") OR (" . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . "=" . "?"
+      . " AND " . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->tieBreakerKey) . $this->operator . "?";
     if (count($this->filters) > 0) {
-      $queryString = $queryString . " AND ". implode(" AND ", $parts);
+      $queryString = $queryString . " AND " . implode(" AND ", $parts);
     }
-    $queryString .= ")"; 
+    $queryString .= ")";
     return $queryString;
   }
   
@@ -52,7 +54,7 @@ class PaginationFilter extends Filter {
     return array_merge($values, array_map(fn($filter) => $filter->getValue(), $this->filters));
   }
   
-  function getHasValue() {
+  function getHasValue(): bool {
     if ($this->value === null) {
       return false;
     }

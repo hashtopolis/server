@@ -10,6 +10,10 @@ class ApiKeyFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "ApiKey";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class ApiKeyFactory extends AbstractModelFactory {
    * @return ApiKey
    */
   function createObjectFromDict($pk, $dict): ApiKey {
-    return new ApiKey($dict['apiKeyId'], $dict['startValid'], $dict['endValid'], $dict['accessKey'], $dict['accessCount'], $dict['userId'], $dict['apiGroupId']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new ApiKey($dict['apikeyid'], $dict['startvalid'], $dict['endvalid'], $dict['accesskey'], $dict['accesscount'], $dict['userid'], $dict['apigroupid']);
   }
   
   /**
@@ -40,7 +49,7 @@ class ApiKeyFactory extends AbstractModelFactory {
    * @param bool $single
    * @return ApiKey|ApiKey[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

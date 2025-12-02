@@ -4,6 +4,7 @@ use DBA\ContainFilter;
 use DBA\Factory;
 
 use DBA\Agent;
+use DBA\Aggregation;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\CrackerBinary;
@@ -160,46 +161,52 @@ class TaskAPI extends AbstractModelAPI {
     return $task->getId();
   }
   
-  static function aggregateData(object $object, array $aggregateFieldsets = null): array {
+  //TODO make aggregate data queryable and not included by default
+  static function aggregateData(object $object, array &$included_data = [], array $aggregateFieldsets = null): array {
     $aggregatedData = [];
-    $keyspace = $object->getKeyspace();
-    $keyspaceProgress = $object->getKeyspaceProgress();
     
-    if(is_null($aggregateFieldsets) || (is_array($aggregateFieldsets) && array_key_exists('task', $aggregateFieldsets))) {
+    if (is_null($aggregateFieldsets) || (is_array($aggregateFieldsets) && array_key_exists('task', $aggregateFieldsets))) {
       $aggregateFieldsets['task'] = explode(",", $aggregateFieldsets['task']);
+      
+      $activeAgents = [];
+      if (is_null($aggregateFieldsets) || in_array("activeAgents", $aggregateFieldsets['task'])) {
+        $qF = new QueryFilter(Assignment::TASK_ID, $object->getId(), "=");
+        $activeAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
+        $aggregatedData["activeAgents"] = $activeAgents;
+      }
 
-      if(is_null($aggregateFieldsets) || in_array("dispatched", $aggregateFieldsets['task'])) {
+      $keyspace = $object->getKeyspace();
+      $keyspaceProgress = $object->getKeyspaceProgress();
+      
+      if (is_null($aggregateFieldsets) || in_array("dispatched", $aggregateFieldsets['task'])) {
         $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
       }
 
-      if(is_null($aggregateFieldsets) || in_array("searched", $aggregateFieldsets['task'])) {
+      if (is_null($aggregateFieldsets) || in_array("searched", $aggregateFieldsets['task'])) {
         $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
       }
+      
+      if (is_null($aggregateFieldsets) || in_array("status", $aggregateFieldsets['task'])) {
+        $qF1 = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+        $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
+        $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
+        $agg3 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::MAX);
+        $agg4 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::MAX);
+        $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2, $agg3, $agg4]);
 
-      $activeAgents = [];
-      if(is_null($aggregateFieldsets) || in_array("activeAgents", $aggregateFieldsets['task'])) {
-        $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-        $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-        
-        foreach ($chunks as $chunk) {
-          if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
-            $activeAgents[$chunk->getAgentId()] = true;
-          }
-        }
-        
-        $aggregatedData["activeAgents"] = array_keys($activeAgents);
-      }
+        $progress = $results[$agg1->getName()] - $results[$agg2->getName()];
+        $maxTime = max($results[$agg3->getName()], $results[$agg4->getName()]);
 
-      if(is_null($aggregateFieldsets) || in_array("status", $aggregateFieldsets['task'])) {
         //status 1 is running, 2 is idle and 3 is completed
         $status = 2;
+        if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $keyspace || $object->getUsePreprocessor() && $keyspace == DPrince::PRINCE_KEYSPACE)) { 
+          $status = 1;
+        }
+
         if ($keyspaceProgress >= $keyspace && $keyspaceProgress > 0) {
           $status = 3;
         }
-        elseif (count($activeAgents) > 0) {
-          $status = 1;
-        }
-        
+
         $aggregatedData["status"] = $status;
       }
     }

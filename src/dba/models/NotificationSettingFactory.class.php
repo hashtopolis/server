@@ -10,6 +10,10 @@ class NotificationSettingFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "NotificationSetting";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class NotificationSettingFactory extends AbstractModelFactory {
    * @return NotificationSetting
    */
   function createObjectFromDict($pk, $dict): NotificationSetting {
-    return new NotificationSetting($dict['notificationSettingId'], $dict['action'], $dict['objectId'], $dict['notification'], $dict['userId'], $dict['receiver'], $dict['isActive']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new NotificationSetting($dict['notificationsettingid'], $dict['action'], $dict['objectid'], $dict['notification'], $dict['userid'], $dict['receiver'], $dict['isactive']);
   }
   
   /**
@@ -40,7 +49,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
    * @param bool $single
    * @return NotificationSetting|NotificationSetting[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

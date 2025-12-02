@@ -1,15 +1,45 @@
 # Changelog
 
-## v0.14.6 -> vx.x.x
+## v1.0.0-rainbow3 -> v1.0.0-rainbow4
+
+**Bugfixes**
+
+- Fixed status calculation in backend (#1716)
+- Fixed upgrade of agentbinary to new binaryType (#1722)
+
+## v1.0.0-rainbow2 -> v1.0.0-rainbow3
+
+**Enhancements**
+
+- No hard error when permission is missing from includes (#1627)
+
+**Bugfixes**
+
+- Only use the mask as subtask name in supertask import to avoid too long names (#1681)
+- Fixed error in tests by removing deprecated {extension} from new confidence version (#1677)
+
+## v1.0.0-rainbow -> v1.0.0-rainbow2
+
+**Enhancements**
+
+- Return cprogress from TaskExtraDetailHelper, required for frontend's Visual Graph component (#1674)
+
+**Bugfixes**
+
+- Fixed searchHashes helper to return the objects properly (#1662)
+
+## v0.14.6 -> v1.0.0-rainbow
 
 **Enhancements**
 
 - Updated OpenAPI docs to latest API updates
 - Improved version comparison to avoid update script issues
+- Many more enhancements to improve functionality on new frontend
 
 **Bugfixes**
 
 - Fixed missing .htaccess to avoid access to install directory on docker setups
+- Many more bugfixes to work correctly with the new frontend
 
 ## v0.14.5 -> v0.14.6
 

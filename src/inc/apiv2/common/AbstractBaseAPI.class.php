@@ -79,7 +79,9 @@ abstract class AbstractBaseAPI {
   /** @var mixed|null $permissionErrors contained detailed results of last
    * validatePermissions function call
    */
-  private mixed $permissionErrors;
+  protected mixed $permissionErrors = null;
+
+  protected mixed $missing_permissions = [];
   
   /**
    * @var array|null list of model classes which will need to be filtered for public attributes because
@@ -148,10 +150,18 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * Overridable function to aggregate data in the object. Currently only used for Tasks
-   * returns the aggregated data in key value pairs
+   * Overridable function to aggregate data in the object. Used for Tasks and Agents.
+   *
+   * @param object $object The object to aggregate data from.
+   * @param array &$includedData Array passed by reference; implementations can add related resources
+   *   for inclusion in the response by appending to this array.
+   * @return array Aggregated data as key-value pairs.
+   *
+   * Implementations should use $includedData to collect related resources that should be included
+   * in the API response, such as related entities or additional data.
    */
-  public static function aggregateData(object $object, array $sparseFieldsets = null): array {
+  public static function aggregateData(object $object, array &$includedData = [], array $aggregateFieldsets = null): array
+  {
     return [];
   }
   
@@ -551,7 +561,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function obj2Resource(object $obj, array $expandResult = [], array $sparseFieldsets = null, array $aggregateFieldsets = null): array {
+  protected function obj2Resource(object $obj, array &$expandResult = [], array $sparseFieldsets = null, array $aggregateFieldsets = null): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -753,7 +763,7 @@ abstract class AbstractBaseAPI {
    * @throws JsonException
    */
   protected static function ret2json(array $result): string {
-    return json_encode($result, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR) . PHP_EOL;
+    return json_encode($result, JSON_UNESCAPED_SLASHES |  JSON_THROW_ON_ERROR) . PHP_EOL;
   }
   
   /**
@@ -977,9 +987,17 @@ abstract class AbstractBaseAPI {
       array_push($required_perms, ...$expandedPerms);
     }
     $permissionResponse = $this->validatePermissions($required_perms, $permsExpandMatching);
-    if ($permissionResponse === FALSE) {
-      throw new HttpError('Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
+    $expands_to_remove = [];
+
+    // remove expands with missing permissions
+    foreach($this->missing_permissions as $missing_permission) {
+      $expands_to_remove = array_merge($expands_to_remove, $permsExpandMatching[$missing_permission]);
     }
+    $queryExpands = array_diff($queryExpands, $expands_to_remove);
+
+    // if ($permissionResponse === FALSE) {
+    //   throw new HttpError('Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
+    // }
     return $queryExpands;
   }
   
@@ -1034,12 +1052,15 @@ abstract class AbstractBaseAPI {
             if (is_null($value)) {
               throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid boolean value");
             }
+            $value = (int)$value;
             break;
           case 'int':
             $value = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
             if (is_null($value)) {
               throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid integer value");
             }
+            $value = (int)$value;
+            break;
         }
       }
       unset($value);
@@ -1154,8 +1175,59 @@ abstract class AbstractBaseAPI {
     
     return $orderTemplates;
   }
-  
-  
+
+  protected static function addToRelatedResources(array $relatedResources, array $relatedResource): array {
+    $alreadyExists = false;
+    $searchType = $relatedResource["type"];
+    $searchId = $relatedResource["id"];
+    foreach ($relatedResources as $resource) {
+      if ($resource["id"] == $searchId && $resource["type"] == $searchType) {
+        $alreadyExists = true;
+        break;
+      }
+    }
+    if (!$alreadyExists) {
+      $relatedResources[] = $relatedResource;
+    }
+    return $relatedResources;
+  }
+
+  protected function processExpands(
+    object $apiClass,
+    array $expands,
+    object $object,
+    array $expandResult,
+    array $includedResources
+): array {
+    
+    // Add missing expands to expands in case they have been added in aggregateData()
+    $expandKeys = array_keys($expandResult);
+    $diffs = array_diff($expandKeys, $expands);
+    $expands = array_merge($expands, $diffs);
+
+    foreach ($expands as $expand) {
+      if (!array_key_exists($object->getId(), $expandResult[$expand])) {
+          continue;
+      }
+
+      $expandResultObject = $expandResult[$expand][$object->getId()];
+
+      if (is_array($expandResultObject)) {
+        foreach ($expandResultObject as $expandObject) {
+          $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject));
+        }
+      } else {
+          if ($expandResultObject === null) {
+            // to-only relation which is nullable
+            continue;
+          }
+        $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandResultObject));
+      }
+    }
+
+    return $includedResources;
+  }
+
   /**
    * Validate if user is allowed to access hashlist
    * @throws HttpForbidden
@@ -1265,6 +1337,7 @@ abstract class AbstractBaseAPI {
         }
       }
       $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" . join(", ", $required_perms) . "', user_permissions='" . join(", ", $user_available_perms) . "']");
+      $this->missing_permissions = $missing_permissions;
       return FALSE;
     }
     else {
@@ -1430,26 +1503,8 @@ abstract class AbstractBaseAPI {
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object
-      $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
-      
-      // For compound document, included resources
-      foreach ($expands as $expand) {
-        if (array_key_exists($object->getId(), $expandResult[$expand])) {
-          $expandResultObject = $expandResult[$expand][$object->getId()];
-          if (is_array($expandResultObject)) {
-            foreach ($expandResultObject as $expandObject) {
-              $includedResources[] = $apiClass->obj2Resource($expandObject, [], $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
-            }
-          }
-          else {
-            if ($expandResultObject === null) {
-              // to-only relation which is nullable
-              continue;
-            }
-            $includedResources[] = $apiClass->obj2Resource($expandResultObject, [], $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
-          }
-        }
-      }
+x     $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
+      $includedResources = $apiClass->processExpands($apiClass, $expands, $object, $expandResult, $includedResources, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
       
       // Add to result output
       $dataResources[] = $newObject;
@@ -1461,8 +1516,12 @@ abstract class AbstractBaseAPI {
     $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' . $linksQuery : '');
     $links = ["self" => $linksSelf];
     
+    $metaData = [];
+    if ($apiClass->permissionErrors !== null) {
+      $metaData["Include errors"] = $apiClass->permissionErrors;
+    }
     // Generate JSON:API GET output
-    $ret = self::createJsonResponse($dataResources[0], $links, $includedResources);
+    $ret = self::createJsonResponse($dataResources[0], $links, $includedResources, $metaData);
     
     $body = $response->getBody();
     $body->write($apiClass->ret2json($ret));

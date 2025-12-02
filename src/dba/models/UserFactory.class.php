@@ -10,6 +10,10 @@ class UserFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "User";
   }
+
+  function isMapping(): bool {
+    return True;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class UserFactory extends AbstractModelFactory {
    * @return User
    */
   function createObjectFromDict($pk, $dict): User {
-    return new User($dict['userId'], $dict['username'], $dict['email'], $dict['passwordHash'], $dict['passwordSalt'], $dict['isValid'], $dict['isComputedPassword'], $dict['lastLoginDate'], $dict['registeredSince'], $dict['sessionLifetime'], $dict['rightGroupId'], $dict['yubikey'], $dict['otp1'], $dict['otp2'], $dict['otp3'], $dict['otp4']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new User($dict['userid'], $dict['username'], $dict['email'], $dict['passwordhash'], $dict['passwordsalt'], $dict['isvalid'], $dict['iscomputedpassword'], $dict['lastlogindate'], $dict['registeredsince'], $dict['sessionlifetime'], $dict['rightgroupid'], $dict['yubikey'], $dict['otp1'], $dict['otp2'], $dict['otp3'], $dict['otp4']);
   }
   
   /**
@@ -40,7 +49,7 @@ class UserFactory extends AbstractModelFactory {
    * @param bool $single
    * @return User|User[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

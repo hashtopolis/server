@@ -10,6 +10,10 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "AccessGroupAgent";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
    * @return AccessGroupAgent
    */
   function createObjectFromDict($pk, $dict): AccessGroupAgent {
-    return new AccessGroupAgent($dict['accessGroupAgentId'], $dict['accessGroupId'], $dict['agentId']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AccessGroupAgent($dict['accessgroupagentid'], $dict['accessgroupid'], $dict['agentid']);
   }
   
   /**
@@ -40,7 +49,7 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AccessGroupAgent|AccessGroupAgent[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

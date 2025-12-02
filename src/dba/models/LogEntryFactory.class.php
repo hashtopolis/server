@@ -10,6 +10,10 @@ class LogEntryFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "LogEntry";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class LogEntryFactory extends AbstractModelFactory {
    * @return LogEntry
    */
   function createObjectFromDict($pk, $dict): LogEntry {
-    return new LogEntry($dict['logEntryId'], $dict['issuer'], $dict['issuerId'], $dict['level'], $dict['message'], $dict['time']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new LogEntry($dict['logentryid'], $dict['issuer'], $dict['issuerid'], $dict['level'], $dict['message'], $dict['time']);
   }
   
   /**
@@ -40,7 +49,7 @@ class LogEntryFactory extends AbstractModelFactory {
    * @param bool $single
    * @return LogEntry|LogEntry[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

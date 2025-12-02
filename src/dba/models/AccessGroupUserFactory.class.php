@@ -10,6 +10,10 @@ class AccessGroupUserFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "AccessGroupUser";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class AccessGroupUserFactory extends AbstractModelFactory {
    * @return AccessGroupUser
    */
   function createObjectFromDict($pk, $dict): AccessGroupUser {
-    return new AccessGroupUser($dict['accessGroupUserId'], $dict['accessGroupId'], $dict['userId']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AccessGroupUser($dict['accessgroupuserid'], $dict['accessgroupid'], $dict['userid']);
   }
   
   /**
@@ -40,7 +49,7 @@ class AccessGroupUserFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AccessGroupUser|AccessGroupUser[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

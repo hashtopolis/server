@@ -4,9 +4,11 @@ use DBA\Hash;
 use DBA\QueryFilter;
 use DBA\ContainFilter;
 use DBA\OrderFilter;
+use DBA\LimitFilter;
 use DBA\Hashlist;
 use DBA\HashlistHashlist;
 use DBA\HashBinary;
+use DBA\UpdateSet;
 use DBA\User;
 use DBA\File;
 use DBA\JoinFilter;
@@ -21,7 +23,6 @@ use DBA\Zap;
 use DBA\AgentZap;
 use DBA\Factory;
 use DBA\Speed;
-require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class HashlistUtils {
   /**
@@ -197,8 +198,9 @@ class HashlistUtils {
       $size = $hashFactory->countFilter([Factory::FILTER => [$qF1, $qF2]]);
       for ($x = 0; $x * $pagingSize < $size; $x++) {
         $buffer = "";
-        $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ", $pagingSize");
-        $hashes = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+        $oF = new OrderFilter(Hash::HASH_ID, "ASC");
+        $lF = new LimitFilter($pagingSize, $x * $pagingSize);
+        $hashes = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF, Factory::LIMIT => $lF]);
         foreach ($hashes as $hash) {
           $plain = $hash->getPlaintext();
           if (strlen($plain) >= 8 && substr($plain, 0, 5) == "\$HEX[" && substr($plain, strlen($plain) - 1, 1) == "]") {
@@ -490,8 +492,6 @@ class HashlistUtils {
           $ll = Factory::getHashlistFactory()->get($l->getId());
           Factory::getHashlistFactory()->inc($ll, Hashlist::CRACKED, $crackedIn[$ll->getId()]);
         }
-        Factory::getAgentFactory()->getDB()->commit();
-        Factory::getAgentFactory()->getDB()->beginTransaction();
         foreach ($hashlists as $l) {
           $crackedIn[$l->getId()] = 0;
         }
@@ -597,23 +597,8 @@ class HashlistUtils {
     switch ($hashlist->getFormat()) {
       case 0:
         $count = Factory::getHashlistFactory()->countFilter([]);
-        if ($count > 1) {
-          $deleted = 1;
-          $qF = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
-          $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT 20000");
-          while ($deleted > 0) {
-            $result = Factory::getHashFactory()->massDeletion([Factory::FILTER => $qF, Factory::ORDER => $oF]);
-            $deleted = $result->rowCount();
-            Factory::getAgentFactory()->getDB()->commit();
-            Factory::getAgentFactory()->getDB()->beginTransaction();
-          }
-        }
-        else {
-          // in case there is only one hashlist to delete, truncate the Hash table.
-          Factory::getAgentFactory()->getDB()->query("TRUNCATE TABLE Hash");
-          // Make sure that a transaction is active, this is what the rest of the function expects.
-          Factory::getAgentFactory()->getDB()->beginTransaction();
-        }
+        $qF = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
+        Factory::getHashFactory()->massDeletion([Factory::FILTER => $qF]);
         break;
       case 1:
       case 2:
@@ -713,8 +698,9 @@ class HashlistUtils {
     $separator = SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR);
     $numEntries = 0;
     for ($x = 0; $x * $pagingSize < $count; $x++) {
-      $oF = new OrderFilter($orderObject, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
-      $entries = $factory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+      $oF = new OrderFilter($orderObject, "ASC");
+      $lF = new LimitFilter($pagingSize, $x * $pagingSize);
+      $entries = $factory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF, Factory::LIMIT => $lF]);
       $buffer = "";
       foreach ($entries as $entry) {
         switch ($format->getFormat()) {
@@ -797,6 +783,7 @@ class HashlistUtils {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
+    
     $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId(), '', $brainId, $brainFeatures, 0);
     $hashlist = Factory::getHashlistFactory()->save($hashlist);
     
@@ -831,9 +818,9 @@ class HashlistUtils {
     }
     $file = fopen($tmpfile, "rb");
     if (!$file) {
+      Factory::getAgentFactory()->getDB()->rollback();
       throw new HttpError("Failed to open file!");
     }
-    Factory::getAgentFactory()->getDB()->commit();
     $added = 0;
     $preFound = 0;
     
@@ -851,7 +838,6 @@ class HashlistUtils {
           $saltSeparator = "";
         }
         rewind($file);
-        Factory::getAgentFactory()->getDB()->beginTransaction();
         $values = array();
         $bufferCount = 0;
         while (!feof($file)) {
@@ -896,8 +882,6 @@ class HashlistUtils {
           if ($bufferCount >= 10000) {
             $result = Factory::getHashFactory()->massSave($values);
             $added += $result->rowCount();
-            Factory::getAgentFactory()->getDB()->commit();
-            Factory::getAgentFactory()->getDB()->beginTransaction();
             $values = array();
             $bufferCount = 0;
           }
@@ -909,7 +893,6 @@ class HashlistUtils {
         fclose($file);
         unlink($tmpfile);
         Factory::getHashlistFactory()->mset($hashlist, [Hashlist::HASH_COUNT => $added, Hashlist::CRACKED => $preFound]);
-        Factory::getAgentFactory()->getDB()->commit();
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
         
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
@@ -999,6 +982,7 @@ class HashlistUtils {
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
         break;
     }
+    Factory::getAgentFactory()->getDB()->commit();
     return $hashlist;
   }
   
@@ -1102,8 +1086,9 @@ class HashlistUtils {
     }
     $numEntries = 0;
     for ($x = 0; $x * $pagingSize < $count; $x++) {
-      $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
-      $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+      $oF = new OrderFilter(Hash::HASH_ID, "ASC");
+      $lF = new LimitFilter($pagingSize, $x * $pagingSize);
+      $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF, Factory::LIMIT => $lF]);
       $buffer = "";
       foreach ($entries as $entry) {
         $buffer .= $entry->getHash();

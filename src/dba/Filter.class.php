@@ -4,10 +4,11 @@ namespace DBA;
 
 abstract class Filter {
   /**
-   * @param $table string
+   * @param AbstractModelFactory $factory
+   * @param bool $includeTable
    * @return string
    */
-  abstract function getQueryString($table = "");
+  abstract function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string;
   
   abstract function getValue();
   

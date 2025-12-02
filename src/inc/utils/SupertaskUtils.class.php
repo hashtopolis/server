@@ -13,7 +13,6 @@ use DBA\User;
 use DBA\Factory;
 use DBA\File;
 use DBA\FilePretask;
-require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class SupertaskUtils {
   /**
@@ -216,7 +215,7 @@ class SupertaskUtils {
    */
   public static function getPretasksOfSupertask($supertaskId) {
     $oF = new OrderFilter(Pretask::PRIORITY, "DESC", Factory::getPretaskFactory());
-    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertaskId, "=");
+    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertaskId, "=", Factory::getSupertaskPretaskFactory());
     $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
     $joined = Factory::getPretaskFactory()->filter([Factory::ORDER => $oF, Factory::JOIN => $jF, Factory::FILTER => $qF]);
     return $joined[Factory::getPretaskFactory()->getModelName()];
@@ -422,7 +421,7 @@ class SupertaskUtils {
       }
       $cmd = str_replace("COMMA_PLACEHOLDER", "\\,", $cmd);
       $cmd = str_replace("HASH_PLACEHOLDER", "\\#", $cmd);
-      $preTaskName = implode(",", $mask);
+      $preTaskName = $pattern;
       $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
       $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
       
