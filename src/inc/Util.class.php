@@ -216,7 +216,16 @@ class Util {
         if (!$silent) {
           echo "update $type version... ";
         }
-        Factory::getAgentBinaryFactory()->set($binary, AgentBinary::VERSION, $version);
+
+        $query = "UPDATE " . $agentBinaryFactory->getModelTable() . " SET " . AgentBinary::VERSION . "=?";
+        
+        $values = [];
+        $query = $query . " WHERE " . $binary->getPrimaryKey() . "=?";
+        $values[] = $version;
+        $values[] = $binary->getPrimaryKeyValue();
+        
+        $stmt = $dbh->prepare($query);
+        $stmt->execute($values);
         if (!$silent) {
           echo "OK";
         }
