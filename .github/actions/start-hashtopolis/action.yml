@@ -6,6 +6,9 @@ inputs:
     description: "Used to set which DB system should be used"
     required: true
     default: "mysql"
+    options:
+      - "mysql"
+      - "postgres"
 
 runs:
   using: "composite"
