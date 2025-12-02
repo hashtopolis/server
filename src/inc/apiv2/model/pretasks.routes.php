@@ -68,6 +68,8 @@ class PreTaskAPI extends AbstractModelAPI {
     return [
       Pretask::ATTACK_CMD => fn($value) => PretaskUtils::changeAttack($id, $value),
       Pretask::COLOR => fn($value) => PretaskUtils::setColor($id, $value),
+      Pretask::TASK_NAME => fn($value) => PretaskUtils::renamePretask($id, $value),
+      Pretask::MAX_AGENTS => fn($value) => PretaskUtils::setMaxAgents($id, $value),
     ];
   }
   
