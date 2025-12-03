@@ -1,5 +1,4 @@
 click
 click_log
-confidence==0.17
 pytest
-tuspy
+git+https://github.com/hashtopolis/hashtopolis-pylib.git
