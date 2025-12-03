@@ -21,8 +21,8 @@ class AccessGroup extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['accessGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "accessGroupId", "public" => False];
-    $dict['groupName'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "groupName", "public" => False];
+    $dict['accessGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "accessGroupId", "public" => False, "dba_mapping" => False];
+    $dict['groupName'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "groupName", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }

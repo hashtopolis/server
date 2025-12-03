@@ -3,38 +3,44 @@
 namespace DBA;
 
 class ComparisonFilter extends Filter {
-  private $key1;
-  private $key2;
-  private $operator;
+  private string $key1;
+  private string $key2;
+  private string $operator;
   
   /**
    * @var AbstractModelFactory
    */
   private $overrideFactory;
   
-  function __construct($key1, $key2, $operator, $overrideFactory = null) {
+  function __construct(string $key1, string $key2, string $operator, AbstractModelFactory $overrideFactory = null) {
     $this->key1 = $key1;
     $this->key2 = $key2;
     $this->operator = $operator;
     $this->overrideFactory = $overrideFactory;
   }
   
-  function getQueryString($table = "") {
-    if ($table != "") {
-      $table = $table . ".";
-    }
+  /**
+   * @param AbstractModelFactory $factory
+   * @param bool $includeTable
+   * @return string
+   */
+  function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
     if ($this->overrideFactory != null) {
-      $table = $this->overrideFactory->getModelTable() . ".";
+      $factory = $this->overrideFactory;
+    }
+    $table = "";
+    if ($includeTable) {
+      $table = $factory->getMappedModelTable() . ".";
     }
     
-    return $table . $this->key1 . $this->operator . $table . $this->key2;
+    return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key1) . $this->operator . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key2);
   }
   
   function getValue() {
     return null;
   }
   
-  function getHasValue() {
+  function getHasValue(): bool {
     return false;
   }
 }

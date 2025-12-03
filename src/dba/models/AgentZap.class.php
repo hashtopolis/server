@@ -24,9 +24,9 @@ class AgentZap extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['agentZapId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentZapId", "public" => False];
-    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId", "public" => False];
-    $dict['lastZapId'] = ['read_only' => True, "type" => "str(128)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastZapId", "public" => False];
+    $dict['agentZapId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentZapId", "public" => False, "dba_mapping" => False];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId", "public" => False, "dba_mapping" => False];
+    $dict['lastZapId'] = ['read_only' => True, "type" => "str(128)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastZapId", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }

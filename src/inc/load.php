@@ -33,6 +33,7 @@ require_once(dirname(__FILE__) . "/handlers/Handler.class.php");
 require_once(dirname(__FILE__) . "/notifications/Notification.class.php");
 require_once(dirname(__FILE__) . "/api/APIBasic.class.php");
 require_once(dirname(__FILE__) . "/user-api/UserAPIBasic.class.php");
+require_once(dirname(__FILE__) . "/apiv2/common/ErrorHandler.class.php");
 $directories = array('handlers', 'api', 'defines', 'utils', 'notifications', 'user-api');
 foreach ($directories as $directory) {
   $dir = scandir(dirname(__FILE__) . "/$directory/");
@@ -67,7 +68,7 @@ if (Factory::getUserFactory()->getDB(true) === null) {
   die("Database connection failed!");
 }
 try {
-  Factory::getUserFactory()->filter([], true);
+  Factory::getAgentFactory()->filter([], true);
 }
 catch (PDOException $e) {
   $query = file_get_contents(dirname(__FILE__) . "/../install/hashtopolis.sql");
@@ -128,7 +129,7 @@ catch (PDOException $e) {
   $newHash = password_hash($CIPHER, PASSWORD_BCRYPT, $options);
   
   $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
-  Factory::getUserFactory()->save($user);
+  $user = Factory::getUserFactory()->save($user);
   
   // create default group
   $group = AccessUtils::getOrCreateDefaultAccessGroup();

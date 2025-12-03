@@ -10,6 +10,10 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "CrackerBinaryType";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
    * @return CrackerBinaryType
    */
   function createObjectFromDict($pk, $dict): CrackerBinaryType {
-    return new CrackerBinaryType($dict['crackerBinaryTypeId'], $dict['typeName'], $dict['isChunkingAvailable']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new CrackerBinaryType($dict['crackerbinarytypeid'], $dict['typename'], $dict['ischunkingavailable']);
   }
   
   /**
@@ -40,7 +49,7 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
    * @param bool $single
    * @return CrackerBinaryType|CrackerBinaryType[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

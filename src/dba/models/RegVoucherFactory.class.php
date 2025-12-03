@@ -10,6 +10,10 @@ class RegVoucherFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "RegVoucher";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class RegVoucherFactory extends AbstractModelFactory {
    * @return RegVoucher
    */
   function createObjectFromDict($pk, $dict): RegVoucher {
-    return new RegVoucher($dict['regVoucherId'], $dict['voucher'], $dict['time']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new RegVoucher($dict['regvoucherid'], $dict['voucher'], $dict['time']);
   }
   
   /**
@@ -40,7 +49,7 @@ class RegVoucherFactory extends AbstractModelFactory {
    * @param bool $single
    * @return RegVoucher|RegVoucher[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

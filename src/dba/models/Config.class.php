@@ -27,10 +27,10 @@ class Config extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['configId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "configId", "public" => False];
-    $dict['configSectionId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "configSectionId", "public" => False];
-    $dict['item'] = ['read_only' => False, "type" => "str(128)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "item", "public" => False];
-    $dict['value'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "value", "public" => False];
+    $dict['configId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "configId", "public" => False, "dba_mapping" => False];
+    $dict['configSectionId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "configSectionId", "public" => False, "dba_mapping" => False];
+    $dict['item'] = ['read_only' => False, "type" => "str(128)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "item", "public" => False, "dba_mapping" => False];
+    $dict['value'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "value", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }

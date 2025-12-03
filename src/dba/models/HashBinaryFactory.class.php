@@ -10,6 +10,10 @@ class HashBinaryFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "HashBinary";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class HashBinaryFactory extends AbstractModelFactory {
    * @return HashBinary
    */
   function createObjectFromDict($pk, $dict): HashBinary {
-    return new HashBinary($dict['hashBinaryId'], $dict['hashlistId'], $dict['essid'], $dict['hash'], $dict['plaintext'], $dict['timeCracked'], $dict['chunkId'], $dict['isCracked'], $dict['crackPos']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new HashBinary($dict['hashbinaryid'], $dict['hashlistid'], $dict['essid'], $dict['hash'], $dict['plaintext'], $dict['timecracked'], $dict['chunkid'], $dict['iscracked'], $dict['crackpos']);
   }
   
   /**
@@ -40,7 +49,7 @@ class HashBinaryFactory extends AbstractModelFactory {
    * @param bool $single
    * @return HashBinary|HashBinary[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

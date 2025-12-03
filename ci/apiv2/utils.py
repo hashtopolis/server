@@ -37,7 +37,7 @@ from hashtopolis_agent import DummyAgent
 
 def _do_create_obj_from_file(model_class, file_prefix, extra_payload={}, **kwargs):
     file_id = kwargs.get('file_id') or '001'
-    p = Path(__file__).parent.joinpath(f'{file_prefix}_{file_id}.json')
+    p = Path(__file__).parent.joinpath(f'testfiles/{model_class.__name__.lower()}/{file_prefix}_{file_id}.json')
     payload = json.loads(p.read_text('UTF-8'))
     final_payload = {**payload, **extra_payload}
     obj = model_class(**final_payload)

@@ -10,6 +10,10 @@ class ZapFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "Zap";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class ZapFactory extends AbstractModelFactory {
    * @return Zap
    */
   function createObjectFromDict($pk, $dict): Zap {
-    return new Zap($dict['zapId'], $dict['hash'], $dict['solveTime'], $dict['agentId'], $dict['hashlistId']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Zap($dict['zapid'], $dict['hash'], $dict['solvetime'], $dict['agentid'], $dict['hashlistid']);
   }
   
   /**
@@ -40,7 +49,7 @@ class ZapFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Zap|Zap[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

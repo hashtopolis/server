@@ -160,7 +160,7 @@ abstract class AbstractBaseAPI {
    * Implementations should use $includedData to collect related resources that should be included
    * in the API response, such as related entities or additional data.
    */
-  public static function aggregateData(object $object, array &$includedData=[]): array
+  public static function aggregateData(object $object, array &$includedData = [], array $aggregateFieldsets = null): array
   {
     return [];
   }
@@ -561,7 +561,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function obj2Resource(object $obj, array &$expandResult = []): array {
+  protected function obj2Resource(object $obj, array &$expandResult = [], array $sparseFieldsets = null, array $aggregateFieldsets = null): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -571,6 +571,11 @@ abstract class AbstractBaseAPI {
     
     $attributes = [];
     $relationships = [];
+
+    $sparseFieldsetsForObj = null;
+    if (is_array($sparseFieldsets) && array_key_exists($this->getObjectTypeName($obj), $sparseFieldsets)) {
+      $sparseFieldsetsForObj = explode(",", $sparseFieldsets[$this->getObjectTypeName($obj)]);
+    }
     
     /* Collect attributes */
     foreach ($features as $name => $feature) {
@@ -579,6 +584,12 @@ abstract class AbstractBaseAPI {
       if ($feature['private'] === true) {
         continue;
       }
+
+      // If sparse fieldsets (https://jsonapi.org/format/#fetching-sparse-fieldsets) is used, return only the requested data
+      if (is_array($sparseFieldsetsForObj) && !in_array($feature['alias'], $sparseFieldsetsForObj)) {
+        continue;
+      }
+
       // Hide the primaryKey from the attributes since this is used as indentifier (id) in response
       if ($feature['pk'] === true) {
         continue;
@@ -590,9 +601,8 @@ abstract class AbstractBaseAPI {
       
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
-    
-    //TODO: only aggregate data when it has been included
-    $aggregatedData = $apiClass::aggregateData($obj, $expandResult);
+
+    $aggregatedData = $apiClass::aggregateData($obj, $expandResult, $aggregateFieldsets);
     $attributes = array_merge($attributes, $aggregatedData);
     
     /* Build JSON::API relationship resource */
@@ -1042,12 +1052,15 @@ abstract class AbstractBaseAPI {
             if (is_null($value)) {
               throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid boolean value");
             }
+            $value = (int)$value;
             break;
           case 'int':
             $value = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
             if (is_null($value)) {
               throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid integer value");
             }
+            $value = (int)$value;
+            break;
         }
       }
       unset($value);
@@ -1184,7 +1197,9 @@ abstract class AbstractBaseAPI {
     array $expands,
     object $object,
     array $expandResult,
-    array $includedResources
+    array $includedResources,
+    array $sparseFieldsets = null,
+    array $aggregateFieldsets = null
 ): array {
     
     // Add missing expands to expands in case they have been added in aggregateData()
@@ -1201,14 +1216,16 @@ abstract class AbstractBaseAPI {
 
       if (is_array($expandResultObject)) {
         foreach ($expandResultObject as $expandObject) {
-          $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject));
+          $noFurtherExpands = [];
+          $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject, $noFurtherExpands, $sparseFieldsets, $aggregateFieldsets));
         }
       } else {
           if ($expandResultObject === null) {
             // to-only relation which is nullable
             continue;
           }
-        $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandResultObject));
+        $noFurtherExpands = [];
+        $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandResultObject, $noFurtherExpands, $sparseFieldsets, $aggregateFieldsets));
       }
     }
 
@@ -1490,8 +1507,8 @@ abstract class AbstractBaseAPI {
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object
-      $newObject = $apiClass->obj2Resource($object, $expandResult);
-      $includedResources = $apiClass->processExpands($apiClass, $expands, $object, $expandResult, $includedResources);
+      $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
+      $includedResources = $apiClass->processExpands($apiClass, $expands, $object, $expandResult, $includedResources, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
       
       // Add to result output
       $dataResources[] = $newObject;

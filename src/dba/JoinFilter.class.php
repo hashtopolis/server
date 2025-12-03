@@ -40,7 +40,7 @@ class JoinFilter extends Join {
     $this->match1 = $matching1;
     $this->match2 = $matching2;
     
-    $this->otherTableName = $this->otherFactory->getModelTable();
+    $this->otherTableName = $this->otherFactory->getMappedModelTable();
     $this->overrideOwnFactory = $overrideOwnFactory;
   }
   

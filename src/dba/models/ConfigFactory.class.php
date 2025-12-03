@@ -10,6 +10,10 @@ class ConfigFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "Config";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class ConfigFactory extends AbstractModelFactory {
    * @return Config
    */
   function createObjectFromDict($pk, $dict): Config {
-    return new Config($dict['configId'], $dict['configSectionId'], $dict['item'], $dict['value']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Config($dict['configid'], $dict['configsectionid'], $dict['item'], $dict['value']);
   }
   
   /**
@@ -40,7 +49,7 @@ class ConfigFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Config|Config[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

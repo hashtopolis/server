@@ -10,6 +10,10 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "SupertaskPretask";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
    * @return SupertaskPretask
    */
   function createObjectFromDict($pk, $dict): SupertaskPretask {
-    return new SupertaskPretask($dict['supertaskPretaskId'], $dict['supertaskId'], $dict['pretaskId']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new SupertaskPretask($dict['supertaskpretaskid'], $dict['supertaskid'], $dict['pretaskid']);
   }
   
   /**
@@ -40,7 +49,7 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
    * @param bool $single
    * @return SupertaskPretask|SupertaskPretask[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

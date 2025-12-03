@@ -162,37 +162,56 @@ class TaskAPI extends AbstractModelAPI {
   }
   
   //TODO make aggregate data queryable and not included by default
-  static function aggregateData(object $object, array &$included_data = []): array {
-    $qF = new QueryFilter(Assignment::TASK_ID, $object->getId(), "=");
-    $activeAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
-    $aggregatedData["activeAgents"] = $activeAgents;
-
-    $keyspace = $object->getKeyspace();
-    $keyspaceProgress = $object->getKeyspaceProgress();
+  static function aggregateData(object $object, array &$included_data = [], array $aggregateFieldsets = null): array {
+    $aggregatedData = [];
     
-    $qF1 = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-    $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
-    $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
-    $agg3 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::MAX);
-    $agg4 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::MAX);
-    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2, $agg3, $agg4]);
+    if (is_null($aggregateFieldsets) || (is_array($aggregateFieldsets) && array_key_exists('task', $aggregateFieldsets))) {
+      if (!is_null($aggregateFieldsets)) {
+        $aggregateFieldsets['task'] = explode(",", $aggregateFieldsets['task']);
+      }
+      
+      $activeAgents = [];
+      if (is_null($aggregateFieldsets) || in_array("activeAgents", $aggregateFieldsets['task'])) {
+        $qF = new QueryFilter(Assignment::TASK_ID, $object->getId(), "=");
+        $activeAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
+        $aggregatedData["activeAgents"] = $activeAgents;
+      }
 
-    $progress = $results[$agg1->getName()] - $results[$agg2->getName()];
-    $maxTime = max($results[$agg3->getName()], $results[$agg4->getName()]);
+      $keyspace = $object->getKeyspace();
+      $keyspaceProgress = $object->getKeyspaceProgress();
+      
+      if (is_null($aggregateFieldsets) || in_array("dispatched", $aggregateFieldsets['task'])) {
+        $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
+      }
 
-    //status 1 is running, 2 is idle and 3 is completed
-    $status = 2;
-    if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $object->getKeyspace() || $object->getUsePreprocessor() && $object->getKeyspace() == DPrince::PRINCE_KEYSPACE)) { 
-      $status = 1;
+      if (is_null($aggregateFieldsets) || in_array("searched", $aggregateFieldsets['task'])) {
+        $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
+      }
+      
+      if (is_null($aggregateFieldsets) || in_array("status", $aggregateFieldsets['task'])) {
+        $qF1 = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+        $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
+        $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
+        $agg3 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::MAX);
+        $agg4 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::MAX);
+        $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2, $agg3, $agg4]);
+
+        $progress = $results[$agg1->getName()] - $results[$agg2->getName()];
+        $maxTime = max($results[$agg3->getName()], $results[$agg4->getName()]);
+
+        //status 1 is running, 2 is idle and 3 is completed
+        $status = 2;
+        if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $keyspace || $object->getUsePreprocessor() && $keyspace == DPrince::PRINCE_KEYSPACE)) { 
+          $status = 1;
+        }
+
+        if ($keyspaceProgress >= $keyspace && $keyspaceProgress > 0) {
+          $status = 3;
+        }
+
+        $aggregatedData["status"] = $status;
+      }
     }
-    $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
-    $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
-    
-    if ($keyspaceProgress >= $keyspace && $keyspaceProgress > 0) {
-      $status = 3;
-    }
-    
-    $aggregatedData["status"] = $status;
     
     return $aggregatedData;
   }

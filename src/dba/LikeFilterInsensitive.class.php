@@ -8,30 +8,31 @@ class LikeFilterInsensitive extends Filter {
   /**
    * @var AbstractModelFactory
    */
-  private $factory;
+  private $overrideFactory;
   
-  function __construct($key, $value, $factory = null) {
+  function __construct($key, $value, $overrideFactory = null) {
     $this->key = $key;
     $this->value = $value;
-    $this->factory = $factory;
+    $this->overrideFactory = $overrideFactory;
   }
   
-  function getQueryString($table = "") {
-    if ($table != "") {
-      $table = $table . ".";
+  function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
+    if ($this->overrideFactory != null) {
+      $factory = $this->overrideFactory;
     }
-    if ($this->factory != null) {
-      $table = $this->factory->getModelTable() . ".";
+    $table = "";
+    if ($includeTable) {
+      $table = $factory->getMappedModelTable() . ".";
     }
     
-    return "LOWER(" . $table . $this->key . ") LIKE LOWER(?)";
+    return "LOWER(" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(),$this->key) . ") LIKE LOWER(?)";
   }
   
   function getValue() {
     return $this->value;
   }
   
-  function getHasValue() {
+  function getHasValue(): bool {
     return true;
   }
 }
