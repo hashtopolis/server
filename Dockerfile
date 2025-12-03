@@ -130,8 +130,9 @@ RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
 RUN apt-get update \
     && apt-get install -y python3 python3-pip python3-requests python3-pytest
 
-#TODO: Should source from ./ci/apiv2/requirements.txt
-RUN pip3 install click click_log confidence pytest tuspy --break-system-packages
+# install dependencies from ./ci/apiv2/requirements.txt
+COPY ./ci/apiv2/requirements.txt /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt --break-system-packages
 
 # Adding VSCode user and fixing permissions
 RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \
