@@ -120,7 +120,9 @@ class UserAPI extends AbstractModelAPI {
   protected function getUpdateHandlers($id, $current_user): array {
     return [
       User::RIGHT_GROUP_ID => fn($value) => UserUtils::setRights($id, $value, $current_user),
-      User::IS_VALID => fn($value) => $this->toggleValidityUser($id, $value, $current_user)
+      User::IS_VALID => fn($value) => $this->toggleValidityUser($id, $value, $current_user),
+      User::EMAIL => fn($value) => AccountUtils::setEmail($value, UserUtils::getUser($id)),
+      User::SESSION_LIFETIME => fn($value) => AccountUtils::updateSessionLifetime($value, UserUtils::getUser($id)),
     ];
   }
   
