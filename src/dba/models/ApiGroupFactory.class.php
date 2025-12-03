@@ -10,6 +10,10 @@ class ApiGroupFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "ApiGroup";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class ApiGroupFactory extends AbstractModelFactory {
    * @return ApiGroup
    */
   function createObjectFromDict($pk, $dict): ApiGroup {
-    return new ApiGroup($dict['apiGroupId'], $dict['permissions'], $dict['name']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new ApiGroup($dict['apigroupid'], $dict['permissions'], $dict['name']);
   }
   
   /**
@@ -40,7 +49,7 @@ class ApiGroupFactory extends AbstractModelFactory {
    * @param bool $single
    * @return ApiGroup|ApiGroup[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

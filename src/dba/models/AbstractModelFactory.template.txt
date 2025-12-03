@@ -10,6 +10,10 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
   function getModelTable(): string {
     return "__MODEL_NAME__";
   }
+
+  function isMapping(): bool {
+    return __MODEL_DBA_MAPPING__;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,6 +36,11 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
    * @return __MODEL_NAME__
    */
   function createObjectFromDict($pk, $dict): __MODEL_NAME__ {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;__MODEL_MAPPING_DICT__
     return new __MODEL_NAME__(__MODEL__DICT2__);
   }
   
@@ -40,7 +49,7 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
    * @param bool $single
    * @return __MODEL_NAME__|__MODEL_NAME__[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

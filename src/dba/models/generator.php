@@ -279,7 +279,7 @@ $CONF['HealthCheckAgent'] = [
     ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'numGpus', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'start', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'end', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'end', 'read_only' => True, 'type' => 'int64', 'protected' => True, 'dba_mapping' => True],
     ['name' => 'errors', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
   ],
 ];
@@ -445,6 +445,7 @@ $CONF['User'] = [
     ['name' => 'otp3', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
     ['name' => 'otp4', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
   ],
+  "dba_mapping" => True,
 ];
 $CONF['Zap'] = [
   'columns' => [
@@ -568,7 +569,8 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
       '"protected" => ' . (array_key_exists("protected", $COLUMN) ? ($COLUMN['protected'] ? 'True' : 'False') : 'False') . ', ' .
       '"private" => ' . (array_key_exists("private", $COLUMN) ? ($COLUMN['private'] ? 'True' : 'False') : 'False') . ', ' .
       '"alias" => "' . (array_key_exists("alias", $COLUMN) ? $COLUMN['alias'] : $COLUMN['name']) . '", ' .
-      '"public" => ' . (array_key_exists("public", $COLUMN) ? ($COLUMN['public'] ? 'True' : 'False') : 'False') .
+      '"public" => ' . (array_key_exists("public", $COLUMN) ? ($COLUMN['public'] ? 'True' : 'False') : 'False') . ', ' .
+      '"dba_mapping" => ' . (array_key_exists("dba_mapping", $COLUMN) ? ($COLUMN['dba_mapping'] ? 'True' : 'False') : 'False') .
       '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
     $variables[] = "const " . makeConstant($col) . " = \"$col\";";
@@ -593,10 +595,12 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModelFactory.template.txt");
   $class = str_replace("__MODEL_NAME__", $NAME, $class);
-  $dict = array();
-  $dict2 = array();
+  $class = str_replace("__MODEL_DBA_MAPPING__", (array_key_exists("dba_mapping", $MODEL_CONF) ? ($MODEL_CONF['dba_mapping'] ? 'True' : 'False') : 'False'), $class);
+  $dict = [];
+  $dict2 = [];
+  $mapping = [];
   foreach ($COLUMNS as $COLUMN) {
-    $col = $COLUMN['name'];
+    $col = strtolower($COLUMN['name']);
     if (sizeof($dict) == 0) {
       $dict[] = "-1";
       $dict2[] = "\$dict['$col']";
@@ -604,10 +608,19 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
     else {
       $dict[] = "null";
       $dict2[] = "\$dict['$col']";
+      if (array_key_exists("dba_mapping", $COLUMN) && $COLUMN['dba_mapping']) {
+        $mapping[] = "\$dict['$col'] = \$dict['htp_$col'];";
+      }
     }
   }
   $class = str_replace("__MODEL_DICT__", implode(", ", $dict), $class);
   $class = str_replace("__MODEL__DICT2__", implode(", ", $dict2), $class);
+  if (count($mapping) > 0) {
+    $class = str_replace("__MODEL_MAPPING_DICT__", "\n    " . implode("\n    ", $mapping), $class);
+  }
+  else {
+    $class = str_replace("__MODEL_MAPPING_DICT__", "", $class);
+  }
   
   file_put_contents(dirname(__FILE__) . "/" . $NAME . "Factory.class.php", $class);
 }

@@ -1,5 +1,6 @@
 <?php
 
+use DBA\UpdateSet;
 use DBA\User;
 use DBA\QueryFilter;
 use DBA\AccessGroupUser;
@@ -7,7 +8,6 @@ use DBA\Session;
 use DBA\NotificationSetting;
 use DBA\Agent;
 use DBA\Factory;
-require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 
 class UserUtils {
   /**

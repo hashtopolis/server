@@ -10,6 +10,10 @@ class AgentStatFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "AgentStat";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class AgentStatFactory extends AbstractModelFactory {
    * @return AgentStat
    */
   function createObjectFromDict($pk, $dict): AgentStat {
-    return new AgentStat($dict['agentStatId'], $dict['agentId'], $dict['statType'], $dict['time'], $dict['value']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AgentStat($dict['agentstatid'], $dict['agentid'], $dict['stattype'], $dict['time'], $dict['value']);
   }
   
   /**
@@ -40,7 +49,7 @@ class AgentStatFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AgentStat|AgentStat[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

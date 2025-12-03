@@ -1,3 +1,7 @@
+FROM rust:1.91-trixie AS prebuild
+
+RUN cargo install sqlx-cli --no-default-features --features native-tls,mysql,postgres
+
 FROM alpine/git AS preprocess
 
 COPY .gi[t] /.git
@@ -6,7 +10,7 @@ RUN cd / && git rev-parse --short HEAD > /HEAD; exit 0
 
 # BASE image
 # ----BEGIN----
-FROM php:8-apache AS hashtopolis-server-base
+FROM php:8.4-apache AS hashtopolis-server-base
 
 # Enable possible build args for injecting user commands
 ARG CONTAINER_USER_CMD_PRE
@@ -37,12 +41,12 @@ RUN apt-get update \
     #
     # Install git, procps, lsb-release (useful for CLI installs)
     && apt-get -y install git iproute2 procps lsb-release \
-    && apt-get -y install mariadb-client \
+    && apt-get -y install mariadb-client postgresql-client libpq-dev \
     && apt-get -y install libpng-dev \
     && apt-get -y install ssmtp \
     \
     # Install extensions (optional)
-    && docker-php-ext-install pdo_mysql gd \
+    && docker-php-ext-install pdo_mysql pgsql pdo_pgsql gd \
     \
     # Install Composer
     && curl -sS https://getcomposer.org/installer | php \
@@ -82,6 +86,8 @@ RUN mkdir -p ${HASHTOPOLIS_DOCUMENT_ROOT} \
     && chown www-data:www-data ${HASHTOPOLIS_BINARIES_PATH} \
     && chmod g+w ${HASHTOPOLIS_BINARIES_PATH}
 
+COPY --from=prebuild /usr/local/cargo/bin/sqlx /usr/bin/
+
 COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 
 # Install composer
@@ -104,7 +110,7 @@ ENTRYPOINT [ "docker-entrypoint.sh" ]
 FROM hashtopolis-server-base AS hashtopolis-server-dev
 
 # Setting up development requirements, install xdebug
-RUN yes | pecl install xdebug-3.4.0beta1 && docker-php-ext-enable xdebug \
+RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.mode = debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.start_with_request = yes" >> /usr/local/etc/php/conf.d/xdebug.ini \

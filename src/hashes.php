@@ -195,7 +195,7 @@ UI::add('nextPage', $nextPage);
 UI::add('previousPage', $previousPage);
 UI::add('currentPage', $currentPage);
 
-$oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
+$oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE)) . " OFFSET " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage));
 $hashes = $hashFactory->filter([Factory::FILTER => $queryFilters, Factory::ORDER => $oF]);
 
 if (isset($_GET['crackpos']) && $_GET['crackpos'] == 'true') {

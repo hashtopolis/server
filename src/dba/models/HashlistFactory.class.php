@@ -10,6 +10,10 @@ class HashlistFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "Hashlist";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class HashlistFactory extends AbstractModelFactory {
    * @return Hashlist
    */
   function createObjectFromDict($pk, $dict): Hashlist {
-    return new Hashlist($dict['hashlistId'], $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['isSecret'], $dict['hexSalt'], $dict['isSalted'], $dict['accessGroupId'], $dict['notes'], $dict['brainId'], $dict['brainFeatures'], $dict['isArchived']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Hashlist($dict['hashlistid'], $dict['hashlistname'], $dict['format'], $dict['hashtypeid'], $dict['hashcount'], $dict['saltseparator'], $dict['cracked'], $dict['issecret'], $dict['hexsalt'], $dict['issalted'], $dict['accessgroupid'], $dict['notes'], $dict['brainid'], $dict['brainfeatures'], $dict['isarchived']);
   }
   
   /**
@@ -40,7 +49,7 @@ class HashlistFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Hashlist|Hashlist[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

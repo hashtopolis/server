@@ -10,6 +10,10 @@ class FileDownloadFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "FileDownload";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class FileDownloadFactory extends AbstractModelFactory {
    * @return FileDownload
    */
   function createObjectFromDict($pk, $dict): FileDownload {
-    return new FileDownload($dict['fileDownloadId'], $dict['time'], $dict['fileId'], $dict['status']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new FileDownload($dict['filedownloadid'], $dict['time'], $dict['fileid'], $dict['status']);
   }
   
   /**
@@ -40,7 +49,7 @@ class FileDownloadFactory extends AbstractModelFactory {
    * @param bool $single
    * @return FileDownload|FileDownload[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

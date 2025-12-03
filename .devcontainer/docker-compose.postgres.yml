@@ -9,6 +9,7 @@ services:
         - CONTAINER_USER_CMD_PRE
         - CONTAINER_USER_CMD_POST
     environment:
+      HASHTOPOLIS_DB_TYPE: postgres
       HASHTOPOLIS_DB_USER: hashtopolis
       HASHTOPOLIS_DB_PASS: hashtopolis
       HASHTOPOLIS_DB_HOST: hashtopolis-db-dev
@@ -27,19 +28,19 @@ services:
       - hashtopolis_dev
   hashtopolis-db-dev:
     container_name: hashtopolis-db-dev
-    image: mysql:8.0
+    image: postgres:13
     restart: always
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - hashtopolis-db-dev:/var/lib/mysql
+      - hashtopolis-db-dev:/var/lib/postgresql/data
     environment:
-      MYSQL_ROOT_PASSWORD: hashtopolis
-      MYSQL_DATABASE: hashtopolis
-      MYSQL_USER: hashtopolis
-      MYSQL_PASSWORD: hashtopolis
+      POSTGRES_DB: hashtopolis
+      POSTGRES_USER: hashtopolis
+      POSTGRES_PASSWORD: hashtopolis
     networks:
       - hashtopolis_dev
+
 volumes:
   hashtopolis-db-dev:
   hashtopolis-server-dev:

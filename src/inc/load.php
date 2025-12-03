@@ -33,6 +33,7 @@ require_once(dirname(__FILE__) . "/handlers/Handler.class.php");
 require_once(dirname(__FILE__) . "/notifications/Notification.class.php");
 require_once(dirname(__FILE__) . "/api/APIBasic.class.php");
 require_once(dirname(__FILE__) . "/user-api/UserAPIBasic.class.php");
+require_once(dirname(__FILE__) . "/apiv2/common/ErrorHandler.class.php");
 $directories = array('handlers', 'api', 'defines', 'utils', 'notifications', 'user-api');
 foreach ($directories as $directory) {
   $dir = scandir(dirname(__FILE__) . "/$directory/");
@@ -66,13 +67,28 @@ if (Factory::getUserFactory()->getDB(true) === null) {
   //connection not valid
   die("Database connection failed!");
 }
+$initialSetup = false;
 try {
-  Factory::getUserFactory()->filter([], true);
+  Factory::getAgentFactory()->filter([], true);
 }
 catch (PDOException $e) {
-  $query = file_get_contents(dirname(__FILE__) . "/../install/hashtopolis.sql");
-  Factory::getAgentFactory()->getDB()->query($query);
-  
+  // initial setup, run only on the very first time
+  // the boolean is stored to later when the database is migrated, some initial queries can be done
+  $initialSetup = true;
+}
+
+// this only needs to be present for the very first upgrade from non-migration to migrations to make sure the last updates are executed before migration
+if (!$initialSetup && DBA_TYPE == "mysql" && !Util::databaseTableExists("_sqlx_migrations")) {
+  include(dirname(__FILE__) . "/../install/updates/update.php");
+}
+
+$database_uri = DBA_TYPE . "://" . DBA_USER . ":" . DBA_PASS . "@" . DBA_SERVER . ":" . DBA_PORT . "/" . DBA_DB;
+exec('/usr/bin/sqlx migrate run --source ' . dirname(__FILE__) . '/../migrations/' . DBA_TYPE . '/ -D ' . $database_uri, $output, $retval);
+if ($retval !== 0) {
+  die("Failed to run migrations: \n" . implode("\n", $output));
+}
+
+if ($initialSetup === true) {
   // determine the base url
   $baseUrl = explode("/", $_SERVER['REQUEST_URI']);
   unset($baseUrl[sizeof($baseUrl) - 1]);
@@ -128,7 +144,7 @@ catch (PDOException $e) {
   $newHash = password_hash($CIPHER, PASSWORD_BCRYPT, $options);
   
   $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
-  Factory::getUserFactory()->save($user);
+  $user = Factory::getUserFactory()->save($user);
   
   // create default group
   $group = AccessUtils::getOrCreateDefaultAccessGroup();
@@ -158,22 +174,6 @@ else {
   UI::add('toggledarkmode', 0);
 }
 
-$updateExecuted = false;
-// check if update is needed
-// (note if the version was retrieved with git, but the git folder was removed, smaller updates are not recognized because the build value is missing)
-$storedVersion = Factory::getStoredValueFactory()->get("version");
-if ($storedVersion == null || $storedVersion->getVal() != explode("+", $VERSION)[0] && file_exists(dirname(__FILE__) . "/../install/updates/update.php")) {
-  include(dirname(__FILE__) . "/../install/updates/update.php");
-  $updateExecuted = $upgradePossible;
-}
-else { // in case it is not a version upgrade, but the person retrieved a new version via git or copying
-  $storedBuild = Factory::getStoredValueFactory()->get("build");
-  if ($storedBuild == null || ($BUILD != 'repository' && $storedBuild->getVal() != $BUILD) || ($BUILD == 'repository' && strlen(Util::getGitCommit(true)) > 0 && $storedBuild->getVal() != Util::getGitCommit(true)) && file_exists(dirname(__FILE__) . "/../install/updates/update.php")) {
-    include(dirname(__FILE__) . "/../install/updates/update.php");
-    $updateExecuted = $upgradePossible;
-  }
-}
-
 if (strlen(Util::getGitCommit()) == 0) {
   $storedBuild = Factory::getStoredValueFactory()->get("build");
   if ($storedBuild != null) {
@@ -183,10 +183,6 @@ if (strlen(Util::getGitCommit()) == 0) {
 
 UI::add('menu', Menu::get());
 UI::add('messages', []);
-
-if ($updateExecuted) {
-  UI::addMessage(UI::SUCCESS, "An automatic upgrade was executed! " . sizeof($EXECUTED) . " changes applied on DB!");
-}
 
 UI::add('pageTitle', "");
 UI::add('login', Login::getInstance());

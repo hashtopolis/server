@@ -150,10 +150,18 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * Overridable function to aggregate data in the object. Currently only used for Tasks
-   * returns the aggregated data in key value pairs
+   * Overridable function to aggregate data in the object. Used for Tasks and Agents.
+   *
+   * @param object $object The object to aggregate data from.
+   * @param array &$includedData Array passed by reference; implementations can add related resources
+   *   for inclusion in the response by appending to this array.
+   * @return array Aggregated data as key-value pairs.
+   *
+   * Implementations should use $includedData to collect related resources that should be included
+   * in the API response, such as related entities or additional data.
    */
-  public static function aggregateData(object $object): array {
+  public static function aggregateData(object $object, array &$includedData = [], array $aggregateFieldsets = null): array
+  {
     return [];
   }
   
@@ -553,7 +561,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function obj2Resource(object $obj, array $expandResult = []): array {
+  protected function obj2Resource(object $obj, array &$expandResult = [], array $sparseFieldsets = null, array $aggregateFieldsets = null): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -563,6 +571,11 @@ abstract class AbstractBaseAPI {
     
     $attributes = [];
     $relationships = [];
+
+    $sparseFieldsetsForObj = null;
+    if (is_array($sparseFieldsets) && array_key_exists($this->getObjectTypeName($obj), $sparseFieldsets)) {
+      $sparseFieldsetsForObj = explode(",", $sparseFieldsets[$this->getObjectTypeName($obj)]);
+    }
     
     /* Collect attributes */
     foreach ($features as $name => $feature) {
@@ -571,6 +584,12 @@ abstract class AbstractBaseAPI {
       if ($feature['private'] === true) {
         continue;
       }
+
+      // If sparse fieldsets (https://jsonapi.org/format/#fetching-sparse-fieldsets) is used, return only the requested data
+      if (is_array($sparseFieldsetsForObj) && !in_array($feature['alias'], $sparseFieldsetsForObj)) {
+        continue;
+      }
+
       // Hide the primaryKey from the attributes since this is used as indentifier (id) in response
       if ($feature['pk'] === true) {
         continue;
@@ -582,9 +601,8 @@ abstract class AbstractBaseAPI {
       
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
-    
-    //TODO: only aggregate data when it has been included
-    $aggregatedData = $apiClass::aggregateData($obj);
+
+    $aggregatedData = $apiClass::aggregateData($obj, $expandResult, $aggregateFieldsets);
     $attributes = array_merge($attributes, $aggregatedData);
     
     /* Build JSON::API relationship resource */
@@ -1034,12 +1052,15 @@ abstract class AbstractBaseAPI {
             if (is_null($value)) {
               throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid boolean value");
             }
+            $value = (int)$value;
             break;
           case 'int':
             $value = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
             if (is_null($value)) {
               throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid integer value");
             }
+            $value = (int)$value;
+            break;
         }
       }
       unset($value);
@@ -1154,8 +1175,63 @@ abstract class AbstractBaseAPI {
     
     return $orderTemplates;
   }
-  
-  
+
+  protected static function addToRelatedResources(array $relatedResources, array $relatedResource): array {
+    $alreadyExists = false;
+    $searchType = $relatedResource["type"];
+    $searchId = $relatedResource["id"];
+    foreach ($relatedResources as $resource) {
+      if ($resource["id"] == $searchId && $resource["type"] == $searchType) {
+        $alreadyExists = true;
+        break;
+      }
+    }
+    if (!$alreadyExists) {
+      $relatedResources[] = $relatedResource;
+    }
+    return $relatedResources;
+  }
+
+  protected function processExpands(
+    object $apiClass,
+    array $expands,
+    object $object,
+    array $expandResult,
+    array $includedResources,
+    array $sparseFieldsets = null,
+    array $aggregateFieldsets = null
+): array {
+    
+    // Add missing expands to expands in case they have been added in aggregateData()
+    $expandKeys = array_keys($expandResult);
+    $diffs = array_diff($expandKeys, $expands);
+    $expands = array_merge($expands, $diffs);
+
+    foreach ($expands as $expand) {
+      if (!array_key_exists($object->getId(), $expandResult[$expand])) {
+          continue;
+      }
+
+      $expandResultObject = $expandResult[$expand][$object->getId()];
+
+      if (is_array($expandResultObject)) {
+        foreach ($expandResultObject as $expandObject) {
+          $noFurtherExpands = [];
+          $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandObject, $noFurtherExpands, $sparseFieldsets, $aggregateFieldsets));
+        }
+      } else {
+          if ($expandResultObject === null) {
+            // to-only relation which is nullable
+            continue;
+          }
+        $noFurtherExpands = [];
+        $includedResources = self::addToRelatedResources($includedResources, $apiClass->obj2Resource($expandResultObject, $noFurtherExpands, $sparseFieldsets, $aggregateFieldsets));
+      }
+    }
+
+    return $includedResources;
+  }
+
   /**
    * Validate if user is allowed to access hashlist
    * @throws HttpForbidden
@@ -1431,26 +1507,8 @@ abstract class AbstractBaseAPI {
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object
-      $newObject = $apiClass->obj2Resource($object, $expandResult);
-      
-      // For compound document, included resources
-      foreach ($expands as $expand) {
-        if (array_key_exists($object->getId(), $expandResult[$expand])) {
-          $expandResultObject = $expandResult[$expand][$object->getId()];
-          if (is_array($expandResultObject)) {
-            foreach ($expandResultObject as $expandObject) {
-              $includedResources[] = $apiClass->obj2Resource($expandObject);
-            }
-          }
-          else {
-            if ($expandResultObject === null) {
-              // to-only relation which is nullable
-              continue;
-            }
-            $includedResources[] = $apiClass->obj2Resource($expandResultObject);
-          }
-        }
-      }
+      $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
+      $includedResources = $apiClass->processExpands($apiClass, $expands, $object, $expandResult, $includedResources, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
       
       // Add to result output
       $dataResources[] = $newObject;

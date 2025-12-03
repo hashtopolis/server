@@ -10,6 +10,10 @@ class SpeedFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "Speed";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class SpeedFactory extends AbstractModelFactory {
    * @return Speed
    */
   function createObjectFromDict($pk, $dict): Speed {
-    return new Speed($dict['speedId'], $dict['agentId'], $dict['taskId'], $dict['speed'], $dict['time']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Speed($dict['speedid'], $dict['agentid'], $dict['taskid'], $dict['speed'], $dict['time']);
   }
   
   /**
@@ -40,7 +49,7 @@ class SpeedFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Speed|Speed[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

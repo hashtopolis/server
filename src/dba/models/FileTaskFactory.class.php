@@ -10,6 +10,10 @@ class FileTaskFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "FileTask";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class FileTaskFactory extends AbstractModelFactory {
    * @return FileTask
    */
   function createObjectFromDict($pk, $dict): FileTask {
-    return new FileTask($dict['fileTaskId'], $dict['fileId'], $dict['taskId']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new FileTask($dict['filetaskid'], $dict['fileid'], $dict['taskid']);
   }
   
   /**
@@ -40,7 +49,7 @@ class FileTaskFactory extends AbstractModelFactory {
    * @param bool $single
    * @return FileTask|FileTask[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

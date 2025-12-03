@@ -10,6 +10,10 @@ class FileDeleteFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "FileDelete";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class FileDeleteFactory extends AbstractModelFactory {
    * @return FileDelete
    */
   function createObjectFromDict($pk, $dict): FileDelete {
-    return new FileDelete($dict['fileDeleteId'], $dict['filename'], $dict['time']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new FileDelete($dict['filedeleteid'], $dict['filename'], $dict['time']);
   }
   
   /**
@@ -40,7 +49,7 @@ class FileDeleteFactory extends AbstractModelFactory {
    * @param bool $single
    * @return FileDelete|FileDelete[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

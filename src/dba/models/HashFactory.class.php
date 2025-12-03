@@ -10,6 +10,10 @@ class HashFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "Hash";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class HashFactory extends AbstractModelFactory {
    * @return Hash
    */
   function createObjectFromDict($pk, $dict): Hash {
-    return new Hash($dict['hashId'], $dict['hashlistId'], $dict['hash'], $dict['salt'], $dict['plaintext'], $dict['timeCracked'], $dict['chunkId'], $dict['isCracked'], $dict['crackPos']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Hash($dict['hashid'], $dict['hashlistid'], $dict['hash'], $dict['salt'], $dict['plaintext'], $dict['timecracked'], $dict['chunkid'], $dict['iscracked'], $dict['crackpos']);
   }
   
   /**
@@ -40,7 +49,7 @@ class HashFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Hash|Hash[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

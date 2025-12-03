@@ -30,7 +30,7 @@ $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 try {
   $db->query("CREATE DATABASE IF NOT EXISTS hashtopolis;");
   $db->query("USE hashtopolis;");
-  $db->query(file_get_contents($envPath . "src/install/hashtopolis.sql"));
+  $db->query(file_get_contents($envPath . "src/migrations/mysql/20251127000000_initial.sql"));
 }
 catch (PDOException $e) {
   fwrite(STDERR, "Failed to initialize database: " . $e->getMessage());

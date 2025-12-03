@@ -10,6 +10,10 @@ class ChunkFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "Chunk";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
   function isCachable(): bool {
     return false;
@@ -32,7 +36,12 @@ class ChunkFactory extends AbstractModelFactory {
    * @return Chunk
    */
   function createObjectFromDict($pk, $dict): Chunk {
-    return new Chunk($dict['chunkId'], $dict['taskId'], $dict['skip'], $dict['length'], $dict['agentId'], $dict['dispatchTime'], $dict['solveTime'], $dict['checkpoint'], $dict['progress'], $dict['state'], $dict['cracked'], $dict['speed']);
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Chunk($dict['chunkid'], $dict['taskid'], $dict['skip'], $dict['length'], $dict['agentid'], $dict['dispatchtime'], $dict['solvetime'], $dict['checkpoint'], $dict['progress'], $dict['state'], $dict['cracked'], $dict['speed']);
   }
   
   /**
@@ -40,7 +49,7 @@ class ChunkFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Chunk|Chunk[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

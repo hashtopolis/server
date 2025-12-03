@@ -9,7 +9,6 @@ use DBA\QueryFilter;
 use DBA\SupertaskPretask;
 use DBA\Factory;
 
-require_once __DIR__ . '/../apiv2/common/ErrorHandler.class.php';
 class PretaskUtils {
   /**
    * @param int $pretaskId
@@ -126,6 +125,9 @@ class PretaskUtils {
       throw new HTException("Max agents needs to be a number!");
     }
     $maxAgents = intval($maxAgents);
+    if ($maxAgents < 0) {
+      throw new HTException("Max agents cannot be negative!");
+    }
     Factory::getPretaskFactory()->set($pretask, Pretask::MAX_AGENTS, $maxAgents);
   }
   

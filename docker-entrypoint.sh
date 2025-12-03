@@ -10,20 +10,35 @@ for path in ${paths[@]}; do
   fi
 done
 
-echo "Testing database."
-MYSQL="mysql -u${HASHTOPOLIS_DB_USER} -p${HASHTOPOLIS_DB_PASS} -h ${HASHTOPOLIS_DB_HOST} --skip-ssl"
-$MYSQL -e "SELECT 1" > /dev/null 2>&1
-ERROR=$?
+echo "Testing database..."
+if [[ "$HASHTOPOLIS_DB_TYPE" == "mysql" ]]; then
+    echo "Using MySQL..."
+    DB_CMD="mysql -u${HASHTOPOLIS_DB_USER} -p${HASHTOPOLIS_DB_PASS} -h ${HASHTOPOLIS_DB_HOST} --skip-ssl"
+    DB_TYPE="mysql"
+elif [[ "$HASHTOPOLIS_DB_TYPE" == "postgres" ]]; then
+    echo "Using postgres..."
+    DB_CMD="psql -U${HASHTOPOLIS_DB_USER} -h ${HASHTOPOLIS_DB_HOST} ${HASHTOPOLIS_DB_DATABASE}"
+    DB_TYPE="postgres"
+else
+    echo "INVALID DATABASE TYPE PROVIDED: $HASHTOPOLIS_DB_TYPE"
+    exit 1
+fi
 
-while [ $ERROR -ne 0 ];
-do
-  echo "Database not ready or unable to connect. Retrying in 5s."
-  sleep 5
-  $MYSQL -e "SELECT 1" > /dev/null 2>&1
-  ERROR=$?
+while :; do
+    if [[ $DB_TYPE == "mysql" ]]; then
+        $DB_CMD -e "SELECT 1" > /dev/null 2>&1
+        ERROR=$?
+    elif [[ $DB_TYPE == "postgres" ]]; then
+        PGPASSWORD="${HASHTOPOLIS_DB_PASS}" $DB_CMD -c "SELECT 1" > /dev/null 2>&1
+        ERROR=$?
+    fi
+    if [ $ERROR -eq 0 ]; then
+        break
+    fi
+    echo "Database not ready or unable to connect. Retrying in 5s."
+    sleep 5
 done
-
-echo "Database ready."
+echo "Database ready!"
 
 echo "Setting up folders"
 if [ ! -d ${HASHTOPOLIS_FILES_PATH} ];then
