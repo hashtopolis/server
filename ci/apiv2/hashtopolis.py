@@ -1023,11 +1023,13 @@ class Helper(HashtopolisConnector):
         response = self._helper_request("exportWordlist", payload)
         return File(**response['data'])
 
-    def import_cracked_hashes(self, hashlist, source_data: str, separator):
+    def import_cracked_hashes(self, hashlist, source_type, source_data: str, separator, overwrite):
         payload = {
             'hashlistId': hashlist.id,
+            'sourceType': source_type,
             'sourceData': base64.b64encode(source_data.encode()).decode(),
             'separator': separator,
+            'overwrite': overwrite,
         }
         response = self._helper_request("importCrackedHashes", payload)
         return response['meta']
