@@ -46,7 +46,7 @@ class AgentAPI extends AbstractModelAPI {
    * @param array &$includedData
    * @return array not used here 
    */
-  static function aggregateData(object $object, array &$included_data = []): array {
+  static function aggregateData(object $object, array &$included_data = [], array $aggregateFieldsets = null): array {
     $agentId = $object->getId();
     $qFs = [];
     $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");

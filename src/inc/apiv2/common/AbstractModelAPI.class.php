@@ -731,12 +731,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     // Convert objects to data resources 
     foreach ($objects as $object) {
       // Create object  
-      $newObject = $apiClass->obj2Resource($object, $expandResult);
-      $includedResources = $apiClass->processExpands($apiClass, $expands, $object, $expandResult, $includedResources);
+      $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
+      $includedResources = $apiClass->processExpands($apiClass, $expands, $object, $expandResult, $includedResources, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
 
       // Add to result output
       $dataResources[] = $newObject;
     }
+
     $baseUrl = Util::buildServerUrl();
     //build last link
     $lastParams = $request->getQueryParams();
