@@ -13,15 +13,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - db_system: mysql
+          - db_system: postgres
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Start Hashtopolis server
         uses: ./.github/actions/start-hashtopolis
+        with:
+          db_system: ${{ matrix.db_system }}
       - name: Give Apache permissions on necessary directories # for the tests, only src/files and src/inc/utils/locks seem necessary
         run: docker exec -u root hashtopolis-server-dev bash -c "chown -R www-data:www-data /var/www/html/src && chmod -R g+w /var/www/html/src"
-      - name: Run test suite
-        run: docker exec hashtopolis-server-dev php /var/www/html/ci/run.php -vmaster
       - name: Test with pytest
         run: docker exec hashtopolis-server-dev pytest /var/www/html/ci/apiv2
       - name: Test if pytest is removing all test objects

@@ -1,0 +1,45 @@
+version: '3.7'
+services:
+  hashtopolis-backend:
+    container_name: hashtopolis-backend
+    image: hashtopolis/backend:latest
+    restart: always
+    volumes:
+      - hashtopolis:/usr/local/share/hashtopolis:Z
+      # - ./ssmtp.conf:/etc/ssmtp/ssmtp.conf
+    environment:
+      HASHTOPOLIS_DB_TYPE: postgres
+      HASHTOPOLIS_DB_USER: $POSTGRES_USER
+      HASHTOPOLIS_DB_PASS: $POSTGRES_PASSWORD
+      HASHTOPOLIS_DB_HOST: $HASHTOPOLIS_DB_HOST
+      HASHTOPOLIS_DB_DATABASE: $POSTGRES_DATABASE
+      HASHTOPOLIS_ADMIN_USER: $HASHTOPOLIS_ADMIN_USER
+      HASHTOPOLIS_ADMIN_PASSWORD: $HASHTOPOLIS_ADMIN_PASSWORD
+      HASHTOPOLIS_APIV2_ENABLE: $HASHTOPOLIS_APIV2_ENABLE
+    depends_on:
+      - db
+    ports:
+      - 8080:80
+  db:
+    container_name: db
+    image: postgres:13
+    restart: always
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: $POSTGRES_DATABASE
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+  hashtopolis-frontend:
+    container_name: hashtopolis-frontend
+    image: hashtopolis/frontend:latest
+    environment:
+      HASHTOPOLIS_BACKEND_URL: $HASHTOPOLIS_BACKEND_URL
+    restart: always
+    depends_on:
+      - hashtopolis-backend
+    ports:
+      - 4200:80
+volumes:
+  db:
+  hashtopolis:

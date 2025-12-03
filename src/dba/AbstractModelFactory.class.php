@@ -427,18 +427,6 @@ abstract class AbstractModelFactory {
       $query .= $this->applyFilters($vals, $options['filter']);
     }
     
-    if (!array_key_exists("order", $options)) {
-      // Add a asc order on the primary keys as a standard
-      $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
-      $orderOptions = array(
-        $oF
-      );
-      $options['order'] = $orderOptions;
-    }
-    if (count($options['order']) != 0) {
-      $query .= $this->applyOrder($this->getOrders($options));
-    }
-    
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
@@ -483,18 +471,6 @@ abstract class AbstractModelFactory {
     
     if (array_key_exists("filter", $options)) {
       $query .= $this->applyFilters($vals, $options['filter']);
-    }
-    
-    if (!array_key_exists("order", $options)) {
-      // Add a asc order on the primary keys as a standard
-      $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
-      $orderOptions = array(
-        $oF
-      );
-      $options['order'] = $orderOptions;
-    }
-    if (count($options['order']) != 0) {
-      $query .= $this->applyOrder($this->getOrders($options));
     }
     
     $dbh = self::getDB();
@@ -920,26 +896,44 @@ abstract class AbstractModelFactory {
    * @return PDO
    */
   public function getDB(bool $test = false): ?PDO {
-    if (!$test) {
-      $dsn = 'mysql:dbname=' . DBA_DB . ";host=" . DBA_SERVER . ";port=" . DBA_PORT;
-      $user = DBA_USER;
-      $password = DBA_PASS;
-    }
-    else {
-      global $CONN;
-      // The utf8mb4 is here to force php to connect with that encoding, so you can save emoji's or other non ascii chars (specifically, unicode characters outside of the BMP) into the database. 
-      // If you are running into issues with this line, we could make this configurable.
-      $dsn = 'mysql:dbname=' . $CONN['db'] . ";host=" . $CONN['server'] . ";port=" . $CONN['port'] . ";charset=utf8mb4";
-      $user = $CONN['user'];
-      $password = $CONN['pass'];
-    }
-    
     if (self::$dbh !== null) {
       return self::$dbh;
     }
-    
     try {
-      self::$dbh = new PDO($dsn, $user, $password);
+      $dbUser = @DBA_USER;
+      $dbPass = @DBA_PASS;
+      $dbType = @DBA_TYPE;
+      $dbHost = @DBA_SERVER;
+      $dbPort = @DBA_PORT;
+      $dbDB = @DBA_DB;
+      if ($test) { // if the connection is being tested, take credentials from legacy global variable
+        global $CONN;
+        $dbUser = $CONN['user'];
+        $dbPass = $CONN['pass'];
+        $dbType = $CONN['type'];
+        $dbHost = $CONN['server'];
+        $dbPort = $CONN['port'];
+        $dbDB = $CONN['db'];
+      }
+
+      if ($dbType == 'mysql') {
+        // connect as mysql
+        $dsn = "mysql:dbname=$dbDB;host=$dbHost;port=$dbPort;charset=utf8mb4";
+        self::$dbh = new PDO($dsn, $dbUser, $dbPass);
+      }
+      else if ($dbType == 'postgres') {
+        // connect as postgres
+        $dsn = "pgsql:dbname=$dbDB;host=$dbHost;port=$dbPort;user=$dbUser;password=$dbPass";
+        self::$dbh = new PDO($dsn);
+      }
+      else {
+        // unknown type
+        if ($test) {
+          return null;
+        }
+        throw new Exception("Fatal Error: Unknown database type specified!");
+      }
+
       self::$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       return self::$dbh;
     }
