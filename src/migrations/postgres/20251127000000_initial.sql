@@ -1,7 +1,7 @@
 -- Create tables and insert default entries
 CREATE TABLE AccessGroup (
   accessGroupId SERIAL NOT NULL PRIMARY KEY,
-  groupName     TEXT NOT NULL
+  groupName     TEXT   NOT NULL
 );
 
 INSERT INTO AccessGroup (accessGroupId, groupName) VALUES
@@ -9,43 +9,43 @@ INSERT INTO AccessGroup (accessGroupId, groupName) VALUES
 
 CREATE TABLE AccessGroupAgent (
   accessGroupAgentId SERIAL NOT NULL PRIMARY KEY,
-  accessGroupId      INT NOT NULL,
-  agentId            INT NOT NULL
+  accessGroupId      INT    NOT NULL,
+  agentId            INT    NOT NULL
 );
 
 CREATE TABLE AccessGroupUser (
   accessGroupUserId SERIAL NOT NULL PRIMARY KEY,
-  accessGroupId     INT NOT NULL,
-  userId            INT NOT NULL
+  accessGroupId     INT    NOT NULL,
+  userId            INT    NOT NULL
 );
 
 CREATE TABLE Agent (
   agentId         SERIAL NOT NULL PRIMARY KEY,
-  agentName       TEXT NOT NULL,
-  uid             TEXT NOT NULL,
-  os              INT      NOT NULL,
-  devices         TEXT         NOT NULL,
-  cmdPars         TEXT         NOT NULL,
-  ignoreErrors    INT   NOT NULL,
-  isActive        INT   NOT NULL,
-  isTrusted       INT   NOT NULL,
-  token           TEXT  NOT NULL,
-  lastAct         TEXT  NOT NULL,
-  lastTime        BIGINT       NOT NULL,
-  lastIp          TEXT  NOT NULL,
-  userId          INT      DEFAULT NULL,
-  cpuOnly         INT   NOT NULL,
-  clientSignature TEXT  NOT NULL
+  agentName       TEXT   NOT NULL,
+  uid             TEXT   NOT NULL,
+  os              INT    NOT NULL,
+  devices         TEXT   NOT NULL,
+  cmdPars         TEXT   NOT NULL,
+  ignoreErrors    INT    NOT NULL,
+  isActive        INT    NOT NULL,
+  isTrusted       INT    NOT NULL,
+  token           TEXT   NOT NULL,
+  lastAct         TEXT   NOT NULL,
+  lastTime        BIGINT NOT NULL,
+  lastIp          TEXT   NOT NULL,
+  userId          INT    DEFAULT NULL,
+  cpuOnly         INT    NOT NULL,
+  clientSignature TEXT   NOT NULL
 );
 
 CREATE TABLE AgentBinary (
   agentBinaryId    SERIAL NOT NULL PRIMARY KEY,
-  binaryType       TEXT NOT NULL,
-  version          TEXT NOT NULL,
-  operatingSystems TEXT NOT NULL,
-  filename         TEXT NOT NULL,
-  updateTrack      TEXT NOT NULL,
-  updateAvailable  TEXT NOT NULL
+  binaryType       TEXT   NOT NULL,
+  version          TEXT   NOT NULL,
+  operatingSystems TEXT   NOT NULL,
+  filename         TEXT   NOT NULL,
+  updateTrack      TEXT   NOT NULL,
+  updateAvailable  TEXT   NOT NULL
 );
 
 INSERT INTO AgentBinary (agentBinaryId, binaryType, version, operatingSystems, filename, updateTrack, updateAvailable) VALUES
@@ -53,43 +53,62 @@ INSERT INTO AgentBinary (agentBinaryId, binaryType, version, operatingSystems, f
 
 CREATE TABLE AgentError (
   agentErrorId SERIAL NOT NULL PRIMARY KEY,
-  agentId      INT NOT NULL,
-  taskId       INT DEFAULT NULL,
-  time         BIGINT  NOT NULL,
-  error        TEXT    NOT NULL,
-  chunkId      INT NULL
+  agentId      INT    NOT NULL,
+  taskId       INT    DEFAULT NULL,
+  time         BIGINT NOT NULL,
+  error        TEXT   NOT NULL,
+  chunkId      INT    NULL
 );
 
 CREATE TABLE AgentStat (
   agentStatId SERIAL NOT NULL PRIMARY KEY,
-  agentId     INT     NOT NULL,
-  statType    INT     NOT NULL,
-  time        BIGINT      NOT NULL,
-  value       TEXT NOT NULL
+  agentId     INT    NOT NULL,
+  statType    INT    NOT NULL,
+  time        BIGINT NOT NULL,
+  value       TEXT   NOT NULL
 );
 
 CREATE TABLE AgentZap (
   agentZapId SERIAL NOT NULL PRIMARY KEY,
-  agentId    INT NOT NULL,
-  lastZapId  INT NULL
+  agentId    INT    NOT NULL,
+  lastZapId  INT    NULL
 );
+
+CREATE TABLE ApiKey (
+  apiKeyId    SERIAL NOT NULL PRIMARY KEY,
+  startValid  BIGINT NOT NULL,
+  endValid    BIGINT NOT NULL,
+  accessKey   TEXT   NOT NULL,
+  accessCount INT    NOT NULL,
+  userId      INT    NOT NULL,
+  apiGroupId  INT    NOT NULL
+);
+
+CREATE TABLE ApiGroup (
+  apiGroupId  SERIAL NOT NULL PRIMARY KEY,
+  name        TEXT   NOT NULL,
+  permissions TEXT   NOT NULL
+);
+
+INSERT INTO ApiGroup ( apiGroupId, name, permissions) VALUES
+  (1, 'Administrators', 'ALL');
 
 CREATE TABLE Assignment (
   assignmentId SERIAL NOT NULL PRIMARY KEY,
-  taskId       INT     NOT NULL,
-  agentId      INT     NOT NULL,
-  benchmark    TEXT NOT NULL
+  taskId       INT    NOT NULL,
+  agentId      INT    NOT NULL,
+  benchmark    TEXT   NOT NULL
 );
 
 CREATE TABLE Chunk (
   chunkId      SERIAL NOT NULL PRIMARY KEY,
   taskId       INT    NOT NULL,
-  skip         BIGINT  NOT NULL,
-  length       BIGINT  NOT NULL,
+  skip         BIGINT NOT NULL,
+  length       BIGINT NOT NULL,
   agentId      INT    NULL,
-  dispatchTime BIGINT     NOT NULL,
-  solveTime    BIGINT     NOT NULL,
-  checkpoint   BIGINT  NOT NULL,
+  dispatchTime BIGINT NOT NULL,
+  solveTime    BIGINT NOT NULL,
+  checkpoint   BIGINT NOT NULL,
   progress     INT    NULL,
   state        INT    NOT NULL,
   cracked      INT    NOT NULL,
@@ -98,9 +117,9 @@ CREATE TABLE Chunk (
 
 CREATE TABLE Config (
   configId        SERIAL NOT NULL PRIMARY KEY,
-  configSectionId INT     NOT NULL,
-  item            TEXT NOT NULL,
-  value           TEXT        NOT NULL
+  configSectionId INT    NOT NULL,
+  item            TEXT   NOT NULL,
+  value           TEXT   NOT NULL
 );
 
 INSERT INTO Config (configId, configSectionId, item, value) VALUES
@@ -170,7 +189,7 @@ INSERT INTO Config (configId, configSectionId, item, value) VALUES
 
 CREATE TABLE ConfigSection (
   configSectionId SERIAL NOT NULL PRIMARY KEY,
-  sectionName     TEXT NOT NULL
+  sectionName     TEXT   NOT NULL
 );
 
 INSERT INTO ConfigSection (configSectionId, sectionName) VALUES
@@ -184,10 +203,10 @@ INSERT INTO ConfigSection (configSectionId, sectionName) VALUES
 
 CREATE TABLE CrackerBinary (
   crackerBinaryId     SERIAL NOT NULL PRIMARY KEY,
-  crackerBinaryTypeId INT      NOT NULL,
-  version             TEXT  NOT NULL,
-  downloadUrl         TEXT NOT NULL,
-  binaryName          TEXT  NOT NULL
+  crackerBinaryTypeId INT    NOT NULL,
+  version             TEXT   NOT NULL,
+  downloadUrl         TEXT   NOT NULL,
+  binaryName          TEXT   NOT NULL
 );
 
 INSERT INTO CrackerBinary (crackerBinaryId, crackerBinaryTypeId, version, downloadUrl, binaryName) VALUES
@@ -195,8 +214,8 @@ INSERT INTO CrackerBinary (crackerBinaryId, crackerBinaryTypeId, version, downlo
 
 CREATE TABLE CrackerBinaryType (
   crackerBinaryTypeId SERIAL NOT NULL PRIMARY KEY,
-  typeName            TEXT NOT NULL,
-  isChunkingAvailable INT  NOT NULL
+  typeName            TEXT   NOT NULL,
+  isChunkingAvailable INT    NOT NULL
 );
 
 INSERT INTO CrackerBinaryType (crackerBinaryTypeId, typeName, isChunkingAvailable) VALUES
@@ -204,12 +223,25 @@ INSERT INTO CrackerBinaryType (crackerBinaryTypeId, typeName, isChunkingAvailabl
 
 CREATE TABLE File (
   fileId        SERIAL NOT NULL PRIMARY KEY,
-  filename      TEXT NOT NULL,
-  size          BIGINT   NOT NULL,
-  isSecret      INT   NOT NULL,
-  fileType      INT      NOT NULL,
-  accessGroupId INT      NOT NULL,
-  lineCount     BIGINT   DEFAULT NULL
+  filename      TEXT   NOT NULL,
+  size          BIGINT NOT NULL,
+  isSecret      INT    NOT NULL,
+  fileType      INT    NOT NULL,
+  accessGroupId INT    NOT NULL,
+  lineCount     BIGINT DEFAULT NULL
+);
+
+CREATE TABLE FileDelete (
+  fileDeleteId SERIAL NOT NULL PRIMARY KEY,
+  filename     TEXT   NOT NULL,
+  time         BIGINT NOT NULL
+);
+
+CREATE TABLE FileDownload (
+  fileDownloadId SERIAL NOT NULL PRIMARY KEY,
+  time           BIGINT NOT NULL,
+  fileId         INT    NOT NULL,
+  status         INT    NOT NULL
 );
 
 CREATE TABLE FilePretask (
@@ -220,69 +252,63 @@ CREATE TABLE FilePretask (
 
 CREATE TABLE FileTask (
   fileTaskId SERIAL NOT NULL PRIMARY KEY,
-  fileId     INT NOT NULL,
-  taskId     INT NOT NULL
-);
-
-CREATE TABLE FileDelete (
-  fileDeleteId SERIAL NOT NULL PRIMARY KEY,
-  filename     TEXT NOT NULL,
-  time         BIGINT       NOT NULL
+  fileId     INT    NOT NULL,
+  taskId     INT    NOT NULL
 );
 
 CREATE TABLE Hash (
   hashId      SERIAL NOT NULL PRIMARY KEY,
-  hashlistId  INT      NOT NULL,
+  hashlistId  INT    NOT NULL,
   hash        TEXT   NOT NULL,
-  salt        TEXT DEFAULT NULL,
-  plaintext   TEXT DEFAULT NULL,
-  timeCracked BIGINT       DEFAULT NULL,
-  chunkId     INT      DEFAULT NULL,
-  isCracked   INT   NOT NULL,
-  crackPos    BIGINT       NOT NULL
+  salt        TEXT   DEFAULT NULL,
+  plaintext   TEXT   DEFAULT NULL,
+  timeCracked BIGINT DEFAULT NULL,
+  chunkId     INT    DEFAULT NULL,
+  isCracked   INT    NOT NULL,
+  crackPos    BIGINT NOT NULL
 );
 
 CREATE TABLE HashBinary (
   hashBinaryId SERIAL NOT NULL PRIMARY KEY,
-  hashlistId   INT       NOT NULL,
-  essid        TEXT  NOT NULL,
-  hash         TEXT    NOT NULL,
-  plaintext    TEXT DEFAULT NULL,
-  timeCracked  BIGINT        DEFAULT NULL,
-  chunkId      INT       DEFAULT NULL,
+  hashlistId   INT    NOT NULL,
+  essid        TEXT   NOT NULL,
+  hash         TEXT   NOT NULL,
+  plaintext    TEXT   DEFAULT NULL,
+  timeCracked  BIGINT DEFAULT NULL,
+  chunkId      INT    DEFAULT NULL,
   isCracked    INT    NOT NULL,
-  crackPos     BIGINT        NOT NULL
+  crackPos     BIGINT NOT NULL
 );
 
 CREATE TABLE Hashlist (
   hashlistId    SERIAL NOT NULL PRIMARY KEY,
-  hashlistName  TEXT NOT NULL,
-  format        INT      NOT NULL,
-  hashTypeId    INT      NOT NULL,
-  hashCount     INT      NOT NULL,
-  saltSeparator TEXT  DEFAULT NULL,
-  cracked       INT      NOT NULL,
-  isSecret      INT   NOT NULL,
-  hexSalt       INT   NOT NULL,
-  isSalted      INT   NOT NULL,
-  accessGroupId INT      NOT NULL,
-  notes         TEXT         NOT NULL,
-  brainId       INT      NOT NULL,
-  brainFeatures INT   NOT NULL,
-  isArchived    INT   NOT NULL
+  hashlistName  TEXT   NOT NULL,
+  format        INT    NOT NULL,
+  hashTypeId    INT    NOT NULL,
+  hashCount     INT    NOT NULL,
+  saltSeparator TEXT   DEFAULT NULL,
+  cracked       INT    NOT NULL,
+  isSecret      INT    NOT NULL,
+  hexSalt       INT    NOT NULL,
+  isSalted      INT    NOT NULL,
+  accessGroupId INT    NOT NULL,
+  notes         TEXT   NOT NULL,
+  brainId       INT    NOT NULL,
+  brainFeatures INT    NOT NULL,
+  isArchived    INT    NOT NULL
 );
 
 CREATE TABLE HashlistHashlist (
   hashlistHashlistId SERIAL NOT NULL PRIMARY KEY,
-  parentHashlistId   INT NOT NULL,
-  hashlistId         INT NOT NULL
+  parentHashlistId   INT    NOT NULL,
+  hashlistId         INT    NOT NULL
 );
 
 CREATE TABLE HashType (
   hashTypeId  SERIAL NOT NULL PRIMARY KEY,
-  description TEXT NOT NULL,
-  isSalted    INT   NOT NULL,
-  isSlowHash  INT   NOT NULL
+  description TEXT   NOT NULL,
+  isSalted    INT    NOT NULL,
+  isSlowHash  INT    NOT NULL
 );
 
 INSERT INTO HashType (hashTypeId, description, isSalted, isSlowHash) VALUES
@@ -867,51 +893,106 @@ INSERT INTO HashType (hashTypeId, description, isSalted, isSlowHash) VALUES
   (73000, 'Generic Hash [Bridged: Python Interpreter with GIL]', 0, 1),
   (99999, 'Plaintext', 0, 0);
 
+CREATE TABLE HealthCheck (
+  healthCheckId   SERIAL NOT NULL PRIMARY KEY,
+  time            BIGINT NOT NULL,
+  status          INT    NOT NULL,
+  checkType       INT    NOT NULL,
+  hashtypeId      INT    NOT NULL,
+  crackerBinaryId INT    NOT NULL,
+  expectedCracks  INT    NOT NULL,
+  attackCmd       TEXT   NOT NULL
+);
+
+CREATE TABLE HealthCheckAgent (
+  healthCheckAgentId SERIAL NOT NULL PRIMARY KEY,
+  healthCheckId      INT    NOT NULL,
+  agentId            INT    NOT NULL,
+  status             INT    NOT NULL,
+  cracked            INT    NOT NULL,
+  numGpus            INT    NOT NULL,
+  start              BIGINT NOT NULL,
+  htp_end            BIGINT NOT NULL,
+  errors             TEXT   NOT NULL
+);
+
+CREATE TABLE htp_User (
+  userId             SERIAL NOT NULL PRIMARY KEY,
+  username           TEXT   NOT NULL,
+  email              TEXT   NOT NULL,
+  passwordHash       TEXT   NOT NULL,
+  passwordSalt       TEXT   NOT NULL,
+  isValid            INT    NOT NULL,
+  isComputedPassword INT    NOT NULL,
+  lastLoginDate      BIGINT NOT NULL,
+  registeredSince    BIGINT NOT NULL,
+  sessionLifetime    INT    NOT NULL,
+  rightGroupId       INT    NOT NULL,
+  yubikey            TEXT   DEFAULT NULL,
+  otp1               TEXT   DEFAULT NULL,
+  otp2               TEXT   DEFAULT NULL,
+  otp3               TEXT   DEFAULT NULL,
+  otp4               TEXT   DEFAULT NULL
+);
+
 CREATE TABLE LogEntry (
   logEntryId SERIAL NOT NULL PRIMARY KEY,
-  issuer     TEXT NOT NULL,
-  issuerId   TEXT NOT NULL,
-  level      TEXT NOT NULL,
-  message    TEXT        NOT NULL,
-  time       BIGINT      NOT NULL
+  issuer     TEXT   NOT NULL,
+  issuerId   TEXT   NOT NULL,
+  level      TEXT   NOT NULL,
+  message    TEXT   NOT NULL,
+  time       BIGINT NOT NULL
 );
 
 CREATE TABLE NotificationSetting (
   notificationSettingId SERIAL NOT NULL PRIMARY KEY,
-  action                TEXT  NOT NULL,
-  objectId              INT      NULL,
-  notification          TEXT  NOT NULL,
-  userId                INT      NOT NULL,
-  receiver              TEXT NOT NULL,
-  isActive              INT   NOT NULL
+  action                TEXT   NOT NULL,
+  objectId              INT    NULL,
+  notification          TEXT   NOT NULL,
+  userId                INT    NOT NULL,
+  receiver              TEXT   NOT NULL,
+  isActive              INT    NOT NULL
 );
+
+CREATE TABLE Preprocessor (
+  preprocessorId  SERIAL NOT NULL PRIMARY KEY,
+  name            TEXT   NOT NULL,
+  url             TEXT   NOT NULL,
+  binaryName      TEXT   NOT NULL,
+  keyspaceCommand TEXT   NULL,
+  skipCommand     TEXT   NULL,
+  limitCommand    TEXT   NULL
+);
+
+INSERT INTO Preprocessor ( preprocessorId, name, url, binaryName, keyspaceCommand, skipCommand, limitCommand) VALUES
+  (1, 'Prince', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z', 'pp', '--keyspace', '--skip', '--limit');
 
 CREATE TABLE Pretask (
   pretaskId           SERIAL NOT NULL PRIMARY KEY,
-  taskName            TEXT NOT NULL,
-  attackCmd           TEXT         NOT NULL,
-  chunkTime           INT      NOT NULL,
-  statusTimer         INT      NOT NULL,
-  color               TEXT  NULL,
-  isSmall             INT   NOT NULL,
-  isCpuTask           INT   NOT NULL,
-  useNewBench         INT   NOT NULL,
-  priority            INT      NOT NULL,
-  maxAgents           INT      NOT NULL,
-  isMaskImport        INT   NOT NULL,
-  crackerBinaryTypeId INT      NOT NULL
+  taskName            TEXT   NOT NULL,
+  attackCmd           TEXT   NOT NULL,
+  chunkTime           INT    NOT NULL,
+  statusTimer         INT    NOT NULL,
+  color               TEXT   NULL,
+  isSmall             INT    NOT NULL,
+  isCpuTask           INT    NOT NULL,
+  useNewBench         INT    NOT NULL,
+  priority            INT    NOT NULL,
+  maxAgents           INT    NOT NULL,
+  isMaskImport        INT    NOT NULL,
+  crackerBinaryTypeId INT    NOT NULL
 );
 
 CREATE TABLE RegVoucher (
   regVoucherId SERIAL NOT NULL PRIMARY KEY,
-  voucher      TEXT NOT NULL,
-  time         BIGINT       NOT NULL
+  voucher      TEXT   NOT NULL,
+  time         BIGINT NOT NULL
 );
 
 CREATE TABLE RightGroup (
   rightGroupId SERIAL NOT NULL PRIMARY KEY,
-  groupName    TEXT NOT NULL,
-  permissions  TEXT        NOT NULL
+  groupName    TEXT   NOT NULL,
+  permissions  TEXT   NOT NULL
 );
 
 INSERT INTO RightGroup (rightGroupId, groupName, permissions) VALUES
@@ -919,12 +1000,12 @@ INSERT INTO RightGroup (rightGroupId, groupName, permissions) VALUES
 
 CREATE TABLE Session (
   sessionId        SERIAL NOT NULL PRIMARY KEY,
-  userId           INT      NOT NULL,
-  sessionStartDate BIGINT       NOT NULL,
-  lastActionDate   BIGINT       NOT NULL,
-  isOpen           INT   NOT NULL,
-  sessionLifetime  INT      NOT NULL,
-  sessionKey       TEXT NOT NULL
+  userId           INT    NOT NULL,
+  sessionStartDate BIGINT NOT NULL,
+  lastActionDate   BIGINT NOT NULL,
+  isOpen           INT    NOT NULL,
+  sessionLifetime  INT    NOT NULL,
+  sessionKey       TEXT   NOT NULL
 );
 
 CREATE TABLE Speed (
@@ -942,148 +1023,67 @@ CREATE TABLE StoredValue (
 
 CREATE TABLE Supertask (
   supertaskId   SERIAL NOT NULL PRIMARY KEY,
-  supertaskName TEXT NOT NULL
+  supertaskName TEXT   NOT NULL
 );
 
 CREATE TABLE SupertaskPretask (
   supertaskPretaskId SERIAL NOT NULL PRIMARY KEY,
-  supertaskId        INT NOT NULL,
-  pretaskId          INT NOT NULL
+  supertaskId        INT    NOT NULL,
+  pretaskId          INT    NOT NULL
 );
 
 CREATE TABLE Task (
   taskId              SERIAL NOT NULL PRIMARY KEY,
-  taskName            TEXT NOT NULL,
-  attackCmd           TEXT         NOT NULL,
-  chunkTime           INT      NOT NULL,
-  statusTimer         INT      NOT NULL,
-  keyspace            BIGINT   NOT NULL,
-  keyspaceProgress    BIGINT   NOT NULL,
-  priority            INT      NOT NULL,
-  maxAgents           INT      NOT NULL,
-  color               TEXT  NULL,
-  isSmall             INT   NOT NULL,
-  isCpuTask           INT   NOT NULL,
-  useNewBench         INT   NOT NULL,
-  skipKeyspace        BIGINT   NOT NULL,
-  crackerBinaryId     INT      DEFAULT NULL,
-  crackerBinaryTypeId INT      NULL,
-  taskWrapperId       INT      NOT NULL,
-  isArchived          INT   NOT NULL,
-  notes               TEXT         NOT NULL,
-  staticChunks        INT      NOT NULL,
-  chunkSize           BIGINT   NOT NULL,
-  forcePipe           INT   NOT NULL,
-  usePreprocessor     INT   NOT NULL,
-  preprocessorCommand TEXT NOT NULL
+  taskName            TEXT   NOT NULL,
+  attackCmd           TEXT   NOT NULL,
+  chunkTime           INT    NOT NULL,
+  statusTimer         INT    NOT NULL,
+  keyspace            BIGINT NOT NULL,
+  keyspaceProgress    BIGINT NOT NULL,
+  priority            INT    NOT NULL,
+  maxAgents           INT    NOT NULL,
+  color               TEXT   NULL,
+  isSmall             INT    NOT NULL,
+  isCpuTask           INT    NOT NULL,
+  useNewBench         INT    NOT NULL,
+  skipKeyspace        BIGINT NOT NULL,
+  crackerBinaryId     INT    DEFAULT NULL,
+  crackerBinaryTypeId INT    NULL,
+  taskWrapperId       INT    NOT NULL,
+  isArchived          INT    NOT NULL,
+  notes               TEXT   NOT NULL,
+  staticChunks        INT    NOT NULL,
+  chunkSize           BIGINT NOT NULL,
+  forcePipe           INT    NOT NULL,
+  usePreprocessor     INT    NOT NULL,
+  preprocessorCommand TEXT   NOT NULL
 );
 
 CREATE TABLE TaskDebugOutput (
   taskDebugOutputId SERIAL NOT NULL PRIMARY KEY,
-  taskId            INT      NOT NULL,
-  output            TEXT NOT NULL
+  taskId            INT    NOT NULL,
+  output            TEXT   NOT NULL
 );
 
 CREATE TABLE TaskWrapper (
   taskWrapperId   SERIAL NOT NULL PRIMARY KEY,
-  priority        INT      NOT NULL,
-  maxAgents       INT      NOT NULL,
-  taskType        INT      NOT NULL,
-  hashlistId      INT      NOT NULL,
-  accessGroupId   INT      DEFAULT NULL,
-  taskWrapperName TEXT NOT NULL,
-  isArchived      INT   NOT NULL,
-  cracked         INT      NOT NULL
-);
-
-CREATE TABLE htp_User (
-  userId             SERIAL NOT NULL PRIMARY KEY,
-  username           TEXT NOT NULL,
-  email              TEXT NOT NULL,
-  passwordHash       TEXT NOT NULL,
-  passwordSalt       TEXT NOT NULL,
-  isValid            INT   NOT NULL,
-  isComputedPassword INT   NOT NULL,
-  lastLoginDate      BIGINT       NOT NULL,
-  registeredSince    BIGINT       NOT NULL,
-  sessionLifetime    INT      NOT NULL,
-  rightGroupId       INT      NOT NULL,
-  yubikey            TEXT DEFAULT NULL,
-  otp1               TEXT DEFAULT NULL,
-  otp2               TEXT DEFAULT NULL,
-  otp3               TEXT DEFAULT NULL,
-  otp4               TEXT DEFAULT NULL
+  priority        INT    NOT NULL,
+  maxAgents       INT    NOT NULL,
+  taskType        INT    NOT NULL,
+  hashlistId      INT    NOT NULL,
+  accessGroupId   INT    DEFAULT NULL,
+  taskWrapperName TEXT   NOT NULL,
+  isArchived      INT    NOT NULL,
+  cracked         INT    NOT NULL
 );
 
 CREATE TABLE Zap (
   zapId      SERIAL NOT NULL PRIMARY KEY,
-  hash       TEXT NOT NULL,
-  solveTime  BIGINT     NOT NULL,
+  hash       TEXT   NOT NULL,
+  solveTime  BIGINT NOT NULL,
   agentId    INT    NULL,
   hashlistId INT    NOT NULL
 );
-
-CREATE TABLE ApiKey (
-  apiKeyId    SERIAL NOT NULL PRIMARY KEY,
-  startValid  BIGINT   NOT NULL,
-  endValid    BIGINT   NOT NULL,
-  accessKey   TEXT NOT NULL,
-  accessCount INT      NOT NULL,
-  userId      INT      NOT NULL,
-  apiGroupId  INT      NOT NULL
-);
-
-CREATE TABLE ApiGroup (
-  apiGroupId  SERIAL NOT NULL PRIMARY KEY,
-  name        TEXT NOT NULL,
-  permissions TEXT         NOT NULL
-);
-
-CREATE TABLE FileDownload (
-  fileDownloadId SERIAL NOT NULL PRIMARY KEY,
-  time           BIGINT  NOT NULL,
-  fileId         INT NOT NULL,
-  status         INT NOT NULL
-);
-
-INSERT INTO ApiGroup ( apiGroupId, name, permissions) VALUES
-  (1, 'Administrators', 'ALL');
-
-CREATE TABLE HealthCheck (
-  healthCheckId   SERIAL NOT NULL PRIMARY KEY,
-  time            BIGINT   NOT NULL,
-  status          INT      NOT NULL,
-  checkType       INT      NOT NULL,
-  hashtypeId      INT      NOT NULL,
-  crackerBinaryId INT      NOT NULL,
-  expectedCracks  INT      NOT NULL,
-  attackCmd       TEXT         NOT NULL
-);
-
-CREATE TABLE HealthCheckAgent (
-  healthCheckAgentId SERIAL NOT NULL PRIMARY KEY,
-  healthCheckId      INT    NOT NULL,
-  agentId            INT    NOT NULL,
-  status             INT    NOT NULL,
-  cracked            INT    NOT NULL,
-  numGpus            INT    NOT NULL,
-  start              BIGINT NOT NULL,
-  htp_end            BIGINT NOT NULL,
-  errors             TEXT       NOT NULL
-);
-
-CREATE TABLE Preprocessor (
-  preprocessorId  SERIAL NOT NULL PRIMARY KEY,
-  name            TEXT NOT NULL,
-  url             TEXT NOT NULL,
-  binaryName      TEXT NOT NULL,
-  keyspaceCommand TEXT NULL,
-  skipCommand     TEXT NULL,
-  limitCommand    TEXT NULL
-);
-
-INSERT INTO Preprocessor ( preprocessorId, name, url, binaryName, keyspaceCommand, skipCommand, limitCommand) VALUES
-  (1, 'Prince', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z', 'pp', '--keyspace', '--skip', '--limit');
 
 -- Set sequences for all tables with SERIAL
 SELECT pg_catalog.setval(pg_get_serial_sequence('AccessGroup', 'accessgroupid'), MAX(accessGroupId)) from AccessGroup;
@@ -1131,74 +1131,74 @@ SELECT pg_catalog.setval(pg_get_serial_sequence('TaskWrapper', 'taskwrapperid'),
 SELECT pg_catalog.setval(pg_get_serial_sequence('Zap', 'zapid'), MAX(zapId)) from Zap;
 
 -- Add Indexes
-CREATE INDEX IF NOT EXISTS accessGroupId_idx ON AccessGroupAgent (accessGroupId);
-CREATE INDEX IF NOT EXISTS agentId_idx ON AccessGroupAgent (agentId);
+CREATE INDEX IF NOT EXISTS AccessGroupAgent_accessGroupId_idx ON AccessGroupAgent (accessGroupId);
+CREATE INDEX IF NOT EXISTS AccessGroupAgent_agentId_idx ON AccessGroupAgent (agentId);
 
-CREATE INDEX IF NOT EXISTS accessGroupId_idx ON AccessGroupUser (accessGroupId);
-CREATE INDEX IF NOT EXISTS userId_idx ON AccessGroupUser (userId);
+CREATE INDEX IF NOT EXISTS AccessGroupUser_accessGroupId_idx ON AccessGroupUser (accessGroupId);
+CREATE INDEX IF NOT EXISTS AccessGroupUser_userId_idx ON AccessGroupUser (userId);
 
-CREATE INDEX IF NOT EXISTS userId_idx ON Agent (userId);
+CREATE INDEX IF NOT EXISTS Agent_userId_idx ON Agent (userId);
 
-CREATE INDEX IF NOT EXISTS agentId_idx ON AgentError (agentId);
-CREATE INDEX IF NOT EXISTS taskId_idx ON AgentError (taskId);
+CREATE INDEX IF NOT EXISTS AgentError_agentId_idx ON AgentError (agentId);
+CREATE INDEX IF NOT EXISTS AgentError_taskId_idx ON AgentError (taskId);
 
-CREATE INDEX IF NOT EXISTS agentId_idx ON AgentStat (agentId);
+CREATE INDEX IF NOT EXISTS AgentStat_agentId_idx ON AgentStat (agentId);
 
-CREATE INDEX IF NOT EXISTS agentId_idx ON AgentZap (agentId);
-CREATE INDEX IF NOT EXISTS lastZapId_idx ON AgentZap (lastZapId);
+CREATE INDEX IF NOT EXISTS AgentZap_agentId_idx ON AgentZap (agentId);
+CREATE INDEX IF NOT EXISTS AgentZap_lastZapId_idx ON AgentZap (lastZapId);
 
-CREATE INDEX IF NOT EXISTS taskId_idx ON Assignment (taskId);
-CREATE INDEX IF NOT EXISTS agentId_idx ON Assignment (agentId);
+CREATE INDEX IF NOT EXISTS Assignment_taskId_idx ON Assignment (taskId);
+CREATE INDEX IF NOT EXISTS Assignment_agentId_idx ON Assignment (agentId);
 
-CREATE INDEX IF NOT EXISTS taskId_idx ON Chunk (taskId);
-CREATE INDEX IF NOT EXISTS progress_idx ON Chunk (progress);
-CREATE INDEX IF NOT EXISTS agentId_idx ON Chunk (agentId);
+CREATE INDEX IF NOT EXISTS Chunk_taskId_idx ON Chunk (taskId);
+CREATE INDEX IF NOT EXISTS Chunk_progress_idx ON Chunk (progress);
+CREATE INDEX IF NOT EXISTS Chunk_agentId_idx ON Chunk (agentId);
 
-CREATE INDEX IF NOT EXISTS configSectionId_idx ON Config (configSectionId);
+CREATE INDEX IF NOT EXISTS Config_configSectionId_idx ON Config (configSectionId);
 
-CREATE INDEX IF NOT EXISTS crackerBinaryTypeId_idx ON CrackerBinary (crackerBinaryTypeId);
+CREATE INDEX IF NOT EXISTS CrackerBinary_crackerBinaryTypeId_idx ON CrackerBinary (crackerBinaryTypeId);
 
-CREATE INDEX IF NOT EXISTS fileId_idx ON FilePretask (fileId);
-CREATE INDEX IF NOT EXISTS pretaskId_idx ON FilePretask (pretaskId);
+CREATE INDEX IF NOT EXISTS FilePretask_fileId_idx ON FilePretask (fileId);
+CREATE INDEX IF NOT EXISTS FilePretask_pretaskId_idx ON FilePretask (pretaskId);
 
-CREATE INDEX IF NOT EXISTS fileId_idx ON FileTask (fileId);
-CREATE INDEX IF NOT EXISTS taskId_idx ON FileTask (taskId);
+CREATE INDEX IF NOT EXISTS FileTask_fileId_idx ON FileTask (fileId);
+CREATE INDEX IF NOT EXISTS FileTask_taskId_idx ON FileTask (taskId);
 
-CREATE INDEX IF NOT EXISTS hashlistId_idx ON Hash (hashlistId);
-CREATE INDEX IF NOT EXISTS chunkId_idx ON Hash (chunkId);
-CREATE INDEX IF NOT EXISTS isCracked_idx ON Hash (isCracked);
-CREATE INDEX IF NOT EXISTS hash_idx ON Hash (hash);
-CREATE INDEX IF NOT EXISTS timeCracked_idx ON Hash (timeCracked);
+CREATE INDEX IF NOT EXISTS Hash_hashlistId_idx ON Hash (hashlistId);
+CREATE INDEX IF NOT EXISTS Hash_chunkId_idx ON Hash (chunkId);
+CREATE INDEX IF NOT EXISTS Hash_isCracked_idx ON Hash (isCracked);
+CREATE INDEX IF NOT EXISTS Hash_hash_idx ON Hash (hash);
+CREATE INDEX IF NOT EXISTS Hash_timeCracked_idx ON Hash (timeCracked);
 
-CREATE INDEX IF NOT EXISTS hashlistId_idx ON HashBinary (hashlistId);
-CREATE INDEX IF NOT EXISTS chunkId_idx ON HashBinary (chunkId);
+CREATE INDEX IF NOT EXISTS HashBinary_hashlistId_idx ON HashBinary (hashlistId);
+CREATE INDEX IF NOT EXISTS HashBinary_chunkId_idx ON HashBinary (chunkId);
 
-CREATE INDEX IF NOT EXISTS hashTypeId_idx ON Hashlist (hashTypeId);
+CREATE INDEX IF NOT EXISTS Hashlist_hashTypeId_idx ON Hashlist (hashTypeId);
 
-CREATE INDEX IF NOT EXISTS parentHashlistId_idx ON HashlistHashlist (parentHashlistId);
-CREATE INDEX IF NOT EXISTS hashlistId_idx ON HashlistHashlist (hashlistId);
+CREATE INDEX IF NOT EXISTS HashlistHashlist_parentHashlistId_idx ON HashlistHashlist (parentHashlistId);
+CREATE INDEX IF NOT EXISTS HashlistHashlist_hashlistId_idx ON HashlistHashlist (hashlistId);
 
-CREATE INDEX IF NOT EXISTS rightGroupId_idx ON htp_User (rightGroupId);
+CREATE INDEX IF NOT EXISTS htp_User_rightGroupId_idx ON htp_User (rightGroupId);
 
-CREATE INDEX IF NOT EXISTS userId_idx ON NotificationSetting (userId);
+CREATE INDEX IF NOT EXISTS NotificationSetting_userId_idx ON NotificationSetting (userId);
 
-CREATE INDEX IF NOT EXISTS userId_idx ON Session (userId);
+CREATE INDEX IF NOT EXISTS Session_userId_idx ON Session (userId);
 
-CREATE INDEX IF NOT EXISTS agentId_idx ON Speed (agentId);
-CREATE INDEX IF NOT EXISTS taskId_idx ON Speed (taskId);
+CREATE INDEX IF NOT EXISTS Speed_agentId_idx ON Speed (agentId);
+CREATE INDEX IF NOT EXISTS Speed_taskId_idx ON Speed (taskId);
 
-CREATE INDEX IF NOT EXISTS supertaskId_idx ON SupertaskPretask (supertaskId);
-CREATE INDEX IF NOT EXISTS pretaskId_idx ON SupertaskPretask (pretaskId);
+CREATE INDEX IF NOT EXISTS SupertaskPretask_supertaskId_idx ON SupertaskPretask (supertaskId);
+CREATE INDEX IF NOT EXISTS SupertaskPretask_pretaskId_idx ON SupertaskPretask (pretaskId);
 
-CREATE INDEX IF NOT EXISTS crackerBinaryId_idx ON Task (crackerBinaryId);
+CREATE INDEX IF NOT EXISTS Task_crackerBinaryId_idx ON Task (crackerBinaryId);
 
-CREATE INDEX IF NOT EXISTS hashlistId_idx ON TaskWrapper (hashlistId);
-CREATE INDEX IF NOT EXISTS priority_idx ON TaskWrapper (priority);
-CREATE INDEX IF NOT EXISTS isArchived_idx ON TaskWrapper (isArchived);
-CREATE INDEX IF NOT EXISTS accessGroupId_idx ON TaskWrapper (accessGroupId);
+CREATE INDEX IF NOT EXISTS TaskWrapper_hashlistId_idx ON TaskWrapper (hashlistId);
+CREATE INDEX IF NOT EXISTS TaskWrapper_priority_idx ON TaskWrapper (priority);
+CREATE INDEX IF NOT EXISTS TaskWrapper_isArchived_idx ON TaskWrapper (isArchived);
+CREATE INDEX IF NOT EXISTS TaskWrapper_accessGroupId_idx ON TaskWrapper (accessGroupId);
 
-CREATE INDEX IF NOT EXISTS agentId_idx ON Zap (agentId);
-CREATE INDEX IF NOT EXISTS hashlistId_idx ON Zap (hashlistId);
+CREATE INDEX IF NOT EXISTS Zap_agentId_idx ON Zap (agentId);
+CREATE INDEX IF NOT EXISTS Zap_hashlistId_idx ON Zap (hashlistId);
 
 -- Add Constraints
 ALTER TABLE AccessGroupAgent ADD CONSTRAINT AccessGroupAgent_ibfk_1 FOREIGN KEY (accessGroupId) REFERENCES AccessGroup (accessGroupId);
