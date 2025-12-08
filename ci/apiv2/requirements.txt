@@ -2,3 +2,4 @@ click
 click_log
 pytest
 git+https://github.com/hashtopolis/python-hashtopolis.git
+confidence
