@@ -184,7 +184,7 @@ if (isset($_GET['id'])) {
   UI::add('agentsSpeed', $agentsSpeed);
   
   $assignAgents = array();
-  $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $hashlist->getAccessGroupId(), "=");
+  $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $hashlist->getAccessGroupId(), "=", Factory::getAccessGroupAgentFactory());
   $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroupAgent::AGENT_ID, Agent::AGENT_ID);
   $allAgents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF])[Factory::getAgentFactory()->getModelName()];
   foreach ($allAgents as $agent) {
