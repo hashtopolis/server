@@ -19,6 +19,7 @@ use DBA\AgentStat;
 use DBA\Factory;
 use DBA\TaskWrapper;
 use DBA\Speed;
+use DBA\UpdateSet;
 
 class APISendProgress extends APIBasic {
   public function execute($QUERY = array()) {
