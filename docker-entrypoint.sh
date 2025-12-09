@@ -9,6 +9,9 @@ for path in ${paths[@]}; do
     exit 1
   fi
 done
+if [[ -z "${HASHTOPOLIS_DB_TYPE+x}" ]]; then
+    HASHTOPOLIS_DB_TYPE="mysql"
+fi
 
 echo "Testing database..."
 if [[ "$HASHTOPOLIS_DB_TYPE" == "mysql" ]]; then

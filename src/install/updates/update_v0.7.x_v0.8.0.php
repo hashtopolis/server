@@ -4,6 +4,7 @@ use DBA\Factory;
 use DBA\File;
 use DBA\Config;
 use DBA\ConfigSection;
+use DBA\UpdateSet;
 
 /** @noinspection PhpIncludeInspection */
 require_once(dirname(__FILE__) . "/../../inc/db.php");
