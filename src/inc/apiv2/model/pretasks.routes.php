@@ -6,7 +6,10 @@ use DBA\OrderFilter;
 
 use DBA\File;
 use DBA\FilePretask;
+use DBA\JoinFilter;
 use DBA\Pretask;
+use DBA\Supertask;
+use DBA\SupertaskPretask;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -63,7 +66,30 @@ class PreTaskAPI extends AbstractModelAPI {
     );
     return $pretask->getId();
   }
-  
+
+  //TODO make aggregate data queryable and not included by default
+  static function aggregateData(object $object, array &$included_data = [], array $aggregateFieldsets = null): array {
+    $aggregatedData = [];
+    if (is_null($aggregateFieldsets) || (is_array($aggregateFieldsets) && array_key_exists('pretask', $aggregateFieldsets)) || (array_key_exists("benchmarka0", $aggregatedData) && array_key_exists("benchmarka3", $aggregatedData))) {
+
+      $qF1 = new QueryFilter(FilePretask::PRETASK_ID, $object->getId(), "=", Factory::getFilePretaskFactory());
+      $jF1 = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
+      $files = Factory::getFileFactory()->filter([Factory::FILTER => $qF1, Factory::JOIN => $jF1]);
+      $files = $files[Factory::getFileFactory()->getModelName()];
+      
+      $lineCountProduct = 1;
+      foreach ($files as $file) {
+        $lineCount = $file->getLineCount();
+        if ($lineCount !== null) {
+          $lineCountProduct = $lineCountProduct * $lineCount;
+        }
+      }
+      $aggregatedData["auxiliaryKeyspace"] = $lineCountProduct;
+    }
+
+    return $aggregatedData;
+  }
+
   protected function getUpdateHandlers($id, $current_user): array {
     return [
       Pretask::ATTACK_CMD => fn($value) => PretaskUtils::changeAttack($id, $value),
