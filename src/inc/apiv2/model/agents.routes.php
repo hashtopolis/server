@@ -35,6 +35,7 @@ class AgentAPI extends AbstractModelAPI {
   protected function getUpdateHandlers($id, $current_user): array {
     return [
       Agent::IGNORE_ERRORS => fn($value) => AgentUtils::changeIgnoreErrors($id, $value, $current_user),
+      Agent::AGENT_NAME => fn($value) => AgentUtils::rename($id, $value, $current_user),
     ];
   }
   
