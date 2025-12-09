@@ -148,9 +148,9 @@ class UserTest(BaseTest):
 
     def test_patch_username(self):
         model_obj = self.create_test_object()
-        model_obj.username = "fancy-username"
+        model_obj.name = "fancy-username"
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 403)
-        self.assertEqual(e.exception.title, f"Key 'username' is immutable")
+        self.assertEqual(e.exception.title, f"Key 'name' is immutable")
 
