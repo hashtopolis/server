@@ -2,14 +2,11 @@
 
 use DBA\Factory;
 use DBA\QueryFilter;
-use DBA\OrderFilter;
 
 use DBA\File;
 use DBA\FilePretask;
 use DBA\JoinFilter;
 use DBA\Pretask;
-use DBA\Supertask;
-use DBA\SupertaskPretask;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -70,7 +67,7 @@ class PreTaskAPI extends AbstractModelAPI {
   //TODO make aggregate data queryable and not included by default
   static function aggregateData(object $object, array &$included_data = [], array $aggregateFieldsets = null): array {
     $aggregatedData = [];
-    if (is_null($aggregateFieldsets) || (is_array($aggregateFieldsets) && array_key_exists('pretask', $aggregateFieldsets)) || (array_key_exists("benchmarka0", $aggregatedData) && array_key_exists("benchmarka3", $aggregatedData))) {
+    if (is_null($aggregateFieldsets) || (is_array($aggregateFieldsets) && array_key_exists('pretask', $aggregateFieldsets))) {
 
       $qF1 = new QueryFilter(FilePretask::PRETASK_ID, $object->getId(), "=", Factory::getFilePretaskFactory());
       $jF1 = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
