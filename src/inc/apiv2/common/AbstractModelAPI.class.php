@@ -23,14 +23,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   
   abstract protected function deleteObject(object $object): void;
   
-  public static function getToOneRelationships(): array {
-    return [];
-  }
-  
-  public static function getToManyRelationships(): array {
-    return [];
-  }
-  
   /**
    * Available 'expand' parameters on $object
    */
@@ -124,16 +116,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   public function getFeaturesWithoutFormfields(): array {
     $features = call_user_func($this->getDBAclass() . '::getFeatures');
     return $this->mapFeatures($features);
-  }
-  
-  /**
-   * Get features based on DBA model features
-   *
-   * @param string $dbaClass is the dba class to get the features from
-   */
-  //TODO doesnt retrieve features based on form fields, could be done by adding api class in relationship objects
-  final protected function getFeaturesOther(string $dbaClass): array {
-    return call_user_func($dbaClass . '::getFeatures');
   }
   
   /**
@@ -547,16 +529,23 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
   protected static function getMinMaxCursor($apiClass, string $sort, array $filters, $request, $aliasedfeatures) {
     $filters[Factory::LIMIT] = new LimitFilter(1);
-
+    $primaryKey = $apiClass->getPrimaryKey();
     // Descending queries are used to retrieve the last element. For this all sorts have to be reversed, since
     // if all order quereis are reversed and limit to 1, you will retrieve the last element.
     $reverseSort = ($sort == "DESC") ? true : false;
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $sort, $reverseSort);
     $orderFilters = [];
+    $joinFilters = [];
     foreach ($orderTemplates as $orderTemplate) {
-      $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
+      $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type'], $orderTemplate['factory']);
+      if ($orderTemplate['factory'] !== null){
+        // if factory of ordertemplate is not null, sort is happenning on joined table
+        $otherFactory = $orderTemplate['factory'];
+        $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $apiClass->getPrimaryKeyOther($otherFactory->getNullObject()::class));
+      }
     }
     $filters[Factory::ORDER] = $orderFilters;
+    $filters[Factory::JOIN] = $joinFilters;
     $factory = $apiClass->getFactory();
     $result = $factory->filter($filters);
     //handle joined queries
@@ -661,23 +650,30 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     } else {
       $defaultSort = "ASC";
     }
+    $primaryKey = $apiClass->getPrimaryKey();
 
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $defaultSort);
     $orderTemplates[0]["type"] = $defaultSort;
     $primaryFilter = $orderTemplates[0]['by'];
     $orderFilters = [];
+    $joinFilters = [];
 
     // Build actual order filters
     foreach ($orderTemplates as $orderTemplate) {
       // $aFs[Factory::ORDER][] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
-      $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
+      $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type'], $orderTemplate['factory']);
+      if ($orderTemplate['factory'] !== null) {
+        // if factory of ordertemplate is not null, sort is happenning on joined table
+        $otherFactory = $orderTemplate['factory'];
+        $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $apiClass->getPrimaryKeyOther($otherFactory->getNullObject()::class));
+      }
     }
     $aFs[Factory::ORDER] = $orderFilters;
+    $aFs[Factory::JOIN] = $joinFilters;
 
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
 
-    $primaryKey = $apiClass->getPrimaryKey();
     //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
     //But this probably needs to be added in getFeatures() then.
     $primaryKeyIsNotPrimaryFilter = $primaryFilter != $primaryKey;

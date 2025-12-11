@@ -144,6 +144,16 @@ abstract class AbstractBaseAPI {
     }
     return $features;
   }
+
+  /**
+   * Get features based on DBA model features
+   *
+   * @param string $dbaClass is the dba class to get the features from
+   */
+  //TODO doesnt retrieve features based on form fields, could be done by adding api class in relationship objects
+  final protected function getFeaturesOther(string $dbaClass): array {
+    return call_user_func($dbaClass . '::getFeatures');
+  }
   
   protected function getUpdateHandlers($id, $current_user): array {
     return [];
@@ -174,6 +184,11 @@ abstract class AbstractBaseAPI {
     $features = $this->getFeatures();
     return $this->mapFeatures($features);
   }
+
+  public function getAliasedFeaturesOther($dbaclass): array {
+    $features = $this->getFeaturesOther($dbaclass);
+    return $this->mapFeatures($features);
+  }
   
   final protected function mapFeatures($features): array {
     $mappedFeatures = [];
@@ -182,6 +197,18 @@ abstract class AbstractBaseAPI {
       $mappedFeatures[$value['alias']]['dbname'] = $key;
     }
     return $mappedFeatures;
+  }
+
+  public static function getToOneRelationships(): array {
+    return [];
+  }
+  
+  public static function getToManyRelationships(): array {
+    return [];
+  }
+
+  public function getAllRelationships(): array {
+    return array_merge($this->getToOneRelationships(), $this->getToManyRelationships());
   }
   
   /**
@@ -1145,19 +1172,38 @@ abstract class AbstractBaseAPI {
     $orderings = $this->getQueryParameterAsList($request, 'sort');
     $contains_primary_key = false;
     foreach ($orderings as $order) {
-      if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z]+)$/', $order, $matches)) {
+      $factory = null;
+      $joinKey = null;
+      $features_sort = $features;
+      if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z.]+)$/', $order, $matches)) {
         // Special filtering of _id to use for uniform access to model primary key
         $cast_key = $matches['key'] == 'id' ? $this->getPrimaryKey() : $matches['key'];
         if ($cast_key == $this->getPrimaryKey()) {
           $contains_primary_key = true;
         }
-        if (array_key_exists($cast_key, $features)) {
-          $remappedKey = $features[$cast_key]['dbname'];
+        if (strpos($cast_key, ".")) {
+          $parts = explode(".", $cast_key);
+            if (count($parts) == 2) { // Only relations of 1 deep allowed ex. task.keyspace
+              $relationString = $parts[0];
+              //currently getting all relationships, but its probably only possible to sort on  1 to 1 relations
+              $relations = $this->getAllRelationships();
+              if (array_key_exists($relationString, $relations)) {
+                $relationClass = $relations[$relationString]['relationType'];
+                $relationFeatures = $this->getAliasedFeaturesOther($relationClass);
+                $factory = $this->getModelFactory($relationClass);
+                $joinKey = $relations[$relationString]['relationKey'];
+                $features_sort = $relationFeatures;
+                $cast_key = $parts[1];
+              }
+            }
+          }
+        if (array_key_exists($cast_key, $features_sort)) {
+          $remappedKey = $features_sort[$cast_key]['dbname'];
           $type = ($matches['operator'] == '-') ? "DESC" : "ASC";
           if ($reverseSort) {
             $type = ($type == "ASC") ? "DESC" : "ASC";
           }
-          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type];
+          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type, 'factory' => $factory, 'joinKey' => $joinKey];
         }
         else {
           throw new HttpForbidden("Ordering parameter '" . $order . "' is not valid");
@@ -1170,7 +1216,7 @@ abstract class AbstractBaseAPI {
     
     //when no primary key has been added in the sort parameter, add the default case of sorting on primary key as last sort
     if (!$contains_primary_key) {
-      $orderTemplates[] = ['by' => $this->getPrimaryKey(), 'type' => $defaultSort];
+      $orderTemplates[] = ['by' => $this->getPrimaryKey(), 'type' => $defaultSort, 'factory' => null, 'joinKey' => null];
     }
     
     return $orderTemplates;
