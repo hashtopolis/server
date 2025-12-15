@@ -562,6 +562,7 @@ abstract class AbstractModelFactory {
    * @return AbstractModel[]|AbstractModel Returns a list of matching objects or Null
    */
   private function filterWithJoin(array $options): array|AbstractModel {
+    $vals = array();
     $joins = $this->getJoins($options);
     $factories = array($this);
     $query = "SELECT " . Util::createPrefixedString($this->getMappedModelTable(), self::getMappedModelKeys($this->getNullObject()));
@@ -580,11 +581,14 @@ abstract class AbstractModelFactory {
       }
       $match1 = self::getMappedModelKey($localFactory->getNullObject(), $join->getMatch1());
       $match2 = self::getMappedModelKey($joinFactory->getNullObject(), $join->getMatch2());
-      $query .= " INNER JOIN " . $joinFactory->getMappedModelTable() . " ON " . $localFactory->getMappedModelTable() . "." . $match1 . "=" . $joinFactory->getMappedModelTable() . "." . $match2 . " ";
+      $query .= " " . $join->getJoinType() . " JOIN " . $joinFactory->getMappedModelTable() . " ON " . $localFactory->getMappedModelTable() . "." . $match1 . "=" . $joinFactory->getMappedModelTable() . "." . $match2 . " ";
+      $joinQueryFilters = $join->getQueryFilters();
+      if (count($joinQueryFilters) > 0) {
+        $query .= $this->applyFilters($vals, $joinQueryFilters, true) ;
+      }
     }
     
     // Apply all normal filter to this query
-    $vals = array();
     if (array_key_exists("filter", $options)) {
       $query .= $this->applyFilters($vals, $options['filter']);
     }
@@ -709,7 +713,7 @@ abstract class AbstractModelFactory {
    * @param $filters Filter|Filter[]
    * @return string
    */
-  private function applyFilters(&$vals, Filter|array $filters): string {
+  private function applyFilters(&$vals, Filter|array $filters, bool $isJoinFilter = false): string {
     $parts = array();
     if (!is_array($filters)) {
       $filters = array($filters);
@@ -729,6 +733,9 @@ abstract class AbstractModelFactory {
       else {
         $vals[] = $v;
       }
+    }
+    if ($isJoinFilter) {
+      return " AND " . implode(" AND ", $parts);
     }
     return " WHERE " . implode(" AND ", $parts);
   }
