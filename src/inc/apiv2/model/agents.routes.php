@@ -127,6 +127,17 @@ class AgentAPI extends AbstractModelAPI {
       ],
     ];
   }
+
+  public static function getToOneRelationships(): array {
+    return [
+      'user' => [
+        'key' => Agent::USER_ID,
+        
+        'relationType' => User::class,
+        'relationKey' => User::USER_ID,
+      ],
+    ];
+  }
   
   #[NoReturn] protected function createObject(array $data): int {
     assert(False, "Agents cannot be created via API");
