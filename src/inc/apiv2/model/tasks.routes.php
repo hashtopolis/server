@@ -120,7 +120,7 @@ class TaskAPI extends AbstractModelAPI {
       ]
     ];
   }
-  
+
   public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return [

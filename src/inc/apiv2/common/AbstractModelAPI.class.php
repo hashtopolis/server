@@ -559,7 +559,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   }
 
   /**
-   * overiddable function to parse filters, currently only needed for taskWrapper endpoint
+   * overridable function to parse filters, currently only needed for taskWrapper endpoint
    * to handle the taskwrapper -> task relation, to be able to treat it as a to one relationship
    */
   protected function parseFilters(array $filters) {
@@ -671,7 +671,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       // $aFs[Factory::ORDER][] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
       $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type'], $orderTemplate['factory']);
       if ($orderTemplate['factory'] !== null) {
-        // if factory of ordertemplate is not null, sort is happenning on joined table
+        // if factory of ordertemplate is not null, sort is happening on joined table
         $otherFactory = $orderTemplate['factory'];
         $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $apiClass->getPrimaryKeyOther($otherFactory->getNullObject()::class));
       }

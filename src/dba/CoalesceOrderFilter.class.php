@@ -16,5 +16,3 @@ class CoalesceOrderFilter extends Order {
     return "COALESCE(" . implode(", ", $this->columns) . ") " . $this->type;
   }
 }
-
-
