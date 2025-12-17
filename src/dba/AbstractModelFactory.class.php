@@ -609,7 +609,6 @@ abstract class AbstractModelFactory {
     if (array_key_exists("limit", $options)) {
       $query .= $this->applyLimit($options['limit']);
     }
-    
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
@@ -765,7 +764,7 @@ abstract class AbstractModelFactory {
       }
       $match1 = self::getMappedModelKey($localFactory->getNullObject(), $join->getMatch1());
       $match2 = self::getMappedModelKey($joinFactory->getNullObject(), $join->getMatch2());
-      $query .= " INNER JOIN " . $joinFactory->getMappedModelTable() . " ON " . $localFactory->getMappedModelTable() . "." . $match1 . "=" . $joinFactory->getMappedModelTable() . "." . $match2 . " ";
+      $query .= " " . $join->getJoinType() . " JOIN " . $joinFactory->getMappedModelTable() . " ON " . $localFactory->getMappedModelTable() . "." . $match1 . "=" . $joinFactory->getMappedModelTable() . "." . $match2 . " ";
     }
     return $query;
   }
