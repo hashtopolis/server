@@ -1,11 +1,13 @@
 <?php
 
 use DBA\AccessGroup;
+use DBA\CoalesceOrderFilter;
 use DBA\ContainFilter;
 use DBA\Factory;
 use DBA\Hashlist;
 use DBA\HashType;
 use DBA\JoinFilter;
+use DBA\OrderFilter;
 use DBA\QueryFilter;
 
 use DBA\Task;
@@ -82,6 +84,13 @@ class TaskWrapperAPI extends AbstractModelAPI {
         'relationType' => HashType::class,
         'relationKey' => HashType::HASH_TYPE_ID,
       ],
+      'task' => [
+        'key' => TaskWrapper::TASK_WRAPPER_ID,
+        
+        'relationType' => Task::class,
+        'relationKey' => Task::TASK_WRAPPER_ID,
+        'readonly' => true // Not allowed to change tasks of a taskwrapper 
+      ],
     ];
   }
   
@@ -97,6 +106,37 @@ class TaskWrapperAPI extends AbstractModelAPI {
     ];
   }
   
+  protected function parseFilters(array $filters) {
+    //This is in order to handle filters and sorting on columds
+    if (isset($filters[Factory::JOIN])) {
+      $joinFilters = $filters[Factory::JOIN];
+      //TODO no correct, should check if it is a query for 1 to 1 'task' and not 1 to many 'tasks'
+      foreach ($joinFilters as $joinFilter) {
+        if ($joinFilter->getOtherTableName() == "Task") {
+          // This is a leftjoin where the task type is 0 which means not a supertask. This is in order to 
+          // create a to 1 relationship where the taskwrapper will have the normal task as a relation and a supertaks will have null
+          // This way it becomes possible to filter or sort on the included single task.
+          $joinFilter->setJoinType("left");
+          $qf = new QueryFilter(TaskWrapper::TASK_TYPE, "0", "=");
+          $joinFilter->setQueryFilters([$qf]);
+        }
+      }
+
+      // parse the order and filter
+      // Because the frontend shows taskwrappername for supertasks and taskname for normaltasks, the orders and filters for the 
+      // name needs to be changed to coalesce filters to get the correct value between these 2. 
+      // Another possibilty where this hack is not needed would be to also store the taskname of normal tasks in the
+      // taskwrapper
+      foreach ($filters[Factory::ORDER] as &$orderfilter) {
+        if ($orderfilter->getBy() == Task::TASK_NAME) {
+          $newOrderFilter = new CoalesceOrderFilter([Task::TASK_NAME, TaskWrapper::TASK_WRAPPER_NAME], $orderfilter->gettype());
+          $orderfilter = $newOrderFilter;
+        }
+      }
+      unset($orderfilter);
+    }
+    return $filters;
+  }
   
   #[NoReturn] protected function createObject(array $data): int {
     assert(False, "TaskWrappers cannot be created via API");

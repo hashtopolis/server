@@ -428,7 +428,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     return $updates;
   }
-  
+
   protected static function calculate_next_cursor(string|int $cursor, bool $ascending=true) {
     if (is_int($cursor)) {
       if ($ascending) {
@@ -539,7 +539,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     foreach ($orderTemplates as $orderTemplate) {
       $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type'], $orderTemplate['factory']);
       if ($orderTemplate['factory'] !== null){
-        // if factory of ordertemplate is not null, sort is happenning on joined table
+        // if factory of ordertemplate is not null, sort is happening on joined table
         $otherFactory = $orderTemplate['factory'];
         $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $apiClass->getPrimaryKeyOther($otherFactory->getNullObject()::class));
       }
@@ -556,6 +556,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       return null;
     }
     return $result[0];
+  }
+
+  /**
+   * overiddable function to parse filters, currently only needed for taskWrapper endpoint
+   * to handle the taskwrapper -> task relation, to be able to treat it as a to one relationship
+   */
+  protected function parseFilters(array $filters) {
+    return $filters;
   }
 
   /**
@@ -668,11 +676,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $apiClass->getPrimaryKeyOther($otherFactory->getNullObject()::class));
       }
     }
+
     $aFs[Factory::ORDER] = $orderFilters;
     $aFs[Factory::JOIN] = $joinFilters;
 
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
+    $finalFs = $apiClass->parseFilters($finalFs);
 
     //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
     //But this probably needs to be added in getFeatures() then.
