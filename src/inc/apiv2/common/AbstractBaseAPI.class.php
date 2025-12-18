@@ -185,8 +185,8 @@ abstract class AbstractBaseAPI {
     return $this->mapFeatures($features);
   }
 
-  public function getAliasedFeaturesOther($dbaclass): array {
-    $features = $this->getFeaturesOther($dbaclass);
+  public function getAliasedFeaturesOther($dbaClass): array {
+    $features = $this->getFeaturesOther($dbaClass);
     return $this->mapFeatures($features);
   }
   

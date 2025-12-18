@@ -81,7 +81,7 @@ class JoinFilter extends Join {
   }
 
   function setJoinType($joinType) {
-    return $this->joinType = $joinType;
+    $this->joinType = $joinType;
   }
 
 

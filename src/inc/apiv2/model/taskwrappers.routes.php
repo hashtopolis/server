@@ -111,11 +111,11 @@ class TaskWrapperAPI extends AbstractModelAPI {
     if (isset($filters[Factory::JOIN])) {
       $joinFilters = $filters[Factory::JOIN];
       foreach ($joinFilters as $joinFilter) {
-        if ($joinFilter->getOtherTableName() == "Task") {
+        if ($joinFilter->getOtherTableName() == Task::class) {
           // This is a leftjoin where the task type is 0 which means not a supertask. This is in order to 
           // create a to 1 relationship where the taskwrapper will have the normal task as a relation and a supertask will have null
           // This way it becomes possible to filter or sort on the included single task.
-          $joinFilter->setJoinType("left");
+          $joinFilter->setJoinType("LEFT");
           $qf = new QueryFilter(TaskWrapper::TASK_TYPE, DTaskTypes::NORMAL, "=");
           $joinFilter->setQueryFilters([$qf]);
         }
