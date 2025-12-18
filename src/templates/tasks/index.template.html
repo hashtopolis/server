@@ -17,11 +17,19 @@
 			<input type="submit" value="Delete archived" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}'>
 		</form>
 	{{ENDIF}}
-  {{IF [[showArchived]]}}
-    <a style="float: left; margin-right: 5px;" href="tasks.php" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}">Show current</a>
-  {{ELSE}}
-    <a style="float: left; margin-right: 5px;" href="tasks.php?archived=true" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}">Show archived</a>
-  {{ENDIF}}
+  <a id="toggleArchivedBtn" style="float: left; margin-right: 5px;" href="#" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}">{{IF [[showArchived]]}}Show current{{ELSE}}Show archived{{ENDIF}}</a>
+  <script>
+    document.getElementById('toggleArchivedBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('archived')) {
+        url.searchParams.delete('archived');
+      } else {
+        url.searchParams.set('archived', 'true');
+      }
+      window.location.href = url.toString();
+    });
+  </script>
 	{%TEMPLATE->tasks/autorefresh%}
 	<br>
 </div>
