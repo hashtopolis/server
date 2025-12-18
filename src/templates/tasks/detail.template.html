@@ -235,6 +235,20 @@
         </td>
       </tr>
       <tr>
+        <td>Use static chunking:</td>
+        <td>
+          {{IF [[task.getStaticChunks()]] == [[$DTaskStaticChunking::NORMAL]]}}
+            No
+          {{ELSE}}
+            {{IF [[task.getStaticChunks()]] == [[$DTaskStaticChunking::CHUNK_SIZE]]}}
+              Fixed chunk size ([[task.getChunkSize()]])
+            {{ELSE}}
+              Fixed number of chunks ([[task.getChunkSize()]])
+            {{ENDIF}}
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
         <td>Skipping keyspace at the beginning:</td>
         <td>
           [[task.getSkipKeyspace()]]
