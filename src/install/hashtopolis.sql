@@ -170,7 +170,11 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (74, 4, 'agentUtilThreshold1', '90'),
   (75, 4, 'agentUtilThreshold2', '75'),
   (76, 3, 'uApiSendTaskIsComplete', '0'),
-  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed');
+  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed'),
+  (78, 8, 'vastAiApiKey', ''),
+  (79, 8, 'vastImageUrl', 'deadjakk/hcat-vast-dev:latest'),
+  (80, 8, 'vastImageLogin', ''),
+  (81, 8, 'vastHashtopolisBaseUrl', '');
 
 CREATE TABLE `ConfigSection` (
   `configSectionId` INT(11)      NOT NULL,
@@ -184,7 +188,9 @@ INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
   (4, 'UI'),
   (5, 'Server'),
   (6, 'Multicast'),
-  (7, 'Notifications');
+  (7, 'Notifications'),
+  (8, 'VastAI')
+;
 
 CREATE TABLE `CrackerBinary` (
   `crackerBinaryId`     INT(11)      NOT NULL,
