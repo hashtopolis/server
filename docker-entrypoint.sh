@@ -18,10 +18,16 @@ if [[ "$HASHTOPOLIS_DB_TYPE" == "mysql" ]]; then
     echo "Using MySQL..."
     DB_CMD="mysql -u${HASHTOPOLIS_DB_USER} -p${HASHTOPOLIS_DB_PASS} -h ${HASHTOPOLIS_DB_HOST} --skip-ssl"
     DB_TYPE="mysql"
+    if [[ -n "${HASHTOPOLIS_DB_PORT}" ]]; then
+        DB_CMD="${DB_CMD} -P${HASHTOPOLIS_DB_PORT}"
+    fi
 elif [[ "$HASHTOPOLIS_DB_TYPE" == "postgres" ]]; then
     echo "Using postgres..."
     DB_CMD="psql -U${HASHTOPOLIS_DB_USER} -h ${HASHTOPOLIS_DB_HOST} ${HASHTOPOLIS_DB_DATABASE}"
     DB_TYPE="postgres"
+    if [[ -n "${HASHTOPOLIS_DB_PORT}" ]]; then
+        DB_CMD="${DB_CMD} -p${HASHTOPOLIS_DB_PORT}"
+    fi
 else
     echo "INVALID DATABASE TYPE PROVIDED: $HASHTOPOLIS_DB_TYPE"
     exit 1
