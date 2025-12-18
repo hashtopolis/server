@@ -19,7 +19,7 @@ class UserAPIPretask extends UserAPIBasic {
         case USectionPretask::SET_PRETASK_MAX_AGENTS:
           $this->setPretaskMaxAgents($QUERY);
           break;
-        case USectionpretask::SET_PRETASK_NAME:
+        case USectionPretask::SET_PRETASK_NAME:
           $this->setPretaskName($QUERY);
           break;
         case USectionPretask::SET_PRETASK_COLOR:
@@ -34,7 +34,7 @@ class UserAPIPretask extends UserAPIBasic {
         case USectionPretask::SET_PRETASK_SMALL:
           $this->setPretaskSmall($QUERY);
           break;
-        case USectionpretask::DELETE_PRETASK:
+        case USectionPretask::DELETE_PRETASK:
           $this->deletePretask($QUERY);
           break;
         default:
