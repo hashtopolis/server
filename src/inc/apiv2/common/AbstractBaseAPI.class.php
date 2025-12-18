@@ -1192,6 +1192,7 @@ abstract class AbstractBaseAPI {
                 $relationFeatures = $this->getAliasedFeaturesOther($relationClass);
                 $factory = $this->getModelFactory($relationClass);
                 $joinKey = $relations[$relationString]['relationKey'];
+                $key = $relations[$relationString]['key'];
                 $features_sort = $relationFeatures;
                 $cast_key = $parts[1];
               }
@@ -1203,7 +1204,7 @@ abstract class AbstractBaseAPI {
           if ($reverseSort) {
             $type = ($type == "ASC") ? "DESC" : "ASC";
           }
-          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type, 'factory' => $factory, 'joinKey' => $joinKey];
+          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type, 'factory' => $factory, 'joinKey' => $joinKey, 'key' => $key];
         }
         else {
           throw new HttpForbidden("Ordering parameter '" . $order . "' is not valid");

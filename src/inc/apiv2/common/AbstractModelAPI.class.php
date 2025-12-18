@@ -673,7 +673,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       if ($orderTemplate['factory'] !== null) {
         // if factory of ordertemplate is not null, sort is happening on joined table
         $otherFactory = $orderTemplate['factory'];
-        $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $apiClass->getPrimaryKeyOther($otherFactory->getNullObject()::class));
+        $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $orderTemplate['key']);
       }
     }
 
