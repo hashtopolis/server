@@ -42,7 +42,10 @@
             "phpstan/extension-installer": true
         },
         "process-timeout": 0,
-        "sort-packages": true
+        "sort-packages": true,
+        "audit": {
+          "block-insecure": false
+        }
     },
     "autoload": {
         "psr-4": {
