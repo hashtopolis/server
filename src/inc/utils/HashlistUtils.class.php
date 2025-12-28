@@ -853,9 +853,15 @@ class HashlistUtils {
 
         $db = Factory::getAgentFactory()->getDB();
         $db->query("CREATE TEMPORARY TABLE tmp_hashes (
-            hash VARCHAR(255) PRIMARY KEY
+            hash VARCHAR(255)
         ) ENGINE=InnoDB");
 
+
+        $statementInsertInTempDb = $db->prepare(
+        "INSERT INTO tmp_hashes (hash) VALUES (:hash)"
+         );
+
+         
         $batchSize = 1000;
         $batch = [];
         rewind($file);
@@ -869,16 +875,20 @@ class HashlistUtils {
             } else {
                 $hash = $line;
             }
-            $batch[] = $db->quote($hash);
+            $batch[] = $hash;
 
             if (count($batch) >= $batchSize) {
-              
-                $db->query("INSERT IGNORE INTO tmp_hashes (hash) VALUES (" . implode("),(", $batch) . ")");
+                foreach($batch as $h) {
+                $statementInsertInTempDb->execute([':hash' => $h]);
+                }
                 $batch = [];
+                
             }
         }
         if (count($batch) > 0) {
-            $db->query("INSERT IGNORE INTO tmp_hashes (hash) VALUES (" . implode("),(", $batch) . ")");
+              foreach($batch as $h){
+            $statementInsertInTempDb->execute([':hash' => $h]);
+            }
         }
 
         $foundHashes = [];
@@ -895,7 +905,8 @@ class HashlistUtils {
               $foundHashes[$row['hash']] = Factory::getHashFactory()->createObjectFromDict($row['hashId'], $row);
             }
         }
-        // -- End of changed code block --
+        
+// -- End of changed code block --
 
         $values = [];
         $bufferCount = 0;
@@ -932,7 +943,6 @@ class HashlistUtils {
                 $bufferCount = 0;
             }
         }
-
         if (sizeof($values) > 0) {
             $result = Factory::getHashFactory()->massSave($values);
             $added += $result->rowCount();
