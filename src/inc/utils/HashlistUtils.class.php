@@ -770,7 +770,7 @@ class HashlistUtils {
     $hashtype = intval($hashtype);
     $accessGroup = Factory::getAccessGroupFactory()->get($accessGroupId);
     $brainFeatures = intval($brainFeatures);
-    
+
     if ($format < DHashlistFormat::PLAIN || $format > DHashlistFormat::BINARY) {
       throw new HTException("Invalid hashlist format!");
     }
@@ -792,11 +792,11 @@ class HashlistUtils {
     else if ($brainId && $brainFeatures < 1 || $brainFeatures > 3) {
       throw new HTException("Invalid brain features selected!");
     }
-    
+
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId(), '', $brainId, $brainFeatures, 0);
     $hashlist = Factory::getHashlistFactory()->save($hashlist);
-    
+
     $dataSource = "";
     switch ($source) {
       case "paste":
@@ -821,7 +821,6 @@ class HashlistUtils {
       Factory::getAgentFactory()->getDB()->rollback();
       throw new HTException("Required file does not exist!");
     }
-    // replace countLines with fileLineCount? Seems like a better option, not OS-dependent
     else if (Util::countLines($tmpfile) > SConfig::getInstance()->getVal(DConfig::MAX_HASHLIST_SIZE)) {
       Factory::getAgentFactory()->getDB()->rollback();
       throw new HTException("Hashlist has too many lines!");
@@ -833,11 +832,10 @@ class HashlistUtils {
     Factory::getAgentFactory()->getDB()->commit();
     $added = 0;
     $preFound = 0;
-    
+
     switch ($format) {
       case DHashlistFormat::PLAIN:
         if ($salted) {
-          // find out if the first line contains field separator
           rewind($file);
           $bufline = stream_get_line($file, 1024);
           if (strpos($bufline, $saltSeparator) === false) {
@@ -847,70 +845,109 @@ class HashlistUtils {
         else {
           $saltSeparator = "";
         }
-        rewind($file);
+
+      
+        // -- Start of new codeblock --
         Factory::getAgentFactory()->getDB()->beginTransaction();
-        $values = array();
+        rewind($file);
+
+        $db = Factory::getAgentFactory()->getDB();
+        $db->query("CREATE TEMPORARY TABLE tmp_hashes (
+            hash VARCHAR(255) PRIMARY KEY
+        ) ENGINE=InnoDB");
+
+        $batchSize = 1000;
+        $batch = [];
+        rewind($file);
+        while (($line = fgets($file)) !== false) {
+            $line = trim($line);
+            if ($line === '') continue;
+
+            if ($saltSeparator !== '') {
+                $parts = explode($saltSeparator, $line, 2);
+                $hash = $parts[0];
+            } else {
+                $hash = $line;
+            }
+            $batch[] = $db->quote($hash);
+
+            if (count($batch) >= $batchSize) {
+              
+                $db->query("INSERT IGNORE INTO tmp_hashes (hash) VALUES (" . implode("),(", $batch) . ")");
+                $batch = [];
+            }
+        }
+        if (count($batch) > 0) {
+            $db->query("INSERT IGNORE INTO tmp_hashes (hash) VALUES (" . implode("),(", $batch) . ")");
+        }
+
+        $foundHashes = [];
+        if (SConfig::getInstance()->getVal(DConfig::HASHLIST_IMPORT_CHECK)) {
+            $sql = "
+                SELECT *
+                FROM Hash h
+                INNER JOIN tmp_hashes t ON h.hash = t.hash
+                WHERE h.isCracked = 1
+            ";
+            $stmt = $db->query($sql);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+              $foundHashes[$row['hash']] = Factory::getHashFactory()->createObjectFromDict($row['hashId'], $row);
+            }
+        }
+        // -- End of changed code block --
+
+        $values = [];
         $bufferCount = 0;
-        while (!feof($file)) {
-          $line = trim(fgets($file));
-          if (strlen($line) == 0) {
-            continue;
-          }
-          $hash = $line;
-          $salt = "";
-          if ($saltSeparator != "") {
-            $pos = strpos($line, $saltSeparator);
-            if ($pos !== false) {
-              $hash = substr($line, 0, $pos);
-              $salt = substr($line, $pos + 1);
+        rewind($file);
+        while (($line = fgets($file)) !== false) {
+            $line = trim($line);
+            if ($line === '') continue;
+
+            if ($saltSeparator !== '') {
+                $parts = explode($saltSeparator, $line, 2);
+                $hash = $parts[0];
+                $salt = $parts[1] ?? "";
+            } else {
+                $hash = $line;
+                $salt = "";
             }
-          }
-          if (strlen($hash) == 0) {
-            continue;
-          }
-          //TODO: check hash length here
-          
-          // if selected check if it is cracked
-          $found = null;
-          if (SConfig::getInstance()->getVal(DConfig::HASHLIST_IMPORT_CHECK)) {
-            $qF = new QueryFilter(Hash::HASH, $hash, "=");
-            $check = Factory::getHashFactory()->filter([Factory::FILTER => $qF]);
-            foreach ($check as $c) {
-              if ($c->getIsCracked()) {
-                $found = $c;
-                break;
-              }
+
+            $found = $foundHashes[$hash] ?? null;
+
+            if ($found == null) {
+                $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, "", 0, null, 0, 0);
+            } else {
+                $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, $found->getPlaintext(), time(), null, 1, 0);
+                $preFound++;
             }
-          }
-          if ($found == null) {
-            $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, "", 0, null, 0, 0);
-          }
-          else {
-            $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, $found->getPlaintext(), time(), null, 1, 0);
-            $preFound++;
-          }
-          $bufferCount++;
-          if ($bufferCount >= 10000) {
+
+            $bufferCount++;
+            if ($bufferCount >= 10000) {
+                $result = Factory::getHashFactory()->massSave($values);
+                $added += $result->rowCount();
+                Factory::getAgentFactory()->getDB()->commit();
+                Factory::getAgentFactory()->getDB()->beginTransaction();
+                $values = [];
+                $bufferCount = 0;
+            }
+        }
+
+        if (sizeof($values) > 0) {
             $result = Factory::getHashFactory()->massSave($values);
             $added += $result->rowCount();
-            Factory::getAgentFactory()->getDB()->commit();
-            Factory::getAgentFactory()->getDB()->beginTransaction();
-            $values = array();
-            $bufferCount = 0;
-          }
         }
-        if (sizeof($values) > 0) {
-          $result = Factory::getHashFactory()->massSave($values);
-          $added += $result->rowCount();
-        }
+
         fclose($file);
         unlink($tmpfile);
+
         Factory::getHashlistFactory()->mset($hashlist, [Hashlist::HASH_COUNT => $added, Hashlist::CRACKED => $preFound]);
         Factory::getAgentFactory()->getDB()->commit();
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
-        
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
+
         break;
+
       case DHashlistFormat::WPA:
         $added = 0;
         $values = [];
