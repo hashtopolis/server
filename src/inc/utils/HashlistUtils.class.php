@@ -846,67 +846,71 @@ class HashlistUtils {
           $saltSeparator = "";
         }
 
-      
-        // -- Start of new codeblock --
-        Factory::getAgentFactory()->getDB()->beginTransaction();
+              Factory::getAgentFactory()->getDB()->beginTransaction();
         rewind($file);
 
         $db = Factory::getAgentFactory()->getDB();
-        $db->query("CREATE TEMPORARY TABLE tmp_hashes (
+        $db->query(
+          "CREATE TEMPORARY TABLE tmp_hashes (
             hash VARCHAR(255)
-        ) ENGINE=InnoDB");
-
+          ) ENGINE=InnoDB"
+        );
 
         $statementInsertInTempDb = $db->prepare(
-        "INSERT INTO tmp_hashes (hash) VALUES (:hash)"
-         );
+          "INSERT INTO tmp_hashes (hash) VALUES (:hash)"
+        );
 
-         
         $batchSize = 1000;
         $batch = [];
         rewind($file);
+
         while (($line = fgets($file)) !== false) {
-            $line = trim($line);
-            if ($line === '') continue;
+          $line = trim($line);
+          if ($line === '') {
+            continue;
+          }
 
-            if ($saltSeparator !== '') {
-                $parts = explode($saltSeparator, $line, 2);
-                $hash = $parts[0];
-            } else {
-                $hash = $line;
-            }
-            $batch[] = $hash;
+          if ($saltSeparator !== '') {
+            $parts = explode($saltSeparator, $line, 2);
+            $hash  = $parts[0];
+          } else {
+            $hash = $line;
+          }
 
-            if (count($batch) >= $batchSize) {
-                foreach($batch as $h) {
-                $statementInsertInTempDb->execute([':hash' => $h]);
-                }
-                $batch = [];
-                
+          $batch[] = $hash;
+
+          if (count($batch) >= $batchSize) {
+            foreach ($batch as $h) {
+              $statementInsertInTempDb->execute([':hash' => $h]);
             }
+            $batch = [];
+          }
         }
+
         if (count($batch) > 0) {
-              foreach($batch as $h){
+          foreach ($batch as $h) {
             $statementInsertInTempDb->execute([':hash' => $h]);
-            }
+          }
         }
 
         $foundHashes = [];
         if (SConfig::getInstance()->getVal(DConfig::HASHLIST_IMPORT_CHECK)) {
-            $sql = "
-                SELECT *
-                FROM Hash h
-                INNER JOIN tmp_hashes t ON h.hash = t.hash
-                WHERE h.isCracked = 1
-            ";
-            $stmt = $db->query($sql);
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($rows as $row) {
-              $foundHashes[$row['hash']] = Factory::getHashFactory()->createObjectFromDict($row['hashId'], $row);
-            }
+          $sql = "
+            SELECT *
+            FROM Hash h
+            INNER JOIN tmp_hashes t ON h.hash = t.hash
+            WHERE h.isCracked = 1
+          ";
+          $stmt = $db->query($sql);
+          $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+          foreach ($rows as $row) {
+            $foundHashes[$row['hash']] = Factory::getHashFactory()->createObjectFromDict(
+              $row['hashId'],
+              $row
+            );
+          }
         }
-        
-// -- End of changed code block --
 
         $values = [];
         $bufferCount = 0;
