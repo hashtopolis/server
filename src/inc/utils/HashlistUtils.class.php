@@ -852,7 +852,7 @@ class HashlistUtils {
         $db = Factory::getAgentFactory()->getDB();
         $db->query(
           "CREATE TEMPORARY TABLE tmp_hashes (
-            hash VARCHAR(255)
+            hash VARCHAR(1024)
           ) ENGINE=InnoDB"
         );
 
