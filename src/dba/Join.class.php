@@ -24,7 +24,7 @@ abstract class Join {
   abstract function getJoinType();
 
   /**
-   * @return QueryFilter[] array of queryfilters that have to be perfromed on the join
+   * @return QueryFilter[] array of queryfilters that have to be performed on the join
    */
   abstract function getQueryFilters();
 }

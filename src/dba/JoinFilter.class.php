@@ -34,7 +34,7 @@ class JoinFilter extends Join {
   private $joinType;
 
   /**
-   * @var QueryFilter[] array of queryfilters that have to be perfromed on the join
+   * @var QueryFilter[] array of queryfilters that have to be performed on the join
    */
   private $queryFilters;
   
