@@ -58,10 +58,10 @@ use JimTools\JwtAuth\Rules\RequestMethodRule;
 use JimTools\JwtAuth\Rules\RequestPathRule;
 use Psr\Http\Message\ServerRequestInterface;
 
-require __DIR__ . "/../../../vendor/autoload.php";
-require __DIR__ . "/../../inc/apiv2/common/ErrorHandler.class.php";
+require_once(__DIR__ . "/../../../vendor/autoload.php");
+require_once(__DIR__ . "/../../inc/apiv2/common/ErrorHandler.class.php");
 
-require_once(dirname(__FILE__) . "/../../inc/load.php");
+require_once(dirname(__FILE__) . "/../../inc/startup/include.php");
 
 
 /* Construct container for middleware */

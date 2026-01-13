@@ -68,7 +68,7 @@ fi
 
 # required to trigger the initialization
 echo "Start initialization process..."
-php -f ${HASHTOPOLIS_DOCUMENT_ROOT}/inc/load.php
+php -f ${HASHTOPOLIS_DOCUMENT_ROOT}/inc/startup/setup.php
 echo "Initialization complete!"
 
 

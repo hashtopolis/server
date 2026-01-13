@@ -7,9 +7,9 @@ use DBA\User;
 use DBA\Factory;
 use DBA\StoredValue;
 
-require_once(dirname(__FILE__) . "/../inc/load.php");
+require_once(dirname(__FILE__) . "/../inc/startup/load.php");
 
-$write_files = array(".", "../inc/Encryption.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../");
+$write_files = array(".", "../inc/Encryption.class.php", "../inc/startup/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../");
 
 if ($INSTALL) {
   die("Installation is already done!");

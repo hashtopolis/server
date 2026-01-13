@@ -10,7 +10,7 @@ use DBA\QueryFilter;
 use DBA\Task;
 use DBA\Factory;
 
-require_once(dirname(__FILE__) . "/../inc/load.php");
+require_once(dirname(__FILE__) . "/../inc/startup/include.php");
 
 //check if there is a session
 if (!Login::getInstance()->isLoggedin()) {

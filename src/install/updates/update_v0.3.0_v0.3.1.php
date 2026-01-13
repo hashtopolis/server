@@ -2,7 +2,7 @@
 
 use DBA\Factory;
 
-require_once(dirname(__FILE__) . "/../../inc/load.php");
+require_once(dirname(__FILE__) . "/../../inc/startup/load.php");
 
 echo "Apply updates...\n";
 

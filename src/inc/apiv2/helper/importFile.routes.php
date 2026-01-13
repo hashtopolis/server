@@ -9,7 +9,7 @@ use DBA\Factory;
 
 /* Default timeout interval for considering an upload stale/incomplete */
 const DEFAULT_UPLOAD_EXPIRES_TIMEOUT = 3600;
-require_once(dirname(__FILE__) . "/../../load.php");
+require_once(dirname(__FILE__) . "/../../startup/include.php");
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
 /*  File import API
