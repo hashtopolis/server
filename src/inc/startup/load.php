@@ -45,6 +45,8 @@ if (Login::getInstance()->isLoggedin()) {
   AccessControl::getInstance(Login::getInstance()->getUser());
 }
 
+define("APP_NAME", (SConfig::getInstance()->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
+
 UI::add('config', SConfig::getInstance());
 
 //set autorefresh to false for all pages
