@@ -14,7 +14,6 @@ session_start();
 
 require_once(dirname(__FILE__) . "/include.php");
 
-$LANG = new Lang();
 UI::add('version', $VERSION);
 UI::add('host', $HOST);
 UI::add('gitcommit', Util::getGitCommit());

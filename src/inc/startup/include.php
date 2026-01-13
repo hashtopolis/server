@@ -45,3 +45,7 @@ include($baseDir . "/mask.php");
 
 // include DBA
 require_once($baseDir . "/../dba/init.php");
+
+// legacy, but needed for email sending
+// TODO: this later should be replaced with a singleton
+$LANG = new Lang();
