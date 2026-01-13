@@ -47,8 +47,6 @@ if (Login::getInstance()->isLoggedin()) {
 
 UI::add('config', SConfig::getInstance());
 
-define("APP_NAME", (SConfig::getInstance()->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
-
 //set autorefresh to false for all pages
 UI::add('autorefresh', -1);
 

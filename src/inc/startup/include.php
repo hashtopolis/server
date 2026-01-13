@@ -43,3 +43,5 @@ include($baseDir . "/mask.php");
 
 // include DBA
 require_once($baseDir . "/../dba/init.php");
+
+define("APP_NAME", (SConfig::getInstance()->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
