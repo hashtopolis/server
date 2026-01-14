@@ -230,13 +230,17 @@ class APISendProgress extends APIBasic {
           $qF3 = new QueryFilter(Hash::IS_CRACKED, 0, "=");
           $hashes = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3]]);
           if (sizeof($hashes) == 0) {
-            //This can happen if agent rebuild the hash incorrectly
-            //Log the skipped hash so that admin can spot this false negative
-            $logMessage = "Hash has been cracked but skipped! This happened while cracking hashlist with ID: "
-              . $hashlist->getId() . " during chunk with ID: " . $chunk->getId() . " This happens when the agent returns
+            // check without IS_CRACKED=0 to check if the hash was already cracked, or if it really cannot be found (which then triggers the log entry)
+            $check = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+            if (sizeof($check) == 0) {
+              //This can happen if agent rebuild the hash incorrectly
+              //Log the skipped hash so that admin can spot this false negative
+              $logMessage = "Hash has been cracked but skipped! This happened while cracking hashlist with ID: "
+                . $hashlist->getId() . " during chunk with ID: " . $chunk->getId() . " This happens when the agent returns
                a cracked hash that does not exist in the database. This can happen when hashcat malforms the hash.";
-            Util::createLogEntry(DLogEntryIssuer::API, $this->agent->getToken(), DLogEntry::FATAL, $logMessage);
-            DServerLog::log(DServerLog::FATAL, $logMessage);
+              Util::createLogEntry(DLogEntryIssuer::API, $this->agent->getToken(), DLogEntry::FATAL, $logMessage);
+              DServerLog::log(DServerLog::FATAL, $logMessage);
+            }
 
             $skipped++;
             break;
