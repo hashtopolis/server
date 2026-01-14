@@ -43,6 +43,11 @@ class AccessGroupAPI extends AbstractModelAPI {
     ];
   }
   
+  protected function getUpdateHandlers($id, $current_user): array {
+    return [
+      AccessGroup::GROUP_NAME => fn($value) => AccessGroupUtils::rename($id, $value),
+    ];
+  }
   
   /**
    * @throws HTException

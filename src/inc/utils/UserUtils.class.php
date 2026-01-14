@@ -165,6 +165,9 @@ class UserUtils {
     if ($user->getId() == $adminUser->getId()) {
       throw new HTException("To change your own password go to your settings!");
     }
+    else if (strlen($password) == 0) {
+      throw new HTException("Password cannot be of zero length!");
+    }
     
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($password, $newSalt);
