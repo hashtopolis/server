@@ -27,7 +27,7 @@ class SupertaskUtils {
    * @param User $user
    * @throws HTException
    */
-  public static function bulkSupertask($name, $command, $isCpuOnly, $maxAgents, $isSmall, $crackerBinaryTypeId, $benchtype, $basefiles, $iterfiles, $user) {
+  public static function bulkSupertask($name, $command, $isCpuOnly, $maxAgents, $isSmall, $crackerBinaryTypeId, $benchtype, $basefiles, $iterfiles, $user): Supertask {
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
     $benchtype = ($benchtype == 'speed') ? 1 : 0;
@@ -86,6 +86,7 @@ class SupertaskUtils {
       Factory::getSupertaskPretaskFactory()->save($relation);
     }
     Factory::getAgentFactory()->getDB()->commit();
+    return $supertask;
   }
   
   /**
@@ -359,7 +360,7 @@ class SupertaskUtils {
    * @param string $benchtype
    * @throws HTException
    */
-  public static function importSupertask($name, $isCpuOnly, $maxAgents, $isSmall, $useOptimized, $crackerBinaryTypeId, $masks, $benchtype) {
+  public static function importSupertask($name, $isCpuOnly, $maxAgents, $isSmall, $useOptimized, $crackerBinaryTypeId, $masks, $benchtype): Supertask {
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
     $useOptimized = ($useOptimized) ? true : false;
@@ -386,6 +387,7 @@ class SupertaskUtils {
       Factory::getSupertaskPretaskFactory()->save($relation);
     }
     Factory::getAgentFactory()->getDB()->commit();
+    return $supertask;
   }
   
   /**
