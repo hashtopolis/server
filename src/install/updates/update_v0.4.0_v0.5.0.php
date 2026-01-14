@@ -132,7 +132,7 @@ $DB->exec(file_get_contents(dirname(__FILE__) . "/../hashtopolis.sql"));
 echo "OK\n";
 
 echo "Reload full include... (Warning about sessions might show up, which can be ignored)";
-require_once(dirname(__FILE__) . "/../../inc/load.php");
+require_once(dirname(__FILE__) . "/../../inc/startup/load.php");
 echo "OK\n";
 
 echo "Starting with refilling data...\n";

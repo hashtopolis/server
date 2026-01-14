@@ -11,7 +11,7 @@ use DBA\QueryFilter;
 use DBA\User;
 use DBA\Factory;
 
-require_once(dirname(__FILE__) . "/../../load.php");
+require_once(dirname(__FILE__) . "/../../startup/include.php");
 
 $app->group("/api/v2/auth/token", function (RouteCollectorProxy $group) {
   /* Allow preflight requests */

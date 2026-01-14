@@ -1,5 +1,9 @@
 <?php
 
+/**
+This file should only be called by docker-entrypoint.sh so that it's only executed on the docker startup
+**/
+
 use DBA\AccessGroupUser;
 use DBA\Factory;
 use DBA\QueryFilter;
@@ -12,44 +16,7 @@ ini_set("display_errors", "0");
 
 session_start();
 
-require_once(dirname(__FILE__) . "/../../vendor/autoload.php");
-
-require_once(dirname(__FILE__) . "/info.php");
-
-include(dirname(__FILE__) . "/confv2.php");
-
-// include all .class.php files in inc dir
-$dir = scandir(dirname(__FILE__));
-foreach ($dir as $entry) {
-  if (strpos($entry, ".class.php") !== false) {
-    require_once(dirname(__FILE__) . "/" . $entry);
-  }
-}
-require_once(dirname(__FILE__) . "/templating/Statement.class.php");
-require_once(dirname(__FILE__) . "/templating/Template.class.php");
-
-// include all required files
-require_once(dirname(__FILE__) . "/handlers/Handler.class.php");
-require_once(dirname(__FILE__) . "/notifications/Notification.class.php");
-require_once(dirname(__FILE__) . "/api/APIBasic.class.php");
-require_once(dirname(__FILE__) . "/user-api/UserAPIBasic.class.php");
-require_once(dirname(__FILE__) . "/apiv2/common/ErrorHandler.class.php");
-$directories = array('handlers', 'api', 'defines', 'utils', 'notifications', 'user-api');
-foreach ($directories as $directory) {
-  $dir = scandir(dirname(__FILE__) . "/$directory/");
-  foreach ($dir as $entry) {
-    if (strpos($entry, ".php") !== false) {
-      require_once(dirname(__FILE__) . "/$directory/" . $entry);
-    }
-  }
-}
-
-include(dirname(__FILE__) . "/protocol.php");
-
-include(dirname(__FILE__) . "/mask.php");
-
-// include DBA
-require_once(dirname(__FILE__) . "/../dba/init.php");
+require_once(dirname(__FILE__) . "/include.php");
 
 // create directories if not exists and ensure they are writeable
 foreach ($DIRECTORIES as $name => $path) {
@@ -79,28 +46,16 @@ catch (PDOException $e) {
 
 // this only needs to be present for the very first upgrade from non-migration to migrations to make sure the last updates are executed before migration
 if (!$initialSetup && DBA_TYPE == "mysql" && !Util::databaseTableExists("_sqlx_migrations")) {
-  include(dirname(__FILE__) . "/../install/updates/update.php");
+  include(dirname(__FILE__) . "/../../install/updates/update.php");
 }
 
 $database_uri = DBA_TYPE . "://" . DBA_USER . ":" . DBA_PASS . "@" . DBA_SERVER . ":" . DBA_PORT . "/" . DBA_DB;
-exec('/usr/bin/sqlx migrate run --source ' . dirname(__FILE__) . '/../migrations/' . DBA_TYPE . '/ -D ' . $database_uri, $output, $retval);
+exec('/usr/bin/sqlx migrate run --source ' . dirname(__FILE__) . '/../../migrations/' . DBA_TYPE . '/ -D ' . $database_uri, $output, $retval);
 if ($retval !== 0) {
   die("Failed to run migrations: \n" . implode("\n", $output));
 }
 
 if ($initialSetup === true) {
-  // determine the base url
-  $baseUrl = explode("/", $_SERVER['REQUEST_URI']);
-  unset($baseUrl[sizeof($baseUrl) - 1]);
-  try {
-    $urlConfig = ConfigUtils::get(DConfig::BASE_URL);
-  }
-  catch (HTException $e) {
-    die("Failure in config: " . $e->getMessage());
-  }
-  $urlConfig->setValue(implode("/", $baseUrl));
-  Factory::getConfigFactory()->update($urlConfig);
-  
   // if peppers are not set, generate them and save them
   if (!isset($PEPPER)) {
     $PEPPER = [
@@ -160,45 +115,4 @@ Util::checkDataDirectory(DDirectories::IMPORT, $DIRECTORIES['import']);
 Util::checkDataDirectory(DDirectories::LOG, $DIRECTORIES['log']);
 Util::checkDataDirectory(DDirectories::CONFIG, $DIRECTORIES['config']);
 
-$LANG = new Lang();
-UI::add('version', $VERSION);
-UI::add('host', $HOST);
-UI::add('gitcommit', Util::getGitCommit());
-UI::add('build', '');
-
-// Darkmode
-if (isset($_COOKIE['toggledarkmode']) && $_COOKIE['toggledarkmode'] == '1') {
-  UI::add('toggledarkmode', 1);
-}
-else {
-  UI::add('toggledarkmode', 0);
-}
-
-if (strlen(Util::getGitCommit()) == 0) {
-  $storedBuild = Factory::getStoredValueFactory()->get("build");
-  if ($storedBuild != null) {
-    UI::add('build', $storedBuild->getVal());
-  }
-}
-
-UI::add('menu', Menu::get());
-UI::add('messages', []);
-
-UI::add('pageTitle', "");
-UI::add('login', Login::getInstance());
-if (Login::getInstance()->isLoggedin()) {
-  UI::add('user', Login::getInstance()->getUser());
-  AccessControl::getInstance(Login::getInstance()->getUser());
-}
-
-UI::add('config', SConfig::getInstance());
-
 define("APP_NAME", (SConfig::getInstance()->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
-
-//set autorefresh to false for all pages
-UI::add('autorefresh', -1);
-
-UI::add('accessControl', AccessControl::getInstance());
-
-// CSRF setup
-CSRF::init();

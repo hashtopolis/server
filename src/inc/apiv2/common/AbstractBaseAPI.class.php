@@ -52,7 +52,7 @@ use DBA\QueryFilter;
 use DBA\SupertaskPretask;
 use Psr\Container\ContainerInterface;
 
-require_once(dirname(__FILE__) . "/../../load.php");
+require_once(dirname(__FILE__) . "/../../startup/include.php");
 
 
 /**

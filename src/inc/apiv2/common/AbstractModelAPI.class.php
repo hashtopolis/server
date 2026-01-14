@@ -751,6 +751,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     } else if (isset($lastCursorObject)){
       $new_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
       $last_cursor = $apiClass::build_cursor($primaryFilter, $new_cursor);
+    } else {
+      $last_cursor = null;
     }
     $lastParams['page']['before'] = $last_cursor;
     $linksLast = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($lastParams));

@@ -13,7 +13,7 @@ use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Factory;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 if (isset($_GET['download'])) {
   $agentHandler = new AgentHandler();
