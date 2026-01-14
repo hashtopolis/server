@@ -39,3 +39,13 @@ class ChunkTest(BaseTest):
 
         chunks = Chunk.objects.filter(taskId=retval['task'].id)
         self.assertEqual(len(chunks), 0)
+
+    def test_helper_rebuild_chunk_cache(self):
+        # Note: it is currently only tested that the call to the helper works, but not that it would fix anything correctly.
+        # The problem is, that we cannot set the values of chunks and hashlists to "wrong" values via the API.
+
+        self.create_test_object()
+
+        helper = Helper()
+        response = helper.rebuild_chunk_cache()
+        self.assertEqual({"Rebuild": "Success", "correctedChunks": 0, "correctedHashlists": 0}, response)
