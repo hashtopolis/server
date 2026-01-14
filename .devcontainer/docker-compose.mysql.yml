@@ -24,6 +24,7 @@ services:
       # and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/var/www/html
       - hashtopolis-server-dev:/usr/local/share/hashtopolis:Z
+      # - ./jwks.json:/keys/jwks.json:ro
     networks:
       - hashtopolis_dev
   hashtopolis-db-dev:

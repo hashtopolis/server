@@ -143,7 +143,7 @@ $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface
   include(dirname(__FILE__) . '/../../inc/confv2.php');
 
   $decoder = new FirebaseDecoder(
-      new Secret($PEPPER[0], 'HS256')
+    new Secret($PEPPER[0], 'HS256', hash("sha256", $PEPPER[0]))
   );
 
   $options = new Options(
@@ -153,7 +153,7 @@ $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface
   );
 
   $rules = [
-    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"]),
+    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/auth/oauth-token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"]),
     new RequestMethodRule(ignore: ["OPTIONS"])
   ];
   return new JwtAuthentication($options, $decoder, $rules);
