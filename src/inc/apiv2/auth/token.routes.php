@@ -82,22 +82,26 @@ $app->group("/api/v2/auth/oauth-token", function (RouteCollectorProxy $group) {
       throw new HttpError("No jwks.json found, upload the jwks public keys to /keys/jwks.json to use OIDC authentication");
     }
     $jwks = json_decode($jwks_file, true);
+
+    if ($jwks === null) {
+      throw new HttpError("Incorrect json inside jwks.json, make sure to upload a valid json file");
+    }
     $keys = JWK::parseKeySet($jwks);
     $jwt = extractBearerToken($request);
+    if ($jwt === null) {
+      throw new HttpError("No jwt Token found in the Bearer header");
+    }
     $decoded_jwt = JWT::decode($jwt, $keys);
 
-    $now = new DateTime();
-    $tokenExpiration = new DateTime("@" . $decoded_jwt->exp);
-    if ($now > $tokenExpiration) {
-      throw new HttpError("Token has been expired");
+    if(!property_exists($decoded_jwt, "preferred_username")) {
+      throw new HttpError("The OAUTH token doesnt have a 'preferred_username' claim, which is needed to validate the user");
     }
-
     $userName = $decoded_jwt->preferred_username;
 
     $future = new DateTime("now +2 hours");
     $token = generateTokenForUser($request, $userName, $future->getTimestamp());
     $data["token"] = $token;
-    $data["expires"] = $future;
+    $data["expires"] = $future->getTimestamp();
     
     $body = $response->getBody();
     $body->write(json_encode($data, JSON_UNESCAPED_SLASHES));
@@ -120,7 +124,7 @@ $app->group("/api/v2/auth/token", function (RouteCollectorProxy $group) {
     $token = generateTokenForUser($request, $request->getAttribute('user'), $future->getTimestamp());
     
     $data["token"] = $token;
-    $data["expires"] = $future;
+    $data["expires"] = $future->getTimestamp();
     
     $body = $response->getBody();
     $body->write(json_encode($data, JSON_UNESCAPED_SLASHES));
