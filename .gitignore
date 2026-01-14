@@ -13,6 +13,9 @@ src/files/*
 *.phpproj.user
 *.lock*
 
+# the public keys for oauth
+jwks.json
+
 # dynamically created by installer
 src/install/.htaccess
 
