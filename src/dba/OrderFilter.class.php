@@ -15,6 +15,14 @@ class OrderFilter extends Order {
     $this->type = $type;
     $this->overrideFactory = $overrideFactory;
   }
+
+  function getBy(): string {
+    return $this->by;
+  }
+
+  function getType(): string {
+    return $this->type;
+  }
   
   function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
     if ($this->overrideFactory != null) {
