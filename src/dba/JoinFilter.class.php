@@ -37,6 +37,11 @@ class JoinFilter extends Join {
    * @var QueryFilter[] array of queryfilters that have to be performed on the join
    */
   private $queryFilters;
+
+  // string constants for the join types
+  public const string INNER = "INNER";
+  public const string LEFT = "LEFT";
+  public const string RIGHT = "RIGHT";
   
   /**
    * JoinFilter constructor.
@@ -46,7 +51,7 @@ class JoinFilter extends Join {
    * @param $overrideOwnFactory AbstractModelFactory
    * @param $joinType string is normally inner, left or right
    */
-  function __construct($otherFactory, $matching1, $matching2, $overrideOwnFactory = null, $joinType = "inner", $queryFilters = []) {
+  function __construct($otherFactory, $matching1, $matching2, $overrideOwnFactory = null, $joinType = JoinFilter::INNER, $queryFilters = []) {
     $this->otherFactory = $otherFactory;
     $this->match1 = $matching1;
     $this->match2 = $matching2;

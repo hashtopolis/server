@@ -13,6 +13,10 @@ class CoalesceOrderFilter extends Order {
   }
   
   function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
-    return "COALESCE(" . implode(", ", $this->columns) . ") " . $this->type;
+    $mapped_columns = [];
+    foreach($this->columns as $column) {
+      array_push($mapped_columns, AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $column));
+    }
+    return "COALESCE(" . implode(", ", $mapped_columns) . ") " . $this->type;
   }
 }
