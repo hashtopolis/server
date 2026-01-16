@@ -641,6 +641,9 @@ class Util {
       $qF = new QueryFilter(AgentStat::TIME, time() - $lifetime, "<=");
       Factory::getAgentStatFactory()->massDeletion([Factory::FILTER => $qF]);
       
+      $qF = new QueryFilter(Speed::TIME, time() - $lifetime, "<=");
+      Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
+      
       Factory::getStoredValueFactory()->set($entry, StoredValue::VAL, time());
     }
   }
