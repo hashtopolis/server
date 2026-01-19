@@ -3,9 +3,7 @@
 // set to 1 for debugging
 ini_set("display_errors", "0");
 
-if(!defined("APP_NAME")) {
-  define("APP_NAME", "Hashtopolis");
-}
+define("APP_NAME", "Hashtopolis");
 
 $baseDir = dirname(__FILE__) . "/..";
 
