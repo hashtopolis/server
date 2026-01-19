@@ -37,24 +37,26 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     return [];
   }
   
-  static function getUploadPath(string $id): string {
-    return "/tmp/" . $id . '.part';
-  }
-  
-  static function getMetaPath(string $id): string {
-    return "/tmp/" . $id . '.meta';
-  }
-  
+function getUploadPath(string $id): string {
+  $filename = "/var/tmp/tus/uploads/" . $id . '.part';
+  return $filename;
+}
+
+function getMetaPath(string $id): string {
+  $filename = "/var/tmp/tus/meta/" . $id . '.meta';
+  return $filename;
+}
+
+function getImportPath(string $id): string {
+  $filename = Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $id;
+  return $filename;
+}
+
   /**
    * Import file has no POST parameters
    */
   public function getFormFields(): array {
     return [];
-  }
-  
-  
-  static function getImportPath(string $id): string {
-    return Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $id;
   }
   
   static function getChecksumAlgorithm(): array {
