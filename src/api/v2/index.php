@@ -11,8 +11,8 @@ error_reporting(E_ALL ^ E_DEPRECATED);
 ini_set("display_errors", '1');
 /**
  * Treat warnings as error, very usefull during unit testing.
- * TODO: How-ever during Xdebug debugging under VS Code, this is very 
- * TODO: slightly annoying since the last call stack is not very interesting. 
+ * TODO: How-ever during Xdebug debugging under VS Code, this is very
+ * TODO: slightly annoying since the last call stack is not very interesting.
  * TODO: Thus for the time-being do not-enable by default.
  */
 // set_error_handler(function ($severity, $message, $file, $line) {
@@ -24,17 +24,21 @@ ini_set("display_errors", '1');
 use Slim\Factory\AppFactory;
 use Slim\Middleware\ContentLengthMiddleware;
 use Slim\Routing\RouteContext;
-
+use Slim\Exception\HttpMethodNotAllowedException;
 
 use Slim\Psr7\Response;
 
 use Skeleton\Domain\Token;
-use Crell\ApiProblem\ApiProblem;
 
-use Tuupola\Middleware\JwtAuthentication;
 use Tuupola\Middleware\HttpBasicAuthentication;
 use Tuupola\Middleware\HttpBasicAuthentication\AuthenticatorInterface;
 use Tuupola\Middleware\CorsMiddleware;
+
+use JimTools\JwtAuth\Decoder\FirebaseDecoder;
+use JimTools\JwtAuth\Middleware\JwtAuthentication;
+use JimTools\JwtAuth\Options;
+use JimTools\JwtAuth\Secret;
+use JimTools\JwtAuth\Exceptions\AuthorizationException;
 
 use Middlewares\DeflateEncoder;
 
@@ -49,164 +53,183 @@ use DBA\QueryFilter;
 use DBA\Session;
 use DBA\User;
 use DBA\Factory;
+use JimTools\JwtAuth\Handlers\BeforeHandlerInterface;
+use JimTools\JwtAuth\Rules\RequestMethodRule;
+use JimTools\JwtAuth\Rules\RequestPathRule;
+use Psr\Http\Message\ServerRequestInterface;
 
-require __DIR__ . "/../../../vendor/autoload.php";
+require_once(__DIR__ . "/../../../vendor/autoload.php");
+require_once(__DIR__ . "/../../inc/apiv2/common/ErrorHandler.class.php");
 
-require_once(dirname(__FILE__) . "/../../inc/load.php");
+require_once(dirname(__FILE__) . "/../../inc/startup/include.php");
 
- 
+
 /* Construct container for middleware */
 $container = new \DI\Container();
 AppFactory::setContainer($container);
 
 
-/* Quirk to display error JSON style */
-function errorResponse($response, $message, $status = 401)
-{
-    $problem = new ApiProblem($message, "about:blank");
-    $problem->setStatus($status);
-
-    $body = $response->getBody();
-    $body->write($problem->asJson(true));
-
-    return $response
-        ->withHeader("Content-type", "application/problem+json")
-        ->withStatus($status);
+class JWTBeforeHandler implements BeforeHandlerInterface {
+  /**
+   * @param array{decoded: array<string, mixed>, token: string} $arguments
+   */
+  public function __invoke(ServerRequestInterface $request, array $arguments): ServerRequestInterface
+  {
+    // adds the decoded userId and scope to the request attributes
+    return $request->withAttribute("userId", $arguments["decoded"]["userId"])->withAttribute("scope", $arguments["decoded"]["scope"]);
+  }
 }
 
-
 /* Authentication middleware for token retrival */
-class HashtopolisAuthenticator implements AuthenticatorInterface {
-    public function __invoke(array $arguments): bool {
-        $username = $arguments["user"];
-        $password = $arguments["password"];
 
-        $filter = new QueryFilter(User::USERNAME, $username, "=");
-        
-        $check = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);
-        if ($check === null || sizeof($check) == 0) {
-            return false;
-        }
-        $user = $check[0];
-        
-        if ($user->getIsValid() != 1) {
-            return false;
-        }
-        else if (!Encryption::passwordVerify($password, $user->getPasswordSalt(), $user->getPasswordHash())) {
-            Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed login attempt due to wrong password!");
-            return false;
-        }
-        return true;
+class HashtopolisAuthenticator implements AuthenticatorInterface {
+  public function __invoke(array $arguments): bool {
+    $username = $arguments["user"];
+    $password = $arguments["password"];
+    
+    $filter = new QueryFilter(User::USERNAME, $username, "=");
+    
+    $user = Factory::getUserFactory()->filter([Factory::FILTER => $filter], true);
+    if ($user === null) {
+      return false;
     }
+    
+    if ($user->getIsValid() != 1) {
+      return false;
+    }
+    else if (!Encryption::passwordVerify($password, $user->getPasswordSalt(), $user->getPasswordHash())) {
+      Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed login attempt due to wrong password!");
+      return false;
+    }
+    Factory::getUserFactory()->set($user, User::LAST_LOGIN_DATE, time());
+    return true;
+  }
 }
 
 $container->set("HttpBasicAuthentication", function (\Psr\Container\ContainerInterface $container) {
-    return new HttpBasicAuthentication([
-        "path" => "/api/v2/auth/token",
-        "secure" => false,
-        "error" => function ($response, $arguments) {
-            return errorResponse($response, $arguments["message"], 401);
-        },
-        "authenticator" => new HashtopolisAuthenticator,
-        "before" => function ($request, $arguments) {
-            return $request->withAttribute("user", $arguments["user"]);
-        }
-    ]);
+  return new HttpBasicAuthentication([
+    "path" => "/api/v2/auth/token",
+    "secure" => false,
+    "error" => function ($response, $arguments) {
+      return errorResponse($response, $arguments["message"], 401);
+    },
+    "authenticator" => new HashtopolisAuthenticator,
+    "before" => function ($request, $arguments) {
+      return $request->withAttribute("user", $arguments["user"]);
+    }
+  ]);
 });
 
 /* Quick to create auto-generated lookup table between DBA Objects and APIv2 classes */
+
 class ClassMapper {
-  private $store = array();  
-  public function add($key, $value) : void {
+  private array $store = array();
+  
+  public function add($key, $value): void {
     $this->store[$key] = $value;
   }
+  
   public function get($key): string {
     return $this->store[$key];
   }
 }
 
-$container->set("classMapper", function() {
+$container->set("classMapper", function () {
   return new ClassMapper();
 });
 
 /* API token validation */
 $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface $container) {
-    include(dirname(__FILE__) . '/../../inc/confv2.php');
-    return new JwtAuthentication([
-        "path" => "/",
-        "ignore" => ["/api/v2/auth/token", "/api/v2/openapi.json"],
-        "secret" => $PEPPER[0],
-        "attribute" => false,
-        "secure" => false,
-        "error" => function ($response, $arguments) {
-            return errorResponse($response, $arguments["message"], 401);
-        },
-        "before" => function ($request, $arguments) use ($container) {
-            // TODO: Validate if user is still allowed to login
-            return $request->withAttribute("userId", $arguments["decoded"]["userId"])->withAttribute("scope", $arguments["decoded"]["scope"]);
-        },
-    ]);
+  include(dirname(__FILE__) . '/../../inc/confv2.php');
+
+  $decoder = new FirebaseDecoder(
+    new Secret($PEPPER[0], 'HS256', hash("sha256", $PEPPER[0]))
+  );
+
+  $options = new Options(
+    isSecure: false,
+    before: new JWTBeforeHandler,
+    attribute: null
+  );
+
+  $rules = [
+    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/auth/oauth-token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"]),
+    new RequestMethodRule(ignore: ["OPTIONS"])
+  ];
+  return new JwtAuthentication($options, $decoder, $rules);
 });
-
-
+  
 /* Pre-parse incoming request body */
-class JsonBodyParserMiddleware implements MiddlewareInterface
-{
-    public function process(Request $request, RequestHandler $handler): Response
-    {
-        $contentType = $request->getHeaderLine('Content-Type');
 
-        if (strstr($contentType, 'application/json') || strstr($contentType, 'application/vnd.api+json')) {
-            $contents = json_decode(file_get_contents('php://input'), true);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                $request = $request->withParsedBody($contents);
-            } else {
-                $response = new Response();
-                return errorResponse($response, "Malformed request", 400);
-            }
-        }
-
-        $response = $handler->handle($request);
-        return $response;
+class JsonBodyParserMiddleware implements MiddlewareInterface {
+  public function process(Request $request, RequestHandler $handler): Response {
+    $contentType = $request->getHeaderLine('Content-Type');
+    
+    if (strstr($contentType, 'application/json') || strstr($contentType, 'application/vnd.api+json')) {
+      $contents = json_decode(file_get_contents('php://input'), true);
+      if (json_last_error() === JSON_ERROR_NONE) {
+        $request = $request->withParsedBody($contents);
+      }
+      else {
+        $response = new Response();
+        return errorResponse($response, "Malformed request", 400);
+      }
     }
+    
+    return $handler->handle($request);
+  }
 }
 
-/* Quirk to map token as parameter (usefull for debugging) to 'Authorization Header (for JWT input) */
-class TokenAsParameterMiddleware implements MiddlewareInterface
-{
-    public function process(Request $request, RequestHandler $handler): Response
-    {
-        $data = $request->getQueryParams();
-        if (array_key_exists('token', $data)) {
-            $request = $request->withHeader('Authorization', 'Bearer ' . $data['token']);
-        };
+/* Quirk to map token as parameter (useful for debugging) to 'Authorization Header (for JWT input) */
 
-        $response = $handler->handle($request);
-        return $response;
-    }
+class TokenAsParameterMiddleware implements MiddlewareInterface {
+  public function process(Request $request, RequestHandler $handler): Response {
+    $data = $request->getQueryParams();
+    if (array_key_exists('token', $data)) {
+      $request = $request->withHeader('Authorization', 'Bearer ' . $data['token']);
+    };
+    
+    return $handler->handle($request);
+  }
 }
 
 
-/* FIXME: CORS wildcard hack should require proper implementation and validation */
 /* This middleware will append the response header Access-Control-Allow-Methods with all allowed methods */
-class CorsHackMiddleware implements MiddlewareInterface 
-{
-    public function process(Request $request, RequestHandler $handler): Response {
-        $routeContext = RouteContext::fromRequest($request);
-        $routingResults = $routeContext->getRoutingResults();
-        $methods = $routingResults->getAllowedMethods();
-        $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
+
+class CorsHackMiddleware implements MiddlewareInterface {
+  public function process(Request $request, RequestHandler $handler): Response {
+    $response = $handler->handle($request);
     
-        $response = $handler->handle($request);
+    return $this::addCORSheaders($request, $response);
+  }
+  
+  public static function addCORSheaders(Request $request, $response) {
+    $routeContext = RouteContext::fromRequest($request);
+    $routingResults = $routeContext->getRoutingResults();
+    $methods = $routingResults->getAllowedMethods();
+    $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
     
-        $response = $response->withHeader('Access-Control-Allow-Origin', '*');
-        $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
-        $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
-    
-        // Optional: Allow Ajax CORS requests with Authorization header
-        // $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-        return $response;
+    $frontend_urls = getenv('HASHTOPOLIS_FRONTEND_URLS');
+    if ($frontend_urls !== false) {
+      if(in_array($request->getHeaderLine('Origin'), explode(',', $frontend_urls), true)) {
+        $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('Origin'));
+      }
+      else {
+        error_log("CORS error: Allow-Origin doesn't match. Please make sure to include the used frontend in the .env file.");
+      }
     }
+    else {
+      //No frontend URLs given in .env file, switch to default allow all
+      $response = $response->withHeader('Access-Control-Allow-Origin', '*');
+    }
+
+    $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
+    $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
+    
+    // Optional: Allow Ajax CORS requests with Authorization header
+    // $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+    return $response;
+  }
 }
 
 /* 
@@ -229,62 +252,124 @@ $app->add(new TokenAsParameterMiddleware());
 $app->add(new ContentLengthMiddleware());       // NOTE: Add any middleware which may modify the response body before adding the ContentLengthMiddleware
 $app->add((new DeflateEncoder())->contentType(
   '/^(image\/svg\\+xml|text\/.*|application\/json|"application\/vnd\.api+json)(;.*)?$/'
-));
+)
+);
 
 $app->add(new CorsHackMiddleware());            // NOTE: The RoutingMiddleware should be added after our CORS middleware so routing is performed first
-$app->addRoutingMiddleware();
-
-require __DIR__ . "/../../inc/apiv2/auth/token.routes.php";
-
-require __DIR__ . "/../../inc/apiv2/common/openAPISchema.routes.php";
-
-require __DIR__ . "/../../inc/apiv2/model/accessgroups.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/agentassignments.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/agentbinaries.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/agents.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/agentstats.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/chunks.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/configs.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/configsections.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/crackers.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/crackertypes.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/files.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/globalpermissiongroups.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/hashes.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/hashlists.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/hashtypes.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/healthcheckagents.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/healthchecks.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/logentries.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/notifications.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/preprocessors.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/pretasks.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/speeds.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/supertasks.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/tasks.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/taskwrappers.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/users.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/vouchers.routes.php";
-
-require __DIR__ . "/../../inc/apiv2/helper/abortChunk.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/assignAgent.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/createSupertask.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/createSuperHashlist.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/exportCrackedHashes.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/exportLeftHashes.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/exportWordlist.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/getFile.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/importCrackedHashes.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/importFile.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/purgeTask.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/recountFileLines.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/resetChunk.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/setUserPassword.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/unassignAgent.routes.php";
-
 // NOTE: The ErrorMiddleware should be added after any middleware which may modify the response body
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorHandler = $errorMiddleware->getDefaultErrorHandler();
 $errorHandler->forceContentType('application/json');
+
+$customErrorHandler = function (
+  Request $request,
+  Throwable $exception,
+  bool $displayErrorDetails,
+  bool $logErrors,
+  bool $logErrorDetails) use ($app) {
+  
+  $response = $app->getResponseFactory()->createResponse();
+  $response = CorsHackMiddleware::addCORSheaders($request, $response);
+  
+  //Quirck to handle HTexceptions without status code, this can be removed when all HTexceptions have been migrated
+  error_log($exception->getMessage());
+  $code = $exception->getCode();
+  if ($code == 0 || $code == 1 || !is_integer($code)) {
+    $code = 500;
+  }
+
+  $msg = $exception->getMessage();
+
+  if ($exception instanceof AuthorizationException && empty($msg)) {
+    //the JWT authorization exceptions are wrapped in an outer exception
+    $previous = $exception->getPrevious();
+    if ($previous !== null) {
+      $code = 400;
+      $msg = $previous->getMessage();
+    }
+  }
+
+  
+  return errorResponse($response, $msg, $code);
+};
+$errorMiddleware->setDefaultErrorHandler($customErrorHandler);
+$app->addRoutingMiddleware(); //Routing middleware has to be added after the default error handler
+$errorMiddlewareMethodNotAllowed = $app->addErrorMiddleware(true, true, true);
+$errorMiddlewareMethodNotAllowed->setErrorHandler(HttpMethodNotAllowedException::class, function (
+  Request $request,
+  Throwable $exception,
+  bool $displayErrorDetails,
+  bool $logErrors,
+  bool $logErrorDetails) use ($app) {
+  $response = $app->getResponseFactory()->createResponse();
+  return errorResponse($response, $exception->getMessage(), 405);
+});
+
+
+require_once(__DIR__ . "/../../inc/apiv2/auth/token.routes.php");
+require_once(__DIR__ . "/../../inc/apiv2/common/openAPISchema.routes.php");
+
+$modelDir = __DIR__ . "/../../inc/apiv2/model";
+
+require_once($modelDir . "/accessgroups.routes.php");
+require_once($modelDir . "/agentassignments.routes.php");
+require_once($modelDir . "/agentbinaries.routes.php");
+require_once($modelDir . "/agenterrors.routes.php");
+require_once($modelDir . "/agents.routes.php");
+require_once($modelDir . "/agentstats.routes.php");
+require_once($modelDir . "/chunks.routes.php");
+require_once($modelDir . "/configs.routes.php");
+require_once($modelDir . "/configsections.routes.php");
+require_once($modelDir . "/crackers.routes.php");
+require_once($modelDir . "/crackertypes.routes.php");
+require_once($modelDir . "/files.routes.php");
+require_once($modelDir . "/globalpermissiongroups.routes.php");
+require_once($modelDir . "/hashes.routes.php");
+require_once($modelDir . "/hashlists.routes.php");
+require_once($modelDir . "/hashtypes.routes.php");
+require_once($modelDir . "/healthcheckagents.routes.php");
+require_once($modelDir . "/healthchecks.routes.php");
+require_once($modelDir . "/logentries.routes.php");
+require_once($modelDir . "/notifications.routes.php");
+require_once($modelDir . "/preprocessors.routes.php");
+require_once($modelDir . "/pretasks.routes.php");
+require_once($modelDir . "/speeds.routes.php");
+require_once($modelDir . "/supertasks.routes.php");
+require_once($modelDir . "/tasks.routes.php");
+require_once($modelDir . "/taskwrappers.routes.php");
+require_once($modelDir . "/users.routes.php");
+require_once($modelDir . "/vouchers.routes.php");
+
+$helperDir = __DIR__ . "/../../inc/apiv2/helper";
+
+require_once($helperDir . "/abortChunk.routes.php");
+require_once($helperDir . "/assignAgent.routes.php");
+require_once($helperDir . "/bulkSupertaskBuilder.routes.php");
+require_once($helperDir . "/changeOwnPassword.routes.php");
+require_once($helperDir . "/currentUser.routes.php");
+require_once($helperDir . "/createSupertask.routes.php");
+require_once($helperDir . "/createSuperHashlist.routes.php");
+require_once($helperDir . "/exportCrackedHashes.routes.php");
+require_once($helperDir . "/exportLeftHashes.routes.php");
+require_once($helperDir . "/exportWordlist.routes.php");
+require_once($helperDir . "/getAccessGroups.routes.php");
+require_once($helperDir . "/getAgentBinary.routes.php");
+require_once($helperDir . "/getCracksOfTask.routes.php");
+require_once($helperDir . "/getFile.routes.php");
+require_once($helperDir . "/getTaskProgressImage.routes.php");
+require_once($helperDir . "/getUserPermission.routes.php");
+require_once($helperDir . "/importCrackedHashes.routes.php");
+require_once($helperDir . "/importFile.routes.php");
+require_once($helperDir . "/maskSupertaskBuilder.routes.php");
+require_once($helperDir . "/purgeTask.routes.php");
+require_once($helperDir . "/rebuildChunkCache.routes.php");
+require_once($helperDir . "/recountFileLines.routes.php");
+require_once($helperDir . "/rescanGlobalFiles.routes.php");
+require_once($helperDir . "/resetChunk.routes.php");
+require_once($helperDir . "/resetUserPassword.routes.php");
+require_once($helperDir . "/searchHashes.routes.php");
+require_once($helperDir . "/setUserPassword.routes.php");
+require_once($helperDir . "/taskExtraDetails.routes.php");
+require_once($helperDir . "/unassignAgent.routes.php");
 
 $app->run();

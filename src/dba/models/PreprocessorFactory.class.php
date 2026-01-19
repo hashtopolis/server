@@ -3,28 +3,31 @@
 namespace DBA;
 
 class PreprocessorFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Preprocessor";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Preprocessor";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Preprocessor
    */
-  function getNullObject() {
-    $o = new Preprocessor(-1, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): Preprocessor {
+    return new Preprocessor(-1, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class PreprocessorFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Preprocessor
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Preprocessor($dict['preprocessorId'], $dict['name'], $dict['url'], $dict['binaryName'], $dict['keyspaceCommand'], $dict['skipCommand'], $dict['limitCommand']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Preprocessor {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Preprocessor($dict['preprocessorid'], $dict['name'], $dict['url'], $dict['binaryname'], $dict['keyspacecommand'], $dict['skipcommand'], $dict['limitcommand']);
   }
   
   /**
@@ -42,7 +49,7 @@ class PreprocessorFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Preprocessor|Preprocessor[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class PreprocessorFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Preprocessor
+   * @return ?Preprocessor
    */
-  function get($pk) {
+  function get($pk): ?Preprocessor {
     return Util::cast(parent::get($pk), Preprocessor::class);
   }
   
@@ -76,7 +83,7 @@ class PreprocessorFactory extends AbstractModelFactory {
    * @param Preprocessor $model
    * @return Preprocessor
    */
-  function save($model) {
+  function save($model): Preprocessor {
     return Util::cast(parent::save($model), Preprocessor::class);
   }
 }

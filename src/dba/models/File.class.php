@@ -3,15 +3,15 @@
 namespace DBA;
 
 class File extends AbstractModel {
-  private $fileId;
-  private $filename;
-  private $size;
-  private $isSecret;
-  private $fileType;
-  private $accessGroupId;
-  private $lineCount;
+  private ?int $fileId;
+  private ?string $filename;
+  private ?int $size;
+  private ?int $isSecret;
+  private ?int $fileType;
+  private ?int $accessGroupId;
+  private ?int $lineCount;
   
-  function __construct($fileId, $filename, $size, $isSecret, $fileType, $accessGroupId, $lineCount) {
+  function __construct(?int $fileId, ?string $filename, ?int $size, ?int $isSecret, ?int $fileType, ?int $accessGroupId, ?int $lineCount) {
     $this->fileId = $fileId;
     $this->filename = $filename;
     $this->size = $size;
@@ -21,7 +21,7 @@ class File extends AbstractModel {
     $this->lineCount = $lineCount;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['fileId'] = $this->fileId;
     $dict['filename'] = $this->filename;
@@ -34,32 +34,32 @@ class File extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileId"];
-    $dict['filename'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "filename"];
-    $dict['size'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "size"];
-    $dict['isSecret'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSecret"];
-    $dict['fileType'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "fileType"];
-    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "accessGroupId"];
-    $dict['lineCount'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lineCount"];
+    $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileId", "public" => False, "dba_mapping" => False];
+    $dict['filename'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "filename", "public" => False, "dba_mapping" => False];
+    $dict['size'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "size", "public" => False, "dba_mapping" => False];
+    $dict['isSecret'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSecret", "public" => False, "dba_mapping" => False];
+    $dict['fileType'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "fileType", "public" => False, "dba_mapping" => False];
+    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "accessGroupId", "public" => False, "dba_mapping" => False];
+    $dict['lineCount'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lineCount", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "fileId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->fileId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->fileId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->fileId = $id;
   }
   
@@ -67,55 +67,55 @@ class File extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getFilename() {
+  function getFilename(): ?string {
     return $this->filename;
   }
   
-  function setFilename($filename) {
+  function setFilename(?string $filename): void {
     $this->filename = $filename;
   }
   
-  function getSize() {
+  function getSize(): ?int {
     return $this->size;
   }
   
-  function setSize($size) {
+  function setSize(?int $size): void {
     $this->size = $size;
   }
   
-  function getIsSecret() {
+  function getIsSecret(): ?int {
     return $this->isSecret;
   }
   
-  function setIsSecret($isSecret) {
+  function setIsSecret(?int $isSecret): void {
     $this->isSecret = $isSecret;
   }
   
-  function getFileType() {
+  function getFileType(): ?int {
     return $this->fileType;
   }
   
-  function setFileType($fileType) {
+  function setFileType(?int $fileType): void {
     $this->fileType = $fileType;
   }
   
-  function getAccessGroupId() {
+  function getAccessGroupId(): ?int {
     return $this->accessGroupId;
   }
   
-  function setAccessGroupId($accessGroupId) {
+  function setAccessGroupId(?int $accessGroupId): void {
     $this->accessGroupId = $accessGroupId;
   }
   
-  function getLineCount() {
+  function getLineCount(): ?int {
     return $this->lineCount;
   }
   
-  function setLineCount($lineCount) {
+  function setLineCount(?int $lineCount): void {
     $this->lineCount = $lineCount;
   }
   

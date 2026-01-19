@@ -69,7 +69,7 @@ class AgentHandler implements Handler {
           break;
         case DAgentAction::ASSIGN_AGENT:
           AccessControl::getInstance()->checkPermission(DAgentAction::ASSIGN_AGENT_PERM);
-          AgentUtils::assign($_POST['agentId'], $_POST['task'], Login::getInstance()->getUser());
+          AgentUtils::assign(intval($_POST['agentId']), intval($_POST['task']), Login::getInstance()->getUser());
           break;
         case DAgentAction::CREATE_VOUCHER:
           AccessControl::getInstance()->checkPermission(DAgentAction::CREATE_VOUCHER_PERM);
@@ -95,7 +95,7 @@ class AgentHandler implements Handler {
           break;
       }
     }
-    catch (HTException $e) {
+    catch (Exception $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

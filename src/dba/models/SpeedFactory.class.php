@@ -3,28 +3,31 @@
 namespace DBA;
 
 class SpeedFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Speed";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Speed";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Speed
    */
-  function getNullObject() {
-    $o = new Speed(-1, null, null, null, null);
-    return $o;
+  function getNullObject(): Speed {
+    return new Speed(-1, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class SpeedFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Speed
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Speed($dict['speedId'], $dict['agentId'], $dict['taskId'], $dict['speed'], $dict['time']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Speed {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Speed($dict['speedid'], $dict['agentid'], $dict['taskid'], $dict['speed'], $dict['time']);
   }
   
   /**
@@ -42,7 +49,7 @@ class SpeedFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Speed|Speed[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class SpeedFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Speed
+   * @return ?Speed
    */
-  function get($pk) {
+  function get($pk): ?Speed {
     return Util::cast(parent::get($pk), Speed::class);
   }
   
@@ -76,7 +83,7 @@ class SpeedFactory extends AbstractModelFactory {
    * @param Speed $model
    * @return Speed
    */
-  function save($model) {
+  function save($model): Speed {
     return Util::cast(parent::save($model), Speed::class);
   }
 }

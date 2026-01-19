@@ -3,28 +3,31 @@
 namespace DBA;
 
 class AgentBinaryFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "AgentBinary";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "AgentBinary";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return AgentBinary
    */
-  function getNullObject() {
-    $o = new AgentBinary(-1, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): AgentBinary {
+    return new AgentBinary(-1, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class AgentBinaryFactory extends AbstractModelFactory {
    * @param array $dict
    * @return AgentBinary
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new AgentBinary($dict['agentBinaryId'], $dict['type'], $dict['version'], $dict['operatingSystems'], $dict['filename'], $dict['updateTrack'], $dict['updateAvailable']);
-    return $o;
+  function createObjectFromDict($pk, $dict): AgentBinary {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AgentBinary($dict['agentbinaryid'], $dict['binarytype'], $dict['version'], $dict['operatingsystems'], $dict['filename'], $dict['updatetrack'], $dict['updateavailable']);
   }
   
   /**
@@ -42,7 +49,7 @@ class AgentBinaryFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AgentBinary|AgentBinary[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class AgentBinaryFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return AgentBinary
+   * @return ?AgentBinary
    */
-  function get($pk) {
+  function get($pk): ?AgentBinary {
     return Util::cast(parent::get($pk), AgentBinary::class);
   }
   
@@ -76,7 +83,7 @@ class AgentBinaryFactory extends AbstractModelFactory {
    * @param AgentBinary $model
    * @return AgentBinary
    */
-  function save($model) {
+  function save($model): AgentBinary {
     return Util::cast(parent::save($model), AgentBinary::class);
   }
 }

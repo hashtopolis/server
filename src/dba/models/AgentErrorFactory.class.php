@@ -3,28 +3,31 @@
 namespace DBA;
 
 class AgentErrorFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "AgentError";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "AgentError";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return AgentError
    */
-  function getNullObject() {
-    $o = new AgentError(-1, null, null, null, null, null);
-    return $o;
+  function getNullObject(): AgentError {
+    return new AgentError(-1, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class AgentErrorFactory extends AbstractModelFactory {
    * @param array $dict
    * @return AgentError
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new AgentError($dict['agentErrorId'], $dict['agentId'], $dict['taskId'], $dict['chunkId'], $dict['time'], $dict['error']);
-    return $o;
+  function createObjectFromDict($pk, $dict): AgentError {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AgentError($dict['agenterrorid'], $dict['agentid'], $dict['taskid'], $dict['chunkid'], $dict['time'], $dict['error']);
   }
   
   /**
@@ -42,7 +49,7 @@ class AgentErrorFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AgentError|AgentError[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class AgentErrorFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return AgentError
+   * @return ?AgentError
    */
-  function get($pk) {
+  function get($pk): ?AgentError {
     return Util::cast(parent::get($pk), AgentError::class);
   }
   
@@ -76,7 +83,7 @@ class AgentErrorFactory extends AbstractModelFactory {
    * @param AgentError $model
    * @return AgentError
    */
-  function save($model) {
+  function save($model): AgentError {
     return Util::cast(parent::save($model), AgentError::class);
   }
 }

@@ -3,15 +3,15 @@
 namespace DBA;
 
 class ApiKey extends AbstractModel {
-  private $apiKeyId;
-  private $startValid;
-  private $endValid;
-  private $accessKey;
-  private $accessCount;
-  private $userId;
-  private $apiGroupId;
+  private ?int $apiKeyId;
+  private ?int $startValid;
+  private ?int $endValid;
+  private ?string $accessKey;
+  private ?int $accessCount;
+  private ?int $userId;
+  private ?int $apiGroupId;
   
-  function __construct($apiKeyId, $startValid, $endValid, $accessKey, $accessCount, $userId, $apiGroupId) {
+  function __construct(?int $apiKeyId, ?int $startValid, ?int $endValid, ?string $accessKey, ?int $accessCount, ?int $userId, ?int $apiGroupId) {
     $this->apiKeyId = $apiKeyId;
     $this->startValid = $startValid;
     $this->endValid = $endValid;
@@ -21,7 +21,7 @@ class ApiKey extends AbstractModel {
     $this->apiGroupId = $apiGroupId;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['apiKeyId'] = $this->apiKeyId;
     $dict['startValid'] = $this->startValid;
@@ -34,32 +34,32 @@ class ApiKey extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['apiKeyId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "apiKeyId"];
-    $dict['startValid'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "startValid"];
-    $dict['endValid'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "endValid"];
-    $dict['accessKey'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "accessKey"];
-    $dict['accessCount'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "accessCount"];
-    $dict['userId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "userId"];
-    $dict['apiGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "apiGroupId"];
+    $dict['apiKeyId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "apiKeyId", "public" => False, "dba_mapping" => False];
+    $dict['startValid'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "startValid", "public" => False, "dba_mapping" => False];
+    $dict['endValid'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "endValid", "public" => False, "dba_mapping" => False];
+    $dict['accessKey'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "accessKey", "public" => False, "dba_mapping" => False];
+    $dict['accessCount'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "accessCount", "public" => False, "dba_mapping" => False];
+    $dict['userId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "userId", "public" => False, "dba_mapping" => False];
+    $dict['apiGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "apiGroupId", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "apiKeyId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->apiKeyId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->apiKeyId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->apiKeyId = $id;
   }
   
@@ -67,55 +67,55 @@ class ApiKey extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getStartValid() {
+  function getStartValid(): ?int {
     return $this->startValid;
   }
   
-  function setStartValid($startValid) {
+  function setStartValid(?int $startValid): void {
     $this->startValid = $startValid;
   }
   
-  function getEndValid() {
+  function getEndValid(): ?int {
     return $this->endValid;
   }
   
-  function setEndValid($endValid) {
+  function setEndValid(?int $endValid): void {
     $this->endValid = $endValid;
   }
   
-  function getAccessKey() {
+  function getAccessKey(): ?string {
     return $this->accessKey;
   }
   
-  function setAccessKey($accessKey) {
+  function setAccessKey(?string $accessKey): void {
     $this->accessKey = $accessKey;
   }
   
-  function getAccessCount() {
+  function getAccessCount(): ?int {
     return $this->accessCount;
   }
   
-  function setAccessCount($accessCount) {
+  function setAccessCount(?int $accessCount): void {
     $this->accessCount = $accessCount;
   }
   
-  function getUserId() {
+  function getUserId(): ?int {
     return $this->userId;
   }
   
-  function setUserId($userId) {
+  function setUserId(?int $userId): void {
     $this->userId = $userId;
   }
   
-  function getApiGroupId() {
+  function getApiGroupId(): ?int {
     return $this->apiGroupId;
   }
   
-  function setApiGroupId($apiGroupId) {
+  function setApiGroupId(?int $apiGroupId): void {
     $this->apiGroupId = $apiGroupId;
   }
   

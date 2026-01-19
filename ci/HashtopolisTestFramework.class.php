@@ -1,6 +1,7 @@
 <?php
 
 use DBA\Factory;
+use Composer\Semver\Comparator;
 
 class HashtopolisTestFramework {
   const REQUEST_CLIENT = 0;
@@ -73,7 +74,7 @@ private function backupDatabase() {
   HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Backup database to " . $this->dbBackupFile . "...");
 
   // Note that the '-y' option avoids requirement on 'PROCESS' privilege for the 'hashtopolis' user!
-  exec("mysqldump hashtopolis -y -h".$CONN['server'] . " -P".$CONN['port'] . " -u".$CONN['user'] . " -p".$CONN['pass'] ." > " . $this->dbBackupFile, $output, $status);
+  exec("mysqldump hashtopolis -y -h".$CONN['server'] . " -P".$CONN['port'] . " -u".$CONN['user'] . " -p".$CONN['pass'] ." --skip-ssl > " . $this->dbBackupFile, $output, $status);
   if ($status != 0) {
     $this->dbBackupFile = "";
 
@@ -104,11 +105,11 @@ private function isTestIncluded($instance, $version, $testNames, $runType, $upgr
   if (!empty($testNames) && !in_array(get_class($instance), $testNames)) {
     return false;
   }
-  if (!$upgrade && $version != 'master' && (Util::versionComparison($version, $instance->getMinVersion()) > 0 || $instance->getMinVersion() == 'master')) {
+  if (!$upgrade && $version != 'master' && (Comparator::lessThan($version, $instance->getMinVersion()) || $instance->getMinVersion() == 'master')) {
     echo "Ignoring " . $instance->getTestName() . ": minimum " . $instance->getMinVersion() . " required, but testing $version...\n";
     return false;
   }
-  if ($instance->getMaxVersion() != 'master' && (Util::versionComparison($version, $instance->getMaxVersion()) < 0 || $version == 'master')) { 
+  if ($instance->getMaxVersion() != 'master' && (Comparator::greaterThan($version, $instance->getMaxVersion()) || $version == 'master')) { 
     echo "Ignoring " . $instance->getTestName() . ": maximum " . $instance->getMaxVersion() . " required, but testing $version...\n";
     return false;
   }

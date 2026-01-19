@@ -10,7 +10,7 @@ use DBA\QueryFilter;
 use DBA\Task;
 use DBA\Factory;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -195,7 +195,7 @@ UI::add('nextPage', $nextPage);
 UI::add('previousPage', $previousPage);
 UI::add('currentPage', $currentPage);
 
-$oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
+$oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE)) . " OFFSET " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage));
 $hashes = $hashFactory->filter([Factory::FILTER => $queryFilters, Factory::ORDER => $oF]);
 
 if (isset($_GET['crackpos']) && $_GET['crackpos'] == 'true') {

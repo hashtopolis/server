@@ -3,28 +3,31 @@
 namespace DBA;
 
 class ChunkFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Chunk";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Chunk";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Chunk
    */
-  function getNullObject() {
-    $o = new Chunk(-1, null, null, null, null, null, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): Chunk {
+    return new Chunk(-1, null, null, null, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class ChunkFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Chunk
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Chunk($dict['chunkId'], $dict['taskId'], $dict['skip'], $dict['length'], $dict['agentId'], $dict['dispatchTime'], $dict['solveTime'], $dict['checkpoint'], $dict['progress'], $dict['state'], $dict['cracked'], $dict['speed']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Chunk {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Chunk($dict['chunkid'], $dict['taskid'], $dict['skip'], $dict['length'], $dict['agentid'], $dict['dispatchtime'], $dict['solvetime'], $dict['checkpoint'], $dict['progress'], $dict['state'], $dict['cracked'], $dict['speed']);
   }
   
   /**
@@ -42,7 +49,7 @@ class ChunkFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Chunk|Chunk[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class ChunkFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Chunk
+   * @return ?Chunk
    */
-  function get($pk) {
+  function get($pk): ?Chunk {
     return Util::cast(parent::get($pk), Chunk::class);
   }
   
@@ -76,7 +83,7 @@ class ChunkFactory extends AbstractModelFactory {
    * @param Chunk $model
    * @return Chunk
    */
-  function save($model) {
+  function save($model): Chunk {
     return Util::cast(parent::save($model), Chunk::class);
   }
 }

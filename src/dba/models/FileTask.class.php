@@ -3,17 +3,17 @@
 namespace DBA;
 
 class FileTask extends AbstractModel {
-  private $fileTaskId;
-  private $fileId;
-  private $taskId;
+  private ?int $fileTaskId;
+  private ?int $fileId;
+  private ?int $taskId;
   
-  function __construct($fileTaskId, $fileId, $taskId) {
+  function __construct(?int $fileTaskId, ?int $fileId, ?int $taskId) {
     $this->fileTaskId = $fileTaskId;
     $this->fileId = $fileId;
     $this->taskId = $taskId;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['fileTaskId'] = $this->fileTaskId;
     $dict['fileId'] = $this->fileId;
@@ -22,28 +22,28 @@ class FileTask extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['fileTaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileTaskId"];
-    $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "fileId"];
-    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId"];
+    $dict['fileTaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileTaskId", "public" => False, "dba_mapping" => False];
+    $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "fileId", "public" => False, "dba_mapping" => False];
+    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "fileTaskId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->fileTaskId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->fileTaskId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->fileTaskId = $id;
   }
   
@@ -51,23 +51,23 @@ class FileTask extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getFileId() {
+  function getFileId(): ?int {
     return $this->fileId;
   }
   
-  function setFileId($fileId) {
+  function setFileId(?int $fileId): void {
     $this->fileId = $fileId;
   }
   
-  function getTaskId() {
+  function getTaskId(): ?int {
     return $this->taskId;
   }
   
-  function setTaskId($taskId) {
+  function setTaskId(?int $taskId): void {
     $this->taskId = $taskId;
   }
   

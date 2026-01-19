@@ -3,28 +3,31 @@
 namespace DBA;
 
 class ApiGroupFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "ApiGroup";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "ApiGroup";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return ApiGroup
    */
-  function getNullObject() {
-    $o = new ApiGroup(-1, null, null);
-    return $o;
+  function getNullObject(): ApiGroup {
+    return new ApiGroup(-1, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class ApiGroupFactory extends AbstractModelFactory {
    * @param array $dict
    * @return ApiGroup
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new ApiGroup($dict['apiGroupId'], $dict['permissions'], $dict['name']);
-    return $o;
+  function createObjectFromDict($pk, $dict): ApiGroup {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new ApiGroup($dict['apigroupid'], $dict['permissions'], $dict['name']);
   }
   
   /**
@@ -42,7 +49,7 @@ class ApiGroupFactory extends AbstractModelFactory {
    * @param bool $single
    * @return ApiGroup|ApiGroup[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class ApiGroupFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return ApiGroup
+   * @return ?ApiGroup
    */
-  function get($pk) {
+  function get($pk): ?ApiGroup {
     return Util::cast(parent::get($pk), ApiGroup::class);
   }
   
@@ -76,7 +83,7 @@ class ApiGroupFactory extends AbstractModelFactory {
    * @param ApiGroup $model
    * @return ApiGroup
    */
-  function save($model) {
+  function save($model): ApiGroup {
     return Util::cast(parent::save($model), ApiGroup::class);
   }
 }

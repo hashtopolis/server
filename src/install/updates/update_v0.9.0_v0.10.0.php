@@ -72,13 +72,13 @@ if (!isset($PRESENT["v0.9.0_speed"])) {
 if (!isset($PRESENT["v0.9.0_agentBinaries"])) {
   Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` ADD `updateAvailable` VARCHAR(20) NOT NULL");
   Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` ADD `updateTrack`     VARCHAR(20) NOT NULL");
-  $qF = new QueryFilter(AgentBinary::TYPE, "python", "=");
+  $qF = new QueryFilter("type", "python", "=");
   $agent = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
   if ($agent != null) {
     $agent->setUpdateTrack('stable');
     Factory::getAgentBinaryFactory()->update($agent);
   }
   
-  Util::checkAgentVersion("python", "0.4.0", true);
+  Util::checkAgentVersionLegacy("python", "0.4.0", true);
   $EXECUTED["v0.9.0_agentBinaries"] = true;
 }

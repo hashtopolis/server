@@ -13,6 +13,9 @@ src/files/*
 *.phpproj.user
 *.lock*
 
+# the public keys for oauth
+jwks.json
+
 # dynamically created by installer
 src/install/.htaccess
 
@@ -25,3 +28,5 @@ vendor
 # For python cache files
 __pycache__
 .pytest_cache
+
+site/

@@ -3,19 +3,19 @@
 namespace DBA;
 
 class Assignment extends AbstractModel {
-  private $assignmentId;
-  private $taskId;
-  private $agentId;
-  private $benchmark;
+  private ?int $assignmentId;
+  private ?int $taskId;
+  private ?int $agentId;
+  private ?string $benchmark;
   
-  function __construct($assignmentId, $taskId, $agentId, $benchmark) {
+  function __construct(?int $assignmentId, ?int $taskId, ?int $agentId, ?string $benchmark) {
     $this->assignmentId = $assignmentId;
     $this->taskId = $taskId;
     $this->agentId = $agentId;
     $this->benchmark = $benchmark;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['assignmentId'] = $this->assignmentId;
     $dict['taskId'] = $this->taskId;
@@ -25,29 +25,29 @@ class Assignment extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['assignmentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "assignmentId"];
-    $dict['taskId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId"];
-    $dict['agentId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "agentId"];
-    $dict['benchmark'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "benchmark"];
+    $dict['assignmentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "assignmentId", "public" => False, "dba_mapping" => False];
+    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId", "public" => False, "dba_mapping" => False];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "agentId", "public" => False, "dba_mapping" => False];
+    $dict['benchmark'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "benchmark", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "assignmentId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->assignmentId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->assignmentId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->assignmentId = $id;
   }
   
@@ -55,31 +55,31 @@ class Assignment extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getTaskId() {
+  function getTaskId(): ?int {
     return $this->taskId;
   }
   
-  function setTaskId($taskId) {
+  function setTaskId(?int $taskId): void {
     $this->taskId = $taskId;
   }
   
-  function getAgentId() {
+  function getAgentId(): ?int {
     return $this->agentId;
   }
   
-  function setAgentId($agentId) {
+  function setAgentId(?int $agentId): void {
     $this->agentId = $agentId;
   }
   
-  function getBenchmark() {
+  function getBenchmark(): ?string {
     return $this->benchmark;
   }
   
-  function setBenchmark($benchmark) {
+  function setBenchmark(?string $benchmark): void {
     $this->benchmark = $benchmark;
   }
   

@@ -5,6 +5,7 @@ use DBA\QueryFilter;
 use DBA\RightGroup;
 use DBA\User;
 use DBA\Factory;
+use DBA\UpdateSet;
 
 /** @noinspection PhpIncludeInspection */
 require_once(dirname(__FILE__) . "/../../inc/db.php");
@@ -14,8 +15,8 @@ require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
 echo "Apply updates...\n";
 
 echo "Check agent binaries... ";
-Util::checkAgentVersion("python", "0.1.4");
-Util::checkAgentVersion("csharp", "0.52.2");
+Util::checkAgentVersionLegacy("python", "0.1.4");
+Util::checkAgentVersionLegacy("csharp", "0.52.2");
 echo "\n";
 
 echo "Create new permissions... ";

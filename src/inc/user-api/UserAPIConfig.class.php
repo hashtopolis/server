@@ -22,7 +22,7 @@ class UserAPIConfig extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch (HTException $e) {
+    catch (Exception $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
@@ -45,7 +45,7 @@ class UserAPIConfig extends UserAPIBasic {
         $config = ConfigUtils::get($QUERY[UQueryConfig::CONFIG_ITEM]);
         $config->setValue($QUERY[UQueryConfig::CONFIG_VALUE]);
       }
-      catch (HTException $e) {
+      catch (Exception $e) {
         $config = new Config(null, 1, $QUERY[UQueryConfig::CONFIG_ITEM], $QUERY[UQueryConfig::CONFIG_VALUE]);
         $new = true;
       }
@@ -69,12 +69,15 @@ class UserAPIConfig extends UserAPIBasic {
         }
         break;
       case DConfigType::TICKBOX:
-        if (!is_bool($config->getValue())) {
+        if ($config->getValue() != '1' && $config->getValue()) {
           throw new HTException("Value most be boolean!");
         }
         # Workaround, inserting 'false' into text field will cause an empty field.
-        if ($config->getValue() === false) {
-          $config->setValue(0);
+        if (!$config->getValue()) {
+          $config->setValue('0');
+        }
+        else{
+          $config->setValue('1');
         }
         break;
       case DConfigType::SELECT:

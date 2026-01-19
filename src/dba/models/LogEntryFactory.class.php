@@ -3,28 +3,31 @@
 namespace DBA;
 
 class LogEntryFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "LogEntry";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "LogEntry";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return LogEntry
    */
-  function getNullObject() {
-    $o = new LogEntry(-1, null, null, null, null, null);
-    return $o;
+  function getNullObject(): LogEntry {
+    return new LogEntry(-1, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class LogEntryFactory extends AbstractModelFactory {
    * @param array $dict
    * @return LogEntry
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new LogEntry($dict['logEntryId'], $dict['issuer'], $dict['issuerId'], $dict['level'], $dict['message'], $dict['time']);
-    return $o;
+  function createObjectFromDict($pk, $dict): LogEntry {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new LogEntry($dict['logentryid'], $dict['issuer'], $dict['issuerid'], $dict['level'], $dict['message'], $dict['time']);
   }
   
   /**
@@ -42,7 +49,7 @@ class LogEntryFactory extends AbstractModelFactory {
    * @param bool $single
    * @return LogEntry|LogEntry[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class LogEntryFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return LogEntry
+   * @return ?LogEntry
    */
-  function get($pk) {
+  function get($pk): ?LogEntry {
     return Util::cast(parent::get($pk), LogEntry::class);
   }
   
@@ -76,7 +83,7 @@ class LogEntryFactory extends AbstractModelFactory {
    * @param LogEntry $model
    * @return LogEntry
    */
-  function save($model) {
+  function save($model): LogEntry {
     return Util::cast(parent::save($model), LogEntry::class);
   }
 }

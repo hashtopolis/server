@@ -3,28 +3,31 @@
 namespace DBA;
 
 class FileFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "File";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "File";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return File
    */
-  function getNullObject() {
-    $o = new File(-1, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): File {
+    return new File(-1, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class FileFactory extends AbstractModelFactory {
    * @param array $dict
    * @return File
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new File($dict['fileId'], $dict['filename'], $dict['size'], $dict['isSecret'], $dict['fileType'], $dict['accessGroupId'], $dict['lineCount']);
-    return $o;
+  function createObjectFromDict($pk, $dict): File {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new File($dict['fileid'], $dict['filename'], $dict['size'], $dict['issecret'], $dict['filetype'], $dict['accessgroupid'], $dict['linecount']);
   }
   
   /**
@@ -42,7 +49,7 @@ class FileFactory extends AbstractModelFactory {
    * @param bool $single
    * @return File|File[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class FileFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return File
+   * @return ?File
    */
-  function get($pk) {
+  function get($pk): ?File {
     return Util::cast(parent::get($pk), File::class);
   }
   
@@ -76,7 +83,7 @@ class FileFactory extends AbstractModelFactory {
    * @param File $model
    * @return File
    */
-  function save($model) {
+  function save($model): File {
     return Util::cast(parent::save($model), File::class);
   }
 }

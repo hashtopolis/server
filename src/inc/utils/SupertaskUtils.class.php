@@ -27,7 +27,7 @@ class SupertaskUtils {
    * @param User $user
    * @throws HTException
    */
-  public static function bulkSupertask($name, $command, $isCpuOnly, $maxAgents, $isSmall, $crackerBinaryTypeId, $benchtype, $basefiles, $iterfiles, $user) {
+  public static function bulkSupertask($name, $command, $isCpuOnly, $maxAgents, $isSmall, $crackerBinaryTypeId, $benchtype, $basefiles, $iterfiles, $user): Supertask {
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
     $benchtype = ($benchtype == 'speed') ? 1 : 0;
@@ -86,6 +86,7 @@ class SupertaskUtils {
       Factory::getSupertaskPretaskFactory()->save($relation);
     }
     Factory::getAgentFactory()->getDB()->commit();
+    return $supertask;
   }
   
   /**
@@ -215,7 +216,7 @@ class SupertaskUtils {
    */
   public static function getPretasksOfSupertask($supertaskId) {
     $oF = new OrderFilter(Pretask::PRIORITY, "DESC", Factory::getPretaskFactory());
-    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertaskId, "=");
+    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertaskId, "=", Factory::getSupertaskPretaskFactory());
     $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
     $joined = Factory::getPretaskFactory()->filter([Factory::ORDER => $oF, Factory::JOIN => $jF, Factory::FILTER => $qF]);
     return $joined[Factory::getPretaskFactory()->getModelName()];
@@ -320,17 +321,18 @@ class SupertaskUtils {
   /**
    * @param string $name
    * @param int[] $pretasks
-   * @throws HTException
+   * @return Supertask
+   * @throws HttpError
    */
-  public static function createSupertask($name, $pretasks) {
-    if (!is_array($pretasks) || sizeof($pretasks) == 0) {
-      throw new HTException("Cannot create empty supertask!");
+  public static function createSupertask(string $name, array|null $pretasks): Supertask {
+    if (sizeof($pretasks) == 0) {
+      throw new HttpError("Cannot create empty supertask!");
     }
     $tasks = [];
     foreach ($pretasks as $pretaskId) {
       $pretask = Factory::getPretaskFactory()->get($pretaskId);
       if ($pretask == null) {
-        throw new HTException("Invalid preconfigured task ID ($pretaskId)!");
+        throw new HttpError("Invalid preconfigured task ID ($pretaskId)!");
       }
       $tasks[] = $pretask;
     }
@@ -345,6 +347,7 @@ class SupertaskUtils {
     }
     
     Factory::getAgentFactory()->getDB()->commit();
+    return Factory::getSupertaskFactory()->get($supertask->getId());
   }
   
   /**
@@ -357,7 +360,7 @@ class SupertaskUtils {
    * @param string $benchtype
    * @throws HTException
    */
-  public static function importSupertask($name, $isCpuOnly, $maxAgents, $isSmall, $useOptimized, $crackerBinaryTypeId, $masks, $benchtype) {
+  public static function importSupertask($name, $isCpuOnly, $maxAgents, $isSmall, $useOptimized, $crackerBinaryTypeId, $masks, $benchtype): Supertask {
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
     $useOptimized = ($useOptimized) ? true : false;
@@ -384,6 +387,7 @@ class SupertaskUtils {
       Factory::getSupertaskPretaskFactory()->save($relation);
     }
     Factory::getAgentFactory()->getDB()->commit();
+    return $supertask;
   }
   
   /**
@@ -419,7 +423,7 @@ class SupertaskUtils {
       }
       $cmd = str_replace("COMMA_PLACEHOLDER", "\\,", $cmd);
       $cmd = str_replace("HASH_PLACEHOLDER", "\\#", $cmd);
-      $preTaskName = implode(",", $mask);
+      $preTaskName = $pattern;
       $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
       $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
       

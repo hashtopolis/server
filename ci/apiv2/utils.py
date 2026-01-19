@@ -37,7 +37,7 @@ from hashtopolis_agent import DummyAgent
 
 def _do_create_obj_from_file(model_class, file_prefix, extra_payload={}, **kwargs):
     file_id = kwargs.get('file_id') or '001'
-    p = Path(__file__).parent.joinpath(f'{file_prefix}_{file_id}.json')
+    p = Path(__file__).parent.joinpath(f'testfiles/{model_class.__name__.lower()}/{file_prefix}_{file_id}.json')
     payload = json.loads(p.read_text('UTF-8'))
     final_payload = {**payload, **extra_payload}
     obj = model_class(**final_payload)
@@ -57,7 +57,7 @@ def do_create_dummy_agent():
     dummy_agent.update_information()
 
     # Validate automatically deleted when an test-agent claims the voucher
-    assert list(Voucher.objects.filter(_id=voucher.id)) == []
+    assert list(Voucher.objects.filter(id=voucher.id)) == []
 
     agent = Agent.objects.get(agentName=dummy_agent.name)
     return (dummy_agent, agent)
@@ -189,6 +189,8 @@ def do_create_user(global_permission_group_id=1):
         name=f'test-{stamp}',
         email='test@example.com',
         globalPermissionGroupId=global_permission_group_id,
+        isValid=True,
+        sessionLifetime=3600,
     )
     obj = User(**payload)
     obj.save()
@@ -218,8 +220,8 @@ def find_stale_test_objects():
     test_objs.extend(File.objects.all())
     test_objs.extend(User.objects.filter(id__gt=1))
     test_objs.extend(GlobalPermissionGroup.objects.filter(id__gt=1))
-    test_objs.extend(Cracker.objects.filter(_id__gt=1))
-    test_objs.extend(CrackerType.objects.filter(_id__gt=1))
+    test_objs.extend(Cracker.objects.filter(id__gt=1))
+    test_objs.extend(CrackerType.objects.filter(id__gt=1))
     return test_objs
 
 
@@ -378,8 +380,9 @@ class BaseTest(unittest.TestCase):
     def _test_exception(self, func_create, *args, **kwargs):
         with self.assertRaises(HashtopolisError) as e:
             _ = func_create(*args, **kwargs)
-        self.assertEqual(e.exception.status_code,  500)
-        self.assertGreaterEqual(len(e.exception.exception_details), 1)
+        self.assertIn(e.exception.status_code,  [403, 500, 400])
+        # checks len of both old and new exceptions style, TODO: old can be removed when ervything has been refactored.
+        self.assertTrue(len(e.exception.exception_details) >= 1 or len(e.exception.title) >= 1)
 
     def _test_patch(self, model_obj, attr, new_attr_value=None):
         """ Generic test worker to PATCH object"""

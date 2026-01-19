@@ -3,28 +3,31 @@
 namespace DBA;
 
 class StoredValueFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "StoredValue";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "StoredValue";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return StoredValue
    */
-  function getNullObject() {
-    $o = new StoredValue(-1, null);
-    return $o;
+  function getNullObject(): StoredValue {
+    return new StoredValue(-1, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class StoredValueFactory extends AbstractModelFactory {
    * @param array $dict
    * @return StoredValue
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new StoredValue($dict['storedValueId'], $dict['val']);
-    return $o;
+  function createObjectFromDict($pk, $dict): StoredValue {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new StoredValue($dict['storedvalueid'], $dict['val']);
   }
   
   /**
@@ -42,7 +49,7 @@ class StoredValueFactory extends AbstractModelFactory {
    * @param bool $single
    * @return StoredValue|StoredValue[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class StoredValueFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return StoredValue
+   * @return ?StoredValue
    */
-  function get($pk) {
+  function get($pk): ?StoredValue {
     return Util::cast(parent::get($pk), StoredValue::class);
   }
   
@@ -76,7 +83,7 @@ class StoredValueFactory extends AbstractModelFactory {
    * @param StoredValue $model
    * @return StoredValue
    */
-  function save($model) {
+  function save($model): StoredValue {
     return Util::cast(parent::save($model), StoredValue::class);
   }
 }

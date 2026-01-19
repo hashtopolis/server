@@ -3,28 +3,31 @@
 namespace DBA;
 
 class ApiKeyFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "ApiKey";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "ApiKey";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return ApiKey
    */
-  function getNullObject() {
-    $o = new ApiKey(-1, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): ApiKey {
+    return new ApiKey(-1, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class ApiKeyFactory extends AbstractModelFactory {
    * @param array $dict
    * @return ApiKey
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new ApiKey($dict['apiKeyId'], $dict['startValid'], $dict['endValid'], $dict['accessKey'], $dict['accessCount'], $dict['userId'], $dict['apiGroupId']);
-    return $o;
+  function createObjectFromDict($pk, $dict): ApiKey {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new ApiKey($dict['apikeyid'], $dict['startvalid'], $dict['endvalid'], $dict['accesskey'], $dict['accesscount'], $dict['userid'], $dict['apigroupid']);
   }
   
   /**
@@ -42,7 +49,7 @@ class ApiKeyFactory extends AbstractModelFactory {
    * @param bool $single
    * @return ApiKey|ApiKey[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class ApiKeyFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return ApiKey
+   * @return ?ApiKey
    */
-  function get($pk) {
+  function get($pk): ?ApiKey {
     return Util::cast(parent::get($pk), ApiKey::class);
   }
   
@@ -76,7 +83,7 @@ class ApiKeyFactory extends AbstractModelFactory {
    * @param ApiKey $model
    * @return ApiKey
    */
-  function save($model) {
+  function save($model): ApiKey {
     return Util::cast(parent::save($model), ApiKey::class);
   }
 }

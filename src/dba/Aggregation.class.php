@@ -10,32 +10,33 @@ class Aggregation {
   /**
    * @var AbstractModelFactory
    */
-  private $factory;
-
-  const SUM = "SUM";
-  const MAX = "MAX";
-  const MIN = "MIN";
-  const COUNT = "COUNT"; 
+  private $overrideFactory;
   
-  function __construct($column, $function, $factory = null) {
+  const SUM   = "SUM";
+  const MAX   = "MAX";
+  const MIN   = "MIN";
+  const COUNT = "COUNT";
+  
+  function __construct($column, $function, $overrideFactory = null) {
     $this->column = $column;
     $this->function = $function;
-    $this->factory = $factory;
+    $this->overrideFactory = $overrideFactory;
   }
   
   function getName() {
-    return strtolower($this->function) . "_" . $this->column;
+    return strtolower($this->function) . "_" . strtolower($this->column);
   }
   
-  function getQueryString($table = "") {
-    if ($table != "") {
-      $table = $table . ".";
+  function getQueryString(AbstractModelFactory $factory, bool $includeTable = false) {
+    if ($this->overrideFactory != null) {
+      $factory = $this->overrideFactory;
     }
-    if ($this->factory != null) {
-      $table = $this->factory->getModelTable() . ".";
+    $table = "";
+    if ($includeTable) {
+      $table = $factory->getMappedModelTable() . ".";
     }
     
-    return $this->function . "(" . $table . $this->column . ") AS " . $this->getName();
+    return $this->function . "(" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->column) . ") AS " . $this->getName();
   }
 }
 

@@ -3,28 +3,31 @@
 namespace DBA;
 
 class UserFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "User";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "User";
   }
+
+  function isMapping(): bool {
+    return True;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return User
    */
-  function getNullObject() {
-    $o = new User(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): User {
+    return new User(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class UserFactory extends AbstractModelFactory {
    * @param array $dict
    * @return User
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new User($dict['userId'], $dict['username'], $dict['email'], $dict['passwordHash'], $dict['passwordSalt'], $dict['isValid'], $dict['isComputedPassword'], $dict['lastLoginDate'], $dict['registeredSince'], $dict['sessionLifetime'], $dict['rightGroupId'], $dict['yubikey'], $dict['otp1'], $dict['otp2'], $dict['otp3'], $dict['otp4']);
-    return $o;
+  function createObjectFromDict($pk, $dict): User {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new User($dict['userid'], $dict['username'], $dict['email'], $dict['passwordhash'], $dict['passwordsalt'], $dict['isvalid'], $dict['iscomputedpassword'], $dict['lastlogindate'], $dict['registeredsince'], $dict['sessionlifetime'], $dict['rightgroupid'], $dict['yubikey'], $dict['otp1'], $dict['otp2'], $dict['otp3'], $dict['otp4']);
   }
   
   /**
@@ -42,7 +49,7 @@ class UserFactory extends AbstractModelFactory {
    * @param bool $single
    * @return User|User[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class UserFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return User
+   * @return ?User
    */
-  function get($pk) {
+  function get($pk): ?User {
     return Util::cast(parent::get($pk), User::class);
   }
   
@@ -76,7 +83,7 @@ class UserFactory extends AbstractModelFactory {
    * @param User $model
    * @return User
    */
-  function save($model) {
+  function save($model): User {
     return Util::cast(parent::save($model), User::class);
   }
 }

@@ -3,28 +3,31 @@
 namespace DBA;
 
 class TaskDebugOutputFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "TaskDebugOutput";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "TaskDebugOutput";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return TaskDebugOutput
    */
-  function getNullObject() {
-    $o = new TaskDebugOutput(-1, null, null);
-    return $o;
+  function getNullObject(): TaskDebugOutput {
+    return new TaskDebugOutput(-1, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
    * @param array $dict
    * @return TaskDebugOutput
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new TaskDebugOutput($dict['taskDebugOutputId'], $dict['taskId'], $dict['output']);
-    return $o;
+  function createObjectFromDict($pk, $dict): TaskDebugOutput {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new TaskDebugOutput($dict['taskdebugoutputid'], $dict['taskid'], $dict['output']);
   }
   
   /**
@@ -42,7 +49,7 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
    * @param bool $single
    * @return TaskDebugOutput|TaskDebugOutput[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return TaskDebugOutput
+   * @return ?TaskDebugOutput
    */
-  function get($pk) {
+  function get($pk): ?TaskDebugOutput {
     return Util::cast(parent::get($pk), TaskDebugOutput::class);
   }
   
@@ -76,7 +83,7 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
    * @param TaskDebugOutput $model
    * @return TaskDebugOutput
    */
-  function save($model) {
+  function save($model): TaskDebugOutput {
     return Util::cast(parent::save($model), TaskDebugOutput::class);
   }
 }

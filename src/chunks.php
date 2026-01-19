@@ -7,7 +7,7 @@ use DBA\Task;
 use DBA\QueryFilter;
 use DBA\Factory;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -32,7 +32,7 @@ if (!isset($_GET['show'])) {
   $numentries = Factory::getChunkFactory()->countFilter([]);
   UI::add('maxpage', floor($numentries / $PAGESIZE));
   $limit = $page * $PAGESIZE;
-  $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $PAGESIZE", Factory::getChunkFactory());
+  $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $PAGESIZE OFFSET $limit", Factory::getChunkFactory());
   UI::add('all', false);
   UI::add('pageTitle', "Chunks Activity (page " . ($page + 1) . ")");
 }

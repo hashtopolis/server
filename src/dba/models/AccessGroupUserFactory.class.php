@@ -3,28 +3,31 @@
 namespace DBA;
 
 class AccessGroupUserFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "AccessGroupUser";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "AccessGroupUser";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return AccessGroupUser
    */
-  function getNullObject() {
-    $o = new AccessGroupUser(-1, null, null);
-    return $o;
+  function getNullObject(): AccessGroupUser {
+    return new AccessGroupUser(-1, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class AccessGroupUserFactory extends AbstractModelFactory {
    * @param array $dict
    * @return AccessGroupUser
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new AccessGroupUser($dict['accessGroupUserId'], $dict['accessGroupId'], $dict['userId']);
-    return $o;
+  function createObjectFromDict($pk, $dict): AccessGroupUser {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AccessGroupUser($dict['accessgroupuserid'], $dict['accessgroupid'], $dict['userid']);
   }
   
   /**
@@ -42,7 +49,7 @@ class AccessGroupUserFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AccessGroupUser|AccessGroupUser[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class AccessGroupUserFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return AccessGroupUser
+   * @return ?AccessGroupUser
    */
-  function get($pk) {
+  function get($pk): ?AccessGroupUser {
     return Util::cast(parent::get($pk), AccessGroupUser::class);
   }
   
@@ -76,7 +83,7 @@ class AccessGroupUserFactory extends AbstractModelFactory {
    * @param AccessGroupUser $model
    * @return AccessGroupUser
    */
-  function save($model) {
+  function save($model): AccessGroupUser {
     return Util::cast(parent::save($model), AccessGroupUser::class);
   }
 }

@@ -3,8 +3,9 @@
 use DBA\AgentBinary;
 use DBA\QueryFilter;
 use DBA\Factory;
+use Composer\Semver\Comparator;
 
-require_once(dirname(__FILE__) . "/../../inc/load.php");
+require_once(dirname(__FILE__) . "/../../inc/startup/load.php");
 
 echo "Apply updates...\n";
 
@@ -17,10 +18,10 @@ Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HashBinary` CHANGE `pla
 echo "OK\n";
 
 echo "Check csharp binary... ";
-$qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
+$qF = new QueryFilter("type", "csharp", "=");
 $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
 if ($binary != null) {
-  if (Util::versionComparison($binary->getVersion(), "0.40") == 1) {
+  if (Comparator::lessThan($binary->getVersion(), "0.40")) {
     echo "update version... ";
     $binary->setVersion("0.40");
     Factory::getAgentBinaryFactory()->update($binary);

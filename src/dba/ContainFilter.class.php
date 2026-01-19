@@ -8,22 +8,23 @@ class ContainFilter extends Filter {
   /**
    * @var AbstractModelFactory
    */
-  private $factory;
+  private $overrideFactory;
   private $inverse;
   
-  function __construct($key, $values, $factory = null, $inverse = false) {
+  function __construct($key, $values, $overrideFactory = null, $inverse = false) {
     $this->key = $key;
     $this->values = $values;
-    $this->factory = $factory;
+    $this->overrideFactory = $overrideFactory;
     $this->inverse = $inverse;
   }
   
-  function getQueryString($table = "") {
-    if ($table != "") {
-      $table = $table . ".";
+  function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
+    if ($this->overrideFactory != null) {
+      $factory = $this->overrideFactory;
     }
-    if ($this->factory != null) {
-      $table = $this->factory->getModelTable() . ".";
+    $table = "";
+    if ($includeTable) {
+      $table = $factory->getMappedModelTable() . ".";
     }
     
     $app = array();
@@ -36,7 +37,7 @@ class ContainFilter extends Filter {
       }
       return "FALSE";
     }
-    return $table . $this->key . (($this->inverse) ? " NOT" : "") . " IN (" . implode(",", $app) . ")";
+    return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . (($this->inverse) ? " NOT" : "") . " IN (" . implode(",", $app) . ")";
   }
   
   function getValue() {

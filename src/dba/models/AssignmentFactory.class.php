@@ -3,28 +3,31 @@
 namespace DBA;
 
 class AssignmentFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Assignment";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Assignment";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Assignment
    */
-  function getNullObject() {
-    $o = new Assignment(-1, null, null, null);
-    return $o;
+  function getNullObject(): Assignment {
+    return new Assignment(-1, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class AssignmentFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Assignment
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Assignment($dict['assignmentId'], $dict['taskId'], $dict['agentId'], $dict['benchmark']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Assignment {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Assignment($dict['assignmentid'], $dict['taskid'], $dict['agentid'], $dict['benchmark']);
   }
   
   /**
@@ -42,7 +49,7 @@ class AssignmentFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Assignment|Assignment[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class AssignmentFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Assignment
+   * @return ?Assignment
    */
-  function get($pk) {
+  function get($pk): ?Assignment {
     return Util::cast(parent::get($pk), Assignment::class);
   }
   
@@ -76,7 +83,7 @@ class AssignmentFactory extends AbstractModelFactory {
    * @param Assignment $model
    * @return Assignment
    */
-  function save($model) {
+  function save($model): Assignment {
     return Util::cast(parent::save($model), Assignment::class);
   }
 }

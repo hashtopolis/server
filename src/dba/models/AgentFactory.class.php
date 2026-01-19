@@ -3,28 +3,31 @@
 namespace DBA;
 
 class AgentFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Agent";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Agent";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Agent
    */
-  function getNullObject() {
-    $o = new Agent(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): Agent {
+    return new Agent(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class AgentFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Agent
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Agent($dict['agentId'], $dict['agentName'], $dict['uid'], $dict['os'], $dict['devices'], $dict['cmdPars'], $dict['ignoreErrors'], $dict['isActive'], $dict['isTrusted'], $dict['token'], $dict['lastAct'], $dict['lastTime'], $dict['lastIp'], $dict['userId'], $dict['cpuOnly'], $dict['clientSignature']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Agent {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Agent($dict['agentid'], $dict['agentname'], $dict['uid'], $dict['os'], $dict['devices'], $dict['cmdpars'], $dict['ignoreerrors'], $dict['isactive'], $dict['istrusted'], $dict['token'], $dict['lastact'], $dict['lasttime'], $dict['lastip'], $dict['userid'], $dict['cpuonly'], $dict['clientsignature']);
   }
   
   /**
@@ -42,7 +49,7 @@ class AgentFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Agent|Agent[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class AgentFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Agent
+   * @return ?Agent
    */
-  function get($pk) {
+  function get($pk): ?Agent {
     return Util::cast(parent::get($pk), Agent::class);
   }
   
@@ -76,7 +83,7 @@ class AgentFactory extends AbstractModelFactory {
    * @param Agent $model
    * @return Agent
    */
-  function save($model) {
+  function save($model): Agent {
     return Util::cast(parent::save($model), Agent::class);
   }
 }

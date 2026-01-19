@@ -3,28 +3,31 @@
 namespace DBA;
 
 class HealthCheckAgentFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "HealthCheckAgent";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "HealthCheckAgent";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return HealthCheckAgent
    */
-  function getNullObject() {
-    $o = new HealthCheckAgent(-1, null, null, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): HealthCheckAgent {
+    return new HealthCheckAgent(-1, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,14 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
    * @param array $dict
    * @return HealthCheckAgent
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new HealthCheckAgent($dict['healthCheckAgentId'], $dict['healthCheckId'], $dict['agentId'], $dict['status'], $dict['cracked'], $dict['numGpus'], $dict['start'], $dict['end'], $dict['errors']);
-    return $o;
+  function createObjectFromDict($pk, $dict): HealthCheckAgent {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    $dict['end'] = $dict['htp_end'];
+    return new HealthCheckAgent($dict['healthcheckagentid'], $dict['healthcheckid'], $dict['agentid'], $dict['status'], $dict['cracked'], $dict['numgpus'], $dict['start'], $dict['end'], $dict['errors']);
   }
   
   /**
@@ -42,7 +50,7 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
    * @param bool $single
    * @return HealthCheckAgent|HealthCheckAgent[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +74,9 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return HealthCheckAgent
+   * @return ?HealthCheckAgent
    */
-  function get($pk) {
+  function get($pk): ?HealthCheckAgent {
     return Util::cast(parent::get($pk), HealthCheckAgent::class);
   }
   
@@ -76,7 +84,7 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
    * @param HealthCheckAgent $model
    * @return HealthCheckAgent
    */
-  function save($model) {
+  function save($model): HealthCheckAgent {
     return Util::cast(parent::save($model), HealthCheckAgent::class);
   }
 }

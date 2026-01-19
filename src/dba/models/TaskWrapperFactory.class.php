@@ -3,28 +3,31 @@
 namespace DBA;
 
 class TaskWrapperFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "TaskWrapper";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "TaskWrapper";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return TaskWrapper
    */
-  function getNullObject() {
-    $o = new TaskWrapper(-1, null, null, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): TaskWrapper {
+    return new TaskWrapper(-1, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class TaskWrapperFactory extends AbstractModelFactory {
    * @param array $dict
    * @return TaskWrapper
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new TaskWrapper($dict['taskWrapperId'], $dict['priority'], $dict['maxAgents'], $dict['taskType'], $dict['hashlistId'], $dict['accessGroupId'], $dict['taskWrapperName'], $dict['isArchived'], $dict['cracked']);
-    return $o;
+  function createObjectFromDict($pk, $dict): TaskWrapper {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new TaskWrapper($dict['taskwrapperid'], $dict['priority'], $dict['maxagents'], $dict['tasktype'], $dict['hashlistid'], $dict['accessgroupid'], $dict['taskwrappername'], $dict['isarchived'], $dict['cracked']);
   }
   
   /**
@@ -42,7 +49,7 @@ class TaskWrapperFactory extends AbstractModelFactory {
    * @param bool $single
    * @return TaskWrapper|TaskWrapper[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class TaskWrapperFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return TaskWrapper
+   * @return ?TaskWrapper
    */
-  function get($pk) {
+  function get($pk): ?TaskWrapper {
     return Util::cast(parent::get($pk), TaskWrapper::class);
   }
   
@@ -76,7 +83,7 @@ class TaskWrapperFactory extends AbstractModelFactory {
    * @param TaskWrapper $model
    * @return TaskWrapper
    */
-  function save($model) {
+  function save($model): TaskWrapper {
     return Util::cast(parent::save($model), TaskWrapper::class);
   }
 }

@@ -3,23 +3,23 @@
 namespace DBA;
 
 class Hashlist extends AbstractModel {
-  private $hashlistId;
-  private $hashlistName;
-  private $format;
-  private $hashTypeId;
-  private $hashCount;
-  private $saltSeparator;
-  private $cracked;
-  private $isSecret;
-  private $hexSalt;
-  private $isSalted;
-  private $accessGroupId;
-  private $notes;
-  private $brainId;
-  private $brainFeatures;
-  private $isArchived;
+  private ?int $hashlistId;
+  private ?string $hashlistName;
+  private ?int $format;
+  private ?int $hashTypeId;
+  private ?int $hashCount;
+  private ?string $saltSeparator;
+  private ?int $cracked;
+  private ?int $isSecret;
+  private ?int $hexSalt;
+  private ?int $isSalted;
+  private ?int $accessGroupId;
+  private ?string $notes;
+  private ?int $brainId;
+  private ?int $brainFeatures;
+  private ?int $isArchived;
   
-  function __construct($hashlistId, $hashlistName, $format, $hashTypeId, $hashCount, $saltSeparator, $cracked, $isSecret, $hexSalt, $isSalted, $accessGroupId, $notes, $brainId, $brainFeatures, $isArchived) {
+  function __construct(?int $hashlistId, ?string $hashlistName, ?int $format, ?int $hashTypeId, ?int $hashCount, ?string $saltSeparator, ?int $cracked, ?int $isSecret, ?int $hexSalt, ?int $isSalted, ?int $accessGroupId, ?string $notes, ?int $brainId, ?int $brainFeatures, ?int $isArchived) {
     $this->hashlistId = $hashlistId;
     $this->hashlistName = $hashlistName;
     $this->format = $format;
@@ -37,7 +37,7 @@ class Hashlist extends AbstractModel {
     $this->isArchived = $isArchived;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['hashlistId'] = $this->hashlistId;
     $dict['hashlistName'] = $this->hashlistName;
@@ -58,40 +58,40 @@ class Hashlist extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashlistId"];
-    $dict['hashlistName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "name"];
-    $dict['format'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => [0 => "Hashlist format is PLAIN", 1 => "Hashlist format is WPA", 2 => "Hashlist format is BINARY", 3 => "Hashlist is SUPERHASHLIST", ], "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "format"];
-    $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashTypeId"];
-    $dict['hashCount'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashCount"];
-    $dict['saltSeparator'] = ['read_only' => True, "type" => "str(10)", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "separator"];
-    $dict['cracked'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "cracked"];
-    $dict['isSecret'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSecret"];
-    $dict['hexSalt'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isHexSalt"];
-    $dict['isSalted'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSalted"];
-    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "accessGroupId"];
-    $dict['notes'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "notes"];
-    $dict['brainId'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "useBrain"];
-    $dict['brainFeatures'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "brainFeatures"];
-    $dict['isArchived'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isArchived"];
+    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashlistId", "public" => False, "dba_mapping" => False];
+    $dict['hashlistName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "name", "public" => False, "dba_mapping" => False];
+    $dict['format'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => [0 => "Hashlist format is PLAIN", 1 => "Hashlist format is WPA", 2 => "Hashlist format is BINARY", 3 => "Hashlist is SUPERHASHLIST", ], "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "format", "public" => False, "dba_mapping" => False];
+    $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashTypeId", "public" => False, "dba_mapping" => False];
+    $dict['hashCount'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashCount", "public" => False, "dba_mapping" => False];
+    $dict['saltSeparator'] = ['read_only' => True, "type" => "str(10)", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "separator", "public" => False, "dba_mapping" => False];
+    $dict['cracked'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "cracked", "public" => False, "dba_mapping" => False];
+    $dict['isSecret'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSecret", "public" => False, "dba_mapping" => False];
+    $dict['hexSalt'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isHexSalt", "public" => False, "dba_mapping" => False];
+    $dict['isSalted'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSalted", "public" => False, "dba_mapping" => False];
+    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "accessGroupId", "public" => False, "dba_mapping" => False];
+    $dict['notes'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "notes", "public" => False, "dba_mapping" => False];
+    $dict['brainId'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "useBrain", "public" => False, "dba_mapping" => False];
+    $dict['brainFeatures'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "brainFeatures", "public" => False, "dba_mapping" => False];
+    $dict['isArchived'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isArchived", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "hashlistId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->hashlistId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->hashlistId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->hashlistId = $id;
   }
   
@@ -99,119 +99,119 @@ class Hashlist extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getHashlistName() {
+  function getHashlistName(): ?string {
     return $this->hashlistName;
   }
   
-  function setHashlistName($hashlistName) {
+  function setHashlistName(?string $hashlistName): void {
     $this->hashlistName = $hashlistName;
   }
   
-  function getFormat() {
+  function getFormat(): ?int {
     return $this->format;
   }
   
-  function setFormat($format) {
+  function setFormat(?int $format): void {
     $this->format = $format;
   }
   
-  function getHashTypeId() {
+  function getHashTypeId(): ?int {
     return $this->hashTypeId;
   }
   
-  function setHashTypeId($hashTypeId) {
+  function setHashTypeId(?int $hashTypeId): void {
     $this->hashTypeId = $hashTypeId;
   }
   
-  function getHashCount() {
+  function getHashCount(): ?int {
     return $this->hashCount;
   }
   
-  function setHashCount($hashCount) {
+  function setHashCount(?int $hashCount): void {
     $this->hashCount = $hashCount;
   }
   
-  function getSaltSeparator() {
+  function getSaltSeparator(): ?string {
     return $this->saltSeparator;
   }
   
-  function setSaltSeparator($saltSeparator) {
+  function setSaltSeparator(?string $saltSeparator): void {
     $this->saltSeparator = $saltSeparator;
   }
   
-  function getCracked() {
+  function getCracked(): ?int {
     return $this->cracked;
   }
   
-  function setCracked($cracked) {
+  function setCracked(?int $cracked): void {
     $this->cracked = $cracked;
   }
   
-  function getIsSecret() {
+  function getIsSecret(): ?int {
     return $this->isSecret;
   }
   
-  function setIsSecret($isSecret) {
+  function setIsSecret(?int $isSecret): void {
     $this->isSecret = $isSecret;
   }
   
-  function getHexSalt() {
+  function getHexSalt(): ?int {
     return $this->hexSalt;
   }
   
-  function setHexSalt($hexSalt) {
+  function setHexSalt(?int $hexSalt): void {
     $this->hexSalt = $hexSalt;
   }
   
-  function getIsSalted() {
+  function getIsSalted(): ?int {
     return $this->isSalted;
   }
   
-  function setIsSalted($isSalted) {
+  function setIsSalted(?int $isSalted): void {
     $this->isSalted = $isSalted;
   }
   
-  function getAccessGroupId() {
+  function getAccessGroupId(): ?int {
     return $this->accessGroupId;
   }
   
-  function setAccessGroupId($accessGroupId) {
+  function setAccessGroupId(?int $accessGroupId): void {
     $this->accessGroupId = $accessGroupId;
   }
   
-  function getNotes() {
+  function getNotes(): ?string {
     return $this->notes;
   }
   
-  function setNotes($notes) {
+  function setNotes(?string $notes): void {
     $this->notes = $notes;
   }
   
-  function getBrainId() {
+  function getBrainId(): ?int {
     return $this->brainId;
   }
   
-  function setBrainId($brainId) {
+  function setBrainId(?int $brainId): void {
     $this->brainId = $brainId;
   }
   
-  function getBrainFeatures() {
+  function getBrainFeatures(): ?int {
     return $this->brainFeatures;
   }
   
-  function setBrainFeatures($brainFeatures) {
+  function setBrainFeatures(?int $brainFeatures): void {
     $this->brainFeatures = $brainFeatures;
   }
   
-  function getIsArchived() {
+  function getIsArchived(): ?int {
     return $this->isArchived;
   }
   
-  function setIsArchived($isArchived) {
+  function setIsArchived(?int $isArchived): void {
     $this->isArchived = $isArchived;
   }
   

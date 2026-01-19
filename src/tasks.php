@@ -13,7 +13,7 @@ use DBA\Preprocessor;
 use DBA\QueryFilter;
 use DBA\Factory;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -184,7 +184,7 @@ if (isset($_GET['id'])) {
   UI::add('agentsSpeed', $agentsSpeed);
   
   $assignAgents = array();
-  $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $hashlist->getAccessGroupId(), "=");
+  $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $hashlist->getAccessGroupId(), "=", Factory::getAccessGroupAgentFactory());
   $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroupAgent::AGENT_ID, Agent::AGENT_ID);
   $allAgents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF])[Factory::getAgentFactory()->getModelName()];
   foreach ($allAgents as $agent) {
@@ -257,7 +257,7 @@ if (isset($_GET['id'])) {
       }
       UI::add('page', $page);
       $limit = $page * $chunkPageSize;
-      $oFp = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $chunkPageSize", Factory::getChunkFactory());
+      $oFp = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $chunkPageSize OFFSET $limit", Factory::getChunkFactory());
       UI::add('chunksPageTitle', "All chunks (page " . ($page + 1) . ")");
       
       $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
@@ -414,6 +414,7 @@ else if (isset($_GET['new'])) {
   UI::add('binaries', Factory::getCrackerBinaryTypeFactory()->filter([]));
   $versions = Factory::getCrackerBinaryFactory()->filter([Factory::ORDER => $oF]);
   usort($versions, ["Util", "versionComparisonBinary"]);
+  $versions = array_reverse($versions);
   UI::add('versions', $versions);
   UI::add('pageTitle', "Create Task");
 }

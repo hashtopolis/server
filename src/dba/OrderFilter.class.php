@@ -8,23 +8,32 @@ class OrderFilter extends Order {
   /**
    * @var AbstractModelFactory
    */
-  private $factory;
+  private $overrideFactory;
   
-  function __construct($by, $type, $factory = null) {
+  function __construct($by, $type, $overrideFactory = null) {
     $this->by = $by;
     $this->type = $type;
-    $this->factory = $factory;
+    $this->overrideFactory = $overrideFactory;
+  }
+
+  function getBy(): string {
+    return $this->by;
+  }
+
+  function getType(): string {
+    return $this->type;
   }
   
-  function getQueryString($table = "") {
-    if ($table != "") {
-      $table = $table . ".";
+  function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
+    if ($this->overrideFactory != null) {
+      $factory = $this->overrideFactory;
     }
-    if ($this->factory != null) {
-      $table = $this->factory->getModelTable() . ".";
+    $table = "";
+    if ($includeTable) {
+      $table = $factory->getMappedModelTable() . ".";
     }
     
-    return $table . $this->by . " " . $this->type;
+    return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->by) . " " . $this->type;
   }
 }
 

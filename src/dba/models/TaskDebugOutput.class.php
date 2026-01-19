@@ -3,17 +3,17 @@
 namespace DBA;
 
 class TaskDebugOutput extends AbstractModel {
-  private $taskDebugOutputId;
-  private $taskId;
-  private $output;
+  private ?int $taskDebugOutputId;
+  private ?int $taskId;
+  private ?string $output;
   
-  function __construct($taskDebugOutputId, $taskId, $output) {
+  function __construct(?int $taskDebugOutputId, ?int $taskId, ?string $output) {
     $this->taskDebugOutputId = $taskDebugOutputId;
     $this->taskId = $taskId;
     $this->output = $output;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['taskDebugOutputId'] = $this->taskDebugOutputId;
     $dict['taskId'] = $this->taskId;
@@ -22,28 +22,28 @@ class TaskDebugOutput extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['taskDebugOutputId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "taskDebugOutputId"];
-    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId"];
-    $dict['output'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "output"];
+    $dict['taskDebugOutputId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "taskDebugOutputId", "public" => False, "dba_mapping" => False];
+    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId", "public" => False, "dba_mapping" => False];
+    $dict['output'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "output", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "taskDebugOutputId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->taskDebugOutputId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->taskDebugOutputId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->taskDebugOutputId = $id;
   }
   
@@ -51,23 +51,23 @@ class TaskDebugOutput extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getTaskId() {
+  function getTaskId(): ?int {
     return $this->taskId;
   }
   
-  function setTaskId($taskId) {
+  function setTaskId(?int $taskId): void {
     $this->taskId = $taskId;
   }
   
-  function getOutput() {
+  function getOutput(): ?string {
     return $this->output;
   }
   
-  function setOutput($output) {
+  function setOutput(?string $output): void {
     $this->output = $output;
   }
   

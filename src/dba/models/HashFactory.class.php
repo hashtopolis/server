@@ -3,28 +3,31 @@
 namespace DBA;
 
 class HashFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Hash";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Hash";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Hash
    */
-  function getNullObject() {
-    $o = new Hash(-1, null, null, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): Hash {
+    return new Hash(-1, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class HashFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Hash
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Hash($dict['hashId'], $dict['hashlistId'], $dict['hash'], $dict['salt'], $dict['plaintext'], $dict['timeCracked'], $dict['chunkId'], $dict['isCracked'], $dict['crackPos']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Hash {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Hash($dict['hashid'], $dict['hashlistid'], $dict['hash'], $dict['salt'], $dict['plaintext'], $dict['timecracked'], $dict['chunkid'], $dict['iscracked'], $dict['crackpos']);
   }
   
   /**
@@ -42,7 +49,7 @@ class HashFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Hash|Hash[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class HashFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Hash
+   * @return ?Hash
    */
-  function get($pk) {
+  function get($pk): ?Hash {
     return Util::cast(parent::get($pk), Hash::class);
   }
   
@@ -76,7 +83,7 @@ class HashFactory extends AbstractModelFactory {
    * @param Hash $model
    * @return Hash
    */
-  function save($model) {
+  function save($model): Hash {
     return Util::cast(parent::save($model), Hash::class);
   }
 }

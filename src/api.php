@@ -5,7 +5,7 @@ use DBA\QueryFilter;
 use DBA\Factory;
 use DBA\User;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));

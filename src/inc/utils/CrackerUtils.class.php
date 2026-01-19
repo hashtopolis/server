@@ -27,19 +27,21 @@ class CrackerUtils {
   
   /**
    * @param string $typeName
-   * @throws HTException
+   * @return CrackerBinaryType
+   * @throws HttpConflict
+   * @throws HttpError
    */
-  public static function createBinaryType($typeName) {
+  public static function createBinaryType(string $typeName): CrackerBinaryType {
     $qF = new QueryFilter(CrackerBinaryType::TYPE_NAME, $typeName, "=");
     $check = Factory::getCrackerBinaryTypeFactory()->filter([Factory::FILTER => $qF], true);
     if ($check !== null) {
-      throw new HTException("This binary type already exists!");
+      throw new HttpConflict("This binary type already exists!");
     }
     else if (strlen($typeName) == 0) {
-      throw new HTException("Cracker name cannot be empty!");
+      throw new HttpError("Cracker name cannot be empty!");
     }
     $binaryType = new CrackerBinaryType(null, $typeName, 1);
-    Factory::getCrackerBinaryTypeFactory()->save($binaryType);
+    return Factory::getCrackerBinaryTypeFactory()->save($binaryType);
   }
   
   /**
@@ -47,17 +49,17 @@ class CrackerUtils {
    * @param string $name
    * @param string $url
    * @param int $binaryTypeId
-   * @return CrackerBinaryType
+   * @return CrackerBinary
+   * @throws HttpError
    * @throws HTException
    */
-  public static function createBinary($version, $name, $url, $binaryTypeId) {
+  public static function createBinary(string $version, string $name, string $url, int $binaryTypeId): CrackerBinary {
     $binaryType = CrackerUtils::getBinaryType($binaryTypeId);
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
-      throw new HTException("Please provide all information!");
+      throw new HttpError("Please provide all information!");
     }
     $binary = new CrackerBinary(null, $binaryType->getId(), $version, $url, $name);
-    Factory::getCrackerBinaryFactory()->save($binary);
-    return $binaryType;
+    return Factory::getCrackerBinaryFactory()->save($binary);
   }
   
   /**

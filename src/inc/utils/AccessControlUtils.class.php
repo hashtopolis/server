@@ -22,6 +22,18 @@ class AccessControlUtils {
     return Factory::getRightGroupFactory()->filter([]);
   }
   
+  public static function addToPermissions($groupId, $perm) {
+    $group = AccessControlUtils::getGroup($groupId);
+    $current_permissions = $group->getPermissions();
+    if ($current_permissions == 'ALL') {
+      throw new HTException("Administrator group cannot be changed!");
+    }
+    $current_permissions_decoded = json_decode($current_permissions, true);
+
+    $merged_permissions = array_merge($current_permissions_decoded, $perm);
+    Factory::getRightGroupFactory()->set($group, RightGroup::PERMISSIONS, json_encode($merged_permissions));
+  }
+
   /**
    * @param int $groupId
    * @param array $perm
@@ -72,33 +84,33 @@ class AccessControlUtils {
   /**
    * @param string $groupName
    * @return RightGroup
-   * @throws HTException
+   * @throws HttpError
+   * @throws HttpConflict
    */
-  public static function createGroup($groupName) {
+  public static function createGroup(string $groupName): RightGroup {
     if (strlen($groupName) == 0 || strlen($groupName) > DLimits::ACCESS_GROUP_MAX_LENGTH) {
-      throw new HTException("Permission group name is too short or too long!");
+      throw new HttpError("Permission group name is too short or too long!");
     }
     
     $qF = new QueryFilter(RightGroup::GROUP_NAME, $groupName, "=");
     $check = Factory::getRightGroupFactory()->filter([Factory::FILTER => $qF], true);
     if ($check !== null) {
-      throw new HTException("There is already an permission group with the same name!");
+      throw new HttpConflict("There is already an permission group with the same name!");
     }
     $group = new RightGroup(null, $groupName, "[]");
-    $group = Factory::getRightGroupFactory()->save($group);
-    return $group;
+    return Factory::getRightGroupFactory()->save($group);
   }
   
   /**
    * @param int $groupId
-   * @throws HTException
+   * @throws HttpError
    */
   public static function deleteGroup($groupId) {
     $group = AccessControlUtils::getGroup($groupId);
     $qF = new QueryFilter(User::RIGHT_GROUP_ID, $group->getId(), "=");
     $count = Factory::getUserFactory()->countFilter([Factory::FILTER => $qF]);
     if ($count > 0) {
-      throw new HTException("You cannot delete a group which has still users belonging to it!");
+      throw new HttpError("You cannot delete a group which has still users belonging to it!");
     }
     
     // delete permission group

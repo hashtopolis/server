@@ -3,6 +3,7 @@
 use DBA\AgentBinary;
 use DBA\QueryFilter;
 use DBA\Factory;
+use Composer\Semver\Comparator;
 
 class APICheckClientVersion extends APIBasic {
   public function execute($QUERY = array()) {
@@ -15,7 +16,7 @@ class APICheckClientVersion extends APIBasic {
     $version = $QUERY[PQueryCheckClientVersion::VERSION];
     $type = $QUERY[PQueryCheckClientVersion::TYPE];
     
-    $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
+    $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");
     $result = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($result == null) {
       DServerLog::log(DServerLog::WARNING, "Agent " . $this->agent->getId() . " sent unknown client type: " . $type);
@@ -23,7 +24,7 @@ class APICheckClientVersion extends APIBasic {
     }
     
     $this->updateAgent(PActions::CHECK_CLIENT_VERSION);
-    if (Util::versionComparison($result->getVersion(), $version) == -1) {
+    if (Comparator::greaterThan($result->getVersion(), $version)) {
       DServerLog::log(DServerLog::DEBUG, "Agent " . $this->agent->getId() . " got notified about client update");
       $this->sendResponse(array(
           PResponseClientUpdate::ACTION => PActions::CHECK_CLIENT_VERSION,

@@ -3,28 +3,31 @@
 namespace DBA;
 
 class TaskFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Task";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Task";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Task
    */
-  function getNullObject() {
-    $o = new Task(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): Task {
+    return new Task(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class TaskFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Task
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Task($dict['taskId'], $dict['taskName'], $dict['attackCmd'], $dict['chunkTime'], $dict['statusTimer'], $dict['keyspace'], $dict['keyspaceProgress'], $dict['priority'], $dict['maxAgents'], $dict['color'], $dict['isSmall'], $dict['isCpuTask'], $dict['useNewBench'], $dict['skipKeyspace'], $dict['crackerBinaryId'], $dict['crackerBinaryTypeId'], $dict['taskWrapperId'], $dict['isArchived'], $dict['notes'], $dict['staticChunks'], $dict['chunkSize'], $dict['forcePipe'], $dict['usePreprocessor'], $dict['preprocessorCommand']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Task {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Task($dict['taskid'], $dict['taskname'], $dict['attackcmd'], $dict['chunktime'], $dict['statustimer'], $dict['keyspace'], $dict['keyspaceprogress'], $dict['priority'], $dict['maxagents'], $dict['color'], $dict['issmall'], $dict['iscputask'], $dict['usenewbench'], $dict['skipkeyspace'], $dict['crackerbinaryid'], $dict['crackerbinarytypeid'], $dict['taskwrapperid'], $dict['isarchived'], $dict['notes'], $dict['staticchunks'], $dict['chunksize'], $dict['forcepipe'], $dict['usepreprocessor'], $dict['preprocessorcommand']);
   }
   
   /**
@@ -42,7 +49,7 @@ class TaskFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Task|Task[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class TaskFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Task
+   * @return ?Task
    */
-  function get($pk) {
+  function get($pk): ?Task {
     return Util::cast(parent::get($pk), Task::class);
   }
   
@@ -76,7 +83,7 @@ class TaskFactory extends AbstractModelFactory {
    * @param Task $model
    * @return Task
    */
-  function save($model) {
+  function save($model): Task {
     return Util::cast(parent::save($model), Task::class);
   }
 }

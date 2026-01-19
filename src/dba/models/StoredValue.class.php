@@ -3,15 +3,15 @@
 namespace DBA;
 
 class StoredValue extends AbstractModel {
-  private $storedValueId;
-  private $val;
+  private ?string $storedValueId;
+  private ?string $val;
   
-  function __construct($storedValueId, $val) {
+  function __construct(?string $storedValueId, ?string $val) {
     $this->storedValueId = $storedValueId;
     $this->val = $val;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['storedValueId'] = $this->storedValueId;
     $dict['val'] = $this->val;
@@ -19,27 +19,27 @@ class StoredValue extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['storedValueId'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "storedValueId"];
-    $dict['val'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "val"];
+    $dict['storedValueId'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "storedValueId", "public" => False, "dba_mapping" => False];
+    $dict['val'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "val", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "storedValueId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?string {
     return $this->storedValueId;
   }
   
-  function getId() {
+  function getId(): ?string {
     return $this->storedValueId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->storedValueId = $id;
   }
   
@@ -47,15 +47,15 @@ class StoredValue extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getVal() {
+  function getVal(): ?string {
     return $this->val;
   }
   
-  function setVal($val) {
+  function setVal(?string $val): void {
     $this->val = $val;
   }
   

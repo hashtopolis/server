@@ -3,28 +3,31 @@
 namespace DBA;
 
 class FileDownloadFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "FileDownload";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "FileDownload";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return FileDownload
    */
-  function getNullObject() {
-    $o = new FileDownload(-1, null, null, null);
-    return $o;
+  function getNullObject(): FileDownload {
+    return new FileDownload(-1, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class FileDownloadFactory extends AbstractModelFactory {
    * @param array $dict
    * @return FileDownload
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new FileDownload($dict['fileDownloadId'], $dict['time'], $dict['fileId'], $dict['status']);
-    return $o;
+  function createObjectFromDict($pk, $dict): FileDownload {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new FileDownload($dict['filedownloadid'], $dict['time'], $dict['fileid'], $dict['status']);
   }
   
   /**
@@ -42,7 +49,7 @@ class FileDownloadFactory extends AbstractModelFactory {
    * @param bool $single
    * @return FileDownload|FileDownload[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class FileDownloadFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return FileDownload
+   * @return ?FileDownload
    */
-  function get($pk) {
+  function get($pk): ?FileDownload {
     return Util::cast(parent::get($pk), FileDownload::class);
   }
   
@@ -76,7 +83,7 @@ class FileDownloadFactory extends AbstractModelFactory {
    * @param FileDownload $model
    * @return FileDownload
    */
-  function save($model) {
+  function save($model): FileDownload {
     return Util::cast(parent::save($model), FileDownload::class);
   }
 }

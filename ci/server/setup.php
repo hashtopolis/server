@@ -30,13 +30,13 @@ $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 try {
   $db->query("CREATE DATABASE IF NOT EXISTS hashtopolis;");
   $db->query("USE hashtopolis;");
-  $db->query(file_get_contents($envPath . "src/install/hashtopolis.sql"));
+  $db->query(file_get_contents($envPath . "src/migrations/mysql/20251127000000_initial.sql"));
 }
 catch (PDOException $e) {
   fwrite(STDERR, "Failed to initialize database: " . $e->getMessage());
   exit(-1);
 }
 
-$load = file_get_contents($envPath . "src/inc/load.php");
+$load = file_get_contents($envPath . "src/inc/startup/load.php");
 $load = str_replace('ini_set("display_errors", "0");', 'ini_set("display_errors", "1");', $load);
-file_put_contents($envPath . "src/inc/load.php", $load);
+file_put_contents($envPath . "src/inc/startup/load.php", $load);

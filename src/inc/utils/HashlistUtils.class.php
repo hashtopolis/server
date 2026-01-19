@@ -4,9 +4,11 @@ use DBA\Hash;
 use DBA\QueryFilter;
 use DBA\ContainFilter;
 use DBA\OrderFilter;
+use DBA\LimitFilter;
 use DBA\Hashlist;
 use DBA\HashlistHashlist;
 use DBA\HashBinary;
+use DBA\UpdateSet;
 use DBA\User;
 use DBA\File;
 use DBA\JoinFilter;
@@ -196,8 +198,9 @@ class HashlistUtils {
       $size = $hashFactory->countFilter([Factory::FILTER => [$qF1, $qF2]]);
       for ($x = 0; $x * $pagingSize < $size; $x++) {
         $buffer = "";
-        $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ", $pagingSize");
-        $hashes = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+        $oF = new OrderFilter(Hash::HASH_ID, "ASC");
+        $lF = new LimitFilter($pagingSize, $x * $pagingSize);
+        $hashes = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF, Factory::LIMIT => $lF]);
         foreach ($hashes as $hash) {
           $plain = $hash->getPlaintext();
           if (strlen($plain) >= 8 && substr($plain, 0, 5) == "\$HEX[" && substr($plain, strlen($plain) - 1, 1) == "]") {
@@ -212,7 +215,7 @@ class HashlistUtils {
     fclose($wordlistFile);
     
     //add file to files list
-    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId(), $wordCount);
+    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), DFileType::WORDLIST, $hashlist->getAccessGroupId(), $wordCount);
     $file = Factory::getFileFactory()->save($file);
     # TODO: returning wordCount and wordlistName are not really required here as the name and the count are already given in the file object
     return [$wordCount, $wordlistName, $file];
@@ -489,8 +492,6 @@ class HashlistUtils {
           $ll = Factory::getHashlistFactory()->get($l->getId());
           Factory::getHashlistFactory()->inc($ll, Hashlist::CRACKED, $crackedIn[$ll->getId()]);
         }
-        Factory::getAgentFactory()->getDB()->commit();
-        Factory::getAgentFactory()->getDB()->beginTransaction();
         foreach ($hashlists as $l) {
           $crackedIn[$l->getId()] = 0;
         }
@@ -596,23 +597,8 @@ class HashlistUtils {
     switch ($hashlist->getFormat()) {
       case 0:
         $count = Factory::getHashlistFactory()->countFilter([]);
-        if ($count > 1) {
-          $deleted = 1;
-          $qF = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
-          $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT 20000");
-          while ($deleted > 0) {
-            $result = Factory::getHashFactory()->massDeletion([Factory::FILTER => $qF, Factory::ORDER => $oF]);
-            $deleted = $result->rowCount();
-            Factory::getAgentFactory()->getDB()->commit();
-            Factory::getAgentFactory()->getDB()->beginTransaction();
-          }
-        }
-        else {
-          // in case there is only one hashlist to delete, truncate the Hash table.
-          Factory::getAgentFactory()->getDB()->query("TRUNCATE TABLE Hash");
-          // Make sure that a transaction is active, this is what the rest of the function expects.
-          Factory::getAgentFactory()->getDB()->beginTransaction();
-        }
+        $qF = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
+        Factory::getHashFactory()->massDeletion([Factory::FILTER => $qF]);
         break;
       case 1:
       case 2:
@@ -710,9 +696,11 @@ class HashlistUtils {
       $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
     $separator = SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR);
+    $numEntries = 0;
     for ($x = 0; $x * $pagingSize < $count; $x++) {
-      $oF = new OrderFilter($orderObject, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
-      $entries = $factory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+      $oF = new OrderFilter($orderObject, "ASC");
+      $lF = new LimitFilter($pagingSize, $x * $pagingSize);
+      $entries = $factory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF, Factory::LIMIT => $lF]);
       $buffer = "";
       foreach ($entries as $entry) {
         switch ($format->getFormat()) {
@@ -732,12 +720,13 @@ class HashlistUtils {
             break;
         }
       }
+      $numEntries += sizeof($entries);
       fputs($file, $buffer);
     }
     fclose($file);
     usleep(1000000);
     
-    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId(), null);
+    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), DFileType::OTHER, $hashlist->getAccessGroupId(), $numEntries);
     $file = Factory::getFileFactory()->save($file);
     return $file;
   }
@@ -772,28 +761,29 @@ class HashlistUtils {
     $brainFeatures = intval($brainFeatures);
     
     if ($format < DHashlistFormat::PLAIN || $format > DHashlistFormat::BINARY) {
-      throw new HTException("Invalid hashlist format!");
+      throw new HttpError("Invalid hashlist format!");
     }
     else if ($accessGroup == null) {
-      throw new HTException("Invalid access group selected!");
+      throw new HttpError("Invalid access group selected!");
     }
     else if (sizeof(AccessUtils::intersection(array($accessGroup), AccessUtils::getAccessGroupsOfUser($user))) == 0) {
-      throw new HTException("Access group with no rights selected!");
+      throw new HttpError("Access group with no rights selected!");
     }
     else if (strlen($name) == 0) {
-      throw new HTException("Hashlist name cannot be empty!");
+      throw new HttpError("Hashlist name cannot be empty!");
     }
     else if ($salted == '1' && strlen($saltSeparator) == 0) {
-      throw new HTException("Salt separator cannot be empty when hashes are salted!");
+      throw new HttpError("Salt separator cannot be empty when hashes are salted!");
     }
     else if ($brainId && !SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_ENABLE)) {
-      throw new HTException("Hashcat brain cannot be used if not enabled in config!");
+      throw new HttpError("Hashcat brain cannot be used if not enabled in config!");
     }
     else if ($brainId && $brainFeatures < 1 || $brainFeatures > 3) {
-      throw new HTException("Invalid brain features selected!");
+      throw new HttpError("Invalid brain features selected!");
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
+    
     $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId(), '', $brainId, $brainFeatures, 0);
     $hashlist = Factory::getHashlistFactory()->save($hashlist);
     
@@ -815,22 +805,22 @@ class HashlistUtils {
     $tmpfile = "/tmp/hashlist_" . $hashlist->getId();
     if (!Util::uploadFile($tmpfile, $source, $dataSource) && file_exists($tmpfile)) {
       Factory::getAgentFactory()->getDB()->rollback();
-      throw new HTException("Failed to process file!");
+      throw new HttpError("Failed to process file!");
     }
     else if (!file_exists($tmpfile)) {
       Factory::getAgentFactory()->getDB()->rollback();
-      throw new HTException("Required file does not exist!");
+      throw new HttpError("Required file does not exist!");
     }
     // replace countLines with fileLineCount? Seems like a better option, not OS-dependent
     else if (Util::countLines($tmpfile) > SConfig::getInstance()->getVal(DConfig::MAX_HASHLIST_SIZE)) {
       Factory::getAgentFactory()->getDB()->rollback();
-      throw new HTException("Hashlist has too many lines!");
+      throw new HttpError("Hashlist has too many lines!");
     }
     $file = fopen($tmpfile, "rb");
     if (!$file) {
-      throw new HTException("Failed to open file!");
+      Factory::getAgentFactory()->getDB()->rollback();
+      throw new HttpError("Failed to open file!");
     }
-    Factory::getAgentFactory()->getDB()->commit();
     $added = 0;
     $preFound = 0;
     
@@ -841,14 +831,13 @@ class HashlistUtils {
           rewind($file);
           $bufline = stream_get_line($file, 1024);
           if (strpos($bufline, $saltSeparator) === false) {
-            throw new HTException("Salted hashes separator not found in file!");
+            throw new HttpError("Salted hashes separator not found in file!");
           }
         }
         else {
           $saltSeparator = "";
         }
         rewind($file);
-        Factory::getAgentFactory()->getDB()->beginTransaction();
         $values = array();
         $bufferCount = 0;
         while (!feof($file)) {
@@ -890,11 +879,9 @@ class HashlistUtils {
             $preFound++;
           }
           $bufferCount++;
-          if ($bufferCount >= 10000) {
+          if ($bufferCount >= 5000) {
             $result = Factory::getHashFactory()->massSave($values);
             $added += $result->rowCount();
-            Factory::getAgentFactory()->getDB()->commit();
-            Factory::getAgentFactory()->getDB()->beginTransaction();
             $values = array();
             $bufferCount = 0;
           }
@@ -906,7 +893,6 @@ class HashlistUtils {
         fclose($file);
         unlink($tmpfile);
         Factory::getHashlistFactory()->mset($hashlist, [Hashlist::HASH_COUNT => $added, Hashlist::CRACKED => $preFound]);
-        Factory::getAgentFactory()->getDB()->commit();
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
         
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
@@ -996,6 +982,7 @@ class HashlistUtils {
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
         break;
     }
+    Factory::getAgentFactory()->getDB()->commit();
     return $hashlist;
   }
   
@@ -1097,9 +1084,11 @@ class HashlistUtils {
     if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
       $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
+    $numEntries = 0;
     for ($x = 0; $x * $pagingSize < $count; $x++) {
-      $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
-      $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+      $oF = new OrderFilter(Hash::HASH_ID, "ASC");
+      $lF = new LimitFilter($pagingSize, $x * $pagingSize);
+      $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF, Factory::LIMIT => $lF]);
       $buffer = "";
       foreach ($entries as $entry) {
         $buffer .= $entry->getHash();
@@ -1108,12 +1097,13 @@ class HashlistUtils {
         }
         $buffer .= "\n";
       }
+      $numEntries += sizeof($entries);
       fputs($file, $buffer);
     }
     fclose($file);
     usleep(1000000);
     
-    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId(), null);
+    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), DFileType::OTHER, $hashlist->getAccessGroupId(), $numEntries);
     return Factory::getFileFactory()->save($file);
   }
   

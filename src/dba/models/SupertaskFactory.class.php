@@ -3,28 +3,31 @@
 namespace DBA;
 
 class SupertaskFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Supertask";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Supertask";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Supertask
    */
-  function getNullObject() {
-    $o = new Supertask(-1, null);
-    return $o;
+  function getNullObject(): Supertask {
+    return new Supertask(-1, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class SupertaskFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Supertask
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Supertask($dict['supertaskId'], $dict['supertaskName']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Supertask {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Supertask($dict['supertaskid'], $dict['supertaskname']);
   }
   
   /**
@@ -42,7 +49,7 @@ class SupertaskFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Supertask|Supertask[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class SupertaskFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Supertask
+   * @return ?Supertask
    */
-  function get($pk) {
+  function get($pk): ?Supertask {
     return Util::cast(parent::get($pk), Supertask::class);
   }
   
@@ -76,7 +83,7 @@ class SupertaskFactory extends AbstractModelFactory {
    * @param Supertask $model
    * @return Supertask
    */
-  function save($model) {
+  function save($model): Supertask {
     return Util::cast(parent::save($model), Supertask::class);
   }
 }

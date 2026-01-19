@@ -3,17 +3,17 @@
 namespace DBA;
 
 class SupertaskPretask extends AbstractModel {
-  private $supertaskPretaskId;
-  private $supertaskId;
-  private $pretaskId;
+  private ?int $supertaskPretaskId;
+  private ?int $supertaskId;
+  private ?int $pretaskId;
   
-  function __construct($supertaskPretaskId, $supertaskId, $pretaskId) {
+  function __construct(?int $supertaskPretaskId, ?int $supertaskId, ?int $pretaskId) {
     $this->supertaskPretaskId = $supertaskPretaskId;
     $this->supertaskId = $supertaskId;
     $this->pretaskId = $pretaskId;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['supertaskPretaskId'] = $this->supertaskPretaskId;
     $dict['supertaskId'] = $this->supertaskId;
@@ -22,28 +22,28 @@ class SupertaskPretask extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['supertaskPretaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "supertaskPretaskId"];
-    $dict['supertaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "supertaskId"];
-    $dict['pretaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "pretaskId"];
+    $dict['supertaskPretaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "supertaskPretaskId", "public" => False, "dba_mapping" => False];
+    $dict['supertaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "supertaskId", "public" => False, "dba_mapping" => False];
+    $dict['pretaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "pretaskId", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "supertaskPretaskId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->supertaskPretaskId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->supertaskPretaskId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->supertaskPretaskId = $id;
   }
   
@@ -51,23 +51,23 @@ class SupertaskPretask extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getSupertaskId() {
+  function getSupertaskId(): ?int {
     return $this->supertaskId;
   }
   
-  function setSupertaskId($supertaskId) {
+  function setSupertaskId(?int $supertaskId): void {
     $this->supertaskId = $supertaskId;
   }
   
-  function getPretaskId() {
+  function getPretaskId(): ?int {
     return $this->pretaskId;
   }
   
-  function setPretaskId($pretaskId) {
+  function setPretaskId(?int $pretaskId): void {
     $this->pretaskId = $pretaskId;
   }
   

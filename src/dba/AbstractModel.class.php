@@ -24,7 +24,7 @@ abstract class AbstractModel {
    * @param $id string
    * @return
    */
-  abstract function setId($id);
+  abstract function setId(string $id): void;
   
   /**
    * this function returns the models id

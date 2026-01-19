@@ -3,28 +3,31 @@
 namespace DBA;
 
 class RightGroupFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "RightGroup";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "RightGroup";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return RightGroup
    */
-  function getNullObject() {
-    $o = new RightGroup(-1, null, null);
-    return $o;
+  function getNullObject(): RightGroup {
+    return new RightGroup(-1, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class RightGroupFactory extends AbstractModelFactory {
    * @param array $dict
    * @return RightGroup
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new RightGroup($dict['rightGroupId'], $dict['groupName'], $dict['permissions']);
-    return $o;
+  function createObjectFromDict($pk, $dict): RightGroup {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new RightGroup($dict['rightgroupid'], $dict['groupname'], $dict['permissions']);
   }
   
   /**
@@ -42,7 +49,7 @@ class RightGroupFactory extends AbstractModelFactory {
    * @param bool $single
    * @return RightGroup|RightGroup[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class RightGroupFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return RightGroup
+   * @return ?RightGroup
    */
-  function get($pk) {
+  function get($pk): ?RightGroup {
     return Util::cast(parent::get($pk), RightGroup::class);
   }
   
@@ -76,7 +83,7 @@ class RightGroupFactory extends AbstractModelFactory {
    * @param RightGroup $model
    * @return RightGroup
    */
-  function save($model) {
+  function save($model): RightGroup {
     return Util::cast(parent::save($model), RightGroup::class);
   }
 }

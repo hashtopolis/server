@@ -3,28 +3,31 @@
 namespace DBA;
 
 class CrackerBinaryTypeFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "CrackerBinaryType";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "CrackerBinaryType";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return CrackerBinaryType
    */
-  function getNullObject() {
-    $o = new CrackerBinaryType(-1, null, null);
-    return $o;
+  function getNullObject(): CrackerBinaryType {
+    return new CrackerBinaryType(-1, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
    * @param array $dict
    * @return CrackerBinaryType
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new CrackerBinaryType($dict['crackerBinaryTypeId'], $dict['typeName'], $dict['isChunkingAvailable']);
-    return $o;
+  function createObjectFromDict($pk, $dict): CrackerBinaryType {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new CrackerBinaryType($dict['crackerbinarytypeid'], $dict['typename'], $dict['ischunkingavailable']);
   }
   
   /**
@@ -42,7 +49,7 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
    * @param bool $single
    * @return CrackerBinaryType|CrackerBinaryType[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return CrackerBinaryType
+   * @return ?CrackerBinaryType
    */
-  function get($pk) {
+  function get($pk): ?CrackerBinaryType {
     return Util::cast(parent::get($pk), CrackerBinaryType::class);
   }
   
@@ -76,7 +83,7 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
    * @param CrackerBinaryType $model
    * @return CrackerBinaryType
    */
-  function save($model) {
+  function save($model): CrackerBinaryType {
     return Util::cast(parent::save($model), CrackerBinaryType::class);
   }
 }

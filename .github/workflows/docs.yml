@@ -1,0 +1,52 @@
+name: Generate MkDocs and upload
+
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install mkdocs
+        pip3 install $(mkdocs get-deps)
+        sudo apt-get update
+        sudo apt-get install php
+        sudo apt-get install -y lftp
+        sudo apt-get install nodejs
+        sudo apt-get install npm
+    - name: Start Hashtopolis server
+      uses: ./.github/actions/start-hashtopolis
+      with:
+        db_system: "mysql"
+    - name: Download newest apiv2 spec
+      run: |
+        wget http://localhost:8080/api/v2/openapi.json -P /tmp/
+        cat /tmp/openapi.json
+        mv /tmp/openapi.json ./doc/
+    - name: Create function level documentation with phpdocumentor
+      run: |
+        wget https://phpdoc.org/phpDocumentor.phar -P /tmp/
+        sudo php /tmp/phpDocumentor.phar --ignore vendor/ -d . -t ./doc/php-documentor/
+    - name: Build MkDocs site
+      run: |
+        mkdocs build
+    - name: Upload HTML files to FTP server
+      env:
+        FTP_SERVER: ${{ secrets.FTP_SERVER }}
+        FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      run: |
+        lftp -e "mirror -R site/ /; quit" -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER

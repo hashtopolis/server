@@ -3,28 +3,31 @@
 namespace DBA;
 
 class FilePretaskFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "FilePretask";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "FilePretask";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return FilePretask
    */
-  function getNullObject() {
-    $o = new FilePretask(-1, null, null);
-    return $o;
+  function getNullObject(): FilePretask {
+    return new FilePretask(-1, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class FilePretaskFactory extends AbstractModelFactory {
    * @param array $dict
    * @return FilePretask
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new FilePretask($dict['filePretaskId'], $dict['fileId'], $dict['pretaskId']);
-    return $o;
+  function createObjectFromDict($pk, $dict): FilePretask {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new FilePretask($dict['filepretaskid'], $dict['fileid'], $dict['pretaskid']);
   }
   
   /**
@@ -42,7 +49,7 @@ class FilePretaskFactory extends AbstractModelFactory {
    * @param bool $single
    * @return FilePretask|FilePretask[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class FilePretaskFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return FilePretask
+   * @return ?FilePretask
    */
-  function get($pk) {
+  function get($pk): ?FilePretask {
     return Util::cast(parent::get($pk), FilePretask::class);
   }
   
@@ -76,7 +83,7 @@ class FilePretaskFactory extends AbstractModelFactory {
    * @param FilePretask $model
    * @return FilePretask
    */
-  function save($model) {
+  function save($model): FilePretask {
     return Util::cast(parent::save($model), FilePretask::class);
   }
 }

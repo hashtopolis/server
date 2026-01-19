@@ -26,7 +26,9 @@ use DBA\AgentBinary;
 use DBA\AgentStat;
 use DBA\FileDelete;
 use DBA\Factory;
+use DBA\UpdateSet;
 use DBA\Speed;
+use Composer\Semver\Comparator;
 
 /**
  *
@@ -186,15 +188,61 @@ class Util {
   }
   
   /**
+   * function to check agent version for older update scripts, that still has
+   * the 'type' field in AgentBinary instead of 'binaryType'
+   */
+  public static function checkAgentVersionLegacy($type, $version, $silent = false) {
+    $agentBinaryFactory = Factory::getAgentBinaryFactory();
+    $dict = $agentBinaryFactory->getNullObject()->getKeyValueDict();
+    unset($dict["binaryType"]);
+    $dict["type"] = null;
+    $keys = array_keys($dict);
+    
+    $query = "SELECT " . implode(", ", $keys) . " FROM " . $agentBinaryFactory->getModelTable();
+    $query .= " WHERE type=?";
+    $dbh = $agentBinaryFactory->getDB();
+    $stmt = $dbh->prepare($query);
+    $vals = [$type];
+    $stmt->execute($vals);
+
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if($row != null) {
+      $pkName = $agentBinaryFactory->getNullObject()->getPrimaryKey();
+      $pk = $row[$pkName];
+      $row["binaryType"] = $row["type"];
+      $binary = $agentBinaryFactory->createObjectFromDict($pk, $row);
+
+      if (Comparator::lessThan($binary->getVersion(), $version)) {
+        if (!$silent) {
+          echo "update $type version... ";
+        }
+
+        $query = "UPDATE " . $agentBinaryFactory->getModelTable() . " SET " . AgentBinary::VERSION . "=?";
+        
+        $values = [];
+        $query = $query . " WHERE " . $binary->getPrimaryKey() . "=?";
+        $values[] = $version;
+        $values[] = $binary->getPrimaryKeyValue();
+        
+        $stmt = $dbh->prepare($query);
+        $stmt->execute($values);
+        if (!$silent) {
+          echo "OK";
+        }
+      }
+    }
+  }
+
+  /**
    * @param string $type
    * @param string $version
    * @param bool $silent
    */
   public static function checkAgentVersion($type, $version, $silent = false) {
-    $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
+    $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");
     $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($binary != null) {
-      if (Util::versionComparison($binary->getVersion(), $version) == 1) {
+      if (Comparator::lessThan($binary->getVersion(), $version)) {
         if (!$silent) {
           echo "update $type version... ";
         }
@@ -593,6 +641,9 @@ class Util {
       $qF = new QueryFilter(AgentStat::TIME, time() - $lifetime, "<=");
       Factory::getAgentStatFactory()->massDeletion([Factory::FILTER => $qF]);
       
+      $qF = new QueryFilter(Speed::TIME, time() - $lifetime, "<=");
+      Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
+      
       Factory::getStoredValueFactory()->set($entry, StoredValue::VAL, time());
     }
   }
@@ -937,33 +988,11 @@ class Util {
    * @return int
    */
   public static function versionComparisonBinary($binary1, $binary2) {
-    return Util::versionComparison($binary1->getVersion(), $binary2->getVersion());
-  }
-  
-  /**
-   * @param string $version1
-   * @param string $version2
-   * @return int 1 if version2 is newer, 0 if equal and -1 if version1 is newer
-   */
-  public static function versionComparison($version1, $version2) {
-    $version1 = explode(".", $version1);
-    $version2 = explode(".", $version2);
-    
-    for ($i = 0; $i < sizeof($version1) && $i < sizeof($version2); $i++) {
-      $num1 = (int)$version1[$i];
-      $num2 = (int)$version2[$i];
-      if ($num1 > $num2) {
-        return -1;
-      }
-      else if ($num1 < $num2) {
-        return 1;
-      }
-    }
-    if (sizeof($version1) > sizeof($version2)) {
-      return -1;
-    }
-    else if (sizeof($version1) < sizeof($version2)) {
+    if (Comparator::greaterThan($binary1->getVersion(), $binary2->getVersion())){
       return 1;
+    }
+    else if (Comparator::lessThan($binary1->getVersion(), $binary2->getVersion())){
+      return -1;
     }
     return 0;
   }
@@ -980,7 +1009,13 @@ class Util {
     $version1 = substr($versionString1, 8, strpos($versionString1, "_", 7) - 8);
     $version2 = substr($versionString2, 8, strpos($versionString2, "_", 7) - 8);
     
-    return Util::versionComparison($version2, $version1);
+    if(Comparator::greaterThan($version2, $version1)){
+      return 1;
+    }
+    else if(Comparator::lessThan($version2, $version1)){
+      return -1;
+    }
+    return 0;
   }
   
   /**

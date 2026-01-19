@@ -3,28 +3,31 @@
 namespace DBA;
 
 class AccessGroupAgentFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "AccessGroupAgent";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "AccessGroupAgent";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return AccessGroupAgent
    */
-  function getNullObject() {
-    $o = new AccessGroupAgent(-1, null, null);
-    return $o;
+  function getNullObject(): AccessGroupAgent {
+    return new AccessGroupAgent(-1, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
    * @param array $dict
    * @return AccessGroupAgent
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new AccessGroupAgent($dict['accessGroupAgentId'], $dict['accessGroupId'], $dict['agentId']);
-    return $o;
+  function createObjectFromDict($pk, $dict): AccessGroupAgent {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new AccessGroupAgent($dict['accessgroupagentid'], $dict['accessgroupid'], $dict['agentid']);
   }
   
   /**
@@ -42,7 +49,7 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AccessGroupAgent|AccessGroupAgent[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return AccessGroupAgent
+   * @return ?AccessGroupAgent
    */
-  function get($pk) {
+  function get($pk): ?AccessGroupAgent {
     return Util::cast(parent::get($pk), AccessGroupAgent::class);
   }
   
@@ -76,7 +83,7 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
    * @param AccessGroupAgent $model
    * @return AccessGroupAgent
    */
-  function save($model) {
+  function save($model): AccessGroupAgent {
     return Util::cast(parent::save($model), AccessGroupAgent::class);
   }
 }

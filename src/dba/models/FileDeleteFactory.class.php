@@ -3,28 +3,31 @@
 namespace DBA;
 
 class FileDeleteFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "FileDelete";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "FileDelete";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return FileDelete
    */
-  function getNullObject() {
-    $o = new FileDelete(-1, null, null);
-    return $o;
+  function getNullObject(): FileDelete {
+    return new FileDelete(-1, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class FileDeleteFactory extends AbstractModelFactory {
    * @param array $dict
    * @return FileDelete
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new FileDelete($dict['fileDeleteId'], $dict['filename'], $dict['time']);
-    return $o;
+  function createObjectFromDict($pk, $dict): FileDelete {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new FileDelete($dict['filedeleteid'], $dict['filename'], $dict['time']);
   }
   
   /**
@@ -42,7 +49,7 @@ class FileDeleteFactory extends AbstractModelFactory {
    * @param bool $single
    * @return FileDelete|FileDelete[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class FileDeleteFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return FileDelete
+   * @return ?FileDelete
    */
-  function get($pk) {
+  function get($pk): ?FileDelete {
     return Util::cast(parent::get($pk), FileDelete::class);
   }
   
@@ -76,7 +83,7 @@ class FileDeleteFactory extends AbstractModelFactory {
    * @param FileDelete $model
    * @return FileDelete
    */
-  function save($model) {
+  function save($model): FileDelete {
     return Util::cast(parent::save($model), FileDelete::class);
   }
 }

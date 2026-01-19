@@ -18,6 +18,11 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
     return [Hashlist::PERM_UPDATE, Hash::PERM_UPDATE];
   }
   
+  /**
+   * HashlistId is the Id of the hashlist where you want to import the cracked hashes into.
+   * SourceData is the cracked hashes you want to import.
+   * Seperator is the seperator that has been used for the salt in the hashes.
+   */
   public function getFormFields(): array {
     return [
       Hashlist::HASHLIST_ID => ["type" => "int"],
@@ -26,10 +31,28 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
     ];
   }
   
+  public static function getResponse(): array {
+    return [
+      "totalLines" => 100,
+      "newCracked" => 5,
+      "alreadyCracked" => 2,
+      "invalid" => 1,
+      "notFound" => 1,
+      "processTime" => 60,
+      "tooLongPlaintexts" => 4,
+    ];
+  }
+  
+  /**
+   * Endpoint to import cracked hashes into a hashlist.
+   * @throws HTException
+   */
   public function actionPost($data): object|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     
-    $result = HashlistUtils::processZap($hashlist->getId(), $data["separator"], "paste", ["hashfield" => $data["sourceData"]], [], $this->getCurrentUser());
+    $importData = base64_decode($data["sourceData"]);
+    
+    $result = HashlistUtils::processZap($hashlist->getId(), $data["separator"], "paste", ["hashfield" => $importData], [], $this->getCurrentUser());
     
     return [
       "totalLines" => $result[0],

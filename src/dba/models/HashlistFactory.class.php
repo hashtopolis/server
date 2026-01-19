@@ -3,28 +3,31 @@
 namespace DBA;
 
 class HashlistFactory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "Hashlist";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "Hashlist";
   }
+
+  function isMapping(): bool {
+    return False;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return Hashlist
    */
-  function getNullObject() {
-    $o = new Hashlist(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    return $o;
+  function getNullObject(): Hashlist {
+    return new Hashlist(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -32,9 +35,13 @@ class HashlistFactory extends AbstractModelFactory {
    * @param array $dict
    * @return Hashlist
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new Hashlist($dict['hashlistId'], $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['isSecret'], $dict['hexSalt'], $dict['isSalted'], $dict['accessGroupId'], $dict['notes'], $dict['brainId'], $dict['brainFeatures'], $dict['isArchived']);
-    return $o;
+  function createObjectFromDict($pk, $dict): Hashlist {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;
+    return new Hashlist($dict['hashlistid'], $dict['hashlistname'], $dict['format'], $dict['hashtypeid'], $dict['hashcount'], $dict['saltseparator'], $dict['cracked'], $dict['issecret'], $dict['hexsalt'], $dict['issalted'], $dict['accessgroupid'], $dict['notes'], $dict['brainid'], $dict['brainfeatures'], $dict['isarchived']);
   }
   
   /**
@@ -42,7 +49,7 @@ class HashlistFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Hashlist|Hashlist[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false) {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +73,9 @@ class HashlistFactory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return Hashlist
+   * @return ?Hashlist
    */
-  function get($pk) {
+  function get($pk): ?Hashlist {
     return Util::cast(parent::get($pk), Hashlist::class);
   }
   
@@ -76,7 +83,7 @@ class HashlistFactory extends AbstractModelFactory {
    * @param Hashlist $model
    * @return Hashlist
    */
-  function save($model) {
+  function save($model): Hashlist {
     return Util::cast(parent::save($model), Hashlist::class);
   }
 }

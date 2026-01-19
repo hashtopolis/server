@@ -3,20 +3,20 @@
 namespace DBA;
 
 class Chunk extends AbstractModel {
-  private $chunkId;
-  private $taskId;
-  private $skip;
-  private $length;
-  private $agentId;
-  private $dispatchTime;
-  private $solveTime;
-  private $checkpoint;
-  private $progress;
-  private $state;
-  private $cracked;
-  private $speed;
+  private ?int $chunkId;
+  private ?int $taskId;
+  private ?int $skip;
+  private ?int $length;
+  private ?int $agentId;
+  private ?int $dispatchTime;
+  private ?int $solveTime;
+  private ?int $checkpoint;
+  private ?int $progress;
+  private ?int $state;
+  private ?int $cracked;
+  private ?int $speed;
   
-  function __construct($chunkId, $taskId, $skip, $length, $agentId, $dispatchTime, $solveTime, $checkpoint, $progress, $state, $cracked, $speed) {
+  function __construct(?int $chunkId, ?int $taskId, ?int $skip, ?int $length, ?int $agentId, ?int $dispatchTime, ?int $solveTime, ?int $checkpoint, ?int $progress, ?int $state, ?int $cracked, ?int $speed) {
     $this->chunkId = $chunkId;
     $this->taskId = $taskId;
     $this->skip = $skip;
@@ -31,7 +31,7 @@ class Chunk extends AbstractModel {
     $this->speed = $speed;
   }
   
-  function getKeyValueDict() {
+  function getKeyValueDict(): array {
     $dict = array();
     $dict['chunkId'] = $this->chunkId;
     $dict['taskId'] = $this->taskId;
@@ -49,37 +49,37 @@ class Chunk extends AbstractModel {
     return $dict;
   }
   
-  static function getFeatures() {
+  static function getFeatures(): array {
     $dict = array();
-    $dict['chunkId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "chunkId"];
-    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "taskId"];
-    $dict['skip'] = ['read_only' => True, "type" => "uint64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "skip"];
-    $dict['length'] = ['read_only' => True, "type" => "uint64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "length"];
-    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId"];
-    $dict['dispatchTime'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "dispatchTime"];
-    $dict['solveTime'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "solveTime"];
-    $dict['checkpoint'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "checkpoint"];
-    $dict['progress'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "progress"];
-    $dict['state'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "state"];
-    $dict['cracked'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "cracked"];
-    $dict['speed'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "speed"];
+    $dict['chunkId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "chunkId", "public" => False, "dba_mapping" => False];
+    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "taskId", "public" => False, "dba_mapping" => False];
+    $dict['skip'] = ['read_only' => True, "type" => "uint64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "skip", "public" => False, "dba_mapping" => False];
+    $dict['length'] = ['read_only' => True, "type" => "uint64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "length", "public" => False, "dba_mapping" => False];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId", "public" => False, "dba_mapping" => False];
+    $dict['dispatchTime'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "dispatchTime", "public" => False, "dba_mapping" => False];
+    $dict['solveTime'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "solveTime", "public" => False, "dba_mapping" => False];
+    $dict['checkpoint'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "checkpoint", "public" => False, "dba_mapping" => False];
+    $dict['progress'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "progress", "public" => False, "dba_mapping" => False];
+    $dict['state'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "state", "public" => False, "dba_mapping" => False];
+    $dict['cracked'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "cracked", "public" => False, "dba_mapping" => False];
+    $dict['speed'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "speed", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
 
-  function getPrimaryKey() {
+  function getPrimaryKey(): string {
     return "chunkId";
   }
   
-  function getPrimaryKeyValue() {
+  function getPrimaryKeyValue(): ?int {
     return $this->chunkId;
   }
   
-  function getId() {
+  function getId(): ?int {
     return $this->chunkId;
   }
   
-  function setId($id) {
+  function setId($id): void {
     $this->chunkId = $id;
   }
   
@@ -87,95 +87,95 @@ class Chunk extends AbstractModel {
    * Used to serialize the data contained in the model
    * @return array
    */
-  public function expose() {
+  public function expose(): array {
     return get_object_vars($this);
   }
   
-  function getTaskId() {
+  function getTaskId(): ?int {
     return $this->taskId;
   }
   
-  function setTaskId($taskId) {
+  function setTaskId(?int $taskId): void {
     $this->taskId = $taskId;
   }
   
-  function getSkip() {
+  function getSkip(): ?int {
     return $this->skip;
   }
   
-  function setSkip($skip) {
+  function setSkip(?int $skip): void {
     $this->skip = $skip;
   }
   
-  function getLength() {
+  function getLength(): ?int {
     return $this->length;
   }
   
-  function setLength($length) {
+  function setLength(?int $length): void {
     $this->length = $length;
   }
   
-  function getAgentId() {
+  function getAgentId(): ?int {
     return $this->agentId;
   }
   
-  function setAgentId($agentId) {
+  function setAgentId(?int $agentId): void {
     $this->agentId = $agentId;
   }
   
-  function getDispatchTime() {
+  function getDispatchTime(): ?int {
     return $this->dispatchTime;
   }
   
-  function setDispatchTime($dispatchTime) {
+  function setDispatchTime(?int $dispatchTime): void {
     $this->dispatchTime = $dispatchTime;
   }
   
-  function getSolveTime() {
+  function getSolveTime(): ?int {
     return $this->solveTime;
   }
   
-  function setSolveTime($solveTime) {
+  function setSolveTime(?int $solveTime): void {
     $this->solveTime = $solveTime;
   }
   
-  function getCheckpoint() {
+  function getCheckpoint(): ?int {
     return $this->checkpoint;
   }
   
-  function setCheckpoint($checkpoint) {
+  function setCheckpoint(?int $checkpoint): void {
     $this->checkpoint = $checkpoint;
   }
   
-  function getProgress() {
+  function getProgress(): ?int {
     return $this->progress;
   }
   
-  function setProgress($progress) {
+  function setProgress(?int $progress): void {
     $this->progress = $progress;
   }
   
-  function getState() {
+  function getState(): ?int {
     return $this->state;
   }
   
-  function setState($state) {
+  function setState(?int $state): void {
     $this->state = $state;
   }
   
-  function getCracked() {
+  function getCracked(): ?int {
     return $this->cracked;
   }
   
-  function setCracked($cracked) {
+  function setCracked(?int $cracked): void {
     $this->cracked = $cracked;
   }
   
-  function getSpeed() {
+  function getSpeed(): ?int {
     return $this->speed;
   }
   
-  function setSpeed($speed) {
+  function setSpeed(?int $speed): void {
     $this->speed = $speed;
   }
   
