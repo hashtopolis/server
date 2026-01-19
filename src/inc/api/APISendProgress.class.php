@@ -247,11 +247,11 @@ class APISendProgress extends APIBasic {
           }
           else if (sizeof($splitLine) == 5) {
             $plain = $splitLine[2]; // if hash is salted
-            $crackPos = $splitLine[4];
+            $crackPos = intval($splitLine[4]);
           }
           else {
             $plain = $splitLine[1];
-            $crackPos = $splitLine[3];
+            $crackPos = intval($splitLine[3]);
           }
           
           foreach ($hashes as $hash) {
@@ -312,7 +312,7 @@ class APISendProgress extends APIBasic {
             $identification .= SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $essid;
           }
           $plain = $splitLine[1];
-          $crackPos = $splitLine[3];
+          $crackPos = intval($splitLine[3]);
           $qF1 = new QueryFilter(HashBinary::ESSID, $identification, "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
           $hashes = Factory::getHashBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
@@ -333,7 +333,7 @@ class APISendProgress extends APIBasic {
           // save binary password
           // result sent: ..\hashcat_luks_testfiles\luks_tests\hashcat_ripemd160_aes_cbc-essiv_128.luks:hashcat:68617368636174:12
           $plain = $splitLine[1];
-          $crackPos = $splitLine[3];
+          $crackPos = intval($splitLine[3]);
           $qF1 = new QueryFilter(HashBinary::HASHLIST_ID, $totalHashlist->getId(), "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
           $hashes = Factory::getHashBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
