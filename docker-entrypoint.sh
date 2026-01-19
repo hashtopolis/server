@@ -62,8 +62,9 @@ directories=(
 
 echo "Setting up folders"
 for dir in "${directories[@]}"; do
-  mkdir -p "$dir"
-  chown www-data:www-data "$dir"
+  if [ ! -d $dir ];then
+    mkdir -p $dir && chown www-data:www-data $dir
+  fi
 done
 
 # required to trigger the initialization
