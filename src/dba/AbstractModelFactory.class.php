@@ -841,16 +841,25 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
+    $integerValue = false;
     foreach ($updates as $update) {
       $query .= $update->getMassQuery(self::getMappedModelKey($this->getNullObject(),$matchingColumn));
       $vals[] = $update->getMatchValue();
       $vals[] = $update->getUpdateValue();
+      $integerValue = is_int($update->getUpdateValue);
     }
     
     $matchingArr = array();
     foreach ($updates as $update) {
       $vals[] = $update->getMatchValue();
       $matchingArr[] = "?";
+    }
+    
+    // this covers the specific case when integer values are updated and the db system does not know what type the case statements would have
+    // mysql does not really care, but postgres does
+    // the trick we use here works for both systems (as opposed to cast it to int/bigint in postgres with ::bigint where we would need to branch based on the db)
+    if ($integerValue) {
+      $query .= " ELSE 2147483648 "; // 32 bit int max + 1
     }
     
     $query .= "END) WHERE ".self::getMappedModelKey($this->getNullObject(), $matchingColumn)." IN (" . implode(",", $matchingArr) . ")";
