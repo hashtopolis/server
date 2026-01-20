@@ -537,8 +537,7 @@ class APISendProgress extends APIBasic {
         DServerLog::log(DServerLog::TRACE, "Checked zaps and sending new ones to agent", [$this->agent, $zaps]);
         break;
     }
-    Util::zapCleaning();
-    Util::agentStatCleaning();
+    Util::cleaning();
     $this->sendResponse(array(
         PResponseSendProgress::ACTION => PActions::SEND_PROGRESS,
         PResponseSendProgress::RESPONSE => PValues::SUCCESS,

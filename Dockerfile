@@ -107,11 +107,6 @@ COPY --from=prebuild /usr/local/cargo/bin/sqlx /usr/bin/
 
 COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 
-COPY cleanup_cron_script.sh /usr/local/bin/cleanup_cron_script.sh
-RUN chmod +x /usr/local/bin/cleanup_cron_script.sh \
-    && echo '0 * * * * www-data /usr/local/bin/cleanup_cron_script.sh >> /var/log/cleanup_cron.log 2>&1' > /etc/cron.d/cleanup_cron \
-    && crontab /etc/cron.d/cleanup_cron
-
 # Install composer
 COPY composer.json ${HASHTOPOLIS_DOCUMENT_ROOT}/../
 RUN composer install --working-dir=${HASHTOPOLIS_DOCUMENT_ROOT}/..

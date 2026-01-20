@@ -43,7 +43,7 @@ static function getUploadPath(string $id): string {
 }
 
 static function getMetaPath(string $id): string {
-  $filename = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . '/uploads/' . $id . '.meta';
+  $filename = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . '/meta/' . $id . '.meta';
   return $filename;
 }
 
