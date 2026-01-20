@@ -42,11 +42,15 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     $data = $request->getParsedBody();
     $allFeatures = $this->getAliasedFeatures();
     
-    // Validate if correct parameters are sent
-    $this->validateParameters($data, $allFeatures);
-    
-    /* Validate type of parameters */
-    $this->validateData($data, $allFeatures);
+    if ($data !== null) {
+      // Validate if correct parameters are sent
+      $this->validateParameters($data, $allFeatures);
+
+      /* Validate type of parameters */
+      $this->validateData($data, $allFeatures);
+    } else {
+      $data = [];
+    }
     
     /* All creation of object */
     $newObject = $this->actionPost($data);
