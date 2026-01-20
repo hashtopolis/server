@@ -37,17 +37,17 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     return [];
   }
   
-function getUploadPath(string $id): string {
-  $filename = "/var/tmp/tus/uploads/" . $id . '.part';
+static function getUploadPath(string $id): string {
+  $filename = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . '/uploads/' . $id . '.part';
   return $filename;
 }
 
-function getMetaPath(string $id): string {
-  $filename = "/var/tmp/tus/meta/" . $id . '.meta';
+static function getMetaPath(string $id): string {
+  $filename = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . '/uploads/' . $id . '.meta';
   return $filename;
 }
 
-function getImportPath(string $id): string {
+static function getImportPath(string $id): string {
   $filename = Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $id;
   return $filename;
 }

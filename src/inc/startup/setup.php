@@ -114,5 +114,6 @@ Util::checkDataDirectory(DDirectories::FILES, $DIRECTORIES['files']);
 Util::checkDataDirectory(DDirectories::IMPORT, $DIRECTORIES['import']);
 Util::checkDataDirectory(DDirectories::LOG, $DIRECTORIES['log']);
 Util::checkDataDirectory(DDirectories::CONFIG, $DIRECTORIES['config']);
+Util::checkDataDirectory(DDirectories::TUS, $DIRECTORIES['tus']);
 
 define("APP_NAME", (SConfig::getInstance()->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
