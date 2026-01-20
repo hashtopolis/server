@@ -105,8 +105,6 @@ RUN mkdir -p \
 
 COPY --from=prebuild /usr/local/cargo/bin/sqlx /usr/bin/
 
-COPY --from=prebuild /usr/local/cargo/bin/sqlx /usr/bin/
-
 COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 
 COPY cleanup_cron_script.sh /usr/local/bin/cleanup_cron_script.sh
