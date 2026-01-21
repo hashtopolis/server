@@ -88,8 +88,10 @@ static function getImportPath(string $id): string {
    * And to retrieve the upload status.
    */
   function processHead(Request $request, Response $response, array $args): Response {
-    // TODO return 404 or 410 if entry is not found
     $filename = self::getUploadPath($args['id']);
+    if (!is_file($filename)) {
+      return $response->withStatus(404);
+    }
     $currentSize = filesize($filename);
     $ds = self::getMetaStorage($args['id']);
     
