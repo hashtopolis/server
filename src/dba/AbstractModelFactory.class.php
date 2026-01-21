@@ -853,6 +853,13 @@ abstract class AbstractModelFactory {
       $matchingArr[] = "?";
     }
     
+    // this covers the specific case when integer values are updated and the db system does not know what type the case statements would have
+    // mysql does not really care, but postgres does
+    // the trick we use here works for both systems (as opposed to cast it to int/bigint in postgres with ::bigint where we would need to branch based on the db)
+    if (is_int($updates[0]->getUpdateValue())) {
+      $query .= " ELSE 2147483648 "; // 32 bit int max + 1
+    }
+    
     $query .= "END) WHERE ".self::getMappedModelKey($this->getNullObject(), $matchingColumn)." IN (" . implode(",", $matchingArr) . ")";
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);

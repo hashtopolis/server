@@ -93,7 +93,6 @@ class DConfig {
   const EMAIL_SENDER_NAME = "emailSenderName";
   const CONTACT_EMAIL     = "contactEmail";
   const VOUCHER_DELETION  = "voucherDeletion";
-  const S_NAME            = "jeSuisHashtopussy";
   const SERVER_LOG_LEVEL  = "serverLogLevel";
   const ALLOW_DEREGISTER  = "allowDeregister";
   
