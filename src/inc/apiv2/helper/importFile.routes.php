@@ -38,39 +38,17 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   }
   
 static function getUploadPath(string $id): string {
-  $baseDir = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . DIRECTORY_SEPARATOR . 'uploads' . 
-    DIRECTORY_SEPARATOR;
-  $fullPath = realpath($baseDir . $id . ".part");
-  // path traversal prevention
-  if (!$fullPath || !str_starts_with($fullPath, $baseDir)) {
-    throw new HttpForbidden("Invalid path");
-  }
-  return $fullPath;
+  return Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . DIRECTORY_SEPARATOR . 'uploads' . 
+    DIRECTORY_SEPARATOR . basename($id) . ".part";
 }
 
 static function getMetaPath(string $id): string {
-  $baseDir = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . DIRECTORY_SEPARATOR .  'meta' 
-    . DIRECTORY_SEPARATOR;
-  $fullPath = realpath($baseDir . $id . ".meta");
-
-  // path traversal prevention
-  if (!$fullPath || !str_starts_with($fullPath, $baseDir)) {
-    throw new HttpForbidden("Invalid path");
-  }
-
-  return $fullPath;
+  return Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . DIRECTORY_SEPARATOR .  'meta' 
+    . DIRECTORY_SEPARATOR . basename($id) . ".meta";
 }
 
 static function getImportPath(string $id): string {
-  $baseDir = Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . DIRECTORY_SEPARATOR;
-  $fullPath = realpath($baseDir . $id);
-
-  // path traversal prevention
-  if (!$fullPath || !str_starts_with($fullPath, $baseDir)) {
-    throw new HttpForbidden("Invalid path");
-  }
-  
-  return $fullPath;
+  return Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . DIRECTORY_SEPARATOR . basename($id);
 }
 
   /**
