@@ -623,9 +623,9 @@ class Util {
   }
 
   public static function cleaning() {
-    $entry = Factory::getStoredValueFactory()->get(DStats::LAST_CLEANING);
+    $entry = Factory::getStoredValueFactory()->get(DCleaning::LAST_CLEANING);
     if ($entry == null) {
-      $entry = new StoredValue(DStats::LAST_CLEANING, 0);
+      $entry = new StoredValue(DCleaning::LAST_CLEANING, 0);
       Factory::getStoredValueFactory()->save($entry);
     }
     $time = time();
