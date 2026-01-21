@@ -38,18 +38,39 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   }
   
 static function getUploadPath(string $id): string {
-  $filename = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . '/uploads/' . $id . '.part';
-  return $filename;
+  $baseDir = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . DIRECTORY_SEPARATOR . 'uploads' . 
+    DIRECTORY_SEPARATOR;
+  $fullPath = realpath($baseDir . $id . ".part");
+  // path traversal prevention
+  if (!$fullPath || !str_starts_with($fullPath, $baseDir)) {
+    throw new HttpForbidden("Invalid path");
+  }
+  return $fullPath;
 }
 
 static function getMetaPath(string $id): string {
-  $filename = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . '/meta/' . $id . '.meta';
-  return $filename;
+  $baseDir = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . DIRECTORY_SEPARATOR .  'meta' 
+    . DIRECTORY_SEPARATOR;
+  $fullPath = realpath($baseDir . $id . ".meta");
+
+  // path traversal prevention
+  if (!$fullPath || !str_starts_with($fullPath, $baseDir)) {
+    throw new HttpForbidden("Invalid path");
+  }
+
+  return $fullPath;
 }
 
 static function getImportPath(string $id): string {
-  $filename = Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $id;
-  return $filename;
+  $baseDir = Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . DIRECTORY_SEPARATOR;
+  $fullPath = realpath($baseDir . $id);
+
+  // path traversal prevention
+  if (!$fullPath || !str_starts_with($fullPath, $baseDir)) {
+    throw new HttpForbidden("Invalid path");
+  }
+  
+  return $fullPath;
 }
 
   /**
@@ -160,7 +181,7 @@ static function getImportPath(string $id): string {
       foreach ($list as $item) {
         list($key, $b64val) = explode(" ", $item);
         if (!isset($b64val)) {
-          $response->getBody()->write("Error Upload-Metadata, should be a key value pair that is seperated by a space, no value has been provided");
+          $response->getBody()->write("Error Upload-Metadata, should be a key value pair that is separated by a space, no value has been provided");
           return $response->withStatus(400);
         }
         if (($val = base64_decode($b64val, true)) === false) {
@@ -264,6 +285,9 @@ static function getImportPath(string $id): string {
     
     /* Validate if upload time is still valid */
     $now = new DateTimeImmutable();
+    if (!isset($ds['upload_expires'])) {
+      throw new HttpError("The meta file of this upload is incorrect");
+    }
     $dt = (new DateTime())->setTimeStamp($ds['upload_expires']);
     if (($dt->getTimestamp() - $now->getTimestamp()) <= 0) {
       Util::tusFileCleaning();
@@ -364,11 +388,15 @@ static function getImportPath(string $id): string {
       $filename_upload = self::getUploadPath($args['id']);
       $filename_meta = self::getMetaPath($args['id']);
       if (!file_exists($filename_upload) && !file_exists($filename_meta)) {
-        $response->getBody()->write('Upload ID does not exists');
+        $response->getBody()->write('Upload ID does not exist');
         return $response->withStatus(404); 
       }
-      unlink($filename_upload);
-      unlink($filename_meta);
+      $isDeletedUpload = unlink($filename_upload);
+      $isDeletedMeta = unlink($filename_meta);
+
+      if (!$isDeletedMeta || !$isDeletedUpload) {
+      throw new HttpError("Something went wrong while deleting the files");
+      }
 
       return $response->withStatus(204)
         ->withHeader("Tus-Resumable", "1.0.0")

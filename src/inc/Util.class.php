@@ -633,8 +633,8 @@ class Util {
       self::agentStatCleaning();
       self::zapCleaning();
       self::tusFileCleaning();
+      Factory::getStoredValueFactory()->set($entry, StoredValue::VAL, $time);
     }
-    Factory::getStoredValueFactory()->set($entry, StoredValue::VAL, $time);
   }
   
   /**
@@ -673,8 +673,8 @@ class Util {
 
   public static function tusFileCleaning() {
     $tusDirectory = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal();
-    $uploadDirectory = $tusDirectory . "/uploads/";
-    $metaDirectory = $tusDirectory . "/meta/";
+    $uploadDirectory = $tusDirectory . PATH_SEPARATOR . "uploads" . PATH_SEPARATOR;
+    $metaDirectory = $tusDirectory .  PATH_SEPARATOR . "meta" . PATH_SEPARATOR;
     $expiration_time = 3600;
     if (file_exists($metaDirectory) && is_dir($metaDirectory)) {
       if ($metaDirectoryHandler = opendir($metaDirectory)){
@@ -682,6 +682,9 @@ class Util {
           if (str_ends_with($file, ".meta")) {
             $metaFile = $metaDirectory . $file;
             $metadata = (array)json_decode(file_get_contents($metaFile), true) ;
+            if (!isset($metadata['upload_expires'])) {
+              continue;
+            }
             if ($metadata['upload_expires'] > $expiration_time) {
               $uploadFile = $uploadDirectory . pathinfo($file, PATHINFO_FILENAME) . ".part";
               unlink($metaFile);
