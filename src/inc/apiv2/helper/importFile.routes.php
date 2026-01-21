@@ -317,7 +317,7 @@ static function getImportPath(string $id): string {
       }
     }
 
-    if (file_put_contents($filename, $chunk, FILE_APPEND) == false) {
+    if (file_put_contents($filename, $chunk, FILE_APPEND) === false) {
       $response->getBody()->write('Failed to write to file');
       return $response->withStatus(400);
     }
@@ -365,12 +365,17 @@ static function getImportPath(string $id): string {
       /* Return 404 if entry is not found */
       $filename_upload = self::getUploadPath($args['id']);
       $filename_meta = self::getMetaPath($args['id']);
-      if (!file_exists($filename_upload) && !file_exists($filename_meta)) {
-        $response->getBody()->write('Upload ID does not exist');
-        return $response->withStatus(404); 
+      $uploadExists = file_exists($filename_upload);
+      $metaExists = file_exists($filename_meta);
+      if (!$uploadExists && !$metaExists) {
+        throw new HttpError("Upload ID doesnt exists");
       }
-      $isDeletedUpload = unlink($filename_upload);
-      $isDeletedMeta = unlink($filename_meta);
+      if ($uploadExists) {
+        $isDeletedUpload = unlink($filename_upload);
+      }
+      if ($metaExists) {
+        $isDeletedMeta = unlink($filename_meta);
+      }
 
       if (!$isDeletedMeta || !$isDeletedUpload) {
       throw new HttpError("Something went wrong while deleting the files");

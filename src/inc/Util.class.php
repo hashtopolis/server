@@ -671,11 +671,19 @@ class Util {
     Factory::getZapFactory()->massDeletion([Factory::FILTER => $zapFilter]);
   }
 
+  /**
+   * Cleans up stale TUS upload files.
+   *
+   * This method scans the TUS metadata directory for .meta files, reads their
+   * metadata to determine upload expiration, and removes expired metadata files
+   * together with their corresponding upload (.part) files. It performs file
+   * system operations and may delete files on disk.
+   */
   public static function tusFileCleaning() {
     $tusDirectory = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal();
-    $uploadDirectory = $tusDirectory . PATH_SEPARATOR . "uploads" . PATH_SEPARATOR;
-    $metaDirectory = $tusDirectory .  PATH_SEPARATOR . "meta" . PATH_SEPARATOR;
-    $expiration_time = 3600;
+    $uploadDirectory = $tusDirectory . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SEPARATOR;
+    $metaDirectory = $tusDirectory .  DIRECTORY_SEPARATOR . "meta" . DIRECTORY_SEPARATOR;
+    $expiration_time = time() + 3600;
     if (file_exists($metaDirectory) && is_dir($metaDirectory)) {
       if ($metaDirectoryHandler = opendir($metaDirectory)){
         while ($file = readdir($metaDirectoryHandler)) {
@@ -687,8 +695,12 @@ class Util {
             }
             if ($metadata['upload_expires'] > $expiration_time) {
               $uploadFile = $uploadDirectory . pathinfo($file, PATHINFO_FILENAME) . ".part";
-              unlink($metaFile);
-              unlink($uploadFile);
+              if (file_exists($metaFile)) {
+                unlink($metaFile);
+              }
+              if (file_exists($uploadFile)){
+                unlink($uploadFile);
+              }
             }
           }
         }
