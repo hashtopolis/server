@@ -266,7 +266,7 @@ static function getImportPath(string $id): string {
     $now = new DateTimeImmutable();
     $dt = (new DateTime())->setTimeStamp($ds['upload_expires']);
     if (($dt->getTimestamp() - $now->getTimestamp()) <= 0) {
-      // TODO: Remove expired uploads
+      Util::tusFileCleaning();
       $response->getBody()->write('Upload token expired');
       return $response->withStatus(410);
     }

@@ -676,20 +676,20 @@ class Util {
     $uploadDirectory = $tusDirectory . "/uploads/";
     $metaDirectory = $tusDirectory . "/meta/";
     $expiration_time = 3600;
-    if (file_exists($uploadDirectory) && is_dir($uploadDirectory)) {
-      if ($uploadDirectoryHandler = opendir($uploadDirectory)){
-        while ($file = readdir($uploadDirectoryHandler)) {
-          if (str_ends_with($file, ".part")) {
-            $mod_time  = filemtime($file);
-            $file_age = time() - $mod_time; 
-            if ($file_age > $expiration_time) {
-              $metaFile = $metaDirectory . pathinfo($file, PATHINFO_FILENAME);
+    if (file_exists($metaDirectory) && is_dir($metaDirectory)) {
+      if ($metaDirectoryHandler = opendir($metaDirectory)){
+        while ($file = readdir($metaDirectoryHandler)) {
+          if (str_ends_with($file, ".meta")) {
+            $metaFile = $metaDirectory . $file;
+            $metadata = (array)json_decode(file_get_contents($metaFile), true) ;
+            if ($metadata['upload_expires'] > $expiration_time) {
+              $uploadFile = $uploadDirectory . pathinfo($file, PATHINFO_FILENAME) . ".part";
               unlink($metaFile);
-              unlink($uploadDirectory . $file);
+              unlink($uploadFile);
             }
           }
         }
-        closedir($uploadDirectoryHandler);
+        closedir($metaDirectoryHandler);
       }
     }
   }
