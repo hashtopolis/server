@@ -29,12 +29,12 @@ services:
       - hashtopolis_dev
   hashtopolis-db-dev:
     container_name: hashtopolis-db-dev
-    image: postgres:13
+    image: postgres:18
     restart: always
     ports:
       - "5432:5432"
     volumes:
-      - hashtopolis-db-dev:/var/lib/postgresql/data
+      - hashtopolis-db-dev:/var/lib/postgresql
     environment:
       POSTGRES_DB: hashtopolis
       POSTGRES_USER: hashtopolis
