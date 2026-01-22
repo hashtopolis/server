@@ -1148,7 +1148,7 @@ class Util {
               }
             } 
             else {
-              $msg = "Incorrect permissions of import file, hashtopolis server cant read the file";
+              $msg = "Incorrect permissions of import file, Hashtopolis server can't read the file";
             }
           }
           else {
