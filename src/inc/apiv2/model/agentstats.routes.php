@@ -59,4 +59,6 @@ class AgentStatAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 AgentStatAPI::register($app);

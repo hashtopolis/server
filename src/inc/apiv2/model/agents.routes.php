@@ -152,4 +152,6 @@ class AgentAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 AgentAPI::register($app);

@@ -90,4 +90,6 @@ class ChunkAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 ChunkAPI::register($app);

@@ -78,4 +78,6 @@ class AgentErrorAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 AgentErrorAPI::register($app);

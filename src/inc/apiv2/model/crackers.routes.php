@@ -64,4 +64,6 @@ class CrackerBinaryAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 CrackerBinaryAPI::register($app);

@@ -49,4 +49,6 @@ class AgentBinaryAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 AgentBinaryAPI::register($app);

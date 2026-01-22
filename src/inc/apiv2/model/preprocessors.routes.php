@@ -52,4 +52,6 @@ class PreprocessorAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 PreprocessorAPI::register($app);

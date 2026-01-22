@@ -65,7 +65,7 @@ class PreTaskAPI extends AbstractModelAPI {
   }
 
   //TODO make aggregate data queryable and not included by default
-  static function aggregateData(object $object, array &$included_data = [], array $aggregateFieldsets = null): array {
+  static function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
     $aggregatedData = [];
     if (is_null($aggregateFieldsets) || (is_array($aggregateFieldsets) && array_key_exists('pretask', $aggregateFieldsets))) {
 
@@ -104,4 +104,6 @@ class PreTaskAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 PreTaskAPI::register($app);
