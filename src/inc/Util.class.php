@@ -1138,12 +1138,17 @@ class Util {
         
         case "import":
           if (file_exists(Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $sourcedata)) {
-            rename(Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $sourcedata, $target);
-            if (file_exists($target)) {
-              $success = true;
-            }
+            if (is_readable(Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $sourcedata)) {
+              rename(Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $sourcedata, $target);
+              if (file_exists($target)) {
+                $success = true;
+              }
+              else {
+                $msg = "Renaming of file from import directory failed!";
+              }
+            } 
             else {
-              $msg = "Renaming of file from import directory failed!";
+              $msg = "Incorrect permissions of import file, hashtopolis server cant read the file";
             }
           }
           else {
