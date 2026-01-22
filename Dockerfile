@@ -30,6 +30,9 @@ ENV HASHTOPOLIS_IMPORT_PATH=${HASHTOPOLIS_PATH}/import
 ENV HASHTOPOLIS_LOG_PATH=${HASHTOPOLIS_PATH}/log
 ENV HASHTOPOLIS_CONFIG_PATH=${HASHTOPOLIS_PATH}/config
 ENV HASHTOPOLIS_BINARIES_PATH=${HASHTOPOLIS_PATH}/binaries
+ENV HASHTOPOLIS_TUS_PATH=/var/tmp/tus
+ENV HASHTOPOLIS_TEMP_UPLOADS_PATH=${HASHTOPOLIS_TUS_PATH}/uploads
+ENV HASHTOPOLIS_TEMP_META_PATH=${HASHTOPOLIS_TUS_PATH}/meta
 
 # Add support for TLS inspection corporate setups, see .env.sample for details
 ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt 
@@ -67,26 +70,24 @@ RUN echo "ServerTokens Prod" >> /etc/apache2/apache2.conf \
     && echo "ServerSignature Off" >> /etc/apache2/apache2.conf
 
 
-RUN mkdir -p ${HASHTOPOLIS_DOCUMENT_ROOT} \
-    && mkdir ${HASHTOPOLIS_DOCUMENT_ROOT}/../../.git/ \
-    && mkdir -p ${HASHTOPOLIS_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_PATH} \
-    && chmod g+w ${HASHTOPOLIS_PATH} \
-    && mkdir -p ${HASHTOPOLIS_FILES_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_FILES_PATH} \
-    && chmod g+w ${HASHTOPOLIS_FILES_PATH} \
-    && mkdir -p ${HASHTOPOLIS_IMPORT_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_IMPORT_PATH} \
-    && chmod g+w ${HASHTOPOLIS_IMPORT_PATH} \
-    && mkdir -p ${HASHTOPOLIS_LOG_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_LOG_PATH} \
-    && chmod g+w ${HASHTOPOLIS_LOG_PATH} \
-    && mkdir -p ${HASHTOPOLIS_CONFIG_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_CONFIG_PATH} \
-    && chmod g+w ${HASHTOPOLIS_CONFIG_PATH} \
-    && mkdir -p ${HASHTOPOLIS_BINARIES_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_BINARIES_PATH} \
-    && chmod g+w ${HASHTOPOLIS_BINARIES_PATH}
+RUN mkdir -p \
+    ${HASHTOPOLIS_DOCUMENT_ROOT} \
+    ${HASHTOPOLIS_DOCUMENT_ROOT}/../../.git/ \
+    ${HASHTOPOLIS_PATH} \
+    ${HASHTOPOLIS_FILES_PATH} \
+    ${HASHTOPOLIS_IMPORT_PATH} \
+    ${HASHTOPOLIS_LOG_PATH} \
+    ${HASHTOPOLIS_CONFIG_PATH} \
+    ${HASHTOPOLIS_BINARIES_PATH} \
+    ${HASHTOPOLIS_TUS_PATH} \
+    ${HASHTOPOLIS_TEMP_UPLOADS_PATH} \
+    ${HASHTOPOLIS_TEMP_META_PATH} \
+    && chown -R www-data:www-data \
+    ${HASHTOPOLIS_PATH} \
+    ${HASHTOPOLIS_TUS_PATH} \
+    && chmod -R g+w \
+    ${HASHTOPOLIS_PATH} \
+    ${HASHTOPOLIS_TUS_PATH}
 
 COPY --from=prebuild /usr/local/cargo/bin/sqlx /usr/bin/
 

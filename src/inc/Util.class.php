@@ -621,6 +621,21 @@ class Util {
     }
     return true;
   }
+
+  public static function cleaning() {
+    $entry = Factory::getStoredValueFactory()->get(DCleaning::LAST_CLEANING);
+    if ($entry == null) {
+      $entry = new StoredValue(DCleaning::LAST_CLEANING, 0);
+      Factory::getStoredValueFactory()->save($entry);
+    }
+    $time = time();
+    if ($time - $entry->getVal() > 600) {
+      self::agentStatCleaning();
+      self::zapCleaning();
+      self::tusFileCleaning();
+      Factory::getStoredValueFactory()->set($entry, StoredValue::VAL, $time);
+    }
+  }
   
   /**
    * Checks if it is longer than 10 mins since the last time it was checked if there are
@@ -628,48 +643,69 @@ class Util {
    * and old entries are deleted.
    */
   public static function agentStatCleaning() {
-    $entry = Factory::getStoredValueFactory()->get(DStats::LAST_STAT_CLEANING);
-    if ($entry == null) {
-      $entry = new StoredValue(DStats::LAST_STAT_CLEANING, 0);
-      Factory::getStoredValueFactory()->save($entry);
+    $lifetime = intval(SConfig::getInstance()->getVal(DConfig::AGENT_DATA_LIFETIME));
+    if ($lifetime <= 0) {
+      $lifetime = 3600;
     }
-    if (time() - $entry->getVal() > 600) {
-      $lifetime = intval(SConfig::getInstance()->getVal(DConfig::AGENT_DATA_LIFETIME));
-      if ($lifetime <= 0) {
-        $lifetime = 3600;
-      }
-      $qF = new QueryFilter(AgentStat::TIME, time() - $lifetime, "<=");
-      Factory::getAgentStatFactory()->massDeletion([Factory::FILTER => $qF]);
-      
-      $qF = new QueryFilter(Speed::TIME, time() - $lifetime, "<=");
-      Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
-      
-      Factory::getStoredValueFactory()->set($entry, StoredValue::VAL, time());
-    }
+    $qF = new QueryFilter(AgentStat::TIME, time() - $lifetime, "<=");
+    Factory::getAgentStatFactory()->massDeletion([Factory::FILTER => $qF]);
+    
+    $qF = new QueryFilter(Speed::TIME, time() - $lifetime, "<=");
+    Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
+    
   }
   
   /**
    * Used by the solver. Cleans the zap-queue
    */
   public static function zapCleaning() {
-    $entry = Factory::getStoredValueFactory()->get(DZaps::LAST_ZAP_CLEANING);
-    if ($entry == null) {
-      $entry = new StoredValue(DZaps::LAST_ZAP_CLEANING, 0);
-      Factory::getStoredValueFactory()->save($entry);
-    }
-    if (time() - $entry->getVal() > 600) {
-      $zapFilter = new QueryFilter(Zap::SOLVE_TIME, time() - 600, "<=");
-      
-      // delete dependencies on AgentZap
-      $zaps = Factory::getZapFactory()->filter([Factory::FILTER => $zapFilter]);
-      $zapIds = Util::arrayOfIds($zaps);
-      $uS = new UpdateSet(AgentZap::LAST_ZAP_ID, null);
-      $qF = new ContainFilter(AgentZap::LAST_ZAP_ID, $zapIds);
-      Factory::getAgentZapFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
-      
-      Factory::getZapFactory()->massDeletion([Factory::FILTER => $zapFilter]);
-      
-      Factory::getStoredValueFactory()->set($entry, StoredValue::VAL, time());
+    $zapFilter = new QueryFilter(Zap::SOLVE_TIME, time() - 600, "<=");
+    
+    // delete dependencies on AgentZap
+    $zaps = Factory::getZapFactory()->filter([Factory::FILTER => $zapFilter]);
+    $zapIds = Util::arrayOfIds($zaps);
+    $uS = new UpdateSet(AgentZap::LAST_ZAP_ID, null);
+    $qF = new ContainFilter(AgentZap::LAST_ZAP_ID, $zapIds);
+    Factory::getAgentZapFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+    
+    Factory::getZapFactory()->massDeletion([Factory::FILTER => $zapFilter]);
+  }
+
+  /**
+   * Cleans up stale TUS upload files.
+   *
+   * This method scans the TUS metadata directory for .meta files, reads their
+   * metadata to determine upload expiration, and removes expired metadata files
+   * together with their corresponding upload (.part) files. It performs file
+   * system operations and may delete files on disk.
+   */
+  public static function tusFileCleaning() {
+    $tusDirectory = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal();
+    $uploadDirectory = $tusDirectory . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SEPARATOR;
+    $metaDirectory = $tusDirectory .  DIRECTORY_SEPARATOR . "meta" . DIRECTORY_SEPARATOR;
+    $expiration_time = time() + 3600;
+    if (file_exists($metaDirectory) && is_dir($metaDirectory)) {
+      if ($metaDirectoryHandler = opendir($metaDirectory)){
+        while ($file = readdir($metaDirectoryHandler)) {
+          if (str_ends_with($file, ".meta")) {
+            $metaFile = $metaDirectory . $file;
+            $metadata = (array)json_decode(file_get_contents($metaFile), true) ;
+            if (!isset($metadata['upload_expires'])) {
+              continue;
+            }
+            if ($metadata['upload_expires'] > $expiration_time) {
+              $uploadFile = $uploadDirectory . pathinfo($file, PATHINFO_FILENAME) . ".part";
+              if (file_exists($metaFile)) {
+                unlink($metaFile);
+              }
+              if (file_exists($uploadFile)){
+                unlink($uploadFile);
+              }
+            }
+          }
+        }
+        closedir($metaDirectoryHandler);
+      }
     }
   }
   

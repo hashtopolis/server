@@ -10,7 +10,8 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
       "files" => dirname(__FILE__) . "/../files/",
       "import" => dirname(__FILE__) . "/../import/",
       "log" => dirname(__FILE__) . "/../log/",
-      "config" => dirname(__FILE__) . "/../config/"
+      "config" => dirname(__FILE__) . "/../config/",
+      "tus" => "/var/tmp/tus/",
     ];
   }
   
@@ -48,7 +49,8 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
     "files" => "/usr/local/share/hashtopolis/files",
     "import" => "/usr/local/share/hashtopolis/import",
     "log" => "/usr/local/share/hashtopolis/log",
-    "config" => "/usr/local/share/hashtopolis/config"
+    "config" => "/usr/local/share/hashtopolis/config",
+    "tus" => "/var/tmp/tus/",
   ];
   
   // update from env if set
@@ -60,6 +62,9 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
   }
   if (getenv('HASHTOPOLIS_LOG_PATH') !== false) {
     $DIRECTORIES["log"] = getenv('HASHTOPOLIS_LOG_PATH');
+  }
+  if (getenv('HASHTOPOLIS_TUS_PATH') !== false) {
+    $DIRECTORIES["tus"] = getenv('HASHTOPOLIS_TUS_PATH');
   }
 }
 // load data

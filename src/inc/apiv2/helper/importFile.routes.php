@@ -37,24 +37,25 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     return [];
   }
   
-  static function getUploadPath(string $id): string {
-    return "/tmp/" . $id . '.part';
-  }
-  
-  static function getMetaPath(string $id): string {
-    return "/tmp/" . $id . '.meta';
-  }
-  
+static function getUploadPath(string $id): string {
+  return Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . DIRECTORY_SEPARATOR . 'uploads' . 
+    DIRECTORY_SEPARATOR . basename($id) . ".part";
+}
+
+static function getMetaPath(string $id): string {
+  return Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . DIRECTORY_SEPARATOR .  'meta' 
+    . DIRECTORY_SEPARATOR . basename($id) . ".meta";
+}
+
+static function getImportPath(string $id): string {
+  return Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . DIRECTORY_SEPARATOR . basename($id);
+}
+
   /**
    * Import file has no POST parameters
    */
   public function getFormFields(): array {
     return [];
-  }
-  
-  
-  static function getImportPath(string $id): string {
-    return Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $id;
   }
   
   static function getChecksumAlgorithm(): array {
@@ -86,8 +87,10 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
    * And to retrieve the upload status.
    */
   function processHead(Request $request, Response $response, array $args): Response {
-    // TODO return 404 or 410 if entry is not found
     $filename = self::getUploadPath($args['id']);
+    if (!is_file($filename)) {
+      return $response->withStatus(404);
+    }
     $currentSize = filesize($filename);
     $ds = self::getMetaStorage($args['id']);
     
@@ -155,6 +158,10 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
       $list = explode(",", $update["upload_metadata_raw"]);
       foreach ($list as $item) {
         list($key, $b64val) = explode(" ", $item);
+        if (!isset($b64val)) {
+          $response->getBody()->write("Error Upload-Metadata, should be a key value pair that is separated by a space, no value has been provided");
+          return $response->withStatus(400);
+        }
         if (($val = base64_decode($b64val, true)) === false) {
           $response->getBody()->write("Error Upload-Metadata '$key' invalid base64 encoding");
           return $response->withStatus(400);
@@ -163,7 +170,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
       }
     }
     // TODO: Should filename be mandatory?
-    if (array_key_exists('filename', $update_metadata)) {
+    if (isset($update_metadata) && array_key_exists('filename', $update_metadata)) {
       $filename = $update_metadata['filename'];
       /* Generate unique upload identifier */
       $id = date("YmdHis") . "-" . md5($filename);
@@ -178,6 +185,10 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     }
     $update["upload_metadata"] = $update_metadata;
     
+    if ($request->hasHeader('Upload-Defer-Length') && $request->hasHeader('Upload-Length')) {
+      $response->getBody()->write('Error: Cannot provide both Upload-Length and Upload-Defer-Length');
+      return $response->withStatus(400);
+    }
     if ($request->hasHeader('Upload-Defer-Length')) {
       if ($request->getHeader('Upload-Defer-Length')[0] == "1") {
         $update["upload_defer_length"] = true;
@@ -252,9 +263,12 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     
     /* Validate if upload time is still valid */
     $now = new DateTimeImmutable();
+    if (!isset($ds['upload_expires'])) {
+      throw new HttpError("The meta file of this upload is incorrect");
+    }
     $dt = (new DateTime())->setTimeStamp($ds['upload_expires']);
     if (($dt->getTimestamp() - $now->getTimestamp()) <= 0) {
-      // TODO: Remove expired uploads
+      Util::tusFileCleaning();
       $response->getBody()->write('Upload token expired');
       return $response->withStatus(410);
     }
@@ -302,9 +316,12 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
         self::updateStorage($args['id'], $update);
       }
     }
-    
-    file_put_contents($filename, $chunk, FILE_APPEND);
-    
+
+    if (file_put_contents($filename, $chunk, FILE_APPEND) === false) {
+      $response->getBody()->write('Failed to write to file');
+      return $response->withStatus(400);
+    }
+
     clearstatcache();
     $newSize = filesize($filename);
     
@@ -333,7 +350,8 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     else {
       $statusMsg = "Next chunk please";
     }
-    
+
+    $dt = (new DateTime())->setTimeStamp($ds['upload_expires']);
     $response->getBody()->write($statusMsg);
     return $response->withStatus(204)
       ->withHeader("Tus-Resumable", "1.0.0")
@@ -342,18 +360,32 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
       ->withHeader('Upload-Expires', $dt->format(DateTimeInterface::RFC7231))
       ->WithHeader("Access-Control-Expose-Headers", "Tus-Resumable, Upload-Length, Upload-Offset");
   }
-  
-  /**
-   * Endpoint to delete the file
-   */
+
   function processDelete(Request $request, Response $response, array $args): Response {
-    //   // TODO delete file
-    
-    //   // TODO return 404 or 410 if entry is not found
-    return $response->withStatus(204)
-      ->withHeader("Tus-Resumable", "1.0.0")
-      ->WithHeader("Access-Control-Expose-Headers", "Tus-Resumable");
+      /* Return 404 if entry is not found */
+      $filename_upload = self::getUploadPath($args['id']);
+      $filename_meta = self::getMetaPath($args['id']);
+      $uploadExists = file_exists($filename_upload);
+      $metaExists = file_exists($filename_meta);
+      if (!$uploadExists && !$metaExists) {
+        throw new HttpError("Upload ID doesnt exists");
+      }
+      if ($uploadExists) {
+        $isDeletedUpload = unlink($filename_upload);
+      }
+      if ($metaExists) {
+        $isDeletedMeta = unlink($filename_meta);
+      }
+
+      if (!$isDeletedMeta || !$isDeletedUpload) {
+      throw new HttpError("Something went wrong while deleting the files");
+      }
+
+      return $response->withStatus(204)
+        ->withHeader("Tus-Resumable", "1.0.0")
+        ->WithHeader("Access-Control-Expose-Headers", "Tus-Resumable");
   }
+
   
   static public function register($app): void {
     $me = get_called_class();
@@ -373,7 +405,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
       
       $group->post('', $me . ":processPost")->setName($me . ":processPost");
     });
-    
+
     $app->group($baseUri . "/{id:[0-9]{14}-[0-9a-f]{32}}", function (RouteCollectorProxy $group) use ($me) {
       /* Allow preflight requests */
       $group->options('', function (Request $request, Response $response, array $args): Response {
