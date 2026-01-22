@@ -386,6 +386,31 @@ static function getImportPath(string $id): string {
         ->WithHeader("Access-Control-Expose-Headers", "Tus-Resumable");
   }
 
+  /**
+   * Scans the import-directory for files. Directories are ignored.
+   * @return array of all files in the top-level directory /../import
+   */
+  function scanImportDirectory() {
+    $directory = Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/";
+    if (file_exists($directory) && is_dir($directory)) {
+      $importDirectory = opendir($directory);
+      $importFiles = array();
+      while ($file = readdir($importDirectory)) {
+        if ($file[0] != '.' && $file != "." && $file != ".." && !is_dir($file)) {
+          $importFiles[] = array("file" => $file, "size" => Util::filesize($directory . "/" . $file));
+        }
+      }
+      sort($importFiles);
+      return $importFiles;
+    }
+    return array();
+  }
+
+  function processGet(Request $request, Response $response, array $args): Response {
+    $importFiles = $this->scanImportDirectory();
+    return self::getMetaResponse($importFiles, $request, $response);
+  }
+
   
   static public function register($app): void {
     $me = get_called_class();
@@ -404,6 +429,7 @@ static function getImportPath(string $id): string {
       });
       
       $group->post('', $me . ":processPost")->setName($me . ":processPost");
+      $group->get('', $me . ":processGet")->setName($me . ":processGet");
     });
 
     $app->group($baseUri . "/{id:[0-9]{14}-[0-9a-f]{32}}", function (RouteCollectorProxy $group) use ($me) {
