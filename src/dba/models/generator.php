@@ -437,7 +437,7 @@ $CONF['User'] = [
     ['name' => 'isComputedPassword', 'read_only' => True, 'type' => 'bool', 'protected' => True,],
     ['name' => 'lastLoginDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'registeredSince', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'sessionLifetime', 'read_only' => False, 'type' => 'int', 'protected' => True],
+    ['name' => 'sessionLifetime', 'read_only' => False, 'type' => 'int', 'protected' => False],
     ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int', 'alias' => 'globalPermissionGroupId', 'relation' => 'RightGroup'],
     ['name' => 'yubikey', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
     ['name' => 'otp1', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],

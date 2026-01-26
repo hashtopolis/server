@@ -86,6 +86,7 @@ class UserAPI extends AbstractModelAPI {
       $data[User::RIGHT_GROUP_ID],
       $this->getCurrentUser(),
       $data[User::IS_VALID] ?? false,
+      $data[User::SESSION_LIFETIME] ?? 3600
     );
     
     return $user->getId();
