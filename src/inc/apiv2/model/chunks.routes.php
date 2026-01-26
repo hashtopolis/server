@@ -12,7 +12,6 @@ use DBA\QueryFilter;
 use DBA\Task;
 use DBA\TaskWrapper;
 use DBA\User;
-use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -77,16 +76,16 @@ class ChunkAPI extends AbstractModelAPI {
     ];
   }
   
-  #[NoReturn] protected function createObject(array $data): int {
-    assert(False, "Chunks cannot be created via API");
+  protected function createObject(array $data): int {
+    throw new HttpError("Chunks cannot be created via API");
   }
   
-  #[NoReturn] public function updateObject(int $objectId, array $data): void {
-    assert(False, "Chunks cannot be updated via API");
+  public function updateObject(int $objectId, array $data): void {
+    throw new HttpError("Chunks cannot be updated via API");
   }
   
-  #[NoReturn] protected function deleteObject(object $object): void {
-    assert(False, "Chunks cannot be deleted via API");
+  protected function deleteObject(object $object): void {
+    throw new HttpError("Chunks cannot be deleted via API");
   }
 }
 

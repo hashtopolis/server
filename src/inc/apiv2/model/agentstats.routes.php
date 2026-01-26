@@ -7,7 +7,6 @@ use DBA\Factory;
 use DBA\AgentStat;
 use DBA\JoinFilter;
 use DBA\User;
-use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -46,12 +45,12 @@ class AgentStatAPI extends AbstractModelAPI {
     ];
   }
   
-  #[NoReturn] protected function createObject(array $data): int {
-    assert(False, "AgentStats cannot be created via API");
+  protected function createObject(array $data): int {
+    throw new HttpError("AgentStats cannot be created via API");
   }
   
-  #[NoReturn] public function updateObject(int $objectId, array $data): void {
-    assert(False, "AgentStats cannot be updated via API");
+  public function updateObject(int $objectId, array $data): void {
+    throw new HttpError("AgentStats cannot be updated via API");
   }
   
   protected function deleteObject(object $object): void {

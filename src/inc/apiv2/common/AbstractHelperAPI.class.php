@@ -6,6 +6,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\App;
 use Slim\Exception\HttpForbiddenException;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
@@ -76,7 +77,7 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
   /**
    * Override-able registering of options
    */
-  static public function register($app): void {
+  static public function register(App $app): void {
     $me = get_called_class();
     $baseUri = $me::getBaseUri();
     

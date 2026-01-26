@@ -42,4 +42,6 @@ class RescanGlobalFilesHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 RescanGlobalFilesHelperAPI::register($app);

@@ -41,4 +41,6 @@ class ResetChunkHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 ResetChunkHelperAPI::register($app);

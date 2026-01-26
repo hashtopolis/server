@@ -4,7 +4,6 @@ use DBA\Aggregation;
 use DBA\Chunk;
 use DBA\Factory;
 use DBA\QueryFilter;
-use JetBrains\PhpStorm\NoReturn;
 use Middlewares\Utils\HttpErrorException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -86,8 +85,8 @@ class TaskExtraDetailsHelper extends AbstractHelperAPI {
     return self::getMetaResponse($responseObject, $request, $response);
   }
   
-  #[NoReturn] public function actionPost($data): object|array|null {
-    assert(false, "TaskExtraDetails has no POST");
+  public function actionPost($data): object|array|null {
+    throw new HttpError("TaskExtraDetails has no POST");
   }
   
   static public function register($app): void {
@@ -108,4 +107,6 @@ class TaskExtraDetailsHelper extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 TaskExtraDetailsHelper::register($app);

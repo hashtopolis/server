@@ -1,6 +1,5 @@
 <?php
 
-use JetBrains\PhpStorm\NoReturn;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -51,7 +50,7 @@ class currentUserHelperAPI extends AbstractHelperAPI {
    * @return object|array|null
    */
   public function actionPost($data): object|array|null {
-    assert(False, "GetCurrentUser has no actionPOST");
+    throw new HttpError("GetCurrentUser has no actionPOST");
   }
   
   // PATCH endpoint in order to patch attributes of own user, even when user doesnt have permissions to alter users
@@ -84,4 +83,6 @@ class currentUserHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 currentUserHelperAPI::register($app);

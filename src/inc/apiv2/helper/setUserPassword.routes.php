@@ -49,4 +49,6 @@ class SetUserPasswordHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 SetUserPasswordHelperAPI::register($app);

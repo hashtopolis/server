@@ -1589,12 +1589,12 @@ abstract class AbstractBaseAPI {
   /**
    * @throws JsonException
    */
-  protected static function getMetaResponse(array $meta, Request $request, Response $response, int $statusCode = 200): MessageInterface|Response {
+  protected static function getMetaResponse(array $meta, Request $request, Response $response, int $statusCode = 200): Response {
     $ret = self::createJsonResponse(meta: $meta);
     $body = $response->getBody();
     $body->write(self::ret2json($ret));
     
-    return $response->withStatus($statusCode)->withHeader("Content-Type", "application/vnd.api+json");
+    return $response->withHeader("Content-Type", "application/vnd.api+json")->withStatus($statusCode);
   }
   
   /**

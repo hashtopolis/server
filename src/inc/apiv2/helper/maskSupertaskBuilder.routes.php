@@ -44,4 +44,6 @@ class MaskSupertaskBuilderHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 MaskSupertaskBuilderHelperAPI::register($app);

@@ -45,4 +45,6 @@ class AssignAgentHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 AssignAgentHelperAPI::register($app);

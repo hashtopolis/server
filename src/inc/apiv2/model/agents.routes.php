@@ -14,7 +14,6 @@ use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\Task;
 use DBA\User;
-use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -44,10 +43,10 @@ class AgentAPI extends AbstractModelAPI {
    * $included_data.
    *
    * @param object $object the agent object were data is aggregated from
-   * @param array &$includedData
+   * @param array &$included_data
    * @return array not used here 
    */
-  static function aggregateData(object $object, array &$included_data = [], array $aggregateFieldsets = null): array {
+  static function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
     $agentId = $object->getId();
     $qFs = [];
     $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
@@ -140,8 +139,8 @@ class AgentAPI extends AbstractModelAPI {
     ];
   }
   
-  #[NoReturn] protected function createObject(array $data): int {
-    assert(False, "Agents cannot be created via API");
+  protected function createObject(array $data): int {
+    throw new HttpError("Agents cannot be created via API");
   }
   
   /**

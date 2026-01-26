@@ -66,4 +66,6 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 ImportCrackedHashesHelperAPI::register($app);
