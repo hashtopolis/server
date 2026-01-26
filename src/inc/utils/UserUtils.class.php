@@ -186,7 +186,7 @@ class UserUtils {
    * @throws HttpConflict
    * @throws HttpError
    */
-  public static function createUser(string $username, string $email, int $rightGroupId, User $adminUser, bool $isValid = true): User {
+  public static function createUser(string $username, string $email, int $rightGroupId, User $adminUser, bool $isValid = true, int $session_lifetime=3600): User {
     $username = htmlentities($username, ENT_QUOTES, "UTF-8");
     $group = AccessControlUtils::getGroup($rightGroupId);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) == 0) {
@@ -206,7 +206,7 @@ class UserUtils {
     $newPass = Util::randomString(10);
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPass, $newSalt);
-    $user = new User(null, $username, $email, $newHash, $newSalt, $isValid ? 1: 0, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
+    $user = new User(null, $username, $email, $newHash, $newSalt, $isValid ? 1: 0, 1, 0, time(), $session_lifetime, $group->getId(), 0, "", "", "", "");
     Factory::getUserFactory()->save($user);
     
     // add user to default group
