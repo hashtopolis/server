@@ -95,6 +95,7 @@ class UserAPI extends AbstractModelAPI {
     
     $features = parent::getAllPostParameters($features);
     unset($features[User::IS_VALID]);
+    unset($features[User::SESSION_LIFETIME]);
     return $features;
   }
   
