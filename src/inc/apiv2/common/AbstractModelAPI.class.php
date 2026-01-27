@@ -985,14 +985,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * API entry point for modification of single object
    * @param Request $request
    * @param Response $response
-   * @param array $args
+   * @param mixed $object
+   * @param mixed $data
    * @return Response
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
    * @throws ResourceNotFoundError
    */
-  public function patchSingleObject(Request $request, Response $response, mixed $object, mixed $data) {
+  public function patchSingleObject(Request $request, Response $response, mixed $object, mixed $data): Response {
     if (!$this->validateResourceRecord($data)) {
       return errorResponse($response, "No valid resource identifier object was given as data!", 403);
     }
@@ -1712,6 +1713,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
     }
     else {
+      $updates = [];
       foreach ($data as $item) {
         if (!$this->validateResourceRecord($item)) {
           $encoded_item = json_encode($item);

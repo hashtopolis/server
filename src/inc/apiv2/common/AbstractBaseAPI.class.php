@@ -1577,9 +1577,9 @@ abstract class AbstractBaseAPI {
     $body = $response->getBody();
     $body->write($apiClass->ret2json($ret));
     
-    return $response->withStatus($statusCode)
-      ->withHeader("Content-Type", "application/vnd.api+json")
-      ->withHeader("Location", $dataResources[0]["links"]["self"]);
+    return $response->withHeader("Content-Type", "application/vnd.api+json")
+      ->withHeader("Location", $dataResources[0]["links"]["self"])
+      ->withStatus($statusCode);
     //for location we use links value from $dataresources because if we use $linksSelf, the wrong location gets returned in
     //case of a POST request
   }
