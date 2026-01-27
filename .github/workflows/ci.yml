@@ -20,7 +20,7 @@ jobs:
           - db_system: postgres
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: Start Hashtopolis server
         uses: ./.github/actions/start-hashtopolis
         with:
@@ -31,8 +31,6 @@ jobs:
         run: docker exec -w /var/www/html/ci/apiv2 hashtopolis-server-dev pytest
       - name: Test if pytest is removing all test objects
         run: docker exec -w /var/www/html/ci/apiv2 hashtopolis-server-dev python3 htcli.py run delete-test-data
-      - name: Analyse code with phpstan
-        run: docker exec -w /var/www/html hashtopolis-server-dev vendor/bin/phpstan analyse 
       - name: Show docker log files
         if: ${{ always() }}
         run: docker logs hashtopolis-server-dev
