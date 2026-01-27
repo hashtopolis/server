@@ -396,7 +396,7 @@ static function getImportPath(string $id): string {
       $importDirectory = opendir($directory);
       $importFiles = array();
       while ($file = readdir($importDirectory)) {
-        if ($file[0] != '.' && $file != "." && $file != ".." && !is_dir($file)) {
+        if ($file[0] != '.' && !is_dir($file)) {
           $importFiles[] = array("file" => $file, "size" => Util::filesize($directory . "/" . $file));
         }
       }
