@@ -70,8 +70,9 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     }
     elseif (is_array($newObject)) {
       return self::getMetaResponse($newObject, $request, $response);
+    } else {
+      throw new HttpError("Unable to process request!");
     }
-    throw new HttpError("Unable to process request!");
   }
   
   /**
@@ -132,13 +133,13 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
       return false;
     }
     if ($range == '-') {
-      $c_start = $size - substr($range, 1);
+      $c_start = $size - (int) substr($range, 1);
     }
     else {
       $range = explode('-', $range);
-      $c_start = $range[0];
+      $c_start = (int) $range[0];
       if ((isset($range[1]) && is_numeric($range[1]))) {
-        $c_end = $range[1];
+        $c_end = (int) $range[1];
       }
       else {
         $c_end = $size;

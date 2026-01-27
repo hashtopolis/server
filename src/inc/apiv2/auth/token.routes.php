@@ -16,6 +16,9 @@ require_once(dirname(__FILE__) . "/../../startup/include.php");
 
 function generateTokenForUser(Request $request, string $userName, int $expires) {
   include(dirname(__FILE__) . '/../../confv2.php');
+  if (!isset($PEPPER)) {
+    throw new HttpError("Pepper is not set");
+  }
   $jti = bin2hex(random_bytes(16));
   
   $requested_scopes = $request->getParsedBody() ?: ["todo.all"];
@@ -74,6 +77,8 @@ function extractBearerToken(Request $request): ?string {
 }
 
 // Exchanges an oauth token for a application JWT token
+use Slim\App;
+/** @var App $app */
 $app->group("/api/v2/auth/oauth-token", function (RouteCollectorProxy $group) {
 
   $group->post('', function (Request $request, Response $response, array $args): Response {
@@ -147,6 +152,9 @@ $app->group("/api/v2/auth/refresh", function (RouteCollectorProxy $group) {
     $future = new DateTime("now +2 hours");
     
     $jti = bin2hex(random_bytes(16));
+    if (!isset($PEPPER)) {
+      throw new HttpError("Pepper is not set");
+    }
     
     $secret = $PEPPER[0];
     $payload = [

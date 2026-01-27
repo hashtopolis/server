@@ -380,7 +380,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws ResourceNotFoundError
    * @throws HttpForbidden
    */
-  protected function doFetch(string $pk, AbstractModelFactory $otherFactory = null): mixed {
+  protected function doFetch(string $pk, ?AbstractModelFactory $otherFactory = null): mixed {
     if ($otherFactory != null) {
       $object = $otherFactory->get($pk);
     }
@@ -546,7 +546,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
     }
     $filters[Factory::ORDER] = $orderFilters;
-    $filters[Factory::JOIN] = $joinFilters;
+    if (!empty($joinFilters)) {
+      $filters[Factory::JOIN] = $joinFilters;
+    }
     $factory = $apiClass->getFactory();
     $result = $factory->filter($filters);
     //handle joined queries
@@ -693,7 +695,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     //pagination filters need to be added after max has been calculated
     $finalFs[Factory::LIMIT] = new LimitFilter($pageSize);
 
-    if (isset($paginationCursor)) {
+    if (isset($paginationCursor) && isset($operator)) {
       $decoded_cursor = $apiClass->decode_cursor($paginationCursor);
       $primary_cursor = $decoded_cursor["primary"];
       $primary_cursor_key = key($primary_cursor);

@@ -165,7 +165,7 @@ class TaskAPI extends AbstractModelAPI {
   static function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
     $aggregatedData = [];
     
-    if (is_null($aggregateFieldsets) || (is_array($aggregateFieldsets) && array_key_exists('task', $aggregateFieldsets))) {
+    if (is_null($aggregateFieldsets) || array_key_exists('task', $aggregateFieldsets)) {
       if (!is_null($aggregateFieldsets)) {
         $aggregateFieldsets['task'] = explode(",", $aggregateFieldsets['task']);
       }
