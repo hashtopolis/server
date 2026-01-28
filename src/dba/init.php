@@ -13,6 +13,7 @@ require_once(dirname(__FILE__) . "/AbstractModelFactory.class.php");
 require_once(dirname(__FILE__) . "/Aggregation.class.php");
 require_once(dirname(__FILE__) . "/Filter.class.php");
 require_once(dirname(__FILE__) . "/Order.class.php");
+require_once(dirname(__FILE__) . "/CoalesceLikeFilterInsensitive.class.php");
 require_once(dirname(__FILE__) . "/CoalesceOrderFilter.class.php");
 require_once(dirname(__FILE__) . "/Join.class.php");
 require_once(dirname(__FILE__) . "/Group.class.php");

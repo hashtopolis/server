@@ -1,6 +1,7 @@
 <?php
 
 use DBA\AccessGroup;
+use DBA\CoalesceLikeFilterInsensitive;
 use DBA\CoalesceOrderFilter;
 use DBA\ContainFilter;
 use DBA\Factory;
@@ -132,6 +133,12 @@ class TaskWrapperAPI extends AbstractModelAPI {
         }
       }
       unset($orderfilter);
+
+      foreach($filters[Factory::FILTER] as &$filter) {
+        $newFilter = new CoalesceLikeFilterInsensitive();
+
+      }
+      unset($filter);
     }
     return $filters;
   }
