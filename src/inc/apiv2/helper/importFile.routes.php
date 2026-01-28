@@ -160,14 +160,15 @@ static function getImportPath(string $id): string {
       foreach ($list as $item) {
         list($key, $b64val) = explode(" ", $item, 2);
         if ($b64val == null) {
-          $response->getBody()->write("Error Upload-Metadata, should be a key value pair that is separated by a space, no value has been provided");
-          return $response->withStatus(400);
+          // Some keys dont have a value
+          $update_metadata[$key] = null;
         }
         if (($val = base64_decode($b64val, true)) === false) {
           $response->getBody()->write("Error Upload-Metadata '$key' invalid base64 encoding");
           return $response->withStatus(400);
+        } else {
+          $update_metadata[$key] = $val;
         }
-        $update_metadata[$key] = $val;
       }
     }
     // TODO: Should filename be mandatory?
