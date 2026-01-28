@@ -6,6 +6,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+use Slim\App;
 use DBA\AbstractModelFactory;
 use DBA\Aggregation;
 use DBA\JoinFilter;
@@ -379,7 +380,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws ResourceNotFoundError
    * @throws HttpForbidden
    */
-  protected function doFetch(string $pk, AbstractModelFactory $otherFactory = null): mixed {
+  protected function doFetch(string $pk, ?AbstractModelFactory $otherFactory = null): mixed {
     if ($otherFactory != null) {
       $object = $otherFactory->get($pk);
     }
@@ -545,7 +546,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
     }
     $filters[Factory::ORDER] = $orderFilters;
-    $filters[Factory::JOIN] = $joinFilters;
+    if (!empty($joinFilters)) {
+      $filters[Factory::JOIN] = $joinFilters;
+    }
     $factory = $apiClass->getFactory();
     $result = $factory->filter($filters);
     //handle joined queries
@@ -692,7 +695,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     //pagination filters need to be added after max has been calculated
     $finalFs[Factory::LIMIT] = new LimitFilter($pageSize);
 
-    if (isset($paginationCursor)) {
+    if (isset($paginationCursor) && isset($operator)) {
       $decoded_cursor = $apiClass->decode_cursor($paginationCursor);
       $primary_cursor = $decoded_cursor["primary"];
       $primary_cursor_key = key($primary_cursor);
@@ -984,14 +987,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * API entry point for modification of single object
    * @param Request $request
    * @param Response $response
-   * @param array $args
+   * @param mixed $object
+   * @param mixed $data
    * @return Response
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
    * @throws ResourceNotFoundError
    */
-  public function patchSingleObject(Request $request, Response $response, mixed $object, mixed $data) {
+  public function patchSingleObject(Request $request, Response $response, mixed $object, mixed $data): Response {
     if (!$this->validateResourceRecord($data)) {
       return errorResponse($response, "No valid resource identifier object was given as data!", 403);
     }
@@ -1711,6 +1715,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
     }
     else {
+      $updates = [];
       foreach ($data as $item) {
         if (!$this->validateResourceRecord($item)) {
           $encoded_item = json_encode($item);
@@ -1800,7 +1805,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * Override-able registering of options
    */
-  static public function register($app): void {
+  static public function register(App $app): void {
     $me = get_called_class();
     $baseUri = $me::getBaseUri();
     $baseUriOne = $baseUri . '/{id:[0-9]+}';

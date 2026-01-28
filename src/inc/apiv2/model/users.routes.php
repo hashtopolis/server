@@ -130,4 +130,6 @@ class UserAPI extends AbstractModelAPI {
   
 }
 
+use Slim\App;
+/** @var App $app */
 UserAPI::register($app);

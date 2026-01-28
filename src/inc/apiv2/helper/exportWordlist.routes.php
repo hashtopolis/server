@@ -45,4 +45,6 @@ class ExportWordlistHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 ExportWordlistHelperAPI::register($app);

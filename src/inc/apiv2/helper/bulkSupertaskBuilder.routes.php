@@ -45,4 +45,6 @@ class BulkSupertaskBuilderHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 BulkSupertaskBuilderHelperAPI::register($app);

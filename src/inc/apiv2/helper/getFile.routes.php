@@ -1,7 +1,6 @@
 <?php
 
 use DBA\File;
-use JetBrains\PhpStorm\NoReturn;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use DBA\Factory;
@@ -32,8 +31,8 @@ class GetFileHelperAPI extends AbstractHelperAPI {
   }
   
   
-  #[NoReturn] public function actionPost(array $data): object|array|null {
-    assert(False, "GetFile has no POST");
+  public function actionPost(array $data): object|array|null {
+    throw new HttpErrorException("GetFile has no POST");
   }
   
   /**
@@ -111,4 +110,6 @@ class GetFileHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 GetFileHelperAPI::register($app);

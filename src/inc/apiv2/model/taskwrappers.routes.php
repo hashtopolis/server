@@ -13,7 +13,6 @@ use DBA\QueryFilter;
 use DBA\Task;
 use DBA\TaskWrapper;
 use DBA\User;
-use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -137,8 +136,8 @@ class TaskWrapperAPI extends AbstractModelAPI {
     return $filters;
   }
   
-  #[NoReturn] protected function createObject(array $data): int {
-    assert(False, "TaskWrappers cannot be created via API");
+  protected function createObject(array $data): int {
+    throw new HttpError("TaskWrappers cannot be created via API");
   }
   
   protected function getUpdateHandlers($id, $current_user): array {
@@ -170,9 +169,11 @@ class TaskWrapperAPI extends AbstractModelAPI {
         TaskUtils::deleteSupertask($object->getId(), $this->getCurrentUser());
         break;
       default:
-        assert(False, "Internal Error: taskType not recognized");
+      throw new HttpError("Internal Error: taskType not recognized");
     }
   }
 }
 
+use Slim\App;
+/** @var App $app */
 TaskWrapperAPI::register($app);

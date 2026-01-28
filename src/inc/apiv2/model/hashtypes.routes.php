@@ -37,4 +37,6 @@ class HashTypeAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 HashTypeAPI::register($app);

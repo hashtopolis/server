@@ -20,7 +20,7 @@ jobs:
           - db_system: postgres
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: Start Hashtopolis server
         uses: ./.github/actions/start-hashtopolis
         with:

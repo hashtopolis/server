@@ -1,7 +1,6 @@
 <?php
 
 use DBA\Factory;
-use JetBrains\PhpStorm\NoReturn;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -48,8 +47,8 @@ class GetUserPermissionHelperAPI extends AbstractHelperAPI {
       ->withHeader("Content-Type", 'application/vnd.api+json;');
   }
   
-  #[NoReturn] public function actionPost($data): object|array|null {
-    assert(False, "GetAccessGroups has no POST");
+  public function actionPost($data): object|array|null {
+    throw new HttpError("GetAccessGroups has no POST");
   }
   
   static public function register($app): void {
@@ -70,4 +69,6 @@ class GetUserPermissionHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 GetUserPermissionHelperAPI::register($app);

@@ -44,4 +44,6 @@ class RebuildChunkCacheHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 RebuildChunkCacheHelperAPI::register($app);

@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Random\RandomException;
 use Slim\Routing\RouteCollectorProxy;
 use DBA\Factory;
+use Slim\App;
 
 /* Default timeout interval for considering an upload stale/incomplete */
 const DEFAULT_UPLOAD_EXPIRES_TIMEOUT = 3600;
@@ -157,8 +158,8 @@ static function getImportPath(string $id): string {
       $update_metadata = [];
       $list = explode(",", $update["upload_metadata_raw"]);
       foreach ($list as $item) {
-        list($key, $b64val) = explode(" ", $item);
-        if (!isset($b64val)) {
+        list($key, $b64val) = explode(" ", $item, 2);
+        if ($b64val == null) {
           $response->getBody()->write("Error Upload-Metadata, should be a key value pair that is separated by a space, no value has been provided");
           return $response->withStatus(400);
         }
@@ -183,7 +184,7 @@ static function getImportPath(string $id): string {
     else {
       $id = bin2hex(random_bytes(16));
     }
-    $update["upload_metadata"] = $update_metadata;
+    $update["upload_metadata"] = $update_metadata ?? null;
     
     if ($request->hasHeader('Upload-Defer-Length') && $request->hasHeader('Upload-Length')) {
       $response->getBody()->write('Error: Cannot provide both Upload-Length and Upload-Defer-Length');
@@ -295,11 +296,11 @@ static function getImportPath(string $id): string {
             $chunkHash = base64_encode(sha1($chunk, true));
             break;
           case "crc32":
-            $chunkHash = base64_encode(crc32($chunk, true));
+            $chunkHash = base64_encode(crc32($chunk));
             break;
           default:
             /* Since algorithms are checked in regex, this should never happen */
-            assert(False);
+            throw new HttpError("Hash algorithm not supported");
         }
         
         if ($chunkHash != $incomingHash) {
@@ -367,6 +368,7 @@ static function getImportPath(string $id): string {
       $filename_meta = self::getMetaPath($args['id']);
       $uploadExists = file_exists($filename_upload);
       $metaExists = file_exists($filename_meta);
+      $isDeletedMeta = $isDeletedUpload = false;
       if (!$uploadExists && !$metaExists) {
         throw new HttpError("Upload ID doesnt exists");
       }
@@ -412,7 +414,7 @@ static function getImportPath(string $id): string {
   }
 
   
-  static public function register($app): void {
+  static public function register(App $app): void {
     $me = get_called_class();
     $baseUri = $me::getBaseUri();
     
@@ -445,4 +447,5 @@ static function getImportPath(string $id): string {
   }
 }
 
+/** @var App $app */
 ImportFileHelperAPI::register($app);

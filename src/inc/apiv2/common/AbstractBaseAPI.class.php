@@ -63,8 +63,8 @@ abstract class AbstractBaseAPI {
   
   abstract public function getRequiredPermissions(string $method): array;
   
-  /** @var DBA\User|null $user is currently logged in user */
-  private User|null $user;
+  /** @var DBA\User $user is currently logged in user */
+  private User $user;
   
   /** @var RouteParserInterface|null $routeParser contains routing information
    * which are for example used dynamic creation of _self references
@@ -170,7 +170,7 @@ abstract class AbstractBaseAPI {
    * Implementations should use $includedData to collect related resources that should be included
    * in the API response, such as related entities or additional data.
    */
-  public static function aggregateData(object $object, array &$includedData = [], array $aggregateFieldsets = null): array
+  public static function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array
   {
     return [];
   }
@@ -294,7 +294,7 @@ abstract class AbstractBaseAPI {
       case User::class:
         return Factory::getUserFactory();
     }
-    assert(False, "Model '$model' cannot be mapped to Factory");
+    throw new HttpError("Model '$model' cannot be mapped to Factory");
   }
   
   /**
@@ -559,7 +559,7 @@ abstract class AbstractBaseAPI {
   /**
    * Convert JSON object value to DB insert value, supported by DBA
    * @throws NotFoundExceptionInterface
-   * @throws ContainerExceptionInterface,
+   * @throws ContainerExceptionInterface
    */
   protected function obj2Array(object $obj): array {
     // Convert values to JSON supported types
@@ -588,7 +588,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function obj2Resource(object $obj, array &$expandResult = [], array $sparseFieldsets = null, array $aggregateFieldsets = null): array {
+  protected function obj2Resource(object $obj, array &$expandResult = [], ?array $sparseFieldsets = null, ?array $aggregateFieldsets = null): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -1144,7 +1144,7 @@ abstract class AbstractBaseAPI {
           $qFs[] = new ContainFilter($remappedKey, $valueList, $factory, true);
           break;
         default:
-          assert(False, "Operator '" . $operator . "' not implemented");
+          throw new HttpError("Operator '" . $operator . "' not implemented");
       }
       
       if ($query_operator) {
@@ -1174,6 +1174,7 @@ abstract class AbstractBaseAPI {
     foreach ($orderings as $order) {
       $factory = null;
       $joinKey = null;
+      $key = null;
       $features_sort = $features;
       if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z.]+)$/', $order, $matches)) {
         // Special filtering of _id to use for uniform access to model primary key
@@ -1245,8 +1246,8 @@ abstract class AbstractBaseAPI {
     object $object,
     array $expandResult,
     array $includedResources,
-    array $sparseFieldsets = null,
-    array $aggregateFieldsets = null
+    ?array $sparseFieldsets = null,
+    ?array $aggregateFieldsets = null
 ): array {
     
     // Add missing expands to expands in case they have been added in aggregateData()
@@ -1347,7 +1348,7 @@ abstract class AbstractBaseAPI {
         
         $missingPermissionMatching = true;
         // if we also have permissions from expanded entries we need to check them as well
-        if (count($permsExpandMatching) && $this instanceof AbstractModelAPI) {
+        if (count($permsExpandMatching)) {
           foreach ($missing_permissions as $missing_permission) {
             $expands = $permsExpandMatching[$missing_permission];
             foreach ($expands as $expand) {
@@ -1577,9 +1578,9 @@ abstract class AbstractBaseAPI {
     $body = $response->getBody();
     $body->write($apiClass->ret2json($ret));
     
-    return $response->withStatus($statusCode)
-      ->withHeader("Content-Type", "application/vnd.api+json")
-      ->withHeader("Location", $dataResources[0]["links"]["self"]);
+    return $response->withHeader("Content-Type", "application/vnd.api+json")
+      ->withHeader("Location", $dataResources[0]["links"]["self"])
+      ->withStatus($statusCode);
     //for location we use links value from $dataresources because if we use $linksSelf, the wrong location gets returned in
     //case of a POST request
   }
@@ -1589,12 +1590,12 @@ abstract class AbstractBaseAPI {
   /**
    * @throws JsonException
    */
-  protected static function getMetaResponse(array $meta, Request $request, Response $response, int $statusCode = 200): MessageInterface|Response {
+  protected static function getMetaResponse(array $meta, Request $request, Response $response, int $statusCode = 200): Response {
     $ret = self::createJsonResponse(meta: $meta);
     $body = $response->getBody();
     $body->write(self::ret2json($ret));
     
-    return $response->withStatus($statusCode)->withHeader("Content-Type", "application/vnd.api+json");
+    return $response->withHeader("Content-Type", "application/vnd.api+json")->withStatus($statusCode);
   }
   
   /**

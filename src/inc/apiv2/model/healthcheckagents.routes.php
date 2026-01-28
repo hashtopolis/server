@@ -65,18 +65,20 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
     ];
   }
   
-  #[NoReturn] protected function createObject(array $object): int {
-    assert(False, "HealthCheckAgents cannot be created via API");
+  protected function createObject(array $object): int {
+    throw new HttpError("HealthCheckAgents cannot be created via API");
   }
   
-  #[NoReturn] public function updateObject(int $objectId, array $data): void {
-    assert(False, "HealthCheckAgents cannot be updated via API");
+  public function updateObject(int $objectId, array $data): void {
+    throw new HttpError("HealthCheckAgents cannot be updated via API");
   }
   
-  #[NoReturn] protected function deleteObject(object $object): void {
+  protected function deleteObject(object $object): void {
     /* Dummy code to implement abstract functions */
-    assert(False, "HealthCheckAgents cannot be deleted via API");
+    throw new HttpError("HealthCheckAgents cannot be deleted via API");
   }
 }
 
+use Slim\App;
+/** @var App $app */
 HealthCheckAgentAPI::register($app);

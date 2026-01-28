@@ -43,4 +43,6 @@ class PurgeTaskHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 PurgeTaskHelperAPI::register($app);

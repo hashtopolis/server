@@ -65,4 +65,6 @@ class AccessGroupAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 AccessGroupAPI::register($app);
