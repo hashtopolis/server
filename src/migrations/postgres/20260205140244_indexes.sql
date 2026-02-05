@@ -6,7 +6,7 @@ CREATE INDEX IF NOT EXISTS File_accessGroupId_idx ON File(accessGroupId);
 CREATE INDEX IF NOT EXISTS Hashlist_accessGroupId_idx ON Hashlist(accessGroupId);
 CREATE INDEX IF NOT EXISTS HealthCheck_crackerBinaryId_idx ON HealthCheck(crackerBinaryId);
 CREATE INDEX IF NOT EXISTS HealthCheckAgent_healthCheckId_idx ON HealthCheckAgent(healthCheckId);
-CREATE INDEX IF NOT EXISTS HealthCheckAgent_agentId_idx ON healthCheckAgent(agentId);
+CREATE INDEX IF NOT EXISTS HealthCheckAgent_agentId_idx ON HealthCheckAgent(agentId);
 CREATE INDEX IF NOT EXISTS Pretask_crackerBinaryTypeId_idx ON Pretask(crackerBinaryTypeId);
 CREATE INDEX IF NOT EXISTS Task_taskWrapperId_idx ON Task(taskWrapperId);
 CREATE INDEX IF NOT EXISTS Task_crackerBinaryTypeId_idx ON Task(crackerBinaryTypeId);
