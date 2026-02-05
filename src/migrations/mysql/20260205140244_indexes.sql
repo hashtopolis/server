@@ -29,6 +29,7 @@ END;
 DROP PROCEDURE IF EXISTS `DropIndex`;
 CREATE PROCEDURE `DropIndex`
 (
+    IN given_table    VARCHAR(64),
     IN given_index    VARCHAR(64)
 )
 BEGIN
@@ -37,12 +38,13 @@ BEGIN
 
     SELECT COUNT(1) INTO IndexIsThere
     FROM INFORMATION_SCHEMA.STATISTICS
-    WHERE index_name   = given_index;
+    WHERE table_name   = given_table
+    AND   index_name   = given_index;
 
     IF IndexIsThere = 0 THEN
-        SELECT CONCAT('Index ', given_index, ' does not exist') DropindexErrorMessage;
+        SELECT CONCAT('Index ', given_index, ' does not exist on table ', given_table) DropindexErrorMessage;
     ELSE
-        SET @sqlstmt = CONCAT('DROP INDEX ', given_index);
+        SET @sqlstmt = CONCAT('DROP INDEX ', given_index, ' ON ', given_table);
         PREPARE st FROM @sqlstmt;
         EXECUTE st;
         DEALLOCATE PREPARE st;
@@ -51,8 +53,8 @@ BEGIN
 END;
 
 -- create new indexes on some isArchived columns which is used on a lot of queries
-CALL CreateIndex('Hashlist', 'Hashlist_isArchived_idx', 'isArchived');
-CALL CreateIndex('Task', 'Task_isArchived_priority_idx', 'isArchived, priority');
+CALL CreateIndex('Hashlist', 'isArchived', 'isArchived');
+CALL CreateIndex('Task', 'isArchived_priority', 'isArchived, priority');
 
-CALL DropIndex('TaskWrapper_isArchived_idx'); -- we drop and replace the single isArchived index with the following composite one
-CALL CreateIndex('TaskWrapper', 'TaskWrapper_isArchived_priority_idx', 'isArchived, priority');
+CALL DropIndex('TaskWrapper', 'isArchived'); -- we drop and replace the single isArchived index with the following composite one
+CALL CreateIndex('TaskWrapper', 'isArchived_priority', 'isArchived, priority');
