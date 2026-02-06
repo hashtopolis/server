@@ -173,11 +173,11 @@ abstract class AbstractModelFactory {
    * @return Filter[]
    */
   private function getFilters(array $arr): array {
-    if (!is_array($arr['filter'])) {
-      $arr['filter'] = array($arr['filter']);
+    if (!is_array($arr[Factory::FILTER])) {
+      $arr[Factory::FILTER] = array($arr[Factory::FILTER]);
     }
-    if (isset($arr['filter'])) {
-      return $arr['filter'];
+    if (isset($arr[Factory::FILTER])) {
+      return $arr[Factory::FILTER];
     }
     return array();
   }
@@ -187,11 +187,11 @@ abstract class AbstractModelFactory {
    * @return Order[]
    */
   private function getOrders(array $arr): array {
-    if (!is_array($arr['order'])) {
-      $arr['order'] = array($arr['order']);
+    if (!is_array($arr[Factory::ORDER])) {
+      $arr[Factory::ORDER] = array($arr[Factory::ORDER]);
     }
-    if (isset($arr['order'])) {
-      return $arr['order'];
+    if (isset($arr[Factory::ORDER])) {
+      return $arr[Factory::ORDER];
     }
     return array();
   }
@@ -201,11 +201,11 @@ abstract class AbstractModelFactory {
    * @return Group[]
    */
   private function getGroups(array $arr): array {
-    if (!is_array($arr['group'])) {
-      $arr['group'] = array($arr['group']);
+    if (!is_array($arr[Factory::GROUP])) {
+      $arr[Factory::GROUP] = array($arr[Factory::GROUP]);
     }
-    if (isset($arr['group'])) {
-      return $arr['group'];
+    if (isset($arr[Factory::GROUP])) {
+      return $arr[Factory::GROUP];
     }
     return array();
   }
@@ -215,11 +215,11 @@ abstract class AbstractModelFactory {
    * @return Join[]
    */
   private function getJoins(array $arr): array {
-    if (!is_array($arr['join'])) {
-      $arr['join'] = array($arr['join']);
+    if (!is_array($arr[Factory::JOIN])) {
+      $arr[Factory::JOIN] = array($arr[Factory::JOIN]);
     }
-    if (isset($arr['join'])) {
-      return $arr['join'];
+    if (isset($arr[Factory::JOIN])) {
+      return $arr[Factory::JOIN];
     }
     return array();
   }
@@ -423,8 +423,8 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
     $dbh = self::getDB();
@@ -449,11 +449,11 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
-    if (array_key_exists('join', $options)) {
-      $query .= $this->applyJoins($options['join']);
+    if (array_key_exists(Factory::JOIN, $options)) {
+      $query .= $this->applyJoins($options[Factory::JOIN]);
     }
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
     $dbh = self::getDB();
@@ -469,8 +469,8 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
     $dbh = self::getDB();
@@ -487,12 +487,12 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
-    if (array_key_exists('join', $options)) {
-      $query .= $this->applyJoins($options['join']);
+    if (array_key_exists(Factory::JOIN, $options)) {
+      $query .= $this->applyJoins($options[Factory::JOIN]);
     }
     
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
     $dbh = self::getDB();
@@ -554,9 +554,9 @@ abstract class AbstractModelFactory {
    * structure
    *
    * $options = array();
-   * $options['filter'] is an array of QueryFilter options
-   * $options['order'] is an array of OrderFilter options
-   * $options['join'] is an array of JoinFilter options
+   * $options[Factory::FILTER] is an array of QueryFilter options
+   * $options[Factory::ORDER] is an array of OrderFilter options
+   * $options[Factory::JOIN] is an array of JoinFilter options
    *
    * @param $options array containing option settings
    * @return AbstractModel[]|AbstractModel Returns a list of matching objects or Null
@@ -589,25 +589,25 @@ abstract class AbstractModelFactory {
     }
     
     // Apply all normal filter to this query
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
-    if (array_key_exists("group", $options)) {
+    if (array_key_exists(Factory::GROUP, $options)) {
       $query .= $this->applyGroups($this->getGroups($options));
     }
     
     // Apply order filter
-    if (!array_key_exists("order", $options)) {
+    if (!array_key_exists(Factory::ORDER, $options)) {
       // Add a asc order on the primary keys as a standard
       $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
       $orderOptions = array($oF);
-      $options['order'] = $orderOptions;
+      $options[Factory::ORDER] = $orderOptions;
     }
-    $query .= $this->applyOrder($options['order']);
+    $query .= $this->applyOrder($options[Factory::ORDER]);
     
-    if (array_key_exists("limit", $options)) {
-      $query .= $this->applyLimit($options['limit']);
+    if (array_key_exists(Factory::LIMIT, $options)) {
+      $query .= $this->applyLimit($options[Factory::LIMIT]);
     }
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
@@ -647,7 +647,7 @@ abstract class AbstractModelFactory {
    */
   public function filter(array $options, bool $single = false) {
     // Check if we need to join and if so pass on to internal Function
-    if (array_key_exists('join', $options)) {
+    if (array_key_exists(Factory::JOIN, $options)) {
       return $this->filterWithJoin($options);
     }
     
@@ -655,24 +655,24 @@ abstract class AbstractModelFactory {
     $query = "SELECT " . implode(", ", $keys) . " FROM " . $this->getMappedModelTable();
     $vals = array();
     
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
-    if (array_key_exists("group", $options)) {
+    if (array_key_exists(Factory::GROUP, $options)) {
       $query .= $this->applyGroups($this->getGroups($options));
     }
     
-    if (!array_key_exists("order", $options)) {
+    if (!array_key_exists(Factory::ORDER, $options)) {
       // Add a asc order on the primary keys as a standard
       $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
       $orderOptions = array($oF);
-      $options['order'] = $orderOptions;
+      $options[Factory::ORDER] = $orderOptions;
     }
-    $query .= $this->applyOrder($options['order']);
+    $query .= $this->applyOrder($options[Factory::ORDER]);
     
-    if (array_key_exists("limit", $options)) {
-      $query .= $this->applyLimit($options['limit']);
+    if (array_key_exists(Factory::LIMIT, $options)) {
+      $query .= $this->applyLimit($options[Factory::LIMIT]);
     }
     
     $dbh = self::getDB();
@@ -815,7 +815,7 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
-    if (array_key_exists("filter", $options)) {
+    if (array_key_exists(Factory::FILTER, $options)) {
       $query .= $this->applyFilters($vals, $this->getFilters($options));
     }
     
@@ -871,11 +871,11 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
-    if (array_key_exists("update", $options)) {
+    if (array_key_exists(Factory::UPDATE, $options)) {
       $query = $query . " SET ";
       
       
-      $updateOptions = $options['update'];
+      $updateOptions = $options[Factory::UPDATE];
       if (!is_array($updateOptions)) {
         $updateOptions = array($updateOptions);
       }
@@ -894,8 +894,8 @@ abstract class AbstractModelFactory {
       }
     }
     
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
     $dbh = self::getDB();
