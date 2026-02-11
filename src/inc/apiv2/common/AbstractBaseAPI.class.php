@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AbstractModelFactory;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\MessageInterface;
@@ -44,6 +45,7 @@ use DBA\User;
 
 use DBA\Factory;
 use DBA\ContainFilter;
+use DBA\JoinFilter;
 use DBA\LikeFilter;
 use DBA\LikeFilterInsensitive;
 use DBA\LogEntry;
@@ -223,7 +225,7 @@ abstract class AbstractBaseAPI {
   }
   
   
-  protected static function getModelFactory(string $model): object {
+  protected static function getModelFactory(string $model): AbstractModelFactory {
     switch ($model) {
       case AccessGroup::class:
         return Factory::getAccessGroupFactory();
@@ -1046,24 +1048,44 @@ abstract class AbstractBaseAPI {
   function getFilters(Request $request): array {
     return $this->getQueryParameterFamily($request, 'filter');
   }
+
+  protected static function checkJoinExists(array $joins, $modelName) {
+    foreach($joins as $join) {
+      if ($join->getOtherFactory()->getModelName() === $modelName) {
+        return true;
+      }
+    }
+    return false;
+  }
   
   /**
    * Check for valid filter parameters and build QueryFilter
    * @throws HttpForbidden
    * @throws InternalError
    */
-  protected function makeFilter(array $filters, object $apiClass): array {
+  protected function makeFilter(array $filters, object $apiClass, array &$joinFilters = []): array {
+  // protected function makeFilter(array $filters, object $apiClass, array &$joinFilters): array {
     $qFs = [];
     $features = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
     foreach ($filters as $filter => $value) {
       
-      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith|__in|__nin)$/', $filter, $matches) == 0) {
+      if (preg_match('/^(?P<key>[_a-zA-Z0-9.]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith|__in|__nin)$/', $filter, $matches) == 0) {
         throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid");
       }
       
       // Special filtering of _id to use for uniform access to model primary key
       $cast_key = $matches['key'] == 'id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
+      if (strpos($cast_key, ".")) {
+        //When the key contains a "." it should be a relation in format: "task.taskname" where task is the relation.
+          $relationObject = $this->retrieveRelationKey($cast_key);
+          $factory = $relationObject->factory;
+          $cast_key = $relationObject->cast_key;
+          if (!self::checkJoinExists($joinFilters, $factory->getModelName())) {
+            $joinFilters[] = new JoinFilter($factory, $relationObject->joinKey, $relationObject->key);
+          }
+          $features = $relationObject->features_relation;
+      }
       
       if (!array_key_exists($cast_key, $features)) {
         throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid (key not valid field)");
@@ -1158,7 +1180,38 @@ abstract class AbstractBaseAPI {
     }
     return $qFs;
   }
-  
+
+  /**
+   * Retrieves the relation from a sort/filter value. ex task.taskName when task is a relation for the current
+   * Model endpoint. This works only for relations of 1 deep
+   */
+  protected function retrieveRelationKey(string $value): object {
+    $parts = explode(".", $value);
+    if (count($parts) == 2) {
+      $relationString = $parts[0];
+      $relations = $this->getAllRelationships();
+      if (array_key_exists($relationString, $relations)) {
+        $relationClass = $relations[$relationString]['relationType'];
+        $relationFeatures = $this->getAliasedFeaturesOther($relationClass);
+        $factory = $this->getModelFactory($relationClass);
+        $joinKey = $relations[$relationString]['relationKey'];
+        $key = $relations[$relationString]['key'];
+        $features_relation = $relationFeatures;
+        $value = $parts[1];
+        return (object) [
+          "factory" => $factory,
+          "joinKey" => $joinKey,
+          "key" => $key,
+          "features_relation" => $features_relation,
+          "cast_key" => $value
+        ];
+      } else {
+        throw new HttpError("Invalid relation: " . $relationString);
+      }
+    } else {
+      throw new HttpError("Invalid key, multiple '.' found in key, but only relationships of one deep is allowed");
+    }
+  }
   
   /**
    * Check for valid ordering parameters and build QueryFilter
@@ -1172,9 +1225,6 @@ abstract class AbstractBaseAPI {
     $orderings = $this->getQueryParameterAsList($request, 'sort');
     $contains_primary_key = false;
     foreach ($orderings as $order) {
-      $factory = null;
-      $joinKey = null;
-      $key = null;
       $features_sort = $features;
       if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z.]+)$/', $order, $matches)) {
         // Special filtering of _id to use for uniform access to model primary key
@@ -1183,29 +1233,20 @@ abstract class AbstractBaseAPI {
           $contains_primary_key = true;
         }
         if (strpos($cast_key, ".")) {
-          $parts = explode(".", $cast_key);
-            if (count($parts) == 2) { // Only relations of 1 deep allowed ex. task.keyspace
-              $relationString = $parts[0];
-              //currently getting all relationships, but its probably only possible to sort on  1 to 1 relations
-              $relations = $this->getAllRelationships();
-              if (array_key_exists($relationString, $relations)) {
-                $relationClass = $relations[$relationString]['relationType'];
-                $relationFeatures = $this->getAliasedFeaturesOther($relationClass);
-                $factory = $this->getModelFactory($relationClass);
-                $joinKey = $relations[$relationString]['relationKey'];
-                $key = $relations[$relationString]['key'];
-                $features_sort = $relationFeatures;
-                $cast_key = $parts[1];
-              }
-            }
-          }
+          $relationObject = $this->retrieveRelationKey($cast_key);
+          $factory = $relationObject->factory;
+          $joinKey = $relationObject->joinKey;
+          $cast_key = $relationObject->cast_key;
+          $key = $relationObject->key;
+          $features_sort = $relationObject->features_relation;
+        }
         if (array_key_exists($cast_key, $features_sort)) {
           $remappedKey = $features_sort[$cast_key]['dbname'];
           $type = ($matches['operator'] == '-') ? "DESC" : "ASC";
           if ($reverseSort) {
             $type = ($type == "ASC") ? "DESC" : "ASC";
           }
-          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type, 'factory' => $factory, 'joinKey' => $joinKey, 'key' => $key];
+          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type, 'factory' => $factory ?? null, 'joinKey' => $joinKey ?? null, 'key' => $key ?? null];
         }
         else {
           throw new HttpForbidden("Ordering parameter '" . $order . "' is not valid");

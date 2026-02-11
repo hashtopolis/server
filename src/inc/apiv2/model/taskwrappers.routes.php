@@ -1,6 +1,7 @@
 <?php
 
 use DBA\AccessGroup;
+use DBA\CoalesceColumn;
 use DBA\CoalesceLikeFilterInsensitive;
 use DBA\CoalesceOrderFilter;
 use DBA\ContainFilter;
@@ -8,6 +9,8 @@ use DBA\Factory;
 use DBA\Hashlist;
 use DBA\HashType;
 use DBA\JoinFilter;
+use DBA\LikeFilter;
+use DBA\LikeFilterInsensitive;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 
@@ -126,19 +129,27 @@ class TaskWrapperAPI extends AbstractModelAPI {
       // name needs to be changed to coalesce filters to get the correct value between these 2. 
       // Another possibility where this hack is not needed would be to also store the taskname of normal tasks in the
       // taskwrapper
-      foreach ($filters[Factory::ORDER] as &$orderfilter) {
-        if ($orderfilter->getBy() == Task::TASK_NAME) {
-          $newOrderFilter = new CoalesceOrderFilter([Task::TASK_NAME, TaskWrapper::TASK_WRAPPER_NAME], $orderfilter->getType());
-          $orderfilter = $newOrderFilter;
+      if (isset($filters[Factory::ORDER])) {
+        foreach ($filters[Factory::ORDER] as &$orderfilter) {
+          if ($orderfilter->getBy() == Task::TASK_NAME) {
+            $coalesceColumns = [new CoalesceColumn(Task::TASK_NAME, Factory::getTaskFactory()), new CoalesceColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory())];
+            $newOrderFilter = new CoalesceOrderFilter($coalesceColumns, $orderfilter->getType());
+            $orderfilter = $newOrderFilter;
+          }
         }
+        unset($orderfilter);
       }
-      unset($orderfilter);
 
-      foreach($filters[Factory::FILTER] as &$filter) {
-        $newFilter = new CoalesceLikeFilterInsensitive();
-
+      if (isset($filters[Factory::FILTER])) {
+        foreach($filters[Factory::FILTER] as &$filter) {
+          if ($filter instanceof LikeFilterInsensitive && $filter->getKey() == Task::TASK_NAME) {
+            $coalesceColumns = [new CoalesceColumn(Task::TASK_NAME, Factory::getTaskFactory()), new CoalesceColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory())];
+            $newFilter = new CoalesceLikeFilterInsensitive($coalesceColumns, $filter->getValue());
+            $filter = $newFilter;
+          }
+        }
+        unset($filter);
       }
-      unset($filter);
     }
     return $filters;
   }

@@ -599,10 +599,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     /* Object filter definition */
     $aFs = [];
+    $joinFilters = [];
 
     /* Generate filters */
     $filters = $apiClass->getFilters($request);
-    $qFs_Filter = $apiClass->makeFilter($filters, $apiClass);
+    $qFs_Filter = $apiClass->makeFilter($filters, $apiClass, $joinFilters);
     $group = Factory::getRightGroupFactory()->get($apiClass->getCurrentUser()->getRightGroupId());
     if ($group->getPermissions() !== 'ALL') { // Only add permission filters when no admin user
       $aFs_ACL = $apiClass->getFilterACL();
@@ -628,6 +629,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     //this is used to reverse the array to show the data correctly for the user 
     $reverseArray = false;
 
+    $aFs[Factory::JOIN] = $joinFilters;
+    $aFs = $apiClass->parseFilters($aFs);
+    foreach($aFs[Factory::JOIN] as $a) {
+      error_log($a->getOtherTableName());
+    }
     $firstCursorObject = $apiClass->getMinMaxCursor($apiClass, "ASC", $aFs, $request, $aliasedfeatures);
     $lastCursorObject = $apiClass->getMinMaxCursor($apiClass, "DESC", $aFs, $request, $aliasedfeatures);
 
@@ -667,7 +673,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $orderTemplates[0]["type"] = $defaultSort;
     $primaryFilter = $orderTemplates[0]['by'];
     $orderFilters = [];
-    $joinFilters = [];
 
     // Build actual order filters
     foreach ($orderTemplates as $orderTemplate) {
@@ -676,7 +681,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       if ($orderTemplate['factory'] !== null) {
         // if factory of ordertemplate is not null, sort is happening on joined table
         $otherFactory = $orderTemplate['factory'];
-        $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $orderTemplate['key']);
+        if (!$apiClass::checkJoinExists($joinFilters, $otherFactory->getModelName())) {
+          $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $orderTemplate['key']);
+        }
       }
     }
 
@@ -685,7 +692,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
-    $finalFs = $apiClass->parseFilters($finalFs);
 
     //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
     //But this probably needs to be added in getFeatures() then.

@@ -35,4 +35,8 @@ class LikeFilterInsensitive extends Filter {
   function getHasValue(): bool {
     return true;
   }
+
+  function getKey() {
+    return $this->key;
+  }
 }
