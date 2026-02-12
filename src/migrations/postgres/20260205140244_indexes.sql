@@ -14,7 +14,7 @@ CREATE INDEX IF NOT EXISTS TaskDebugOutput_taskId_idx ON TaskDebugOutput(taskId)
 
 -- create new indexes on some isArchived columns which is used on a lot of queries
 CREATE INDEX IF NOT EXISTS Hashlist_isArchived_idx ON Hashlist(isArchived, hashlistId);
-CREATE INDEX IF NOT EXISTS Task_isArchived_priority_idx ON Task(isArchived, priority);
+CREATE INDEX IF NOT EXISTS Task_isArchived_priority_taskId_idx ON Task(isArchived, priority DESC, taskId ASC);
 DROP INDEX IF EXISTS TaskWrapper_isArchived_idx; -- we drop and replace the single isArchived index with the following composite one
-CREATE INDEX IF NOT EXISTS TaskWrapper_isArchived_priority_idx ON TaskWrapper(isArchived, priority);
+CREATE INDEX IF NOT EXISTS TaskWrapper_isArchived_priority_taskWrapperId_idx ON TaskWrapper(isArchived, priority DESC, taskWrapperId ASC);
 

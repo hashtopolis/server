@@ -54,7 +54,7 @@ END;
 
 -- create new indexes on some isArchived columns which is used on a lot of queries
 CALL CreateIndex('Hashlist', 'isArchived', 'isArchived, hashlistId');
-CALL CreateIndex('Task', 'isArchived_priority', 'isArchived, priority');
+CALL CreateIndex('Task', 'isArchived_priority_taskId', 'isArchived, priority DESC, taskId ASC');
 
 CALL DropIndex('TaskWrapper', 'isArchived'); -- we drop and replace the single isArchived index with the following composite one
-CALL CreateIndex('TaskWrapper', 'isArchived_priority', 'isArchived, priority');
+CALL CreateIndex('TaskWrapper', 'isArchived_priority_taskWrapperId', 'isArchived, priority DESC, taskWrapperId ASC');
