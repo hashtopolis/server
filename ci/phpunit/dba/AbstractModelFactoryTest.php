@@ -1,17 +1,26 @@
+<?php
+namespace Tests\DBA;
+
+use Exception;
 use PHPUnit\Framework\TestCase;
-use DBA;
+use DBA\Factory;
+use DBA\QueryFilter;
+use DBA\User;
 
 final class AbstractModelFactoryTest extends TestCase {
-    public function testGetDBWithTest(): void {
-        $db = Factory::getAgentFactory()->getDB(true);
-
-        $this->assertSame($db, null);
-    }
-
-    public function testSimpleFilter(): void {
-        $qF = new QueryFilter(User::USER_ID, 99999, "=");
-        $user = Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
-
-        $this->assertSame($user, null);
-    }
+  /**
+   * @throws Exception
+   */
+  public function testGetDBWithTest(): void {
+    $db = Factory::getAgentFactory()->getDB(true);
+    
+    $this->assertSame(null, $db);
+  }
+  
+  public function testSimpleFilter(): void {
+    $qF = new QueryFilter(User::USER_ID, 99999, "=");
+    $user = Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
+    
+    $this->assertSame(null, $user);
+  }
 }

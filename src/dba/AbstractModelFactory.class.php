@@ -2,6 +2,7 @@
 
 namespace DBA;
 
+use Exception;
 use MassUpdateSet;
 use PDO, PDOStatement, PDOException;
 use UI;
@@ -931,7 +932,8 @@ abstract class AbstractModelFactory {
   /**
    * Returns the DB connection if possible
    * @param bool $test
-   * @return PDO
+   * @return ?PDO
+   * @throws Exception
    */
   public function getDB(bool $test = false): ?PDO {
     if (self::$dbh !== null) {
@@ -979,8 +981,7 @@ abstract class AbstractModelFactory {
       if ($test) {
         return null;
       }
-      UI::printError(UI::ERROR, "Fatal Error! Database connection failed: " . $e->getMessage());
-      return null;
+      throw new Exception("Fatal Error! Database connection failed: " . $e->getMessage());
     }
   }
 }
