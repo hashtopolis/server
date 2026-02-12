@@ -11,9 +11,8 @@ use Composer\Semver\Comparator;
  */
 
 if (!isset($TEST)) {
-  require_once(dirname(__FILE__) . "/../../inc/confv2.php");
+  require_once(dirname(__FILE__) . "/../../inc/StartupConfig.class.php");
   require_once(dirname(__FILE__) . "/../../dba/init.php");
-  require_once(dirname(__FILE__) . "/../../inc/info.php");
   require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
 }
 
@@ -32,13 +31,13 @@ $storedBuild = Factory::getStoredValueFactory()->get("build");
 $upgradePossible = true;
 if ($storedVersion == null) {
   // we just save the current version and assume that the upgrade was executed up to this version
-  $storedVersion = new StoredValue("version", explode("+", $VERSION)[0]);
+  $storedVersion = new StoredValue("version", explode("+", StartupConfig::getInstance()->getVersion())[0]);
   Factory::getStoredValueFactory()->save($storedVersion);
   $upgradePossible = false;
 }
 if ($storedBuild == null) {
   // we just save the current build and assume that the upgrade was executed up to this build
-  $storedBuild = new StoredValue("build", ($BUILD == 'repository') ? Util::getGitCommit(true) : $BUILD);
+  $storedBuild = new StoredValue("build", (StartupConfig::getInstance()->getBuild() == 'repository') ? Util::getGitCommit(true) : StartupConfig::getInstance()->getBuild());
   Factory::getStoredValueFactory()->save($storedBuild);
   $upgradePossible = false;
 }
@@ -66,8 +65,8 @@ if ($upgradePossible) { // we can actually check if there are upgrades to be app
   }
   
   // save the new version
-  $storedVersion->setVal(explode("+", $VERSION)[0]);
+  $storedVersion->setVal(explode("+", StartupConfig::getInstance()->getVersion())[0]);
   Factory::getStoredValueFactory()->update($storedVersion);
-  $storedBuild->setVal(($BUILD == 'repository') ? Util::getGitCommit(true) : $BUILD);
+  $storedBuild->setVal((StartupConfig::getInstance()->getBuild() == 'repository') ? Util::getGitCommit(true) : StartupConfig::getInstance()->getBuild());
   Factory::getStoredValueFactory()->update($storedBuild);
 }

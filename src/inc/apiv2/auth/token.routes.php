@@ -15,10 +15,6 @@ use Firebase\JWT\JWK;
 require_once(dirname(__FILE__) . "/../../startup/include.php");
 
 function generateTokenForUser(Request $request, string $userName, int $expires) {
-  include(dirname(__FILE__) . '/../../confv2.php');
-  if (!isset($PEPPER)) {
-    throw new HttpError("Pepper is not set");
-  }
   $jti = bin2hex(random_bytes(16));
   
   $requested_scopes = $request->getParsedBody() ?: ["todo.all"];
@@ -44,7 +40,7 @@ function generateTokenForUser(Request $request, string $userName, int $expires) 
     throw new HttpError("No user with this userName in the database");
   }
 
-  $secret = $PEPPER[0];
+  $secret = StartupConfig::getInstance()->getPepper(0);
   $now = new DateTime();
 
   $payload = [
@@ -152,11 +148,8 @@ $app->group("/api/v2/auth/refresh", function (RouteCollectorProxy $group) {
     $future = new DateTime("now +2 hours");
     
     $jti = bin2hex(random_bytes(16));
-    if (!isset($PEPPER)) {
-      throw new HttpError("Pepper is not set");
-    }
     
-    $secret = $PEPPER[0];
+    $secret = StartupConfig::getInstance()->getPepper(0);
     $payload = [
       "iat" => $now->getTimeStamp(),
       "exp" => $future->getTimeStamp(),

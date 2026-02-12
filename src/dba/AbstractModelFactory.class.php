@@ -5,6 +5,7 @@ namespace DBA;
 use Exception;
 use MassUpdateSet;
 use PDO, PDOStatement, PDOException;
+use StartupConfig;
 use UI;
 
 /**
@@ -935,25 +936,24 @@ abstract class AbstractModelFactory {
    * @return ?PDO
    * @throws Exception
    */
-  public function getDB(bool $test = false): ?PDO {
+  public function getDB(bool $test = false, array $testProperties = []): ?PDO {
     if (self::$dbh !== null) {
       return self::$dbh;
     }
     try {
-      $dbUser = @DBA_USER;
-      $dbPass = @DBA_PASS;
-      $dbType = @DBA_TYPE;
-      $dbHost = @DBA_SERVER;
-      $dbPort = @DBA_PORT;
-      $dbDB = @DBA_DB;
-      if ($test) { // if the connection is being tested, take credentials from legacy global variable
-        global $CONN;
-        $dbUser = $CONN['user'];
-        $dbPass = $CONN['pass'];
-        $dbType = $CONN['type'];
-        $dbHost = $CONN['server'];
-        $dbPort = $CONN['port'];
-        $dbDB = $CONN['db'];
+      $dbUser = StartupConfig::getInstance()->getDatabaseUser();
+      $dbPass = StartupConfig::getInstance()->getDatabasePassword();
+      $dbType = StartupConfig::getInstance()->getDatabaseType();
+      $dbHost = StartupConfig::getInstance()->getDatabaseServer();
+      $dbPort = StartupConfig::getInstance()->getDatabasePort();
+      $dbDB = StartupConfig::getInstance()->getDatabaseDB();
+      if ($test) { // if the connection is being tested, take credentials from argument properties
+        $dbUser = $testProperties['user'];
+        $dbPass = $testProperties['pass'];
+        $dbType = $testProperties['type'];
+        $dbHost = $testProperties['server'];
+        $dbPort = $testProperties['port'];
+        $dbDB = $testProperties['db'];
       }
 
       if ($dbType == 'mysql') {

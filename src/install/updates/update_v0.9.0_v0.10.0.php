@@ -6,8 +6,7 @@ use DBA\QueryFilter;
 use DBA\AgentBinary;
 
 if (!isset($TEST)) {
-  require_once(dirname(__FILE__) . "/../../inc/confv2.php");
-  require_once(dirname(__FILE__) . "/../../inc/info.php");
+  require_once(dirname(__FILE__) . "/../../inc/StartupConfig.class.php");
   require_once(dirname(__FILE__) . "/../../dba/init.php");
   require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
 }

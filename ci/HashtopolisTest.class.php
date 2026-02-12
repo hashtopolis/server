@@ -41,9 +41,6 @@ abstract class HashtopolisTest {
   ];
   
   public function initAndUpgrade($fromVersion) {
-    // these global variables are needed in the included update.php script
-    global $VERSION, $BUILD, $TEST;
-    
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialize old version $fromVersion...");
     $this->init($fromVersion);
     
@@ -67,8 +64,6 @@ abstract class HashtopolisTest {
   }
   
   public function init($version) {
-    global $PEPPER, $VERSION;
-    
     // drop old data and create empty DB
     /*Factory::getAgentFactory()->getDB()->query("DROP DATABASE IF EXISTS hashtopolis");
     Factory::getAgentFactory()->getDB()->query("CREATE DATABASE hashtopolis");

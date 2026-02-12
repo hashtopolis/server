@@ -118,7 +118,7 @@ echo "All data loaded! Removing old tables... ";
 $DB->exec("SET @tables = NULL;
 SELECT GROUP_CONCAT(table_schema, '.', table_name) INTO @tables
   FROM information_schema.tables
-  WHERE table_schema = '" . $CONN['db'] . "';
+  WHERE table_schema = '" . StartupConfig::getInstance()->getDatabaseDB() . "';
 
 SET @tables = CONCAT('DROP TABLE ', @tables);
 PREPARE stmt FROM @tables;
