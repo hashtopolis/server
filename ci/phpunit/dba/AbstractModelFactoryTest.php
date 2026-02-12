@@ -17,10 +17,19 @@ final class AbstractModelFactoryTest extends TestCase {
     $this->assertSame(null, $db);
   }
   
+  /**
+   * Tests both cases to be used on a simple QueryFilter with no result.
+   * When single is true, null must be returned if no matching entry was found, empty array otherwise
+   *
+   * @return void
+   */
   public function testSimpleFilter(): void {
     $qF = new QueryFilter(User::USER_ID, 99999, "=");
-    $user = Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
     
+    $user = Factory::getUserFactory()->filter([Factory::FILTER => $qF], true);
     $this->assertSame(null, $user);
+    
+    $user = Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
+    $this->assertSame([], $user);
   }
 }
