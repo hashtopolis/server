@@ -56,10 +56,7 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\DBA\\": "ci/phpunit/dba/"
-        },
-        "files": [
-            "src/inc/startup/include.php"
-        ]
+        }
     },
     "scripts": {
         "start": "php -S localhost:8080 -t src",

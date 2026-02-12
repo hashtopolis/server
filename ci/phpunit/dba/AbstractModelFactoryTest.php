@@ -7,6 +7,8 @@ use DBA\Factory;
 use DBA\QueryFilter;
 use DBA\User;
 
+require_once(dirname(__FILE__) . '/../../../src/inc/startup/include.php');
+
 final class AbstractModelFactoryTest extends TestCase {
   /**
    * @throws Exception
