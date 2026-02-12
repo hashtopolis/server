@@ -138,7 +138,7 @@ abstract class AbstractModelFactory {
     
     $keys = self::getMappedModelKeys($model);
     
-    if($vals[0] === -1 || $vals[0] === null){
+    if ($vals[0] === -1 || $vals[0] === null) {
       array_splice($vals, 0, 1);
       array_splice($keys, 0, 1);
     }
@@ -487,8 +487,12 @@ abstract class AbstractModelFactory {
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
-    // we make sure that only the numeric key entries are passed back, otherwise there could be double entries
-    return $stmt->fetchAll(PDO::FETCH_NUM);
+    // put result into one array
+    $result = [];
+    while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+      $result[] = $row[0];
+    }
+    return $result;
   }
   
   public function sumFilter($options, $sumColumn) {
@@ -612,7 +616,7 @@ abstract class AbstractModelFactory {
       $query .= " " . $join->getJoinType() . " JOIN " . $joinFactory->getMappedModelTable() . " ON " . $localFactory->getMappedModelTable() . "." . $match1 . "=" . $joinFactory->getMappedModelTable() . "." . $match2 . " ";
       $joinQueryFilters = $join->getQueryFilters();
       if (count($joinQueryFilters) > 0) {
-        $query .= $this->applyFilters($vals, $joinQueryFilters, true) ;
+        $query .= $this->applyFilters($vals, $joinQueryFilters, true);
       }
     }
     
@@ -865,12 +869,12 @@ abstract class AbstractModelFactory {
     if (sizeof($updates) == 0) {
       return null;
     }
-    $query .= " SET ".self::getMappedModelKey($this->getNullObject(),$updateColumn)." = ( CASE ";
+    $query .= " SET " . self::getMappedModelKey($this->getNullObject(), $updateColumn) . " = ( CASE ";
     
     $vals = array();
     
     foreach ($updates as $update) {
-      $query .= $update->getMassQuery(self::getMappedModelKey($this->getNullObject(),$matchingColumn));
+      $query .= $update->getMassQuery(self::getMappedModelKey($this->getNullObject(), $matchingColumn));
       $vals[] = $update->getMatchValue();
       $vals[] = $update->getUpdateValue();
     }
@@ -888,7 +892,7 @@ abstract class AbstractModelFactory {
       $query .= " ELSE 2147483648 "; // 32 bit int max + 1
     }
     
-    $query .= "END) WHERE ".self::getMappedModelKey($this->getNullObject(), $matchingColumn)." IN (" . implode(",", $matchingArr) . ")";
+    $query .= "END) WHERE " . self::getMappedModelKey($this->getNullObject(), $matchingColumn) . " IN (" . implode(",", $matchingArr) . ")";
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     return $stmt->execute($vals);
@@ -956,7 +960,7 @@ abstract class AbstractModelFactory {
         $dbPort = $testProperties['port'];
         $dbDB = $testProperties['db'];
       }
-
+      
       if ($dbType == 'mysql') {
         // connect as mysql
         $dsn = "mysql:dbname=$dbDB;host=$dbHost;port=$dbPort;charset=utf8mb4";
@@ -974,7 +978,7 @@ abstract class AbstractModelFactory {
         }
         throw new Exception("Fatal Error: Unknown database type specified!");
       }
-
+      
       self::$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       return self::$dbh;
     }
