@@ -487,7 +487,8 @@ abstract class AbstractModelFactory {
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    // we make sure that only the numeric key entries are passed back, otherwise there could be double entries
+    return array_filter($stmt->fetch(PDO::FETCH_ASSOC), fn($_, $k) => is_int($k), ARRAY_FILTER_USE_KEY);
   }
   
   public function sumFilter($options, $sumColumn) {
