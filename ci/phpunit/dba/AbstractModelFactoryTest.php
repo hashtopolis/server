@@ -1,6 +1,8 @@
 <?php
+
 namespace Tests\DBA;
 
+use DBA\ContainFilter;
 use DBA\Hashlist;
 use DBA\OrderFilter;
 use Exception;
@@ -63,5 +65,8 @@ final class AbstractModelFactoryTest extends TestCase {
     $qF = new QueryFilter(Hashlist::CRACKED, 0, ">");
     $ids = Factory::getHashlistFactory()->columnFilter([Factory::FILTER => $qF, Factory::ORDER => $oF], Hashlist::HASHLIST_ID);
     $this->assertSame([], $ids);
+    
+    // clean up
+    Factory::getHashlistFactory()->massDeletion([Factory::FILTER => new ContainFilter(Hashlist::HASHLIST_ID, [$hashlist_1->getId(), $hashlist_2->getId(), $hashlist_3->getId()])]);
   }
 }
