@@ -122,7 +122,8 @@ switch ($STEP) {
         'pass' => $_POST['pass'],
         'server' => $_POST['server'],
         'db' => $_POST['db'],
-        'port' => $_POST['port']
+        'port' => $_POST['port'],
+        'type' => 'mysql',
       );
       if (Factory::getUserFactory()->getDB(true, $CONN) === null) {
         //connection not valid

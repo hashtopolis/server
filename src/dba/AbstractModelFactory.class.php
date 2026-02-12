@@ -948,7 +948,7 @@ abstract class AbstractModelFactory {
       $dbHost = StartupConfig::getInstance()->getDatabaseServer();
       $dbPort = StartupConfig::getInstance()->getDatabasePort();
       $dbDB = StartupConfig::getInstance()->getDatabaseDB();
-      if ($test) { // if the connection is being tested, take credentials from argument properties
+      if ($test && sizeof($testProperties) == 6) { // if the connection is being tested, take credentials from argument properties
         $dbUser = $testProperties['user'];
         $dbPass = $testProperties['pass'];
         $dbType = $testProperties['type'];

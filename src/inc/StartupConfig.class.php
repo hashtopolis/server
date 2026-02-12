@@ -158,6 +158,9 @@ class StartupConfig {
         "tus" => "/var/tmp/tus/",
       ];
     }
+    else {
+      $this->directories = $DIRECTORIES;
+    }
     
     // extract old database settings format
     $this->db_properties[self::DB_PROPERTY_TYPE] = "mysql"; // old setups can only by mysql
