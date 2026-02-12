@@ -463,6 +463,31 @@ abstract class AbstractModelFactory {
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
   
+  /**
+   * @param $options array options of query (filters and joins)
+   * @param $column string single column key which should be retrieved
+   * @return array of the column entries returned from this query
+   */
+  public function columnFilter(array $options, string $column): array {
+    $query = "SELECT " . Util::createPrefixedString($this->getMappedModelTable(), [self::getMappedModelKey($this->getNullObject(), $column)]);
+    $query = $query . " FROM " . $this->getMappedModelTable();
+    
+    $vals = array();
+    
+    if (array_key_exists(Factory::JOIN, $options)) {
+      $query .= $this->applyJoins($options[Factory::JOIN]);
+    }
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
+    }
+    
+    $dbh = self::getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+  
   public function sumFilter($options, $sumColumn) {
     $query = "SELECT SUM(" . self::getMappedModelKey($this->getNullObject(), $sumColumn) . ") AS sum ";
     $query = $query . " FROM " . $this->getMappedModelTable();
