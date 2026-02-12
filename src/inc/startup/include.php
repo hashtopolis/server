@@ -11,7 +11,7 @@ require_once($baseDir . "/../../vendor/autoload.php");
 
 require_once($baseDir . "/info.php");
 
-include($baseDir . "/confv2.php");
+require_once($baseDir . "/confv2.php");
 
 // include all .class.php files in inc dir
 $dir = scandir($baseDir);

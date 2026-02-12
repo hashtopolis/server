@@ -140,7 +140,7 @@ $container->set("classMapper", function () {
 
 /* API token validation */
 $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface $container) {
-  include(dirname(__FILE__) . '/../../inc/confv2.php');
+  require_once(dirname(__FILE__) . '/../../inc/confv2.php');
 
   $decoder = new FirebaseDecoder(
     new Secret($PEPPER[0], 'HS256', hash("sha256", $PEPPER[0]))
