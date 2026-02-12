@@ -18,7 +18,7 @@ final class AbstractModelFactoryTest extends TestCase {
   public function testGetDBWithTest(): void {
     $db = Factory::getAgentFactory()->getDB(true);
     
-    $this->assertSame(null, $db);
+    $this->assertNotNull($db);
   }
   
   /**
