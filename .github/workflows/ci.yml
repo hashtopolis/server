@@ -28,7 +28,7 @@ jobs:
       - name: Give Apache permissions on necessary directories # for the tests, only src/files and src/inc/utils/locks seem necessary
         run: docker exec -u root hashtopolis-server-dev bash -c "chown -R www-data:www-data /var/www/html/src && chmod -R g+w /var/www/html/src"
       - name: PHPUnittest Run
-        run: docker exec -w /var/www/html/ hashtopolis-server-dev ./vendor/bin/phpunit ci/phpunit
+        run: docker exec -w /var/www/html/ hashtopolis-server-dev ./vendor/bin/phpunit ci/phpunit --display-warnings --display-deprecations
       - name: Test with pytest
         run: docker exec -w /var/www/html/ci/apiv2 hashtopolis-server-dev pytest
       - name: Test if pytest is removing all test objects
