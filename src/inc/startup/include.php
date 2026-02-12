@@ -39,9 +39,9 @@ foreach ($directories as $directory) {
   }
 }
 
-include($baseDir . "/protocol.php");
+require_once($baseDir . "/protocol.php");
 
-include($baseDir . "/mask.php");
+require_once($baseDir . "/mask.php");
 
 // include DBA
 require_once($baseDir . "/../dba/init.php");
