@@ -7,11 +7,11 @@ define("APP_NAME", "Hashtopolis");
 
 $baseDir = dirname(__FILE__) . "/..";
 
-require_once($baseDir . "/../../vendor/autoload.php");
-
 require_once($baseDir . "/info.php");
 
 require_once($baseDir . "/confv2.php");
+
+require_once($baseDir . "/../../vendor/autoload.php");
 
 // include all .class.php files in inc dir
 $dir = scandir($baseDir);
