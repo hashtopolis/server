@@ -225,7 +225,7 @@ class StartupConfig {
   }
   
   public function getPepper(int $index): string {
-    if ($index < 0 || $index > sizeof($this->peppers)) {
+    if ($index < 0 || $index >= count($this->peppers)) {
       return "";
     }
     return $this->peppers[$index];
