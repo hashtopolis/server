@@ -15,8 +15,6 @@ if ($INSTALL) {
   die("Installation is already done!");
 }
 
-/** @var array $CONN */
-
 $STEP = 0;
 if (isset($_COOKIE['step'])) {
   $STEP = $_COOKIE['step'];
@@ -84,9 +82,9 @@ switch ($STEP) {
     file_put_contents(dirname(__FILE__) . "/../import/.htaccess", "Order deny,allow\nDeny from all");
 
     // save version and build into database
-    $version = new StoredValue("version", explode("+", $VERSION)[0]);
+    $version = new StoredValue("version", explode("+", StartupConfig::getInstance()->getVersion())[0]);
     Factory::getStoredValueFactory()->save($version);
-    $build = new StoredValue("build", $BUILD);
+    $build = new StoredValue("build", StartupConfig::getInstance()->getBuild());
     Factory::getStoredValueFactory()->save($build);
     setcookie("step", "", time() - 10);
     setcookie("prev", "", time() - 10);
@@ -124,9 +122,10 @@ switch ($STEP) {
         'pass' => $_POST['pass'],
         'server' => $_POST['server'],
         'db' => $_POST['db'],
-        'port' => $_POST['port']
+        'port' => $_POST['port'],
+        'type' => 'mysql',
       );
-      if (Factory::getUserFactory()->getDB(true) === null) {
+      if (Factory::getUserFactory()->getDB(true, $CONN) === null) {
         //connection not valid
         $fail = true;
       }

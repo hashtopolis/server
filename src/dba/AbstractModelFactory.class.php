@@ -2,8 +2,10 @@
 
 namespace DBA;
 
+use Exception;
 use MassUpdateSet;
 use PDO, PDOStatement, PDOException;
+use StartupConfig;
 use UI;
 
 /**
@@ -136,7 +138,7 @@ abstract class AbstractModelFactory {
     
     $keys = self::getMappedModelKeys($model);
     
-    if($vals[0] === -1 || $vals[0] === null){
+    if ($vals[0] === -1 || $vals[0] === null) {
       array_splice($vals, 0, 1);
       array_splice($keys, 0, 1);
     }
@@ -463,6 +465,31 @@ abstract class AbstractModelFactory {
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
   
+  /**
+   * @param $options array options of query (filters and joins)
+   * @param $column string single column key which should be retrieved
+   * @return array of the column entries returned from this query
+   */
+  public function columnFilter(array $options, string $column): array {
+    $query = "SELECT " . Util::createPrefixedString($this->getMappedModelTable(), [self::getMappedModelKey($this->getNullObject(), $column)]);
+    $query = $query . " FROM " . $this->getMappedModelTable();
+    
+    $vals = array();
+    
+    if (array_key_exists(Factory::JOIN, $options)) {
+      $query .= $this->applyJoins($options[Factory::JOIN]);
+    }
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
+    }
+    
+    $dbh = self::getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+  }
+  
   public function sumFilter($options, $sumColumn) {
     $query = "SELECT SUM(" . self::getMappedModelKey($this->getNullObject(), $sumColumn) . ") AS sum ";
     $query = $query . " FROM " . $this->getMappedModelTable();
@@ -584,7 +611,7 @@ abstract class AbstractModelFactory {
       $query .= " " . $join->getJoinType() . " JOIN " . $joinFactory->getMappedModelTable() . " ON " . $localFactory->getMappedModelTable() . "." . $match1 . "=" . $joinFactory->getMappedModelTable() . "." . $match2 . " ";
       $joinQueryFilters = $join->getQueryFilters();
       if (count($joinQueryFilters) > 0) {
-        $query .= $this->applyFilters($vals, $joinQueryFilters, true) ;
+        $query .= $this->applyFilters($vals, $joinQueryFilters, true);
       }
     }
     
@@ -837,12 +864,12 @@ abstract class AbstractModelFactory {
     if (sizeof($updates) == 0) {
       return null;
     }
-    $query .= " SET ".self::getMappedModelKey($this->getNullObject(),$updateColumn)." = ( CASE ";
+    $query .= " SET " . self::getMappedModelKey($this->getNullObject(), $updateColumn) . " = ( CASE ";
     
     $vals = array();
     
     foreach ($updates as $update) {
-      $query .= $update->getMassQuery(self::getMappedModelKey($this->getNullObject(),$matchingColumn));
+      $query .= $update->getMassQuery(self::getMappedModelKey($this->getNullObject(), $matchingColumn));
       $vals[] = $update->getMatchValue();
       $vals[] = $update->getUpdateValue();
     }
@@ -860,7 +887,7 @@ abstract class AbstractModelFactory {
       $query .= " ELSE 2147483648 "; // 32 bit int max + 1
     }
     
-    $query .= "END) WHERE ".self::getMappedModelKey($this->getNullObject(), $matchingColumn)." IN (" . implode(",", $matchingArr) . ")";
+    $query .= "END) WHERE " . self::getMappedModelKey($this->getNullObject(), $matchingColumn) . " IN (" . implode(",", $matchingArr) . ")";
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     return $stmt->execute($vals);
@@ -906,29 +933,29 @@ abstract class AbstractModelFactory {
   /**
    * Returns the DB connection if possible
    * @param bool $test
-   * @return PDO
+   * @return ?PDO
+   * @throws Exception
    */
-  public function getDB(bool $test = false): ?PDO {
+  public function getDB(bool $test = false, array $testProperties = []): ?PDO {
     if (self::$dbh !== null) {
       return self::$dbh;
     }
     try {
-      $dbUser = @DBA_USER;
-      $dbPass = @DBA_PASS;
-      $dbType = @DBA_TYPE;
-      $dbHost = @DBA_SERVER;
-      $dbPort = @DBA_PORT;
-      $dbDB = @DBA_DB;
-      if ($test) { // if the connection is being tested, take credentials from legacy global variable
-        global $CONN;
-        $dbUser = $CONN['user'];
-        $dbPass = $CONN['pass'];
-        $dbType = $CONN['type'];
-        $dbHost = $CONN['server'];
-        $dbPort = $CONN['port'];
-        $dbDB = $CONN['db'];
+      $dbUser = StartupConfig::getInstance()->getDatabaseUser();
+      $dbPass = StartupConfig::getInstance()->getDatabasePassword();
+      $dbType = StartupConfig::getInstance()->getDatabaseType();
+      $dbHost = StartupConfig::getInstance()->getDatabaseServer();
+      $dbPort = StartupConfig::getInstance()->getDatabasePort();
+      $dbDB = StartupConfig::getInstance()->getDatabaseDB();
+      if ($test && sizeof($testProperties) == 6) { // if the connection is being tested, take credentials from argument properties
+        $dbUser = $testProperties['user'];
+        $dbPass = $testProperties['pass'];
+        $dbType = $testProperties['type'];
+        $dbHost = $testProperties['server'];
+        $dbPort = $testProperties['port'];
+        $dbDB = $testProperties['db'];
       }
-
+      
       if ($dbType == 'mysql') {
         // connect as mysql
         $dsn = "mysql:dbname=$dbDB;host=$dbHost;port=$dbPort;charset=utf8mb4";
@@ -946,7 +973,7 @@ abstract class AbstractModelFactory {
         }
         throw new Exception("Fatal Error: Unknown database type specified!");
       }
-
+      
       self::$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       return self::$dbh;
     }
@@ -954,8 +981,7 @@ abstract class AbstractModelFactory {
       if ($test) {
         return null;
       }
-      UI::printError(UI::ERROR, "Fatal Error! Database connection failed: " . $e->getMessage());
-      return null;
+      throw new Exception("Fatal Error! Database connection failed: " . $e->getMessage());
     }
   }
 }

@@ -55,7 +55,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\DBA\\": "ci/phpunit/dba/"
         }
     },
     "scripts": {

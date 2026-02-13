@@ -14,8 +14,8 @@ session_start();
 
 require_once(dirname(__FILE__) . "/include.php");
 
-UI::add('version', $VERSION);
-UI::add('host', $HOST);
+UI::add('version', StartupConfig::getInstance()->getVersion());
+UI::add('host', StartupConfig::getInstance()->getHost());
 UI::add('gitcommit', Util::getGitCommit());
 UI::add('build', '');
 

@@ -7,16 +7,14 @@ define("APP_NAME", "Hashtopolis");
 
 $baseDir = dirname(__FILE__) . "/..";
 
+require_once($baseDir . "/StartupConfig.class.php");
+
 require_once($baseDir . "/../../vendor/autoload.php");
-
-require_once($baseDir . "/info.php");
-
-include($baseDir . "/confv2.php");
 
 // include all .class.php files in inc dir
 $dir = scandir($baseDir);
 foreach ($dir as $entry) {
-  if (strpos($entry, ".class.php") !== false) {
+  if (str_contains($entry, ".class.php")) {
     require_once($baseDir . "/" . $entry);
   }
 }
@@ -33,15 +31,15 @@ $directories = array('handlers', 'api', 'defines', 'utils', 'notifications', 'us
 foreach ($directories as $directory) {
   $dir = scandir($baseDir . "/$directory/");
   foreach ($dir as $entry) {
-    if (strpos($entry, ".php") !== false) {
+    if (str_contains($entry, ".php")) {
       require_once($baseDir . "/$directory/" . $entry);
     }
   }
 }
 
-include($baseDir . "/protocol.php");
+require_once($baseDir . "/protocol.php");
 
-include($baseDir . "/mask.php");
+require_once($baseDir . "/mask.php");
 
 // include DBA
 require_once($baseDir . "/../dba/init.php");

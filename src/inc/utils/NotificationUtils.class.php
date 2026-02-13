@@ -16,7 +16,7 @@ class NotificationUtils {
    * @throws HttpError
    */
 
-  public static function createNotification(string $actionType, string $notification, string $receiver, array $post, User $user = null): NotificationSetting {
+  public static function createNotification(string $actionType, string $notification, string $receiver, array $post, ?User $user = null): NotificationSetting {
     if ($user == null) {
       $user = Login::getInstance()->getUser();
     };

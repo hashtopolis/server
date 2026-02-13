@@ -1,8 +1,8 @@
 <?php
 
 /**
-This file should only be called by docker-entrypoint.sh so that it's only executed on the docker startup
-**/
+ * This file should only be called by docker-entrypoint.sh so that it's only executed on the docker startup
+ **/
 
 use DBA\AccessGroupUser;
 use DBA\Factory;
@@ -19,18 +19,19 @@ session_start();
 require_once(dirname(__FILE__) . "/include.php");
 
 // create directories if not exists and ensure they are writeable
-foreach ($DIRECTORIES as $name => $path) {
+foreach (StartupConfig::getInstance()->getDirectories() as $name => $path) {
   if (!file_exists($path)) {
     if (mkdir($path) === false) {
       die("Unable to create directory '$path'!");
     }
-  } elseif (!is_writable($path)) {
+  }
+  elseif (!is_writable($path)) {
     die("Directory '$path' is not writable!");
   }
 }
 
 // check if the system is set up and installed
-if (Factory::getUserFactory()->getDB(true) === null) {
+if (Factory::getUserFactory()->getDB() === null) {
   //connection not valid
   die("Database connection failed!");
 }
@@ -45,36 +46,37 @@ catch (PDOException $e) {
 }
 
 // this only needs to be present for the very first upgrade from non-migration to migrations to make sure the last updates are executed before migration
-if (!$initialSetup && DBA_TYPE == "mysql" && !Util::databaseTableExists("_sqlx_migrations")) {
+if (!$initialSetup && StartupConfig::getInstance()->getDatabaseType() == "mysql" && !Util::databaseTableExists("_sqlx_migrations")) {
   include(dirname(__FILE__) . "/../../install/updates/update.php");
 }
 
-$database_uri = DBA_TYPE . "://" . DBA_USER . ":" . DBA_PASS . "@" . DBA_SERVER . ":" . DBA_PORT . "/" . DBA_DB;
-exec('/usr/bin/sqlx migrate run --source ' . dirname(__FILE__) . '/../../migrations/' . DBA_TYPE . '/ -D ' . $database_uri, $output, $retval);
+$database_uri = StartupConfig::getInstance()->getDatabaseType() . "://" . StartupConfig::getInstance()->getDatabaseUser() . ":" . StartupConfig::getInstance()->getDatabasePassword() . "@" . StartupConfig::getInstance()->getDatabaseServer() . ":" . StartupConfig::getInstance()->getDatabasePort() . "/" . StartupConfig::getInstance()->getDatabaseDB();
+exec('/usr/bin/sqlx migrate run --source ' . dirname(__FILE__) . '/../../migrations/' . StartupConfig::getInstance()->getDatabaseType() . '/ -D ' . $database_uri, $output, $retval);
 if ($retval !== 0) {
   die("Failed to run migrations: \n" . implode("\n", $output));
 }
 
 if ($initialSetup === true) {
   // if peppers are not set, generate them and save them
-  if (!isset($PEPPER)) {
-    $PEPPER = [
+  if (strlen(StartupConfig::getInstance()->getPepper(0)) == 0) {
+    $pepper = [
       Util::randomString(32),
       Util::randomString(32),
       Util::randomString(32),
       Util::randomString(32)
     ];
-
-    $json_config_filepath = $DIRECTORIES['config'] . "/config.json";
-    if (file_put_contents($json_config_filepath, json_encode(array('PEPPER' =>$PEPPER))) === false) {
+    
+    $json_config_filepath = StartupConfig::getInstance()->getDirectoryConfig() . "/config.json";
+    if (file_put_contents($json_config_filepath, json_encode(array('PEPPER' => $pepper))) === false) {
       die("Cannot write configuration file '$json_config_filepath'!");
     }
+    StartupConfig::reload();
   }
   
   // save version and build
-  $version = new StoredValue("version", explode("+", $VERSION)[0]);
+  $version = new StoredValue("version", explode("+", StartupConfig::getInstance()->getVersion())[0]);
   Factory::getStoredValueFactory()->save($version);
-  $build = new StoredValue("build", $BUILD);
+  $build = new StoredValue("build", StartupConfig::getInstance()->getBuild());
   Factory::getStoredValueFactory()->save($build);
   
   // create default user
@@ -94,7 +96,7 @@ if ($initialSetup === true) {
   $group = Factory::getRightGroupFactory()->filter([Factory::FILTER => $qF]);
   $group = $group[0];
   $newSalt = Util::randomString(20);
-  $CIPHER = $PEPPER[1] . $password . $newSalt;
+  $CIPHER = StartupConfig::getInstance()->getPepper(1) . $password . $newSalt;
   $options = array('cost' => 12);
   $newHash = password_hash($CIPHER, PASSWORD_BCRYPT, $options);
   
@@ -110,8 +112,8 @@ if ($initialSetup === true) {
 }
 
 // check if directories are saved in config
-Util::checkDataDirectory(DDirectories::FILES, $DIRECTORIES['files']);
-Util::checkDataDirectory(DDirectories::IMPORT, $DIRECTORIES['import']);
-Util::checkDataDirectory(DDirectories::LOG, $DIRECTORIES['log']);
-Util::checkDataDirectory(DDirectories::CONFIG, $DIRECTORIES['config']);
-Util::checkDataDirectory(DDirectories::TUS, $DIRECTORIES['tus']);
+Util::checkDataDirectory(DDirectories::FILES, StartupConfig::getInstance()->getDirectoryFiles());
+Util::checkDataDirectory(DDirectories::IMPORT, StartupConfig::getInstance()->getDirectoryImport());
+Util::checkDataDirectory(DDirectories::LOG, StartupConfig::getInstance()->getDirectoryLog());
+Util::checkDataDirectory(DDirectories::CONFIG, StartupConfig::getInstance()->getDirectoryConfig());
+Util::checkDataDirectory(DDirectories::TUS, StartupConfig::getInstance()->getDirectoryTus());

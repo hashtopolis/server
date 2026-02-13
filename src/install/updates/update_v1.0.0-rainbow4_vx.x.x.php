@@ -6,7 +6,7 @@ use DBA\HashType;
 use DBA\QueryFilter;
 
 
-if (DBA_TYPE == 'postgres' || Util::databaseTableExists("_sqlx_migrations")) {
+if (StartupConfig::getInstance()->getDatabaseType() == 'postgres' || Util::databaseTableExists("_sqlx_migrations")) {
   // this system is already using migrations, so it should NEVER do any of the updates
   return;
 }

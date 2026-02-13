@@ -105,11 +105,11 @@ class Login {
    * @param string $username username of the user to be logged in
    * @param string $password password which was entered on login form
    * @param string $otp OTP login field
-   * @return true on success and false on failure
+   * @return bool true on success and false on failure
    */
-  public function login($username, $password, $otp = NULL) {
+  public function login(string $username, string $password, $otp = NULL): bool {
     /****** Check password ******/
-    if ($this->valid == true) {
+    if ($this->valid) {
       return false;
     }
     $filter = new QueryFilter(User::USERNAME, $username, "=");
