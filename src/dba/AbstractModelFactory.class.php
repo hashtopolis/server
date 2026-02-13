@@ -487,12 +487,7 @@ abstract class AbstractModelFactory {
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
-    // put result into one array
-    $result = [];
-    while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
-      $result[] = $row[0];
-    }
-    return $result;
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
   }
   
   public function sumFilter($options, $sumColumn) {
