@@ -1,5 +1,10 @@
 <?php
 
+use Hashtopolis\inc\Util;
+
+/**
+ * @deprecated
+ */
 class UserTest extends HashtopolisTest {
   protected $minVersion = "0.7.0";
   protected $maxVersion = "master";

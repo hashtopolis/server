@@ -1,0 +1,71 @@
+<?php
+
+namespace Hashtopolis\inc\utils;
+
+use Hashtopolis\dba\models\HashType;
+use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\models\Hashlist;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\defines\DLogEntry;
+use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\Util;
+
+class HashtypeUtils {
+  /**
+   * @param int $hashtypeId
+   * @throws HTException
+   */
+  public static function deleteHashtype($hashtypeId) {
+    $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
+    if ($hashtype == null) {
+      throw new HTException("Invalid hashtype!");
+    }
+    
+    $qF = new QueryFilter(Hashlist::HASH_TYPE_ID, $hashtype->getId(), "=");
+    $hashlists = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF]);
+    if (sizeof($hashlists) > 0) {
+      throw new HTException("You cannot delete this hashtype! There are hashlists present which are of this type!");
+    }
+    
+    Factory::getHashTypeFactory()->delete($hashtype);
+  }
+  
+  /**
+   * @param int $hashtypeId
+   * @param string $description
+   * @param int $isSalted
+   * @param bool $isSlowHash
+   * @param User $user
+   * @return HashType
+   * @throws HttpError
+   */
+  public static function addHashtype(int $hashtypeId, string $description, int $isSalted, bool $isSlowHash, User $user): HashType {
+    $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
+    if ($hashtype != null) {
+      throw new HttpError("This hash number is already used!");
+    }
+    $desc = htmlentities($description, ENT_QUOTES, "UTF-8");
+    if (strlen($desc) == 0 || $hashtypeId < 0) {
+      throw new HttpError("Invalid inputs!");
+    }
+    
+    $salted = 0;
+    if ($isSalted) {
+      $salted = 1;
+    }
+    $slow = 0;
+    if ($isSlowHash) {
+      $slow = 1;
+    }
+    
+    $hashtype = new HashType($hashtypeId, $desc, $salted, $slow);
+    $hashtype = Factory::getHashTypeFactory()->save($hashtype);
+    if ($hashtype == null) {
+      throw new HttpError("Failed to add new hash type!");
+    }
+    Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashtype added: " . $hashtype->getDescription());
+    return $hashtype;
+  }
+}

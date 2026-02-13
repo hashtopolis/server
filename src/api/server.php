@@ -7,6 +7,30 @@
  * The input is sent as JSON encoded data and the response will also be in JSON
  */
 
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQuery;
+use Hashtopolis\inc\api\APICheckClientVersion;
+use Hashtopolis\inc\api\APIClientError;
+use Hashtopolis\inc\api\APIDeRegisterAgent;
+use Hashtopolis\inc\api\APIDownloadBinary;
+use Hashtopolis\inc\api\APIGetChunk;
+use Hashtopolis\inc\api\APIGetFile;
+use Hashtopolis\inc\api\APIGetFileStatus;
+use Hashtopolis\inc\api\APIGetFound;
+use Hashtopolis\inc\api\APIGetHashlist;
+use Hashtopolis\inc\api\APIGetHealthCheck;
+use Hashtopolis\inc\api\APIGetTask;
+use Hashtopolis\inc\api\APILogin;
+use Hashtopolis\inc\api\APIRegisterAgent;
+use Hashtopolis\inc\api\APISendBenchmark;
+use Hashtopolis\inc\api\APISendHealthCheck;
+use Hashtopolis\inc\api\APISendKeyspace;
+use Hashtopolis\inc\api\APISendProgress;
+use Hashtopolis\inc\api\APITestConnection;
+use Hashtopolis\inc\api\APIUpdateClientInformation;
+use Hashtopolis\inc\defines\DServerLog;
+use Hashtopolis\inc\Util;
+
 require_once(dirname(__FILE__) . "/../inc/startup/include.php");
 set_time_limit(0);
 

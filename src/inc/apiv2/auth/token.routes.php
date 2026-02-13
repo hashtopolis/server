@@ -2,14 +2,16 @@
 
 use Firebase\JWT\JWT;
 
+use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\StartupConfig;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Slim\Routing\RouteCollectorProxy;
 
-use DBA\QueryFilter;
-use DBA\User;
-use DBA\Factory;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\Factory;
 use Firebase\JWT\JWK;
 
 require_once(dirname(__FILE__) . "/../../startup/include.php");

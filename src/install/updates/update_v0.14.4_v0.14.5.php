@@ -1,9 +1,8 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
-use DBA\Config;
-use DBA\Factory;
-use DBA\HashType;
-use DBA\QueryFilter;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\HashType;
+use Hashtopolis\inc\Util;
 
 
 if (!isset($PRESENT["v0.14.4_update_agent_binary"])) {

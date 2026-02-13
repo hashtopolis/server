@@ -1,13 +1,17 @@
 <?php
 
-use DHashlistFormat as GlobalDHashlistFormat;
+use Hashtopolis\inc\defines\DAgentIgnoreErrors;
+use Hashtopolis\inc\defines\DHashlistFormat;
+use Hashtopolis\inc\defines\DTaskTypes;
+use Hashtopolis\inc\defines\UQueryHashlist;
 
 $CONF = array();
 
-require_once(dirname(__FILE__) . "/../../inc/defines/agents.php");
-require_once(dirname(__FILE__) . "/../../inc/defines/hashlists.php");
-require_once(dirname(__FILE__) . "/../../inc/defines/userApi.php");
-require_once(dirname(__FILE__) . "/../../inc/defines/tasks.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DAgentIgnoreErrors.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DHashlistFormat.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DTaskTypes.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/UQuery.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/UQueryHashlist.php");
 
 //
 // Field choice declarations
@@ -93,10 +97,10 @@ $CONF['AgentError'] = [
 $CONF['AgentStat'] = [
   'columns' => [
     ['name' => 'agentStatId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'protected' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
-    ['name' => 'statType', 'read_only' => True, 'protected' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'time', 'read_only' => True, 'protected' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'value', 'read_only' => True, 'protected' => True, 'type' => 'array', 'subtype' => 'int', 'protected' => True],
+    ['name' => 'agentId', 'read_only' => True, 'protected' => True, 'type' => 'int',  'relation' => 'Agent'],
+    ['name' => 'statType', 'read_only' => True, 'protected' => True, 'type' => 'int'],
+    ['name' => 'time', 'read_only' => True, 'protected' => True, 'type' => 'int64'],
+    ['name' => 'value', 'read_only' => True, 'protected' => True, 'type' => 'array', 'subtype' => 'int'],
   ],
 ];
 $CONF['AgentZap'] = [
@@ -591,7 +595,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $class = str_replace("__MODEL_VARIABLE_NAMES__", implode("\n  ", $variables), $class);
   $class = str_replace("__MODEL_PERMISSION_DEFINES__", implode("\n  ", $crud_defines), $class);
   
-  file_put_contents(dirname(__FILE__) . "/" . $NAME . ".class.php", $class);
+  file_put_contents(dirname(__FILE__) . "/" . $NAME . ".php", $class);
   
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModelFactory.template.txt");
   $class = str_replace("__MODEL_NAME__", $NAME, $class);
@@ -622,21 +626,24 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
     $class = str_replace("__MODEL_MAPPING_DICT__", "", $class);
   }
   
-  file_put_contents(dirname(__FILE__) . "/" . $NAME . "Factory.class.php", $class);
+  file_put_contents(dirname(__FILE__) . "/" . $NAME . "Factory.php", $class);
 }
 
 $class = file_get_contents(dirname(__FILE__) . "/Factory.template.txt");
 $static = array();
 $functions = array();
+$include_models = [];
 foreach ($CONF as $NAME => $COLUMNS) {
+  $include_models[] = "use Hashtopolis\\dba\\models\\{$NAME}Factory;";
   $lowerName = strtolower($NAME[0]) . substr($NAME, 1);
-  $static[] = "private static \$" . $lowerName . "Factory = null;";
-  $functions[] = "public static function get" . $NAME . "Factory() {\n    if (self::\$" . $lowerName . "Factory == null) {\n      \$f = new " . $NAME . "Factory();\n      self::\$" . $lowerName . "Factory = \$f;\n      return \$f;\n    } else {\n      return self::\$" . $lowerName . "Factory;\n    }\n  }";
+  $static[] = "private static ?" . $NAME . "Factory \$" . $lowerName . "Factory = null;";
+  $functions[] = "public static function get" . $NAME . "Factory(): " . $NAME . "Factory {\n    if (self::\$" . $lowerName . "Factory == null) {\n      \$f = new " . $NAME . "Factory();\n      self::\$" . $lowerName . "Factory = \$f;\n      return \$f;\n    } else {\n      return self::\$" . $lowerName . "Factory;\n    }\n  }";
 }
+$class = str_replace("__MODEL_INCLUDE__", implode("\n", $include_models), $class);
 $class = str_replace("__MODEL_STATIC__", implode("\n  ", $static), $class);
 $class = str_replace("__MODEL_FUNCTIONS__", implode("\n  \n  ", $functions), $class);
 
-file_put_contents(dirname(__FILE__) . "/../Factory.class.php", $class);
+file_put_contents(dirname(__FILE__) . "/../Factory.php", $class);
 
 
 function makeConstant($name) {

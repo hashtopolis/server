@@ -1,19 +1,23 @@
 <?php
 
-use DBA\LikeFilterInsensitive;
-use DBA\StoredValue;
-use DBA\Factory;
+use Hashtopolis\dba\LikeFilterInsensitive;
+use Hashtopolis\dba\models\StoredValue;
+use Hashtopolis\dba\Factory;
 use Composer\Semver\Comparator;
+use Hashtopolis\inc\StartupConfig;
+use Hashtopolis\inc\Util;
 
-/*
+/**
+ * @deprecated this method will be discarded in the future
+ *
  * This script should automatically determine the current base function and go through
  * the newer update scripts and run all actions which need to be executed.
  */
 
 if (!isset($TEST)) {
-  require_once(dirname(__FILE__) . "/../../inc/StartupConfig.class.php");
+  require_once(dirname(__FILE__) . "/../../inc/StartupConfig.php");
   require_once(dirname(__FILE__) . "/../../dba/init.php");
-  require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
+  require_once(dirname(__FILE__) . "/../../inc/Util.php");
 }
 
 $qF = new LikeFilterInsensitive(StoredValue::STORED_VALUE_ID, "update_%");
@@ -43,7 +47,7 @@ if ($storedBuild == null) {
 }
 if ($upgradePossible) { // we can actually check if there are upgrades to be applied
   $allFiles = scandir(dirname(__FILE__));
-  usort($allFiles, array("Util", "updateVersionComparison"));
+  usort($allFiles, array("Hashtopolis\inc\Util", "updateVersionComparison"));
   $allFiles = array_reverse($allFiles);
   foreach ($allFiles as $file) {
     if (Util::startsWith($file, "update_v")) {

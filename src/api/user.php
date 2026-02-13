@@ -7,6 +7,25 @@
  * The input is sent as JSON encoded data and the response will also be in JSON
  */
 
+use Hashtopolis\inc\defines\DServerLog;
+use Hashtopolis\inc\defines\UQuery;
+use Hashtopolis\inc\defines\USection;
+use Hashtopolis\inc\user_api\UserAPIAccess;
+use Hashtopolis\inc\user_api\UserAPIAccount;
+use Hashtopolis\inc\user_api\UserAPIAgent;
+use Hashtopolis\inc\user_api\UserAPIConfig;
+use Hashtopolis\inc\user_api\UserAPICracker;
+use Hashtopolis\inc\user_api\UserAPIFile;
+use Hashtopolis\inc\user_api\UserAPIGroup;
+use Hashtopolis\inc\user_api\UserAPIHashlist;
+use Hashtopolis\inc\user_api\UserAPIPretask;
+use Hashtopolis\inc\user_api\UserAPISuperhashlist;
+use Hashtopolis\inc\user_api\UserAPISupertask;
+use Hashtopolis\inc\user_api\UserAPITask;
+use Hashtopolis\inc\user_api\UserAPITest;
+use Hashtopolis\inc\user_api\UserAPIUser;
+use Hashtopolis\inc\Util;
+
 require_once(dirname(__FILE__) . "/../inc/startup/include.php");
 set_time_limit(0);
 
