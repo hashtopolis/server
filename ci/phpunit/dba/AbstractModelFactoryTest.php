@@ -7,6 +7,7 @@ use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\OrderFilter;
 use Exception;
 use Hashtopolis\inc\defines\DHashlistFormat;
+use Hashtopolis\inc\utils\AccessUtils;
 use PHPUnit\Framework\TestCase;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
@@ -47,9 +48,9 @@ final class AbstractModelFactoryTest extends TestCase {
    */
   public function testColumnFilter(): void {
     // add some data
-    $hashlist_1 = new Hashlist(null, "hashlist 1", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 0, \Hashtopolis\inc\utils\AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0);
-    $hashlist_2 = new Hashlist(null, "hashlist 2", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 1, \Hashtopolis\inc\utils\AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0);
-    $hashlist_3 = new Hashlist(null, "hashlist 3", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 0, \Hashtopolis\inc\utils\AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0);
+    $hashlist_1 = new Hashlist(null, "hashlist 1", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 0, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0);
+    $hashlist_2 = new Hashlist(null, "hashlist 2", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 1, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0);
+    $hashlist_3 = new Hashlist(null, "hashlist 3", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 0, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0);
     $hashlist_1 = Factory::getHashlistFactory()->save($hashlist_1);
     $hashlist_2 = Factory::getHashlistFactory()->save($hashlist_2);
     $hashlist_3 = Factory::getHashlistFactory()->save($hashlist_3);
