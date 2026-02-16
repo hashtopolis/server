@@ -52,7 +52,7 @@ class SessionFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Session|Session[]
    */
-  function filter(array $options, bool $single = false): Session|array {
+  function filter(array $options, bool $single = false): Session|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

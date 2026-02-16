@@ -52,7 +52,7 @@ class HashFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Hash|Hash[]
    */
-  function filter(array $options, bool $single = false): Hash|array {
+  function filter(array $options, bool $single = false): Hash|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

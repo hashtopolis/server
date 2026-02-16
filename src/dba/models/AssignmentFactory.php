@@ -52,7 +52,7 @@ class AssignmentFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Assignment|Assignment[]
    */
-  function filter(array $options, bool $single = false): Assignment|array {
+  function filter(array $options, bool $single = false): Assignment|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

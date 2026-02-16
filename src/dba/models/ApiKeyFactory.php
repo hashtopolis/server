@@ -52,7 +52,7 @@ class ApiKeyFactory extends AbstractModelFactory {
    * @param bool $single
    * @return ApiKey|ApiKey[]
    */
-  function filter(array $options, bool $single = false): ApiKey|array {
+  function filter(array $options, bool $single = false): ApiKey|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

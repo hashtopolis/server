@@ -52,7 +52,7 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
    * @param bool $single
    * @return TaskDebugOutput|TaskDebugOutput[]
    */
-  function filter(array $options, bool $single = false): TaskDebugOutput|array {
+  function filter(array $options, bool $single = false): TaskDebugOutput|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

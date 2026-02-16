@@ -52,7 +52,7 @@ class TaskWrapperFactory extends AbstractModelFactory {
    * @param bool $single
    * @return TaskWrapper|TaskWrapper[]
    */
-  function filter(array $options, bool $single = false): TaskWrapper|array {
+  function filter(array $options, bool $single = false): TaskWrapper|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

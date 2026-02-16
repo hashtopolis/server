@@ -52,7 +52,7 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
    * @param bool $single
    * @return SupertaskPretask|SupertaskPretask[]
    */
-  function filter(array $options, bool $single = false): SupertaskPretask|array {
+  function filter(array $options, bool $single = false): SupertaskPretask|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

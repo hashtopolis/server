@@ -52,7 +52,7 @@ class UserFactory extends AbstractModelFactory {
    * @param bool $single
    * @return User|User[]
    */
-  function filter(array $options, bool $single = false): User|array {
+  function filter(array $options, bool $single = false): User|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

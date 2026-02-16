@@ -52,7 +52,7 @@ class AgentZapFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AgentZap|AgentZap[]
    */
-  function filter(array $options, bool $single = false): AgentZap|array {
+  function filter(array $options, bool $single = false): AgentZap|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

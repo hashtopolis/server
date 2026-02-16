@@ -52,7 +52,7 @@ class RegVoucherFactory extends AbstractModelFactory {
    * @param bool $single
    * @return RegVoucher|RegVoucher[]
    */
-  function filter(array $options, bool $single = false): RegVoucher|array {
+  function filter(array $options, bool $single = false): RegVoucher|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

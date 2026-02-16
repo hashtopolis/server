@@ -52,7 +52,7 @@ class RightGroupFactory extends AbstractModelFactory {
    * @param bool $single
    * @return RightGroup|RightGroup[]
    */
-  function filter(array $options, bool $single = false): RightGroup|array {
+  function filter(array $options, bool $single = false): RightGroup|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

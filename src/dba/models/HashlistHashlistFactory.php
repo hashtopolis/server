@@ -52,7 +52,7 @@ class HashlistHashlistFactory extends AbstractModelFactory {
    * @param bool $single
    * @return HashlistHashlist|HashlistHashlist[]
    */
-  function filter(array $options, bool $single = false): HashlistHashlist|array {
+  function filter(array $options, bool $single = false): HashlistHashlist|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

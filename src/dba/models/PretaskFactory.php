@@ -52,7 +52,7 @@ class PretaskFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Pretask|Pretask[]
    */
-  function filter(array $options, bool $single = false): Pretask|array {
+  function filter(array $options, bool $single = false): Pretask|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

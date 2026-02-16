@@ -52,7 +52,7 @@ class ConfigSectionFactory extends AbstractModelFactory {
    * @param bool $single
    * @return ConfigSection|ConfigSection[]
    */
-  function filter(array $options, bool $single = false): ConfigSection|array {
+  function filter(array $options, bool $single = false): ConfigSection|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

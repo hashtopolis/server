@@ -52,7 +52,7 @@ class FileFactory extends AbstractModelFactory {
    * @param bool $single
    * @return File|File[]
    */
-  function filter(array $options, bool $single = false): File|array {
+  function filter(array $options, bool $single = false): File|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

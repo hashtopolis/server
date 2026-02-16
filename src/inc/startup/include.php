@@ -16,7 +16,7 @@ define("MASK_API_KEYS", true);
 
 $baseDir = dirname(__FILE__) . "/..";
 
-require_once($baseDir . "/StartupConfig.class.php");
+require_once($baseDir . "/StartupConfig.php");
 
 require_once($baseDir . "/../../vendor/autoload.php");
 

@@ -52,7 +52,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
    * @param bool $single
    * @return NotificationSetting|NotificationSetting[]
    */
-  function filter(array $options, bool $single = false): NotificationSetting|array {
+  function filter(array $options, bool $single = false): NotificationSetting|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

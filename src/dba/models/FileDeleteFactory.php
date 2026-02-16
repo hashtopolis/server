@@ -52,7 +52,7 @@ class FileDeleteFactory extends AbstractModelFactory {
    * @param bool $single
    * @return FileDelete|FileDelete[]
    */
-  function filter(array $options, bool $single = false): FileDelete|array {
+  function filter(array $options, bool $single = false): FileDelete|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

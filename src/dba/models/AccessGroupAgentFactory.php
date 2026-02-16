@@ -52,7 +52,7 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AccessGroupAgent|AccessGroupAgent[]
    */
-  function filter(array $options, bool $single = false): AccessGroupAgent|array {
+  function filter(array $options, bool $single = false): AccessGroupAgent|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

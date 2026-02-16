@@ -52,7 +52,7 @@ class AgentBinaryFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AgentBinary|AgentBinary[]
    */
-  function filter(array $options, bool $single = false): AgentBinary|array {
+  function filter(array $options, bool $single = false): AgentBinary|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

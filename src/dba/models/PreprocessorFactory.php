@@ -52,7 +52,7 @@ class PreprocessorFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Preprocessor|Preprocessor[]
    */
-  function filter(array $options, bool $single = false): Preprocessor|array {
+  function filter(array $options, bool $single = false): Preprocessor|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

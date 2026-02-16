@@ -52,7 +52,7 @@ class AgentErrorFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AgentError|AgentError[]
    */
-  function filter(array $options, bool $single = false): AgentError|array {
+  function filter(array $options, bool $single = false): AgentError|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

@@ -52,7 +52,7 @@ class ZapFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Zap|Zap[]
    */
-  function filter(array $options, bool $single = false): Zap|array {
+  function filter(array $options, bool $single = false): Zap|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

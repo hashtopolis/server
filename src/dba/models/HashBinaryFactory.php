@@ -52,7 +52,7 @@ class HashBinaryFactory extends AbstractModelFactory {
    * @param bool $single
    * @return HashBinary|HashBinary[]
    */
-  function filter(array $options, bool $single = false): HashBinary|array {
+  function filter(array $options, bool $single = false): HashBinary|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

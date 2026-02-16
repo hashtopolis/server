@@ -52,7 +52,7 @@ class ChunkFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Chunk|Chunk[]
    */
-  function filter(array $options, bool $single = false): Chunk|array {
+  function filter(array $options, bool $single = false): Chunk|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

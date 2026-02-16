@@ -53,7 +53,7 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
    * @param bool $single
    * @return HealthCheckAgent|HealthCheckAgent[]
    */
-  function filter(array $options, bool $single = false): HealthCheckAgent|array {
+  function filter(array $options, bool $single = false): HealthCheckAgent|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

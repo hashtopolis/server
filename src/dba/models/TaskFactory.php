@@ -52,7 +52,7 @@ class TaskFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Task|Task[]
    */
-  function filter(array $options, bool $single = false): Task|array {
+  function filter(array $options, bool $single = false): Task|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

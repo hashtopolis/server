@@ -52,7 +52,7 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
    * @param bool $single
    * @return CrackerBinaryType|CrackerBinaryType[]
    */
-  function filter(array $options, bool $single = false): CrackerBinaryType|array {
+  function filter(array $options, bool $single = false): CrackerBinaryType|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

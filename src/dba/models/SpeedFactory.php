@@ -52,7 +52,7 @@ class SpeedFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Speed|Speed[]
    */
-  function filter(array $options, bool $single = false): Speed|array {
+  function filter(array $options, bool $single = false): Speed|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

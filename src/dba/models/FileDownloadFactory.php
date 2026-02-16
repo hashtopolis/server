@@ -52,7 +52,7 @@ class FileDownloadFactory extends AbstractModelFactory {
    * @param bool $single
    * @return FileDownload|FileDownload[]
    */
-  function filter(array $options, bool $single = false): FileDownload|array {
+  function filter(array $options, bool $single = false): FileDownload|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

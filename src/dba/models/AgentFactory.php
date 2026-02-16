@@ -52,7 +52,7 @@ class AgentFactory extends AbstractModelFactory {
    * @param bool $single
    * @return Agent|Agent[]
    */
-  function filter(array $options, bool $single = false): Agent|array {
+  function filter(array $options, bool $single = false): Agent|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

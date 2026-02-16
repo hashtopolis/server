@@ -52,7 +52,7 @@ class HashTypeFactory extends AbstractModelFactory {
    * @param bool $single
    * @return HashType|HashType[]
    */
-  function filter(array $options, bool $single = false): HashType|array {
+  function filter(array $options, bool $single = false): HashType|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

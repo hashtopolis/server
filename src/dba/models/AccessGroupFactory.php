@@ -52,7 +52,7 @@ class AccessGroupFactory extends AbstractModelFactory {
    * @param bool $single
    * @return AccessGroup|AccessGroup[]
    */
-  function filter(array $options, bool $single = false): AccessGroup|array {
+  function filter(array $options, bool $single = false): AccessGroup|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

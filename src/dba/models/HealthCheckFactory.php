@@ -52,7 +52,7 @@ class HealthCheckFactory extends AbstractModelFactory {
    * @param bool $single
    * @return HealthCheck|HealthCheck[]
    */
-  function filter(array $options, bool $single = false): HealthCheck|array {
+  function filter(array $options, bool $single = false): HealthCheck|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
