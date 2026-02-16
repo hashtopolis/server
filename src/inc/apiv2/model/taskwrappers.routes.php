@@ -132,7 +132,7 @@ class TaskWrapperAPI extends AbstractModelAPI {
       if (isset($filters[Factory::ORDER])) {
         foreach ($filters[Factory::ORDER] as &$orderfilter) {
           if ($orderfilter->getBy() == Task::TASK_NAME) {
-            $concatColumns = [new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory()), new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory())];
+            $concatColumns = [new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory()), new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory())];
             $newOrderFilter = new ConcatOrderFilter($concatColumns, $orderfilter->getType());
             $orderfilter = $newOrderFilter;
           }
