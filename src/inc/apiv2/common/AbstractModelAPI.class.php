@@ -530,25 +530,25 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
   protected static function getMinMaxCursor($apiClass, string $sort, array $filters, $request, $aliasedfeatures) {
     $filters[Factory::LIMIT] = new LimitFilter(1);
-    $primaryKey = $apiClass->getPrimaryKey();
     // Descending queries are used to retrieve the last element. For this all sorts have to be reversed, since
-    // if all order quereis are reversed and limit to 1, you will retrieve the last element.
+    // if all order queries are reversed and limit to 1, you will retrieve the last element.
     $reverseSort = ($sort == "DESC") ? true : false;
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $sort, $reverseSort);
     $orderFilters = [];
-    $joinFilters = [];
+    // TODO this logic is now done twice, once for the max and once for the min, this should be moved outside this function
+    // and given as an argument
     foreach ($orderTemplates as $orderTemplate) {
       $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type'], $orderTemplate['factory']);
       if ($orderTemplate['factory'] !== null){
         // if factory of ordertemplate is not null, sort is happening on joined table
         $otherFactory = $orderTemplate['factory'];
-        $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $apiClass->getPrimaryKeyOther($otherFactory->getNullObject()::class));
+        if (!$apiClass::checkJoinExists($filters[Factory::JOIN], $otherFactory->getModelName())) {
+          $filters[Factory::JOIN][] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $apiClass->getPrimaryKeyOther($otherFactory->getNullObject()::class));
+        }
       }
     }
     $filters[Factory::ORDER] = $orderFilters;
-    if (!empty($joinFilters)) {
-      $filters[Factory::JOIN] = $joinFilters;
-    }
+    $filters = $apiClass->parseFilters($filters);
     $factory = $apiClass->getFactory();
     $result = $factory->filter($filters);
     //handle joined queries
@@ -611,7 +611,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $qFs_Filter = array_merge($aFs_ACL[Factory::FILTER], $qFs_Filter);
       }
       if (isset($aFs_ACL[Factory::JOIN])) {
-        $aFs[Factory::JOIN] = $aFs_ACL[Factory::JOIN];
+        foreach($aFs_ACL[Factory::JOIN] as $filter) {
+          if(!$apiClass::checkJoinExists($joinFilters, $filter->getOtherFactory()->getModelName())) {
+            $joinFilters[] = $filter;
+          }
+        }
       }
     }
     
@@ -630,10 +634,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $reverseArray = false;
 
     $aFs[Factory::JOIN] = $joinFilters;
-    $aFs = $apiClass->parseFilters($aFs);
-    foreach($aFs[Factory::JOIN] as $a) {
-      error_log($a->getOtherTableName());
-    }
     $firstCursorObject = $apiClass->getMinMaxCursor($apiClass, "ASC", $aFs, $request, $aliasedfeatures);
     $lastCursorObject = $apiClass->getMinMaxCursor($apiClass, "DESC", $aFs, $request, $aliasedfeatures);
 
@@ -692,6 +692,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
+    $finalFs = $apiClass->parseFilters($finalFs);
 
     //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
     //But this probably needs to be added in getFeatures() then.

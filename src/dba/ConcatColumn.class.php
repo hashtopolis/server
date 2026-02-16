@@ -2,7 +2,7 @@
 
 namespace DBA;
 
-class CoalesceColumn {
+class ConcatColumn {
   private $value;
   /**
    * @var AbstractModelFactory

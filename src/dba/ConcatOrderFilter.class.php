@@ -2,10 +2,10 @@
 
 namespace DBA;
 
-class CoalesceOrderFilter extends Order {
+class ConcatOrderFilter extends Order {
   // The columns to do the COALESCE function on
   /**
-   * @var CoalesceColumn[] $columns
+   * @var ConcatColumn[] $columns
    */
   private $columns;
   private $type;
@@ -20,6 +20,6 @@ class CoalesceOrderFilter extends Order {
     foreach($this->columns as $column) {
       array_push($mapped_columns, AbstractModelFactory::getMappedModelKey($column->getFactory()->getNullObject(), $column->getValue()));
     }
-    return "COALESCE(" . implode(", ", $mapped_columns) . ") " . $this->type;
+    return "CONCAT(" . implode(", ", $mapped_columns) . ") " . $this->type;
   }
 }

@@ -2,7 +2,7 @@
 
 namespace DBA;
 
-class CoalesceLikeFilterInsensitive extends Filter {
+class ConcatLikeFilterInsensitive extends Filter {
   private $value;
   /**
    * @var AbstractModelFactory
@@ -10,7 +10,7 @@ class CoalesceLikeFilterInsensitive extends Filter {
   private $overrideFactory;
 
   /**
-   * @var CoalesceColumn[] $columns
+   * @var ConcatColumn[] $columns
    */
   private array $columns;
   
@@ -29,7 +29,7 @@ class CoalesceLikeFilterInsensitive extends Filter {
       $columnFactory = $column->getFactory();
       array_push($mapped_columns, $columnFactory->getMappedModelTable() . "." . AbstractModelFactory::getMappedModelKey($columnFactory->getNullObject(), $column->getValue()));
     }
-    return "LOWER(" . "COALESCE(" . implode(", ", $mapped_columns) . ")" . ") LIKE LOWER(?)";
+    return "LOWER(" . "CONCAT(" . implode(", ", $mapped_columns) . ")" . ") LIKE LOWER(?)";
   }
   
   function getValue() {

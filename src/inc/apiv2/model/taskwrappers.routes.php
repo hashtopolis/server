@@ -1,9 +1,9 @@
 <?php
 
 use DBA\AccessGroup;
-use DBA\CoalesceColumn;
-use DBA\CoalesceLikeFilterInsensitive;
-use DBA\CoalesceOrderFilter;
+use DBA\ConcatColumn;
+use DBA\ConcatLikeFilterInsensitive;
+use DBA\ConcatOrderFilter;
 use DBA\ContainFilter;
 use DBA\Factory;
 use DBA\Hashlist;
@@ -132,8 +132,8 @@ class TaskWrapperAPI extends AbstractModelAPI {
       if (isset($filters[Factory::ORDER])) {
         foreach ($filters[Factory::ORDER] as &$orderfilter) {
           if ($orderfilter->getBy() == Task::TASK_NAME) {
-            $coalesceColumns = [new CoalesceColumn(Task::TASK_NAME, Factory::getTaskFactory()), new CoalesceColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory())];
-            $newOrderFilter = new CoalesceOrderFilter($coalesceColumns, $orderfilter->getType());
+            $concatColumns = [new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory()), new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory())];
+            $newOrderFilter = new ConcatOrderFilter($concatColumns, $orderfilter->getType());
             $orderfilter = $newOrderFilter;
           }
         }
@@ -143,8 +143,9 @@ class TaskWrapperAPI extends AbstractModelAPI {
       if (isset($filters[Factory::FILTER])) {
         foreach($filters[Factory::FILTER] as &$filter) {
           if ($filter instanceof LikeFilterInsensitive && $filter->getKey() == Task::TASK_NAME) {
-            $coalesceColumns = [new CoalesceColumn(Task::TASK_NAME, Factory::getTaskFactory()), new CoalesceColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory())];
-            $newFilter = new CoalesceLikeFilterInsensitive($coalesceColumns, $filter->getValue());
+            $concatColumns = [new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory()), new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory())];
+            // $coalesceColumns = [new CoalesceColumn(Task::TASK_NAME, Factory::getTaskFactory()), new CoalesceColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory())];
+            $newFilter = new ConcatLikeFilterInsensitive($concatColumns, $filter->getValue());
             $filter = $newFilter;
           }
         }
