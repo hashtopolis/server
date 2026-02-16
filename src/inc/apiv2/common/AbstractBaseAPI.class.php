@@ -1049,7 +1049,7 @@ abstract class AbstractBaseAPI {
     return $this->getQueryParameterFamily($request, 'filter');
   }
 
-  protected static function checkJoinExists(array $joins, $modelName) {
+  protected static function checkJoinExists(array $joins, string $modelName) {
     foreach($joins as $join) {
       if ($join->getOtherFactory()->getModelName() === $modelName) {
         return true;
@@ -1064,7 +1064,6 @@ abstract class AbstractBaseAPI {
    * @throws InternalError
    */
   protected function makeFilter(array $filters, object $apiClass, array &$joinFilters = []): array {
-  // protected function makeFilter(array $filters, object $apiClass, array &$joinFilters): array {
     $qFs = [];
     $features = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
@@ -1209,7 +1208,7 @@ abstract class AbstractBaseAPI {
         throw new HttpError("Invalid relation: " . $relationString);
       }
     } else {
-      throw new HttpError("Invalid key, multiple '.' found in key, but only relationships of one deep is allowed");
+      throw new HttpForbidden("Invalid key, multiple '.' found in key, but only relationships of one deep is allowed");
     }
   }
   
@@ -1232,6 +1231,7 @@ abstract class AbstractBaseAPI {
         if ($cast_key == $this->getPrimaryKey()) {
           $contains_primary_key = true;
         }
+        $factory = $joinKey = $key = null;
         if (strpos($cast_key, ".")) {
           $relationObject = $this->retrieveRelationKey($cast_key);
           $factory = $relationObject->factory;
@@ -1246,7 +1246,7 @@ abstract class AbstractBaseAPI {
           if ($reverseSort) {
             $type = ($type == "ASC") ? "DESC" : "ASC";
           }
-          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type, 'factory' => $factory ?? null, 'joinKey' => $joinKey ?? null, 'key' => $key ?? null];
+          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type, 'factory' => $factory, 'joinKey' => $joinKey, 'key' => $key];
         }
         else {
           throw new HttpForbidden("Ordering parameter '" . $order . "' is not valid");

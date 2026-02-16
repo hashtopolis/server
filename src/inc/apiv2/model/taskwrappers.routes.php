@@ -144,7 +144,6 @@ class TaskWrapperAPI extends AbstractModelAPI {
         foreach($filters[Factory::FILTER] as &$filter) {
           if ($filter instanceof LikeFilterInsensitive && $filter->getKey() == Task::TASK_NAME) {
             $concatColumns = [new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory()), new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory())];
-            // $coalesceColumns = [new CoalesceColumn(Task::TASK_NAME, Factory::getTaskFactory()), new CoalesceColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory())];
             $newFilter = new ConcatLikeFilterInsensitive($concatColumns, $filter->getValue());
             $filter = $newFilter;
           }
