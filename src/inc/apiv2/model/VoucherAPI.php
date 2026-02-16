@@ -6,7 +6,7 @@ use Hashtopolis\inc\utils\AgentUtils;
 
 use Hashtopolis\dba\models\RegVoucher;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpConflict;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\HTException;
 
 

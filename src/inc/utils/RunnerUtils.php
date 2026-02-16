@@ -1,6 +1,7 @@
 <?php
 
 namespace Hashtopolis\inc\utils;
+
 use Hashtopolis\inc\HTException;
 
 /**

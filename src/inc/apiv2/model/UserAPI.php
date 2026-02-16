@@ -11,8 +11,8 @@ use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\RightGroup;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpConflict;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\UserUtils;
 

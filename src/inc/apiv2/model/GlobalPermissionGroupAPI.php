@@ -7,10 +7,10 @@ use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\models\RightGroup;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpConflict;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
-use Hashtopolis\inc\apiv2\common\error\HttpForbidden;
-use Hashtopolis\inc\apiv2\common\error\ResourceNotFoundError;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
+use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
 
 

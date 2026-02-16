@@ -2,11 +2,11 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
-use DHashlistFormat;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\HTException;
 use JsonException;
 use Psr\Container\ContainerExceptionInterface;
@@ -119,6 +119,6 @@ class GetCracksOfTaskHelper extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "getCracksOfTaskHelper:handleGet");
+    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\GetCracksOfTaskHelper:handleGet");
   }
 }

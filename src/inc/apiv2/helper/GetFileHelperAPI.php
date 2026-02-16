@@ -2,9 +2,9 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
-use DDirectories;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
+use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\HTException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -108,6 +108,6 @@ class GetFileHelperAPI extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "getFileHelperAPI:handleGet");
+    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\GetFileHelperAPI:handleGet");
   }
 }

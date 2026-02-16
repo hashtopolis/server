@@ -101,6 +101,6 @@ class GetAgentBinaryHelperAPI extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "getAgentBinaryHelperAPI:handleGet");
+    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\GetAgentBinaryHelperAPI:handleGet");
   }
 }

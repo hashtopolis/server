@@ -2,13 +2,12 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
-use DNotificationObjectType;
-use DNotificationType;
-
 use Hashtopolis\dba\models\NotificationSetting;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\defines\DNotificationObjectType;
+use Hashtopolis\inc\defines\DNotificationType;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\NotificationUtils;
 

@@ -7,7 +7,7 @@ use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\JoinFilter;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\HTException;
 

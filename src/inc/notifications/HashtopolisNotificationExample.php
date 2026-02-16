@@ -19,5 +19,3 @@ class HashtopolisNotificationExample extends HashtopolisNotification {
   }
 }
 
-HashtopolisNotification::add('Example', new HashtopolisNotificationExample());
-

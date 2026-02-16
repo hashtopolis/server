@@ -7,7 +7,7 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\HealthCheckAgent;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\HealthCheck;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DHealthCheck;
 use Hashtopolis\inc\defines\DHealthCheckAgentStatus;

@@ -6,7 +6,7 @@ use Hashtopolis\inc\utils\ConfigUtils;
 use Hashtopolis\dba\models\Config;
 use Hashtopolis\dba\models\ConfigSection;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 
 

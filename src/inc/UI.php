@@ -7,7 +7,7 @@ use Hashtopolis\inc\templating\Template;
 class UI {
   private static $objects = [];
   
-  public static function printError($level, $message) {
+  public static function printError($level, $message): void {
     Template::loadInstance("errors/error");
     UI::add('message', $message);
     UI::add('level', $level);
@@ -27,27 +27,27 @@ class UI {
     return self::$objects[$key];
   }
   
-  public static function getObjects() {
+  public static function getObjects(): array {
     return self::$objects;
   }
   
-  public static function permissionError() {
+  public static function permissionError(): void {
     Template::loadInstance("errors/restricted");
     UI::add('pageTitle', "Restricted");
     echo Template::getInstance()->render(UI::getObjects());
     die();
   }
   
-  public static function printFatalError($message) {
+  public static function printFatalError($message): void {
     echo $message;
     die();
   }
   
-  public static function addMessage($type, $message) {
+  public static function addMessage($type, $message): void {
     self::$objects['messages'][] = new DataSet(['type' => $type, 'message' => $message]);
   }
   
-  public static function getNumMessages($type = "ALL") {
+  public static function getNumMessages($type = "ALL"): int {
     $count = 0;
     foreach (self::$objects['messages'] as $message) {
       /** @var $message DataSet */
@@ -58,7 +58,7 @@ class UI {
     return $count;
   }
   
-  public static function setForward($url, $delay) {
+  public static function setForward($url, $delay): void {
     UI::add('autorefresh', $delay);
     UI::add('autorefreshUrl', $url);
   }

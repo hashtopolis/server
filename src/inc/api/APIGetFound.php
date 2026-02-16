@@ -2,14 +2,14 @@
 
 namespace Hashtopolis\inc\api;
 
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQueryGetFound;
+use Hashtopolis\inc\agent\PResponseGetFound;
+use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Assignment;
-use PActions;
-use PQueryGetFound;
-use PResponseGetFound;
-use PValues;
 use Hashtopolis\inc\Util;
 
 class APIGetFound extends APIBasic {

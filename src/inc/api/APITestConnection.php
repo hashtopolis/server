@@ -2,9 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
-use PActions;
-use PResponse;
-use PValues;
+
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PResponse;
+use Hashtopolis\inc\agent\PValues;
 
 class APITestConnection extends APIBasic {
   public function execute($QUERY = array()) {

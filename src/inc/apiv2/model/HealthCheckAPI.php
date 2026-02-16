@@ -7,7 +7,7 @@ use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\HealthCheck;
 use Hashtopolis\dba\models\HealthCheckAgent;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\utils\HealthUtils;
 use Hashtopolis\inc\HTException;
 

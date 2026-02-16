@@ -2,16 +2,16 @@
 
 namespace Hashtopolis\inc\api;
 
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQueryGetFile;
+use Hashtopolis\inc\agent\PResponseGetFile;
+use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\FileTask;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
-use PActions;
-use PQueryGetFile;
-use PResponseGetFile;
-use PValues;
 
 class APIGetFile extends APIBasic {
   public function execute($QUERY = array()) {

@@ -6,7 +6,7 @@ use Hashtopolis\inc\utils\AgentBinaryUtils;
 
 use Hashtopolis\dba\models\AgentBinary;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 
 

@@ -15,12 +15,11 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\FilePretask;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
-use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;
 
 class SupertaskUtils {

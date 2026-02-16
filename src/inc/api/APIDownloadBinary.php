@@ -2,14 +2,14 @@
 
 namespace Hashtopolis\inc\api;
 
-use DConfig;
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQueryDownloadBinary;
+use Hashtopolis\inc\agent\PResponseBinaryDownload;
+use Hashtopolis\inc\agent\PValues;
+use Hashtopolis\inc\agent\PValuesDownloadBinaryType;
+use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\Factory;
-use PActions;
-use PQueryDownloadBinary;
-use PResponseBinaryDownload;
-use PValues;
-use PValuesDownloadBinaryType;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 

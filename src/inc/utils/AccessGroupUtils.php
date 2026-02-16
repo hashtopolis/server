@@ -2,8 +2,6 @@
 
 namespace Hashtopolis\inc\utils;
 
-use Hashtopolis\inc\utils\AccessUtils;
-use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\ContainFilter;
@@ -15,13 +13,11 @@ use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\File;
-use Hashtopolis\inc\apiv2\common\error\HttpConflict;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\inc\defines\DLimits;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\utils\TaskUtils;
-use Hashtopolis\inc\utils\UserUtils;
 use Hashtopolis\inc\Util;
 
 class AccessGroupUtils {

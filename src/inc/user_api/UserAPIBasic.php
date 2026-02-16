@@ -11,7 +11,6 @@ use Hashtopolis\inc\defines\UQueryTask;
 use Hashtopolis\inc\defines\UResponse;
 use Hashtopolis\inc\defines\UResponseErrorMessage;
 use Hashtopolis\inc\defines\UValues;
-use PValues;
 
 abstract class UserAPIBasic {
   /** @var User */
@@ -24,13 +23,13 @@ abstract class UserAPIBasic {
    */
   public abstract function execute($QUERY = array());
   
-  protected function sendResponse($RESPONSE) {
+  protected function sendResponse($RESPONSE): void {
     header("Content-Type: application/json");
     echo json_encode($RESPONSE);
     die();
   }
   
-  protected function checkForError($QUERY, $error, $response = null) {
+  protected function checkForError($QUERY, $error, $response = null): void {
     if ($error !== false) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $error);
     }
@@ -44,7 +43,7 @@ abstract class UserAPIBasic {
    * Used to send a generic success response if no additional data is sent
    * @param array $QUERY original query
    */
-  protected function sendSuccessResponse($QUERY) {
+  protected function sendSuccessResponse($QUERY): void {
     $this->sendResponse(array(
         UResponse::SECTION => $QUERY[UQuery::SECTION],
         UResponse::REQUEST => $QUERY[UQuery::REQUEST],
@@ -53,12 +52,12 @@ abstract class UserAPIBasic {
     );
   }
   
-  protected function updateApi() {
+  protected function updateApi(): void {
     $this->apiKey->setAccessCount($this->apiKey->getAccessCount() + 1);
     Factory::getApiKeyFactory()->update($this->apiKey);
   }
   
-  public function sendErrorResponse($section, $request, $msg) {
+  public function sendErrorResponse($section, $request, $msg): void {
     $ANS = array();
     $ANS[UResponseErrorMessage::SECTION] = $section;
     $ANS[UResponseErrorMessage::REQUEST] = $request;

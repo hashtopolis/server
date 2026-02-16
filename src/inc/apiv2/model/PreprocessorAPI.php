@@ -4,8 +4,8 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Hashtopolis\dba\models\Preprocessor;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpConflict;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\utils\PreprocessorUtils;
 
 

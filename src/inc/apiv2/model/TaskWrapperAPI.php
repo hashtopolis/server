@@ -2,8 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\utils\AccessUtils;
-use DTaskTypes;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\CoalesceOrderFilter;
 use Hashtopolis\dba\ContainFilter;
@@ -17,10 +17,11 @@ use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\TaskWrapperUtils;
 
 
 class TaskWrapperAPI extends AbstractModelAPI {

@@ -2,17 +2,17 @@
 
 namespace Hashtopolis\inc\api;
 
-use DAgentIgnoreErrors;
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQuerySendHealthCheck;
+use Hashtopolis\inc\agent\PResponseSendHealthCheck;
+use Hashtopolis\inc\agent\PValues;
+use Hashtopolis\inc\defines\DAgentIgnoreErrors;
 use Hashtopolis\inc\defines\DHealthCheckAgentStatus;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\HealthCheckAgent;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\utils\HealthUtils;
-use PActions;
-use PQuerySendHealthCheck;
-use PResponseSendHealthCheck;
-use PValues;
 
 class APISendHealthCheck extends APIBasic {
   public function execute($QUERY = array()) {

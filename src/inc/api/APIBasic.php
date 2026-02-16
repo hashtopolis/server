@@ -2,14 +2,14 @@
 
 namespace Hashtopolis\inc\api;
 
+use Hashtopolis\inc\agent\PResponseErrorMessage;
+use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\agent\PQuery;
-use PResponseErrorMessage;
-use PValues;
 use Hashtopolis\inc\Util;
 
 abstract class APIBasic {
@@ -28,11 +28,11 @@ abstract class APIBasic {
     die();
   }
   
-  protected function updateAgent($action) {
+  protected function updateAgent($action): void {
     Factory::getAgentFactory()->mset($this->agent, [Agent::LAST_IP => Util::getIP(), Agent::LAST_ACT => $action, Agent::LAST_TIME => time()]);
   }
   
-  public function sendErrorResponse($action, $msg) {
+  public function sendErrorResponse($action, $msg): void {
     $ANS = array();
     $ANS[PResponseErrorMessage::ACTION] = $action;
     $ANS[PResponseErrorMessage::RESPONSE] = PValues::ERROR;
@@ -42,7 +42,7 @@ abstract class APIBasic {
     die();
   }
   
-  public function checkToken($action, $QUERY) {
+  public function checkToken($action, $QUERY): void {
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQuery::TOKEN], "=");
     $agent = Factory::getAgentFactory()->filter([Factory::FILTER => array($qF)], true);
     if ($agent == null) {

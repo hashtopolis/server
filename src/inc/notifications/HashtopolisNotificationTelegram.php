@@ -56,5 +56,3 @@ class HashtopolisNotificationTelegram extends HashtopolisNotification {
   }
 }
 
-HashtopolisNotification::add('Telegram', new HashtopolisNotificationTelegram());
-

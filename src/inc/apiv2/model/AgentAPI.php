@@ -20,7 +20,7 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Hashtopolis\inc\apiv2\common\error;
+namespace Hashtopolis\inc\apiv2\error;
 
 use Crell\ApiProblem\ApiProblem;
 use Psr\Http\Message\ResponseInterface as Response;

@@ -2,18 +2,18 @@
 
 namespace Hashtopolis\inc\api;
 
-use DLogEntry;
-use DLogEntryIssuer;
-use DPrince;
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQuerySendKeyspace;
+use Hashtopolis\inc\agent\PResponseSendKeyspace;
+use Hashtopolis\inc\agent\PValues;
+use Hashtopolis\inc\defines\DLogEntry;
+use Hashtopolis\inc\defines\DLogEntryIssuer;
+use Hashtopolis\inc\defines\DPrince;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Task;
-use PActions;
-use PQuerySendKeyspace;
-use PResponseSendKeyspace;
-use PValues;
 use Hashtopolis\inc\Util;
 
 class APISendKeyspace extends APIBasic {

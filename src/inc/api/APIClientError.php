@@ -2,11 +2,15 @@
 
 namespace Hashtopolis\inc\api;
 
-use DAgentIgnoreErrors;
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQueryClientError;
+use Hashtopolis\inc\agent\PResponseError;
+use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\DataSet;
-use DConfig;
-use DNotificationType;
-use DPayloadKeys;
+use Hashtopolis\inc\defines\DAgentIgnoreErrors;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DNotificationType;
+use Hashtopolis\inc\defines\DPayloadKeys;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\AgentError;
@@ -14,10 +18,6 @@ use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\handlers\NotificationHandler;
-use PActions;
-use PQueryClientError;
-use PResponseError;
-use PValues;
 use Hashtopolis\inc\SConfig;
 
 class APIClientError extends APIBasic {

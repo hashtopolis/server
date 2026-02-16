@@ -52,5 +52,3 @@ class HashtopolisNotificationSlack extends HashtopolisNotification {
   }
 }
 
-HashtopolisNotification::add('Slack', new HashtopolisNotificationSlack());
-

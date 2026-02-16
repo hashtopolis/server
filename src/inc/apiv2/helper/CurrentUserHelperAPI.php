@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\apiv2\helper;
 
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use JsonException;
 use Psr\Container\ContainerExceptionInterface;
@@ -79,8 +79,8 @@ class CurrentUserHelperAPI extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "CurrentUserHelperAPI:handleGet");
-    $app->patch($baseUri, "CurrentUserHelperAPI:actionPatch");
+    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\CurrentUserHelperAPI:handleGet");
+    $app->patch($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\CurrentUserHelperAPI:actionPatch");
   }
   
   /**

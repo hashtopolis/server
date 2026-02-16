@@ -21,14 +21,34 @@ abstract class HashtopolisNotification {
   
   private static $instances = [];
   
-  public static function add($name, $instance) {
-    self::$instances[$name] = $instance;
+  private static function loadInstances(): void {
+    // TODO: find a better way to load these automatically, failed to do it with the classloader and scanning
+    $inst = new HashtopolisNotificationChatBot();
+    self::$instances[$inst::$name] = $inst;
+    
+    $inst = new HashtopolisNotificationDiscordWebhook();
+    self::$instances[$inst::$name] = $inst;
+    
+    $inst = new HashtopolisNotificationEmail();
+    self::$instances[$inst::$name] = $inst;
+    
+    $inst = new HashtopolisNotificationExample();
+    self::$instances[$inst::$name] = $inst;
+    
+    $inst = new HashtopolisNotificationSlack();
+    self::$instances[$inst::$name] = $inst;
+    
+    $inst = new HashtopolisNotificationTelegram();
+    self::$instances[$inst::$name] = $inst;
   }
   
   /**
    * @return HashtopolisNotification[]
    */
-  public static function getInstances() {
+  public static function getInstances(): array {
+    if (sizeof(self::$instances) == 0){
+      self::loadInstances();
+    }
     return self::$instances;
   }
   

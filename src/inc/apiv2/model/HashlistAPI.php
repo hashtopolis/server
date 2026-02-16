@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\inc\defines\UQueryHashlist;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\models\AccessGroup;
@@ -19,7 +20,6 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\HTException;
 use Middlewares\Utils\HttpErrorException;
-use UQueryHashlist;
 use Hashtopolis\inc\Util;
 
 

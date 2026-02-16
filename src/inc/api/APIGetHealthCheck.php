@@ -2,14 +2,14 @@
 
 namespace Hashtopolis\inc\api;
 
-use DConfig;
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQueryGetHealthCheck;
+use Hashtopolis\inc\agent\PResponseGetHealthCheck;
+use Hashtopolis\inc\agent\PValues;
+use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\utils\HealthUtils;
-use PActions;
-use PQueryGetHealthCheck;
-use PResponseGetHealthCheck;
-use PValues;
 use Hashtopolis\inc\SConfig;
 
 class APIGetHealthCheck extends APIBasic {

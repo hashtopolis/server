@@ -2,7 +2,7 @@
 
 namespace Hashtopolis\inc;
 
-use Auth_Yubico;
+use Hashtopolis\inc\Auth_Yubico;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Session;
 use Hashtopolis\dba\models\User;

@@ -49,7 +49,6 @@ class PretaskHandler implements Handler {
             die();
           }
           break;
-          break;
         case DPretaskAction::SET_CPU_TASK:
           AccessControl::getInstance()->checkPermission(DPretaskAction::SET_CPU_TASK_PERM);
           PretaskUtils::setCpuOnlyTask($_POST['pretaskId'], $_POST['isCpu']);

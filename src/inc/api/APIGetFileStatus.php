@@ -3,9 +3,9 @@
 namespace Hashtopolis\inc\api;
 
 use Hashtopolis\dba\Factory;
-use PActions;
-use PResponseGetFileStatus;
-use PValues;
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PResponseGetFileStatus;
+use Hashtopolis\inc\agent\PValues;
 
 class APIGetFileStatus extends APIBasic {
   public function execute($QUERY = array()) {

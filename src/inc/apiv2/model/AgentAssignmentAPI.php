@@ -4,7 +4,7 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
-use Hashtopolis\inc\utils\assignmentUtils;
+use Hashtopolis\inc\utils\AssignmentUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
@@ -17,7 +17,7 @@ use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
 
@@ -91,7 +91,7 @@ class AgentAssignmentAPI extends AbstractModelAPI {
   
   protected function getUpdateHandlers($id, $current_user): array {
     return [
-      Assignment::BENCHMARK => fn($value) => assignmentUtils::setBenchmark($id, $value, $current_user)
+      Assignment::BENCHMARK => fn($value) => AssignmentUtils::setBenchmark($id, $value, $current_user)
     ];
   }
   

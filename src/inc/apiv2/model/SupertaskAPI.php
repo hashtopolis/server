@@ -8,7 +8,7 @@ use Hashtopolis\dba\models\SupertaskPretask;
 
 
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Hashtopolis\inc\utils\SupertaskUtils;

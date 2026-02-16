@@ -5,9 +5,9 @@ namespace Hashtopolis\inc\apiv2\helper;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
-use DDirectories;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\defines\DDirectories;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -228,7 +228,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   
   /**
    * Given the offset in the 'Upload Offset' header, the user can use this PATCH endpoint in order to resume the upload.
-   * @throws \Hashtopolis\inc\apiv2\common\HttpError
+   * @throws HttpError
    */
   function processPatch(Request $request, Response $response, array $args): Response {
     // Check for Content-Type: application/offset+octet-stream or return 415

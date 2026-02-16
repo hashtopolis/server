@@ -2,12 +2,12 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
-use DConfig;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\HTException;
 use JsonException;
 use Middlewares\Utils\HttpErrorException;
@@ -107,7 +107,7 @@ class TaskExtraDetailsHelper extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "TaskExtraDetailsHelper:handleGet");
+    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\TaskExtraDetailsHelper:handleGet");
   }
   
   /**

@@ -4,7 +4,7 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Hashtopolis\dba\models\ConfigSection;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 
 
 class ConfigSectionAPI extends AbstractModelAPI {

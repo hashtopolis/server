@@ -2,13 +2,13 @@
 
 namespace Hashtopolis\inc\api;
 
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQueryUpdateInformation;
+use Hashtopolis\inc\agent\PResponse;
+use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\Factory;
-use PActions;
-use PQueryUpdateInformation;
-use PResponse;
-use PValues;
 
 class APIUpdateClientInformation extends APIBasic {
   public function execute($QUERY = array()) {
@@ -26,7 +26,7 @@ class APIUpdateClientInformation extends APIBasic {
     $cpuOnly = 1;
     foreach ($devices as $device) {
       $device = strtolower($device);
-      if ((strpos($device, "amd") !== false) || (strpos($device, "ati ") !== false) || (strpos($device, "radeon") !== false) || strpos($device, "nvidia") !== false || strpos($device, "gtx") !== false || strpos($device, "ti") !== false || strpos($device, "microsoft") != false) {
+      if (str_contains($device, "amd") || str_contains($device, "ati ") || str_contains($device, "radeon") || str_contains($device, "nvidia") || str_contains($device, "gtx") || str_contains($device, "ti") || strpos($device, "microsoft")) {
         $cpuOnly = 0;
       }
     }

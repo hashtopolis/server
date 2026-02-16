@@ -2,7 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
-use DHashlistFormat;
+use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\OrderFilter;

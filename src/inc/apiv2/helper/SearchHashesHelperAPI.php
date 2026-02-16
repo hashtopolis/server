@@ -11,7 +11,7 @@ use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\LikeFilterInsensitive;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Slim\App;

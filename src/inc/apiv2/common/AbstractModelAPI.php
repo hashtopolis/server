@@ -3,6 +3,10 @@
 namespace Hashtopolis\inc\apiv2\common;
 
 use Hashtopolis\dba\MassUpdateSet;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
+use Hashtopolis\inc\apiv2\error\InternalError;
+use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
 use JsonException;
 use PDOException;
@@ -514,10 +518,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    *
    * @param string $encoded_cursor in base64 format
    *
-   * @return string the decoded cursor in a json string format
+   * @return array the decoded cursor in a json string format
    * @throws HttpError
    */
-  protected static function decode_cursor(string $encoded_cursor): string {
+  protected static function decode_cursor(string $encoded_cursor): array {
     $json = base64_decode($encoded_cursor);
     if ($json == false) {
       throw new HttpError("Invallid pagination cursor, cursor has to be base64 encoded");

@@ -9,8 +9,8 @@ use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Pretask;
-use Hashtopolis\inc\apiv2\common\error\HttpConflict;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
 

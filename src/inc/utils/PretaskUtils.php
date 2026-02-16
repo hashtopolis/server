@@ -11,7 +11,7 @@ use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\SupertaskPretask;
 use Hashtopolis\dba\Factory;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DNotificationType;
 use Hashtopolis\inc\defines\DPayloadKeys;
@@ -19,7 +19,6 @@ use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
-use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;
 
 class PretaskUtils {

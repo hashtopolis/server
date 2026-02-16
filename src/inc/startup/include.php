@@ -21,7 +21,7 @@ require_once($baseDir . "/StartupConfig.php");
 require_once($baseDir . "/../../vendor/autoload.php");
 
 // include all .class.php files in inc dir
-$dir = scandir($baseDir);
+/*$dir = scandir($baseDir);
 foreach ($dir as $entry) {
   if (str_contains($entry, ".class.php")) {
     require_once($baseDir . "/" . $entry);
@@ -43,7 +43,7 @@ foreach ($directories as $directory) {
       require_once($baseDir . "/$directory/" . $entry);
     }
   }
-}
+}*/
 
 // legacy, but needed for email sending
 $LANG = new Lang();

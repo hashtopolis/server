@@ -2,11 +2,11 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
-use DTaskTypes;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
-use Hashtopolis\inc\apiv2\common\error\HttpForbidden;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
+use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\HTException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -82,6 +82,7 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
    * @return Response
    * @throws HTException
    * @throws HttpError
+   * @throws HttpForbidden
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
@@ -225,6 +226,6 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "GetTaskProgressImageHelperAPI:handleGet");
+    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\GetTaskProgressImageHelperAPI:handleGet");
   }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace hashtopolis\inc\apiv2\common;
+namespace Hashtopolis\inc\apiv2\common;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;

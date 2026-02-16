@@ -54,7 +54,7 @@ class LockUtils {
    * @return void
    */
   public static function deleteLockFile($taskId) {
-    $lockFile = dirname(__FILE__) . "/locks/" . LOCK::CHUNKING . $taskId;
+    $lockFile = dirname(__FILE__) . "/locks/" . Lock::CHUNKING . $taskId;
     if (file_exists($lockFile)) {
       unlink($lockFile);
     }

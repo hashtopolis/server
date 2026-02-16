@@ -2,14 +2,14 @@
 
 namespace Hashtopolis\inc\api;
 
-use DConfig;
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQueryLogin;
+use Hashtopolis\inc\agent\PResponseLogin;
+use Hashtopolis\inc\agent\PValues;
+use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\Factory;
-use PActions;
-use PQueryLogin;
-use PResponseLogin;
-use PValues;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\Util;

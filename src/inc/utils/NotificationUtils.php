@@ -5,15 +5,13 @@ namespace Hashtopolis\inc\utils;
 use Hashtopolis\dba\models\NotificationSetting;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DAccessControl;
 use Hashtopolis\inc\defines\DNotificationObjectType;
 use Hashtopolis\inc\defines\DNotificationType;
 use Hashtopolis\inc\notifications\HashtopolisNotification;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Login;
-use Hashtopolis\inc\utils\TaskUtils;
-use Hashtopolis\inc\utils\UserUtils;
 
 class NotificationUtils {
   /**

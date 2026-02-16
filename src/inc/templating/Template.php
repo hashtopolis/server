@@ -336,7 +336,6 @@ class Template {
           break;
         default:
           return false;
-          break;
       }
     }
     return true;

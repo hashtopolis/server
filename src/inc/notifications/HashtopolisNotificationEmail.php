@@ -23,5 +23,3 @@ class HashtopolisNotificationEmail extends HashtopolisNotification {
     Util::sendMail($this->receiver, $subject, $message[0], $message[1]);
   }
 }
-
-HashtopolisNotification::add('Email', new HashtopolisNotificationEmail());

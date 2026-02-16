@@ -57,5 +57,3 @@ class HashtopolisNotificationChatBot extends HashtopolisNotification {
   }
 }
 
-HashtopolisNotification::add('ChatBot', new HashtopolisNotificationChatBot());
-

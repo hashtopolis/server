@@ -43,8 +43,8 @@ RUN if [ -n "${CONTAINER_USER_CMD_PRE}" ]; then echo "${CONTAINER_USER_CMD_PRE}"
 # Configure apt and install packages
 RUN apt-get update \
     && apt-get -y install --no-install-recommends apt-utils zip unzip nano ncdu gettext-base 2>&1 \
-    #
-    # Install git, procps, lsb-release (useful for CLI installs)
+    \
+    # Install git, procps, lsb-release (useful for CLI installs) \
     && apt-get -y install git iproute2 procps lsb-release \
     && apt-get -y install mariadb-client postgresql-client libpq-dev \
     && apt-get -y install libpng-dev \
@@ -120,7 +120,7 @@ RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
 	&& echo "xdebug.client_port = 9003" >> /usr/local/etc/php/conf.d/xdebug.ini \
 	&& echo "xdebug.idekey = PHPSTORM" >> /usr/local/etc/php/conf.d/xdebug.ini \
     \
-    # Configuring PHP
+    # Configuring PHP \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
 	&& echo "display_errors = on" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \

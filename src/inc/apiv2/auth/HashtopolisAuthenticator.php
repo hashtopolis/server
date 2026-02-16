@@ -4,8 +4,9 @@
 /* Authentication middleware for token retrival */
 
 namespace Hashtopolis\inc\apiv2\auth;
-use DLogEntry;
-use DLogEntryIssuer;
+
+use Hashtopolis\inc\defines\DLogEntry;
+use Hashtopolis\inc\defines\DLogEntryIssuer;
 use Hashtopolis\inc\Encryption;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\User;

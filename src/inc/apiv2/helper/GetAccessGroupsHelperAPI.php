@@ -4,7 +4,7 @@ namespace Hashtopolis\inc\apiv2\helper;
 
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use JsonException;
 use Psr\Container\ContainerExceptionInterface;
@@ -70,7 +70,7 @@ class GetAccessGroupsHelperAPI extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "GetAccessGroupsHelperAPI:handleGet");
+    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\GetAccessGroupsHelperAPI:handleGet");
   }
   
   /**

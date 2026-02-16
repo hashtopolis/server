@@ -7,7 +7,7 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
 use Composer\Semver\Comparator;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DLogEntryIssuer;
 use Hashtopolis\inc\HTException;

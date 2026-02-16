@@ -26,7 +26,7 @@ use Hashtopolis\dba\models\Zap;
 use Hashtopolis\dba\models\AgentZap;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Speed;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\defines\DFileType;
@@ -39,7 +39,6 @@ use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
-use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\UI;
 use Hashtopolis\inc\Util;
 

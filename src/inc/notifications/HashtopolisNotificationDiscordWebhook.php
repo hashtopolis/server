@@ -57,5 +57,3 @@ class HashtopolisNotificationDiscordWebhook extends HashtopolisNotification {
     
   }
 }
-
-HashtopolisNotification::add('Discord Webhook', new HashtopolisNotificationDiscordWebhook());

@@ -2,17 +2,17 @@
 
 namespace Hashtopolis\inc\api;
 
-use DConfig;
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQueryCheckClientVersion;
+use Hashtopolis\inc\agent\PResponseClientUpdate;
+use Hashtopolis\inc\agent\PValues;
+use Hashtopolis\inc\agent\PValuesUpdateVersion;
+use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\models\AgentBinary;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
 use Composer\Semver\Comparator;
-use PActions;
-use PQueryCheckClientVersion;
-use PResponseClientUpdate;
-use PValues;
-use PValuesUpdateVersion;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 

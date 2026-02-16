@@ -2,12 +2,17 @@
 
 namespace Hashtopolis\inc\api;
 
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQueryGetChunk;
+use Hashtopolis\inc\agent\PResponseGetChunk;
+use Hashtopolis\inc\agent\PValues;
+use Hashtopolis\inc\agent\PValuesChunkType;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DTaskStaticChunking;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\ChunkUtils;
-use DConfig;
 use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\inc\defines\DServerLog;
-use DTaskStaticChunking;
 use Exception;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Chunk;
@@ -16,13 +21,8 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\utils\HealthUtils;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\utils\LOCK;
+use Hashtopolis\inc\utils\Lock;
 use Hashtopolis\inc\utils\LockUtils;
-use PActions;
-use PQueryGetChunk;
-use PResponseGetChunk;
-use PValues;
-use PValuesChunkType;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\utils\TaskUtils;
 
@@ -87,7 +87,7 @@ class APIGetChunk extends APIBasic {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Agent is inactive!");
     }
     
-    $LOCKFILE = LOCK::CHUNKING . $task->getId();
+    $LOCKFILE = Lock::CHUNKING . $task->getId();
     
     LockUtils::get($LOCKFILE);
     DServerLog::log(DServerLog::TRACE, "Retrieved lock for chunking!", [$this->agent]);

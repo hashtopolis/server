@@ -13,7 +13,7 @@ use Hashtopolis\dba\models\HealthCheckAgent;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\Util;
 
 

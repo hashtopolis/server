@@ -2,7 +2,12 @@
 
 namespace Hashtopolis\inc\api;
 
-use DConfig;
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQueryGetTask;
+use Hashtopolis\inc\agent\PResponseGetTask;
+use Hashtopolis\inc\agent\PValues;
+use Hashtopolis\inc\agent\PValuesTask;
+use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\File;
@@ -12,11 +17,6 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\utils\HealthUtils;
-use PActions;
-use PQueryGetTask;
-use PResponseGetTask;
-use PValues;
-use PValuesTask;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\utils\TaskUtils;
 

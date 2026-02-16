@@ -2,7 +2,6 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
-use DTaskTypes;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
@@ -13,6 +12,7 @@ use Hashtopolis\dba\models\Supertask;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
+use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\SupertaskUtils;
 

@@ -2,13 +2,13 @@
 
 namespace Hashtopolis\inc\api;
 
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQueryDeRegister;
+use Hashtopolis\inc\agent\PResponseDeRegister;
+use Hashtopolis\inc\agent\PValues;
+use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\utils\AgentUtils;
-use DConfig;
 use Hashtopolis\inc\HTException;
-use PActions;
-use PQueryDeRegister;
-use PResponseDeRegister;
-use PValues;
 use Hashtopolis\inc\SConfig;
 
 class APIDeRegisterAgent extends APIBasic {

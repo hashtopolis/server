@@ -2,22 +2,22 @@
 
 namespace Hashtopolis\inc\api;
 
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQuerySendBenchmark;
+use Hashtopolis\inc\agent\PResponseSendBenchmark;
+use Hashtopolis\inc\agent\PValues;
+use Hashtopolis\inc\agent\PValuesBenchmarkType;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DDirectories;
+use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\utils\AccessUtils;
-use DConfig;
-use DDirectories;
 use Hashtopolis\inc\defines\DFileType;
 use Hashtopolis\inc\defines\DServerLog;
-use DTaskTypes;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\File;
-use PActions;
-use PQuerySendBenchmark;
-use PResponseSendBenchmark;
-use PValues;
-use PValuesBenchmarkType;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;

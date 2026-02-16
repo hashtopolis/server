@@ -2,11 +2,15 @@
 
 namespace Hashtopolis\inc\api;
 
+use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agent\PQueryRegister;
+use Hashtopolis\inc\agent\PResponseRegister;
+use Hashtopolis\inc\agent\PValues;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DNotificationType;
+use Hashtopolis\inc\defines\DPayloadKeys;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\DataSet;
-use DConfig;
-use DNotificationType;
-use DPayloadKeys;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\Agent;
@@ -14,10 +18,6 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\RegVoucher;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\handlers\NotificationHandler;
-use PActions;
-use PQueryRegister;
-use PResponseRegister;
-use PValues;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 

@@ -6,7 +6,7 @@ use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 
 class AssignAgentHelperAPI extends AbstractHelperAPI {

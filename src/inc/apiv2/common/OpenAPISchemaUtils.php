@@ -189,7 +189,7 @@ class OpenAPISchemaUtils {
           ],
           "attributes" => [
             "type" => "object",
-            "properties" => makeProperties($expandApiClass->getAliasedFeatures())
+            "properties" => self::makeProperties($expandApiClass->getAliasedFeatures())
           ]
         ]
       ];
@@ -222,7 +222,7 @@ class OpenAPISchemaUtils {
       if ($skipPK && $feature['pk']) {
         continue;
       }
-      $ret = typeLookup($feature);
+      $ret = self::typeLookup($feature);
       $propertyVal[$feature['alias']]["type"] = $ret["type"];
       if ($ret["type_format"] !== null) {
         $propertyVal[$feature['alias']]["format"] = $ret["type_format"];

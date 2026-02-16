@@ -1,6 +1,6 @@
 <?php
 
-namespace Hashtopolis\inc\apiv2\common\util;
+namespace Hashtopolis\inc\apiv2\util;
 
 use Hashtopolis\inc\apiv2\common\error\ErrorHandler;
 use Psr\Http\Server\MiddlewareInterface;

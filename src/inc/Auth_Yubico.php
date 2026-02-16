@@ -10,7 +10,12 @@
    * @version     2.0
    * @link        http://www.yubico.com
    */
+
+namespace Hashtopolis\inc;
+
 require_once 'PEAR.php';
+use PEAR;
+
 /**
  * Class for verifying Yubico One-Time-Passcodes
  *
@@ -435,4 +440,5 @@ class Auth_Yubico
 	  //return PEAR::raiseError($ans);
 	}
 }
+
 ?>

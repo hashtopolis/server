@@ -15,7 +15,7 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\models\FileDelete;
 use Hashtopolis\dba\Factory;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\defines\DFileType;
 use Hashtopolis\inc\HTException;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Hashtopolis\inc\apiv2\common\util;
+namespace Hashtopolis\inc\apiv2\util;
 
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;

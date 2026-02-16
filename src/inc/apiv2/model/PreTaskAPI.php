@@ -10,7 +10,7 @@ use Hashtopolis\dba\models\FilePretask;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\Pretask;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\PretaskUtils;
 
