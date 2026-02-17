@@ -132,13 +132,27 @@ class TaskWrapperAPI extends AbstractModelAPI {
       // name needs to be changed to coalesce filters to get the correct value between these 2. 
       // Another possibility where this hack is not needed would be to also store the taskname of normal tasks in the
       // taskwrapper
-      foreach ($filters[Factory::ORDER] as &$orderfilter) {
-        if ($orderfilter->getBy() == Task::TASK_NAME) {
-          $newOrderFilter = new CoalesceOrderFilter([Task::TASK_NAME, TaskWrapper::TASK_WRAPPER_NAME], $orderfilter->getType());
-          $orderfilter = $newOrderFilter;
+      if (isset($filters[Factory::ORDER])) {
+        foreach ($filters[Factory::ORDER] as &$orderfilter) {
+          if ($orderfilter->getBy() == Task::TASK_NAME) {
+            $concatColumns = [new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory()), new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory())];
+            $newOrderFilter = new ConcatOrderFilter($concatColumns, $orderfilter->getType());
+            $orderfilter = $newOrderFilter;
+          }
         }
+        unset($orderfilter);
       }
-      unset($orderfilter);
+
+      if (isset($filters[Factory::FILTER])) {
+        foreach($filters[Factory::FILTER] as &$filter) {
+          if ($filter instanceof LikeFilterInsensitive && $filter->getKey() == Task::TASK_NAME) {
+            $concatColumns = [new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory()), new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory())];
+            $newFilter = new ConcatLikeFilterInsensitive($concatColumns, $filter->getValue());
+            $filter = $newFilter;
+          }
+        }
+        unset($filter);
+      }
     }
     return $filters;
   }
