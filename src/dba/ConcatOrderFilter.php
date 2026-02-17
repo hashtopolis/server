@@ -21,7 +21,7 @@ class ConcatOrderFilter extends Order {
   function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
     $mapped_columns = [];
     foreach($this->columns as $column) {
-      array_push($mapped_columns, AbstractModelFactory::getMappedModelKey($column->getFactory()->getNullObject(), $column->getValue()));
+      $mapped_columns[] = AbstractModelFactory::getMappedModelKey($column->getFactory()->getNullObject(), $column->getValue());
     }
     return "CONCAT(" . implode(", ", $mapped_columns) . ") " . $this->type;
   }

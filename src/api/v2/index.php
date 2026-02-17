@@ -10,7 +10,7 @@ date_default_timezone_set("UTC");
 error_reporting(E_ALL ^ E_DEPRECATED);
 ini_set("display_errors", '1');
 /**
- * Treat warnings as error, very usefull during unit testing.
+ * Treat warnings as error, very useful during unit testing.
  * TODO: How-ever during Xdebug debugging under VS Code, this is very
  * TODO: slightly annoying since the last call stack is not very interesting.
  * TODO: Thus for the time-being do not-enable by default.

@@ -1,6 +1,6 @@
 <?php
 
-namespace DBA;
+namespace Hashtopolis\dba;
 
 class ConcatLikeFilterInsensitive extends Filter {
   private $value;
@@ -27,7 +27,7 @@ class ConcatLikeFilterInsensitive extends Filter {
     $mapped_columns = [];
     foreach($this->columns as $column) {
       $columnFactory = $column->getFactory();
-      array_push($mapped_columns, $columnFactory->getMappedModelTable() . "." . AbstractModelFactory::getMappedModelKey($columnFactory->getNullObject(), $column->getValue()));
+      $mapped_columns[] = $columnFactory->getMappedModelTable() . "." . AbstractModelFactory::getMappedModelKey($columnFactory->getNullObject(), $column->getValue());
     }
     return "LOWER(" . "CONCAT(" . implode(", ", $mapped_columns) . ")" . ") LIKE LOWER(?)";
   }

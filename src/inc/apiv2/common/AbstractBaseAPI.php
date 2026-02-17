@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\common;
 
+use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\error\InternalError;

@@ -3,6 +3,8 @@
 namespace Hashtopolis\inc\apiv2\common;
 
 use Hashtopolis\dba\MassUpdateSet;
+use Hashtopolis\inc\apiv2\error\ErrorHandler;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\error\InternalError;
@@ -1039,7 +1041,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    */
   public function patchSingleObject(Request $request, Response $response, mixed $object, mixed $data): Response {
     if (!$this->validateResourceRecord($data)) {
-      return errorResponse($response, "No valid resource identifier object was given as data!", 403);
+      return ErrorHandler::errorResponse($response, "No valid resource identifier object was given as data!", 403);
     }
     
     $attributes = $data['attributes'];

@@ -1,6 +1,6 @@
 <?php
 
-namespace DBA;
+namespace Hashtopolis\dba;
 
 class ConcatColumn {
   private $value;

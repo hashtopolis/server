@@ -2,10 +2,13 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\ConcatColumn;
+use Hashtopolis\dba\ConcatLikeFilterInsensitive;
+use Hashtopolis\dba\ConcatOrderFilter;
+use Hashtopolis\dba\LikeFilterInsensitive;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroup;
-use Hashtopolis\dba\CoalesceOrderFilter;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Hashlist;
