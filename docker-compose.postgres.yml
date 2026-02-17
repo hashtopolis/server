@@ -23,7 +23,7 @@ services:
       - 8080:80
   db:
     container_name: db
-    image: postgres:13
+    image: postgres:18
     restart: always
     volumes:
       - db:/var/lib/postgresql/data
