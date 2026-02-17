@@ -12,7 +12,7 @@ use Slim\Psr7\Response;
 
 /* Pre-parse incoming request body */
 class JsonBodyParserMiddleware implements MiddlewareInterface {
-  public function process(Request $request, RequestHandler $handler): Response {
+  public function process(Request $request, RequestHandler $handler): \Psr\Http\Message\ResponseInterface {
     $contentType = $request->getHeaderLine('Content-Type');
     
     if (strstr($contentType, 'application/json') || strstr($contentType, 'application/vnd.api+json')) {
