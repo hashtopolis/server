@@ -124,7 +124,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       
       if (!($class instanceof AbstractModelAPI)) {
         $name = $class::class;
-        $apiMethod = ($apiMethod == "processPost" && $name !== "ImportFileHelperAPI") ? "actionPost" : $apiMethod;
+        $apiMethod = ($apiMethod == "processPost" && $name != "ImportFileHelperAPI") ? "actionPost" : $apiMethod;
         $reflectionApiMethod = new ReflectionMethod($name, $apiMethod);
         $paths[$path][$method]["description"] = OpenAPISchemaUtils::parsePhpDoc($reflectionApiMethod->getDocComment());
         $parameters = $class->getCreateValidFeatures();

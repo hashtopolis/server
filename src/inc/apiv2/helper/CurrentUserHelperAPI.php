@@ -73,7 +73,7 @@ class CurrentUserHelperAPI extends AbstractHelperAPI {
   }
   
   static public function register($app): void {
-    $baseUri = currentUserHelperAPI::getBaseUri();
+    $baseUri = CurrentUserHelperAPI::getBaseUri();
     
     /* Allow CORS preflight requests */
     $app->options($baseUri, function (Request $request, Response $response): Response {

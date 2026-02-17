@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\inc\Util;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
