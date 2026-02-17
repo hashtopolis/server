@@ -530,25 +530,25 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
   protected static function getMinMaxCursor($apiClass, string $sort, array $filters, $request, $aliasedfeatures) {
     $filters[Factory::LIMIT] = new LimitFilter(1);
-    $primaryKey = $apiClass->getPrimaryKey();
     // Descending queries are used to retrieve the last element. For this all sorts have to be reversed, since
-    // if all order quereis are reversed and limit to 1, you will retrieve the last element.
+    // if all order queries are reversed and limit to 1, you will retrieve the last element.
     $reverseSort = ($sort == "DESC") ? true : false;
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $sort, $reverseSort);
     $orderFilters = [];
-    $joinFilters = [];
+    // TODO this logic is now done twice, once for the max and once for the min, this should be moved outside this function
+    // and given as an argument
     foreach ($orderTemplates as $orderTemplate) {
       $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type'], $orderTemplate['factory']);
       if ($orderTemplate['factory'] !== null){
         // if factory of ordertemplate is not null, sort is happening on joined table
         $otherFactory = $orderTemplate['factory'];
-        $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $apiClass->getPrimaryKeyOther($otherFactory->getNullObject()::class));
+        if (!$apiClass::checkJoinExists($filters[Factory::JOIN], $otherFactory->getModelName())) {
+          $filters[Factory::JOIN][] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $apiClass->getPrimaryKeyOther($otherFactory->getNullObject()::class));
+        }
       }
     }
     $filters[Factory::ORDER] = $orderFilters;
-    if (!empty($joinFilters)) {
-      $filters[Factory::JOIN] = $joinFilters;
-    }
+    $filters = $apiClass->parseFilters($filters);
     $factory = $apiClass->getFactory();
     $result = $factory->filter($filters);
     //handle joined queries
@@ -599,10 +599,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     /* Object filter definition */
     $aFs = [];
+    $joinFilters = [];
 
     /* Generate filters */
     $filters = $apiClass->getFilters($request);
-    $qFs_Filter = $apiClass->makeFilter($filters, $apiClass);
+    $qFs_Filter = $apiClass->makeFilter($filters, $apiClass, $joinFilters);
     $group = Factory::getRightGroupFactory()->get($apiClass->getCurrentUser()->getRightGroupId());
     if ($group->getPermissions() !== 'ALL') { // Only add permission filters when no admin user
       $aFs_ACL = $apiClass->getFilterACL();
@@ -610,7 +611,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $qFs_Filter = array_merge($aFs_ACL[Factory::FILTER], $qFs_Filter);
       }
       if (isset($aFs_ACL[Factory::JOIN])) {
-        $aFs[Factory::JOIN] = $aFs_ACL[Factory::JOIN];
+        foreach($aFs_ACL[Factory::JOIN] as $filter) {
+          if(!$apiClass::checkJoinExists($joinFilters, $filter->getOtherFactory()->getModelName())) {
+            $joinFilters[] = $filter;
+          }
+        }
       }
     }
     
@@ -628,6 +633,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     //this is used to reverse the array to show the data correctly for the user 
     $reverseArray = false;
 
+    $aFs[Factory::JOIN] = $joinFilters;
     $firstCursorObject = $apiClass->getMinMaxCursor($apiClass, "ASC", $aFs, $request, $aliasedfeatures);
     $lastCursorObject = $apiClass->getMinMaxCursor($apiClass, "DESC", $aFs, $request, $aliasedfeatures);
 
@@ -667,7 +673,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $orderTemplates[0]["type"] = $defaultSort;
     $primaryFilter = $orderTemplates[0]['by'];
     $orderFilters = [];
-    $joinFilters = [];
 
     // Build actual order filters
     foreach ($orderTemplates as $orderTemplate) {
@@ -676,7 +681,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       if ($orderTemplate['factory'] !== null) {
         // if factory of ordertemplate is not null, sort is happening on joined table
         $otherFactory = $orderTemplate['factory'];
-        $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $orderTemplate['key']);
+        if (!$apiClass::checkJoinExists($joinFilters, $otherFactory->getModelName())) {
+          $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $orderTemplate['key']);
+        }
       }
     }
 
