@@ -1,7 +1,152 @@
 <?php
 
 namespace Hashtopolis\inc\templating;
+
 use Hashtopolis\inc\UI;
+
+/**
+ * current hack and easy way to make sure we have everything we need, we just include all. As it's legacy code it will
+ * be removed on refactoring to get rid of any eval code.
+ */
+define("EVAL_PREFIX", "use Hashtopolis\inc\{
+  CSRF,
+  DataSet,
+  Encryption,
+  Lang,
+  Login,
+  Menu,
+  SConfig,
+  StartupConfig,
+  UI,
+  Util,
+};
+use Hashtopolis\inc\defines\{
+  DAccessControlAction,
+  DAccessControl,
+  DAccessGroupAction,
+  DAccessLevel,
+  DAccountAction,
+  DAgentAction,
+  DAgentBinaryAction,
+  DAgentIgnoreErrors,
+  DAgentStatsType,
+  DApiAction,
+  DCleaning,
+  DConfigAction,
+  DConfig,
+  DConfigType,
+  DCrackerBinaryAction,
+  DDeviceCompress,
+  DDirectories,
+  DFileAction,
+  DFileDownloadStatus,
+  DFileType,
+  DForgotAction,
+  DHashcatStatus,
+  DHashlistAction,
+  DHashlistFormat,
+  DHashtypeAction,
+  DHealthCheckAction,
+  DHealthCheckAgentStatus,
+  DHealthCheckMode,
+  DHealthCheck,
+  DHealthCheckStatus,
+  DHealthCheckType,
+  DLimits,
+  DLogEntryIssuer,
+  DLogEntry,
+  DNotificationAction,
+  DNotificationObjectType,
+  DNotificationType,
+  DOperatingSystem,
+  DPayloadKeys,
+  DPlatforms,
+  DPreprocessorAction,
+  DPretaskAction,
+  DPrince,
+  DProxyTypes,
+  DSearchAction,
+  DServerLog,
+  DStats,
+  DSupertaskAction,
+  DTaskAction,
+  DTaskStaticChunking,
+  DTaskTypes,
+  DUserAction,
+  DViewControl,
+  UApi,
+  UQueryAccess,
+  UQueryAccount,
+  UQueryAgent,
+  UQueryConfig,
+  UQueryCracker,
+  UQueryFile,
+  UQueryGroup,
+  UQueryHashlist,
+  UQuery,
+  UQuerySuperhashlist,
+  UQueryTask,
+  UQueryUser,
+  UResponseAccess,
+  UResponseAccount,
+  UResponseAgent,
+  UResponseConfig,
+  UResponseCracker,
+  UResponseErrorMessage,
+  UResponseFile,
+  UResponseGroup,
+  UResponseHashlist,
+  UResponse,
+  UResponseSuperhashlist,
+  UResponseTask,
+  UResponseUser,
+  USectionAccess,
+  USectionAccount,
+  USectionAgent,
+  USectionConfig,
+  USectionCracker,
+  USectionFile,
+  USectionGroup,
+  USectionHashlist,
+  USection,
+  USectionPretask,
+  USectionSuperhashlist,
+  USectionSupertask,
+  USectionTask,
+  USectionTest,
+  USectionUser,
+  UValues,
+};
+use Hashtopolis\inc\utils\{
+  AccessControl,
+  AccessControlUtils,
+  AccessGroupUtils,
+  AccessUtils,
+  AccountUtils,
+  AgentBinaryUtils,
+  AgentUtils,
+  ApiUtils,
+  AssignmentUtils,
+  ChunkUtils,
+  ConfigUtils,
+  CrackerBinaryUtils,
+  CrackerUtils,
+  FileDownloadUtils,
+  FileUtils,
+  HashlistUtils,
+  HashtypeUtils,
+  HealthUtils,
+  Lock,
+  LockUtils,
+  NotificationUtils,
+  PreprocessorUtils,
+  PretaskUtils,
+  RunnerUtils,
+  SupertaskUtils,
+  TaskUtils,
+  TaskWrapperUtils,
+  UserUtils,
+};");
 
 class Statement {
   private $statementType; //if, for, foreach, content
@@ -24,7 +169,7 @@ class Statement {
     switch ($this->statementType) {
       case 'IF': //setting -> array(condition, else position)
         $condition = $this->renderContent($this->setting[0], $objects, true);
-        if (eval("return $condition;")) {
+        if (eval(EVAL_PREFIX . "return $condition;")) {
           //if statement is true
           for ($x = 0; $x < sizeof($this->content); $x++) {
             if ($x == $this->setting[1]) {
@@ -162,7 +307,7 @@ class Statement {
         return "\$objects['$varname']$calls";
       }
       else {
-        return eval("return \$objects['$varname']$calls;");
+        return eval(EVAL_PREFIX . "return \$objects['$varname']$calls;");
       }
     }
     else if (isset($objects[preg_replace('/\[.*\] /', "", $value)])) {
@@ -172,7 +317,7 @@ class Statement {
         return "\$objects['$varname']" . str_replace($varname . "[", "", str_replace("] ", "", $value));
       }
       else {
-        return eval("return \$objects['$varname'][" . str_replace($varname . "[", "", str_replace("] ", "", $value)) . "];");
+        return eval(EVAL_PREFIX . "return \$objects['$varname'][" . str_replace($varname . "[", "", str_replace("] ", "", $value)) . "];");
       }
     }
     else if (is_callable(preg_replace('/\(.*\)/', "", $value))) {
@@ -181,7 +326,7 @@ class Statement {
         return "$value";
       }
       else {
-        return eval("return $value;");
+        return eval(EVAL_PREFIX . "return $value;");
       }
     }
     else if (strpos($value, '$') === 0) {
@@ -190,7 +335,7 @@ class Statement {
         return substr($value, 1);
       }
       else {
-        return eval("return " . substr($value, 1) . ";");
+        return eval(EVAL_PREFIX . "return " . substr($value, 1) . ";");
       }
     }
     else {

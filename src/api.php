@@ -1,6 +1,6 @@
 <?php
 
-use Hashtopolis\dba\models\APiKey;
+use Hashtopolis\dba\models\ApiKey;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\User;
