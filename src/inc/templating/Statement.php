@@ -4,150 +4,6 @@ namespace Hashtopolis\inc\templating;
 
 use Hashtopolis\inc\UI;
 
-/**
- * current hack and easy way to make sure we have everything we need, we just include all. As it's legacy code it will
- * be removed on refactoring to get rid of any eval code.
- */
-define("EVAL_PREFIX", "use Hashtopolis\inc\{
-  CSRF,
-  DataSet,
-  Encryption,
-  Lang,
-  Login,
-  Menu,
-  SConfig,
-  StartupConfig,
-  UI,
-  Util,
-};
-use Hashtopolis\inc\defines\{
-  DAccessControlAction,
-  DAccessControl,
-  DAccessGroupAction,
-  DAccessLevel,
-  DAccountAction,
-  DAgentAction,
-  DAgentBinaryAction,
-  DAgentIgnoreErrors,
-  DAgentStatsType,
-  DApiAction,
-  DCleaning,
-  DConfigAction,
-  DConfig,
-  DConfigType,
-  DCrackerBinaryAction,
-  DDeviceCompress,
-  DDirectories,
-  DFileAction,
-  DFileDownloadStatus,
-  DFileType,
-  DForgotAction,
-  DHashcatStatus,
-  DHashlistAction,
-  DHashlistFormat,
-  DHashtypeAction,
-  DHealthCheckAction,
-  DHealthCheckAgentStatus,
-  DHealthCheckMode,
-  DHealthCheck,
-  DHealthCheckStatus,
-  DHealthCheckType,
-  DLimits,
-  DLogEntryIssuer,
-  DLogEntry,
-  DNotificationAction,
-  DNotificationObjectType,
-  DNotificationType,
-  DOperatingSystem,
-  DPayloadKeys,
-  DPlatforms,
-  DPreprocessorAction,
-  DPretaskAction,
-  DPrince,
-  DProxyTypes,
-  DSearchAction,
-  DServerLog,
-  DStats,
-  DSupertaskAction,
-  DTaskAction,
-  DTaskStaticChunking,
-  DTaskTypes,
-  DUserAction,
-  DViewControl,
-  UApi,
-  UQueryAccess,
-  UQueryAccount,
-  UQueryAgent,
-  UQueryConfig,
-  UQueryCracker,
-  UQueryFile,
-  UQueryGroup,
-  UQueryHashlist,
-  UQuery,
-  UQuerySuperhashlist,
-  UQueryTask,
-  UQueryUser,
-  UResponseAccess,
-  UResponseAccount,
-  UResponseAgent,
-  UResponseConfig,
-  UResponseCracker,
-  UResponseErrorMessage,
-  UResponseFile,
-  UResponseGroup,
-  UResponseHashlist,
-  UResponse,
-  UResponseSuperhashlist,
-  UResponseTask,
-  UResponseUser,
-  USectionAccess,
-  USectionAccount,
-  USectionAgent,
-  USectionConfig,
-  USectionCracker,
-  USectionFile,
-  USectionGroup,
-  USectionHashlist,
-  USection,
-  USectionPretask,
-  USectionSuperhashlist,
-  USectionSupertask,
-  USectionTask,
-  USectionTest,
-  USectionUser,
-  UValues,
-};
-use Hashtopolis\inc\utils\{
-  AccessControl,
-  AccessControlUtils,
-  AccessGroupUtils,
-  AccessUtils,
-  AccountUtils,
-  AgentBinaryUtils,
-  AgentUtils,
-  ApiUtils,
-  AssignmentUtils,
-  ChunkUtils,
-  ConfigUtils,
-  CrackerBinaryUtils,
-  CrackerUtils,
-  FileDownloadUtils,
-  FileUtils,
-  HashlistUtils,
-  HashtypeUtils,
-  HealthUtils,
-  Lock,
-  LockUtils,
-  NotificationUtils,
-  PreprocessorUtils,
-  PretaskUtils,
-  RunnerUtils,
-  SupertaskUtils,
-  TaskUtils,
-  TaskWrapperUtils,
-  UserUtils,
-};");
-
 class Statement {
   private $statementType; //if, for, foreach, content
   /**
@@ -162,6 +18,152 @@ class Statement {
     $this->statementType = $type;
   }
   
+  /**
+   * current hack and easy way to make sure we have everything we need, we just include all. As it's legacy code it will
+   * be removed on refactoring to get rid of any eval code.
+   */
+  private static array $useStatements = [
+    'Hashtopolis\\inc\\utils\\AccessControl',
+    'Hashtopolis\\inc\\utils\\AccessControlUtils',
+    'Hashtopolis\\inc\\utils\\AccessGroupUtils',
+    'Hashtopolis\\inc\\utils\\AccessUtils',
+    'Hashtopolis\\inc\\utils\\AccountUtils',
+    'Hashtopolis\\inc\\utils\\AgentBinaryUtils',
+    'Hashtopolis\\inc\\utils\\AgentUtils',
+    'Hashtopolis\\inc\\utils\\ApiUtils',
+    'Hashtopolis\\inc\\utils\\AssignmentUtils',
+    'Hashtopolis\\inc\\utils\\ChunkUtils',
+    'Hashtopolis\\inc\\utils\\ConfigUtils',
+    'Hashtopolis\\inc\\utils\\CrackerBinaryUtils',
+    'Hashtopolis\\inc\\utils\\CrackerUtils',
+    'Hashtopolis\\inc\\utils\\FileDownloadUtils',
+    'Hashtopolis\\inc\\utils\\FileUtils',
+    'Hashtopolis\\inc\\utils\\HashlistUtils',
+    'Hashtopolis\\inc\\utils\\HashtypeUtils',
+    'Hashtopolis\\inc\\utils\\HealthUtils',
+    'Hashtopolis\\inc\\utils\\Lock',
+    'Hashtopolis\\inc\\utils\\LockUtils',
+    'Hashtopolis\\inc\\utils\\NotificationUtils',
+    'Hashtopolis\\inc\\utils\\PreprocessorUtils',
+    'Hashtopolis\\inc\\utils\\PretaskUtils',
+    'Hashtopolis\\inc\\utils\\RunnerUtils',
+    'Hashtopolis\\inc\\utils\\SupertaskUtils',
+    'Hashtopolis\\inc\\utils\\TaskUtils',
+    'Hashtopolis\\inc\\utils\\TaskWrapperUtils',
+    'Hashtopolis\\inc\\utils\\UserUtils',
+    'Hashtopolis\\inc\\defines\\DAccessControl',
+    'Hashtopolis\\inc\\defines\\DAccessControlAction',
+    'Hashtopolis\\inc\\defines\\DAccessGroupAction',
+    'Hashtopolis\\inc\\defines\\DAccessLevel',
+    'Hashtopolis\\inc\\defines\\DAccountAction',
+    'Hashtopolis\\inc\\defines\\DAgentAction',
+    'Hashtopolis\\inc\\defines\\DAgentBinaryAction',
+    'Hashtopolis\\inc\\defines\\DAgentIgnoreErrors',
+    'Hashtopolis\\inc\\defines\\DAgentStatsType',
+    'Hashtopolis\\inc\\defines\\DApiAction',
+    'Hashtopolis\\inc\\defines\\DCleaning',
+    'Hashtopolis\\inc\\defines\\DConfig',
+    'Hashtopolis\\inc\\defines\\DConfigAction',
+    'Hashtopolis\\inc\\defines\\DConfigType',
+    'Hashtopolis\\inc\\defines\\DCrackerBinaryAction',
+    'Hashtopolis\\inc\\defines\\DDeviceCompress',
+    'Hashtopolis\\inc\\defines\\DDirectories',
+    'Hashtopolis\\inc\\defines\\DFileAction',
+    'Hashtopolis\\inc\\defines\\DFileDownloadStatus',
+    'Hashtopolis\\inc\\defines\\DFileType',
+    'Hashtopolis\\inc\\defines\\DForgotAction',
+    'Hashtopolis\\inc\\defines\\DHashcatStatus',
+    'Hashtopolis\\inc\\defines\\DHashlistAction',
+    'Hashtopolis\\inc\\defines\\DHashlistFormat',
+    'Hashtopolis\\inc\\defines\\DHashtypeAction',
+    'Hashtopolis\\inc\\defines\\DHealthCheck',
+    'Hashtopolis\\inc\\defines\\DHealthCheckAction',
+    'Hashtopolis\\inc\\defines\\DHealthCheckAgentStatus',
+    'Hashtopolis\\inc\\defines\\DHealthCheckMode',
+    'Hashtopolis\\inc\\defines\\DHealthCheckStatus',
+    'Hashtopolis\\inc\\defines\\DHealthCheckType',
+    'Hashtopolis\\inc\\defines\\DLimits',
+    'Hashtopolis\\inc\\defines\\DLogEntry',
+    'Hashtopolis\\inc\\defines\\DLogEntryIssuer',
+    'Hashtopolis\\inc\\defines\\DNotificationAction',
+    'Hashtopolis\\inc\\defines\\DNotificationObjectType',
+    'Hashtopolis\\inc\\defines\\DNotificationType',
+    'Hashtopolis\\inc\\defines\\DOperatingSystem',
+    'Hashtopolis\\inc\\defines\\DPayloadKeys',
+    'Hashtopolis\\inc\\defines\\DPlatforms',
+    'Hashtopolis\\inc\\defines\\DPreprocessorAction',
+    'Hashtopolis\\inc\\defines\\DPretaskAction',
+    'Hashtopolis\\inc\\defines\\DPrince',
+    'Hashtopolis\\inc\\defines\\DProxyTypes',
+    'Hashtopolis\\inc\\defines\\DSearchAction',
+    'Hashtopolis\\inc\\defines\\DServerLog',
+    'Hashtopolis\\inc\\defines\\DStats',
+    'Hashtopolis\\inc\\defines\\DSupertaskAction',
+    'Hashtopolis\\inc\\defines\\DTaskAction',
+    'Hashtopolis\\inc\\defines\\DTaskStaticChunking',
+    'Hashtopolis\\inc\\defines\\DTaskTypes',
+    'Hashtopolis\\inc\\defines\\DUserAction',
+    'Hashtopolis\\inc\\defines\\DViewControl',
+    'Hashtopolis\\inc\\defines\\UApi',
+    'Hashtopolis\\inc\\defines\\UQuery',
+    'Hashtopolis\\inc\\defines\\UQueryAccess',
+    'Hashtopolis\\inc\\defines\\UQueryAccount',
+    'Hashtopolis\\inc\\defines\\UQueryAgent',
+    'Hashtopolis\\inc\\defines\\UQueryConfig',
+    'Hashtopolis\\inc\\defines\\UQueryCracker',
+    'Hashtopolis\\inc\\defines\\UQueryFile',
+    'Hashtopolis\\inc\\defines\\UQueryGroup',
+    'Hashtopolis\\inc\\defines\\UQueryHashlist',
+    'Hashtopolis\\inc\\defines\\UQuerySuperhashlist',
+    'Hashtopolis\\inc\\defines\\UQueryTask',
+    'Hashtopolis\\inc\\defines\\UQueryUser',
+    'Hashtopolis\\inc\\defines\\UResponse',
+    'Hashtopolis\\inc\\defines\\UResponseAccess',
+    'Hashtopolis\\inc\\defines\\UResponseAccount',
+    'Hashtopolis\\inc\\defines\\UResponseAgent',
+    'Hashtopolis\\inc\\defines\\UResponseConfig',
+    'Hashtopolis\\inc\\defines\\UResponseCracker',
+    'Hashtopolis\\inc\\defines\\UResponseErrorMessage',
+    'Hashtopolis\\inc\\defines\\UResponseFile',
+    'Hashtopolis\\inc\\defines\\UResponseGroup',
+    'Hashtopolis\\inc\\defines\\UResponseHashlist',
+    'Hashtopolis\\inc\\defines\\UResponseSuperhashlist',
+    'Hashtopolis\\inc\\defines\\UResponseTask',
+    'Hashtopolis\\inc\\defines\\UResponseUser',
+    'Hashtopolis\\inc\\defines\\USection',
+    'Hashtopolis\\inc\\defines\\USectionAccess',
+    'Hashtopolis\\inc\\defines\\USectionAccount',
+    'Hashtopolis\\inc\\defines\\USectionAgent',
+    'Hashtopolis\\inc\\defines\\USectionConfig',
+    'Hashtopolis\\inc\\defines\\USectionCracker',
+    'Hashtopolis\\inc\\defines\\USectionFile',
+    'Hashtopolis\\inc\\defines\\USectionGroup',
+    'Hashtopolis\\inc\\defines\\USectionHashlist',
+    'Hashtopolis\\inc\\defines\\USectionPretask',
+    'Hashtopolis\\inc\\defines\\USectionSuperhashlist',
+    'Hashtopolis\\inc\\defines\\USectionSupertask',
+    'Hashtopolis\\inc\\defines\\USectionTask',
+    'Hashtopolis\\inc\\defines\\USectionTest',
+    'Hashtopolis\\inc\\defines\\USectionUser',
+    'Hashtopolis\\inc\\defines\\UValues',
+    'Hashtopolis\\inc\\CSRF',
+    'Hashtopolis\\inc\\DataSet',
+    'Hashtopolis\\inc\\Encryption',
+    'Hashtopolis\\inc\\Lang',
+    'Hashtopolis\\inc\\Login',
+    'Hashtopolis\\inc\\Menu',
+    'Hashtopolis\\inc\\SConfig',
+    'Hashtopolis\\inc\\StartupConfig',
+    'Hashtopolis\\inc\\UI',
+    'Hashtopolis\\inc\\Util',
+  ];
+  
+  private static array $namespaces = [
+    'Hashtopolis\\inc',
+    'Hashtopolis\\inc\\defines',
+    'Hashtopolis\\inc\\utils',
+  ];
+  
   public function render($objects) {
     global $LANG;
     
@@ -169,7 +171,7 @@ class Statement {
     switch ($this->statementType) {
       case 'IF': //setting -> array(condition, else position)
         $condition = $this->renderContent($this->setting[0], $objects, true);
-        if (eval(EVAL_PREFIX . "return $condition;")) {
+        if (eval(Statement::getPrefix() . "return $condition;")) {
           //if statement is true
           for ($x = 0; $x < sizeof($this->content); $x++) {
             if ($x == $this->setting[1]) {
@@ -293,6 +295,43 @@ class Statement {
     return array($output, $pos);
   }
   
+  // The functions getPrefix() and isCallable() are needed as a workaround for the templating to work with the current
+  // way of namespaces
+  private static function getPrefix(): string {
+    $statements = "";
+    foreach (self::$useStatements as $s) {
+      $statements .= "use " . $s . ";";
+    }
+    return $statements;
+  }
+  
+  private static function isCallable(string $methodString) {
+    // split into class and method parts
+    if (!strpos($methodString, '::')) {
+      return is_callable($methodString); // global methods
+    }
+    [$classPart, $method] = explode('::', $methodString, 2);
+    
+    $makeFQ = fn($cls) => '\\' . trim($cls, '\\');
+    
+    $fqClass = $makeFQ($classPart);
+    $candidate = $fqClass . '::' . $method;
+    if (is_callable($candidate)) {
+      return true;
+    }
+    
+    foreach (Statement::$namespaces as $ns) {
+      $fqClass = $makeFQ($ns . '\\' . $classPart);
+      $candidate = $fqClass . '::' . $method;
+      if (is_callable($candidate)) {
+        return true;
+      }
+    }
+    
+    // nothing matched
+    return false;
+  }
+  
   private function evalResult($value, $objects, $inner) {
     $vals = explode(".", $value);
     $varname = $vals[0];
@@ -307,7 +346,7 @@ class Statement {
         return "\$objects['$varname']$calls";
       }
       else {
-        return eval(EVAL_PREFIX . "return \$objects['$varname']$calls;");
+        return eval(Statement::getPrefix() . "return \$objects['$varname']$calls;");
       }
     }
     else if (isset($objects[preg_replace('/\[.*\] /', "", $value)])) {
@@ -317,16 +356,16 @@ class Statement {
         return "\$objects['$varname']" . str_replace($varname . "[", "", str_replace("] ", "", $value));
       }
       else {
-        return eval(EVAL_PREFIX . "return \$objects['$varname'][" . str_replace($varname . "[", "", str_replace("] ", "", $value)) . "];");
+        return eval(Statement::getPrefix() . "return \$objects['$varname'][" . str_replace($varname . "[", "", str_replace("] ", "", $value)) . "];");
       }
     }
-    else if (is_callable(preg_replace('/\(.*\)/', "", $value))) {
+    else if (Statement::isCallable(preg_replace('/\(.*\)/', "", $value))) {
       //is a static function call
       if ($inner) {
         return "$value";
       }
       else {
-        return eval(EVAL_PREFIX . "return $value;");
+        return eval(Statement::getPrefix() . "return $value;");
       }
     }
     else if (strpos($value, '$') === 0) {
@@ -335,7 +374,7 @@ class Statement {
         return substr($value, 1);
       }
       else {
-        return eval(EVAL_PREFIX . "return " . substr($value, 1) . ";");
+        return eval(Statement::getPrefix() . "return " . substr($value, 1) . ";");
       }
     }
     else {
