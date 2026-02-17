@@ -23,7 +23,7 @@ services:
     ports:
       - 8080:80
   db:
-    container_name: db
+    container_name: hashtopolis-db
     image: mysql:8.4
     restart: always
     volumes:
