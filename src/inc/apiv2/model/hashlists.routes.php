@@ -127,7 +127,7 @@ class HashlistAPI extends AbstractModelAPI {
       if (strlen($data["sourceData"]) == 0) {
         throw new HttpError("sourceType=paste, requires sourceData to be non-empty");
       }
-      else if ($dummyPost["hashfield"] === false) {
+      else if ($dummyPost["hashfield"] == false) {
         throw new HttpError("sourceData not valid base64 encoding");
       }
     }
