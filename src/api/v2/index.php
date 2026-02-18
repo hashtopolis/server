@@ -205,22 +205,47 @@ class CorsHackMiddleware implements MiddlewareInterface {
     $routeContext = RouteContext::fromRequest($request);
     $routingResults = $routeContext->getRoutingResults();
     $methods = $routingResults->getAllowedMethods();
-    $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
     
-    $frontend_urls = getenv('HASHTOPOLIS_FRONTEND_URLS');
-    if ($frontend_urls !== false) {
-      if(in_array($request->getHeaderLine('Origin'), explode(',', $frontend_urls), true)) {
-        $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('Origin'));
+    $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
+    $requestHttpOrigin = $request->getHeaderLine('HTTP_ORIGIN');
+
+    $envBackend = getenv('HASHTOPOLIS_BACKEND_URL');
+    $envFrontendPort = getenv('HASHTOPOLIS_FRONTEND_PORT');
+    
+    if ($envBackend !== false || $envFrontendPort !== false) {
+      $requestHttpOrigin = explode('://', $requestHttpOrigin)[1];
+      $envBackend = explode('://', $envBackend)[1];
+
+      $envBackend = explode('/', $envBackend)[0];
+
+      $requestHttpOriginUrl = substr($requestHttpOrigin, 0, strrpos($requestHttpOrigin, ":")); //Needs to use strrpos in case of ipv6 because of multiple ':' characters
+      $envBackendUrl = substr($envBackend, 0, strrpos($envBackend, ":"));
+      
+      $localhostSynonyms = ["localhost", "127.0.0.1", "[::1]"];
+      
+      if ($requestHttpOriginUrl === $envBackendUrl || (in_array($requestHttpOriginUrl, $localhostSynonyms) && in_array($envBackendUrl, $localhostSynonyms))) {
+        //Origin URL matches, now check the port too
+        $requestHttpOriginPort = substr($requestHttpOrigin, strrpos($requestHttpOrigin, ":") + 1); //Needs to use strrpos in case of ipv6 because of multiple ':' characters
+        $envBackendPort = substr($envBackend, strrpos($envBackend, ":") + 1);
+
+        if ($requestHttpOriginPort === $envFrontendPort || $requestHttpOriginPort === $envBackendPort) {
+          $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'));
+        }
+        else {
+          error_log("CORS error: Allow-Origin port doesn't match. Try switching the frontend port back to the default value (4200) in the docker-compose.");
+          die();
+        }
       }
       else {
-        error_log("CORS error: Allow-Origin doesn't match. Please make sure to include the used frontend in the .env file.");
+        error_log("CORS error: Allow-Origin URL doesn't match. Is the HASHTOPOLIS_BACKEND_URL in the .env file the correct one?");
+        die();
       }
     }
     else {
-      //No frontend URLs given in .env file, switch to default allow all
+      //No backend URL given in .env file, switch to default allow all
       $response = $response->withHeader('Access-Control-Allow-Origin', '*');
     }
-
+    
     $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
     $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
     

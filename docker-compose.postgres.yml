@@ -17,6 +17,8 @@ services:
       HASHTOPOLIS_ADMIN_USER: $HASHTOPOLIS_ADMIN_USER
       HASHTOPOLIS_ADMIN_PASSWORD: $HASHTOPOLIS_ADMIN_PASSWORD
       HASHTOPOLIS_APIV2_ENABLE: $HASHTOPOLIS_APIV2_ENABLE
+      HASHTOPOLIS_BACKEND_URL: $HASHTOPOLIS_BACKEND_URL
+      HASHTOPOLIS_FRONTEND_PORT: 4200
     depends_on:
       - db
     ports:
@@ -40,7 +42,7 @@ services:
     depends_on:
       - hashtopolis-backend
     ports:
-      - 4200:80
+      - 4200:80 # When changing the host port don't forget to also update the HASHTOPOLIS_FRONTEND_PORT variable above
 volumes:
   db:
   hashtopolis:
