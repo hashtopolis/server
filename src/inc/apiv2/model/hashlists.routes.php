@@ -102,6 +102,7 @@ class HashlistAPI extends AbstractModelAPI {
   
   /**
    * @throws HttpErrorException
+   * @throws HttpError
    * @throws HTException
    */
   protected function createObject(array $data): int {
@@ -122,11 +123,12 @@ class HashlistAPI extends AbstractModelAPI {
         throw new HttpErrorException("sourceType value '" . $data["sourceType"] . "' is not supported (choices paste, import, url");
     }
     
-    // TODO: validate input is valid base64 encoded
     if ($data["sourceType"] == "paste") {
       if (strlen($data["sourceData"]) == 0) {
-        // TODO: Should be 400 instead
-        throw new HttpErrorException("sourceType=paste, requires sourceData to be non-empty");
+        throw new HttpError("sourceType=paste, requires sourceData to be non-empty");
+      }
+      else if ($dummyPost["hashfield"] == false) {
+        throw new HttpError("sourceData not valid base64 encoding");
       }
     }
     
