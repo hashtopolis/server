@@ -1,11 +1,12 @@
 <?php
 
-use DBA\Factory;
-use DBA\User;
-use DBA\ApiKey;
-use DBA\AccessGroupUser;
-use DBA\StoredValue;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\ApiKey;
+use Hashtopolis\inc\utils\AccessUtils;
 
+/**
+ * @deprecated
+ */
 abstract class HashtopolisTest {
   protected $minVersion;
   protected $maxVersion;

@@ -1,10 +1,11 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
-use DBA\Config;
-use DBA\Factory;
-use DBA\QueryFilter;
+use Hashtopolis\dba\models\Config;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\inc\defines\DConfig;
 
-require_once(dirname(__FILE__) . "/../../inc/defines/config.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/Dconfig.php");
 
 if (!isset($PRESENT["v0.14.x_pagination"])) {
   $qF = new QueryFilter(Config::ITEM, DConfig::DEFAULT_PAGE_SIZE, "=");

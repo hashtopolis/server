@@ -1,6 +1,7 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
-use DBA\Factory;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\Util;
 
 if (!isset($PRESENT["v0.14.x_maxAgents_taskwrapper"])) {
   if (!Util::databaseColumnExists("TaskWrapper", "maxAgents")) {

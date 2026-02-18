@@ -1,13 +1,16 @@
 <?php
 
-use DBA\AccessGroupUser;
-use DBA\Factory;
-use DBA\QueryFilter;
-use DBA\RightGroup;
-use DBA\StoredValue;
-use DBA\User;
-
 // set to 1 for debugging
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\CSRF;
+use Hashtopolis\inc\Login;
+use Hashtopolis\inc\Menu;
+use Hashtopolis\inc\SConfig;
+use Hashtopolis\inc\StartupConfig;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessControl;
+
 ini_set("display_errors", "0");
 
 session_start();

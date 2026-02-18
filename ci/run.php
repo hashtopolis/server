@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @deprecated
  * This is the entry point to run the full environment
  */
 

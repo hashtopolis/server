@@ -21,7 +21,7 @@ services:
     depends_on:
       - db
     ports:
-      - 8080:80
+      - "8080:80"
   db:
     container_name: hashtopolis-db
     image: mysql:8.4
@@ -42,7 +42,7 @@ services:
     depends_on:
       - hashtopolis-backend
     ports:
-      - 4200:80
+      - "4200:80"
 volumes:
   db:
   hashtopolis:

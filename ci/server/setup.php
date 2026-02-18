@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * @deprecated
+ *
  * This script should setup a server with the according version.
  * Note: we assume that the CI script already set up apache2 and configured to point to the correct directory for the test
  */
