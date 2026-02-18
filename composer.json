@@ -22,7 +22,7 @@
         "ext-pdo": "*",
         "composer/semver": "^3.4",
         "crell/api-problem": "^3.6",
-        "jimtools/jwt-auth": "^2.3",
+        "jimtools/jwt-auth": "^3.0",
         "middlewares/encoder": "^2.1",
         "middlewares/negotiation": "^2.1",
         "monolog/monolog": "^2.8",
