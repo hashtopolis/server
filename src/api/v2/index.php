@@ -210,8 +210,9 @@ class CorsHackMiddleware implements MiddlewareInterface {
     $requestHttpOrigin = $request->getHeaderLine('HTTP_ORIGIN');
 
     $envBackend = getenv('HASHTOPOLIS_BACKEND_URL');
+    $envFrontendPort = getenv('HASHTOPOLIS_FRONTEND_PORT');
     
-    if ($envBackend !== false) {
+    if ($envBackend !== false || $envFrontendPort !== false) {
       $requestHttpOrigin = explode('://', $requestHttpOrigin)[1];
       $envBackend = explode('://', $envBackend)[1];
 
@@ -224,10 +225,10 @@ class CorsHackMiddleware implements MiddlewareInterface {
       
       if ($requestHttpOriginUrl === $envBackendUrl || (in_array($requestHttpOriginUrl, $localhostSynonyms) && in_array($envBackendUrl, $localhostSynonyms))) {
         //Origin URL matches, now check the port too
-        $requestHttpOriginPort = substr($envBackend, strrpos($envBackend, ":")); //Needs to use strrpos in case of ipv6 because of multiple ':' characters
-        $envBackendPort = substr($envBackend, strrpos($envBackend, ":"));
+        $requestHttpOriginPort = substr($requestHttpOrigin, strrpos($requestHttpOrigin, ":") + 1); //Needs to use strrpos in case of ipv6 because of multiple ':' characters
+        $envBackendPort = substr($envBackend, strrpos($envBackend, ":") + 1);
 
-        if ($requestHttpOriginPort === $envBackendPort || $requestHttpOriginPort === "4200") {
+        if ($requestHttpOriginPort === $envFrontendPort || $requestHttpOriginPort === $envBackendPort) {
           $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'));
         }
         else {
