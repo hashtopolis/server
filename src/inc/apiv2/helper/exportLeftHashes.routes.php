@@ -43,4 +43,6 @@ class ExportLeftHashesHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 ExportLeftHashesHelperAPI::register($app);

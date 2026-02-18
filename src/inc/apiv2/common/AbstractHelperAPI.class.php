@@ -6,6 +6,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\App;
 use Slim\Exception\HttpForbiddenException;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
@@ -42,11 +43,15 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     $data = $request->getParsedBody();
     $allFeatures = $this->getAliasedFeatures();
     
-    // Validate if correct parameters are sent
-    $this->validateParameters($data, $allFeatures);
-    
-    /* Validate type of parameters */
-    $this->validateData($data, $allFeatures);
+    if ($data !== null) {
+      // Validate if correct parameters are sent
+      $this->validateParameters($data, $allFeatures);
+
+      /* Validate type of parameters */
+      $this->validateData($data, $allFeatures);
+    } else {
+      $data = [];
+    }
     
     /* All creation of object */
     $newObject = $this->actionPost($data);
@@ -65,14 +70,15 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     }
     elseif (is_array($newObject)) {
       return self::getMetaResponse($newObject, $request, $response);
+    } else {
+      throw new HttpError("Unable to process request!");
     }
-    throw new HttpError("Unable to process request!");
   }
   
   /**
    * Override-able registering of options
    */
-  static public function register($app): void {
+  static public function register(App $app): void {
     $me = get_called_class();
     $baseUri = $me::getBaseUri();
     
@@ -127,13 +133,13 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
       return false;
     }
     if ($range == '-') {
-      $c_start = $size - substr($range, 1);
+      $c_start = $size - (int) substr($range, 1);
     }
     else {
       $range = explode('-', $range);
-      $c_start = $range[0];
+      $c_start = (int) $range[0];
       if ((isset($range[1]) && is_numeric($range[1]))) {
-        $c_end = $range[1];
+        $c_end = (int) $range[1];
       }
       else {
         $c_end = $size;

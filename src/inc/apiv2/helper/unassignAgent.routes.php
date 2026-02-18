@@ -42,4 +42,6 @@ class UnassignAgentHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 UnassignAgentHelperAPI::register($app);

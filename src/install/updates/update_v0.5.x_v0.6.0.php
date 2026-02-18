@@ -5,6 +5,7 @@ use DBA\QueryFilter;
 use DBA\RightGroup;
 use DBA\User;
 use DBA\Factory;
+use DBA\UpdateSet;
 
 /** @noinspection PhpIncludeInspection */
 require_once(dirname(__FILE__) . "/../../inc/db.php");

@@ -57,7 +57,7 @@ class RunnerUtils {
    * @return boolean
    */
   private static function isAvailable() {
-    if (!`which python3`) {
+    if (!shell_exec("which python3")) {
       return false;
     }
     $path = self::getDir() . "/runner.zip";

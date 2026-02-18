@@ -34,4 +34,6 @@ class VoucherAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 VoucherAPI::register($app);

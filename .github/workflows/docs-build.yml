@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Check out the repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
     - name: Set up Python
@@ -29,6 +29,8 @@ jobs:
         sudo apt-get install npm
     - name: Start Hashtopolis server
       uses: ./.github/actions/start-hashtopolis
+      with:
+        db_system: "mysql"
     - name: Download newest apiv2 spec
       run: |
         wget http://localhost:8080/api/v2/openapi.json -P /tmp/

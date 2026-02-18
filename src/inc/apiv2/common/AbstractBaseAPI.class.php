@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AbstractModelFactory;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\MessageInterface;
@@ -44,6 +45,7 @@ use DBA\User;
 
 use DBA\Factory;
 use DBA\ContainFilter;
+use DBA\JoinFilter;
 use DBA\LikeFilter;
 use DBA\LikeFilterInsensitive;
 use DBA\LogEntry;
@@ -52,7 +54,7 @@ use DBA\QueryFilter;
 use DBA\SupertaskPretask;
 use Psr\Container\ContainerInterface;
 
-require_once(dirname(__FILE__) . "/../../load.php");
+require_once(dirname(__FILE__) . "/../../startup/include.php");
 
 
 /**
@@ -63,8 +65,8 @@ abstract class AbstractBaseAPI {
   
   abstract public function getRequiredPermissions(string $method): array;
   
-  /** @var DBA\User|null $user is currently logged in user */
-  private User|null $user;
+  /** @var DBA\User $user is currently logged in user */
+  private User $user;
   
   /** @var RouteParserInterface|null $routeParser contains routing information
    * which are for example used dynamic creation of _self references
@@ -144,6 +146,16 @@ abstract class AbstractBaseAPI {
     }
     return $features;
   }
+
+  /**
+   * Get features based on DBA model features
+   *
+   * @param string $dbaClass is the dba class to get the features from
+   */
+  //TODO doesnt retrieve features based on form fields, could be done by adding api class in relationship objects
+  final protected function getFeaturesOther(string $dbaClass): array {
+    return call_user_func($dbaClass . '::getFeatures');
+  }
   
   protected function getUpdateHandlers($id, $current_user): array {
     return [];
@@ -160,7 +172,7 @@ abstract class AbstractBaseAPI {
    * Implementations should use $includedData to collect related resources that should be included
    * in the API response, such as related entities or additional data.
    */
-  public static function aggregateData(object $object, array &$includedData = [], array $aggregateFieldsets = null): array
+  public static function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array
   {
     return [];
   }
@@ -174,6 +186,11 @@ abstract class AbstractBaseAPI {
     $features = $this->getFeatures();
     return $this->mapFeatures($features);
   }
+
+  public function getAliasedFeaturesOther($dbaClass): array {
+    $features = $this->getFeaturesOther($dbaClass);
+    return $this->mapFeatures($features);
+  }
   
   final protected function mapFeatures($features): array {
     $mappedFeatures = [];
@@ -182,6 +199,18 @@ abstract class AbstractBaseAPI {
       $mappedFeatures[$value['alias']]['dbname'] = $key;
     }
     return $mappedFeatures;
+  }
+
+  public static function getToOneRelationships(): array {
+    return [];
+  }
+  
+  public static function getToManyRelationships(): array {
+    return [];
+  }
+
+  public function getAllRelationships(): array {
+    return array_merge($this->getToOneRelationships(), $this->getToManyRelationships());
   }
   
   /**
@@ -196,7 +225,7 @@ abstract class AbstractBaseAPI {
   }
   
   
-  protected static function getModelFactory(string $model): object {
+  protected static function getModelFactory(string $model): AbstractModelFactory {
     switch ($model) {
       case AccessGroup::class:
         return Factory::getAccessGroupFactory();
@@ -267,7 +296,7 @@ abstract class AbstractBaseAPI {
       case User::class:
         return Factory::getUserFactory();
     }
-    assert(False, "Model '$model' cannot be mapped to Factory");
+    throw new HttpError("Model '$model' cannot be mapped to Factory");
   }
   
   /**
@@ -532,7 +561,7 @@ abstract class AbstractBaseAPI {
   /**
    * Convert JSON object value to DB insert value, supported by DBA
    * @throws NotFoundExceptionInterface
-   * @throws ContainerExceptionInterface,
+   * @throws ContainerExceptionInterface
    */
   protected function obj2Array(object $obj): array {
     // Convert values to JSON supported types
@@ -561,7 +590,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function obj2Resource(object $obj, array &$expandResult = [], array $sparseFieldsets = null, array $aggregateFieldsets = null): array {
+  protected function obj2Resource(object $obj, array &$expandResult = [], ?array $sparseFieldsets = null, ?array $aggregateFieldsets = null): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -1019,24 +1048,43 @@ abstract class AbstractBaseAPI {
   function getFilters(Request $request): array {
     return $this->getQueryParameterFamily($request, 'filter');
   }
+
+  protected static function checkJoinExists(array $joins, string $modelName) {
+    foreach($joins as $join) {
+      if ($join->getOtherFactory()->getModelName() === $modelName) {
+        return true;
+      }
+    }
+    return false;
+  }
   
   /**
    * Check for valid filter parameters and build QueryFilter
    * @throws HttpForbidden
    * @throws InternalError
    */
-  protected function makeFilter(array $filters, object $apiClass): array {
+  protected function makeFilter(array $filters, object $apiClass, array &$joinFilters = []): array {
     $qFs = [];
     $features = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
     foreach ($filters as $filter => $value) {
       
-      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith|__in|__nin)$/', $filter, $matches) == 0) {
+      if (preg_match('/^(?P<key>[_a-zA-Z0-9.]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith|__in|__nin)$/', $filter, $matches) == 0) {
         throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid");
       }
       
       // Special filtering of _id to use for uniform access to model primary key
       $cast_key = $matches['key'] == 'id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
+      if (strpos($cast_key, ".")) {
+        //When the key contains a "." it should be a relation in format: "task.taskname" where task is the relation.
+          $relationObject = $this->retrieveRelationKey($cast_key);
+          $factory = $relationObject->factory;
+          $cast_key = $relationObject->cast_key;
+          if (!self::checkJoinExists($joinFilters, $factory->getModelName())) {
+            $joinFilters[] = new JoinFilter($factory, $relationObject->joinKey, $relationObject->key);
+          }
+          $features = $relationObject->features_relation;
+      }
       
       if (!array_key_exists($cast_key, $features)) {
         throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid (key not valid field)");
@@ -1117,7 +1165,7 @@ abstract class AbstractBaseAPI {
           $qFs[] = new ContainFilter($remappedKey, $valueList, $factory, true);
           break;
         default:
-          assert(False, "Operator '" . $operator . "' not implemented");
+          throw new HttpError("Operator '" . $operator . "' not implemented");
       }
       
       if ($query_operator) {
@@ -1131,7 +1179,38 @@ abstract class AbstractBaseAPI {
     }
     return $qFs;
   }
-  
+
+  /**
+   * Retrieves the relation from a sort/filter value. ex task.taskName when task is a relation for the current
+   * Model endpoint. This works only for relations of 1 deep
+   */
+  protected function retrieveRelationKey(string $value): object {
+    $parts = explode(".", $value);
+    if (count($parts) == 2) {
+      $relationString = $parts[0];
+      $relations = $this->getAllRelationships();
+      if (array_key_exists($relationString, $relations)) {
+        $relationClass = $relations[$relationString]['relationType'];
+        $relationFeatures = $this->getAliasedFeaturesOther($relationClass);
+        $factory = $this->getModelFactory($relationClass);
+        $joinKey = $relations[$relationString]['relationKey'];
+        $key = $relations[$relationString]['key'];
+        $features_relation = $relationFeatures;
+        $value = $parts[1];
+        return (object) [
+          "factory" => $factory,
+          "joinKey" => $joinKey,
+          "key" => $key,
+          "features_relation" => $features_relation,
+          "cast_key" => $value
+        ];
+      } else {
+        throw new HttpError("Invalid relation: " . $relationString);
+      }
+    } else {
+      throw new HttpForbidden("Invalid key, multiple '.' found in key, but only relationships of one deep is allowed");
+    }
+  }
   
   /**
    * Check for valid ordering parameters and build QueryFilter
@@ -1145,19 +1224,29 @@ abstract class AbstractBaseAPI {
     $orderings = $this->getQueryParameterAsList($request, 'sort');
     $contains_primary_key = false;
     foreach ($orderings as $order) {
-      if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z]+)$/', $order, $matches)) {
+      $features_sort = $features;
+      if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z.]+)$/', $order, $matches)) {
         // Special filtering of _id to use for uniform access to model primary key
         $cast_key = $matches['key'] == 'id' ? $this->getPrimaryKey() : $matches['key'];
         if ($cast_key == $this->getPrimaryKey()) {
           $contains_primary_key = true;
         }
-        if (array_key_exists($cast_key, $features)) {
-          $remappedKey = $features[$cast_key]['dbname'];
+        $factory = $joinKey = $key = null;
+        if (strpos($cast_key, ".")) {
+          $relationObject = $this->retrieveRelationKey($cast_key);
+          $factory = $relationObject->factory;
+          $joinKey = $relationObject->joinKey;
+          $cast_key = $relationObject->cast_key;
+          $key = $relationObject->key;
+          $features_sort = $relationObject->features_relation;
+        }
+        if (array_key_exists($cast_key, $features_sort)) {
+          $remappedKey = $features_sort[$cast_key]['dbname'];
           $type = ($matches['operator'] == '-') ? "DESC" : "ASC";
           if ($reverseSort) {
             $type = ($type == "ASC") ? "DESC" : "ASC";
           }
-          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type];
+          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type, 'factory' => $factory, 'joinKey' => $joinKey, 'key' => $key];
         }
         else {
           throw new HttpForbidden("Ordering parameter '" . $order . "' is not valid");
@@ -1170,7 +1259,7 @@ abstract class AbstractBaseAPI {
     
     //when no primary key has been added in the sort parameter, add the default case of sorting on primary key as last sort
     if (!$contains_primary_key) {
-      $orderTemplates[] = ['by' => $this->getPrimaryKey(), 'type' => $defaultSort];
+      $orderTemplates[] = ['by' => $this->getPrimaryKey(), 'type' => $defaultSort, 'factory' => null, 'joinKey' => null];
     }
     
     return $orderTemplates;
@@ -1198,8 +1287,8 @@ abstract class AbstractBaseAPI {
     object $object,
     array $expandResult,
     array $includedResources,
-    array $sparseFieldsets = null,
-    array $aggregateFieldsets = null
+    ?array $sparseFieldsets = null,
+    ?array $aggregateFieldsets = null
 ): array {
     
     // Add missing expands to expands in case they have been added in aggregateData()
@@ -1300,7 +1389,7 @@ abstract class AbstractBaseAPI {
         
         $missingPermissionMatching = true;
         // if we also have permissions from expanded entries we need to check them as well
-        if (count($permsExpandMatching) && $this instanceof AbstractModelAPI) {
+        if (count($permsExpandMatching)) {
           foreach ($missing_permissions as $missing_permission) {
             $expands = $permsExpandMatching[$missing_permission];
             foreach ($expands as $expand) {
@@ -1530,9 +1619,9 @@ abstract class AbstractBaseAPI {
     $body = $response->getBody();
     $body->write($apiClass->ret2json($ret));
     
-    return $response->withStatus($statusCode)
-      ->withHeader("Content-Type", "application/vnd.api+json")
-      ->withHeader("Location", $dataResources[0]["links"]["self"]);
+    return $response->withHeader("Content-Type", "application/vnd.api+json")
+      ->withHeader("Location", $dataResources[0]["links"]["self"])
+      ->withStatus($statusCode);
     //for location we use links value from $dataresources because if we use $linksSelf, the wrong location gets returned in
     //case of a POST request
   }
@@ -1542,12 +1631,12 @@ abstract class AbstractBaseAPI {
   /**
    * @throws JsonException
    */
-  protected static function getMetaResponse(array $meta, Request $request, Response $response, int $statusCode = 200): MessageInterface|Response {
+  protected static function getMetaResponse(array $meta, Request $request, Response $response, int $statusCode = 200): Response {
     $ret = self::createJsonResponse(meta: $meta);
     $body = $response->getBody();
     $body->write(self::ret2json($ret));
     
-    return $response->withStatus($statusCode)->withHeader("Content-Type", "application/vnd.api+json");
+    return $response->withHeader("Content-Type", "application/vnd.api+json")->withStatus($statusCode);
   }
   
   /**

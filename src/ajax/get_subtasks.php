@@ -5,7 +5,7 @@ use DBA\QueryFilter;
 use DBA\Task;
 use DBA\Factory;
 
-require_once(dirname(__FILE__) . "/../inc/load.php");
+require_once(dirname(__FILE__) . "/../inc/startup/load.php");
 
 // test if task exists
 $taskWrapper = Factory::getTaskWrapperFactory()->get($_GET['taskWrapperId']);

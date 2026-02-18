@@ -58,10 +58,10 @@ use JimTools\JwtAuth\Rules\RequestMethodRule;
 use JimTools\JwtAuth\Rules\RequestPathRule;
 use Psr\Http\Message\ServerRequestInterface;
 
-require __DIR__ . "/../../../vendor/autoload.php";
-require __DIR__ . "/../../inc/apiv2/common/ErrorHandler.class.php";
+require_once(__DIR__ . "/../../../vendor/autoload.php");
+require_once(__DIR__ . "/../../inc/apiv2/common/ErrorHandler.class.php");
 
-require_once(dirname(__FILE__) . "/../../inc/load.php");
+require_once(dirname(__FILE__) . "/../../inc/startup/include.php");
 
 
 /* Construct container for middleware */
@@ -140,10 +140,8 @@ $container->set("classMapper", function () {
 
 /* API token validation */
 $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface $container) {
-  include(dirname(__FILE__) . '/../../inc/confv2.php');
-
   $decoder = new FirebaseDecoder(
-      new Secret($PEPPER[0], 'HS256')
+    new Secret(StartupConfig::getInstance()->getPepper(0), 'HS256', hash("sha256", StartupConfig::getInstance()->getPepper(0)))
   );
 
   $options = new Options(
@@ -153,7 +151,7 @@ $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface
   );
 
   $rules = [
-    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"]),
+    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/auth/oauth-token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"]),
     new RequestMethodRule(ignore: ["OPTIONS"])
   ];
   return new JwtAuthentication($options, $decoder, $rules);
@@ -306,63 +304,70 @@ $errorMiddlewareMethodNotAllowed->setErrorHandler(HttpMethodNotAllowedException:
 });
 
 
-require __DIR__ . "/../../inc/apiv2/auth/token.routes.php";
+require_once(__DIR__ . "/../../inc/apiv2/auth/token.routes.php");
+require_once(__DIR__ . "/../../inc/apiv2/common/openAPISchema.routes.php");
 
-require __DIR__ . "/../../inc/apiv2/common/openAPISchema.routes.php";
+$modelDir = __DIR__ . "/../../inc/apiv2/model";
 
-require __DIR__ . "/../../inc/apiv2/model/accessgroups.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/agentassignments.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/agentbinaries.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/agenterrors.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/agents.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/agentstats.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/chunks.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/configs.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/configsections.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/crackers.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/crackertypes.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/files.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/globalpermissiongroups.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/hashes.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/hashlists.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/hashtypes.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/healthcheckagents.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/healthchecks.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/logentries.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/notifications.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/preprocessors.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/pretasks.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/speeds.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/supertasks.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/tasks.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/taskwrappers.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/users.routes.php";
-require __DIR__ . "/../../inc/apiv2/model/vouchers.routes.php";
+require_once($modelDir . "/accessgroups.routes.php");
+require_once($modelDir . "/agentassignments.routes.php");
+require_once($modelDir . "/agentbinaries.routes.php");
+require_once($modelDir . "/agenterrors.routes.php");
+require_once($modelDir . "/agents.routes.php");
+require_once($modelDir . "/agentstats.routes.php");
+require_once($modelDir . "/chunks.routes.php");
+require_once($modelDir . "/configs.routes.php");
+require_once($modelDir . "/configsections.routes.php");
+require_once($modelDir . "/crackers.routes.php");
+require_once($modelDir . "/crackertypes.routes.php");
+require_once($modelDir . "/files.routes.php");
+require_once($modelDir . "/globalpermissiongroups.routes.php");
+require_once($modelDir . "/hashes.routes.php");
+require_once($modelDir . "/hashlists.routes.php");
+require_once($modelDir . "/hashtypes.routes.php");
+require_once($modelDir . "/healthcheckagents.routes.php");
+require_once($modelDir . "/healthchecks.routes.php");
+require_once($modelDir . "/logentries.routes.php");
+require_once($modelDir . "/notifications.routes.php");
+require_once($modelDir . "/preprocessors.routes.php");
+require_once($modelDir . "/pretasks.routes.php");
+require_once($modelDir . "/speeds.routes.php");
+require_once($modelDir . "/supertasks.routes.php");
+require_once($modelDir . "/tasks.routes.php");
+require_once($modelDir . "/taskwrappers.routes.php");
+require_once($modelDir . "/users.routes.php");
+require_once($modelDir . "/vouchers.routes.php");
 
-require __DIR__ . "/../../inc/apiv2/helper/abortChunk.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/assignAgent.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/changeOwnPassword.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/currentUser.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/createSupertask.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/createSuperHashlist.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/exportCrackedHashes.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/exportLeftHashes.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/exportWordlist.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/getAccessGroups.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/getAgentBinary.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/getCracksOfTask.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/getFile.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/getTaskProgressImage.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/getUserPermission.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/importCrackedHashes.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/importFile.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/purgeTask.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/recountFileLines.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/resetChunk.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/resetUserPassword.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/searchHashes.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/setUserPassword.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/taskExtraDetails.routes.php";
-require __DIR__ . "/../../inc/apiv2/helper/unassignAgent.routes.php";
+$helperDir = __DIR__ . "/../../inc/apiv2/helper";
+
+require_once($helperDir . "/abortChunk.routes.php");
+require_once($helperDir . "/assignAgent.routes.php");
+require_once($helperDir . "/bulkSupertaskBuilder.routes.php");
+require_once($helperDir . "/changeOwnPassword.routes.php");
+require_once($helperDir . "/currentUser.routes.php");
+require_once($helperDir . "/createSupertask.routes.php");
+require_once($helperDir . "/createSuperHashlist.routes.php");
+require_once($helperDir . "/exportCrackedHashes.routes.php");
+require_once($helperDir . "/exportLeftHashes.routes.php");
+require_once($helperDir . "/exportWordlist.routes.php");
+require_once($helperDir . "/getAccessGroups.routes.php");
+require_once($helperDir . "/getAgentBinary.routes.php");
+require_once($helperDir . "/getCracksOfTask.routes.php");
+require_once($helperDir . "/getFile.routes.php");
+require_once($helperDir . "/getTaskProgressImage.routes.php");
+require_once($helperDir . "/getUserPermission.routes.php");
+require_once($helperDir . "/importCrackedHashes.routes.php");
+require_once($helperDir . "/importFile.routes.php");
+require_once($helperDir . "/maskSupertaskBuilder.routes.php");
+require_once($helperDir . "/purgeTask.routes.php");
+require_once($helperDir . "/rebuildChunkCache.routes.php");
+require_once($helperDir . "/recountFileLines.routes.php");
+require_once($helperDir . "/rescanGlobalFiles.routes.php");
+require_once($helperDir . "/resetChunk.routes.php");
+require_once($helperDir . "/resetUserPassword.routes.php");
+require_once($helperDir . "/searchHashes.routes.php");
+require_once($helperDir . "/setUserPassword.routes.php");
+require_once($helperDir . "/taskExtraDetails.routes.php");
+require_once($helperDir . "/unassignAgent.routes.php");
 
 $app->run();

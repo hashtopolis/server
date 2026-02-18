@@ -16,6 +16,7 @@ class AttributeTypeTest(BaseTest):
             name=username,
             email='test@example.com',
             globalPermissionGroupId=1,
+            sessionLifetime=6000,
         )
         user.save()
 
@@ -45,6 +46,7 @@ class AttributeTypeTest(BaseTest):
             email='test@example.com',
             globalPermissionGroupId=1,
             passwordHash='test',
+            sessionLifetime=6000,
         )
         with self.assertRaises(HashtopolisError) as e:
             user.save()
@@ -59,6 +61,7 @@ class AttributeTypeTest(BaseTest):
             name=username,
             email='test@example.com',
             globalPermissionGroupId=1,
+            sessionLifetime=6000,
         )
         user.save()
 

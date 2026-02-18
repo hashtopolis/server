@@ -64,8 +64,6 @@ class HashtopolisTestFramework {
 }
 
 private function backupDatabase() {
-  global $CONN;
-
   if (!file_exists(dirname(__FILE__) . "/../ci/db-backups")) {
     mkdir(dirname(__FILE__) . "/../ci/db-backups");
   }
@@ -74,7 +72,7 @@ private function backupDatabase() {
   HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Backup database to " . $this->dbBackupFile . "...");
 
   // Note that the '-y' option avoids requirement on 'PROCESS' privilege for the 'hashtopolis' user!
-  exec("mysqldump hashtopolis -y -h".$CONN['server'] . " -P".$CONN['port'] . " -u".$CONN['user'] . " -p".$CONN['pass'] ." --skip-ssl > " . $this->dbBackupFile, $output, $status);
+  exec("mysqldump hashtopolis -y -h". StartupConfig::getInstance()->getDatabaseServer() . " -P" . StartupConfig::getInstance()->getDatabasePort() . " -u" . StartupConfig::getInstance()->getDatabaseUser() . " -p" . StartupConfig::getInstance()->getDatabasePassword() ." --skip-ssl > " . $this->dbBackupFile, $output, $status);
   if ($status != 0) {
     $this->dbBackupFile = "";
 
@@ -84,8 +82,6 @@ private function backupDatabase() {
 }
 
 private function restoreDatabase() {
-  global $CONN;
-
   if (!empty($this->dbBackupFile)) {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Restoring database from " . $this->dbBackupFile . "...");
 

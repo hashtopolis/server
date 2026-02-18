@@ -160,7 +160,7 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
       $qF1 = new LikeFilterInsensitive(Hash::PLAINTEXT, "%" . $searchEntry . "%");
       $qF2 = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($userHashlists), Factory::getHashFactory());
       $joined2 = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::JOIN => $jF]);
-      /** @var $hashes Hash[] */
+      /** @var Hash[] $hashes */
       $hashes = $joined2[Factory::getHashFactory()->getModelName()];
       for ($i = 0; $i < sizeof($hashes); $i++) {
         $joined[Factory::getHashFactory()->getModelName()][] = $joined2[Factory::getHashFactory()->getModelName()][$i];
@@ -168,7 +168,7 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
       }
       
       $resultEntry = [];
-      /** @var $hashes Hash[] */
+      /** @var Hash[] $hashes */
       $hashes = $joined[Factory::getHashFactory()->getModelName()];
       if (empty($hashes)) {
         $resultEntry["found"] = false;
@@ -179,7 +179,7 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
         $resultEntry["query"] = $searchEntry;
         $matches = [];
         for ($i = 0; $i < sizeof($hashes); $i++) {
-          /** @var $hash Hash */
+          /** @var Hash $hash */
           $hash = $joined[Factory::getHashFactory()->getModelName()][$i];
           $hashlist = $joined[Factory::getHashlistFactory()->getModelName()][$i];
           $hashResource = self::obj2Resource($hash);
@@ -196,4 +196,6 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 SearchHashesHelperAPI::register($app);

@@ -7,7 +7,7 @@
  * The input is sent as JSON encoded data and the response will also be in JSON
  */
 
-require_once(dirname(__FILE__) . "/../inc/load.php");
+require_once(dirname(__FILE__) . "/../inc/startup/include.php");
 set_time_limit(0);
 
 header("Content-Type: application/json");

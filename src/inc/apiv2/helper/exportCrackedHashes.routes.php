@@ -43,4 +43,6 @@ class ExportCrackedHashesHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 ExportCrackedHashesHelperAPI::register($app);

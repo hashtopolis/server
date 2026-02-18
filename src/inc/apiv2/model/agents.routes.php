@@ -14,7 +14,6 @@ use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\Task;
 use DBA\User;
-use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -35,6 +34,7 @@ class AgentAPI extends AbstractModelAPI {
   protected function getUpdateHandlers($id, $current_user): array {
     return [
       Agent::IGNORE_ERRORS => fn($value) => AgentUtils::changeIgnoreErrors($id, $value, $current_user),
+      Agent::AGENT_NAME => fn($value) => AgentUtils::rename($id, $value, $current_user),
     ];
   }
   
@@ -43,10 +43,10 @@ class AgentAPI extends AbstractModelAPI {
    * $included_data.
    *
    * @param object $object the agent object were data is aggregated from
-   * @param array &$includedData
+   * @param array &$included_data
    * @return array not used here 
    */
-  static function aggregateData(object $object, array &$included_data = [], array $aggregateFieldsets = null): array {
+  static function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
     $agentId = $object->getId();
     $qFs = [];
     $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
@@ -74,7 +74,7 @@ class AgentAPI extends AbstractModelAPI {
     return [
       Factory::JOIN => [
         new JoinFilter(Factory::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID)
-      ], Factory::FILTER => [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups),
+      ], Factory::FILTER => [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory()),
       ]
     ];
   }
@@ -127,9 +127,20 @@ class AgentAPI extends AbstractModelAPI {
       ],
     ];
   }
+
+  public static function getToOneRelationships(): array {
+    return [
+      'user' => [
+        'key' => Agent::USER_ID,
+        
+        'relationType' => User::class,
+        'relationKey' => User::USER_ID,
+      ],
+    ];
+  }
   
-  #[NoReturn] protected function createObject(array $data): int {
-    assert(False, "Agents cannot be created via API");
+  protected function createObject(array $data): int {
+    throw new HttpError("Agents cannot be created via API");
   }
   
   /**
@@ -140,4 +151,6 @@ class AgentAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 AgentAPI::register($app);

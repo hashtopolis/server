@@ -46,4 +46,6 @@ class ChangeOwnPasswordHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 ChangeOwnPasswordHelperAPI::register($app);

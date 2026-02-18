@@ -1,7 +1,6 @@
 <?php
 
 use DBA\Chunk;
-use JetBrains\PhpStorm\NoReturn;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use DBA\Factory;
@@ -34,8 +33,8 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
   }
   
   
-  #[NoReturn] public function actionPost(array $data): object|array|null {
-    assert(False, "GetTaskProgressImage has no POST");
+  public function actionPost(array $data): object|array|null {
+    throw new HttpErrorException("GetTaskProgressImage has no POST");
   }
   
   /**
@@ -152,7 +151,7 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
         }
       }
     }
-    else {
+    else if (isset($task)) {
       $progress = $task->getKeyspaceProgress();
       $keyspace = max($task->getKeyspace(), 1);
       
@@ -222,4 +221,6 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 GetTaskProgressImageHelperAPI::register($app);

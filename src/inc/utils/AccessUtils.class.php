@@ -164,6 +164,7 @@ class AccessUtils {
   public static function getOrCreateDefaultAccessGroup() {
     $accessGroup = Factory::getAccessGroupFactory()->get(1);
     if ($accessGroup == null) {
+      // this should never happen anymore (unless someone deleted access group with ID 1)
       $accessGroup = new AccessGroup(1, "Default Group");
       $accessGroup = Factory::getAccessGroupFactory()->save($accessGroup);
     }

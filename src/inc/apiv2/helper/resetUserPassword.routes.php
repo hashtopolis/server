@@ -43,4 +43,6 @@ class ResetUserPasswordHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 ResetUserPasswordHelperAPI::register($app);

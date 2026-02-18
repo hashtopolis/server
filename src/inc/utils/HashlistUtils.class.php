@@ -896,7 +896,7 @@ class HashlistUtils {
             $preFound++;
           }
           $bufferCount++;
-          if ($bufferCount >= 10000) {
+          if ($bufferCount >= 5000) {
             $result = Factory::getHashFactory()->massSave($values);
             $added += $result->rowCount();
             $values = array();

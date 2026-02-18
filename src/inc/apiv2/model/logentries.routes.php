@@ -3,7 +3,6 @@
 use DBA\Factory;
 
 use DBA\LogEntry;
-use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -17,13 +16,15 @@ class LogEntryAPI extends AbstractModelAPI {
     return LogEntry::class;
   }
   
-  #[NoReturn] protected function createObject(array $data): int {
-    assert(False, "Logentries cannot be created via API");
+  protected function createObject(array $data): int {
+    throw new HttpError("Logentries cannot be created via API");
   }
   
   protected function deleteObject(object $object): void {
-    assert(False, "Logentries cannot be deleted via API");
+    throw new HttpError("Logentries cannot be deleted via API");
   }
 }
 
+use Slim\App;
+/** @var App $app */
 LogEntryAPI::register($app);

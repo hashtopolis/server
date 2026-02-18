@@ -65,4 +65,6 @@ class CreateSuperHashlistHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 CreateSuperHashlistHelperAPI::register($app);

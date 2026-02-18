@@ -9,6 +9,7 @@ services:
         - CONTAINER_USER_CMD_PRE
         - CONTAINER_USER_CMD_POST
     environment:
+      HASHTOPOLIS_DB_TYPE: mysql
       HASHTOPOLIS_DB_USER: hashtopolis
       HASHTOPOLIS_DB_PASS: hashtopolis
       HASHTOPOLIS_DB_HOST: hashtopolis-db-dev
@@ -23,11 +24,12 @@ services:
       # and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/var/www/html
       - hashtopolis-server-dev:/usr/local/share/hashtopolis:Z
+      # - ./jwks.json:/keys/jwks.json:ro
     networks:
       - hashtopolis_dev
   hashtopolis-db-dev:
     container_name: hashtopolis-db-dev
-    image: mysql:8.0
+    image: mysql:8.4
     restart: always
     ports:
       - "3306:3306"

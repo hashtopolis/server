@@ -4,7 +4,7 @@ use DBA\Factory;
 use DBA\APiKey;
 use DBA\QueryFilter;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 
 if (!Login::getInstance()->isLoggedin()) {

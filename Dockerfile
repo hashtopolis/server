@@ -1,3 +1,9 @@
+FROM rust:1.91-slim-trixie AS prebuild
+
+RUN apt-get update && apt-get install -y pkg-config libssl-dev
+
+RUN cargo install sqlx-cli --no-default-features --features native-tls,mysql,postgres
+
 FROM alpine/git AS preprocess
 
 COPY .gi[t] /.git
@@ -6,7 +12,7 @@ RUN cd / && git rev-parse --short HEAD > /HEAD; exit 0
 
 # BASE image
 # ----BEGIN----
-FROM php:8.4-apache AS hashtopolis-server-base
+FROM php:8.5-apache AS hashtopolis-server-base
 
 # Enable possible build args for injecting user commands
 ARG CONTAINER_USER_CMD_PRE
@@ -24,6 +30,9 @@ ENV HASHTOPOLIS_IMPORT_PATH=${HASHTOPOLIS_PATH}/import
 ENV HASHTOPOLIS_LOG_PATH=${HASHTOPOLIS_PATH}/log
 ENV HASHTOPOLIS_CONFIG_PATH=${HASHTOPOLIS_PATH}/config
 ENV HASHTOPOLIS_BINARIES_PATH=${HASHTOPOLIS_PATH}/binaries
+ENV HASHTOPOLIS_TUS_PATH=/var/tmp/tus
+ENV HASHTOPOLIS_TEMP_UPLOADS_PATH=${HASHTOPOLIS_TUS_PATH}/uploads
+ENV HASHTOPOLIS_TEMP_META_PATH=${HASHTOPOLIS_TUS_PATH}/meta
 
 # Add support for TLS inspection corporate setups, see .env.sample for details
 ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt 
@@ -37,12 +46,12 @@ RUN apt-get update \
     #
     # Install git, procps, lsb-release (useful for CLI installs)
     && apt-get -y install git iproute2 procps lsb-release \
-    && apt-get -y install mariadb-client \
+    && apt-get -y install mariadb-client postgresql-client libpq-dev \
     && apt-get -y install libpng-dev \
     && apt-get -y install ssmtp \
     \
     # Install extensions (optional)
-    && docker-php-ext-install pdo_mysql gd \
+    && docker-php-ext-install pdo_mysql pgsql pdo_pgsql gd \
     \
     # Install Composer
     && curl -sS https://getcomposer.org/installer | php \
@@ -61,26 +70,26 @@ RUN echo "ServerTokens Prod" >> /etc/apache2/apache2.conf \
     && echo "ServerSignature Off" >> /etc/apache2/apache2.conf
 
 
-RUN mkdir -p ${HASHTOPOLIS_DOCUMENT_ROOT} \
-    && mkdir ${HASHTOPOLIS_DOCUMENT_ROOT}/../../.git/ \
-    && mkdir -p ${HASHTOPOLIS_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_PATH} \
-    && chmod g+w ${HASHTOPOLIS_PATH} \
-    && mkdir -p ${HASHTOPOLIS_FILES_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_FILES_PATH} \
-    && chmod g+w ${HASHTOPOLIS_FILES_PATH} \
-    && mkdir -p ${HASHTOPOLIS_IMPORT_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_IMPORT_PATH} \
-    && chmod g+w ${HASHTOPOLIS_IMPORT_PATH} \
-    && mkdir -p ${HASHTOPOLIS_LOG_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_LOG_PATH} \
-    && chmod g+w ${HASHTOPOLIS_LOG_PATH} \
-    && mkdir -p ${HASHTOPOLIS_CONFIG_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_CONFIG_PATH} \
-    && chmod g+w ${HASHTOPOLIS_CONFIG_PATH} \
-    && mkdir -p ${HASHTOPOLIS_BINARIES_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_BINARIES_PATH} \
-    && chmod g+w ${HASHTOPOLIS_BINARIES_PATH}
+RUN mkdir -p \
+    ${HASHTOPOLIS_DOCUMENT_ROOT} \
+    ${HASHTOPOLIS_DOCUMENT_ROOT}/../../.git/ \
+    ${HASHTOPOLIS_PATH} \
+    ${HASHTOPOLIS_FILES_PATH} \
+    ${HASHTOPOLIS_IMPORT_PATH} \
+    ${HASHTOPOLIS_LOG_PATH} \
+    ${HASHTOPOLIS_CONFIG_PATH} \
+    ${HASHTOPOLIS_BINARIES_PATH} \
+    ${HASHTOPOLIS_TUS_PATH} \
+    ${HASHTOPOLIS_TEMP_UPLOADS_PATH} \
+    ${HASHTOPOLIS_TEMP_META_PATH} \
+    && chown -R www-data:www-data \
+    ${HASHTOPOLIS_PATH} \
+    ${HASHTOPOLIS_TUS_PATH} \
+    && chmod -R g+w \
+    ${HASHTOPOLIS_PATH} \
+    ${HASHTOPOLIS_TUS_PATH}
+
+COPY --from=prebuild /usr/local/cargo/bin/sqlx /usr/bin/
 
 COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 
@@ -124,8 +133,9 @@ RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
 RUN apt-get update \
     && apt-get install -y python3 python3-pip python3-requests python3-pytest
 
-#TODO: Should source from ./ci/apiv2/requirements.txt
-RUN pip3 install click click_log confidence pytest tuspy --break-system-packages
+# install dependencies from ./ci/apiv2/requirements.txt
+COPY ./ci/apiv2/requirements.txt /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt --break-system-packages
 
 # Adding VSCode user and fixing permissions
 RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \

@@ -4,10 +4,9 @@
  * This is the entry point to run the full environment
  */
 
-require_once(dirname(__FILE__) . "/../src/inc/confv2.php");
+require_once(dirname(__FILE__) . "/../src/inc/StartupConfig.class.php");
 require_once(dirname(__FILE__) . "/../src/dba/init.php");
 require_once(dirname(__FILE__) . "/../src/inc/defines/config.php");
-require_once(dirname(__FILE__) . "/../src/inc/info.php");
 require_once(dirname(__FILE__) . "/../src/inc/Util.class.php");
 require_once(dirname(__FILE__) . "/../src/inc/Encryption.class.php");
 require_once(dirname(__FILE__) . "/../src/inc/utils/AccessUtils.class.php");

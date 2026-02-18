@@ -168,13 +168,15 @@ class HashlistAPI extends AbstractModelAPI {
   
   protected function getUpdateHandlers($id, $current_user): array {
     return [
-      Hashlist::IS_ARCHIVED => fn($value) => HashListUtils::setArchived($id, $value, $current_user),
-      Hashlist::NOTES => fn($value) => HashListUtils::editNotes($id, $value, $current_user),
-      Hashlist::IS_SECRET => fn($value) => HashListUtils::setSecret($id, $value, $current_user),
-      Hashlist::HASHLIST_NAME => fn($value) => HashListUtils::rename($id, $value, $current_user),
-      Hashlist::ACCESS_GROUP_ID => fn($value) => HashListUtils::changeAccessGroup($id, $value, $current_user)
+      Hashlist::IS_ARCHIVED => fn($value) => HashlistUtils::setArchived($id, $value, $current_user),
+      Hashlist::NOTES => fn($value) => HashlistUtils::editNotes($id, $value, $current_user),
+      Hashlist::IS_SECRET => fn($value) => HashlistUtils::setSecret($id, $value, $current_user),
+      Hashlist::HASHLIST_NAME => fn($value) => HashlistUtils::rename($id, $value, $current_user),
+      Hashlist::ACCESS_GROUP_ID => fn($value) => HashlistUtils::changeAccessGroup($id, $value, $current_user)
     ];
   }
 }
 
+use Slim\App;
+/** @var App $app */
 HashlistAPI::register($app);
