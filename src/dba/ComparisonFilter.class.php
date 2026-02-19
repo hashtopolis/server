@@ -8,11 +8,11 @@ class ComparisonFilter extends Filter {
   private string $operator;
   
   /**
-   * @var AbstractModelFactory
+   * @var AbstractModelFactory|null
    */
   private $overrideFactory;
   
-  function __construct(string $key1, string $key2, string $operator, AbstractModelFactory $overrideFactory = null) {
+  function __construct(string $key1, string $key2, string $operator, ?AbstractModelFactory $overrideFactory = null) {
     $this->key1 = $key1;
     $this->key2 = $key2;
     $this->operator = $operator;

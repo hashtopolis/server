@@ -2,8 +2,10 @@
 
 namespace DBA;
 
+use Exception;
 use MassUpdateSet;
 use PDO, PDOStatement, PDOException;
+use StartupConfig;
 use UI;
 
 /**
@@ -136,7 +138,7 @@ abstract class AbstractModelFactory {
     
     $keys = self::getMappedModelKeys($model);
     
-    if($vals[0] === -1 || $vals[0] === null){
+    if ($vals[0] === -1 || $vals[0] === null) {
       array_splice($vals, 0, 1);
       array_splice($keys, 0, 1);
     }
@@ -173,11 +175,11 @@ abstract class AbstractModelFactory {
    * @return Filter[]
    */
   private function getFilters(array $arr): array {
-    if (!is_array($arr['filter'])) {
-      $arr['filter'] = array($arr['filter']);
+    if (!is_array($arr[Factory::FILTER])) {
+      $arr[Factory::FILTER] = array($arr[Factory::FILTER]);
     }
-    if (isset($arr['filter'])) {
-      return $arr['filter'];
+    if (isset($arr[Factory::FILTER])) {
+      return $arr[Factory::FILTER];
     }
     return array();
   }
@@ -187,11 +189,11 @@ abstract class AbstractModelFactory {
    * @return Order[]
    */
   private function getOrders(array $arr): array {
-    if (!is_array($arr['order'])) {
-      $arr['order'] = array($arr['order']);
+    if (!is_array($arr[Factory::ORDER])) {
+      $arr[Factory::ORDER] = array($arr[Factory::ORDER]);
     }
-    if (isset($arr['order'])) {
-      return $arr['order'];
+    if (isset($arr[Factory::ORDER])) {
+      return $arr[Factory::ORDER];
     }
     return array();
   }
@@ -201,11 +203,11 @@ abstract class AbstractModelFactory {
    * @return Group[]
    */
   private function getGroups(array $arr): array {
-    if (!is_array($arr['group'])) {
-      $arr['group'] = array($arr['group']);
+    if (!is_array($arr[Factory::GROUP])) {
+      $arr[Factory::GROUP] = array($arr[Factory::GROUP]);
     }
-    if (isset($arr['group'])) {
-      return $arr['group'];
+    if (isset($arr[Factory::GROUP])) {
+      return $arr[Factory::GROUP];
     }
     return array();
   }
@@ -215,11 +217,11 @@ abstract class AbstractModelFactory {
    * @return Join[]
    */
   private function getJoins(array $arr): array {
-    if (!is_array($arr['join'])) {
-      $arr['join'] = array($arr['join']);
+    if (!is_array($arr[Factory::JOIN])) {
+      $arr[Factory::JOIN] = array($arr[Factory::JOIN]);
     }
-    if (isset($arr['join'])) {
-      return $arr['join'];
+    if (isset($arr[Factory::JOIN])) {
+      return $arr[Factory::JOIN];
     }
     return array();
   }
@@ -423,8 +425,8 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
     $dbh = self::getDB();
@@ -449,11 +451,11 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
-    if (array_key_exists('join', $options)) {
-      $query .= $this->applyJoins($options['join']);
+    if (array_key_exists(Factory::JOIN, $options)) {
+      $query .= $this->applyJoins($options[Factory::JOIN]);
     }
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
     $dbh = self::getDB();
@@ -463,14 +465,39 @@ abstract class AbstractModelFactory {
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
   
+  /**
+   * @param $options array options of query (filters and joins)
+   * @param $column string single column key which should be retrieved
+   * @return array of the column entries returned from this query
+   */
+  public function columnFilter(array $options, string $column): array {
+    $query = "SELECT " . Util::createPrefixedString($this->getMappedModelTable(), [self::getMappedModelKey($this->getNullObject(), $column)]);
+    $query = $query . " FROM " . $this->getMappedModelTable();
+    
+    $vals = array();
+    
+    if (array_key_exists(Factory::JOIN, $options)) {
+      $query .= $this->applyJoins($options[Factory::JOIN]);
+    }
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
+    }
+    
+    $dbh = self::getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+  }
+  
   public function sumFilter($options, $sumColumn) {
     $query = "SELECT SUM(" . self::getMappedModelKey($this->getNullObject(), $sumColumn) . ") AS sum ";
     $query = $query . " FROM " . $this->getMappedModelTable();
     
     $vals = array();
     
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
     $dbh = self::getDB();
@@ -487,12 +514,12 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
-    if (array_key_exists('join', $options)) {
-      $query .= $this->applyJoins($options['join']);
+    if (array_key_exists(Factory::JOIN, $options)) {
+      $query .= $this->applyJoins($options[Factory::JOIN]);
     }
     
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
     $dbh = self::getDB();
@@ -554,14 +581,15 @@ abstract class AbstractModelFactory {
    * structure
    *
    * $options = array();
-   * $options['filter'] is an array of QueryFilter options
-   * $options['order'] is an array of OrderFilter options
-   * $options['join'] is an array of JoinFilter options
+   * $options[Factory::FILTER] is an array of QueryFilter options
+   * $options[Factory::ORDER] is an array of OrderFilter options
+   * $options[Factory::JOIN] is an array of JoinFilter options
    *
    * @param $options array containing option settings
    * @return AbstractModel[]|AbstractModel Returns a list of matching objects or Null
    */
   private function filterWithJoin(array $options): array|AbstractModel {
+    $vals = array();
     $joins = $this->getJoins($options);
     $factories = array($this);
     $query = "SELECT " . Util::createPrefixedString($this->getMappedModelTable(), self::getMappedModelKeys($this->getNullObject()));
@@ -580,32 +608,34 @@ abstract class AbstractModelFactory {
       }
       $match1 = self::getMappedModelKey($localFactory->getNullObject(), $join->getMatch1());
       $match2 = self::getMappedModelKey($joinFactory->getNullObject(), $join->getMatch2());
-      $query .= " INNER JOIN " . $joinFactory->getMappedModelTable() . " ON " . $localFactory->getMappedModelTable() . "." . $match1 . "=" . $joinFactory->getMappedModelTable() . "." . $match2 . " ";
+      $query .= " " . $join->getJoinType() . " JOIN " . $joinFactory->getMappedModelTable() . " ON " . $localFactory->getMappedModelTable() . "." . $match1 . "=" . $joinFactory->getMappedModelTable() . "." . $match2 . " ";
+      $joinQueryFilters = $join->getQueryFilters();
+      if (count($joinQueryFilters) > 0) {
+        $query .= $this->applyFilters($vals, $joinQueryFilters, true);
+      }
     }
     
     // Apply all normal filter to this query
-    $vals = array();
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
-    if (array_key_exists("group", $options)) {
+    if (array_key_exists(Factory::GROUP, $options)) {
       $query .= $this->applyGroups($this->getGroups($options));
     }
     
     // Apply order filter
-    if (!array_key_exists("order", $options)) {
+    if (!array_key_exists(Factory::ORDER, $options)) {
       // Add a asc order on the primary keys as a standard
       $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
       $orderOptions = array($oF);
-      $options['order'] = $orderOptions;
+      $options[Factory::ORDER] = $orderOptions;
     }
-    $query .= $this->applyOrder($options['order']);
+    $query .= $this->applyOrder($options[Factory::ORDER]);
     
-    if (array_key_exists("limit", $options)) {
-      $query .= $this->applyLimit($options['limit']);
+    if (array_key_exists(Factory::LIMIT, $options)) {
+      $query .= $this->applyLimit($options[Factory::LIMIT]);
     }
-    
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
@@ -644,7 +674,7 @@ abstract class AbstractModelFactory {
    */
   public function filter(array $options, bool $single = false) {
     // Check if we need to join and if so pass on to internal Function
-    if (array_key_exists('join', $options)) {
+    if (array_key_exists(Factory::JOIN, $options)) {
       return $this->filterWithJoin($options);
     }
     
@@ -652,24 +682,24 @@ abstract class AbstractModelFactory {
     $query = "SELECT " . implode(", ", $keys) . " FROM " . $this->getMappedModelTable();
     $vals = array();
     
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
-    if (array_key_exists("group", $options)) {
+    if (array_key_exists(Factory::GROUP, $options)) {
       $query .= $this->applyGroups($this->getGroups($options));
     }
     
-    if (!array_key_exists("order", $options)) {
+    if (!array_key_exists(Factory::ORDER, $options)) {
       // Add a asc order on the primary keys as a standard
       $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
       $orderOptions = array($oF);
-      $options['order'] = $orderOptions;
+      $options[Factory::ORDER] = $orderOptions;
     }
-    $query .= $this->applyOrder($options['order']);
+    $query .= $this->applyOrder($options[Factory::ORDER]);
     
-    if (array_key_exists("limit", $options)) {
-      $query .= $this->applyLimit($options['limit']);
+    if (array_key_exists(Factory::LIMIT, $options)) {
+      $query .= $this->applyLimit($options[Factory::LIMIT]);
     }
     
     $dbh = self::getDB();
@@ -709,7 +739,7 @@ abstract class AbstractModelFactory {
    * @param $filters Filter|Filter[]
    * @return string
    */
-  private function applyFilters(&$vals, Filter|array $filters): string {
+  private function applyFilters(&$vals, Filter|array $filters, bool $isJoinFilter = false): string {
     $parts = array();
     if (!is_array($filters)) {
       $filters = array($filters);
@@ -729,6 +759,9 @@ abstract class AbstractModelFactory {
       else {
         $vals[] = $v;
       }
+    }
+    if ($isJoinFilter) {
+      return " AND " . implode(" AND ", $parts);
     }
     return " WHERE " . implode(" AND ", $parts);
   }
@@ -758,7 +791,7 @@ abstract class AbstractModelFactory {
       }
       $match1 = self::getMappedModelKey($localFactory->getNullObject(), $join->getMatch1());
       $match2 = self::getMappedModelKey($joinFactory->getNullObject(), $join->getMatch2());
-      $query .= " INNER JOIN " . $joinFactory->getMappedModelTable() . " ON " . $localFactory->getMappedModelTable() . "." . $match1 . "=" . $joinFactory->getMappedModelTable() . "." . $match2 . " ";
+      $query .= " " . $join->getJoinType() . " JOIN " . $joinFactory->getMappedModelTable() . " ON " . $localFactory->getMappedModelTable() . "." . $match1 . "=" . $joinFactory->getMappedModelTable() . "." . $match2 . " ";
     }
     return $query;
   }
@@ -809,7 +842,7 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
-    if (array_key_exists("filter", $options)) {
+    if (array_key_exists(Factory::FILTER, $options)) {
       $query .= $this->applyFilters($vals, $this->getFilters($options));
     }
     
@@ -831,12 +864,12 @@ abstract class AbstractModelFactory {
     if (sizeof($updates) == 0) {
       return null;
     }
-    $query .= " SET ".self::getMappedModelKey($this->getNullObject(),$updateColumn)." = ( CASE ";
+    $query .= " SET " . self::getMappedModelKey($this->getNullObject(), $updateColumn) . " = ( CASE ";
     
     $vals = array();
     
     foreach ($updates as $update) {
-      $query .= $update->getMassQuery(self::getMappedModelKey($this->getNullObject(),$matchingColumn));
+      $query .= $update->getMassQuery(self::getMappedModelKey($this->getNullObject(), $matchingColumn));
       $vals[] = $update->getMatchValue();
       $vals[] = $update->getUpdateValue();
     }
@@ -847,7 +880,14 @@ abstract class AbstractModelFactory {
       $matchingArr[] = "?";
     }
     
-    $query .= "END) WHERE ".self::getMappedModelKey($this->getNullObject(), $matchingColumn)." IN (" . implode(",", $matchingArr) . ")";
+    // this covers the specific case when integer values are updated and the db system does not know what type the case statements would have
+    // mysql does not really care, but postgres does
+    // the trick we use here works for both systems (as opposed to cast it to int/bigint in postgres with ::bigint where we would need to branch based on the db)
+    if (is_int($updates[0]->getUpdateValue())) {
+      $query .= " ELSE 2147483648 "; // 32 bit int max + 1
+    }
+    
+    $query .= "END) WHERE " . self::getMappedModelKey($this->getNullObject(), $matchingColumn) . " IN (" . implode(",", $matchingArr) . ")";
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     return $stmt->execute($vals);
@@ -858,11 +898,11 @@ abstract class AbstractModelFactory {
     
     $vals = array();
     
-    if (array_key_exists("update", $options)) {
+    if (array_key_exists(Factory::UPDATE, $options)) {
       $query = $query . " SET ";
       
       
-      $updateOptions = $options['update'];
+      $updateOptions = $options[Factory::UPDATE];
       if (!is_array($updateOptions)) {
         $updateOptions = array($updateOptions);
       }
@@ -881,8 +921,8 @@ abstract class AbstractModelFactory {
       }
     }
     
-    if (array_key_exists("filter", $options)) {
-      $query .= $this->applyFilters($vals, $options['filter']);
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
     $dbh = self::getDB();
@@ -893,29 +933,29 @@ abstract class AbstractModelFactory {
   /**
    * Returns the DB connection if possible
    * @param bool $test
-   * @return PDO
+   * @return ?PDO
+   * @throws Exception
    */
-  public function getDB(bool $test = false): ?PDO {
+  public function getDB(bool $test = false, array $testProperties = []): ?PDO {
     if (self::$dbh !== null) {
       return self::$dbh;
     }
     try {
-      $dbUser = @DBA_USER;
-      $dbPass = @DBA_PASS;
-      $dbType = @DBA_TYPE;
-      $dbHost = @DBA_SERVER;
-      $dbPort = @DBA_PORT;
-      $dbDB = @DBA_DB;
-      if ($test) { // if the connection is being tested, take credentials from legacy global variable
-        global $CONN;
-        $dbUser = $CONN['user'];
-        $dbPass = $CONN['pass'];
-        $dbType = $CONN['type'];
-        $dbHost = $CONN['server'];
-        $dbPort = $CONN['port'];
-        $dbDB = $CONN['db'];
+      $dbUser = StartupConfig::getInstance()->getDatabaseUser();
+      $dbPass = StartupConfig::getInstance()->getDatabasePassword();
+      $dbType = StartupConfig::getInstance()->getDatabaseType();
+      $dbHost = StartupConfig::getInstance()->getDatabaseServer();
+      $dbPort = StartupConfig::getInstance()->getDatabasePort();
+      $dbDB = StartupConfig::getInstance()->getDatabaseDB();
+      if ($test && sizeof($testProperties) == 6) { // if the connection is being tested, take credentials from argument properties
+        $dbUser = $testProperties['user'];
+        $dbPass = $testProperties['pass'];
+        $dbType = $testProperties['type'];
+        $dbHost = $testProperties['server'];
+        $dbPort = $testProperties['port'];
+        $dbDB = $testProperties['db'];
       }
-
+      
       if ($dbType == 'mysql') {
         // connect as mysql
         $dsn = "mysql:dbname=$dbDB;host=$dbHost;port=$dbPort;charset=utf8mb4";
@@ -933,7 +973,7 @@ abstract class AbstractModelFactory {
         }
         throw new Exception("Fatal Error: Unknown database type specified!");
       }
-
+      
       self::$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       return self::$dbh;
     }
@@ -941,8 +981,7 @@ abstract class AbstractModelFactory {
       if ($test) {
         return null;
       }
-      UI::printError(UI::ERROR, "Fatal Error! Database connection failed: " . $e->getMessage());
-      return null;
+      throw new Exception("Fatal Error! Database connection failed: " . $e->getMessage());
     }
   }
 }

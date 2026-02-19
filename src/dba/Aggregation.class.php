@@ -24,7 +24,7 @@ class Aggregation {
   }
   
   function getName() {
-    return strtolower($this->function) . "_" . $this->column;
+    return strtolower($this->function) . "_" . strtolower($this->column);
   }
   
   function getQueryString(AbstractModelFactory $factory, bool $includeTable = false) {

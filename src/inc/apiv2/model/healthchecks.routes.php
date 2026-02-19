@@ -67,4 +67,6 @@ class HealthCheckAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 HealthCheckAPI::register($app);

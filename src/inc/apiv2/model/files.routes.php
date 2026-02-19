@@ -187,4 +187,6 @@ class FileAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 FileAPI::register($app);

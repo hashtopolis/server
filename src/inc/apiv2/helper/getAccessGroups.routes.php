@@ -1,6 +1,5 @@
 <?php
 
-use JetBrains\PhpStorm\NoReturn;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -55,8 +54,8 @@ class GetAccessGroupsHelperAPI extends AbstractHelperAPI {
    * @param $data
    * @return object|array|null
    */
-  #[NoReturn] public function actionPost($data): object|array|null {
-    assert(False, "GetAccessGroups has no POST");
+  public function actionPost($data): object|array|null {
+    throw new HttpError("GetAccessGroups has no POST");
   }
   
   static public function register($app): void {
@@ -77,4 +76,6 @@ class GetAccessGroupsHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 GetAccessGroupsHelperAPI::register($app);

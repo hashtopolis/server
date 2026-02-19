@@ -71,4 +71,6 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 CreateSupertaskHelperAPI::register($app);

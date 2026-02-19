@@ -58,6 +58,15 @@ class AccessGroupUtils {
     return $group;
   }
   
+  public static function rename($accessGroupId, $newname) {
+    $accessGroup = AccessGroupUtils::getGroup($accessGroupId);
+    $name = htmlentities($newname, ENT_QUOTES, "UTF-8");
+    if (strlen($name) == 0) {
+      throw new HTException("AccessGroup name cannot be empty!");
+    }
+    Factory::getAccessGroupFactory()->set($accessGroup, AccessGroup::GROUP_NAME, $name);
+  }
+  
   /**
    * @param int $groupId
    * @param $user

@@ -49,7 +49,7 @@ class HashlistHandler implements Handler {
           break;
         case DHashlistAction::PROCESS_ZAP:
           AccessControl::getInstance()->checkPermission(DHashlistAction::PROCESS_ZAP_PERM);
-          $data = HashlistUtils::processZap($_POST['hashlist'], $_POST['separator'], $_POST['source'], $_POST, $_FILES, AccessControl::getInstance()->getUser());
+          $data = HashlistUtils::processZap($_POST['hashlist'], $_POST['separator'], $_POST['source'], $_POST, $_FILES, AccessControl::getInstance()->getUser(), (isset($_POST["overwrite"]) && intval($_POST["overwrite"]) == 1) ? true : false);
           UI::addMessage(UI::SUCCESS, "Processed pre-cracked hashes: " . $data[0] . " total lines, " . $data[1] . " new cracked hashes, " . $data[2] . " were already cracked, " . $data[3] . " invalid lines, " . $data[4] . " not matching entries (" . $data[5] . "s)!");
           if ($data[6] > 0) {
             UI::addMessage(UI::WARN, $data[6] . " entries with too long plaintext");

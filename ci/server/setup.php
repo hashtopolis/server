@@ -37,6 +37,6 @@ catch (PDOException $e) {
   exit(-1);
 }
 
-$load = file_get_contents($envPath . "src/inc/load.php");
+$load = file_get_contents($envPath . "src/inc/startup/load.php");
 $load = str_replace('ini_set("display_errors", "0");', 'ini_set("display_errors", "1");', $load);
-file_put_contents($envPath . "src/inc/load.php", $load);
+file_put_contents($envPath . "src/inc/startup/load.php", $load);

@@ -42,4 +42,6 @@ class AbortChunkHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 AbortChunkHelperAPI::register($app);

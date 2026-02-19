@@ -50,4 +50,6 @@ class RecountFileLinesHelperAPI extends AbstractHelperAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 RecountFileLinesHelperAPI::register($app);

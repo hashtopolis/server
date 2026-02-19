@@ -4,8 +4,8 @@ class DLimits {
   const ACCESS_GROUP_MAX_LENGTH = 50;
 }
 
-class DZaps {
-  const LAST_ZAP_CLEANING = "lastZapCleaning";
+class DCleaning {
+  const LAST_CLEANING = "lastCleaning";
 }
 
 class DDirectories {
@@ -13,6 +13,7 @@ class DDirectories {
   const IMPORT = "directory_import";
   const LOG    = "directory_log";
   const CONFIG = "directory_config";
+  const TUS    = "directory_tus";
 }
 
 // log entry types
@@ -36,8 +37,6 @@ class DStats {
   const TASKS_FINISHED     = "tasksFinished";
   const TASKS_RUNNING      = "tasksRunning";
   const TASKS_QUEUED       = "tasksQueued";
-  
-  const LAST_STAT_CLEANING = "lastStatCleaning";
 }
 
 class DPrince {

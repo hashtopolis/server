@@ -5,7 +5,7 @@ use DBA\QueryFilter;
 use DBA\ApiKey;
 use DBA\Factory;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 ini_set("max_execution_time", 100000);
 

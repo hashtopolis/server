@@ -1,11 +1,10 @@
 <?php
 
 use Crell\ApiProblem\ApiProblem;
-use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 
 /* Quirk to display error JSON style */
-function errorResponse(Response $response, $message, $status = 401): MessageInterface|Response {
+function errorResponse(Response $response, $message, $status = 401): Response {
   $problem = new ApiProblem($message, "about:blank");
   $problem->setStatus($status);
   

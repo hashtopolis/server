@@ -118,7 +118,7 @@ echo "All data loaded! Removing old tables... ";
 $DB->exec("SET @tables = NULL;
 SELECT GROUP_CONCAT(table_schema, '.', table_name) INTO @tables
   FROM information_schema.tables
-  WHERE table_schema = '" . $CONN['db'] . "';
+  WHERE table_schema = '" . StartupConfig::getInstance()->getDatabaseDB() . "';
 
 SET @tables = CONCAT('DROP TABLE ', @tables);
 PREPARE stmt FROM @tables;
@@ -132,7 +132,7 @@ $DB->exec(file_get_contents(dirname(__FILE__) . "/../hashtopolis.sql"));
 echo "OK\n";
 
 echo "Reload full include... (Warning about sessions might show up, which can be ignored)";
-require_once(dirname(__FILE__) . "/../../inc/load.php");
+require_once(dirname(__FILE__) . "/../../inc/startup/load.php");
 echo "OK\n";
 
 echo "Starting with refilling data...\n";

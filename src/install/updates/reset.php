@@ -2,7 +2,7 @@
 
 use DBA\Factory;
 
-require_once(dirname(__FILE__) . "/../../inc/load.php");
+require_once(dirname(__FILE__) . "/../../inc/startup/load.php");
 
 /**
  * Use this file if you want to reset the password for an admin account. Fill in the values and just run it once.

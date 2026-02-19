@@ -86,6 +86,7 @@ class UserAPI extends AbstractModelAPI {
       $data[User::RIGHT_GROUP_ID],
       $this->getCurrentUser(),
       $data[User::IS_VALID] ?? false,
+      $data[User::SESSION_LIFETIME] ?? 3600
     );
     
     return $user->getId();
@@ -95,6 +96,7 @@ class UserAPI extends AbstractModelAPI {
     
     $features = parent::getAllPostParameters($features);
     unset($features[User::IS_VALID]);
+    unset($features[User::SESSION_LIFETIME]);
     return $features;
   }
   
@@ -120,10 +122,14 @@ class UserAPI extends AbstractModelAPI {
   protected function getUpdateHandlers($id, $current_user): array {
     return [
       User::RIGHT_GROUP_ID => fn($value) => UserUtils::setRights($id, $value, $current_user),
-      User::IS_VALID => fn($value) => $this->toggleValidityUser($id, $value, $current_user)
+      User::IS_VALID => fn($value) => $this->toggleValidityUser($id, $value, $current_user),
+      User::EMAIL => fn($value) => AccountUtils::setEmail($value, UserUtils::getUser($id)),
+      User::SESSION_LIFETIME => fn($value) => AccountUtils::updateSessionLifetime($value, UserUtils::getUser($id)),
     ];
   }
   
 }
 
+use Slim\App;
+/** @var App $app */
 UserAPI::register($app);

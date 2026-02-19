@@ -84,4 +84,6 @@ class NotificationSettingAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 NotificationSettingAPI::register($app);

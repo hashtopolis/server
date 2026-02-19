@@ -102,4 +102,6 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 GlobalPermissionGroupAPI::register($app);

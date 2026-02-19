@@ -57,3 +57,14 @@ class FileTest(BaseTest):
     def test_bulk_delete(self):
         files = [self.create_test_object(delete=False) for i in range(5)]
         File.objects.delete_many(files)
+
+    def test_helper_rescan_global_files(self):
+        model_obj1 = self.create_test_object()
+        model_obj2 = self.create_test_object()
+
+        helper = Helper()
+        data = helper.rescan_global_files()
+        self.assertEqual(data, {"Rescan": "Success"})
+
+        check_obj1 = File.objects.get(fileId=model_obj1.id)
+        self.assertEqual(3, check_obj1.lineCount)

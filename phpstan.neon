@@ -1,0 +1,7 @@
+parameters:
+    paths:
+        - src/inc/apiv2
+    level: 4
+    scanDirectories:
+        - src/dba
+        - src/inc

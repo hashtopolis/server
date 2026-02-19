@@ -1,17 +1,22 @@
 <?php
 
 use DBA\AccessGroup;
+use DBA\ConcatColumn;
+use DBA\ConcatLikeFilterInsensitive;
+use DBA\ConcatOrderFilter;
 use DBA\ContainFilter;
 use DBA\Factory;
 use DBA\Hashlist;
 use DBA\HashType;
 use DBA\JoinFilter;
+use DBA\LikeFilter;
+use DBA\LikeFilterInsensitive;
+use DBA\OrderFilter;
 use DBA\QueryFilter;
 
 use DBA\Task;
 use DBA\TaskWrapper;
 use DBA\User;
-use JetBrains\PhpStorm\NoReturn;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -82,6 +87,13 @@ class TaskWrapperAPI extends AbstractModelAPI {
         'relationType' => HashType::class,
         'relationKey' => HashType::HASH_TYPE_ID,
       ],
+      'task' => [
+        'key' => TaskWrapper::TASK_WRAPPER_ID,
+        
+        'relationType' => Task::class,
+        'relationKey' => Task::TASK_WRAPPER_ID,
+        'readonly' => true // Not allowed to change tasks of a taskwrapper 
+      ],
     ];
   }
   
@@ -97,9 +109,53 @@ class TaskWrapperAPI extends AbstractModelAPI {
     ];
   }
   
+  protected function parseFilters(array $filters) {
+    //This is in order to handle filters and sorting on columns
+    if (isset($filters[Factory::JOIN])) {
+      $joinFilters = $filters[Factory::JOIN];
+      foreach ($joinFilters as $joinFilter) {
+        if ($joinFilter->getOtherTableName() == Task::class) {
+          // This is a leftjoin where the task type is 0 which means not a supertask. This is in order to 
+          // create a to 1 relationship where the taskwrapper will have the normal task as a relation and a supertask will have null
+          // This way it becomes possible to filter or sort on the included single task.
+          $joinFilter->setJoinType(JoinFilter::LEFT);
+          $qf = new QueryFilter(TaskWrapper::TASK_TYPE, DTaskTypes::NORMAL, "=");
+          $joinFilter->setQueryFilters([$qf]);
+        }
+      }
+
+      // parse the order and filter
+      // Because the frontend shows taskwrappername for supertasks and taskname for normaltasks, the orders and filters for the 
+      // name needs to be changed to coalesce filters to get the correct value between these 2. 
+      // Another possibility where this hack is not needed would be to also store the taskname of normal tasks in the
+      // taskwrapper
+      if (isset($filters[Factory::ORDER])) {
+        foreach ($filters[Factory::ORDER] as &$orderfilter) {
+          if ($orderfilter->getBy() == Task::TASK_NAME) {
+            $concatColumns = [new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory()), new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory())];
+            $newOrderFilter = new ConcatOrderFilter($concatColumns, $orderfilter->getType());
+            $orderfilter = $newOrderFilter;
+          }
+        }
+        unset($orderfilter);
+      }
+
+      if (isset($filters[Factory::FILTER])) {
+        foreach($filters[Factory::FILTER] as &$filter) {
+          if ($filter instanceof LikeFilterInsensitive && $filter->getKey() == Task::TASK_NAME) {
+            $concatColumns = [new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory()), new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory())];
+            $newFilter = new ConcatLikeFilterInsensitive($concatColumns, $filter->getValue());
+            $filter = $newFilter;
+          }
+        }
+        unset($filter);
+      }
+    }
+    return $filters;
+  }
   
-  #[NoReturn] protected function createObject(array $data): int {
-    assert(False, "TaskWrappers cannot be created via API");
+  protected function createObject(array $data): int {
+    throw new HttpError("TaskWrappers cannot be created via API");
   }
   
   protected function getUpdateHandlers($id, $current_user): array {
@@ -131,9 +187,11 @@ class TaskWrapperAPI extends AbstractModelAPI {
         TaskUtils::deleteSupertask($object->getId(), $this->getCurrentUser());
         break;
       default:
-        assert(False, "Internal Error: taskType not recognized");
+      throw new HttpError("Internal Error: taskType not recognized");
     }
   }
 }
 
+use Slim\App;
+/** @var App $app */
 TaskWrapperAPI::register($app);

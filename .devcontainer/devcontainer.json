@@ -1,7 +1,7 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
   "name": "Hashtopolis Devcontainer",
-  "dockerComposeFile": "docker-compose.yml",
+  "dockerComposeFile": "docker-compose.mysql.yml",
   "service": "hashtopolis-server-dev",
   "runServices": [
     "hashtopolis-db-dev"

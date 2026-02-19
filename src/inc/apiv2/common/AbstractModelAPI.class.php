@@ -6,6 +6,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+use Slim\App;
 use DBA\AbstractModelFactory;
 use DBA\Aggregation;
 use DBA\JoinFilter;
@@ -24,14 +25,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   abstract protected function deleteObject(object $object): void;
   
   protected function createObjectAndGetResult(array $data): array {
-    return [];
-  }
-
-  public static function getToOneRelationships(): array {
-    return [];
-  }
-  
-  public static function getToManyRelationships(): array {
     return [];
   }
   
@@ -128,16 +121,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   public function getFeaturesWithoutFormfields(): array {
     $features = call_user_func($this->getDBAclass() . '::getFeatures');
     return $this->mapFeatures($features);
-  }
-  
-  /**
-   * Get features based on DBA model features
-   *
-   * @param string $dbaClass is the dba class to get the features from
-   */
-  //TODO doesnt retrieve features based on form fields, could be done by adding api class in relationship objects
-  final protected function getFeaturesOther(string $dbaClass): array {
-    return call_user_func($dbaClass . '::getFeatures');
   }
   
   /**
@@ -401,7 +384,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws ResourceNotFoundError
    * @throws HttpForbidden
    */
-  protected function doFetch(string $pk, AbstractModelFactory $otherFactory = null): mixed {
+  protected function doFetch(string $pk, ?AbstractModelFactory $otherFactory = null): mixed {
     if ($otherFactory != null) {
       $object = $otherFactory->get($pk);
     }
@@ -450,7 +433,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     return $updates;
   }
-  
+
   protected static function calculate_next_cursor(string|int $cursor, bool $ascending=true) {
     if (is_int($cursor)) {
       if ($ascending) {
@@ -551,16 +534,25 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
   protected static function getMinMaxCursor($apiClass, string $sort, array $filters, $request, $aliasedfeatures) {
     $filters[Factory::LIMIT] = new LimitFilter(1);
-
     // Descending queries are used to retrieve the last element. For this all sorts have to be reversed, since
-    // if all order quereis are reversed and limit to 1, you will retrieve the last element.
+    // if all order queries are reversed and limit to 1, you will retrieve the last element.
     $reverseSort = ($sort == "DESC") ? true : false;
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $sort, $reverseSort);
     $orderFilters = [];
+    // TODO this logic is now done twice, once for the max and once for the min, this should be moved outside this function
+    // and given as an argument
     foreach ($orderTemplates as $orderTemplate) {
-      $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
+      $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type'], $orderTemplate['factory']);
+      if ($orderTemplate['factory'] !== null){
+        // if factory of ordertemplate is not null, sort is happening on joined table
+        $otherFactory = $orderTemplate['factory'];
+        if (!$apiClass::checkJoinExists($filters[Factory::JOIN], $otherFactory->getModelName())) {
+          $filters[Factory::JOIN][] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $apiClass->getPrimaryKeyOther($otherFactory->getNullObject()::class));
+        }
+      }
     }
     $filters[Factory::ORDER] = $orderFilters;
+    $filters = $apiClass->parseFilters($filters);
     $factory = $apiClass->getFactory();
     $result = $factory->filter($filters);
     //handle joined queries
@@ -571,6 +563,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       return null;
     }
     return $result[0];
+  }
+
+  /**
+   * overridable function to parse filters, currently only needed for taskWrapper endpoint
+   * to handle the taskwrapper -> task relation, to be able to treat it as a to one relationship
+   */
+  protected function parseFilters(array $filters) {
+    return $filters;
   }
 
   /**
@@ -603,10 +603,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     /* Object filter definition */
     $aFs = [];
+    $joinFilters = [];
 
     /* Generate filters */
     $filters = $apiClass->getFilters($request);
-    $qFs_Filter = $apiClass->makeFilter($filters, $apiClass);
+    $qFs_Filter = $apiClass->makeFilter($filters, $apiClass, $joinFilters);
     $group = Factory::getRightGroupFactory()->get($apiClass->getCurrentUser()->getRightGroupId());
     if ($group->getPermissions() !== 'ALL') { // Only add permission filters when no admin user
       $aFs_ACL = $apiClass->getFilterACL();
@@ -614,7 +615,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $qFs_Filter = array_merge($aFs_ACL[Factory::FILTER], $qFs_Filter);
       }
       if (isset($aFs_ACL[Factory::JOIN])) {
-        $aFs[Factory::JOIN] = $aFs_ACL[Factory::JOIN];
+        foreach($aFs_ACL[Factory::JOIN] as $filter) {
+          if(!$apiClass::checkJoinExists($joinFilters, $filter->getOtherFactory()->getModelName())) {
+            $joinFilters[] = $filter;
+          }
+        }
       }
     }
     
@@ -632,6 +637,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     //this is used to reverse the array to show the data correctly for the user 
     $reverseArray = false;
 
+    $aFs[Factory::JOIN] = $joinFilters;
     $firstCursorObject = $apiClass->getMinMaxCursor($apiClass, "ASC", $aFs, $request, $aliasedfeatures);
     $lastCursorObject = $apiClass->getMinMaxCursor($apiClass, "DESC", $aFs, $request, $aliasedfeatures);
 
@@ -665,6 +671,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     } else {
       $defaultSort = "ASC";
     }
+    $primaryKey = $apiClass->getPrimaryKey();
 
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $defaultSort);
     $orderTemplates[0]["type"] = $defaultSort;
@@ -674,14 +681,23 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     // Build actual order filters
     foreach ($orderTemplates as $orderTemplate) {
       // $aFs[Factory::ORDER][] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
-      $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
+      $orderFilters[] = new OrderFilter($orderTemplate['by'], $orderTemplate['type'], $orderTemplate['factory']);
+      if ($orderTemplate['factory'] !== null) {
+        // if factory of ordertemplate is not null, sort is happening on joined table
+        $otherFactory = $orderTemplate['factory'];
+        if (!$apiClass::checkJoinExists($joinFilters, $otherFactory->getModelName())) {
+          $joinFilters[] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $orderTemplate['key']);
+        }
+      }
     }
+
     $aFs[Factory::ORDER] = $orderFilters;
+    $aFs[Factory::JOIN] = $joinFilters;
 
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
+    $finalFs = $apiClass->parseFilters($finalFs);
 
-    $primaryKey = $apiClass->getPrimaryKey();
     //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
     //But this probably needs to be added in getFeatures() then.
     $primaryKeyIsNotPrimaryFilter = $primaryFilter != $primaryKey;
@@ -690,7 +706,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     //pagination filters need to be added after max has been calculated
     $finalFs[Factory::LIMIT] = new LimitFilter($pageSize);
 
-    if (isset($paginationCursor)) {
+    if (isset($paginationCursor) && isset($operator)) {
       $decoded_cursor = $apiClass->decode_cursor($paginationCursor);
       $primary_cursor = $decoded_cursor["primary"];
       $primary_cursor_key = key($primary_cursor);
@@ -755,6 +771,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     } else if (isset($lastCursorObject)){
       $new_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
       $last_cursor = $apiClass::build_cursor($primaryFilter, $new_cursor);
+    } else {
+      $last_cursor = null;
     }
     $lastParams['page']['before'] = $last_cursor;
     $linksLast = $baseUrl . $request->getUri()->getPath() . '?' .  urldecode(http_build_query($lastParams));
@@ -980,14 +998,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * API entry point for modification of single object
    * @param Request $request
    * @param Response $response
-   * @param array $args
+   * @param mixed $object
+   * @param mixed $data
    * @return Response
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
    * @throws ResourceNotFoundError
    */
-  public function patchSingleObject(Request $request, Response $response, mixed $object, mixed $data) {
+  public function patchSingleObject(Request $request, Response $response, mixed $object, mixed $data): Response {
     if (!$this->validateResourceRecord($data)) {
       return errorResponse($response, "No valid resource identifier object was given as data!", 403);
     }
@@ -1717,6 +1736,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
     }
     else {
+      $updates = [];
       foreach ($data as $item) {
         if (!$this->validateResourceRecord($item)) {
           $encoded_item = json_encode($item);
@@ -1806,7 +1826,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * Override-able registering of options
    */
-  static public function register($app): void {
+  static public function register(App $app): void {
     $me = get_called_class();
     $baseUri = $me::getBaseUri();
     $baseUriOne = $baseUri . '/{id:[0-9]+}';

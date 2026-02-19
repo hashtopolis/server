@@ -19,6 +19,7 @@ use DBA\AgentStat;
 use DBA\Factory;
 use DBA\TaskWrapper;
 use DBA\Speed;
+use DBA\UpdateSet;
 
 class APISendProgress extends APIBasic {
   public function execute($QUERY = array()) {
@@ -229,24 +230,28 @@ class APISendProgress extends APIBasic {
           $qF3 = new QueryFilter(Hash::IS_CRACKED, 0, "=");
           $hashes = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3]]);
           if (sizeof($hashes) == 0) {
-            //This can happen if agent rebuild the hash incorrectly
-            //Log the skipped hash so that admin can spot this false negative
-            $logMessage = "Hash has been cracked but skipped! This happened while cracking hashlist with ID: "
-              . $hashlist->getId() . " during chunk with ID: " . $chunk->getId() . " This happens when the agent returns
+            // check without IS_CRACKED=0 to check if the hash was already cracked, or if it really cannot be found (which then triggers the log entry)
+            $check = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+            if (sizeof($check) == 0) {
+              //This can happen if agent rebuild the hash incorrectly
+              //Log the skipped hash so that admin can spot this false negative
+              $logMessage = "Hash has been cracked but skipped! This happened while cracking hashlist with ID: "
+                . $hashlist->getId() . " during chunk with ID: " . $chunk->getId() . " This happens when the agent returns
                a cracked hash that does not exist in the database. This can happen when hashcat malforms the hash.";
-            Util::createLogEntry(DLogEntryIssuer::API, $this->agent->getToken(), DLogEntry::FATAL, $logMessage);
-            DServerLog::log(DServerLog::FATAL, $logMessage);
+              Util::createLogEntry(DLogEntryIssuer::API, $this->agent->getToken(), DLogEntry::FATAL, $logMessage);
+              DServerLog::log(DServerLog::FATAL, $logMessage);
+            }
 
             $skipped++;
             break;
           }
           else if (sizeof($splitLine) == 5) {
             $plain = $splitLine[2]; // if hash is salted
-            $crackPos = $splitLine[4];
+            $crackPos = intval($splitLine[4]);
           }
           else {
             $plain = $splitLine[1];
-            $crackPos = $splitLine[3];
+            $crackPos = intval($splitLine[3]);
           }
           
           foreach ($hashes as $hash) {
@@ -307,7 +312,7 @@ class APISendProgress extends APIBasic {
             $identification .= SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $essid;
           }
           $plain = $splitLine[1];
-          $crackPos = $splitLine[3];
+          $crackPos = intval($splitLine[3]);
           $qF1 = new QueryFilter(HashBinary::ESSID, $identification, "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
           $hashes = Factory::getHashBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
@@ -328,7 +333,7 @@ class APISendProgress extends APIBasic {
           // save binary password
           // result sent: ..\hashcat_luks_testfiles\luks_tests\hashcat_ripemd160_aes_cbc-essiv_128.luks:hashcat:68617368636174:12
           $plain = $splitLine[1];
-          $crackPos = $splitLine[3];
+          $crackPos = intval($splitLine[3]);
           $qF1 = new QueryFilter(HashBinary::HASHLIST_ID, $totalHashlist->getId(), "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
           $hashes = Factory::getHashBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
@@ -532,8 +537,7 @@ class APISendProgress extends APIBasic {
         DServerLog::log(DServerLog::TRACE, "Checked zaps and sending new ones to agent", [$this->agent, $zaps]);
         break;
     }
-    Util::zapCleaning();
-    Util::agentStatCleaning();
+    Util::cleaning();
     $this->sendResponse(array(
         PResponseSendProgress::ACTION => PActions::SEND_PROGRESS,
         PResponseSendProgress::RESPONSE => PValues::SUCCESS,

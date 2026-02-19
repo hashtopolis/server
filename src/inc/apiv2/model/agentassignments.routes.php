@@ -98,4 +98,6 @@ class AgentAssignmentAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 AgentAssignmentAPI::register($app);

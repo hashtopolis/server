@@ -72,12 +72,12 @@ class SupertaskAPI extends AbstractModelAPI {
     
     // Find out which to add and remove
     $currentPretasks = SupertaskUtils::getPretasksOfSupertask($id);
-    function compare_ids($a, $b) {
+    $compare_ids = static function($a, $b) {
       return ($a->getId() - $b->getId());
-    }
+    };
     
-    $toAddPretasks = array_udiff($wantedPretasks, $currentPretasks, 'compare_ids');
-    $toRemovePretasks = array_udiff($currentPretasks, $wantedPretasks, 'compare_ids');
+    $toAddPretasks = array_udiff($wantedPretasks, $currentPretasks, $compare_ids);
+    $toRemovePretasks = array_udiff($currentPretasks, $wantedPretasks, $compare_ids);
     
     $factory = $this->getFactory();
     $factory->getDB()->beginTransaction(); //start transaction to be able roll back
@@ -103,4 +103,6 @@ class SupertaskAPI extends AbstractModelAPI {
   }
 }
 
+use Slim\App;
+/** @var App $app */
 SupertaskAPI::register($app);

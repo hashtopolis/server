@@ -61,7 +61,7 @@ function typeLookup($feature): array {
 
 ;
 
-function parsePhpDoc($doc): array|string|null {
+function parsePhpDoc($doc): array|string {
   $cleanedDoc = preg_replace([
     '/^\/\*\*/',   // Remove opening /**
     '/\*\/$/',      // Remove closing */
@@ -351,6 +351,8 @@ function makeDescription($isRelation, $method, $singleObject): string {
   return $description;
 }
 
+use Slim\App;
+/** @var App $app */
 $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($app) {
   /* Allow CORS preflight requests */
   $group->options('', function (Request $request, Response $response): Response {
@@ -536,6 +538,9 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         $isToMany = array_key_exists($relation, $class::getToManyRelationships());
         $isToOne = array_key_exists($relation, $class::getToOneRelationships());
         assert(!($isToMany && $isToOne), "An relationship cant be a to one and to many at the same time.");
+      } else {
+        $isToMany = $isToOne = false;
+        $relation = null;
       }
       
       $expandables = implode(",", $class->getExpandables());
@@ -584,7 +589,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         $json_api_header = makeJsonApiHeader();
         $links = makeLinks($uri);
         $properties_return_post_patch = array_merge($json_api_header, $properties_return_post_patch);
-        $properties_create = buildPatchPost(makeProperties($class->getAllPostParameters($class->getCreateValidFeatures(), true)), $name);
+        $properties_create = buildPatchPost(makeProperties($class->getAllPostParameters($class->getCreateValidFeatures())), $name);
         $properties_get = array_merge($json_api_header, $links, $properties_get_single, $included);
         $properties_patch = buildPatchPost(makeProperties($class->getPatchValidFeatures(), true), $name);
         $properties_patch_post_relation = buildPostPatchRelation($relation, ($isToMany && !$isToOne));
