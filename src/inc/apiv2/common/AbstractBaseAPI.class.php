@@ -1574,7 +1574,7 @@ abstract class AbstractBaseAPI {
   /**
    * Get single Resource
    */
-  protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode = 200, array $creationInformation = null): Response {
+  protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode = 200, array|null $creationInformation = null): Response {
     $apiClass->preCommon($request);
     
     $validExpandables = $apiClass->getExpandables();

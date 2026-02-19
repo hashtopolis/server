@@ -1170,18 +1170,17 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     // Remove key aliases and sanitize to 'db values and request creation
     $mappedData = $this->unaliasData($attributes, $allFeatures);
-    
+
+    // Request object again, since post-modified entries are not reflected into object.
     $object = null;
-    
+
     if (isset($data["getCreationInformation"])) {
       $creationResult = $this->createObjectAndGetResult($mappedData);
-      // Request object again, since post-modified entries are not reflected into object.
       $object = $this->getFactory()->get($creationResult["pk"]);
       return self::getOneResource($this, $object, $request, $response, 201, $creationResult["creationInformation"]);
     }
     else {
       $pk = $this->createObject($mappedData);
-      // Request object again, since post-modified entries are not reflected into object.
       $object = $this->getFactory()->get($pk);
       return self::getOneResource($this, $object, $request, $response, 201);
     }

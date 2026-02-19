@@ -956,7 +956,6 @@ class HashlistUtils {
         }
         
         Factory::getHashlistFactory()->mset($hashlist, [Hashlist::HASH_COUNT => $added, Hashlist::CRACKED => $preFound]);
-        Factory::getAgentFactory()->getDB()->commit();
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName() . ". Total lines: " . $hashlistStatistics["uploadedTotalLines"] . " Empty lines: " . $hashlistStatistics["uploadedEmptyLines"] . " Valid hashes: " . $hashlistStatistics["uploadedValidHashes"] . " Valid hashes without expected salt: " . $hashlistStatistics["uploadedValidHashesWithoutExpectedSalt"] . " Invalid hashes: " . $hashlistStatistics["uploadedInvalidHashes"]);
         
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
