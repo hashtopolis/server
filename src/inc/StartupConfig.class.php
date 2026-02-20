@@ -240,13 +240,12 @@ class StartupConfig {
   }
   
   public function getHost(): string {
-    $host = @$_SERVER['HTTP_HOST'];
-    if (str_contains($host, ":")) {
-      $host = substr($host, 0, strpos($host, ":"));
-    }
+    $host = @$_SERVER['SERVER_NAME'];
+    
     if ($host === null){
       $host = "";
     }
+    
     return $host;
   }
 }
