@@ -32,12 +32,23 @@ A docker-compose file allowing to configure the docker containers for Hashtopoli
 mkdir hashtopolis
 cd hashtopolis
 ```
-2. Download docker-compose.yml and env.example    
+
+Hashtopolis supports MySQL and PostgreSQL since v.1.0.0-rainbow5. You can choose between both databases:
+
+2.  Download docker-compose.mysql.yml and env.mysql.example for MySQL   
 ```
-wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.yml 
-wget https://raw.githubusercontent.com/hashtopolis/server/master/env.example -O .env
+wget https://raw.githubusercontent.com/hashtopolis/server/dev/docker-compose.mysql.yml 
+wget https://raw.githubusercontent.com/hashtopolis/server/dev/env.mysql.example -O .env
 ```   
-3. Edit the .env file and change the settings to your likings.   
+
+**or**
+
+Download docker-compose.postgres.yml and env.postgres.example for PostgreSQL   
+ ```
+wget https://raw.githubusercontent.com/hashtopolis/server/dev/docker-compose.postgres.yml 
+wget https://raw.githubusercontent.com/hashtopolis/server/dev/env.postgres.example -O .env
+```  
+3. . Edit the .env file and change the settings to your likings (for the pre-release you have to change the tag of the  .   
 
 ```
 nano .env
