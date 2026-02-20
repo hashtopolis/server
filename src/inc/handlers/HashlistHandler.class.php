@@ -92,7 +92,7 @@ class HashlistHandler implements Handler {
             AccessControl::getInstance()->getUser(),
             (isset($_POST["useBrain"]) && intval($_POST["useBrain"]) == 1) ? 1 : 0,
             (isset($_POST['brain-features'])) ? intval($_POST['brain-features']) : 0
-          );
+          )["hashlist"];
           header("Location: hashlists.php?id=" . $hashlist->getId());
           die();
         case DHashlistAction::CREATE_SUPERHASHLIST:

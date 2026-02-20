@@ -59,7 +59,7 @@ class RuleSplitTest extends HashtopolisTest {
     $file_id2 = $this->getFile('best64.rule');
 
     # Create hashlist
-    $response = $this->addHashlist(["isSecure" => false]);
+    $response = $this->addHashlist(["isSecure" => false])["hashlist"];
     $hashlistId = $response["hashlistId"];
   
     # Create task with rule/wordlist

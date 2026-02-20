@@ -21,8 +21,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   abstract static public function getDBAClass();
   
   abstract protected function createObject(array $data): int;
-  
+
   abstract protected function deleteObject(object $object): void;
+  
+  protected function createObjectAndGetResult(array $data): array {
+    return [];
+  }
   
   /**
    * Available 'expand' parameters on $object
@@ -1166,11 +1170,20 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     // Remove key aliases and sanitize to 'db values and request creation
     $mappedData = $this->unaliasData($attributes, $allFeatures);
-    $pk = $this->createObject($mappedData);
-    
+
     // Request object again, since post-modified entries are not reflected into object.
-    $object = $this->getFactory()->get($pk);
-    return self::getOneResource($this, $object, $request, $response, 201);
+    $object = null;
+
+    if (isset($data["getCreationInformation"])) {
+      $creationResult = $this->createObjectAndGetResult($mappedData);
+      $object = $this->getFactory()->get($creationResult["pk"]);
+      return self::getOneResource($this, $object, $request, $response, 201, $creationResult["creationInformation"]);
+    }
+    else {
+      $pk = $this->createObject($mappedData);
+      $object = $this->getFactory()->get($pk);
+      return self::getOneResource($this, $object, $request, $response, 201);
+    }
   }
   
   

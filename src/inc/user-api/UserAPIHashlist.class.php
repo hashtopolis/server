@@ -274,7 +274,7 @@ class UserAPIHashlist extends UserAPIBasic {
       $this->user,
       $QUERY[UQueryHashlist::HASHLIST_USE_BRAIN],
       $QUERY[UQueryHashlist::HASHLIST_BRAIN_FEATURES]
-    );
+    )["hashlist"];
     $this->sendResponse(array(
         UResponseHashlist::SECTION => $QUERY[UQuery::SECTION],
         UResponseHashlist::REQUEST => $QUERY[UQuery::REQUEST],

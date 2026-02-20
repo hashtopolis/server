@@ -49,7 +49,7 @@ class MaxAgentsTest extends HashtopolisTest {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running " . $this->getTestName() . "...");
     $this->prepare();
     try {
-      $response = $this->addHashlist(["name" => "NotSecureList", "isSecure" => false]);
+      $response = $this->addHashlist(["name" => "NotSecureList", "isSecure" => false])["hashlist"];
       $hashlistId = $response["hashlistId"];
 
       $this->testTaskMaxAgents($hashlistId);
