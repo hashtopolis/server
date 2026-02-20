@@ -1,3 +1,14 @@
+# v0.14.6 -> v0.14.7
+
+## Enhancements
+
+- Add `hashtopolis-` prefix to db Docker container name (#1572)
+
+## Bugfixes
+
+- Replace random function for random string generation fixing a critical vulnerability (#1944). Thanks to Philipp Tekeser-Glasz from HvS-Consulting GmbH for finding and reporting this vulnerability.
+
+
 # v0.14.5 -> v0.14.6
 
 ## Bugfixes
