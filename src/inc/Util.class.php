@@ -1366,7 +1366,7 @@ class Util {
   public static function randomString($length, $charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") {
     $result = "";
     for ($x = 0; $x < $length; $x++) {
-      $result .= $charset[mt_rand(0, strlen($charset) - 1)];
+      $result .= $charset[random_int(0, strlen($charset) - 1)];
     }
     return $result;
   }

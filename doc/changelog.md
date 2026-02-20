@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.0-rainbow4 -> v1.0.0-rainbow5
+
+**Bugfixes**
+
+- Replace random function for random string generation fixing a critical vulnerability (#1944). Thanks to Philipp Tekeser-Glasz from HvS-Consulting GmbH for finding and reporting this vulnerability.
+
 ## v1.0.0-rainbow3 -> v1.0.0-rainbow4
 
 **Bugfixes**
