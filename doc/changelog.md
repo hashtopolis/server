@@ -6,6 +6,28 @@
 
 - Replace random function for random string generation fixing a critical vulnerability (#1944). Thanks to Philipp Tekeser-Glasz from HvS-Consulting GmbH for finding and reporting this vulnerability.
 
+- Fixed bug that included errors where not added to response (#1752)
+- Fix statement building in DBA on empty filters (#1760)
+- Fixed bug in legacy agentbinary update (#1802)
+- Added additional check to avoid log entries if a hash just was already cracked (#1858)
+
+## Enhancements
+
+- Add `hashtopolis-` prefix to db Docker container name (#1572)
+- Made responses smaller by not pretty printing the json (#1733)
+- DBA mapping rework (#1762)
+- Upgraded deprecated jwt library to maintained jwt library (#1785)
+- Added index for timeCracked on Hash table (#1786)
+- Added an improved CORS implementation(#1725)
+- Implemented sparse fieldsets support on the backend (#1715)
+- DBA migrations and postgres support (#1795)
+- Made dockerfile smaller by using smaller slim base image (#1826)
+- Refactored load.php into different use case startup parts (#1853)
+- Added OAUTH authentication to backend (#1859)
+- Added helper to retrieve files in the import directory (#1877)
+
+**Full Changelog**: https://github.com/hashtopolis/server/compare/v1.0.0-rainbow4...v1.0.0-rainbow5
+
 ## v1.0.0-rainbow3 -> v1.0.0-rainbow4
 
 **Bugfixes**
