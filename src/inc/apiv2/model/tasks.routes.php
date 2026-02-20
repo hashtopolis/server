@@ -211,6 +211,45 @@ class TaskAPI extends AbstractModelAPI {
 
         $aggregatedData["status"] = $status;
       }
+
+      if (is_null($aggregateFieldsets) || in_array("taskExtraDetails", $aggregateFieldsets['task'])) {
+        $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+        $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+        
+        $currentSpeed = 0;
+        $cProgress = 0;
+        
+        foreach ($chunks as $chunk) {
+          $cProgress += $chunk->getCheckpoint() - $chunk->getSkip();
+          if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
+            $currentSpeed += $chunk->getSpeed();
+          }
+        }
+          
+        $timeChunks = $chunks;
+        usort($timeChunks, "Util::compareChunksTime");
+        $timeSpent = 0;
+        $current = 0;
+        
+        foreach ($timeChunks as $c) {
+          if ($c->getDispatchTime() > $current) {
+            $timeSpent += $c->getSolveTime() - $c->getDispatchTime();
+            $current = $c->getSolveTime();
+          }
+          else if ($c->getSolveTime() > $current) {
+            $timeSpent += $c->getSolveTime() - $current;
+            $current = $c->getSolveTime();
+          }
+        }
+
+        $keyspace = $object->getKeyspace();
+        $estimatedTime = ($keyspace > 0 && $cProgress > 0) ? round($timeSpent / ($cProgress / $keyspace) - $timeSpent) : 0;
+        
+        $aggregatedData["estimatedTime"] = $estimatedTime;
+        $aggregatedData["timeSpent"] = $timeSpent;
+        $aggregatedData["currentSpeed"] = $currentSpeed;
+        $aggregatedData["cprogress"] = $cProgress;
+      }
     }
     
     return $aggregatedData;
