@@ -114,6 +114,7 @@ class UserAPISupertask extends UserAPIBasic {
     SupertaskUtils::importSupertask(
       $QUERY[UQueryTask::SUPERTASK_NAME],
       $QUERY[UQueryTask::TASK_CPU_ONLY],
+      $QUERY[UQueryTask::TASK_MAX_AGENTS],
       $QUERY[UQueryTask::TASK_SMALL],
       $QUERY[UQueryTask::TASK_OPTIMIZED],
       $QUERY[UQueryTask::TASK_CRACKER_TYPE],
