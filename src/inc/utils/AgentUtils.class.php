@@ -372,7 +372,7 @@ class AgentUtils {
   public static function assign($agentId, $taskId, $user) {
     $agent = AgentUtils::getAgent($agentId, $user);
 
-    if ($taskId == 0 || empty($taskId)) { // unassign
+    if ($taskId == 0) { // unassign
       $qF = new QueryFilter(Agent::AGENT_ID, $agent->getId(), "=");
       Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
       if (isset($_GET['task'])) {
