@@ -12,6 +12,7 @@
     <button onclick="window.location='config.php?view=5'" type="button" class="btn {{IF [[toggledarkmode]] > 0}}btn-dark{{ELSE}}btn-light{{ENDIF}}{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
     <button onclick="window.location='config.php?view=6'" type="button" class="btn {{IF [[toggledarkmode]] > 0}}btn-dark{{ELSE}}btn-light{{ENDIF}}{{IF [[configSectionId]] == 6}} active{{ENDIF}}">Multicast</button>
     <button onclick="window.location='config.php?view=7'" type="button" class="btn {{IF [[toggledarkmode]] > 0}}btn-dark{{ELSE}}btn-light{{ENDIF}}{{IF [[configSectionId]] == 7}} active{{ENDIF}}">Notifications</button>
+    <button onclick="window.location='config.php?view=8'" type="button" class="btn {{IF [[toggledarkmode]] > 0}}btn-dark{{ELSE}}btn-light{{ENDIF}}{{IF [[configSectionId]] == 8}} active{{ENDIF}}">Vast.AI</button>
   </div>
 </div>
 
@@ -38,7 +39,7 @@
 					  <td>[[DConfig::getConfigDescription([[conf.getVal('item')]])]]</td>
 					  <td>
 						  {{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "string"}}
-							  <input type="text" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]" title="Config Value">
+                          <input type="text" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]" title="Config Value" {{IF [[configSectionId]] == 8 }} size="100" {{ENDIF}}>
 						  {{ENDIF}}
 						  {{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "number"}}
 							  <input type="number" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]" title="Config Value">
