@@ -1257,7 +1257,7 @@ class Util {
     $boundary = uniqid('np');
     
     $headers = "MIME-Version: 1.0\r\n";
-    $headers .= "From: " . SConfig::getInstance()->getVal(Dconfig::EMAIL_SENDER_NAME) . " <" . SConfig::getInstance()->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
+    $headers .= "From: " . SConfig::getInstance()->getVal(DConfig::EMAIL_SENDER_NAME) . " <" . SConfig::getInstance()->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
     $headers .= "Content-Type: multipart/alternative;boundary=" . $boundary . "\r\n";
     
     $plainMessage = "\r\n\r\n--" . $boundary . "\r\n";

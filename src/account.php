@@ -1,7 +1,7 @@
 <?php
 
 use DBA\Factory;
-use DBA\APiKey;
+use DBA\ApiKey;
 use DBA\QueryFilter;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
