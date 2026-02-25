@@ -680,31 +680,35 @@ class Util {
    * system operations and may delete files on disk.
    */
   public static function tusFileCleaning() {
-    $tusDirectory = Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal();
-    $uploadDirectory = $tusDirectory . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SEPARATOR;
-    $metaDirectory = $tusDirectory .  DIRECTORY_SEPARATOR . "meta" . DIRECTORY_SEPARATOR;
-    $expiration_time = time() + 3600;
-    if (file_exists($metaDirectory) && is_dir($metaDirectory)) {
-      if ($metaDirectoryHandler = opendir($metaDirectory)){
-        while ($file = readdir($metaDirectoryHandler)) {
-          if (str_ends_with($file, ".meta")) {
-            $metaFile = $metaDirectory . $file;
-            $metadata = (array)json_decode(file_get_contents($metaFile), true) ;
-            if (!isset($metadata['upload_expires'])) {
-              continue;
-            }
-            if ($metadata['upload_expires'] > $expiration_time) {
-              $uploadFile = $uploadDirectory . pathinfo($file, PATHINFO_FILENAME) . ".part";
-              if (file_exists($metaFile)) {
-                unlink($metaFile);
+    $tusDirectory = Factory::getStoredValueFactory()->get(DDirectories::TUS);
+    
+    if ($tusDirectory !== null) {
+      $tusDirectory = $tusDirectory->getVal();
+      $uploadDirectory = $tusDirectory . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SEPARATOR;
+      $metaDirectory = $tusDirectory .  DIRECTORY_SEPARATOR . "meta" . DIRECTORY_SEPARATOR;
+      $expiration_time = time() + 3600;
+      if (file_exists($metaDirectory) && is_dir($metaDirectory)) {
+        if ($metaDirectoryHandler = opendir($metaDirectory)){
+          while ($file = readdir($metaDirectoryHandler)) {
+            if (str_ends_with($file, ".meta")) {
+              $metaFile = $metaDirectory . $file;
+              $metadata = (array)json_decode(file_get_contents($metaFile), true) ;
+              if (!isset($metadata['upload_expires'])) {
+                continue;
               }
-              if (file_exists($uploadFile)){
-                unlink($uploadFile);
+              if ($metadata['upload_expires'] > $expiration_time) {
+                $uploadFile = $uploadDirectory . pathinfo($file, PATHINFO_FILENAME) . ".part";
+                if (file_exists($metaFile)) {
+                  unlink($metaFile);
+                }
+                if (file_exists($uploadFile)){
+                  unlink($uploadFile);
+                }
               }
             }
           }
+          closedir($metaDirectoryHandler);
         }
-        closedir($metaDirectoryHandler);
       }
     }
   }
