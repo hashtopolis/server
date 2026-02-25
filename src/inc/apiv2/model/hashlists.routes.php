@@ -106,6 +106,15 @@ class HashlistAPI extends AbstractModelAPI {
    * @throws HTException
    */
   protected function createObject(array $data): int {
+    return $this->createObjectAndGetResult($data)["pk"];
+  }
+
+  /**
+   * @throws HttpErrorException
+   * @throws HttpError
+   * @throws HTException
+   */
+  protected function createObjectAndGetResult(array $data): array {
     // Cast to createHashlist compatible upload format
     $dummyPost = [];
     switch ($data["sourceType"]) {
@@ -132,7 +141,7 @@ class HashlistAPI extends AbstractModelAPI {
       }
     }
     
-    $hashlist = HashlistUtils::createHashlist(
+    $hashlistData = HashlistUtils::createHashlist(
       $data[Hashlist::HASHLIST_NAME],
       $data[Hashlist::IS_SALTED],
       $data[Hashlist::IS_SECRET],
@@ -152,11 +161,14 @@ class HashlistAPI extends AbstractModelAPI {
     
     // Modify fields not set on hashlist creation
     if (array_key_exists("notes", $data)) {
-      HashlistUtils::editNotes($hashlist->getId(), $data["notes"], $this->getCurrentUser());
-    };
-    HashlistUtils::setArchived($hashlist->getId(), $data[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->getCurrentUser());
+      HashlistUtils::editNotes($hashlistData["hashlist"]->getId(), $data["notes"], $this->getCurrentUser());
+    }
+    HashlistUtils::setArchived($hashlistData["hashlist"]->getId(), $data[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->getCurrentUser());
     
-    return $hashlist->getId();
+    $creationResult["pk"] = $hashlistData["hashlist"]->getId();
+    $creationResult["creationInformation"] = $hashlistData["statistics"];
+
+    return $creationResult;
   }
   
   /**
