@@ -392,7 +392,6 @@ require_once($helperDir . "/resetChunk.routes.php");
 require_once($helperDir . "/resetUserPassword.routes.php");
 require_once($helperDir . "/searchHashes.routes.php");
 require_once($helperDir . "/setUserPassword.routes.php");
-require_once($helperDir . "/taskExtraDetails.routes.php");
 require_once($helperDir . "/unassignAgent.routes.php");
 
 $app->run();
