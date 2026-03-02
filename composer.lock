@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d707b8562d3314e500ae1bba0dc702ad",
+    "content-hash": "8e561ebf11be4bc46b585d70c42f2d0a",
     "packages": [
         {
             "name": "composer/semver",
@@ -212,16 +212,16 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v6.11.1",
+            "version": "v7.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66"
+                "reference": "5645b43af647b6947daac1d0f659dd1fbe8d3b65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
-                "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/5645b43af647b6947daac1d0f659dd1fbe8d3b65",
+                "reference": "5645b43af647b6947daac1d0f659dd1fbe8d3b65",
                 "shasum": ""
             },
             "require": {
@@ -269,26 +269,26 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v6.11.1"
+                "source": "https://github.com/firebase/php-jwt/tree/v7.0.2"
             },
-            "time": "2025-04-09T20:32:01+00:00"
+            "time": "2025-12-16T22:17:28+00:00"
         },
         {
             "name": "jimtools/jwt-auth",
-            "version": "2.3.1",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JimTools/jwt-auth.git",
-                "reference": "433da5594eb26c349472142a08c1bfe336bdd708"
+                "reference": "266a02352ee5df57107c653827aab3d91a76857e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JimTools/jwt-auth/zipball/433da5594eb26c349472142a08c1bfe336bdd708",
-                "reference": "433da5594eb26c349472142a08c1bfe336bdd708",
+                "url": "https://api.github.com/repos/JimTools/jwt-auth/zipball/266a02352ee5df57107c653827aab3d91a76857e",
+                "reference": "266a02352ee5df57107c653827aab3d91a76857e",
                 "shasum": ""
             },
             "require": {
-                "firebase/php-jwt": "^6.0",
+                "firebase/php-jwt": "^7.0",
                 "php": "~8.2 || ~8.3 || ~8.4 || ~8.5",
                 "psr/http-message": "^1.0 || ^2.0",
                 "psr/http-server-middleware": "^1.0"
@@ -298,6 +298,7 @@
             },
             "require-dev": {
                 "equip/dispatch": "^2.0",
+                "ext-openssl": "*",
                 "friendsofphp/php-cs-fixer": "^3.89",
                 "laminas/laminas-diactoros": "^3.7",
                 "phpstan/phpstan": "^2.1",
@@ -322,7 +323,7 @@
                     "role": "Developer"
                 }
             ],
-            "description": "Drop in replacement for tuupola/slim-jwt-auth",
+            "description": "PSR-15 JWT Authentication middleware, A replacement for tuupola/slim-jwt-auth",
             "homepage": "https://github.com/jimtools/jwt-auth",
             "keywords": [
                 "auth",
@@ -334,7 +335,7 @@
             ],
             "support": {
                 "issues": "https://github.com/JimTools/jwt-auth/issues",
-                "source": "https://github.com/JimTools/jwt-auth/tree/2.3.1"
+                "source": "https://github.com/JimTools/jwt-auth/tree/3.0.0"
             },
             "funding": [
                 {
@@ -342,7 +343,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-11-30T15:18:13+00:00"
+            "time": "2025-12-20T14:28:36+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -1718,30 +1719,29 @@
         },
         {
             "name": "doctrine/instantiator",
-            "version": "2.0.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/instantiator.git",
-                "reference": "c6222283fa3f4ac679f8b9ced9a4e23f163e80d0"
+                "reference": "23da848e1a2308728fe5fdddabf4be17ff9720c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/instantiator/zipball/c6222283fa3f4ac679f8b9ced9a4e23f163e80d0",
-                "reference": "c6222283fa3f4ac679f8b9ced9a4e23f163e80d0",
+                "url": "https://api.github.com/repos/doctrine/instantiator/zipball/23da848e1a2308728fe5fdddabf4be17ff9720c7",
+                "reference": "23da848e1a2308728fe5fdddabf4be17ff9720c7",
                 "shasum": ""
             },
             "require": {
-                "php": "^8.1"
+                "php": "^8.4"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^11",
+                "doctrine/coding-standard": "^14",
                 "ext-pdo": "*",
                 "ext-phar": "*",
                 "phpbench/phpbench": "^1.2",
-                "phpstan/phpstan": "^1.9.4",
-                "phpstan/phpstan-phpunit": "^1.3",
-                "phpunit/phpunit": "^9.5.27",
-                "vimeo/psalm": "^5.4"
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpunit/phpunit": "^10.5.58"
             },
             "type": "library",
             "autoload": {
@@ -1768,7 +1768,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/instantiator/issues",
-                "source": "https://github.com/doctrine/instantiator/tree/2.0.0"
+                "source": "https://github.com/doctrine/instantiator/tree/2.1.0"
             },
             "funding": [
                 {
@@ -1784,7 +1784,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-12-30T00:23:10+00:00"
+            "time": "2026-01-05T06:47:08+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -2819,16 +2819,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.5.11",
+            "version": "12.5.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "9b518cb40f9474572c9f0178e96ff3dc1cf02bf1"
+                "reference": "418e06b3b46b0d54bad749ff4907fc7dfb530199"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9b518cb40f9474572c9f0178e96ff3dc1cf02bf1",
-                "reference": "9b518cb40f9474572c9f0178e96ff3dc1cf02bf1",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/418e06b3b46b0d54bad749ff4907fc7dfb530199",
+                "reference": "418e06b3b46b0d54bad749ff4907fc7dfb530199",
                 "shasum": ""
             },
             "require": {
@@ -2897,7 +2897,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.11"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.12"
             },
             "funding": [
                 {
@@ -2921,7 +2921,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-02-10T12:32:02+00:00"
+            "time": "2026-02-16T08:34:36+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -4070,16 +4070,16 @@
         },
         {
             "name": "webmozart/assert",
-            "version": "2.1.2",
+            "version": "2.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozarts/assert.git",
-                "reference": "ce6a2f100c404b2d32a1dd1270f9b59ad4f57649"
+                "reference": "b39f1870fc7c3e9e4a26106df5053354b9260a33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozarts/assert/zipball/ce6a2f100c404b2d32a1dd1270f9b59ad4f57649",
-                "reference": "ce6a2f100c404b2d32a1dd1270f9b59ad4f57649",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/b39f1870fc7c3e9e4a26106df5053354b9260a33",
+                "reference": "b39f1870fc7c3e9e4a26106df5053354b9260a33",
                 "shasum": ""
             },
             "require": {
@@ -4126,9 +4126,9 @@
             ],
             "support": {
                 "issues": "https://github.com/webmozarts/assert/issues",
-                "source": "https://github.com/webmozarts/assert/tree/2.1.2"
+                "source": "https://github.com/webmozarts/assert/tree/2.1.4"
             },
-            "time": "2026-01-13T14:02:24+00:00"
+            "time": "2026-02-17T12:17:51+00:00"
         }
     ],
     "aliases": [],

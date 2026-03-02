@@ -2,11 +2,13 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\HTException;
+use Middlewares\Utils\HttpErrorException;
 
 class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
@@ -29,8 +31,10 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
   public function getFormFields(): array {
     return [
       Hashlist::HASHLIST_ID => ["type" => "int"],
+      "sourceType" => ['type' => 'str'],
       "sourceData" => ['type' => 'str'],
       "separator" => ['type' => 'str'],
+      "overwrite" => ['type' => 'int'],
     ];
   }
   
@@ -49,13 +53,38 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
   /**
    * Endpoint to import cracked hashes into a hashlist.
    * @throws HTException
+   * @throws HttpError
    */
   public function actionPost($data): object|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     
-    $importData = base64_decode($data["sourceData"]);
+    // Cast to processZap compatible upload format
+    $dummyPost = [];
+    switch ($data["sourceType"]) {
+      case "paste":
+        $dummyPost["hashfield"] = base64_decode($data["sourceData"]);
+        break;
+      case "import":
+        $dummyPost["importfile"] = $data["sourceData"];
+        break;
+      case "url":
+        $dummyPost["url"] = $data["sourceData"];
+        break;
+      default:
+        // TODO: Choice validation are model based checks
+        throw new HttpErrorException("sourceType value '" . $data["sourceType"] . "' is not supported (choices paste, import, url");
+    }
+
+    if ($data["sourceType"] == "paste") {
+      if (strlen($data["sourceData"]) == 0) {
+        throw new HttpError("sourceType=paste, requires sourceData to be non-empty");
+      }
+      else if ($dummyPost["hashfield"] == false) {
+        throw new HttpError("sourceData not valid base64 encoding");
+      }
+    }
     
-    $result = HashlistUtils::processZap($hashlist->getId(), $data["separator"], "paste", ["hashfield" => $importData], [], $this->getCurrentUser());
+    $result = HashlistUtils::processZap($hashlist->getId(), $data["separator"], $data["sourceType"], $dummyPost, [], $this->getCurrentUser(), (isset($data["overwrite"]) && intval($data["overwrite"]) == 1) ? true : false);
     
     return [
       "totalLines" => $result[0],

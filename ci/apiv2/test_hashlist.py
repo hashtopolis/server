@@ -68,7 +68,7 @@ class HashlistTest(BaseTest):
         cracked = "cc03e747a6afbbcbf8be7668acfebee5:test123"
 
         helper = Helper()
-        helper.import_cracked_hashes(model_obj, cracked, ':')
+        helper.import_cracked_hashes(model_obj, 'paste', cracked, ':', 0)
 
         file = helper.export_wordlist(model_obj)
 
@@ -84,7 +84,7 @@ class HashlistTest(BaseTest):
         cracked = "cc03e747a6afbbcbf8be7668acfebee5:test123"
 
         helper = Helper()
-        result = helper.import_cracked_hashes(model_obj, cracked, ':')
+        result = helper.import_cracked_hashes(model_obj, 'paste', cracked, ':', 0)
 
         self.assertEqual(result['totalLines'], 1)
         self.assertEqual(result['newCracked'], 1)
@@ -98,7 +98,7 @@ class HashlistTest(BaseTest):
         cracked = "cc03e747a6afbbcbf8be7668acfebee5__test123"
 
         helper = Helper()
-        result = helper.import_cracked_hashes(model_obj, cracked, ':')
+        result = helper.import_cracked_hashes(model_obj, 'paste', cracked, ':', 0)
 
         self.assertEqual(result['totalLines'], 1)
         self.assertEqual(result['invalid'], 1)
@@ -112,7 +112,7 @@ class HashlistTest(BaseTest):
         cracked = "ffffffffffffffffffffffffffffffff:test123"
 
         helper = Helper()
-        result = helper.import_cracked_hashes(model_obj, cracked, ':')
+        result = helper.import_cracked_hashes(model_obj, 'paste', cracked, ':', 0)
 
         self.assertEqual(result['totalLines'], 1)
         self.assertEqual(result['notFound'], 1)
@@ -126,9 +126,9 @@ class HashlistTest(BaseTest):
         cracked = "cc03e747a6afbbcbf8be7668acfebee5:test123"
 
         helper = Helper()
-        helper.import_cracked_hashes(model_obj, cracked, ':')
+        helper.import_cracked_hashes(model_obj, 'paste', cracked, ':', 0)
 
-        result = helper.import_cracked_hashes(model_obj, cracked, ':')
+        result = helper.import_cracked_hashes(model_obj, 'paste', cracked, ':', 0)
 
         self.assertEqual(result['totalLines'], 1)
         self.assertEqual(result['alreadyCracked'], 1)

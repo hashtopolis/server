@@ -234,7 +234,7 @@ class StartupConfig {
   }
   
   public function getVersion(): string {
-    return "v1.0.0-rainbow4";
+    return "v1.0.0-rainbow5";
   }
   
   public function getBuild(): string {
