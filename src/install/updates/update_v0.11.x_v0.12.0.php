@@ -1,17 +1,19 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
-use DBA\Config;
-use DBA\Factory;
-use DBA\HashType;
-use DBA\QueryFilter;
+use Hashtopolis\dba\models\Config;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\HashType;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\Util;
 
 if (!isset($TEST)) {
-  require_once(dirname(__FILE__) . "/../../inc/StartupConfig.class.php");
+  require_once(dirname(__FILE__) . "/../../inc/StartupConfig.php");
   require_once(dirname(__FILE__) . "/../../dba/init.php");
-  require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
+  require_once(dirname(__FILE__) . "/../../inc/Util.php");
 }
-require_once(dirname(__FILE__) . "/../../inc/defines/config.php");
-require_once(dirname(__FILE__) . "/../../inc/defines/log.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DConfig.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DLogEntry.php");
 
 if (!isset($PRESENT["v0.11.x_tasks"])) {
   if (Util::databaseColumnExists("Task", "isPrince")) {

@@ -1,6 +1,9 @@
 <?php
 
-namespace DBA;
+namespace Hashtopolis\dba\models;
+
+use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\Util;
 
 class __MODEL_NAME__Factory extends AbstractModelFactory {
   function getModelName(): string {
@@ -49,7 +52,7 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
    * @param bool $single
    * @return __MODEL_NAME__|__MODEL_NAME__[]
    */
-  function filter(array $options, bool $single = false) {
+  function filter(array $options, bool $single = false): __MODEL_NAME__|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;

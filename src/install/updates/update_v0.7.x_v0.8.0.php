@@ -1,17 +1,20 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
-use DBA\Factory;
-use DBA\File;
-use DBA\Config;
-use DBA\ConfigSection;
-use DBA\UpdateSet;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\File;
+use Hashtopolis\dba\models\Config;
+use Hashtopolis\dba\models\ConfigSection;
+use Hashtopolis\dba\UpdateSet;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessUtils;
 
 /** @noinspection PhpIncludeInspection */
 require_once(dirname(__FILE__) . "/../../inc/db.php");
 require_once(dirname(__FILE__) . "/../../dba/init.php");
-require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
-require_once(dirname(__FILE__) . "/../../inc/utils/AccessUtils.class.php");
-require_once(dirname(__FILE__) . "/../../inc/defines/config.php");
+require_once(dirname(__FILE__) . "/../../inc/Util.php");
+require_once(dirname(__FILE__) . "/../../inc/utils/AccessUtils.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DConfig.php");
 
 echo "Apply updates...\n";
 

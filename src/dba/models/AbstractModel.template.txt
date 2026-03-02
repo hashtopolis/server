@@ -1,6 +1,8 @@
 <?php
 
-namespace DBA;
+namespace Hashtopolis\dba\models;
+
+use Hashtopolis\dba\AbstractModel;
 
 class __MODEL_NAME__ extends AbstractModel {
   __MODEL_VARS__

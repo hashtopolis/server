@@ -1,5 +1,9 @@
 <?php
 
+use Hashtopolis\inc\defines\DViewControl;
+use Hashtopolis\inc\Login;
+use Hashtopolis\inc\utils\AccessControl;
+
 require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 AccessControl::getInstance()->checkPermission(DViewControl::LOGOUT_VIEW_PERM);

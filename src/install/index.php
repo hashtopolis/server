@@ -1,16 +1,31 @@
 <?php
 
-use DBA\AccessGroupUser;
-use DBA\QueryFilter;
-use DBA\RightGroup;
-use DBA\User;
-use DBA\Factory;
-use DBA\StoredValue;
+use Hashtopolis\dba\models\AccessGroupUser;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\models\RightGroup;
+use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\StoredValue;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\Encryption;
+use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\StartupConfig;
+use Hashtopolis\inc\templating\Template;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessUtils;
+use Hashtopolis\inc\utils\ConfigUtils;
+
+/**
+ * @deprecated
+ * This whole install is deprecated and very likely is or will be broken in the future and removed.
+ */
 
 require_once(dirname(__FILE__) . "/../inc/startup/load.php");
 
 $write_files = array(".", "../inc/Encryption.class.php", "../inc/startup/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../");
 
+global $INSTALL;
 if ($INSTALL) {
   die("Installation is already done!");
 }

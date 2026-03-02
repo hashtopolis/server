@@ -22,7 +22,7 @@ services:
     depends_on:
       - db
     ports:
-      - 8080:80
+      - "8080:80"
   db:
     container_name: db
     image: postgres:18
@@ -42,7 +42,7 @@ services:
     depends_on:
       - hashtopolis-backend
     ports:
-      - 4200:80 # When changing the host port don't forget to also update the HASHTOPOLIS_FRONTEND_PORT variable above
+      - "4200:80" # When changing the host port don't forget to also update the HASHTOPOLIS_FRONTEND_PORT variable above
 volumes:
   db:
   hashtopolis:
