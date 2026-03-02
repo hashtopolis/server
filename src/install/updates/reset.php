@@ -1,10 +1,13 @@
 <?php
 
-use DBA\Factory;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\Encryption;
+use Hashtopolis\inc\Util;
 
 require_once(dirname(__FILE__) . "/../../inc/startup/load.php");
 
 /**
+ * @deprecated will be removed in the future
  * Use this file if you want to reset the password for an admin account. Fill in the values and just run it once.
  */
 

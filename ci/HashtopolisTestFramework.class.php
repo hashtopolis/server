@@ -1,8 +1,12 @@
 <?php
 
-use DBA\Factory;
+use Hashtopolis\dba\Factory;
 use Composer\Semver\Comparator;
+use Hashtopolis\inc\StartupConfig;
 
+/**
+ * @deprecated
+ */
 class HashtopolisTestFramework {
   const REQUEST_CLIENT = 0;
   const REQUEST_UAPI   = 1;
