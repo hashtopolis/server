@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\UQueryHashlist;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\HashlistUtils;
