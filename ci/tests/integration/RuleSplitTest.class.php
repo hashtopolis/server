@@ -1,6 +1,8 @@
 <?php
 
-
+/**
+ * @deprecated
+ */
 class RuleSplitTest extends HashtopolisTest {
   protected $minVersion = "0.12.0";
   protected $maxVersion = "master";

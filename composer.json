@@ -20,6 +20,7 @@
         "php": "^8.2",
         "ext-json": "*",
         "ext-pdo": "*",
+        "ext-gd" : "*",
         "composer/semver": "^3.4",
         "crell/api-problem": "^3.6",
         "jimtools/jwt-auth": "^3.0",
@@ -50,7 +51,7 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "Hashtopolis\\": "src/"
         }
     },
     "autoload-dev": {

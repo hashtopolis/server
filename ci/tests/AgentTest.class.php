@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated
+ */
 class AgentTest extends HashtopolisTest {
   protected $minVersion = "0.7.0";
   protected $maxVersion = "master";

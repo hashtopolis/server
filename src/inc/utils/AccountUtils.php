@@ -1,7 +1,17 @@
 <?php
 
-use DBA\User;
-use DBA\Factory;
+namespace Hashtopolis\inc\utils;
+
+use Hashtopolis\inc\Encryption;
+use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\defines\DAccountAction;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DLogEntry;
+use Hashtopolis\inc\defines\DLogEntryIssuer;
+use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\SConfig;
+use Hashtopolis\inc\Util;
 
 class AccountUtils {
   /**
