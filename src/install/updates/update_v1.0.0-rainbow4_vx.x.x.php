@@ -1,9 +1,8 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
-use DBA\Config;
-use DBA\Factory;
-use DBA\HashType;
-use DBA\QueryFilter;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\StartupConfig;
+use Hashtopolis\inc\Util;
 
 
 if (StartupConfig::getInstance()->getDatabaseType() == 'postgres' || Util::databaseTableExists("_sqlx_migrations")) {

@@ -1,13 +1,14 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
-use DBA\Factory;
-use DBA\Config;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\Config;
+use Hashtopolis\inc\Util;
 
 /** @noinspection PhpIncludeInspection */
 require_once(dirname(__FILE__) . "/../../inc/db.php");
 require_once(dirname(__FILE__) . "/../../dba/init.php");
-require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
-require_once(dirname(__FILE__) . "/../../inc/defines/config.php");
+require_once(dirname(__FILE__) . "/../../inc/Util.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DConfig.php");
 
 echo "Apply updates...\n";
 
@@ -68,7 +69,7 @@ Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `isPrince` IN
 echo "OK\n";
 
 echo "Adding PRINCE settings...";
-$config = new Config(null, 1, DConfig::PRINCE_LINK, 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z');
+$config = new Config(null, 1, 'prince_link', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z');
 Factory::getConfigFactory()->save($config);
 echo "OK\n";
 

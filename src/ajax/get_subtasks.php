@@ -1,9 +1,15 @@
 <?php
 
-use DBA\OrderFilter;
-use DBA\QueryFilter;
-use DBA\Task;
-use DBA\Factory;
+use Hashtopolis\dba\OrderFilter;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\Task;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\DataSet;
+use Hashtopolis\inc\Login;
+use Hashtopolis\inc\templating\Template;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessUtils;
 
 require_once(dirname(__FILE__) . "/../inc/startup/load.php");
 

@@ -1,14 +1,27 @@
 <?php
 
-use DBA\JoinFilter;
-use DBA\Pretask;
-use DBA\QueryFilter;
-use DBA\OrderFilter;
-use DBA\ContainFilter;
-use DBA\SupertaskPretask;
-use DBA\Factory;
-use DBA\File;
-use DBA\FilePretask;
+use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\models\Pretask;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\OrderFilter;
+use Hashtopolis\dba\ContainFilter;
+use Hashtopolis\dba\models\SupertaskPretask;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\File;
+use Hashtopolis\dba\models\FilePretask;
+use Hashtopolis\inc\CSRF;
+use Hashtopolis\inc\DataSet;
+use Hashtopolis\inc\defines\DAccessControl;
+use Hashtopolis\inc\defines\DViewControl;
+use Hashtopolis\inc\handlers\SupertaskHandler;
+use Hashtopolis\inc\Login;
+use Hashtopolis\inc\Menu;
+use Hashtopolis\inc\templating\Template;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessControl;
+use Hashtopolis\inc\utils\FileUtils;
+use Hashtopolis\inc\utils\HashlistUtils;
 
 require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
@@ -57,7 +70,7 @@ else if (isset($_GET['id']) && isset($_GET['new']) && AccessControl::getInstance
   UI::add('lists', HashlistUtils::getHashlists(Login::getInstance()->getUser()));
   UI::add('binaries', Factory::getCrackerBinaryTypeFactory()->filter([]));
   $versions = Factory::getCrackerBinaryFactory()->filter([]);
-  usort($versions, ["Util", "versionComparisonBinary"]);
+  usort($versions, ["Hashtopolis\inc\Util", "versionComparisonBinary"]);
   UI::add('versions', $versions);
   UI::add('pageTitle', "Issue Supertask");
 }
