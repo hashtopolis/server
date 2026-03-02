@@ -285,7 +285,6 @@ ResetChunkHelperAPI::register($app);
 ResetUserPasswordHelperAPI::register($app);
 SearchHashesHelperAPI::register($app);
 SetUserPasswordHelperAPI::register($app);
-TaskExtraDetailsHelper::register($app);
 UnassignAgentHelperAPI::register($app);
 
 $app->run();
