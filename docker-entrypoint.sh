@@ -70,6 +70,11 @@ done
 # required to trigger the initialization
 echo "Start initialization process..."
 php -f ${HASHTOPOLIS_DOCUMENT_ROOT}/inc/startup/setup.php
+rc=$? # capture the status
+if (( rc != 0 )); then
+    echo "Hashtopolis setup.php failed (exit code $rc)" >&2
+    exit $rc # propagate the failure to stop docker continuing
+fi
 echo "Initialization complete!"
 
 
