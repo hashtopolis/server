@@ -54,10 +54,12 @@ if (!$initialSetup && StartupConfig::getInstance()->getDatabaseType() == "mysql"
   include(dirname(__FILE__) . "/../../install/updates/update.php");
 }
 
+$output = [];
 $database_uri = StartupConfig::getInstance()->getDatabaseType() . "://" . StartupConfig::getInstance()->getDatabaseUser() . ":" . StartupConfig::getInstance()->getDatabasePassword() . "@" . StartupConfig::getInstance()->getDatabaseServer() . ":" . StartupConfig::getInstance()->getDatabasePort() . "/" . StartupConfig::getInstance()->getDatabaseDB();
 exec('/usr/bin/sqlx migrate run --source ' . dirname(__FILE__) . '/../../migrations/' . StartupConfig::getInstance()->getDatabaseType() . '/ -D ' . $database_uri, $output, $retval);
 if ($retval !== 0) {
-  die("Failed to run migrations: \n" . implode("\n", $output));
+  echo "Failed to run migrations: \n" . implode("\n", $output);
+  exit(-1);
 }
 
 if ($initialSetup === true) {
