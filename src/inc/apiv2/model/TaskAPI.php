@@ -235,7 +235,7 @@ class TaskAPI extends AbstractModelAPI {
         }
           
         $timeChunks = $chunks;
-        usort($timeChunks, "\Hashtopolis\inc\Util::compareChunksTime");
+        usort($timeChunks, ["Hashtopolis\inc\Util", "compareChunksTime"]);
         $timeSpent = 0;
         $current = 0;
         
