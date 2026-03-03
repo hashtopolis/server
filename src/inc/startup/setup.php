@@ -4,12 +4,16 @@
  * This file should only be called by docker-entrypoint.sh so that it's only executed on the docker startup
  **/
 
-use DBA\AccessGroupUser;
-use DBA\Factory;
-use DBA\QueryFilter;
-use DBA\RightGroup;
-use DBA\StoredValue;
-use DBA\User;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\AccessGroupUser;
+use Hashtopolis\dba\models\RightGroup;
+use Hashtopolis\dba\models\StoredValue;
+use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\inc\defines\DDirectories;
+use Hashtopolis\inc\StartupConfig;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessUtils;
 
 // set to 1 for debugging
 ini_set("display_errors", "0");
@@ -50,10 +54,12 @@ if (!$initialSetup && StartupConfig::getInstance()->getDatabaseType() == "mysql"
   include(dirname(__FILE__) . "/../../install/updates/update.php");
 }
 
+$output = [];
 $database_uri = StartupConfig::getInstance()->getDatabaseType() . "://" . StartupConfig::getInstance()->getDatabaseUser() . ":" . StartupConfig::getInstance()->getDatabasePassword() . "@" . StartupConfig::getInstance()->getDatabaseServer() . ":" . StartupConfig::getInstance()->getDatabasePort() . "/" . StartupConfig::getInstance()->getDatabaseDB();
 exec('/usr/bin/sqlx migrate run --source ' . dirname(__FILE__) . '/../../migrations/' . StartupConfig::getInstance()->getDatabaseType() . '/ -D ' . $database_uri, $output, $retval);
 if ($retval !== 0) {
-  die("Failed to run migrations: \n" . implode("\n", $output));
+  echo "Failed to run migrations: \n" . implode("\n", $output);
+  exit(-1);
 }
 
 if ($initialSetup === true) {
