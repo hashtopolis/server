@@ -12,7 +12,7 @@ use Hashtopolis\inc\utils\TaskUtils;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class getBestTasksAgent extends AbstractHelperAPI {
+class GetBestTasksAgent extends AbstractHelperAPI {
   public static function getBaseUri(): string {
     return "/api/v2/helper/getBestTasksAgent";
   }
@@ -31,7 +31,7 @@ class getBestTasksAgent extends AbstractHelperAPI {
   
   
   public function actionPost(array $data): object|array|null {
-    throw new HttpErrorException("getBestTasksAgents has no POST");
+    throw new HttpErrorException("getBestTasksAgent has no POST");
   }
   
   /**
@@ -54,7 +54,7 @@ class getBestTasksAgent extends AbstractHelperAPI {
   }
   
   /**
-   * Endpoint to get the best task 
+   * Endpoint to get the tasks a agent can work on
    * @param Request $request
    * @param Response $response
    * @return Response
@@ -62,13 +62,18 @@ class getBestTasksAgent extends AbstractHelperAPI {
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
-    $agent = Factory::getAgentFactory()->get($request->getQueryParams()['agent']);
+    $queryParams = $request->getQueryParams();
+    $agentParam = $queryParams['agent'] ?? null;
+    if ($agentParam === null || !is_numeric($agentParam)) {
+      throw new HttpError("Invalid or missing 'agent' query parameter");
+    }
+    $agentId = (int) $agentParam;
+    $agent = Factory::getAgentFactory()->get($agentId);
     if ($agent == null) {
       throw new HttpError("No agent has been found with provided agent id");
     }
     $tasks = TaskUtils::getBestTask($agent, true);
 
-    $converted = [];
     foreach ($tasks as $task) {
       $converted[] = self::obj2Resource($task);
     }
@@ -82,7 +87,7 @@ class getBestTasksAgent extends AbstractHelperAPI {
   }
   
   static public function register($app): void {
-    $baseUri = getBestTasksAgent::getBaseUri();
+    $baseUri = GetBestTasksAgent::getBaseUri();
     
     /* Allow CORS preflight requests */
     $app->options($baseUri, function (Request $request, Response $response): Response {
