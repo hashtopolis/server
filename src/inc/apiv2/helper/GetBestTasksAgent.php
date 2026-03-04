@@ -73,6 +73,7 @@ class GetBestTasksAgent extends AbstractHelperAPI {
       throw new HttpError("No agent has been found with provided agent id");
     }
     $tasks = TaskUtils::getBestTask($agent, true);
+    $converted = [];
 
     foreach ($tasks as $task) {
       $converted[] = self::obj2Resource($task);
