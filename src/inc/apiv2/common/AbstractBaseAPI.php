@@ -1063,7 +1063,7 @@ abstract class AbstractBaseAPI {
       }
       array_push($required_perms, ...$expandedPerms);
     }
-    $permissionResponse = $this->validatePermissions($required_perms, $permsExpandMatching);
+    $permissionResponse = $this->validatePermissions($required_perms, $request->getMethod(), $permsExpandMatching);
     $expands_to_remove = [];
     
     // remove expands with missing permissions
@@ -1399,7 +1399,7 @@ abstract class AbstractBaseAPI {
   /**
    * Validate permissions
    */
-  protected function validatePermissions(array $required_perms, array $permsExpandMatching = []): bool|array {
+  protected function validatePermissions(array $required_perms, string $method, array $permsExpandMatching = []): bool|array {
     // Retrieve permissions from RightGroup part of the User
     $group = Factory::getRightGroupFactory()->get($this->user->getRightGroupId());
     
@@ -1430,7 +1430,9 @@ abstract class AbstractBaseAPI {
     // Find if all permissions are matched
     $missing_permissions = array_diff($required_perms, $user_available_perms);
     if (count($missing_permissions) > 0) {
-      if ($this instanceof AbstractModelAPI) {
+      // When there are public attributes, only these will be returned when creating the get response and the non public
+      // attributes are stripped away.
+      if ($method === "GET" && $this instanceof AbstractModelAPI) {
         $features = $this->getFeatures();
         foreach ($features as $key => $arr) {
           if ($arr['public']) {
@@ -1530,7 +1532,7 @@ abstract class AbstractBaseAPI {
       );
     }
     
-    if ($this->validatePermissions($required_perms) === FALSE) {
+    if ($this->validatePermissions($required_perms, $request->getMethod()) === FALSE) {
       throw new HttpForbidden(join('||', $this->permissionErrors));
     }
   }
