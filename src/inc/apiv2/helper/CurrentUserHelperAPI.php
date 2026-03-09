@@ -11,6 +11,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Hashtopolis\inc\apiv2\model\UserAPI;
+use Hashtopolis\inc\utils\AccountUtils;
 use Hashtopolis\inc\utils\UserUtils;
 use Slim\Routing\RouteContext;
 
@@ -65,16 +66,12 @@ class CurrentUserHelperAPI extends AbstractHelperAPI {
    * @throws HTException
    */
   public function actionPatch(Request $request, Response $response, array $args): Response {
+    $this->preCommon($request);
+    $user = $this->getCurrentUser();
     $data = $request->getParsedBody()['data'];
 
-    $userId = $request->getAttribute(('userId'));
-    $user = UserUtils::getUser($userId);
-    // have to do this manually because we cant call precommon() for the permisions
-    $routeContext = RouteContext::fromRequest($request);
-    $userRoute = new UserAPI($this->container);
-    $userRoute->setCurrentUser($user);
-    $userRoute->routeParser = $routeContext->getRouteParser();
-    return $userRoute->patchSingleObject($request, $response, $user, $data);
+    AccountUtils::setEmail($data["attributes"]["email"], $user);
+    return $response->withStatus(204);
   }
   
   static public function register($app): void {
