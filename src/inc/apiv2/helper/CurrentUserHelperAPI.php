@@ -11,6 +11,9 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Hashtopolis\inc\apiv2\model\UserAPI;
+use Hashtopolis\inc\utils\AccountUtils;
+use Hashtopolis\inc\utils\UserUtils;
+use Slim\Routing\RouteContext;
 
 class CurrentUserHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
@@ -59,17 +62,16 @@ class CurrentUserHelperAPI extends AbstractHelperAPI {
   }
   
   // PATCH endpoint in order to patch attributes of own user, even when user doesnt have permissions to alter users
-  
   /**
    * @throws HTException
    */
   public function actionPatch(Request $request, Response $response, array $args): Response {
-    $data = $request->getParsedBody()['data'];
     $this->preCommon($request);
     $user = $this->getCurrentUser();
-    $userRoute = new UserAPI($this->container);
-    $userRoute->setCurrentUser($user);
-    return $userRoute->patchSingleObject($request, $response, $user, $data);
+    $data = $request->getParsedBody()['data'];
+
+    AccountUtils::setEmail($data["attributes"]["email"], $user);
+    return $response->withStatus(204);
   }
   
   static public function register($app): void {
