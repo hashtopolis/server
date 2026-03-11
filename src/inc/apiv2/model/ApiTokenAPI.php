@@ -3,8 +3,10 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Firebase\JWT\JWT;
+use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\JwtApiKey;
 use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\StartupConfig;
@@ -46,12 +48,24 @@ class ApiTokenAPI extends AbstractModelAPI {
   }
 
   public function getFormFields(): array {
-  // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-  return [
-    "scopes" => ['type' => 'array', 'subtype' => 'string']
-  ];
-}
+    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
+    return [
+      "scopes" => ['type' => 'array', 'subtype' => 'string']
+    ];
+  }
+
+  protected function getSingleACL(User $user, object $object): bool {
+    return ($object->getUserId() === $user->getId());
+  }
   
+  protected function getFilterACL(): array {
+    $userId = $this->getCurrentUser()->getId();
+    return [
+      Factory::FILTER => [
+        new QueryFilter(User::USER_ID, $userId, "=")
+      ]
+    ];
+  }
   /**
    * @throws HttpError
    */
