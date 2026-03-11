@@ -1,5 +1,5 @@
 CREATE TABLE JwtApiKey (
-    JwtApiKeyId INT NOT NULL,
+    JwtApiKeyId INT NOT NULL AUTO_INCREMENT,
     userId INTEGER,
     startValid bigint,
     endValid bigint,
