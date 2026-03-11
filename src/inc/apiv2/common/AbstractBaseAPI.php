@@ -684,7 +684,8 @@ abstract class AbstractBaseAPI {
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
     
-    $aggregatedData = $this->aggregateData($obj, $expandResult, $aggregateFieldsets);
+    $apiClassObject = new $apiClass($this->container);
+    $aggregatedData = $apiClassObject->aggregateData($obj, $expandResult, $aggregateFieldsets);
     $attributes = array_merge($attributes, $aggregatedData);
     
     /* Build JSON::API relationship resource */
