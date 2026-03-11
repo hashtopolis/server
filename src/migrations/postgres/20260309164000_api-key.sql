@@ -5,6 +5,6 @@ CREATE TABLE JwtApiKey (
     endValid bigint,
     isRevoked BOOLEAN DEFAULT FALSE,
     CONSTRAINT fk_JwtApiKey_user
-        FOREIGN KEY (userId) REFERENCES htp_User(id)
+        FOREIGN KEY (userId) REFERENCES htp_User(userId)
 );
 CREATE INDEX idx_JwtApiKey_userId ON JwtApiKey (userId);
