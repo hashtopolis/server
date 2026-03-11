@@ -599,7 +599,7 @@ abstract class AbstractBaseAPI {
     elseif (str_starts_with($feature['type'], 'str')) {
       $val = htmlentities($obj, ENT_QUOTES, "UTF-8");
     }
-    elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
+    elseif ($feature['type'] == 'array' && ($feature['subtype'] == 'int' || $feature['subtype'] == 'string')) {
       $val = implode(",", $obj);
     }
     elseif ($feature['type'] == 'dict' && $feature['subtype'] == 'bool') {

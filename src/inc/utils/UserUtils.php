@@ -12,6 +12,7 @@ use Hashtopolis\dba\models\Session;
 use Hashtopolis\dba\models\NotificationSetting;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\JwtApiKey;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DConfig;
@@ -62,6 +63,10 @@ class UserUtils {
     Factory::getSessionFactory()->massDeletion([Factory::FILTER => $qF]);
     $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=");
     Factory::getAccessGroupUserFactory()->massDeletion([Factory::FILTER => $qF]);
+    $qF = new QueryFilter(Session::USER_ID, $user->getId(), "=");
+    $uS = new UpdateSet(JwtApiKey::IS_REVOKED, 1);
+    // Revoke all of the API keys of the user
+    Factory::getJwtApiKeyFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
     Factory::getUserFactory()->delete($user);
   }
   

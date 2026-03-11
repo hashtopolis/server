@@ -27,7 +27,7 @@ class ApiTokenAPI extends AbstractModelAPI {
   }
   
   public static function getAvailableMethods(): array {
-    return ['GET', 'POST', 'PATCH'];
+    return ['GET', 'POST', 'PATCH', 'DELETE'];
   }
   
   public static function getDBAclass(): string {
@@ -44,12 +44,34 @@ class ApiTokenAPI extends AbstractModelAPI {
       ]
     ];
   }
+
+  public function getFormFields(): array {
+  // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
+  return [
+    "scopes" => ['type' => 'array', 'subtype' => 'string']
+  ];
+}
   
   /**
    * @throws HttpError
    */
   protected function createObject(array $data): int {
-    $rightGroup = $this->getRightGroup($this->getCurrentUser()->getRightGroupId());
+    //Scopes is an array of permissions in format [permFileTaskUpdate, permAgentDelete]
+    $scopes = explode(",", $data["scopes"]);
+
+    $allPermissions = $this->getRightGroup($this->getCurrentUser()->getRightGroupId())->getPermissions();
+    if ($allPermissions == 'ALL') {
+      // Special (legacy) case for administrative access, enable all available permissions
+      $all_perms = array_keys(self::$acl_mapping);
+      $rightgroup_perms = array_combine($all_perms, array_fill(0, count($all_perms), true));
+    }
+    else {
+      $rightgroup_perms = json_decode($allPermissions, true);
+    }
+    $NotAllowedPerms = array_filter($rightgroup_perms, fn($v) => $v === false);
+    $allowedPerms = array_intersect_key($rightgroup_perms, array_flip($scopes));
+
+    $requestedScopes = $allowedPerms + $NotAllowedPerms;
 
     $secret = StartupConfig::getInstance()->getPepper(0);
     $iat = $data[JwtApiKey::START_VALID];
@@ -62,7 +84,7 @@ class ApiTokenAPI extends AbstractModelAPI {
       "exp" => $expires,
       "jti" => $jti,
       "userId" => $this->getCurrentUser()->getId(),
-      "scope" => $rightGroup->getPermissions(),
+      "scope" => $requestedScopes,
       "iss" => "Hashtopolis",
       "kid" =>  hash("sha256", $secret)
     ];
@@ -87,14 +109,7 @@ class ApiTokenAPI extends AbstractModelAPI {
   /**
    * @throws HttpError
    */
-  public function updateObject(int $objectId, array $data): void {
-    throw new HttpError("ApiToken cannot be updated via API");
-  }
-  
-  /**
-   * @throws HttpError
-   */
   protected function deleteObject(object $object): void {
-    throw new HttpError("ApiToken cannot be deleted via API");
+    JwtTokenUtils::deleteKey($object);
   }
 }
