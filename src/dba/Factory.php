@@ -25,6 +25,7 @@ use Hashtopolis\dba\models\HashlistFactory;
 use Hashtopolis\dba\models\HashTypeFactory;
 use Hashtopolis\dba\models\HealthCheckFactory;
 use Hashtopolis\dba\models\HealthCheckAgentFactory;
+use Hashtopolis\dba\models\JwtApiKeyFactory;
 use Hashtopolis\dba\models\LogEntryFactory;
 use Hashtopolis\dba\models\NotificationSettingFactory;
 use Hashtopolis\dba\models\PreprocessorFactory;
@@ -71,6 +72,7 @@ class Factory {
   private static ?HashTypeFactory $hashTypeFactory = null;
   private static ?HealthCheckFactory $healthCheckFactory = null;
   private static ?HealthCheckAgentFactory $healthCheckAgentFactory = null;
+  private static ?JwtApiKeyFactory $jwtApiKeyFactory = null;
   private static ?LogEntryFactory $logEntryFactory = null;
   private static ?NotificationSettingFactory $notificationSettingFactory = null;
   private static ?PreprocessorFactory $preprocessorFactory = null;
@@ -320,6 +322,16 @@ class Factory {
       return $f;
     } else {
       return self::$healthCheckAgentFactory;
+    }
+  }
+  
+  public static function getJwtApiKeyFactory(): JwtApiKeyFactory {
+    if (self::$jwtApiKeyFactory == null) {
+      $f = new JwtApiKeyFactory();
+      self::$jwtApiKeyFactory = $f;
+      return $f;
+    } else {
+      return self::$jwtApiKeyFactory;
     }
   }
   

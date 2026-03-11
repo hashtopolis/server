@@ -59,6 +59,8 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\LikeFilter;
 use Hashtopolis\dba\LikeFilterInsensitive;
+use Hashtopolis\dba\models\ApiKey;
+use Hashtopolis\dba\models\JwtApiKey;
 use Hashtopolis\dba\models\LogEntry;
 use Hashtopolis\dba\models\Preprocessor;
 use Hashtopolis\dba\QueryFilter;
@@ -182,7 +184,7 @@ abstract class AbstractBaseAPI {
    * Implementations should use $includedData to collect related resources that should be included
    * in the API response, such as related entities or additional data.
    */
-  public static function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
+  public function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     return [];
   }
   
@@ -307,6 +309,8 @@ abstract class AbstractBaseAPI {
         return Factory::getTaskWrapperFactory();
       case User::class:
         return Factory::getUserFactory();
+      case JwtApiKey::class:
+        return Factory::getJwtApiKeyFactory();
     }
     throw new HttpError("Model '$model' cannot be mapped to Factory");
   }
@@ -546,6 +550,7 @@ abstract class AbstractBaseAPI {
     
     // src/inc/defines/notifications.php
     DAccessControl::LOGIN_ACCESS => array(NotificationSetting::PERM_CREATE, NotificationSetting::PERM_READ, NotificationSetting::PERM_UPDATE, NotificationSetting::PERM_DELETE, LogEntry::PERM_CREATE, LogEntry::PERM_DELETE, LogEntry::PERM_UPDATE),
+    "ApiTokenAccess" => array(JwtApiKey::PERM_CREATE, JwtApiKey::PERM_DELETE, JwtApiKey::PERM_READ, JwtApiKey::PERM_UPDATE),
   );
   
   /**
@@ -679,7 +684,7 @@ abstract class AbstractBaseAPI {
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
     
-    $aggregatedData = $apiClass::aggregateData($obj, $expandResult, $aggregateFieldsets);
+    $aggregatedData = $this->aggregateData($obj, $expandResult, $aggregateFieldsets);
     $attributes = array_merge($attributes, $aggregatedData);
     
     /* Build JSON::API relationship resource */
@@ -1063,7 +1068,7 @@ abstract class AbstractBaseAPI {
       }
       array_push($required_perms, ...$expandedPerms);
     }
-    $permissionResponse = $this->validatePermissions($required_perms, $request->getMethod(), $permsExpandMatching);
+    $permissionResponse = $this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $permsExpandMatching);
     $expands_to_remove = [];
     
     // remove expands with missing permissions
@@ -1373,43 +1378,18 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * Validate if user is allowed to access hashlist
-   * @throws HttpForbidden
-   * @throws ResourceNotFoundError
-   */
-  protected function validateHashlistAccess(Request $request, User $user, string $hashlistId): Hashlist {
-    // TODO: Fix permissions
-    if (!AccessControl::getInstance($user)->hasPermission(DAccessControl::MANAGE_HASHLIST_ACCESS)) {
-      throw new HttpForbidden("No '" . DAccessControl::getDescription(DAccessControl::MANAGE_HASHLIST_ACCESS) . "' permission");
-    }
-    
-    try {
-      $hashlist = HashlistUtils::getHashlist($hashlistId);
-    }
-    catch (HTException $ex) {
-      throw new ResourceNotFoundError($ex->getMessage());
-    }
-    if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
-      throw new HttpForbidden("No access to hashlist!");
-    }
-    
-    return $hashlist;
-  }
-  
-  /**
    * Validate permissions
    */
-  protected function validatePermissions(array $required_perms, string $method, array $permsExpandMatching = []): bool|array {
+  protected function validatePermissions(string $permissions, array $required_perms, string $method, array $permsExpandMatching = []): bool|array {
     // Retrieve permissions from RightGroup part of the User
-    $group = Factory::getRightGroupFactory()->get($this->user->getRightGroupId());
     
-    if ($group->getPermissions() == 'ALL') {
+    if ($permissions == 'ALL') {
       // Special (legacy) case for administrative access, enable all available permissions
       $all_perms = array_keys(self::$acl_mapping);
       $rightgroup_perms = array_combine($all_perms, array_fill(0, count($all_perms), true));
     }
     else {
-      $rightgroup_perms = json_decode($group->getPermissions(), true);
+      $rightgroup_perms = json_decode($permissions, true);
     }
     
     // Validate if no undefined permissions are set in $acl_mapping
@@ -1508,8 +1488,11 @@ abstract class AbstractBaseAPI {
    */
   protected function preCommon(Request $request): void {
     $userId = $request->getAttribute(('userId'));
-    $this->user = UserUtils::getUser($userId);
-    
+    $user = UserUtils::getUser($userId);
+    if ($user->getIsValid() != 1) {
+      throw new HttpForbidden("User is set to invalid");
+    }
+    $this->user = $user;
     # 'Initiate' AccessControl class, by requesting instance with parameter of logged-in user.
     # This will cause the AccessControl class to initiate it's static 'instance' parameter,
     # which is in turn used at later stages (e.g. src/inc/utils/NotificationUtils.class.php) to
@@ -1532,7 +1515,7 @@ abstract class AbstractBaseAPI {
       );
     }
     
-    if ($this->validatePermissions($required_perms, $request->getMethod()) === FALSE) {
+    if ($this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod()) === FALSE) {
       throw new HttpForbidden(join('||', $this->permissionErrors));
     }
   }

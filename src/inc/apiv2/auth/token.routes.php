@@ -13,34 +13,45 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
 use Firebase\JWT\JWK;
+use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\models\RightGroup;
 
 require_once(dirname(__FILE__) . "/../../startup/include.php");
 
 function generateTokenForUser(Request $request, string $userName, int $expires) {
   $jti = bin2hex(random_bytes(16));
   
-  $requested_scopes = $request->getParsedBody() ?: ["todo.all"];
-  
-  $valid_scopes = [
-    "todo.create",
-    "todo.read",
-    "todo.update",
-    "todo.delete",
-    "todo.list",
-    "todo.all"
-  ];
-  
-  $scopes = array_filter($requested_scopes, function ($needle) use ($valid_scopes) {
-    return in_array($needle, $valid_scopes);
-  });
-  // FIXME: This is duplicated and should be passed by HttpBasicMiddleware
   $filter = new QueryFilter(User::USERNAME, $userName, "=");
-  $check = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);
-  $user = $check[0];
-
-  if (empty($user)) {
+  $jF = new JoinFilter(Factory::getRightGroupFactory(), User::RIGHT_GROUP_ID, RightGroup::RIGHT_GROUP_ID);
+  $joined = Factory::getUserFactory()->filter([Factory::FILTER => $filter, Factory::JOIN => $jF]);
+  /** @var $check User[] */
+  $check = $joined[Factory::getUserFactory()->getModelName()];
+  if (count($check) === 0) {
     throw new HttpError("No user with this userName in the database");
   }
+  $user = $check[0];
+
+  /** @var $groupArray RightGroup[] */
+  $groupArray = $joined[Factory::getRightGroupFactory()->getModelName()];
+  if (count($groupArray) === 0) {
+    throw new HttpError("No rightgroup found for this user");
+  }
+  $group = $groupArray[0];
+  $scopes = $group->getPermissions();
+  
+  // $requested_scopes = $request->getParsedBody() ?: ["todo.all"];
+  // $valid_scopes = [
+  //   "todo.create",
+  //   "todo.read",
+  //   "todo.update",
+  //   "todo.delete",
+  //   "todo.list",
+  //   "todo.all"
+  // ];
+  
+  // $scopes = array_filter($requested_scopes, function ($needle) use ($valid_scopes) {
+  //   return in_array($needle, $valid_scopes);
+  // });
 
   $secret = StartupConfig::getInstance()->getPepper(0);
   $now = new DateTime();
