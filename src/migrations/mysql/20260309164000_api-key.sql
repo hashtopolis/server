@@ -5,7 +5,7 @@ CREATE TABLE JwtApiKey (
     endValid bigint NOT NULL,
     isRevoked BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (`jwtApiKeyId`),
-    KEY `idx_JwtApiKey_userId` (`userId`),
-    CONSTRAINT `fk_JwtApiKey_user`
+    KEY `idx_jwtApiKey_userId` (`userId`),
+    CONSTRAINT `fk_jwtApiKey_user`
         FOREIGN KEY (`userId`) REFERENCES `htp_User`(`userId`)
 );

@@ -7,4 +7,4 @@ CREATE TABLE JwtApiKey (
     CONSTRAINT fk_JwtApiKey_user
         FOREIGN KEY (userId) REFERENCES htp_User(userId)
 );
-CREATE INDEX idx_JwtApiKey_userId ON JwtApiKey (userId);
+CREATE INDEX idx_jwtApiKey_userId ON JwtApiKey (userId);
