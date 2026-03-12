@@ -59,7 +59,6 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\LikeFilter;
 use Hashtopolis\dba\LikeFilterInsensitive;
-use Hashtopolis\dba\models\ApiKey;
 use Hashtopolis\dba\models\JwtApiKey;
 use Hashtopolis\dba\models\LogEntry;
 use Hashtopolis\dba\models\Preprocessor;
@@ -684,7 +683,13 @@ abstract class AbstractBaseAPI {
       $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
     
-    $apiClassObject = new $apiClass($this->container);
+    if ($this instanceof AbstractModelAPI && get_class($obj) !== $this->getDBAClass()) {
+      $apiClassObject = new $apiClass($this->container);
+    } else {
+      // use instance of this when the object is of the dba class of this api endpoint.
+      // This way its possible to set object attributes in the post to be used in the aggregateData function.
+      $apiClassObject = $this;
+    }
     $aggregatedData = $apiClassObject->aggregateData($obj, $expandResult, $aggregateFieldsets);
     $attributes = array_merge($attributes, $aggregatedData);
     

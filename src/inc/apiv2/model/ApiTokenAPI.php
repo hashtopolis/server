@@ -14,6 +14,7 @@ use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\utils\JwtTokenUtils;
 
 class ApiTokenAPI extends AbstractModelAPI {
+  const API_AUD = "api_hashtopolis";
   private ?string $jwtToken = null;
 
   private function setJwtToken(string $token): void {
@@ -98,8 +99,9 @@ class ApiTokenAPI extends AbstractModelAPI {
       "exp" => $expires,
       "jti" => $jti,
       "userId" => $this->getCurrentUser()->getId(),
-      "scope" => $requestedScopes,
+      "scope" => json_encode($requestedScopes),
       "iss" => "Hashtopolis",
+      "aud" => $this::API_AUD,
       "kid" =>  hash("sha256", $secret)
     ];
 

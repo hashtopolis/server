@@ -289,7 +289,7 @@ $CONF['HealthCheckAgent'] = [
 ];
 $CONF['JwtApiKey'] = [
   'columns' => [
-    ['name' => 'JwtApiKeyId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'jwtApiKeyId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'startValid', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'endValid', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'relation' => 'User'],

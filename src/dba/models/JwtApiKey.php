@@ -97,7 +97,7 @@ class JwtApiKey extends AbstractModel {
     $this->isRevoked = $isRevoked;
   }
   
-  const _JWT_API_KEY_ID = "JwtApiKeyId";
+  const JWT_API_KEY_ID = "JwtApiKeyId";
   const START_VALID = "startValid";
   const END_VALID = "endValid";
   const USER_ID = "userId";

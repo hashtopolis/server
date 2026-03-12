@@ -18,6 +18,7 @@ use Hashtopolis\dba\models\RightGroup;
 
 require_once(dirname(__FILE__) . "/../../startup/include.php");
 
+const USER_AUD = "user_hashtopolis";
 function generateTokenForUser(Request $request, string $userName, int $expires) {
   $jti = bin2hex(random_bytes(16));
   
@@ -63,7 +64,8 @@ function generateTokenForUser(Request $request, string $userName, int $expires) 
     "userId" => $user->getId(),
     "scope" => $scopes,
     "iss" => "Hashtopolis",
-    "kid" =>  hash("sha256", $secret)
+    "kid" =>  hash("sha256", $secret),
+    "aud" => USER_AUD
   ];
 
   $token = JWT::encode($payload, $secret, "HS256");
@@ -170,7 +172,8 @@ $app->group("/api/v2/auth/refresh", function (RouteCollectorProxy $group) {
       "userId" => $request->getAttribute(('userId')),
       "scope" => $request->getAttribute("scope"),
       "iss" => "Hashtopolis",
-      "kid" =>  hash("sha256", $secret)
+      "kid" =>  hash("sha256", $secret),
+      "aud" => USER_AUD
     ];
     
     $token = JWT::encode($payload, $secret, "HS256");
