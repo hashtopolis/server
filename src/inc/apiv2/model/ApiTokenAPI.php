@@ -116,7 +116,7 @@ class ApiTokenAPI extends AbstractModelAPI {
     $aggregatedData = [];
     $token = $this->getJwtToken();
     if ($token !== null) {
-      $aggregatedData["Token"] = $token;
+      $aggregatedData["token"] = $token;
     }
 
     return $aggregatedData;
