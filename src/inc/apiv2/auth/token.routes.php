@@ -15,6 +15,7 @@ use Hashtopolis\dba\Factory;
 use Firebase\JWT\JWK;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\RightGroup;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
 
 require_once(dirname(__FILE__) . "/../../startup/include.php");
 
@@ -25,14 +26,17 @@ function generateTokenForUser(Request $request, string $userName, int $expires) 
   $filter = new QueryFilter(User::USERNAME, $userName, "=");
   $jF = new JoinFilter(Factory::getRightGroupFactory(), User::RIGHT_GROUP_ID, RightGroup::RIGHT_GROUP_ID);
   $joined = Factory::getUserFactory()->filter([Factory::FILTER => $filter, Factory::JOIN => $jF]);
-  /** @var $check User[] */
+  /** @var User[] $check  */
   $check = $joined[Factory::getUserFactory()->getModelName()];
   if (count($check) === 0) {
     throw new HttpError("No user with this userName in the database");
   }
   $user = $check[0];
+  if ($user->getIsValid() !== 1) {
+    throw new HttpForbidden("User is set to invalid");
+  }
 
-  /** @var $groupArray RightGroup[] */
+  /** @var RightGroup[] $groupArray */
   $groupArray = $joined[Factory::getRightGroupFactory()->getModelName()];
   if (count($groupArray) === 0) {
     throw new HttpError("No rightgroup found for this user");
@@ -88,8 +92,7 @@ function extractBearerToken(Request $request): ?string {
 }
 
 // Exchanges an oauth token for a application JWT token
-use Slim\App;
-/** @var App $app */
+/** @var \Slim\App $app */
 $app->group("/api/v2/auth/oauth-token", function (RouteCollectorProxy $group) {
 
   $group->post('', function (Request $request, Response $response, array $args): Response {
