@@ -5,14 +5,14 @@ namespace Hashtopolis\dba\models;
 use Hashtopolis\dba\AbstractModel;
 
 class JwtApiKey extends AbstractModel {
-  private ?int $JwtApiKeyId;
+  private ?int $jwtApiKeyId;
   private ?int $startValid;
   private ?int $endValid;
   private ?int $userId;
   private ?int $isRevoked;
   
-  function __construct(?int $JwtApiKeyId, ?int $startValid, ?int $endValid, ?int $userId, ?int $isRevoked) {
-    $this->JwtApiKeyId = $JwtApiKeyId;
+  function __construct(?int $jwtApiKeyId, ?int $startValid, ?int $endValid, ?int $userId, ?int $isRevoked) {
+    $this->jwtApiKeyId = $jwtApiKeyId;
     $this->startValid = $startValid;
     $this->endValid = $endValid;
     $this->userId = $userId;
@@ -21,7 +21,7 @@ class JwtApiKey extends AbstractModel {
   
   function getKeyValueDict(): array {
     $dict = array();
-    $dict['JwtApiKeyId'] = $this->JwtApiKeyId;
+    $dict['jwtApiKeyId'] = $this->jwtApiKeyId;
     $dict['startValid'] = $this->startValid;
     $dict['endValid'] = $this->endValid;
     $dict['userId'] = $this->userId;
@@ -32,29 +32,29 @@ class JwtApiKey extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['JwtApiKeyId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "JwtApiKeyId", "public" => False, "dba_mapping" => False];
+    $dict['jwtApiKeyId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "jwtApiKeyId", "public" => False, "dba_mapping" => False];
     $dict['startValid'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "startValid", "public" => False, "dba_mapping" => False];
     $dict['endValid'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "endValid", "public" => False, "dba_mapping" => False];
-    $dict['userId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "userId", "public" => False, "dba_mapping" => False];
+    $dict['userId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "userId", "public" => False, "dba_mapping" => False];
     $dict['isRevoked'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "isRevoked", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
 
   function getPrimaryKey(): string {
-    return "JwtApiKeyId";
+    return "jwtApiKeyId";
   }
   
   function getPrimaryKeyValue(): ?int {
-    return $this->JwtApiKeyId;
+    return $this->jwtApiKeyId;
   }
   
   function getId(): ?int {
-    return $this->JwtApiKeyId;
+    return $this->jwtApiKeyId;
   }
   
   function setId($id): void {
-    $this->JwtApiKeyId = $id;
+    $this->jwtApiKeyId = $id;
   }
   
   /**
@@ -97,7 +97,7 @@ class JwtApiKey extends AbstractModel {
     $this->isRevoked = $isRevoked;
   }
   
-  const JWT_API_KEY_ID = "JwtApiKeyId";
+  const JWT_API_KEY_ID = "jwtApiKeyId";
   const START_VALID = "startValid";
   const END_VALID = "endValid";
   const USER_ID = "userId";

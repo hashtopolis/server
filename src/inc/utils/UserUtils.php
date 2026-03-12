@@ -64,9 +64,11 @@ class UserUtils {
     $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=");
     Factory::getAccessGroupUserFactory()->massDeletion([Factory::FILTER => $qF]);
     $qF = new QueryFilter(JwtApiKey::USER_ID, $user->getId(), "=");
-    $uS = new UpdateSet(JwtApiKey::IS_REVOKED, 1);
+    $uS1 = new UpdateSet(JwtApiKey::IS_REVOKED, 1);
+    $uS2 = new UpdateSet(JwtApiKey::USER_ID, null);
+
     // Revoke all of the API keys of the user
-    Factory::getJwtApiKeyFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+    Factory::getJwtApiKeyFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => [$uS1, $uS2]]);
     Factory::getUserFactory()->delete($user);
   }
   

@@ -1,9 +1,9 @@
 CREATE TABLE JwtApiKey (
-    JwtApiKeyId SERIAL NOT NULL PRIMARY KEY,
+    jwtApiKeyId SERIAL NOT NULL PRIMARY KEY,
     userId INTEGER,
-    startValid bigint,
-    endValid bigint,
-    isRevoked BOOLEAN DEFAULT FALSE,
+    startValid bigint NOT NULL,
+    endValid bigint NOT NULL,
+    isRevoked BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_JwtApiKey_user
         FOREIGN KEY (userId) REFERENCES htp_User(userId)
 );

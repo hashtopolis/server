@@ -19,7 +19,7 @@ class JWTBeforeHandler implements BeforeHandlerInterface {
       $token = Factory::getJwtApiKeyFactory()->get($apiTokenId);
       if ($token === null) {
         // Should not happen
-        throw new HttpError("Token doesnt exists in database");
+        throw new HttpError("Token doesn't exists in the database");
       }
       if ($token->getIsRevoked() === 1) {
         throw new HttpForbidden("Token is revoked");

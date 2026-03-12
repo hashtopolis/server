@@ -23,7 +23,7 @@ class JwtTokenUtils {
   public static function deleteKey(JwtApiKey $JwtToken) {
     $expireTime = $JwtToken->getEndValid();
     if (time() < $expireTime) {
-      throw new HttpForbidden("Not possible to delete Api key when it has not expired yet. revoke it instead");
+      throw new HttpForbidden("Cannot delete API key before it expires; revoke it instead.");
     }
     Factory::getJwtApiKeyFactory()->delete($JwtToken);
 
