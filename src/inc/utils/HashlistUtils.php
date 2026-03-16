@@ -31,6 +31,7 @@ use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\defines\DFileType;
 use Hashtopolis\inc\defines\DHashlistFormat;
+use Hashtopolis\inc\defines\DHashlistStatistics;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DNotificationObjectType;
 use Hashtopolis\inc\defines\DNotificationType;
@@ -888,11 +889,11 @@ class HashlistUtils {
     $added = 0;
     $preFound = 0;
     $hashlistStatistics = [];
-    $hashlistStatistics["uploadedTotalLines"] = 0;
-    $hashlistStatistics["uploadedEmptyLines"] = 0;
-    $hashlistStatistics["uploadedValidHashes"] = 0;
-    $hashlistStatistics["uploadedValidHashesWithoutExpectedSalt"] = 0;
-    $hashlistStatistics["uploadedInvalidHashes"] = 0;
+    $hashlistStatistics[DHashlistStatistics::UPLOADED_TOTAL_LINES] = 0;
+    $hashlistStatistics[DHashlistStatistics::UPLOADED_EMPTY_LINES] = 0;
+    $hashlistStatistics[DHashlistStatistics::UPLOADED_VALID_HASHES] = 0;
+    $hashlistStatistics[DHashlistStatistics::UPLOADED_VALID_HASHES_WITHOUT_EXPECTED_SALT] = 0;
+    $hashlistStatistics[DHashlistStatistics::UPLOADED_INVALID_HASHES] = 0;
     
     switch ($format) {
       case DHashlistFormat::PLAIN:
@@ -904,10 +905,10 @@ class HashlistUtils {
 
         while (!feof($file)) {
           $line = trim(fgets($file));
-          $hashlistStatistics["uploadedTotalLines"]++;
+          $hashlistStatistics[DHashlistStatistics::UPLOADED_TOTAL_LINES]++;
 
           if (strlen($line) == 0) {
-            $hashlistStatistics["uploadedEmptyLines"]++;
+            $hashlistStatistics[DHashlistStatistics::UPLOADED_EMPTY_LINES]++;
             continue;
           }
           $hash = $line;
@@ -919,11 +920,11 @@ class HashlistUtils {
               $salt = substr($line, $pos + 1);
             }
             else {
-              $hashlistStatistics["uploadedValidHashesWithoutExpectedSalt"]++;
+              $hashlistStatistics[DHashlistStatistics::UPLOADED_VALID_HASHES_WITHOUT_EXPECTED_SALT]++;
             }
           }
           if (strlen($hash) == 0) {
-            $hashlistStatistics["uploadedEmptyLines"]++;
+            $hashlistStatistics[DHashlistStatistics::UPLOADED_EMPTY_LINES]++;
             continue;
           }
           //TODO: check hash length here
@@ -966,33 +967,22 @@ class HashlistUtils {
         fclose($file);
         unlink($tmpfile);
 
-        if ($added === 0) {
-          Factory::getAgentFactory()->getDB()->rollback();
-          Factory::getHashlistFactory()->delete($hashlist);
-          Factory::getAgentFactory()->getDB()->commit();
-          throw new HttpError("No valid hashes found! Hashlist not created.");
-        }
-        
-        Factory::getHashlistFactory()->mset($hashlist, [Hashlist::HASH_COUNT => $added, Hashlist::CRACKED => $preFound]);
-        Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName() . ". Total lines: " . $hashlistStatistics["uploadedTotalLines"] . " Empty lines: " . $hashlistStatistics["uploadedEmptyLines"] . " Valid hashes: " . $hashlistStatistics["uploadedValidHashes"] . " Valid hashes without expected salt: " . $hashlistStatistics["uploadedValidHashesWithoutExpectedSalt"] . " Invalid hashes: " . $hashlistStatistics["uploadedInvalidHashes"]);
-        
-        NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
         break;
       case DHashlistFormat::WPA:
         $added = 0;
         $values = [];
 
         while (!feof($file)) {
-          $hashlistStatistics["uploadedTotalLines"]++;
+          $hashlistStatistics[DHashlistStatistics::UPLOADED_TOTAL_LINES]++;
           
           if ($hashlist->getHashTypeId() == 2500) { // HCCAPX hashes
             $data = fread($file, 393);
             if (strlen($data) == 0) {
-              $hashlistStatistics["uploadedInvalidHashes"]++;
+              $hashlistStatistics[DHashlistStatistics::UPLOADED_INVALID_HASHES]++;
               break;
             }
             if (strlen($data) != 393) {
-              $hashlistStatistics["uploadedInvalidHashes"]++;
+              $hashlistStatistics[DHashlistStatistics::UPLOADED_INVALID_HASHES]++;
               UI::printError("ERROR", "Data file only contains " . strlen($data) . " bytes!");
             }
             // get the SSID
@@ -1020,13 +1010,13 @@ class HashlistUtils {
             $mac_cli = Util::bintohex($mac_cli);
             $hash = new HashBinary(null, $hashlist->getId(), $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . Util::bintohex($network), Util::bintohex($data), null, 0, null, 0, 0);
             Factory::getHashBinaryFactory()->save($hash);
-            $hashlistStatistics["uploadedValidHashes"]++;
+            $hashlistStatistics[DHashlistStatistics::UPLOADED_VALID_HASHES]++;
             $added++;
           }
           else { // PMKID hashes
             $line = trim(fgets($file));
             if (strlen($line) == 0) {
-              $hashlistStatistics["uploadedEmptyLines"]++;
+              $hashlistStatistics[DHashlistStatistics::UPLOADED_EMPTY_LINES]++;
               continue;
             }
             if (strpos($line, "*") !== false) {
@@ -1045,35 +1035,46 @@ class HashlistUtils {
             }
             $hash = new HashBinary(null, $hashlist->getId(), $identification, Util::bintohex($line . "\n"), null, 0, null, 0, 0);
             Factory::getHashBinaryFactory()->save($hash);
-            $hashlistStatistics["uploadedValidHashes"]++;
+            $hashlistStatistics[DHashlistStatistics::UPLOADED_VALID_HASHES]++;
             $added++;
           }
         }
         fclose($file);
         unlink($tmpfile);
         
-        Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, $added);
-        Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName() . ". Total lines: " . $hashlistStatistics["uploadedTotalLines"] . " Empty lines: " . $hashlistStatistics["uploadedEmptyLines"] . " Valid hashes: " . $hashlistStatistics["uploadedValidHashes"] . " Valid hashes without expected salt: " . $hashlistStatistics["uploadedValidHashesWithoutExpectedSalt"] . " Invalid hashes: " . $hashlistStatistics["uploadedInvalidHashes"]);
-        
-        NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
         break;
       case DHashlistFormat::BINARY:
+        $added = 0;
+
         if (!feof($file)) {
           $data = fread($file, Util::filesize($tmpfile));
           $hash = new HashBinary(null, $hashlist->getId(), "", Util::bintohex($data), "", 0, null, 0, 0);
           Factory::getHashBinaryFactory()->save($hash);
-          $hashlistStatistics["uploadedValidHashes"]++;
+          $hashlistStatistics[DHashlistStatistics::UPLOADED_VALID_HASHES]++;
+          $added++;
         }
 
         fclose($file);
         unlink($tmpfile);
-
-        Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, 1);
-        Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName() . ". Total lines: " . $hashlistStatistics["uploadedTotalLines"] . " Empty lines: " . $hashlistStatistics["uploadedEmptyLines"] . " Valid hashes: " . $hashlistStatistics["uploadedValidHashes"] . " Valid hashes without expected salt: " . $hashlistStatistics["uploadedValidHashesWithoutExpectedSalt"] . " Invalid hashes: " . $hashlistStatistics["uploadedInvalidHashes"]);
         
-        NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
         break;
     }
+    
+    if ($added === 0) {
+      Factory::getAgentFactory()->getDB()->rollback();
+      Factory::getHashlistFactory()->delete($hashlist);
+      Factory::getAgentFactory()->getDB()->commit();
+      throw new HttpError("No valid hashes found! Hashlist not created.");
+    }
+        
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, $added);
+    if($format == DHashlistFormat::PLAIN) {
+      Factory::getHashlistFactory()->set($hashlist, Hashlist::CRACKED, $preFound);
+    }
+
+    Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName() . ". Total lines: " . $hashlistStatistics[DHashlistStatistics::UPLOADED_TOTAL_LINES] . " Empty lines: " . $hashlistStatistics[DHashlistStatistics::UPLOADED_EMPTY_LINES] . " Valid hashes: " . $hashlistStatistics[DHashlistStatistics::UPLOADED_VALID_HASHES] . " Valid hashes without expected salt: " . $hashlistStatistics[DHashlistStatistics::UPLOADED_VALID_HASHES_WITHOUT_EXPECTED_SALT] . " Invalid hashes: " . $hashlistStatistics[DHashlistStatistics::UPLOADED_INVALID_HASHES]);
+        
+    NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
     
     Factory::getAgentFactory()->getDB()->commit();
     return ["hashlist" => $hashlist, "statistics" => $hashlistStatistics];
