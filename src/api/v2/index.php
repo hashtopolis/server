@@ -41,6 +41,7 @@ use Hashtopolis\inc\apiv2\helper\ExportWordlistHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetAccessGroupsHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetAgentBinaryHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetCracksOfTaskHelper;
+use Hashtopolis\inc\apiv2\helper\GetBestTasksAgent;
 use Hashtopolis\inc\apiv2\helper\GetFileHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetTaskProgressImageHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetUserPermissionHelperAPI;
@@ -55,7 +56,6 @@ use Hashtopolis\inc\apiv2\helper\ResetChunkHelperAPI;
 use Hashtopolis\inc\apiv2\helper\ResetUserPasswordHelperAPI;
 use Hashtopolis\inc\apiv2\helper\SearchHashesHelperAPI;
 use Hashtopolis\inc\apiv2\helper\SetUserPasswordHelperAPI;
-use Hashtopolis\inc\apiv2\helper\TaskExtraDetailsHelper;
 use Hashtopolis\inc\apiv2\helper\UnassignAgentHelperAPI;
 use Hashtopolis\inc\apiv2\model\AccessGroupAPI;
 use Hashtopolis\inc\apiv2\model\AgentAPI;
@@ -63,6 +63,7 @@ use Hashtopolis\inc\apiv2\model\AgentAssignmentAPI;
 use Hashtopolis\inc\apiv2\model\AgentBinaryAPI;
 use Hashtopolis\inc\apiv2\model\AgentErrorAPI;
 use Hashtopolis\inc\apiv2\model\AgentStatAPI;
+use Hashtopolis\inc\apiv2\model\ApiTokenAPI;
 use Hashtopolis\inc\apiv2\model\ChunkAPI;
 use Hashtopolis\inc\apiv2\model\ConfigAPI;
 use Hashtopolis\inc\apiv2\model\ConfigSectionAPI;
@@ -169,11 +170,11 @@ $app->add(new JsonBodyParserMiddleware());
 $app->add("HttpBasicAuthentication");
 $app->add("JwtAuthentication");
 $app->add(new TokenAsParameterMiddleware());
-$app->add(new ContentLengthMiddleware());       // NOTE: Add any middleware which may modify the response body before adding the ContentLengthMiddleware
 $app->add((new DeflateEncoder())->contentType(
   '/^(image\/svg\\+xml|text\/.*|application\/json|"application\/vnd\.api+json)(;.*)?$/'
 )
 );
+$app->add(new ContentLengthMiddleware());       // NOTE: Add any middleware which may modify the response body before adding the ContentLengthMiddleware
 
 $app->add(new CorsHackMiddleware());            // NOTE: The RoutingMiddleware should be added after our CORS middleware so routing is performed first
 // NOTE: The ErrorMiddleware should be added after any middleware which may modify the response body
@@ -234,6 +235,7 @@ AgentAssignmentAPI::register($app);
 AgentBinaryAPI::register($app);
 AgentErrorAPI::register($app);
 AgentStatAPI::register($app);
+ApiTokenAPI::register($app);
 ChunkAPI::register($app);
 ConfigAPI::register($app);
 ConfigSectionAPI::register($app);
@@ -270,6 +272,7 @@ ExportLeftHashesHelperAPI::register($app);
 ExportWordlistHelperAPI::register($app);
 GetAccessGroupsHelperAPI::register($app);
 GetAgentBinaryHelperAPI::register($app);
+GetBestTasksAgent::register($app);
 GetCracksOfTaskHelper::register($app);
 GetFileHelperAPI::register($app);
 GetTaskProgressImageHelperAPI::register($app);

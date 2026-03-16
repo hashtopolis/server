@@ -1442,7 +1442,6 @@ class Util {
     }
     
     $DB = Factory::getAgentFactory()->getDB();
-    $DB->beginTransaction();
     $result = $DB->query("SELECT MAX(LENGTH(" . Hash::HASH . ")) as maxLength FROM " . Factory::getHashFactory()->getModelTable());
     $maxLength = $result->fetch()['maxLength'];
     if ($limit >= $maxLength) {
@@ -1457,7 +1456,6 @@ class Util {
     else {
       return false;
     }
-    $DB->commit();
     return true;
   }
   

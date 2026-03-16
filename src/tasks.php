@@ -162,7 +162,7 @@ if (isset($_GET['id'])) {
   UI::add('cProgress', $cProgress);
   
   $timeChunks = $chunks;
-  usort($timeChunks, "Hashtopolis\inc\Util");
+  usort($timeChunks, ["Hashtopolis\inc\Util", "compareChunksTime"]);
   $timeSpent = 0;
   $current = 0;
   foreach ($timeChunks as $c) {

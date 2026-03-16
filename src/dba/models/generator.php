@@ -287,6 +287,15 @@ $CONF['HealthCheckAgent'] = [
     ['name' => 'errors', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
   ],
 ];
+$CONF['JwtApiKey'] = [
+  'columns' => [
+    ['name' => 'jwtApiKeyId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'startValid', 'read_only' => True, 'type' => 'int64'],
+    ['name' => 'endValid', 'read_only' => True, 'type' => 'int64'],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'relation' => 'User'],
+    ['name' => 'isRevoked', 'read_only' => False, 'type' => 'bool'],
+  ],
+];
 $CONF['LogEntry'] = [
   'columns' => [
     ['name' => 'logEntryId', 'read_only' => True, 'type' => 'int', 'protected' => True],

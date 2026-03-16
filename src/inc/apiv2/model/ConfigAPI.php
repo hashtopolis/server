@@ -47,6 +47,10 @@ class ConfigAPI extends AbstractModelAPI {
   protected function deleteObject(object $object): void {
     throw new HttpError("Configs cannot be deleted via API");
   }
+
+  protected function updateObject(int $objectId, array $data): void {
+    ConfigUtils::updateSingleConfig($objectId, $data);
+  }
   
   /**
    * @throws HTException

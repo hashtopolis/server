@@ -170,7 +170,7 @@ class TaskAPI extends AbstractModelAPI {
   }
   
   //TODO make aggregate data queryable and not included by default
-  static function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
+  function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
     $aggregatedData = [];
     
     if (is_null($aggregateFieldsets) || array_key_exists('task', $aggregateFieldsets)) {
@@ -235,7 +235,7 @@ class TaskAPI extends AbstractModelAPI {
         }
           
         $timeChunks = $chunks;
-        usort($timeChunks, "\Hashtopolis\inc\Util::compareChunksTime");
+        usort($timeChunks, ["Hashtopolis\inc\Util", "compareChunksTime"]);
         $timeSpent = 0;
         $current = 0;
         

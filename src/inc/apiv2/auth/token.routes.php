@@ -13,34 +13,50 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
 use Firebase\JWT\JWK;
+use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\models\RightGroup;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
 
 require_once(dirname(__FILE__) . "/../../startup/include.php");
 
+const USER_AUD = "user_hashtopolis";
 function generateTokenForUser(Request $request, string $userName, int $expires) {
   $jti = bin2hex(random_bytes(16));
   
-  $requested_scopes = $request->getParsedBody() ?: ["todo.all"];
-  
-  $valid_scopes = [
-    "todo.create",
-    "todo.read",
-    "todo.update",
-    "todo.delete",
-    "todo.list",
-    "todo.all"
-  ];
-  
-  $scopes = array_filter($requested_scopes, function ($needle) use ($valid_scopes) {
-    return in_array($needle, $valid_scopes);
-  });
-  // FIXME: This is duplicated and should be passed by HttpBasicMiddleware
   $filter = new QueryFilter(User::USERNAME, $userName, "=");
-  $check = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);
-  $user = $check[0];
-
-  if (empty($user)) {
+  $jF = new JoinFilter(Factory::getRightGroupFactory(), User::RIGHT_GROUP_ID, RightGroup::RIGHT_GROUP_ID);
+  $joined = Factory::getUserFactory()->filter([Factory::FILTER => $filter, Factory::JOIN => $jF]);
+  /** @var User[] $check  */
+  $check = $joined[Factory::getUserFactory()->getModelName()];
+  if (count($check) === 0) {
     throw new HttpError("No user with this userName in the database");
   }
+  $user = $check[0];
+  if ($user->getIsValid() !== 1) {
+    throw new HttpForbidden("User is set to invalid");
+  }
+
+  /** @var RightGroup[] $groupArray */
+  $groupArray = $joined[Factory::getRightGroupFactory()->getModelName()];
+  if (count($groupArray) === 0) {
+    throw new HttpError("No rightgroup found for this user");
+  }
+  $group = $groupArray[0];
+  $scopes = $group->getPermissions();
+  
+  // $requested_scopes = $request->getParsedBody() ?: ["todo.all"];
+  // $valid_scopes = [
+  //   "todo.create",
+  //   "todo.read",
+  //   "todo.update",
+  //   "todo.delete",
+  //   "todo.list",
+  //   "todo.all"
+  // ];
+  
+  // $scopes = array_filter($requested_scopes, function ($needle) use ($valid_scopes) {
+  //   return in_array($needle, $valid_scopes);
+  // });
 
   $secret = StartupConfig::getInstance()->getPepper(0);
   $now = new DateTime();
@@ -52,7 +68,8 @@ function generateTokenForUser(Request $request, string $userName, int $expires) 
     "userId" => $user->getId(),
     "scope" => $scopes,
     "iss" => "Hashtopolis",
-    "kid" =>  hash("sha256", $secret)
+    "kid" =>  hash("sha256", $secret),
+    "aud" => USER_AUD
   ];
 
   $token = JWT::encode($payload, $secret, "HS256");
@@ -75,8 +92,7 @@ function extractBearerToken(Request $request): ?string {
 }
 
 // Exchanges an oauth token for a application JWT token
-use Slim\App;
-/** @var App $app */
+/** @var \Slim\App $app */
 $app->group("/api/v2/auth/oauth-token", function (RouteCollectorProxy $group) {
 
   $group->post('', function (Request $request, Response $response, array $args): Response {
@@ -159,7 +175,8 @@ $app->group("/api/v2/auth/refresh", function (RouteCollectorProxy $group) {
       "userId" => $request->getAttribute(('userId')),
       "scope" => $request->getAttribute("scope"),
       "iss" => "Hashtopolis",
-      "kid" =>  hash("sha256", $secret)
+      "kid" =>  hash("sha256", $secret),
+      "aud" => USER_AUD
     ];
     
     $token = JWT::encode($payload, $secret, "HS256");

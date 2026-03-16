@@ -949,7 +949,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
     ];
     
     $body = $response->getBody();
-    $body->write(json_encode($result, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
+    $body->write(json_encode($result, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     
     return $response->withStatus(200)
       ->withHeader("Content-Type", "application/json");
