@@ -1150,7 +1150,11 @@ abstract class AbstractBaseAPI {
         throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid (key not valid field)");
       };
       
-      $valueList = explode(",", $value);
+      // Only __in and __nin support comma-separated multiple values;
+      // all other operators treat the value as a literal string.
+      $operator = $matches['operator'];
+      $isListOperator = in_array($operator, ['__in', '__nin']);
+      $valueList = $isListOperator ? explode(",", $value) : [$value];
       
       // TODO Merge/Combine with validate parameters 
       foreach ($valueList as &$value) {
@@ -1178,7 +1182,6 @@ abstract class AbstractBaseAPI {
       
       $amount_values = count($valueList);
       $single_val = $valueList[0];
-      $operator = $matches['operator'];
       $query_operator = "";
       switch (true) {
         case (($operator == '__eq' | $operator == '') && $amount_values == 1):
