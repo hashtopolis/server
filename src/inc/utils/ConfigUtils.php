@@ -79,17 +79,17 @@ class ConfigUtils {
 
   public static function updateSingleConfig($id, $attributes) {
     $currentConfig = Factory::getConfigFactory()->get($id);
+    if (is_null($currentConfig)) {
+      throw new HTException("No config with this ID!");
+    }
     $newValue = $attributes[Config::VALUE] ?? null;
     $name = $currentConfig->getItem();
     
     if (is_null($newValue)) {
       throw new HTException("No new config value provided");
     }
-    if (is_null($currentConfig)) {
-      throw new HTException("No config with this ID!");
-    }
     if ($currentConfig->getValue() === $newValue) {
-      return; //The value was not changed so we dont need to update it
+      return; //The value was not changed so we don't need to update it.
     }
     
     $lengthLimits = [
