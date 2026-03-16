@@ -76,6 +76,37 @@ class ConfigUtils {
   }
   
   const DEFAULT_CONFIG_SECTION = 5;
+
+  public static function updateSingleConfig($id, $attributes) {
+    $currentConfig = Factory::getConfigFactory()->get($id);
+    if (is_null($currentConfig)) {
+      throw new HTException("No config with this ID!");
+    }
+    $newValue = $attributes[Config::VALUE] ?? null;
+    $name = $currentConfig->getItem();
+    
+    if (is_null($newValue)) {
+      throw new HTException("No new config value provided");
+    }
+    if ($currentConfig->getValue() === $newValue) {
+      return; //The value was not changed so we don't need to update it.
+    }
+    
+    $lengthLimits = [
+      DConfig::HASH_MAX_LENGTH => 'setMaxHashLength',
+      DConfig::PLAINTEXT_MAX_LENGTH => 'setPlaintextMaxLength'
+    ];
+    if (isset($lengthLimits[$name])) {
+      $limit = intval($newValue);
+      if (!Util::{$lengthLimits[$name]}($limit)) {
+        throw new HTException("Failed to update {$name}!");
+      }
+    }
+    
+    SConfig::getInstance()->addValue($name, $newValue);
+    $currentConfig->setValue($newValue);
+    ConfigUtils::set($currentConfig, false);
+  }
   
   /**
    * @param array $arr id => [attributes]
@@ -86,34 +117,7 @@ class ConfigUtils {
    */
   public static function updateConfigs($arr) {
     foreach ($arr as $id => $attributes) {
-      $currentConfig = Factory::getConfigFactory()->get($id);
-      $newValue = $attributes[Config::VALUE] ?? null;
-      $name = $currentConfig->getItem();
-      
-      if (is_null($newValue)) {
-        throw new HTException("No new config value provided");
-      }
-      if (is_null($currentConfig)) {
-        throw new HTException("No config with this ID!");
-      }
-      if ($currentConfig->getValue() === $newValue) {
-        continue; //The value was not changed so we dont need to update it
-      }
-      
-      $lengthLimits = [
-        DConfig::HASH_MAX_LENGTH => 'setMaxHashLength',
-        DConfig::PLAINTEXT_MAX_LENGTH => 'setPlaintextMaxLength'
-      ];
-      if (isset($lengthLimits[$name])) {
-        $limit = intval($newValue);
-        if (!Util::{$lengthLimits[$name]}($limit)) {
-          throw new HTException("Failed to update {$name}!");
-        }
-      }
-      
-      SConfig::getInstance()->addValue($name, $newValue);
-      $currentConfig->setValue($newValue);
-      ConfigUtils::set($currentConfig, false);
+      self::updateSingleConfig($id, $attributes);
     }
     
     SConfig::reload();
