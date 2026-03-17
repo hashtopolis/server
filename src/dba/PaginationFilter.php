@@ -40,8 +40,8 @@ class PaginationFilter extends Filter {
     //ex. SELECT hashTypeId, description, isSalted, isSlowHash FROM HashType 
     //    where (HashType.isSalted < 1) OR (HashType.isSalted = 1 and HashType.hashTypeId < 12600) 
     //    ORDER BY HashType.isSalted DESC, HashType.hashTypeId DESC LIMIT 25;
-    $queryString = "(" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $this->operator . "?" . ") OR (" . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . "=" . "?"
-      . " AND " . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->tieBreakerKey) . $this->operator . "?";
+    $queryString = "(" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $this->operator . "?" . ") OR (" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . "=" . "?"
+      . " AND " . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->tieBreakerKey) . $this->operator . "?";
     if (count($this->filters) > 0) {
       $queryString = $queryString . " AND " . implode(" AND ", $parts);
     }
