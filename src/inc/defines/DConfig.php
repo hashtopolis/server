@@ -18,9 +18,6 @@ class DConfig {
   const BLACKLIST_CHARS        = "blacklistChars";
   const DISP_TOLERANCE         = "disptolerance";
   const DEFAULT_BENCH          = "defaultBenchmark";
-  const RULE_SPLIT_SMALL_TASKS = "ruleSplitSmallTasks";
-  const RULE_SPLIT_ALWAYS      = "ruleSplitAlways";
-  const RULE_SPLIT_DISABLE     = "ruleSplitDisable";
   const AGENT_DATA_LIFETIME    = "agentDataLifetime";
   const DISABLE_TRIMMING       = "disableTrimming";
   const PRIORITY_0_START       = "priority0Start";
