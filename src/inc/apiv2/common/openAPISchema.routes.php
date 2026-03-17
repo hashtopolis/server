@@ -102,7 +102,6 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       /* Quirk to receive className, since it is hidden in a protected variable */
       $reflectionOfRoute = new \ReflectionObject($route);
       $protectedCallable = $reflectionOfRoute->getProperty('callable');
-      $protectedCallable->setAccessible(true);
       $reflectionCallable = ($protectedCallable->getValue($route));
       
       /* Assume only one method per route call */
@@ -123,9 +122,10 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       $class = new $apiClassName($app->getContainer());
       
       if (!($class instanceof AbstractModelAPI)) {
-        $name = $class::class;
+        $name_parts = explode('\\', $class::class);
+        $name = end($name_parts);
         $apiMethod = ($apiMethod == "processPost" && $name != "ImportFileHelperAPI") ? "actionPost" : $apiMethod;
-        $reflectionApiMethod = new ReflectionMethod($name, $apiMethod);
+        $reflectionApiMethod = new ReflectionMethod($class::class, $apiMethod);
         $paths[$path][$method]["description"] = OpenAPISchemaUtils::parsePhpDoc($reflectionApiMethod->getDocComment());
         $parameters = $class->getCreateValidFeatures();
         $properties = OpenAPISchemaUtils::makeProperties($parameters);
@@ -135,7 +135,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             "properties" => $properties,
           ];
         if ($method == "post") {
-          $reflectionMethodFormFields = new ReflectionMethod($name, "getFormFields");
+          $reflectionMethodFormFields = new ReflectionMethod($class::class, "getFormFields");
           $bodyDescription = OpenAPISchemaUtils::parsePhpDoc($reflectionMethodFormFields->getDocComment());
           $paths[$path][$method]["requestBody"] = [
             "description" => $bodyDescription,
@@ -188,7 +188,8 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       
       /* Quick to find out if single parameter object is used */
       $singleObject = ((strstr($path, '/{id:')) !== false);
-      $name = substr($class->getDBAClass(), 4);
+      $name_parts = explode('\\', $class->getDBAClass());
+      $name = end($name_parts);
       $uri = $class->getBaseUri();
       
       $isRelation = (strstr($path, "/relationships/")) !== false;

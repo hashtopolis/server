@@ -421,7 +421,9 @@ abstract class AbstractBaseAPI {
     }
     
     /* Use the API class Name as type identifier written in camelCase*/
-    return lcfirst(substr($apiClass, 0, -3));
+    $name_parts = explode('\\', $apiClass);
+    $name = end($name_parts);
+    return lcfirst(substr($name, 0, -3));
   }
   
   /**
