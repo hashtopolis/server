@@ -49,8 +49,8 @@ class UserTest(BaseTest):
         helper = Helper()
         with self.assertRaises(HashtopolisError) as e:
             helper._test_authentication(user.name, password)
-        self.assertEqual(e.exception.status_code, 401)
-        self.assertEqual(e.exception.title, f"Authentication failed")
+        self.assertEqual(e.exception.status_code, 403)
+        self.assertEqual(e.exception.title, f"Cannot log in. Please contact your administrator for further information")
 
         #  Enable user
         user.isValid = True
