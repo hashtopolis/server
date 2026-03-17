@@ -11,6 +11,7 @@ use Hashtopolis\inc\Encryption;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Tuupola\Middleware\HttpBasicAuthentication\AuthenticatorInterface;
 use Hashtopolis\inc\Util;
 
@@ -27,7 +28,7 @@ class HashtopolisAuthenticator implements AuthenticatorInterface {
     }
     
     if ($user->getIsValid() != 1) {
-      return false;
+      throw new HttpForbidden("Cannot log in. Please contact your administrator for further information");
     }
     else if (!Encryption::passwordVerify($password, $user->getPasswordSalt(), $user->getPasswordHash())) {
       Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed login attempt due to wrong password!");
