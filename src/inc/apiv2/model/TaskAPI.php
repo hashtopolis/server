@@ -236,7 +236,7 @@ class TaskAPI extends AbstractModelAPI {
 
       if (is_null($aggregateFieldsets) || in_array("taskExtraDetails", $aggregateFieldsets['task'])) {
         $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-        if (!isset($chunk)){
+        if (!isset($chunks)){
           $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
         }
         
