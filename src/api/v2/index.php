@@ -8,7 +8,7 @@ if (!$enabled || $enabled == 'false') {
 
 date_default_timezone_set("UTC");
 error_reporting(E_ALL ^ E_DEPRECATED);
-ini_set("display_errors", '1');
+
 /**
  * Treat warnings as error, very useful during unit testing.
  * TODO: How-ever during Xdebug debugging under VS Code, this is very

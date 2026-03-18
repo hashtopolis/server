@@ -15,9 +15,6 @@ use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\Util;
 use Hashtopolis\inc\utils\AccessUtils;
 
-// set to 1 for debugging
-ini_set("display_errors", "0");
-
 session_start();
 
 require_once(dirname(__FILE__) . "/include.php");
