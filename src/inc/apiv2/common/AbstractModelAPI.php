@@ -740,7 +740,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       $primary_cursor_key = key($primary_cursor);
       // Special filtering of id to use for uniform access to model primary key
       $primary_cursor_key = $primary_cursor_key == 'id' ? array_column($aliasedfeatures, 'alias', 'dbname')[$apiClass->getPrimaryKey()] : $primary_cursor_key;
-      $secondary_cursor = $decoded_cursor["secondary"];
+      $secondary_cursor = array_key_exists("secondary", $decoded_cursor) ? $decoded_cursor["secondary"] : null;
       if ($secondary_cursor) {
         $secondary_cursor_key = key($secondary_cursor);
         $secondary_cursor_key = $secondary_cursor_key == '_id' ? array_column($aliasedfeatures, 'alias', 'dbname')[$apiClass->getPrimaryKey()] : $secondary_cursor_key;
