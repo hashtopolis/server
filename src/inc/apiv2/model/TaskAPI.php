@@ -190,8 +190,11 @@ class TaskAPI extends AbstractModelAPI {
         $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
         $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
         $isActive = false;
+        $now = time();
+        $chunkTimeOut = SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT);
+
         foreach ($chunks as $chunk) {
-          if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
+          if ($now - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $chunkTimeOut && $chunk->getProgress() < 10000) {
             $isActive = true;
             break;
           }
