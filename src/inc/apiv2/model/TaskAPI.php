@@ -184,6 +184,20 @@ class TaskAPI extends AbstractModelAPI {
         $activeAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
         $aggregatedData["activeAgents"] = $activeAgents;
       }
+
+      $chunks = null;
+      if (is_null($aggregateFieldsets) || in_array("isActive", $aggregateFieldsets['task'])) {
+        $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+        $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+        $isActive = 0;
+        foreach ($chunks as $chunk) {
+          if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
+            $isActive = 1;
+            break;
+          }
+        }
+        $aggregatedData["isActive"] = $isActive;
+      }
       
       $keyspace = $object->getKeyspace();
       $keyspaceProgress = $object->getKeyspaceProgress();
@@ -222,7 +236,9 @@ class TaskAPI extends AbstractModelAPI {
 
       if (is_null($aggregateFieldsets) || in_array("taskExtraDetails", $aggregateFieldsets['task'])) {
         $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-        $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+        if (!isset($chunk)){
+          $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+        }
         
         $currentSpeed = 0;
         $cProgress = 0;
