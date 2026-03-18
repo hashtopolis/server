@@ -178,30 +178,12 @@ class TaskAPI extends AbstractModelAPI {
         $aggregateFieldsets['task'] = explode(",", $aggregateFieldsets['task']);
       }
       
-      $activeAgents = [];
-      if (is_null($aggregateFieldsets) || in_array("activeAgents", $aggregateFieldsets['task'])) {
+      $assignedAgents = [];
+      if (is_null($aggregateFieldsets) || in_array("assignedAgents", $aggregateFieldsets['task'])) {
         $qF = new QueryFilter(Assignment::TASK_ID, $object->getId(), "=");
-        $activeAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
-        $aggregatedData["activeAgents"] = $activeAgents;
+        $assignedAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
+        $aggregatedData["totalAssignedAgents"] = $assignedAgents;
       }
-
-      $chunks = null;
-      if (is_null($aggregateFieldsets) || in_array("isActive", $aggregateFieldsets['task'])) {
-        $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-        $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-        $isActive = false;
-        $now = time();
-        $chunkTimeOut = SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT);
-
-        foreach ($chunks as $chunk) {
-          if ($now - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $chunkTimeOut && $chunk->getProgress() < 10000) {
-            $isActive = true;
-            break;
-          }
-        }
-        $aggregatedData["isActive"] = $isActive;
-      }
-      
       $keyspace = $object->getKeyspace();
       $keyspaceProgress = $object->getKeyspaceProgress();
       
@@ -212,28 +194,26 @@ class TaskAPI extends AbstractModelAPI {
       if (is_null($aggregateFieldsets) || in_array("searched", $aggregateFieldsets['task'])) {
         $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
       }
-      
-      if (is_null($aggregateFieldsets) || in_array("status", $aggregateFieldsets['task'])) {
-        $qF1 = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-        $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
-        $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
-        $agg3 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::MAX);
-        $agg4 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::MAX);
-        $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2, $agg3, $agg4]);
-        
-        $progress = $results[$agg1->getName()] - $results[$agg2->getName()];
-        $maxTime = max($results[$agg3->getName()], $results[$agg4->getName()]);
-        
-        //status 1 is running, 2 is idle and 3 is completed
+
+      $chunks = null;
+      if (is_null($aggregateFieldsets) || in_array("isActive", $aggregateFieldsets['task'])) {
+        $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+        $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+        //status 1 is running, 2 is idle and 3 is completed.
         $status = 2;
-        if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $keyspace || $object->getUsePreprocessor() && $keyspace == DPrince::PRINCE_KEYSPACE)) {
-          $status = 1;
-        }
-        
         if ($keyspaceProgress >= $keyspace && $keyspaceProgress > 0) {
           $status = 3;
+        } else {
+          $now = time();
+          $chunkTimeOut = SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT);
+
+          foreach ($chunks as $chunk) {
+            if ($now - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $chunkTimeOut && $chunk->getProgress() < 10000) {
+              $status = 1;
+              break;
+            }
+          }
         }
-        
         $aggregatedData["status"] = $status;
       }
 
