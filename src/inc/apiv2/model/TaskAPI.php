@@ -163,7 +163,8 @@ class TaskAPI extends AbstractModelAPI {
       $this->getCurrentUser(),
       $data[Task::NOTES],
       $data[Task::STATIC_CHUNKS],
-      $data[Task::CHUNK_SIZE]
+      $data[Task::CHUNK_SIZE],
+      $data[Task::FORCE_PIPE]
     );
     
     return $task->getId();
