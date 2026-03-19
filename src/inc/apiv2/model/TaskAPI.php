@@ -142,7 +142,7 @@ class TaskAPI extends AbstractModelAPI {
    */
   protected function createObject(array $data): int {
     /* Parameter is used as primary key in database */
-    
+    $features = $this->getFeatures();
     $task = TaskUtils::createTask(
       $data["hashlistId"],
       $data[Task::TASK_NAME],
@@ -153,12 +153,12 @@ class TaskAPI extends AbstractModelAPI {
       $data[Task::COLOR],
       $data[Task::IS_CPU_TASK],
       $data[Task::IS_SMALL],
-      $data[Task::USE_PREPROCESSOR],
+      $data[$features[Task::USE_PREPROCESSOR]["alias"]],
       $data[Task::PREPROCESSOR_COMMAND],
       $data[Task::SKIP_KEYSPACE],
       $data[Task::PRIORITY],
       $data[Task::MAX_AGENTS],
-      $this->db2json($this->getFeatures()['files'], $data["files"]),
+      $this->db2json($features['files'], $data["files"]),
       $data[Task::CRACKER_BINARY_ID],
       $this->getCurrentUser(),
       $data[Task::NOTES],
