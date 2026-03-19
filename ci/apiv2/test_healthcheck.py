@@ -1,5 +1,6 @@
-from hashtopolis import HealthCheck
-from utils import BaseTest
+from hashtopolis import HealthCheck, HealthCheckAgent, HashType, Cracker
+from hashtopolis_agent import DummyAgent
+from utils import BaseTest, do_create_dummy_agent
 
 
 class HealthCheckAgentTest(BaseTest):
@@ -22,5 +23,20 @@ class HealthCheckAgentTest(BaseTest):
 
     def test_expandables(self):
         model_obj = self.create_test_object()
-        expandables = ['crackerBinary', 'healthCheckAgents']
+        expandables = ['crackerBinary', 'hashType', 'healthCheckAgents']
         self._test_expandables(model_obj, expandables)
+
+    def test_healthcheck_agents(self):
+        (dummy_1, agent_1) = do_create_dummy_agent()
+        model_obj = self.create_test_object()
+        
+        check = HealthCheck.objects.filter(healthCheckId=model_obj.id)
+        self.assertEqual(len(check), 1)
+
+        check = HealthCheckAgent.objects.filter(healthCheckId=model_obj.id)
+        self.assertEqual(len(check), 2)
+
+    def test_to_one_relationships(self):
+        model_obj = self.create_test_object()
+        self.assertEqual(len(HashType.objects.filter(hashTypeId=getattr(model_obj, 'hashtypeId'))), 1)
+        self.assertEqual(len(Cracker.objects.filter(crackerBinaryId=getattr(model_obj, 'crackerBinaryId'))), 1)
