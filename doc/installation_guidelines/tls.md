@@ -55,12 +55,13 @@ http {
     server {
         listen 80;
         server_name localhost;
-        return 301 https://$host$request_uri;
+        return 308 https://$host$request_uri;
     }
 
     server {
         client_max_body_size 2G;
-        listen 443 ssl http2;
+        listen 443 ssl;
+        http2 on;
         server_name localhost;
 
         ssl_certificate /etc/nginx/ssl/nginx.crt;
