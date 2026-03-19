@@ -159,7 +159,7 @@ class TaskAPI extends AbstractModelAPI {
       $data[Task::PRIORITY],
       $data[Task::MAX_AGENTS],
       $this->db2json($this->getFeatures()['files'], $data["files"]),
-      $data[Task::CRACKER_BINARY_TYPE_ID],
+      $data[Task::CRACKER_BINARY_ID],
       $this->getCurrentUser(),
       $data[Task::NOTES],
       $data[Task::STATIC_CHUNKS],
