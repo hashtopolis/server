@@ -581,8 +581,8 @@ class OpenAPISchemaUtils {
 
       /* Quick to find out if single parameter object is used */
       $singleObject = ((strstr($path, '/{id:')) !== false);
-      $name_parts = explode('\\', $class->getDBAClass());
-      $name = end($name_parts);
+      $api_name_parts = explode('\\', get_class($class));
+      $name = substr(end($api_name_parts), 0, -3); // Remove "API" suffix
       $typeName = lcfirst($name);
       $uri = $class->getBaseUri();
 
