@@ -27,6 +27,9 @@ class OpenAPISchemaUtils {
     }
     elseif ($feature['type'] == 'dict') {
       $type = "object";
+      if ($feature['subtype'] !== 'unset') {
+        $sub_type = self::typeLookup(['type' => $feature['subtype'], 'choices' => 'unset'])['type'];
+      }
     }
     elseif ($feature['type'] == 'array') {
       $type = "array";
@@ -311,7 +314,11 @@ class OpenAPISchemaUtils {
         $propertyVal[$feature['alias']]["enum"] = $ret["type_enum"];
       }
       if ($ret["subtype"] !== null) {
-        $propertyVal[$feature['alias']]["items"]["type"] = $ret["subtype"];
+        if ($ret["type"] === "object") {
+          $propertyVal[$feature['alias']]["additionalProperties"]["type"] = $ret["subtype"];
+        } else {
+          $propertyVal[$feature['alias']]["items"]["type"] = $ret["subtype"];
+        }
       }
     }
     return $propertyVal;
