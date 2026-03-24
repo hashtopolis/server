@@ -34,7 +34,7 @@ class AgentStat extends AbstractModel {
     $dict = array();
     $dict['agentStatId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentStatId", "public" => False, "dba_mapping" => False];
     $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId", "public" => False, "dba_mapping" => False];
-    $dict['statType'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "statType", "public" => False, "dba_mapping" => False];
+    $dict['statType'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => [1 => "GPU temperature", 2 => "GPU utilization", 3 => "CPU utilization", ], "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "statType", "public" => False, "dba_mapping" => False];
     $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time", "public" => False, "dba_mapping" => False];
     $dict['value'] = ['read_only' => True, "type" => "array", "subtype" => "int", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "value", "public" => False, "dba_mapping" => False];
 

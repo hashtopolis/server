@@ -36,9 +36,9 @@ class LogEntry extends AbstractModel {
   static function getFeatures(): array {
     $dict = array();
     $dict['logEntryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "logEntryId", "public" => False, "dba_mapping" => False];
-    $dict['issuer'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "issuer", "public" => False, "dba_mapping" => False];
+    $dict['issuer'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => ["API" => "API", "User" => "User", ], "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "issuer", "public" => False, "dba_mapping" => False];
     $dict['issuerId'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "issuerId", "public" => False, "dba_mapping" => False];
-    $dict['level'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "level", "public" => False, "dba_mapping" => False];
+    $dict['level'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => ["warning" => "Warning", "error" => "Error", "fatal error" => "Fatal error", "information" => "Information", ], "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "level", "public" => False, "dba_mapping" => False];
     $dict['message'] = ['read_only' => True, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "message", "public" => False, "dba_mapping" => False];
     $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time", "public" => False, "dba_mapping" => False];
 
