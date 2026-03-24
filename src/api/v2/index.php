@@ -147,7 +147,7 @@ $container->set("JwtAuthentication", function (ContainerInterface $container) {
   );
 
   $rules = [
-    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/auth/oauth-token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"]),
+    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/auth/oauth-token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json", "/api/v2/openapi-compliant.json"]),
     new RequestMethodRule(ignore: ["OPTIONS"])
   ];
   return new JwtAuthentication($options, $decoder, $rules);

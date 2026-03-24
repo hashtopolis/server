@@ -68,6 +68,24 @@ class PreTaskAPI extends AbstractModelAPI {
     return $pretask->getId();
   }
   
+  public static function getAggregateFeatures(): array {
+    return [
+      'auxiliaryKeyspace' => [
+        'type' => 'int',
+        'alias' => 'auxiliaryKeyspace',
+        'pk' => false,
+        'private' => false,
+        'choices' => 'unset',
+        'null' => false,
+        'protected' => false,
+        'read_only' => true,
+        'subtype' => 'unset',
+        'public' => false,
+        'dba_mapping' => false,
+      ],
+    ];
+  }
+
   //TODO make aggregate data queryable and not included by default
   function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
     $aggregatedData = [];

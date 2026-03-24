@@ -70,6 +70,24 @@ class ApiTokenAPI extends AbstractModelAPI {
   /**
    * @throws HttpError
    */
+  public static function getAggregateFeatures(): array {
+    return [
+      'token' => [
+        'type' => 'str',
+        'alias' => 'token',
+        'pk' => false,
+        'private' => false,
+        'choices' => 'unset',
+        'null' => false,
+        'protected' => false,
+        'read_only' => true,
+        'subtype' => 'unset',
+        'public' => false,
+        'dba_mapping' => false,
+      ],
+    ];
+  }
+
   protected function createObject(array $data): int {
     //Scopes is an array of permissions in format [permFileTaskUpdate, permAgentDelete]
     $scopes = explode(",", $data["scopes"]);

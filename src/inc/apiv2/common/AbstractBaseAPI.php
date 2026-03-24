@@ -186,6 +186,14 @@ abstract class AbstractBaseAPI {
   public function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     return [];
   }
+
+  /**
+   * Declare computed properties returned by aggregateData() for OpenAPI schema generation.
+   * Override in subclasses that implement aggregateData().
+   */
+  public static function getAggregateFeatures(): array {
+    return [];
+  }
   
   /**
    * Take all the dba features and converts them to a list.

@@ -169,6 +169,34 @@ class TaskAPI extends AbstractModelAPI {
     return $task->getId();
   }
   
+  public static function getAggregateFeatures(): array {
+    $base = [
+      'pk' => false,
+      'private' => false,
+      'choices' => 'unset',
+      'null' => false,
+      'protected' => false,
+      'read_only' => true,
+      'subtype' => 'unset',
+      'public' => false,
+      'dba_mapping' => false,
+    ];
+    return [
+      'activeAgents' => array_merge($base, ['type' => 'int', 'alias' => 'activeAgents']),
+      'dispatched' => array_merge($base, ['type' => 'str', 'alias' => 'dispatched']),
+      'searched' => array_merge($base, ['type' => 'str', 'alias' => 'searched']),
+      'status' => array_merge($base, [
+        'type' => 'int',
+        'alias' => 'status',
+        'choices' => [0 => 'init', 1 => 'running', 2 => 'idle', 3 => 'completed'],
+      ]),
+      'estimatedTime' => array_merge($base, ['type' => 'int', 'alias' => 'estimatedTime']),
+      'timeSpent' => array_merge($base, ['type' => 'int', 'alias' => 'timeSpent']),
+      'currentSpeed' => array_merge($base, ['type' => 'int', 'alias' => 'currentSpeed']),
+      'cprogress' => array_merge($base, ['type' => 'int', 'alias' => 'cprogress']),
+    ];
+  }
+
   //TODO make aggregate data queryable and not included by default
   function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
     $aggregatedData = [];
