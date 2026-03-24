@@ -253,7 +253,7 @@ $CONF['Assignment'] = [
     ['name' => 'assignmentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'relation' => 'Task'],
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'relation' => 'Agent'],
-    ['name' => 'benchmark', 'read_only' => False, 'type' => 'str(50)', 'null' => True],
+    ['name' => 'benchmark', 'read_only' => False, 'type' => 'str(50)'],
   ],
 ];
 $CONF['Chunk'] = [
@@ -475,7 +475,7 @@ $CONF['RightGroup'] = [
   'columns' => [
     ['name' => 'rightGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id'],
     ['name' => 'groupName', 'read_only' => False, 'type' => 'str(50)', 'alias' => 'name'],
-    ['name' => 'permissions', 'read_only' => False, 'type' => 'dict', 'subtype' => 'bool', 'null' => True],
+    ['name' => 'permissions', 'read_only' => False, 'type' => 'dict', 'subtype' => 'bool'],
   ],
 ];
 $CONF['Session'] = [
@@ -565,7 +565,7 @@ $CONF['User'] = [
     ['name' => 'email', 'read_only' => False, 'type' => 'str(150)'],
     ['name' => 'passwordHash', 'read_only' => True, 'type' => 'str(256)', 'protected' => True, 'private' => True],
     ['name' => 'passwordSalt', 'read_only' => True, 'protected' => True, 'type' => 'str(256)', 'private' => True],
-    ['name' => 'isValid', 'read_only' => False, 'type' => 'bool', 'null' => true],
+    ['name' => 'isValid', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'isComputedPassword', 'read_only' => True, 'type' => 'bool', 'protected' => True,],
     ['name' => 'lastLoginDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'registeredSince', 'read_only' => True, 'type' => 'int64', 'protected' => True],

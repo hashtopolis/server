@@ -56,6 +56,7 @@ class OpenAPISchemaUtils {
       "type" => $type,
       "type_format" => $type_format,
       "type_enum" => $type_enum,
+      "type_enum_labels" => $type_enum !== null ? array_values($feature['choices']) : null,
       "subtype" => $sub_type
     ];
   }
@@ -121,11 +122,11 @@ class OpenAPISchemaUtils {
           "default" => $self . "&page[before]=500"
         ],
         "next" => [
-          "type" => "string",
+          "type" => ["string", "null"],
           "default" => $self . "&page[after]=25"
         ],
         "previous" => [
-          "type" => "string",
+          "type" => ["string", "null"],
           "default" => $self . "&page[before]=25"
         ]
       ]
@@ -249,7 +250,15 @@ class OpenAPISchemaUtils {
     foreach ($expandables as $expand => $expandVal) {
       $expandClass = $expandVal["relationType"];
       $expandApiClass = new ($container->get('classMapper')->get($expandClass))($container);
-      $properties[] = [
+      $nameParts = explode('\\', get_class($expandApiClass));
+      $typeName = lcfirst(substr(end($nameParts), 0, -3));
+      $features = array_filter($expandApiClass->getFeaturesWithoutFormfields(), fn($f) => !$f['private']);
+      $attrProperties = self::makeProperties($features, true);
+      $requiredAttributes = array_values(array_map(
+        fn($f) => $f['alias'],
+        array_filter($features, fn($f) => !$f['pk'])
+      ));
+      $properties[$typeName] = [
         "required" => ["id", "type", "attributes"],
         "properties" => [
           "id" => [
@@ -257,16 +266,17 @@ class OpenAPISchemaUtils {
           ],
           "type" => [
             "type" => "string",
-            "const" => $expand
+            "const" => $typeName
           ],
           "attributes" => [
             "type" => "object",
-            "properties" => self::makeProperties($expandApiClass->getAliasedFeatures())
+            "required" => $requiredAttributes,
+            "properties" => $attrProperties
           ]
         ]
       ];
     };
-    return $properties;
+    return array_values($properties);
   }
 
   static function mapToProperties($map): array {
@@ -306,12 +316,28 @@ class OpenAPISchemaUtils {
         continue;
       }
       $ret = self::typeLookup($feature);
-      $propertyVal[$feature['alias']]["type"] = $ret["type"];
-      if ($ret["type_format"] !== null) {
-        $propertyVal[$feature['alias']]["format"] = $ret["type_format"];
-      }
-      if ($ret["type_enum"] !== null) {
-        $propertyVal[$feature['alias']]["enum"] = $ret["type_enum"];
+      $isNullable = $feature['null'] ?? false;
+      if ($ret["type_enum"] !== null && $ret["type_enum_labels"] !== null) {
+        $oneOfItems = [];
+        foreach ($ret["type_enum"] as $i => $val) {
+          $item = ["const" => $val, "title" => $ret["type_enum_labels"][$i], "type" => $ret["type"]];
+          if ($ret["type_format"] !== null) {
+            $item["format"] = $ret["type_format"];
+          }
+          $oneOfItems[] = $item;
+        }
+        if ($isNullable) {
+          $oneOfItems[] = ["type" => "null"];
+        }
+        $propertyVal[$feature['alias']] = ["oneOf" => $oneOfItems];
+      } else {
+        $propertyVal[$feature['alias']]["type"] = $isNullable ? [$ret["type"], "null"] : $ret["type"];
+        if ($ret["type_format"] !== null) {
+          $propertyVal[$feature['alias']]["format"] = $ret["type_format"];
+        }
+        if ($ret["type_enum"] !== null) {
+          $propertyVal[$feature['alias']]["enum"] = $ret["type_enum"];
+        }
       }
       if ($ret["subtype"] !== null) {
         if ($ret["type"] === "object") {
@@ -324,10 +350,17 @@ class OpenAPISchemaUtils {
     return $propertyVal;
   }
 
-  static function buildPatchPost($properties, $name, $id = null): array {
+  static function buildPatchPost($properties, $name, $id = null, $requiredAttributes = null): array {
     $required = ["type", "attributes"];
     if ($id) {
       $required[] = "id";
+    }
+    $attributesSchema = [
+      "type" => "object",
+      "properties" => $properties
+    ];
+    if ($requiredAttributes !== null && count($requiredAttributes) > 0) {
+      $attributesSchema["required"] = $requiredAttributes;
     }
     $result = ["data" => [
       "type" => "object",
@@ -337,10 +370,7 @@ class OpenAPISchemaUtils {
           "type" => "string",
           "const" => $name
         ],
-        "attributes" => [
-          "type" => "object",
-          "properties" => $properties
-        ]
+        "attributes" => $attributesSchema
       ]
     ]
     ];
@@ -628,7 +658,10 @@ class OpenAPISchemaUtils {
               ],
               "attributes" => [
                 "type" => "object",
-                "required" => array_keys($responseAttributeProperties),
+                "required" => array_values(array_map(
+                  fn($f) => $f['alias'],
+                  array_filter(array_merge($responseFeatures, $aggregateFeatures), fn($f) => !$f['pk'])
+                )),
                 "properties" => $allResponseProperties
               ],
             ]
@@ -642,12 +675,19 @@ class OpenAPISchemaUtils {
           "properties" => $relationshipProperties
         ]
         ];
+        $expandables = self::makeExpandables($class, $app->getContainer());
+        $includedItems = count($expandables) === 1
+          ? array_merge(["type" => "object"], $expandables[0])
+          : [
+              "oneOf" => array_map(
+                fn($e) => array_merge(["type" => "object"], $e),
+                $expandables
+              ),
+              "discriminator" => ["propertyName" => "type"]
+            ];
         $included = ["included" => [
           "type" => "array",
-          "items" => [
-            "type" => "object",
-            "properties" => self::makeExpandables($class, $app->getContainer())
-          ],
+          "items" => $includedItems,
         ]
         ];
 
@@ -663,7 +703,12 @@ class OpenAPISchemaUtils {
         $json_api_header = self::makeJsonApiHeader();
         $links = self::makeLinks($uri);
         $properties_return_post_patch = array_merge($json_api_header, $properties_return_post_patch);
-        $properties_create = self::buildPatchPost(self::makeProperties($class->getAllPostParameters($class->getCreateValidFeatures())), $typeName);
+        $createFeatures = $class->getAllPostParameters($class->getCreateValidFeatures());
+        $requiredCreateAttributes = array_values(array_map(
+          fn($f) => $f['alias'],
+          array_filter($createFeatures, fn($f) => !$f['null'])
+        ));
+        $properties_create = self::buildPatchPost(self::makeProperties($createFeatures), $typeName, null, $requiredCreateAttributes);
         $properties_get = array_merge($json_api_header, $links, $properties_get_single, $included);
         $properties_get_list = array_merge($json_api_header, $links, $properties_return_list, $relationships, $included);
         $properties_patch = self::buildPatchPost(self::makeProperties($class->getPatchValidFeatures(), true), $typeName);
