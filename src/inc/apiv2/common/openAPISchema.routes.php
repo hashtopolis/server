@@ -265,7 +265,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         $properties_return_post_patch = array_merge($json_api_header, $properties_return_post_patch);
         $postProperties = OpenAPISchemaUtils::makeProperties($class->getAllPostParameters($class->getCreateValidFeatures()));
         $properties_get = array_merge($json_api_header, $links, $properties_get_single, $included);
-        $patch_properties = OpenAPISchemaUtils::makeProperties($class->getPatchValidFeatures($class->getCreateValidFeatures()));
+        $patch_properties = OpenAPISchemaUtils::makeProperties($class->getPatchValidFeatures());
         
         if (count($postProperties) > 0) {
           $properties_create = OpenAPISchemaUtils::buildPatchPost(OpenAPISchemaUtils::makeProperties($class->getAllPostParameters($class->getCreateValidFeatures())), $name);
