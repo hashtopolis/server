@@ -242,6 +242,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         ];
         
         $relationshipsNames = array_merge(array_keys($class->getToOneRelationships()), array_keys($class->getToManyRelationships()));
+        $relationships = [];
         if (count($relationshipsNames) > 0) {
           $relationships = ["relationships" => [
             "type" => "object",
@@ -250,6 +251,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           ];
         }
         $expandables = array_merge($class->getToOneRelationships(), $class->getToManyRelationships());
+        $included = [];
         if (count($expandables) > 0) {
         $included = ["included" => [
             "type" => "array",
@@ -288,13 +290,11 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ];
         }
         
-        if (count($properties_get) > 0) {
         $components[$name . "Response"] =
           [
             "type" => "object",
             "properties" => $properties_get,
           ];
-        }
         
         if ($relation) {
           $properties_patch_post_relation = OpenAPISchemaUtils::buildPostPatchRelation($relation, ($isToMany && !$isToOne));
@@ -311,21 +311,17 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ];
         }
         
-        if (count($properties_get_single) > 0) {
-          $components[$name . "SingleResponse"] =
-            [
-              "type" => "object",
-              "properties" => $properties_get_single
-            ];
-        }
+        $components[$name . "SingleResponse"] =
+          [
+            "type" => "object",
+            "properties" => $properties_get_single
+          ];
         
-        if (count($properties_return_post_patch) > 0) {
-          $components[$name . "PostPatchResponse"] =
-            [
-              "type" => "object",
-              "properties" => $properties_return_post_patch
-            ];
-        }
+        $components[$name . "PostPatchResponse"] =
+          [
+            "type" => "object",
+            "properties" => $properties_return_post_patch
+          ];
         
         $components[$name . "ListResponse"] =
           [
