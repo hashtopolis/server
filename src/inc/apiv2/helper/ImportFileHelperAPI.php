@@ -130,11 +130,8 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     }
   }
   
-  /**
-   * getfile is different because it returns actual binary data.
-   */
-  public static function getResponse(): null {
-    return null;
+  public static function getResponse(): array {
+    return ["file" => "abc.txt", "size" => 123];
   }
   
   /**  File import API
@@ -422,7 +419,6 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     $importFiles = $this->scanImportDirectory();
     return self::getMetaResponse($importFiles, $request, $response);
   }
-  
   
   static public function register(App $app): void {
     $me = get_called_class();

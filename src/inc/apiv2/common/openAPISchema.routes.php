@@ -120,7 +120,9 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       $apiClassName = $explodedCallable[0];
       $apiMethod = $explodedCallable[1];
       $class = new $apiClassName($app->getContainer());
+
       
+      $path = preg_replace('/\{([^:}]+):(.+)\}/', '{$1}', $path);
       if (!($class instanceof AbstractModelAPI)) {
         $name_parts = explode('\\', $class::class);
         $name = end($name_parts);
@@ -129,12 +131,15 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         $paths[$path][$method]["description"] = OpenAPISchemaUtils::parsePhpDoc($reflectionApiMethod->getDocComment());
         $parameters = $class->getCreateValidFeatures();
         $properties = OpenAPISchemaUtils::makeProperties($parameters);
-        $components[$name] =
-          [
-            "type" => "object",
-            "properties" => $properties,
-          ];
-        if ($method == "post") {
+        $amountProperties = count($properties);
+        if ($amountProperties > 0) {
+          $components[$name] =
+            [
+              "type" => "object",
+              "properties" => $properties,
+            ];
+        }
+        if ($method == "post" && $amountProperties > 0) {
           $reflectionMethodFormFields = new ReflectionMethod($class::class, "getFormFields");
           $bodyDescription = OpenAPISchemaUtils::parsePhpDoc($reflectionMethodFormFields->getDocComment());
           $paths[$path][$method]["requestBody"] = [
@@ -187,7 +192,8 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       };
       
       /* Quick to find out if single parameter object is used */
-      $singleObject = ((strstr($path, '/{id:')) !== false);
+      error_log($path);
+      $singleObject = ((strstr($path, '/{id}')) !== false);
       $name_parts = explode('\\', $class->getDBAClass());
       $name = end($name_parts);
       $uri = $class->getBaseUri();
@@ -199,6 +205,11 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         $isToOne = array_key_exists($relation, $class::getToOneRelationships());
         assert(!($isToMany && $isToOne), "An relationship cant be a to one and to many at the same time.");
       } else {
+        $availableMethods = $class->getAvailableMethods();
+        $method_to_check = strtoupper($method);
+        if ($method_to_check != "GET" && !in_array($method_to_check, $availableMethods)) {
+          continue;
+        }
         $isToMany = $isToOne = false;
         $relation = null;
       }
@@ -230,72 +241,91 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           ]
         ];
         
-        $relationships = ["relationships" => [
-          "type" => "object",
-          "properties" => OpenAPISchemaUtils::makeRelationships($class, $uri)
-        ]
-        ];
-        $included = ["included" => [
-          "type" => "array",
-          "items" => [
+        $relationshipsNames = array_merge(array_keys($class->getToOneRelationships()), array_keys($class->getToManyRelationships()));
+        if (count($relationshipsNames) > 0) {
+          $relationships = ["relationships" => [
             "type" => "object",
-            "properties" => OpenAPISchemaUtils::makeExpandables($class, $app->getContainer())
-          ],
-        ]
+            "properties" => OpenAPISchemaUtils::makeRelationships($relationshipsNames, $uri)
+          ]
+          ];
+        }
+        $expandables = array_merge($class->getToOneRelationships(), $class->getToManyRelationships());
+        if (count($expandables) > 0) {
+        $included = ["included" => [
+            "type" => "array",
+            "items" => [
+              "type" => "object",
+              "properties" => OpenAPISchemaUtils::makeExpandables($expandables, $app->getContainer())
+            ],
+          ]
         ];
+        }
         
         $properties_get_single = array_merge($properties_return_post_patch, $relationships, $included);
         
         $json_api_header = OpenAPISchemaUtils::makeJsonApiHeader();
         $links = OpenAPISchemaUtils::makeLinks($uri);
         $properties_return_post_patch = array_merge($json_api_header, $properties_return_post_patch);
-        $properties_create = OpenAPISchemaUtils::buildPatchPost(OpenAPISchemaUtils::makeProperties($class->getAllPostParameters($class->getCreateValidFeatures())), $name);
+        $postProperties = OpenAPISchemaUtils::makeProperties($class->getAllPostParameters($class->getCreateValidFeatures()));
         $properties_get = array_merge($json_api_header, $links, $properties_get_single, $included);
-        $properties_patch = OpenAPISchemaUtils::buildPatchPost(OpenAPISchemaUtils::makeProperties($class->getPatchValidFeatures(), true), $name);
-        $properties_patch_post_relation = OpenAPISchemaUtils::buildPostPatchRelation($relation, ($isToMany && !$isToOne));
-        $responseGetRelation = $properties_patch_post_relation;
+        $patch_properties = OpenAPISchemaUtils::makeProperties($class->getAllPostParameters($class->getCreateValidFeatures()));
         
-        $components[$name . "Create"] =
-          [
-            "type" => "object",
-            "properties" => $properties_create,
-          ];
+        if (count($postProperties) > 0) {
+          $properties_create = OpenAPISchemaUtils::buildPatchPost(OpenAPISchemaUtils::makeProperties($class->getAllPostParameters($class->getCreateValidFeatures())), $name);
+          $components[$name . "Create"] =
+            [
+              "type" => "object",
+              "properties" => $properties_create,
+            ];
+        }
         
-        $components[$name . "Patch"] =
-          [
-            "type" => "object",
-            "properties" => $properties_patch,
-          ];
+        if (count($patch_properties) > 0) {
+          $properties_patch = OpenAPISchemaUtils::buildPatchPost($patch_properties, $name);
+          $components[$name . "Patch"] =
+            [
+              "type" => "object",
+              "properties" => $properties_patch,
+            ];
+        }
         
+        if (count($properties_get) > 0) {
         $components[$name . "Response"] =
           [
             "type" => "object",
             "properties" => $properties_get,
           ];
+        }
         
-        $components[$name . "Relation" . ucfirst($relation)] =
-          [
-            "type" => "object",
-            "properties" => $properties_patch_post_relation,
-          ];
+        if ($relation) {
+          $properties_patch_post_relation = OpenAPISchemaUtils::buildPostPatchRelation($relation, ($isToMany && !$isToOne));
+          $responseGetRelation = $properties_patch_post_relation;
+          $components[$name . "Relation" . ucfirst($relation)] =
+            [
+              "type" => "object",
+              "properties" => $properties_patch_post_relation,
+            ];
+          $components[$name . "Relation" . ucfirst($relation) . "GetResponse"] =
+            [
+              "type" => "object",
+              "properties" => $responseGetRelation
+            ];
+        }
         
-        $components[$name . "Relation" . ucfirst($relation) . "GetResponse"] =
-          [
-            "type" => "object",
-            "properties" => $responseGetRelation
-          ];
+        if (count($properties_get_single) > 0) {
+          $components[$name . "SingleResponse"] =
+            [
+              "type" => "object",
+              "properties" => $properties_get_single
+            ];
+        }
         
-        $components[$name . "SingleResponse"] =
-          [
-            "type" => "object",
-            "properties" => $properties_get_single
-          ];
-        
-        $components[$name . "PostPatchResponse"] =
-          [
-            "type" => "object",
-            "properties" => $properties_return_post_patch
-          ];
+        if (count($properties_return_post_patch) > 0) {
+          $components[$name . "PostPatchResponse"] =
+            [
+              "type" => "object",
+              "properties" => $properties_return_post_patch
+            ];
+        }
         
         $components[$name . "ListResponse"] =
           [
@@ -355,9 +385,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         ],
         "security" => [
           [
-            "bearerAuth" => [
-              $required_scopes
-            ]
+            "bearerAuth" => $required_scopes
           ]
         ]
       ];
@@ -481,25 +509,17 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           }
           else {
             /* Empty JSON object required */
-            $paths[$path][$method]["requestBody"] = [
-              "required" => true,
-              "content" => [
-                "application/json" => [],
-              ]
-            ];
+            // $paths[$path][$method]["requestBody"] = [
+            //   "required" => false,
+            //   "content" => [
+            //     "application/json" => [],
+            //   ]
+            // ];
           }
         }
         elseif ($method == 'post') {
           $paths[$path][$method]["responses"]["204"] = [
             "description" => "successfully created",
-          ];
-          
-          /* Empty JSON object required */
-          $paths[$path][$method]["requestBody"] = [
-            "required" => true,
-            "content" => [
-              "application/json" => [],
-            ]
           ];
         }
         else {
@@ -574,17 +594,21 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           
         }
         elseif ($method == 'patch') {
-          // TODO add patch many here
+          $paths[$path][$method]["responses"]["204"] = [
+            "description" => "successfully patched",
+          ];
         }
         elseif ($method == 'delete') {
-          // TODO add delete many here
+          $paths[$path][$method]["responses"]["200"] = [
+            "description" => "successfully deleted",
+          ];
         }
         else {
           throw new HttpErrorException("Method '$method' not implemented");
         }
       }
       
-      if ($singleObject && $method == 'get') {
+      if ($singleObject) {
         $parameters = [
           [
             "name" => "id",
@@ -614,51 +638,55 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           $parameters = [
             [
               "name" => "page[after]",
-              "in" => "path",
+              "in" => "query",
               "schema" => [
                 "type" => "integer",
                 "format" => "int32"
               ],
               "example" => 0,
+              "required" => false,
               "description" => "Pointer to paginate to retrieve the data after the value provided"
             ],
             [
               "name" => "page[before]",
-              "in" => "path",
+              "in" => "query",
               "schema" => [
                 "type" => "integer",
                 "format" => "int32"
               ],
               "example" => 0,
+              "required" => false,
               "description" => "Pointer to paginate to retrieve the data before the value provided"
             ],
             [
               "name" => "page[size]",
-              "in" => "path",
+              "in" => "query",
               "schema" => [
                 "type" => "integer",
                 "format" => "int32"
               ],
+              "required" => false,
               "example" => 100,
               "description" => "Amout of data to retrieve inside a single page"
             ],
             [
               "name" => "filter",
-              "in" => "path",
-              "style" => "deepobject",
+              "in" => "query",
+              "style" => "deepObject",
               "explode" => true,
               "schema" => [
-                "type" => "object",
+                "type" => "string",
               ],
               "description" => "Filters results using a query",
               "example" => '"filter[hashlistId__gt]": 200'
             ],
             [
               "name" => "include",
-              "in" => "path",
+              "in" => "query",
               "schema" => [
                 "type" => "string"
               ],
+              "required" => false,
               "description" => "Items to include, comma seperated. Possible options: " . $expandables
             ]
           ];
@@ -782,7 +810,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       [
         "name" => "Upload-Metadata",
         "in" => "header",
-        "required" => "true",
+        "required" => true,
         "schema" => [
           "type" => "string",
           "pattern" => '^([a-zA-Z0-9]+ [A-Za-z0-9+/=]+)(,[a-zA-Z0-9]+ [A-Za-z0-9+/=]+)*$'
@@ -816,43 +844,72 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       ]
     ];
     
-    $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["patch"]["parameters"] = [
+    $paths["/api/v2/helper/importFile/{id}"]["head"]["parameters"] = [
+        [
+          "name" => "id",
+          "in" => "path",
+          "required" => true,
+          "schema" => [
+            "type"=> "string",
+            "pattern"=> "^[0-9]{14}-[0-9a-f]{32}$"
+          ]
+        ]
+      ];
+    $paths["/api/v2/helper/importFile/{id}"]["delete"]["parameters"] = [
+        [
+          "name" => "id",
+          "in" => "path",
+          "required" => true,
+          "schema" => [
+            "type"=> "string",
+            "pattern"=> "^[0-9]{14}-[0-9a-f]{32}$"
+          ]
+        ]
+      ];
+    $paths["/api/v2/helper/importFile/{id}"]["patch"]["parameters"] = [
       [
         "name" => "Upload-Offset",
         "in" => "header",
-        "required" => "true",
+        "required" => true,
         "schema" => [
           "type" => "integer",
         ],
-        "example" => "512",
+        "example" => 512,
         "description" => " The Upload-Offset header’s value MUST be equal to the current offset of the resource"
+      ],
+      [
+        "name" => "id",
+        "in" => "path",
+        "required" => true,
+        "schema" => [
+          "type"=> "string",
+          "pattern"=> "^[0-9]{14}-[0-9a-f]{32}$"
+        ]
       ],
       [
         "name" => "Content-Type",
         "in" => "header",
-        "required" => "true",
+        "required" => true,
         "schema" => [
           "type" => "string",
           "enum" => ["application/offset+octet-stream"]
         ],
       ],
     ];
-    $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["patch"]["requestBody"] = [
-      [
-        "required" => "true",
-        "description" => "The binary data to push to the file",
-        "content" => [
-          "application/offset+octet-stream" => [
-            "schema" => [
-              "type" => "string",
-              "format" => "binary"
-            ]
+    $paths["/api/v2/helper/importFile/{id}"]["patch"]["requestBody"] = [
+      "required" => true,
+      "description" => "The binary data to push to the file",
+      "content" => [
+        "application/offset+octet-stream" => [
+          "schema" => [
+            "type" => "string",
+            "format" => "binary"
           ]
         ]
       ]
     ];
     
-    $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["head"]["responses"]["200"] = [
+    $paths["/api/v2/helper/importFile/{id}"]["head"]["responses"]["200"] = [
       "description" => "successful request",
       "headers" => [
         "Tus-Resumable" => OpenAPISchemaUtils::getTUSHeader(),
@@ -882,6 +939,9 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         ]
       ]
     ];
+    $paths["/api/v2/helper/importFile/{id}"]["delete"]["responses"]["204"] = [
+      "description" => "successful operation"
+    ];
     
     $paths["/api/v2/helper/importFile"]["post"]["responses"]["201"] = [
       "description" => "successful operation",
@@ -896,12 +956,14 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       ],
       "content" => [
         "application/pdf" => [
-          "type" => "string",
-          "format" => "binary"
+          "schema" => [
+            "type" => "string",
+            "format" => "obinary"
+          ]
         ]
       ]
     ];
-    $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["patch"]["responses"]["204"] = [
+    $paths["/api/v2/helper/importFile/{id}"]["patch"]["responses"]["204"] = [
       "description" => "Chunk accepted",
       "headers" => [
         "Tus-Resumable" => OpenAPISchemaUtils::getTUSHeader(),

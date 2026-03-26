@@ -25,8 +25,8 @@ class GetBestTasksAgent extends AbstractHelperAPI {
     return [Agent::PERM_READ, Task::PERM_READ];
   }
   
-  public static function getResponse(): null {
-    return null;
+  public static function getResponse(): string {
+    return "Task";
   }
   
   
