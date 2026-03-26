@@ -681,6 +681,37 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
               "description" => "Items to include, comma seperated. Possible options: " . $expandables
             ]
           ];
+
+          $aggregateFieldsets = $class->getAggregateFieldsets();
+          if (!empty($aggregateFieldsets)) {
+            $aggregateExamples = [];
+            $aggregateDescriptionParts = [];
+            foreach ($aggregateFieldsets as $fieldset => $options) {
+              if (empty($options)) {
+                continue;
+              }
+              $aggregateExamples["aggregate[" . $fieldset . "]"] = implode(",", $options);
+              $aggregateDescriptionParts[] = $fieldset . ": " . implode(", ", $options);
+            }
+
+            if (!empty($aggregateExamples)) {
+              $parameters[] = [
+                "name" => "aggregate",
+                "in" => "query",
+                "style" => "deepObject",
+                "explode" => true,
+                "schema" => [
+                  "type" => "object",
+                  "additionalProperties" => [
+                    "type" => "string"
+                  ]
+                ],
+                "required" => false,
+                "description" => "Aggregated fields to include by type (comma separated values). Possible options: " . implode(" | ", $aggregateDescriptionParts),
+                "example" => $aggregateExamples
+              ];
+            }
+          }
         }
         else {
           $parameters = [];

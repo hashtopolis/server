@@ -186,6 +186,18 @@ abstract class AbstractBaseAPI {
   public function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     return [];
   }
+
+  /**
+   * Return supported aggregate fieldsets/options for this endpoint.
+   *
+   * Format:
+   * [
+   *   'resourceKey' => ['option1', 'option2']
+   * ]
+   */
+  public function getAggregateFieldsets(): array {
+    return [];
+  }
   
   /**
    * Take all the dba features and converts them to a list.
