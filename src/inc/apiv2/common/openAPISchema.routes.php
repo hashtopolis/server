@@ -167,10 +167,6 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         else if (is_string($request_response)) {
           $ref = "#/components/schemas/" . $request_response . "SingleResponse";
         }
-        else if ($name == "ImportFileHelperAPI") {
-          //ImportFileHelperAPI is hardcoded, because its different than other helpers.
-          continue;
-        }
         if (isset($ref)) {
           $paths[$path][$method]["responses"]["200"] = [
             "description" => "successful operation",
@@ -192,7 +188,6 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       };
       
       /* Quick to find out if single parameter object is used */
-      error_log($path);
       $singleObject = ((strstr($path, '/{id}')) !== false);
       $name_parts = explode('\\', $class->getDBAClass());
       $name = end($name_parts);
@@ -250,14 +245,14 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           ]
           ];
         }
-        $expandables = array_merge($class->getToOneRelationships(), $class->getToManyRelationships());
+        $expandables_array = array_merge($class->getToOneRelationships(), $class->getToManyRelationships());
         $included = [];
-        if (count($expandables) > 0) {
+        if (count($expandables_array) > 0) {
         $included = ["included" => [
             "type" => "array",
             "items" => [
               "type" => "object",
-              "properties" => OpenAPISchemaUtils::makeExpandables($expandables, $app->getContainer())
+              "properties" => OpenAPISchemaUtils::makeExpandables($expandables_array, $app->getContainer())
             ],
           ]
         ];
@@ -270,7 +265,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         $properties_return_post_patch = array_merge($json_api_header, $properties_return_post_patch);
         $postProperties = OpenAPISchemaUtils::makeProperties($class->getAllPostParameters($class->getCreateValidFeatures()));
         $properties_get = array_merge($json_api_header, $links, $properties_get_single, $included);
-        $patch_properties = OpenAPISchemaUtils::makeProperties($class->getAllPostParameters($class->getCreateValidFeatures()));
+        $patch_properties = OpenAPISchemaUtils::makeProperties($class->getPatchValidFeatures($class->getCreateValidFeatures()));
         
         if (count($postProperties) > 0) {
           $properties_create = OpenAPISchemaUtils::buildPatchPost(OpenAPISchemaUtils::makeProperties($class->getAllPostParameters($class->getCreateValidFeatures())), $name);
@@ -954,7 +949,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         "application/pdf" => [
           "schema" => [
             "type" => "string",
-            "format" => "obinary"
+            "format" => "binary"
           ]
         ]
       ]
