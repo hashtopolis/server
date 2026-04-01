@@ -1267,7 +1267,8 @@ abstract class AbstractBaseAPI {
           "joinKey" => $joinKey,
           "key" => $key,
           "features_relation" => $features_relation,
-          "cast_key" => $value
+          "cast_key" => $value,
+          "relationString" => $relationString
         ];
       } else {
         throw new HttpError("Invalid relation: " . $relationString);
@@ -1305,6 +1306,7 @@ abstract class AbstractBaseAPI {
           $cast_key = $relationObject->cast_key;
           $key = $relationObject->key;
           $features_sort = $relationObject->features_relation;
+          $relationString = $relationObject->relationString;
         }
         if (array_key_exists($cast_key, $features_sort)) {
           $remappedKey = $features_sort[$cast_key]['dbname'];
@@ -1312,7 +1314,7 @@ abstract class AbstractBaseAPI {
           if ($reverseSort) {
             $type = ($type == "ASC") ? "DESC" : "ASC";
           }
-          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type, 'factory' => $factory, 'joinKey' => $joinKey, 'key' => $key];
+          $orderTemplates[] = ['by' => $remappedKey, 'type' => $type, 'factory' => $factory, 'joinKey' => $joinKey, 'key' => $key, 'relationString' => $relationString];
         }
         else {
           throw new HttpForbidden("Ordering parameter '" . $order . "' is not valid");

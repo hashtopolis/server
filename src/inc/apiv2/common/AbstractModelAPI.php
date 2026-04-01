@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\common;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\MassUpdateSet;
 use Hashtopolis\inc\apiv2\error\ErrorHandler;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
@@ -21,6 +22,7 @@ use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\ContainFilter;
+use Hashtopolis\dba\Filter;
 use Hashtopolis\dba\LimitFilter;
 use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\PaginationFilter;
@@ -554,7 +556,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
   }
   
-  protected static function getMinMaxCursor($apiClass, string $sort, array $filters, $request, $aliasedfeatures) {
+  protected static function getMinMaxCursor($apiClass, string $sort, array $filters, mixed $request, mixed $aliasedfeatures, string $modelname): ?AbstractModel {
     $filters[Factory::LIMIT] = new LimitFilter(1);
     // Descending queries are used to retrieve the last element. For this all sorts have to be reversed, since
     // if all order queries are reversed and limit to 1, you will retrieve the last element.
@@ -569,7 +571,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         // if factory of orderTemplate is not null, sort is happening on joined table
         $otherFactory = $orderTemplate['factory'];
         if (!$apiClass::checkJoinExists($filters[Factory::JOIN], $otherFactory->getModelName())) {
-          $filters[Factory::JOIN][] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $apiClass->getPrimaryKeyOther($otherFactory->getNullObject()::class));
+          $filters[Factory::JOIN][] = new JoinFilter($otherFactory, $orderTemplate['joinKey'], $orderTemplate['key']);
         }
       }
     }
@@ -577,13 +579,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $filters = $apiClass->parseFilters($filters);
     $factory = $apiClass->getFactory();
     $result = $factory->filter($filters);
+    error_log("result for min max query: " . print_r($result, true));
+    error_log($modelname);
     //handle joined queries
     if (array_key_exists(Factory::JOIN, $filters)) {
-      $result = $result[$factory->getModelname()];
+      $result = $result[$modelname];
     }
+    error_log("result for min max query after parse: " . print_r($result[0], true));
     if (sizeof($result) == 0) {
+      // throw new HttpError("Internal error during pagination");
       return null;
     }
+    /** @var AbstractModel[] $result */
     return $result[0];
   }
   
@@ -594,6 +601,21 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   protected function parseFilters(array $filters): array {
     return $filters;
   }
+
+//   protected function resolvePrimarySortDescriptor(array $primaryOrderTemplate, string $apiSortKey): SortDescriptor {
+//   $factory = $primaryOrderTemplate['factory'] ?? $this->getFactory();
+//   return new ColumnSortDescriptor(
+//     $apiSortKey,                 // cursor key
+//     $primaryOrderTemplate['by'], // db key
+//     $this->getPrimaryKey(),      // tie-breaker
+//     $factory
+//   );
+// }
+
+    protected function createPaginationFilter($primary_cursor_key, $primary_cursor, $operator, $secondary_cursor_key, $secondary_cursor, $qFs_Filter, $parentFilterFactory): Filter {
+      return new PaginationFilter($primary_cursor_key, current($primary_cursor),
+              $operator, $secondary_cursor_key, current($secondary_cursor), $qFs_Filter, $parentFilterFactory);
+    }
   
   /**
    * API entry point for requesting multiple objects
@@ -661,8 +683,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $reverseArray = false;
 
     $aFs[Factory::JOIN] = $joinFilters;
-    $firstCursorObject = $apiClass->getMinMaxCursor($apiClass, "ASC", $aFs, $request, $aliasedfeatures);
-    $lastCursorObject = $apiClass->getMinMaxCursor($apiClass, "DESC", $aFs, $request, $aliasedfeatures);
 
     if (!$isNegativeSort && !isset($pageBefore) && isset($pageAfter)) {
       // this happens when going to the next page while having an ascending sort
@@ -703,8 +723,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $defaultSort);
     $orderTemplates[0]["type"] = $defaultSort;
+    error_log("primary order: " . print_r($orderTemplates[0], true));
     $primaryFilter = $orderTemplates[0]['by'];
+    $parentFilterFactory = $orderTemplates[0]['factory'];
+    $modelName = isset($parentFilterFactory) ? $parentFilterFactory->getModelName() : $apiClass::getFactory()->getModelName();
     $orderFilters = [];
+
+    $firstCursorObject = $apiClass->getMinMaxCursor($apiClass, "ASC", $aFs, $request, $aliasedfeatures, $modelName);
+    $lastCursorObject = $apiClass->getMinMaxCursor($apiClass, "DESC", $aFs, $request, $aliasedfeatures, $modelName);
 
     // Build actual order filters
     foreach ($orderTemplates as $orderTemplate) {
@@ -744,12 +770,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       if ($secondary_cursor) {
         $secondary_cursor_key = key($secondary_cursor);
         $secondary_cursor_key = $secondary_cursor_key == '_id' ? array_column($aliasedfeatures, 'alias', 'dbname')[$apiClass->getPrimaryKey()] : $secondary_cursor_key;
-        $finalFs[Factory::FILTER][] = new PaginationFilter($primary_cursor_key, current($primary_cursor),
-          $operator, $secondary_cursor_key, current($secondary_cursor), $qFs_Filter
-        );
+        $finalFs[Factory::FILTER][] = $apiClass->createPaginationFilter($primary_cursor_key, $primary_cursor, $operator, $secondary_cursor_key, $secondary_cursor, $qFs_Filter, $parentFilterFactory);
+        // $finalFs[Factory::FILTER][] = new PaginationFilter($primary_cursor_key, current($primary_cursor),
+        //   $operator, $secondary_cursor_key, current($secondary_cursor), $qFs_Filter, $parentFilterFactory
+        // );
       }
       else {
-        $finalFs[Factory::FILTER][] = new QueryFilter($primary_cursor_key, current($primary_cursor), $operator, $factory);
+        $finalFs[Factory::FILTER][] = new QueryFilter($primary_cursor_key, current($primary_cursor), $operator, $parentFilterFactory);
       }
     }
     
@@ -779,6 +806,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $includedResources = [];
     
     // Convert objects to data resources 
+    error_log("objects: " . print_r($objects, true));
     foreach ($objects as $object) {
       // Create object  
       $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
@@ -787,6 +815,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       // Add to result output
       $dataResources[] = $newObject;
     }
+    error_log("expandResults: " . print_r($expandResult, true));
     
     $baseUrl = Util::buildServerUrl();
     //build last link
@@ -796,10 +825,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     // $next_cursor = $apiClass::build_cursor($primaryFilter, $nextId, $primaryKeyIsNotPrimaryFilter, $primaryKey, $nextPrimaryKey);
     // $lastParams['page']['before'] = $apiClass::encode_cursor(self::calculate_next_cursor($max));
     if ($primaryKeyIsNotPrimaryFilter && isset($lastCursorObject)) {
+      error_log("last cursor object: " . print_r($lastCursorObject->expose(), true));
+      error_log($lastCursorObject::class);
+      error_log($lastCursorObject->getId());
       $new_secondary_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
       $last_cursor = $apiClass::build_cursor($primaryFilter, $lastCursorObject->expose()[$primaryFilter], $primaryKeyIsNotPrimaryFilter, $primaryKey, $new_secondary_cursor);
     }
     else if (isset($lastCursorObject)) {
+      error_log("last cursor object: " . print_r($lastCursorObject->expose(), true));
+      error_log($lastCursorObject->getId());
       $new_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
       $last_cursor = $apiClass::build_cursor($primaryFilter, $new_cursor);
     }
@@ -829,10 +863,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       // retrieve last object in page and retrieve the attribute based on the filter
       $firstObject = $objects[0]->expose();
       $lastObject = end($objects)->expose();
-      $prevId = $firstObject[$primaryFilter];
-      $nextId = $lastObject[$primaryFilter];
       $nextPrimaryKey = $lastObject[$primaryKey];
       $previousPrimaryKey = $firstObject[$primaryKey];
+      //TODOOOO
+      if (isset($parentFilterFactory)) {
+        //retrieve from included section
+        error_log("expandResult for relationString: " . print_r($expandResult[$orderTemplates[0]["relationString"]], true));
+        $nextId = $expandResult[$orderTemplates[0]["relationString"]][$nextPrimaryKey]->expose()[$primaryFilter];
+        $prevId = $expandResult[$orderTemplates[0]["relationString"]][$previousPrimaryKey]->expose()[$primaryFilter];
+      } else {
+        $prevId = $firstObject[$primaryFilter];
+        $nextId = $lastObject[$primaryFilter];
+      }
       
       //only set next page when its not the last page
       if (isset($lastCursorObject) && $nextPrimaryKey !== $lastCursorObject->getId()) {

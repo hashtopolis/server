@@ -23,6 +23,6 @@ class ConcatOrderFilter extends Order {
     foreach($this->columns as $column) {
       $mapped_columns[] = AbstractModelFactory::getMappedModelKey($column->getFactory()->getNullObject(), $column->getValue());
     }
-    return "CONCAT(" . implode(", ", $mapped_columns) . ") " . $this->type;
+    return "CONCAT_WS(''," . implode(", ", $mapped_columns) . ") " . $this->type;
   }
 }

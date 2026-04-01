@@ -513,13 +513,16 @@ abstract class AbstractModelFactory {
     $vals = array();
     
     if (array_key_exists(Factory::JOIN, $options)) {
-      $query .= $this->applyJoins($options[Factory::JOIN]);
+      $query .= $this->applyJoins($options[Factory::JOIN], $vals);
     }
     
     if (array_key_exists(Factory::FILTER, $options)) {
       $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
+
+    error_log($query);
+    error_log(json_encode($vals));
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
@@ -609,6 +612,7 @@ abstract class AbstractModelFactory {
       $query .= " " . $join->getJoinType() . " JOIN " . $joinFactory->getMappedModelTable() . " ON " . $localFactory->getMappedModelTable() . "." . $match1 . "=" . $joinFactory->getMappedModelTable() . "." . $match2 . " ";
       $joinQueryFilters = $join->getQueryFilters();
       if (count($joinQueryFilters) > 0) {
+        error_log("TESTTT");
         $query .= $this->applyFilters($vals, $joinQueryFilters, true);
       }
     }
@@ -635,6 +639,8 @@ abstract class AbstractModelFactory {
       $query .= $this->applyLimit($options[Factory::LIMIT]);
     }
     $dbh = self::getDB();
+    error_log($query);
+    error_log(json_encode($vals));
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
@@ -744,11 +750,15 @@ abstract class AbstractModelFactory {
     }
     
     foreach ($filters as $filter) {
+      error_log("The filter:");
+      error_log($filter->getQueryString($this, true));
       $parts[] = $filter->getQueryString($this, true);
       if (!$filter->getHasValue()) {
         continue;
       }
+      error_log("The value:");
       $v = $filter->getValue();
+      error_log(json_encode($v));
       if (is_array($v)) {
         foreach ($v as $val) {
           $vals[] = $val;
@@ -779,7 +789,7 @@ abstract class AbstractModelFactory {
     return " ORDER BY " . implode(", ", $orderQueries);
   }
   
-  private function applyJoins($joins): string {
+  private function applyJoins($joins, &$vals=[]): string {
     $query = "";
     foreach ($joins as $join) {
       $joinFactory = $join->getOtherFactory();
@@ -790,6 +800,10 @@ abstract class AbstractModelFactory {
       $match1 = self::getMappedModelKey($localFactory->getNullObject(), $join->getMatch1());
       $match2 = self::getMappedModelKey($joinFactory->getNullObject(), $join->getMatch2());
       $query .= " " . $join->getJoinType() . " JOIN " . $joinFactory->getMappedModelTable() . " ON " . $localFactory->getMappedModelTable() . "." . $match1 . "=" . $joinFactory->getMappedModelTable() . "." . $match2 . " ";
+      $joinQueryFilters = $join->getQueryFilters();
+      if (count($joinQueryFilters) > 0) {
+        $query .= $this->applyFilters($vals, $joinQueryFilters, true);
+      }
     }
     return $query;
   }

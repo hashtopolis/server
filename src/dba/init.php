@@ -16,6 +16,7 @@ require_once(dirname(__FILE__) . "/ContainFilter.php");
 require_once(dirname(__FILE__) . "/JoinFilter.php");
 require_once(dirname(__FILE__) . "/OrderFilter.php");
 require_once(dirname(__FILE__) . "/PaginationFilter.php");
+require_once(dirname(__FILE__) . "/PaginationConcatFilter.php");
 require_once(dirname(__FILE__) . "/QueryFilter.php");
 require_once(dirname(__FILE__) . "/GroupFilter.php");
 require_once(dirname(__FILE__) . "/LimitFilter.php");

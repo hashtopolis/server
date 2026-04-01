@@ -29,7 +29,7 @@ class ConcatLikeFilterInsensitive extends Filter {
       $columnFactory = $column->getFactory();
       $mapped_columns[] = $columnFactory->getMappedModelTable() . "." . AbstractModelFactory::getMappedModelKey($columnFactory->getNullObject(), $column->getValue());
     }
-    return "LOWER(" . "CONCAT(" . implode(", ", $mapped_columns) . ")" . ") LIKE LOWER(?)";
+    return "LOWER(" . "CONCAT_WS(''," . implode(", ", $mapped_columns) . ")" . ") LIKE LOWER(?)";
   }
   
   function getValue() {

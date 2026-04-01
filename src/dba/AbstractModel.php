@@ -30,4 +30,6 @@ abstract class AbstractModel {
    * this function returns the models id
    */
   abstract function getId();
+
+  abstract function expose(): array;
 }

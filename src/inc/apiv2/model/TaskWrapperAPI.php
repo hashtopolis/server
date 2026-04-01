@@ -11,6 +11,7 @@ use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\Filter;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\JoinFilter;
@@ -19,6 +20,7 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\PaginationConcatFilter;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
@@ -115,12 +117,21 @@ class TaskWrapperAPI extends AbstractModelAPI {
     ];
   }
   
+  protected function createPaginationFilter($primary_cursor_key, $primary_cursor, $operator, $secondary_cursor_key, $secondary_cursor, $qFs_Filter, $parentFilterFactory): Filter
+  {
+    if ($primary_cursor_key == Task::TASK_NAME) {
+        $concatColumns = [new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory()), new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory())];
+        return new PaginationConcatFilter($concatColumns, current($primary_cursor), $operator, $secondary_cursor_key, current($secondary_cursor), $qFs_Filter, Factory::getTaskFactory());
+    }
+    return parent::createPaginationFilter($primary_cursor_key, $primary_cursor, $operator, $secondary_cursor_key, $secondary_cursor, $qFs_Filter, $parentFilterFactory);
+  }
+  
   protected function parseFilters(array $filters): array {
+    //TODO only do this when filtering or ordering on attributes of task and not 'tasks'
     //This is in order to handle filters and sorting on columns
     if (isset($filters[Factory::JOIN])) {
-      $joinFilters = $filters[Factory::JOIN];
-      foreach ($joinFilters as $joinFilter) {
-        if ($joinFilter->getOtherTableName() == Task::class) {
+      foreach ($filters[Factory::JOIN] as &$joinFilter) {
+        if ($joinFilter->getOtherTableName() == "Task") {
           // This is a leftjoin where the task type is 0 which means not a supertask. This is in order to 
           // create a to 1 relationship where the taskwrapper will have the normal task as a relation and a supertask will have null
           // This way it becomes possible to filter or sort on the included single task.
@@ -129,6 +140,7 @@ class TaskWrapperAPI extends AbstractModelAPI {
           $joinFilter->setQueryFilters([$qf]);
         }
       }
+      unset($joinFilter);
       
       // parse the order and filter
       // Because the frontend shows taskwrappername for supertasks and taskname for normaltasks, the orders and filters for the 
@@ -152,11 +164,16 @@ class TaskWrapperAPI extends AbstractModelAPI {
             $concatColumns = [new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory()), new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory())];
             $newFilter = new ConcatLikeFilterInsensitive($concatColumns, $filter->getValue());
             $filter = $newFilter;
+          // } if ($filter instanceof PaginationFilter && $filter->getKey() == Task::TASK_NAME) {
+          //   $concatColumns = [new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory()), new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory())];
+          //   $newFilter = new ConcatOrderFilter($concatColumns, $filter->getType());
+          //   $filter = $newFilter;
           }
         }
         unset($filter);
       }
     }
+    error_log(json_encode($filters));
     return $filters;
   }
   

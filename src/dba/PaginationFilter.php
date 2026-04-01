@@ -40,7 +40,8 @@ class PaginationFilter extends Filter {
     //ex. SELECT hashTypeId, description, isSalted, isSlowHash FROM HashType 
     //    where (HashType.isSalted < 1) OR (HashType.isSalted = 1 and HashType.hashTypeId < 12600) 
     //    ORDER BY HashType.isSalted DESC, HashType.hashTypeId DESC LIMIT 25;
-    $queryString = "(" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $this->operator . "?" . ") OR (" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . "=" . "?"
+    $mappedKey = AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key);
+    $queryString = "(" . $table . $mappedKey . $this->operator . "?" . ") OR (" . $table . $mappedKey . "=" . "?"
       . " AND " . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->tieBreakerKey) . $this->operator . "?";
     if (count($this->filters) > 0) {
       $queryString = $queryString . " AND " . implode(" AND ", $parts);
@@ -53,11 +54,15 @@ class PaginationFilter extends Filter {
     $values = [$this->value, $this->value, $this->tieBreakerValue];
     return array_merge($values, array_map(fn($filter) => $filter->getValue(), $this->filters));
   }
+
+  function getKey(): string {
+    return $this->key;
+  }
   
   function getHasValue(): bool {
-    if ($this->value === null) {
-      return false;
-    }
+    // if ($this->value === null) {
+    //   return false;
+    // }
     return true;
   }
 }
