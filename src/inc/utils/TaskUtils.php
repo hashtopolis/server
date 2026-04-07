@@ -793,7 +793,7 @@ class TaskUtils {
    * @return Task
    * @throws HttpError
    */
-  public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $usePreprocessor, $preprocessorCommand, $skip, $priority, $maxAgents, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
+  public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $usePreprocessor, $preprocessorCommand, $skip, $priority, $maxAgents, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0, $enforcePipe = 0) {
     $hashlist = Factory::getHashlistFactory()->get($hashlistId);
     if ($hashlist == null) {
       throw new HttpError("Invalid hashlist ID!");
@@ -842,6 +842,8 @@ class TaskUtils {
     }
     else if ($benchtype != 'speed' && $benchtype != 'runtime') {
       throw new HttpError("Invalid benchmark type!");
+    } else if ($enforcePipe < 0 || $enforcePipe > 1) {
+      throw new HttpError("Invalid enforce pipe value");
     }
     $benchtype = ($benchtype == 'speed') ? 1 : 0;
     if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
@@ -892,7 +894,7 @@ class TaskUtils {
       $notes,
       $staticChunking,
       $chunkSize,
-      0,
+      $enforcePipe,
       ($usePreprocessor > 0) ? $preprocessor->getId() : 0,
       ($usePreprocessor > 0) ? $preprocessorCommand : ''
     );
