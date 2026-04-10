@@ -6,7 +6,6 @@ use Hashtopolis\dba\models\Pretask;
 use Hashtopolis\dba\models\Supertask;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\Login;
 use Hashtopolis\inc\utils\SupertaskUtils;
 
 class BulkSupertaskBuilderHelperAPI extends AbstractHelperAPI {
@@ -45,6 +44,6 @@ class BulkSupertaskBuilderHelperAPI extends AbstractHelperAPI {
    * @throws HTException
    */
   public function actionPost($data): object|array|null {
-    return SupertaskUtils::bulkSupertask($data['name'], $data['command'], $data['isCpu'], $data['maxAgents'], $data['isSmall'], $data['crackerBinaryTypeId'], $data['benchtype'], $data['basefiles'], $data['iterfiles'], Login::getInstance()->getUser());
+    return SupertaskUtils::bulkSupertask($data['name'], $data['command'], $data['isCpu'], $data['maxAgents'], $data['isSmall'], $data['crackerBinaryTypeId'], $data['benchtype'], $data['basefiles'], $data['iterfiles'], $this->getCurrentUser());
   }
 }
