@@ -660,7 +660,7 @@ class OpenAPISchemaUtils {
                 "type" => "object",
                 "required" => array_values(array_map(
                   fn($f) => $f['alias'],
-                  array_filter(array_merge($responseFeatures, $aggregateFeatures), fn($f) => !$f['pk'])
+                  array_filter($responseFeatures, fn($f) => !$f['pk'])
                 )),
                 "properties" => $allResponseProperties
               ],
