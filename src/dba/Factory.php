@@ -39,6 +39,7 @@ use Hashtopolis\dba\models\SupertaskFactory;
 use Hashtopolis\dba\models\TaskFactory;
 use Hashtopolis\dba\models\TaskDebugOutputFactory;
 use Hashtopolis\dba\models\TaskWrapperFactory;
+use Hashtopolis\dba\models\TaskWrapperDisplayFactory;
 use Hashtopolis\dba\models\UserFactory;
 use Hashtopolis\dba\models\ZapFactory;
 use Hashtopolis\dba\models\AccessGroupUserFactory;
@@ -86,6 +87,7 @@ class Factory {
   private static ?TaskFactory $taskFactory = null;
   private static ?TaskDebugOutputFactory $taskDebugOutputFactory = null;
   private static ?TaskWrapperFactory $taskWrapperFactory = null;
+  private static ?TaskWrapperDisplayFactory $taskWrapperDisplayFactory = null;
   private static ?UserFactory $userFactory = null;
   private static ?ZapFactory $zapFactory = null;
   private static ?AccessGroupUserFactory $accessGroupUserFactory = null;
@@ -462,6 +464,16 @@ class Factory {
       return $f;
     } else {
       return self::$taskWrapperFactory;
+    }
+  }
+  
+  public static function getTaskWrapperDisplayFactory(): TaskWrapperDisplayFactory {
+    if (self::$taskWrapperDisplayFactory == null) {
+      $f = new TaskWrapperDisplayFactory();
+      self::$taskWrapperDisplayFactory = $f;
+      return $f;
+    } else {
+      return self::$taskWrapperDisplayFactory;
     }
   }
   

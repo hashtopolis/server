@@ -439,6 +439,33 @@ $CONF['TaskWrapper'] = [
     ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ],
 ];
+$CONF['TaskWrapperDisplay'] = [
+  'columns' => [
+    ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'taskWrapperPriority', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'taskWrapperMaxAgents', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'taskType', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldTaskTypeChoices],
+    ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Hashlist'],
+    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', 'relation' => 'AccessGroup'],
+    ['name' => 'taskWrapperName', 'read_only' => False, 'type' => 'str(100)'],
+    ['name' => 'displayName', 'read_only' => False, 'type' => 'str(100)'],
+    ['name' => 'taskWrapperIsArchived', 'read_only' => False, 'type' => 'bool'],
+    ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'taskName', 'read_only' => False, 'type' => 'str(256)'],
+    ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(65535)'],
+    ['name' => 'chunkTime', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'statusTimer', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'keyspace', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'keyspaceProgress', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'taskPriority', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'taskMaxAgents', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'isSmall', 'read_only' => False, 'type' => 'bool'],
+    ['name' => 'isCpuTask', 'read_only' => False, 'type' => 'bool'],
+    ['name' => 'taskIsArchived', 'read_only' => False, 'type' => 'bool'],
+    ['name' => 'taskUsePreprocessor', 'read_only' => True, 'type' => 'int', 'alias' => 'preprocessorId'],
+  ],
+];
 $CONF['User'] = [
   'columns' => [
     ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id', 'public' => True],
