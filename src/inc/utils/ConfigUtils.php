@@ -207,10 +207,19 @@ class ConfigUtils {
       if ($hashlist->getFormat() != DHashlistFormat::PLAIN) {
         $hashFactory = Factory::getHashBinaryFactory();
       }
+      $counted = false;
       $count = $hashFactory->countFilter([Factory::FILTER => [$qF1, $qF2]]);
       if ($count != $hashlist->getCracked()) {
         $correctedHashlists++;
+        $counted = true;
         Factory::getHashlistFactory()->set($hashlist, Hashlist::CRACKED, $count);
+      }
+      $count = $hashFactory->countFilter([Factory::FILTER => $qF1]);
+      if ($count != $hashlist->getHashCount()) {
+        if (!$counted) {
+          $correctedHashlists++;
+        }
+        Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, $count);
       }
     }
     Factory::getAgentFactory()->getDB()->commit();
