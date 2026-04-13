@@ -39,6 +39,9 @@ if (isset($_GET['hashlist'])) {
   if ($list == null) {
     UI::printError("ERROR", "Invalid hashlist!");
   }
+  else if (!AccessUtils::userCanAccessHashlists([$list], Login::getInstance()->getUser())) {
+    UI::printError("ERROR", "No access to these hashes!");
+  }
   UI::add('list', $list);
   if ($list->getFormat() == DHashlistFormat::SUPERHASHLIST) {
     $lists = Util::checkSuperHashlist($list);
@@ -92,6 +95,11 @@ else if (isset($_GET['chunk'])) {
     }
     $binaryFormat = true;
   }
+  
+  if (!AccessUtils::userCanAccessHashlists($hashlists, Login::getInstance()->getUser())) {
+    UI::printError("ERROR", "No access to these hashes!");
+  }
+  
   $queryFilters[] = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
   $src = "chunk";
   UI::add('chunk', $chunk);
@@ -116,6 +124,11 @@ else if (isset($_GET['task'])) {
     }
     $hashClass = \DBA\HashBinary::class;
   }
+  
+  if (!AccessUtils::userCanAccessHashlists($hashlists, Login::getInstance()->getUser())) {
+    UI::printError("ERROR", "No access to these hashes!");
+  }
+  
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
   $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
   $chunkIds = array();
