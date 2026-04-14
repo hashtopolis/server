@@ -745,14 +745,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     /* Request objects */
     $filterObjects = $factory->filter($finalFs);
-    
     /* JOIN statements will return related modules as well, discard for now */
-    if (array_key_exists(Factory::JOIN, $finalFs)) {
-      $objects = $filterObjects[$factory->getModelname()];
-    }
-    else {
-      $objects = $filterObjects;
-    }
+    $objects = $filterObjects[$factory->getModelname()];
     if ($reverseArray) {
       $objects = array_reverse($objects);
     }
