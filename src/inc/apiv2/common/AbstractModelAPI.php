@@ -574,7 +574,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
     }
     $filters[Factory::ORDER] = $orderFilters;
-    $filters = $apiClass->parseFilters($filters);
     $factory = $apiClass->getFactory();
     $result = $factory->filter($filters);
     //handle joined queries
@@ -716,7 +715,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
-    $finalFs = $apiClass->parseFilters($finalFs);
     
     //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
     //But this probably needs to be added in getFeatures() then.
