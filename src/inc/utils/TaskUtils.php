@@ -124,6 +124,27 @@ class TaskUtils {
     $task = TaskUtils::getTask($taskId, $user);
     Factory::getTaskFactory()->set($task, Task::NOTES, $notes);
   }
+
+  // Function for taskwrapper api to determine based on the chunks if a task is running, idle or completed.
+  // Status 1 is running, 2 is idle and 3 is completed.
+  public static function getStatus($chunks, $keyspace, $keyspaceProgress) {
+    //status 1 is running, 2 is idle and 3 is completed.
+    $status = 2;
+    if ($keyspaceProgress >= $keyspace && $keyspaceProgress > 0) {
+      $status = 3;
+    } else {
+      $now = time();
+      $chunkTimeOut = SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT);
+
+      foreach ($chunks as $chunk) {
+        if ($now - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $chunkTimeOut && $chunk->getProgress() < 10000) {
+          $status = 1;
+          break;
+        }
+      }
+    }
+    return $status;
+  }
   
   /**
    * @param User $user

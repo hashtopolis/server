@@ -30,7 +30,7 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
    * @return TaskWrapperDisplay
    */
   function getNullObject(): TaskWrapperDisplay {
-    return new TaskWrapperDisplay(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    return new TaskWrapperDisplay(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -44,7 +44,7 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
-    return new TaskWrapperDisplay($dict['taskwrapperid'], $dict['taskwrapperpriority'], $dict['taskwrappermaxagents'], $dict['tasktype'], $dict['hashlistid'], $dict['accessgroupid'], $dict['taskwrappername'], $dict['displayname'], $dict['taskwrapperisarchived'], $dict['cracked'], $dict['taskid'], $dict['taskname'], $dict['attackcmd'], $dict['chunktime'], $dict['statustimer'], $dict['keyspace'], $dict['keyspaceprogress'], $dict['taskpriority'], $dict['taskmaxagents'], $dict['issmall'], $dict['iscputask'], $dict['taskisarchived'], $dict['taskusepreprocessor']);
+    return new TaskWrapperDisplay($dict['taskwrapperid'], $dict['taskwrapperpriority'], $dict['taskwrappermaxagents'], $dict['tasktype'], $dict['hashlistid'], $dict['accessgroupid'], $dict['taskwrappername'], $dict['displayname'], $dict['taskwrapperisarchived'], $dict['cracked'], $dict['taskid'], $dict['taskname'], $dict['attackcmd'], $dict['chunktime'], $dict['statustimer'], $dict['keyspace'], $dict['keyspaceprogress'], $dict['taskpriority'], $dict['taskmaxagents'], $dict['issmall'], $dict['iscputask'], $dict['taskisarchived'], $dict['taskusepreprocessor'], $dict['hashlistname'], $dict['hashcount'], $dict['hashlistcracked'], $dict['hashtypeid'], $dict['hashtypedescription'], $dict['groupname']);
   }
   
   /**

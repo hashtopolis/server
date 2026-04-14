@@ -1,4 +1,4 @@
-CREATE VIEW TaskWrapperDisplay AS SELECT
+CREATE VIEW TaskWrapperDisplay AS SELECT 
     tw.taskWrapperId AS taskWrapperId, tw.priority AS taskWrapperPriority, tw.maxAgents AS taskWrapperMaxAgents,
     tw.taskType AS taskType, tw.hashlistId AS hashlistId, tw.accessGroupId AS accessGroupId,
     tw.taskWrapperName AS taskWrapperName, tw.isArchived AS taskWrapperIsArchived, tw.cracked AS cracked,
@@ -6,5 +6,11 @@ CREATE VIEW TaskWrapperDisplay AS SELECT
     t.statusTimer AS statusTimer, t.keyspace AS keyspace, t.keyspaceProgress AS keyspaceProgress,
     t.priority AS taskPriority, t.maxAgents AS taskMaxAgents, t.isArchived AS taskIsArchived,
     t.isSmall AS isSmall, t.isCpuTask AS isCpuTask, t.usePreprocessor AS taskUsePreprocessor,
-    CASE WHEN tw.taskType = 0 THEN t.taskName ELSE tw.taskWrapperName END AS displayName
-FROM TaskWrapper tw LEFT JOIN Task t ON tw.taskType = 0 AND t.taskWrapperId = tw.taskWrapperId;
+    CASE WHEN tw.taskType = 0 THEN t.taskName ELSE tw.taskWrapperName END AS displayName,
+    h.hashlistName AS hashlistName, h.hashCount AS hashCount, h.cracked as hashlistCracked,
+    ht.hashTypeId AS hashTypeId, ht.description AS hashTypeDescription, ag.groupName AS groupName
+FROM TaskWrapper tw 
+    LEFT JOIN Task t ON tw.taskType = 0 AND t.taskWrapperId = tw.taskWrapperId
+    INNER JOIN Hashlist h ON tw.hashlistId = h.hashlistId
+    INNER JOIN HashType ht on h.hashTypeId = ht.hashTypeId
+    INNER JOIN AccessGroup ag on tw.accessGroupId = ag.accessGroupId;

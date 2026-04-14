@@ -6,6 +6,7 @@ use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
@@ -14,8 +15,9 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\Util;
-
+use Hashtopolis\inc\utils\TaskUtils;
 
 class TaskWrapperDisplayAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
@@ -55,6 +57,38 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
         new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory()),
       ]
     ];
+  }
+
+  //TODO make aggregate data queryable and not included by default
+  function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
+    $aggregatedData = [];
+    if (is_null($aggregateFieldsets) || array_key_exists('taskwrapperdisplay', $aggregateFieldsets)) {
+      $tasks = TaskUtils::getTasksOfWrapper($object->getId());
+      $completed = 0;
+      $total = 0;
+      $status = 0;
+      foreach($tasks as $task) {
+        $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+        $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+        $taskStatus = TaskUtils::getStatus($chunks, $task->getKeyspace(), $task->getKeyspaceProgress());
+        // if one task of the wrapper is running, it is running
+        if ($taskStatus === 1) {
+          $status = 1;
+          break;
+        }
+        if ($taskStatus === 3) {
+          $completed++;
+        }
+        $total++;
+      }
+      if ($status !== 1 && $total > 0 && $completed === $total) {
+        $status = 3;
+      } else {
+        $status = 2;
+      }
+      $aggregatedData['status'] = $status;
+    }
+    return $aggregatedData;
   }
 
   /**
