@@ -588,14 +588,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   }
   
   /**
-   * overridable function to parse filters, currently only needed for taskWrapper endpoint
-   * to handle the taskWrapper -> task relation, to be able to treat it as a to one relationship
-   */
-  protected function parseFilters(array $filters): array {
-    return $filters;
-  }
-  
-  /**
    * API entry point for requesting multiple objects
    * @throws HttpError
    */
