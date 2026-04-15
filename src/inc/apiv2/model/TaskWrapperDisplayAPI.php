@@ -81,10 +81,12 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
         }
         $total++;
       }
-      if ($status !== 1 && $total > 0 && $completed === $total) {
-        $status = 3;
-      } else {
-        $status = 2;
+      if ($status !== 1) {
+        if ($total > 0 && $completed === $total) {
+          $status = 3;
+        } else {
+          $status = 2;
+        }
       }
       $aggregatedData['status'] = $status;
     }
