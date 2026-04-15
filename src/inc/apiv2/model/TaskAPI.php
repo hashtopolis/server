@@ -200,22 +200,7 @@ class TaskAPI extends AbstractModelAPI {
       if (is_null($aggregateFieldsets) || in_array("isActive", $aggregateFieldsets['task'])) {
         $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
         $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-        //status 1 is running, 2 is idle and 3 is completed.
-        $status = 2;
-        if ($keyspaceProgress >= $keyspace && $keyspaceProgress > 0) {
-          $status = 3;
-        } else {
-          $now = time();
-          $chunkTimeOut = SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT);
-
-          foreach ($chunks as $chunk) {
-            if ($now - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $chunkTimeOut && $chunk->getProgress() < 10000) {
-              $status = 1;
-              break;
-            }
-          }
-        }
-        $aggregatedData["status"] = $status;
+        $aggregatedData["status"] = TaskUtils::getStatus($chunks, $keyspace, $keyspaceProgress);
       }
 
       if (is_null($aggregateFieldsets) || in_array("taskExtraDetails", $aggregateFieldsets['task'])) {
@@ -259,7 +244,7 @@ class TaskAPI extends AbstractModelAPI {
         $aggregatedData["cprogress"] = $cProgress;
       }
     }
-    
+
     return $aggregatedData;
   }
   

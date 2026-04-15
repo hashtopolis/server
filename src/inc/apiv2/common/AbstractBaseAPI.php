@@ -64,6 +64,7 @@ use Hashtopolis\dba\models\LogEntry;
 use Hashtopolis\dba\models\Preprocessor;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\SupertaskPretask;
+use Hashtopolis\dba\models\TaskWrapperDisplay;
 use Psr\Container\ContainerInterface;
 use Hashtopolis\inc\utils\UserUtils;
 
@@ -310,6 +311,8 @@ abstract class AbstractBaseAPI {
         return Factory::getUserFactory();
       case JwtApiKey::class:
         return Factory::getJwtApiKeyFactory();
+      case TaskWrapperDisplay::class:
+        return Factory::getTaskWrapperDisplayFactory();
     }
     throw new HttpError("Model '$model' cannot be mapped to Factory");
   }

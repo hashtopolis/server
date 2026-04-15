@@ -2,10 +2,6 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
-use Hashtopolis\dba\ConcatColumn;
-use Hashtopolis\dba\ConcatLikeFilterInsensitive;
-use Hashtopolis\dba\ConcatOrderFilter;
-use Hashtopolis\dba\LikeFilterInsensitive;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroup;
@@ -113,51 +109,6 @@ class TaskWrapperAPI extends AbstractModelAPI {
         'readonly' => true // Not allowed to change tasks of a taskwrapper 
       ],
     ];
-  }
-  
-  protected function parseFilters(array $filters): array {
-    //This is in order to handle filters and sorting on columns
-    if (isset($filters[Factory::JOIN])) {
-      $joinFilters = $filters[Factory::JOIN];
-      foreach ($joinFilters as $joinFilter) {
-        if ($joinFilter->getOtherTableName() == Task::class) {
-          // This is a leftjoin where the task type is 0 which means not a supertask. This is in order to 
-          // create a to 1 relationship where the taskwrapper will have the normal task as a relation and a supertask will have null
-          // This way it becomes possible to filter or sort on the included single task.
-          $joinFilter->setJoinType(JoinFilter::LEFT);
-          $qf = new QueryFilter(TaskWrapper::TASK_TYPE, DTaskTypes::NORMAL, "=");
-          $joinFilter->setQueryFilters([$qf]);
-        }
-      }
-      
-      // parse the order and filter
-      // Because the frontend shows taskwrappername for supertasks and taskname for normaltasks, the orders and filters for the 
-      // name needs to be changed to coalesce filters to get the correct value between these 2. 
-      // Another possibility where this hack is not needed would be to also store the taskname of normal tasks in the
-      // taskwrapper
-      if (isset($filters[Factory::ORDER])) {
-        foreach ($filters[Factory::ORDER] as &$orderfilter) {
-          if ($orderfilter->getBy() == Task::TASK_NAME) {
-            $concatColumns = [new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory()), new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory())];
-            $newOrderFilter = new ConcatOrderFilter($concatColumns, $orderfilter->getType());
-            $orderfilter = $newOrderFilter;
-          }
-        }
-        unset($orderfilter);
-      }
-
-      if (isset($filters[Factory::FILTER])) {
-        foreach($filters[Factory::FILTER] as &$filter) {
-          if ($filter instanceof LikeFilterInsensitive && $filter->getKey() == Task::TASK_NAME) {
-            $concatColumns = [new ConcatColumn(TaskWrapper::TASK_WRAPPER_NAME, Factory::getTaskWrapperFactory()), new ConcatColumn(Task::TASK_NAME, Factory::getTaskFactory())];
-            $newFilter = new ConcatLikeFilterInsensitive($concatColumns, $filter->getValue());
-            $filter = $newFilter;
-          }
-        }
-        unset($filter);
-      }
-    }
-    return $filters;
   }
   
   /**

@@ -574,7 +574,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
     }
     $filters[Factory::ORDER] = $orderFilters;
-    $filters = $apiClass->parseFilters($filters);
     $factory = $apiClass->getFactory();
     $result = $factory->filter($filters);
     //handle joined queries
@@ -585,14 +584,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       return null;
     }
     return $result[0];
-  }
-  
-  /**
-   * overridable function to parse filters, currently only needed for taskWrapper endpoint
-   * to handle the taskWrapper -> task relation, to be able to treat it as a to one relationship
-   */
-  protected function parseFilters(array $filters): array {
-    return $filters;
   }
   
   /**
@@ -724,7 +715,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
-    $finalFs = $apiClass->parseFilters($finalFs);
     
     //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
     //But this probably needs to be added in getFeatures() then.
@@ -755,14 +745,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     /* Request objects */
     $filterObjects = $factory->filter($finalFs);
-    
     /* JOIN statements will return related modules as well, discard for now */
-    if (array_key_exists(Factory::JOIN, $finalFs)) {
-      $objects = $filterObjects[$factory->getModelname()];
-    }
-    else {
-      $objects = $filterObjects;
-    }
+    $objects = $filterObjects[$factory->getModelname()];
     if ($reverseArray) {
       $objects = array_reverse($objects);
     }
