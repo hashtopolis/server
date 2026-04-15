@@ -11,7 +11,7 @@
 - Fixed bug in legacy agentbinary update (#1802)
 - Added additional check to avoid log entries if a hash just was already cracked (#1858)
 
-## Enhancements
+**Enhancements**
 
 - Add `hashtopolis-` prefix to db Docker container name (#1572)
 - Made responses smaller by not pretty printing the json (#1733)

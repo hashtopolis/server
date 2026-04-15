@@ -2,8 +2,11 @@
 
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\OrderFilter;
+use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\Task;
+use Hashtopolis\dba\models\Hashlist;
+use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\DataSet;
@@ -44,17 +47,21 @@ if (!isset($_GET['show'])) {
   UI::add('pageTitle', "Chunks Activity (page " . ($page + 1) . ")");
 }
 
-$jF = new JoinFilter(Factory::getTaskFactory(), Chunk::TASK_ID, Task::TASK_ID);
-$qF = new QueryFilter(Task::IS_ARCHIVED, 1, "<>", Factory::getTaskFactory());
+$accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
+$jF1 = new JoinFilter(Factory::getTaskFactory(), Chunk::TASK_ID, Task::TASK_ID);
+$jF2 = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskFactory());
+$jF3 = new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID, Factory::getTaskWrapperFactory());
+$qF1 = new QueryFilter(Task::IS_ARCHIVED, 1, "<>", Factory::getTaskFactory());
+$qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupIds, Factory::getHashlistFactory());
+
 if ($oF == null) {
-  $joined = Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+  $joined = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::JOIN => [$jF1, $jF2, $jF3]]);
 }
 else {
-  $joined = Factory::getChunkFactory()->filter([Factory::ORDER => $oF, Factory::FILTER => $qF, Factory::JOIN => $jF]);
+  $joined = Factory::getChunkFactory()->filter([Factory::ORDER => $oF, Factory::FILTER => [$qF1, $qF2], Factory::JOIN => [$jF1, $jF2, $jF3]]);
 }
 /** @var Chunk[] $chunks */
 $chunks = $joined[Factory::getChunkFactory()->getModelName()];
-// TODO: also filter for tasks where access is forbidden because of files from specific group
 
 $spent = new DataSet();
 foreach ($chunks as $chunk) {
@@ -63,7 +70,7 @@ foreach ($chunks as $chunk) {
 UI::add('chunks', $chunks);
 UI::add('spent', $spent);
 
-$tasks = Factory::getTaskFactory()->filter([]);
+$tasks = $joined[Factory::getTaskFactory()->getModelName()];
 $taskNames = new DataSet();
 foreach ($tasks as $task) {
   $taskNames->addValue($task->getId(), $task->getTaskName());
