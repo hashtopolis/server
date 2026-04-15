@@ -19,6 +19,7 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\templating\Template;
 use Hashtopolis\inc\UI;
 use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AccessControl;
 
 require_once(dirname(__FILE__) . "/inc/startup/load.php");
