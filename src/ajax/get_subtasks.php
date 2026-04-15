@@ -2,7 +2,7 @@
 
 use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
-use Hashtopolis\dba\Task;
+use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\DataSet;
 use Hashtopolis\inc\Login;
