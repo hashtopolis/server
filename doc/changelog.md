@@ -1,3 +1,10 @@
+# v0.14.7 -> v0.14.8
+
+## Bugfixes
+
+- Fixed access issues where users could access chunk and hash info from other access groups they were not member of. Thanks to Mateo Hahn from the Red Team Ops of Bureau Veritas Cybersecurity for finding and reporting this issue. (#2031)
+
+
 # v0.14.6 -> v0.14.7
 
 ## Enhancements

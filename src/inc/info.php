@@ -1,6 +1,6 @@
 <?php
 
-$VERSION = "0.14.7";
+$VERSION = "0.14.8";
 $BUILD = "repository";
 $HOST = @$_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
