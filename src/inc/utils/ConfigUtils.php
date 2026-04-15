@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\utils;
 
 use Hashtopolis\dba\models\File;
+use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\Chunk;
@@ -76,7 +77,7 @@ class ConfigUtils {
   }
   
   const DEFAULT_CONFIG_SECTION = 5;
-
+  
   public static function updateSingleConfig($id, $attributes) {
     $currentConfig = Factory::getConfigFactory()->get($id);
     if (is_null($currentConfig)) {
@@ -167,7 +168,7 @@ class ConfigUtils {
   /**
    * @return int[]
    */
-  public static function rebuildCache() {
+  public static function rebuildCache(): array {
     $correctedChunks = 0;
     $correctedHashlists = 0;
     
@@ -183,15 +184,20 @@ class ConfigUtils {
       /** @var $chunks Chunk[] */
       $chunks = $joined[Factory::getChunkFactory()->getModelName()];
       
+      $total_cracked = 0;
       foreach ($chunks as $chunk) {
         $hashFactory = ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) ? Factory::getHashFactory() : Factory::getHashBinaryFactory();
         $qF1 = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
         $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
         $count = $hashFactory->countFilter([Factory::FILTER => [$qF1, $qF2]]);
+        $total_cracked += $count;
         if ($count != $chunk->getCracked()) {
           $correctedChunks++;
           Factory::getChunkFactory()->set($chunk, Chunk::CRACKED, $count);
         }
+      }
+      if ($total_cracked != $taskWrapper->getCracked()) {
+        Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::CRACKED, $total_cracked);
       }
     }
     Factory::getAgentFactory()->getDB()->commit();
