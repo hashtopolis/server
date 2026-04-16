@@ -1,5 +1,42 @@
 # Changelog
 
+## v1.0.0-rainbow5 -> v1.0.0-rainbow6
+
+**Bugfixes**
+
+- Fixed tusFileCleaning error (#1949)
+- Catch a migration running error and prevent docker-entrypoint to continue further on failure (#1951)
+- Fixed bug where PATCHING and POST was not checked for permissions (#1957)
+- Fixed patch current user to change own user without permissions (#1958)
+- Fixed bug in content length calculation (#1984)
+- Parse comma in filter (#1985)
+- Fixed creation of task by using correct parameter for cracker binary (#2012)
+- fix user object argument for supertask builder helper (#2032)
+- Fixed access issues where users could access chunk and hash info from other access groups they were not member of. Thanks to Mateo Hahn from the Red Team Ops of Bureau Veritas Cybersecurity for finding and reporting this issue. (#2031)
+- Fix subtask loading where wrong use statement was used (#2036)
+- Correct cracked count of task wrappers if needed (#2037)
+- Made a taskwrapperview to be able to properly sort in the task view (#2034) 
+
+**Enhancements**
+
+
+- Update the basic install manual according to the latest release (#1946)
+- Update of the manual- - fixing style (#1947)
+- Large Rework on Codebase (#1929)
+- Made CrackerBinaryType.typeName unique (#1950)
+- Improve IPv6 handling on about page (#1943)
+- Removed taskExtraDetails endpoint (#1945)
+- made classpath calls to usort consistent (#1952)
+- Added helper for getting available tasks for agent (#1953)
+- Api tokens (#1965)
+- Removed not working transaction for updating hash length (#1979)
+- Made it possible to update a single config (#1981)
+- Better error message when login in with invalid user (#1991)
+- Fixed class names by removing the package from the name (#1987)
+- Updated nginx docs to recent syntax and status code 308 for redirect (#2003)
+- Added a flag isActive to tasks api response to show whether a task is active (#2005)
+- Check if the total hash count of a hashlist needs to be fixed (#2033)
+
 ## v1.0.0-rainbow4 -> v1.0.0-rainbow5
 
 **Bugfixes**
