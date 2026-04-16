@@ -178,7 +178,7 @@ class DConfig {
         return DConfigType::STRING_INPUT;
       case DConfig::BASE_URL:
         return DConfigType::STRING_INPUT;
-      case Dconfig::DISP_TOLERANCE:
+      case DConfig::DISP_TOLERANCE:
         return DConfigType::NUMBER_INPUT;
       case DConfig::BATCH_SIZE:
         return DConfigType::NUMBER_INPUT;
