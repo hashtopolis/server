@@ -8,19 +8,12 @@ use Hashtopolis\inc\agent\PResponseSendBenchmark;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\agent\PValuesBenchmarkType;
 use Hashtopolis\inc\defines\DConfig;
-use Hashtopolis\inc\defines\DDirectories;
-use Hashtopolis\inc\defines\DTaskTypes;
-use Hashtopolis\inc\utils\AccessUtils;
-use Hashtopolis\inc\defines\DFileType;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
-use Hashtopolis\dba\models\File;
 use Hashtopolis\inc\SConfig;
-use Hashtopolis\inc\utils\TaskUtils;
-use Hashtopolis\inc\Util;
 
 class APISendBenchmark extends APIBasic {
   public function execute($QUERY = array()) {
@@ -34,7 +27,6 @@ class APISendBenchmark extends APIBasic {
     if ($task == null) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid task ID!");
     }
-    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
@@ -56,26 +48,6 @@ class APISendBenchmark extends APIBasic {
           DServerLog::log(DServerLog::ERROR, "Invalid speed test benchmark result!", [$this->agent, $benchmark]);
           $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
-        
-        // Here we check if the benchmark result would require to split the task and check if the task can be split
-        if (SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_DISABLE) == 0 && $task->getUsePreprocessor() == 0 && $split[1] > $task->getChunkTime() * 1000 * 2 && $taskWrapper->getTaskType() == DTaskTypes::NORMAL) {
-          // test if we have a large rule file
-          DServerLog::log(DServerLog::INFO, "Potential rule split required", [$this->agent, $task]);
-          /** @var $files File[] */
-          $files = Util::getFileInfo($task, AccessUtils::getAccessGroupsOfAgent($this->agent))[3];
-          foreach ($files as $file) {
-            if ($file->getFileType() == DFileType::RULE) {
-              // test if splitting makes sense here
-              if (Util::countLines(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename()) > $split[1] / 1000 / $task->getChunkTime() || SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_ALWAYS)) {
-                // --> split
-                DServerLog::log(DServerLog::INFO, "Rule splitting possible on file", [$this->agent, $task, $file]);
-                TaskUtils::splitByRules($task, $taskWrapper, $files, $file, $split);
-                $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Task was split due to benchmark!");
-              }
-            }
-          }
-        }
-        
         break;
       case PValuesBenchmarkType::RUN_TIME:
         if (!is_numeric($benchmark) || $benchmark <= 0) {
