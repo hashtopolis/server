@@ -1,0 +1,28 @@
+name: OpenAPI Lint
+
+on:
+  push:
+    branches:
+    - master
+    - dev
+  pull_request:
+    branches:
+    - master
+    - dev
+
+jobs:
+  openapi-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Start Hashtopolis server
+        uses: ./.github/actions/start-hashtopolis
+        with:
+          db_system: mysql
+      - name: Install Spectral
+        run: npm install -g @stoplight/spectral-cli
+      - name: Download JSON:API ruleset
+        run: curl -fsSL https://raw.githubusercontent.com/jmlue42/spectral-jsonapi-ruleset/main/.spectral.yml -o .spectral.yml
+      - name: Lint OpenAPI schema
+        run: spectral lint http://localhost:8080/api/v2/openapi.json --ruleset .spectral.yml -D

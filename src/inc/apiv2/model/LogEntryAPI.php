@@ -29,4 +29,9 @@ class LogEntryAPI extends AbstractModelAPI {
   protected function deleteObject(object $object): void {
     throw new HttpError("Logentries cannot be deleted via API");
   }
+
+  public static function getAvailableMethods(): array {
+    return ['GET'];
+  }
+
 }
