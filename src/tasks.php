@@ -414,21 +414,14 @@ else if (isset($_GET['new'])) {
   UI::add('binaries', Factory::getCrackerBinaryTypeFactory()->filter([]));
   $versions = Factory::getCrackerBinaryFactory()->filter([Factory::ORDER => $oF]);
   usort($versions, ["Util", "versionComparisonBinary"]);
-  UI::add('versions', $versions);
-  UI::add('pageTitle', "Create Task");
-}
-else {
-  AccessControl::getInstance()->checkPermission(DViewControl::TASKS_VIEW_PERM);
-  UI::add('showArchived', false);
-  UI::add('pageTitle', "Tasks");
-  if (isset($_GET['archived']) && $_GET['archived'] == 'true') {
-    Util::loadTasks(true);
-    UI::add('showArchived', true);
-    UI::add('pageTitle', "Archived Tasks");
+  } else {
+    setcookie('showArchived', '0', time() - 3600, "/"); // Remove cookie
   }
-  else {
-    Util::loadTasks(false);
-  }
+  
+  // Load tasks and set UI state
+  Util::loadTasks($showArchived);
+  UI::add('showArchived', $showArchived);
+  UI::add('pageTitle', $showArchived ? "Archived Tasks" : "Tasks");
 }
 
 echo Template::getInstance()->render(UI::getObjects());
