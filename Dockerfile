@@ -103,8 +103,9 @@ RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
     # Configuring PHP
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
 	&& echo "display_errors = on" >> /usr/local/etc/php/conf.d/custom.ini \
-	&& echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
-	&& echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
+	&& echo "memory_limit = 256G" >> /usr/local/etc/php/conf.d/custom.ini \
+	&& echo "post_max_size = 256G" >> /usr/local/etc/php/conf.d/custom.ini \
+	&& echo "upload_max_filesize = 256G" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "log_errors = On" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "error_log = /dev/stderr" >> /usr/local/etc/php/conf.d/custom.ini
@@ -143,8 +144,9 @@ COPY --chown=www-data:www-data ./src/ $HASHTOPOLIS_DOCUMENT_ROOT
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
-    && echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
-    && echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "memory_limit = 256G" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "post_max_size = 256G" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "upload_max_filesize = 256G" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
     \
     # Clean up
