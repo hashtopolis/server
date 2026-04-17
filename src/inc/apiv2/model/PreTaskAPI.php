@@ -68,24 +68,28 @@ class PreTaskAPI extends AbstractModelAPI {
     return $pretask->getId();
   }
   
-  //TODO make aggregate data queryable and not included by default
   function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
     $aggregatedData = [];
     if (is_null($aggregateFieldsets) || array_key_exists('pretask', $aggregateFieldsets)) {
-      
-      $qF1 = new QueryFilter(FilePretask::PRETASK_ID, $object->getId(), "=", Factory::getFilePretaskFactory());
-      $jF1 = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
-      $files = Factory::getFileFactory()->filter([Factory::FILTER => $qF1, Factory::JOIN => $jF1]);
-      $files = $files[Factory::getFileFactory()->getModelName()];
-      
-      $lineCountProduct = 1;
-      foreach ($files as $file) {
-        $lineCount = $file->getLineCount();
-        if ($lineCount !== null) {
-          $lineCountProduct = $lineCountProduct * $lineCount;
-        }
+      if (!is_null($aggregateFieldsets)) {
+        $aggregateFieldsets['pretask'] = explode(",", $aggregateFieldsets['pretask']);
       }
-      $aggregatedData["auxiliaryKeyspace"] = $lineCountProduct;
+      
+      if (is_null($aggregateFieldsets) || in_array("auxiliaryKeyspace", $aggregateFieldsets['pretask'])) {
+        $qF1 = new QueryFilter(FilePretask::PRETASK_ID, $object->getId(), "=", Factory::getFilePretaskFactory());
+        $jF1 = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
+        $files = Factory::getFileFactory()->filter([Factory::FILTER => $qF1, Factory::JOIN => $jF1]);
+        $files = $files[Factory::getFileFactory()->getModelName()];
+        
+        $lineCountProduct = 1;
+        foreach ($files as $file) {
+          $lineCount = $file->getLineCount();
+          if ($lineCount !== null) {
+            $lineCountProduct = $lineCountProduct * $lineCount;
+          }
+        }
+        $aggregatedData["auxiliaryKeyspace"] = $lineCountProduct;
+      }
     }
     
     return $aggregatedData;

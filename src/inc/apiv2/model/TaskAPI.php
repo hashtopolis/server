@@ -169,7 +169,6 @@ class TaskAPI extends AbstractModelAPI {
     return $task->getId();
   }
   
-  //TODO make aggregate data queryable and not included by default
   function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
     $aggregatedData = [];
     
