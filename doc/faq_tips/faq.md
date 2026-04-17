@@ -303,7 +303,7 @@ If there is enough RAM available, it is possible to raise PHP's memory limit in 
 1. **Create a file `custom.ini` next to your `docker-compose.yml`**
 
     Adjust your desired memory limit (`M` for Megabytes, or `G` for Gigabytes).
-    The other two values are optional to adjust, but need to remain in there, as otherwise they are overwritten with the new `custom.ini` not containing them.
+    The other three values are optional to adjust, but need to remain in there, as otherwise they are overwritten with the new `custom.ini` not containing them.
 
 
 ```ini
@@ -311,6 +311,7 @@ If there is enough RAM available, it is possible to raise PHP's memory limit in 
 memory_limit = 256M
 upload_max_filesize = 256M
 max_execution_time = 60
+display_errors = 0
 ```
 
 

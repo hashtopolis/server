@@ -122,7 +122,7 @@ RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
     \
     # Configuring PHP \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
-	&& echo "display_errors = on" >> /usr/local/etc/php/conf.d/custom.ini \
+	&& echo "display_errors = 1" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
@@ -163,7 +163,8 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
     && echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
-    && echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini
+    && echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "display_errors = 0" >> /usr/local/etc/php/conf.d/custom.ini
 
 USER www-data
 # ----END----

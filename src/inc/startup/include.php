@@ -1,9 +1,6 @@
 <?php
 
-// set to 1 for debugging
 use Hashtopolis\inc\Lang;
-
-ini_set("display_errors", "0");
 
 define("APP_NAME", "Hashtopolis");
 
