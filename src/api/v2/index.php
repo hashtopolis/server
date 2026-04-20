@@ -84,6 +84,7 @@ use Hashtopolis\inc\apiv2\model\SpeedAPI;
 use Hashtopolis\inc\apiv2\model\SupertaskAPI;
 use Hashtopolis\inc\apiv2\model\TaskAPI;
 use Hashtopolis\inc\apiv2\model\TaskWrapperAPI;
+use Hashtopolis\inc\apiv2\model\TaskWrapperDisplayAPI;
 use Hashtopolis\inc\apiv2\model\UserAPI;
 use Hashtopolis\inc\apiv2\model\VoucherAPI;
 
@@ -256,6 +257,7 @@ SpeedAPI::register($app);
 SupertaskAPI::register($app);
 TaskAPI::register($app);
 TaskWrapperAPI::register($app);
+TaskWrapperDisplayAPI::register($app);
 UserAPI::register($app);
 VoucherAPI::register($app);
 

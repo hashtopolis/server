@@ -19,6 +19,7 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\templating\Template;
 use Hashtopolis\inc\UI;
 use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AccessControl;
 
 require_once(dirname(__FILE__) . "/inc/startup/load.php");
@@ -49,6 +50,9 @@ if (isset($_GET['hashlist'])) {
   $list = Factory::getHashlistFactory()->get($_GET["hashlist"]);
   if ($list == null) {
     UI::printError("ERROR", "Invalid hashlist!");
+  }
+  else if (!AccessUtils::userCanAccessHashlists([$list], Login::getInstance()->getUser())) {
+    UI::printError("ERROR", "No access to these hashes!");
   }
   UI::add('list', $list);
   if ($list->getFormat() == DHashlistFormat::SUPERHASHLIST) {
@@ -103,6 +107,11 @@ else if (isset($_GET['chunk'])) {
     }
     $binaryFormat = true;
   }
+  
+  if (!AccessUtils::userCanAccessHashlists($hashlists, Login::getInstance()->getUser())) {
+    UI::printError("ERROR", "No access to these hashes!");
+  }
+  
   $queryFilters[] = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
   $src = "chunk";
   UI::add('chunk', $chunk);
@@ -127,6 +136,11 @@ else if (isset($_GET['task'])) {
     }
     $hashClass = HashBinary::class;
   }
+  
+  if (!AccessUtils::userCanAccessHashlists($hashlists, Login::getInstance()->getUser())) {
+    UI::printError("ERROR", "No access to these hashes!");
+  }
+  
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
   $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
   $chunkIds = array();
