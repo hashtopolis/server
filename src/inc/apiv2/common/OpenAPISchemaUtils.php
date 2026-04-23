@@ -644,6 +644,19 @@ class OpenAPISchemaUtils {
         $aggregateFeatures = $class->getAggregateFeatures();
         $aggregateAttributeProperties = self::makeProperties($aggregateFeatures, true);
         $allResponseProperties = array_merge($responseAttributeProperties, $aggregateAttributeProperties);
+        $attributesOverride = $class->getOpenAPIAttributesSchemaOverride();
+        if ($attributesOverride !== null) {
+          $attributesSchema = $attributesOverride;
+        } else {
+          $attributesSchema = [
+            "type" => "object",
+            "required" => array_values(array_map(
+              fn($f) => $f['alias'],
+              array_filter($responseFeatures, fn($f) => !$f['pk'])
+            )),
+            "properties" => $allResponseProperties
+          ];
+        }
         $properties_return_post_patch = [
           "data" => [
             "type" => "object",
@@ -656,14 +669,7 @@ class OpenAPISchemaUtils {
                 "type" => "string",
                 "const" => $typeName
               ],
-              "attributes" => [
-                "type" => "object",
-                "required" => array_values(array_map(
-                  fn($f) => $f['alias'],
-                  array_filter($responseFeatures, fn($f) => !$f['pk'])
-                )),
-                "properties" => $allResponseProperties
-              ],
+              "attributes" => $attributesSchema,
             ]
           ]
         ];

@@ -136,6 +136,15 @@ abstract class AbstractBaseAPI {
   public function getFormFields(): array {
     return [];
   }
+
+  /**
+   * Replace the OpenAPI "attributes" schema for the GET response. Return null
+   * (default) to let the generator derive the schema from features. Return a
+   * full JSON-schema object (e.g. ["oneOf" => [...]]) to substitute it.
+   */
+  public function getOpenAPIAttributesSchemaOverride(): ?array {
+    return null;
+  }
   
   /**
    * Get input field names valid for creation of object
