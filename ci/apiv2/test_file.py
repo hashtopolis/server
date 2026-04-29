@@ -58,6 +58,10 @@ class FileTest(BaseTest):
         files = [self.create_test_object(delete=False) for i in range(5)]
         File.objects.delete_many(files)
 
+    def test_acl(self):
+        model_obj = self.create_test_object()
+        self._test_acl_list(model_obj, {'permFileRead': True})
+
     def test_helper_rescan_global_files(self):
         model_obj1 = self.create_test_object()
         model_obj2 = self.create_test_object()
