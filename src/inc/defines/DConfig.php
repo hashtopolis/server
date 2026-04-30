@@ -18,9 +18,6 @@ class DConfig {
   const BLACKLIST_CHARS        = "blacklistChars";
   const DISP_TOLERANCE         = "disptolerance";
   const DEFAULT_BENCH          = "defaultBenchmark";
-  const RULE_SPLIT_SMALL_TASKS = "ruleSplitSmallTasks";
-  const RULE_SPLIT_ALWAYS      = "ruleSplitAlways";
-  const RULE_SPLIT_DISABLE     = "ruleSplitDisable";
   const AGENT_DATA_LIFETIME    = "agentDataLifetime";
   const DISABLE_TRIMMING       = "disableTrimming";
   const PRIORITY_0_START       = "priority0Start";
@@ -158,9 +155,6 @@ class DConfig {
       DConfig::EMAIL_SENDER_NAME => DConfigType::STRING_INPUT,
       DConfig::DEFAULT_BENCH => DConfigType::TICKBOX,
       DConfig::SHOW_TASK_PERFORMANCE => DConfigType::TICKBOX,
-      DConfig::RULE_SPLIT_ALWAYS => DConfigType::TICKBOX,
-      DConfig::RULE_SPLIT_SMALL_TASKS => DConfigType::TICKBOX,
-      DConfig::RULE_SPLIT_DISABLE => DConfigType::TICKBOX,
       DConfig::AGENT_STAT_LIMIT => DConfigType::NUMBER_INPUT,
       DConfig::AGENT_DATA_LIFETIME => DConfigType::NUMBER_INPUT,
       DConfig::AGENT_STAT_TENSION => DConfigType::TICKBOX,
@@ -232,9 +226,6 @@ class DConfig {
       DConfig::EMAIL_SENDER_NAME => "Sender's name on emails sent from " . APP_NAME . ".",
       DConfig::DEFAULT_BENCH => "Use speed benchmark as default.",
       DConfig::SHOW_TASK_PERFORMANCE => "Show cracks/minute for tasks which are running.",
-      DConfig::RULE_SPLIT_SMALL_TASKS => "When rule splitting is applied for tasks, always make them a small task.",
-      DConfig::RULE_SPLIT_ALWAYS => "Even do rule splitting when there are not enough rules but just the benchmark is too high.<br>Can result in subtasks with just one rule.",
-      DConfig::RULE_SPLIT_DISABLE => "Disable automatic task splitting with large rule files.",
       DConfig::AGENT_STAT_LIMIT => "Maximal number of data points showing of agent gpu data.",
       DConfig::AGENT_DATA_LIFETIME => "Minimum time in seconds how long agent gpu/cpu utilisation and gpu temperature data is kept on the server.",
       DConfig::AGENT_STAT_TENSION => "Draw straigth lines in agent data graph  instead of bezier curves.",
