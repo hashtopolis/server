@@ -760,9 +760,6 @@ abstract class AbstractBaseAPI {
       "type" => $this->getObjectTypeName($obj),
       "id" => $obj->getId(),
       "attributes" => $attributes,
-      "links" => [
-        "self" => $linkSelf,
-      ],
     ];
     
     if (sizeof($relationships) > 0) {
@@ -1657,6 +1654,9 @@ abstract class AbstractBaseAPI {
     
     $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' . $linksQuery : '');
     $links = ["self" => $linksSelf];
+
+    $resourceApiClass = $apiClass->container->get('classMapper')->get(get_class($object));
+    $resourceLocation = $apiClass->routeParser->urlFor($resourceApiClass . ':getOne', ['id' => $object->getId()]);
     
     $metaData = [];
     if ($apiClass->permissionErrors !== null) {
@@ -1669,10 +1669,8 @@ abstract class AbstractBaseAPI {
     $body->write($apiClass->ret2json($ret));
     
     return $response->withHeader("Content-Type", "application/vnd.api+json")
-      ->withHeader("Location", $dataResources[0]["links"]["self"])
+      ->withHeader("Location", $resourceLocation)
       ->withStatus($statusCode);
-    //for location we use links value from $dataresources because if we use $linksSelf, the wrong location gets returned in
-    //case of a POST request
   }
   
   //Meta response for helper functions that do not respond with resource records

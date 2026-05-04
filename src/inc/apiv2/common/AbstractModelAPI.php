@@ -766,6 +766,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     foreach ($objects as $object) {
       // Create object  
       $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
+      // Resource path 
+      $resourceApiClass = $apiClass->container->get('classMapper')->get(get_class($object));
+      $resourceLocation = $apiClass->routeParser->urlFor($resourceApiClass . ':getOne', ['id' => $object->getId()]);
+      $newObject["links"]["self"] = $resourceLocation;
       $includedResources = $apiClass->processExpands($apiClass, $expands, $object, $expandResult, $includedResources, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
       
       // Add to result output
