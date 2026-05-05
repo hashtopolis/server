@@ -63,7 +63,7 @@ class TaskWrapperDisplaysTest(BaseTest):
         if data_items:
             color_value = data_items[0].get('attributes', {}).get('color')
 
-        print(f"\nResponse status: {r.status_code}")
-        print(f"Color field value: {color_value}")
+        #print(f"\nResponse status: {r.status_code}")
+        #print(f"Color field value: {color_value}")
         self.assertEqual(200, r.status_code)
         self.assertEqual("#913cce", color_value)
