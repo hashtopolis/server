@@ -1,7 +1,10 @@
 import requests
+import json
+import time
 
 from hashtopolis import HashtopolisConnector, HashtopolisConfig
 from utils import BaseTest
+
 
 
 class HttpMethodsTest(BaseTest):
@@ -60,4 +63,32 @@ class HttpMethodsTest(BaseTest):
             self.assertIn('self', resource.get('links', {}), "A resource in a collection should contain a self refrence")
             self.assertEqual(f"{response.request.path_url}/{resource.get('id')}", resource['links']['self'])
 
+    def test_post_user_should_return_getone_uri_in_location(self):
+        conn = HashtopolisConnector('/ui/users', self.config)
+        conn.authenticate()
+        uri = f"{conn._api_endpoint}{conn._model_uri}"
+        stamp = int(time.time() * 1000)
+
+        payload = {
+            "data": {
+                "type": "user",
+                "attributes": {
+                    "name": f"test-{stamp}",
+                    "email": f"test-{stamp}@example.com",
+                    "globalPermissionGroupId": 1,
+                    "isValid": True,
+                    "sessionLifetime": 3600,
+                },
+            },
+        }
+
+        headers = dict(conn._headers)
+        headers["Content-Type"] = "application/json"
+        response = requests.post(uri, headers=headers, data=json.dumps(payload))
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIsNotNone(response.headers.get('Location'), "Missing Location header in created resource")
+        
+        resource_response = requests.get(f"{conn._hashtopolis_uri}{response.headers.get('Location')}", headers=conn._headers)
+        self.assertEqual(resource_response.status_code, 200, "Unable to find the created resource")
 
