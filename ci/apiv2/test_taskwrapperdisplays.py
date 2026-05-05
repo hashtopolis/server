@@ -11,7 +11,7 @@ class TaskWrapperDisplaysTest(BaseTest):
         super().setUpClass()
         cls.config = HashtopolisConfig()        
     
-    def test_color(self):
+    def test_taskwrapperdisplays_returns_color_field(self):
         hashlist = self.create_hashlist()
         task = self.create_task(hashlist, extra_payload={'color': '#8000ff'})
         conn = HashtopolisConnector('/ui/taskwrapperdisplays', self.config)
