@@ -1659,6 +1659,24 @@ abstract class AbstractBaseAPI {
     $links = ["self" => $linksSelf];
     
     $metaData = [];
+
+    $toManyRelations = $apiClass::getToManyRelationships();
+    $hasToManyExpand = false;
+    $totalExpanded = 0;
+    foreach ($expands as $expand) {
+      if (array_key_exists($expand, $toManyRelations)) {
+        $hasToManyExpand = true;
+        if (isset($expandResult[$expand])) {
+          foreach ($expandResult[$expand] as $objectList) {
+            $totalExpanded += count($objectList);
+          }
+        }
+      }
+    }
+    if ($hasToManyExpand) {
+      $metaData["page"] = ["total_elements" => $totalExpanded];
+    }
+
     if ($apiClass->permissionErrors !== null) {
       $metaData["Include errors"] = $apiClass->permissionErrors;
     }
