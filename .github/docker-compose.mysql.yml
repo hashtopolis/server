@@ -21,6 +21,7 @@ services:
       - "8080:80"
     volumes:
       - hashtopolis-server-dev:/usr/local/share/hashtopolis:Z
+      - ../ci/php/zz-mail-disable.ini:/usr/local/etc/php/conf.d/zz-mail-disable.ini:ro
     networks:
       - hashtopolis_dev
   hashtopolis-db-dev:
