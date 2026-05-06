@@ -106,7 +106,9 @@ def do_create_agentbinary(**kwargs):
 
 def do_create_apitoken(extra_payload={}, **kwargs):
     now = int(time.time())
-    extra_payload = {**extra_payload, 'startValid': now, 'endValid': now + 3600}
+    extra_payload = dict(extra_payload or {})
+    extra_payload.setdefault('startValid', now)
+    extra_payload.setdefault('endValid', now + 3600)
     return _do_create_obj_from_file(ApiToken, 'create_apitoken', extra_payload, **kwargs)
 
 
