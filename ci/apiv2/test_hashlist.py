@@ -1,4 +1,6 @@
-from hashtopolis import Hashlist, Helper, File
+import requests
+
+from hashtopolis import Hashlist, Helper, File, HashtopolisConnector, HashtopolisConfig
 from utils import BaseTest
 
 
@@ -158,3 +160,27 @@ class HashlistTest(BaseTest):
     def test_bulk_delete(self):
         hashlists = [self.create_test_object(delete=False) for i in range(5)]
         Hashlist.objects.delete_many(hashlists)
+
+    def test_superhashlist_edit_returns_meta_page_total_elements(self):
+        hashlist1 = self.create_test_object()
+        hashlist2 = self.create_test_object()
+
+        helper = Helper()
+        superhashlist = helper.create_superhashlist(
+            name="SuperhashList edit test",
+            hashlists=[hashlist1, hashlist2]
+        )
+        self.delete_after_test(superhashlist)
+
+        config = HashtopolisConfig()
+        connector = HashtopolisConnector('/ui/hashlists',config)
+        connector.authenticate()
+
+        uri = connector._api_endpoint + connector._model_uri + f'/{superhashlist.id}?include=hashlists,hashType'
+        req = requests.get(uri, headers=connector._headers)
+        response = req.json()
+
+        self.assertIn('meta', response)
+        self.assertIn('page', response['meta'])
+        self.assertIn('total_elements', response['meta']['page'])
+        self.assertEqual(response['meta']['page']['total_elements'], 2)
