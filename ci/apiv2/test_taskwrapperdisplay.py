@@ -18,7 +18,6 @@ class TaskWrapperDisplayTest(BaseTest):
 
         headers = conn._headers
         uri = conn._api_endpoint + conn._model_uri
-
         r = requests.get(uri, headers=headers)
         values = r.json()
         data_items = values.get('data') or []
