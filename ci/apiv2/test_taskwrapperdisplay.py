@@ -4,7 +4,7 @@ from hashtopolis import HashtopolisConnector, HashtopolisConfig
 from utils import BaseTest
 
 
-class TaskWrapperDisplaysTest(BaseTest):
+class TaskWrapperDisplayTest(BaseTest):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
