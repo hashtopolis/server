@@ -10,4 +10,4 @@ class TaskWrapperDisplayTest(BaseTest):
         task_wrapper_Display_object = TaskWrapperDisplay.objects.get(id=task.taskWrapperId)
         self.assertIsNotNone(task_wrapper_Display_object.color)
         self.assertEqual(task_wrapper_Display_object.color, expected_color_value)
-        self.assertNotEqual("ff0000", task_wrapper_Display_object.color)
+        self.assertNotEqual("FFFFFF", task_wrapper_Display_object.color)
