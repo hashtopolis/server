@@ -35,7 +35,8 @@ class AgentStatTest(BaseTest):
         self.assertListEqual(objs[0].value, cpu_utilisations)
 
     def test_acl(self):
-        retval = self.create_agent_with_task()
+        cpu_utilisations = [60, 70]
+        retval = self.create_agent_with_task(cpu_utilisations=cpu_utilisations)
         agent = retval['agent']
         stats = list(AgentStat.objects.filter(agentId=agent.id))
         self.assertGreater(len(stats), 0, "Expected agent stats to exist for ACL test")
