@@ -1,6 +1,5 @@
 from hashtopolis import AgentAssignment
 
-from hashtopolis_agent import DummyAgent
 from utils import BaseTest, do_create_dummy_agent
 
 
@@ -47,3 +46,7 @@ class AgentStatTest(BaseTest):
         self.assertEqual(len(check), 1)
         self.assertEqual(check[0].agentId, agent.id)
         self.assertEqual(check[0].taskId, task.id)
+
+    def test_acl(self):
+        model_obj = self.create_test_object()
+        self._test_acl_list(model_obj, {'permAgentAssignmentRead': True})

@@ -158,3 +158,7 @@ class HashlistTest(BaseTest):
     def test_bulk_delete(self):
         hashlists = [self.create_test_object(delete=False) for i in range(5)]
         Hashlist.objects.delete_many(hashlists)
+
+    def test_acl(self):
+        model_obj = self.create_test_object()
+        self._test_acl_list(model_obj, {'permHashlistRead': True})
