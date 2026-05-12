@@ -95,7 +95,7 @@ COPY --from=prebuild /usr/local/cargo/bin/sqlx /usr/bin/
 COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 
 # Install composer
-COPY composer.json ${HASHTOPOLIS_DOCUMENT_ROOT}/../
+COPY composer.json composer.lock ${HASHTOPOLIS_DOCUMENT_ROOT}/../
 RUN composer install --working-dir=${HASHTOPOLIS_DOCUMENT_ROOT}/..
 
 ENV DEBIAN_FRONTEND=dialog
