@@ -357,7 +357,7 @@ class DConfig {
       case DConfig::AGENT_DATA_LIFETIME:
         return "Minimum time in seconds how long agent gpu/cpu utilisation and gpu temperature data is kept on the server.";
       case DConfig::AGENT_STAT_TENSION:
-        return "Draw straigth lines in agent data graph  instead of bezier curves.";
+        return "Draw straight lines in agent data graph  instead of bezier curves.";
       case DConfig::MULTICAST_ENABLE:
         return "Enable UDP multicast distribution of files to agents. (Make sure you did all the preparation before activating)<br>You can read more informations here: <a href='https://github.com/hashtopolis/runner/blob/master/README.md' target='_blank'>https://github.com/hashtopolis/runner</a>";
       case DConfig::MULTICAST_DEVICE:
