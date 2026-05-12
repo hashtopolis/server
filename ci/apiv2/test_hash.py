@@ -1,4 +1,4 @@
-from hashtopolis import Hash, HashtopolisResponseError, HashtopolisError
+from hashtopolis import Hash, HashtopolisResponseError
 from utils import BaseTest
 
 
