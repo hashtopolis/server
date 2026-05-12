@@ -20,6 +20,8 @@ class HashtopolisNotificationEmail extends HashtopolisNotification {
   
   function sendMessage($message, $subject) {
     $message = explode("##########", $message);
-    Util::sendMail($this->receiver, $subject, $message[0], $message[1]);
+    if (Util::isMailConfigured() && !Util::sendMail($this->receiver, $subject, $message[0], $message[1])) {
+      error_log("Unable to send notification mail with subject: " . $subject);
+    }
   }
 }

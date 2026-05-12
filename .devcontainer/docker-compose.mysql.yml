@@ -24,8 +24,8 @@ services:
       # and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/var/www/html
       - hashtopolis-server-dev:/usr/local/share/hashtopolis:Z
+      - ../.xdebug:/tmp/xdebug
       # - ./jwks.json:/keys/jwks.json:ro
-      - ../ci/php/zz-mail-disable.ini:/usr/local/etc/php/conf.d/zz-mail-disable.ini:ro
     networks:
       - hashtopolis_dev
   hashtopolis-db-dev:

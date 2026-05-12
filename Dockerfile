@@ -49,6 +49,7 @@ RUN apt-get update \
     && apt-get -y install mariadb-client postgresql-client libpq-dev \
     && apt-get -y install libpng-dev \
     && apt-get -y install ssmtp \
+    && rm -f /etc/ssmtp/ssmtp.conf \
     \
     # Install extensions (optional)
     && docker-php-ext-install pdo_mysql pgsql pdo_pgsql gd \

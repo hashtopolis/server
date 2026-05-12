@@ -1343,6 +1343,11 @@ class Util {
     return ($a->getDispatchTime() < $b->getDispatchTime()) ? -1 : 1;
   }
   
+  public static function isMailConfigured(): bool {
+    $path = '/etc/ssmtp/ssmtp.conf';
+    return is_file($path);
+  }
+
   /**
    * This sends a given email with text and subject to the address.
    *
@@ -1356,6 +1361,11 @@ class Util {
    * @return bool true on success, false on failure
    */
   public static function sendMail($address, $subject, $text, $plaintext) {
+    if (!self::isMailConfigured()) {
+      error_log(("Mail notification is not configured. No message sent."));
+      return false;
+    }
+    
     $boundary = uniqid('np');
     
     $headers = "MIME-Version: 1.0\r\n";

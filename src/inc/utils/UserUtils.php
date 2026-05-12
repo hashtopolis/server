@@ -241,7 +241,11 @@ class UserUtils {
     $tmpl = new Template("email/creation");
     $tmplPlain = new Template("email/creation.plain");
     $obj = array('username' => $username, 'password' => $newPass, 'url' => Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL));
-    Util::sendMail($email, "Account at " . APP_NAME, $tmpl->render($obj), $tmplPlain->render($obj));
+    
+    $subject = "Account at " . APP_NAME;
+    if (Util::isMailConfigured() && !Util::sendMail($email, $subject, $tmpl->render($obj), $tmplPlain->render($obj))) {
+      error_log("Unable to send mail to user with subject: " . $subject);
+    }
     
     // create log entry and check if notification sending is needed
     Util::createLogEntry("User", $adminUser->getId(), DLogEntry::INFO, "New User created: " . $user->getUsername());

@@ -25,7 +25,6 @@ services:
       - ..:/var/www/html
       - hashtopolis-server-dev:/usr/local/share/hashtopolis:Z
       # - ./jwks.json:/keys/jwks.json:ro
-      - ../ci/php/zz-mail-disable.ini:/usr/local/etc/php/conf.d/zz-mail-disable.ini:ro
     networks:
       - hashtopolis_dev
   hashtopolis-db-dev:
