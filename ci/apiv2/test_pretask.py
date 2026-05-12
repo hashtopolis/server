@@ -1,5 +1,5 @@
 from hashtopolis import Pretask, HashtopolisError
-from utils import BaseTest,do_create_pretask
+from utils import BaseTest
 
 
 class PretaskTest(BaseTest):
