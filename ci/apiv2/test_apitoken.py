@@ -11,8 +11,9 @@ from utils import BaseTest, create_restricted_user
 def _decode_jwt_scope(jwt_token):
     """Decode a JWT and return its `scope` claim as a parsed dict.
 
-    The `scope` claim is a JSON-encoded string keyed by modern CRUD
-    permission names (e.g. `permHashlistRead`).
+    The `scope` claim is a JSON-encoded string keyed by legacy DAccessControl
+    permission names (e.g. `viewHashlistAccess`) — that's what
+    AbstractBaseAPI::validatePermissions asserts on.
     """
     payload_b64 = jwt_token.split('.')[1]
     padded = payload_b64 + '=' * (-len(payload_b64) % 4)
@@ -73,53 +74,61 @@ class ApiTokenTest(BaseTest):
         model_obj = self.create_test_object(delete=False)
         self._test_acl_list(model_obj, {'permJwtApiKeyRead': True})
 
-    def test_scope_admin_grants_requested_crud_perm(self):
-        # Admin requests one CRUD scope; the JWT scope must grant exactly that
-        # perm (and nothing else) and must NOT be empty (the original admin bug).
+    def test_scope_intersection_admin_maps_to_legacy_keys(self):
+        # Admin requests one CRUD scope. The JWT scope claim must be keyed by
+        # the legacy DAccessControl names whose CRUD set contains that perm,
+        # and every such legacy key must be True. Hashlist::PERM_READ
+        # (permHashlistRead) lives in both viewHashlistAccess and
+        # manageHashlistAccess in $acl_mapping.
         model_obj = self.create_test_object(
             delete=False,
             extra_payload={'scopes': ['permHashlistRead']},
         )
         scope = _decode_jwt_scope(model_obj.token)
 
-        self.assertIn('permHashlistRead', scope)
-        self.assertTrue(scope['permHashlistRead'])
+        self.assertIn('viewHashlistAccess', scope)
+        self.assertTrue(scope['viewHashlistAccess'])
+        self.assertTrue(scope['manageHashlistAccess'])
 
-        # Other CRUD perms must be False
-        self.assertFalse(scope['permAgentCreate'])
-        self.assertFalse(scope['permFileUpdate'])
-        self.assertFalse(scope['permJwtApiKeyRead'])
+        # Legacy keys whose CRUD set does NOT contain permHashlistRead must be False
+        self.assertFalse(scope['createAgentAccess'])
+        self.assertFalse(scope['manageFileAccess'])
+        self.assertFalse(scope['ApiTokenAccess'])
 
         # And the scope dict is NOT empty (the bug symptom for admin)
         self.assertTrue(any(scope.values()), "Admin scope must not be empty after requesting a valid CRUD perm")
 
-    def test_scope_multiple_scopes_union(self):
-        # Multiple CRUD scopes are all granted
+    def test_scope_intersection_multiple_scopes_union(self):
+        # Multiple CRUD scopes union into the matching legacy keys
         model_obj = self.create_test_object(
             delete=False,
             extra_payload={'scopes': ['permHashlistRead', 'permAgentCreate']},
         )
         scope = _decode_jwt_scope(model_obj.token)
 
-        self.assertTrue(scope['permHashlistRead'])
-        self.assertTrue(scope['permAgentCreate'])
-        self.assertFalse(scope['permFileUpdate'])
-        self.assertFalse(scope['permJwtApiKeyRead'])
+        # permHashlistRead -> viewHashlistAccess, manageHashlistAccess
+        self.assertTrue(scope['viewHashlistAccess'])
+        self.assertTrue(scope['manageHashlistAccess'])
+        # permAgentCreate -> createAgentAccess
+        self.assertTrue(scope['createAgentAccess'])
+        # Unrelated legacy keys stay False
+        self.assertFalse(scope['manageFileAccess'])
+        self.assertFalse(scope['ApiTokenAccess'])
 
-    def test_scope_unknown_scope_yields_no_grants(self):
-        # An unrecognised scope must not error and must not flip any key
+    def test_scope_intersection_unknown_scope_yields_no_grants(self):
+        # An unrecognised scope must not error and must not flip any legacy key
         model_obj = self.create_test_object(
             delete=False,
             extra_payload={'scopes': ['definitelyNotARealPermission']},
         )
         scope = _decode_jwt_scope(model_obj.token)
 
-        # Every key is False — and the dict still has the full keyset
+        # Every legacy key is False — and the dict still has the full keyset
         self.assertGreater(len(scope), 0)
         self.assertTrue(all(v is False for v in scope.values()),
                         f"Unknown scope must not grant anything, got: {scope}")
 
-    def test_scope_drops_perms_user_lacks(self):
+    def test_scope_intersection_drops_perms_user_lacks(self):
         # A restricted user with only permHashlistRead must NOT be able to mint
         # a token that grants permAgentCreate, even if they ask for it.
         auth = create_restricted_user(self, {'permHashlistRead': True})
@@ -127,7 +136,7 @@ class ApiTokenTest(BaseTest):
         config = HashtopolisConfig()
         conn = HashtopolisConnector('/auth/token', config)
         r = requests.post(conn._api_endpoint + '/auth/token', auth=auth)
-        self.assertEqual(r.status_code, 200, f"Login failed: {r.text}")
+        self.assertEqual(r.status_code, 201, f"Login failed: {r.text}")
         user_jwt = r.json()['token']
 
         # Create an API token as this restricted user requesting BOTH a perm
@@ -146,9 +155,10 @@ class ApiTokenTest(BaseTest):
 
         scope = _decode_jwt_scope(token)
         # Hashlist-read is granted (user has it)
-        self.assertTrue(scope['permHashlistRead'])
+        self.assertTrue(scope['viewHashlistAccess'])
+        self.assertTrue(scope['manageHashlistAccess'])
         # Agent-create is NOT granted (user lacks it)
-        self.assertFalse(scope['permAgentCreate'])
+        self.assertFalse(scope['createAgentAccess'])
 
     def test_scope_intersection_token_works_as_bearer(self):
         # End-to-end: a token issued for permHashlistRead must successfully
