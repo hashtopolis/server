@@ -34,8 +34,8 @@ class GetCracksOfTaskHelper extends AbstractHelperAPI {
     return [Hashlist::PERM_READ, Hash::PERM_READ, Task::PERM_READ];
   }
   
-  public static function getResponse(): null {
-    return null;
+  public static function getResponse(): string {
+    return "Hash";
   }
   
   
