@@ -1,52 +1,5 @@
 <?php
 
-namespace Hashtopolis\inc {
-	function is_file($path) {
-		if (isset($GLOBALS['user_utils_is_file_mock']) && is_callable($GLOBALS['user_utils_is_file_mock'])) {
-			return $GLOBALS['user_utils_is_file_mock']($path);
-		}
-		return \is_file($path);
-	}
-
-	function mail($to, $subject, $message, $additionalHeaders = null, $additionalParams = null) {
-		if (isset($GLOBALS['user_utils_mail_mock']) && is_callable($GLOBALS['user_utils_mail_mock'])) {
-			return $GLOBALS['user_utils_mail_mock']($to, $subject, $message, $additionalHeaders, $additionalParams);
-		}
-		if ($additionalParams === null) {
-			return \mail($to, $subject, $message, $additionalHeaders ?? '');
-		}
-		return \mail($to, $subject, $message, $additionalHeaders ?? '', $additionalParams);
-	}
-
-	function error_log($message, $messageType = 0, $destination = null, $additionalHeaders = null) {
-		if (isset($GLOBALS['user_utils_util_error_log_mock']) && is_callable($GLOBALS['user_utils_util_error_log_mock'])) {
-			return $GLOBALS['user_utils_util_error_log_mock']($message, $messageType, $destination, $additionalHeaders);
-		}
-		if ($destination === null) {
-			return \error_log($message, $messageType);
-		}
-		if ($additionalHeaders === null) {
-			return \error_log($message, $messageType, $destination);
-		}
-		return \error_log($message, $messageType, $destination, $additionalHeaders);
-	}
-}
-
-namespace Hashtopolis\inc\utils {
-	function error_log($message, $messageType = 0, $destination = null, $additionalHeaders = null) {
-		if (isset($GLOBALS['user_utils_error_log_mock']) && is_callable($GLOBALS['user_utils_error_log_mock'])) {
-			return $GLOBALS['user_utils_error_log_mock']($message, $messageType, $destination, $additionalHeaders);
-		}
-		if ($destination === null) {
-			return \error_log($message, $messageType);
-		}
-		if ($additionalHeaders === null) {
-			return \error_log($message, $messageType, $destination);
-		}
-		return \error_log($message, $messageType, $destination, $additionalHeaders);
-	}
-}
-
 namespace Hashtopolis\inc\templating {
 	class Template {
 		private string $name;
@@ -71,6 +24,7 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\utils\UserUtils;
 use PHPUnit\Framework\TestCase;
 
+require_once(dirname(__FILE__) . '/../TestMocks.php');
 require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 
 final class UserUtilsTest extends TestCase {
@@ -85,12 +39,7 @@ final class UserUtilsTest extends TestCase {
 
 		$_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] ?? 'localhost';
 		$_SERVER['SERVER_PORT'] = $_SERVER['SERVER_PORT'] ?? 80;
-		unset(
-			$GLOBALS['user_utils_is_file_mock'],
-			$GLOBALS['user_utils_mail_mock'],
-			$GLOBALS['user_utils_util_error_log_mock'],
-			$GLOBALS['user_utils_error_log_mock']
-		);
+		\hashtopolis_clear_test_mocks();
 	}
 
 	protected function tearDown(): void {
@@ -111,12 +60,7 @@ final class UserUtilsTest extends TestCase {
 			}
 		}
 
-		unset(
-			$GLOBALS['user_utils_is_file_mock'],
-			$GLOBALS['user_utils_mail_mock'],
-			$GLOBALS['user_utils_util_error_log_mock'],
-			$GLOBALS['user_utils_error_log_mock']
-		);
+		\hashtopolis_clear_test_mocks();
 
 		parent::tearDown();
 	}
@@ -126,17 +70,17 @@ final class UserUtilsTest extends TestCase {
 		$utilErrorLogMessages = [];
 		$username = $this->uniqueUsername('mail_disabled');
 
-		$GLOBALS['user_utils_is_file_mock'] = static function ($path): bool {
+		\hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
 			return false;
-		};
-		$GLOBALS['user_utils_mail_mock'] = static function () use (&$mailCallCount): bool {
+		});
+		\hashtopolis_set_test_mock('Hashtopolis\\inc\\mail', static function () use (&$mailCallCount): bool {
 			$mailCallCount++;
 			return true;
-		};
-		$GLOBALS['user_utils_util_error_log_mock'] = static function ($message) use (&$utilErrorLogMessages): bool {
+		});
+		\hashtopolis_set_test_mock('Hashtopolis\\inc\\error_log', static function ($message) use (&$utilErrorLogMessages): bool {
 			$utilErrorLogMessages[] = $message;
 			return true;
-		};
+		});
 
 		$createdUser = UserUtils::createUser($username, $username . '@example.com', $this->createRightGroup()->getId(), $this->createAdminUser());
 		$this->createdUsernames[] = $username;
@@ -151,17 +95,17 @@ final class UserUtilsTest extends TestCase {
 		$userUtilsErrorLogMessages = [];
 		$username = $this->uniqueUsername('mail_enabled');
 
-		$GLOBALS['user_utils_is_file_mock'] = static function ($path): bool {
+		\hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
 			return true;
-		};
-		$GLOBALS['user_utils_mail_mock'] = static function ($to, $subject, $message, $additionalHeaders = null, $additionalParams = null) use (&$mailCalls): bool {
+		});
+		\hashtopolis_set_test_mock('Hashtopolis\\inc\\mail', static function ($to, $subject, $message, $additionalHeaders = null, $additionalParams = null) use (&$mailCalls): bool {
 			$mailCalls[] = [$to, $subject, $message, $additionalHeaders, $additionalParams];
 			return true;
-		};
-		$GLOBALS['user_utils_error_log_mock'] = static function ($message) use (&$userUtilsErrorLogMessages): bool {
+		});
+		\hashtopolis_set_test_mock('Hashtopolis\\inc\\utils\\error_log', static function ($message) use (&$userUtilsErrorLogMessages): bool {
 			$userUtilsErrorLogMessages[] = $message;
 			return true;
-		};
+		});
 
 		UserUtils::createUser($username, $username . '@example.com', $this->createRightGroup()->getId(), $this->createAdminUser());
 		$this->createdUsernames[] = $username;
@@ -177,17 +121,17 @@ final class UserUtilsTest extends TestCase {
 		$userUtilsErrorLogMessages = [];
 		$username = $this->uniqueUsername('mail_failure');
 
-		$GLOBALS['user_utils_is_file_mock'] = static function ($path): bool {
+		\hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
 			return true;
-		};
-		$GLOBALS['user_utils_mail_mock'] = static function () use (&$mailCallCount): bool {
+		});
+		\hashtopolis_set_test_mock('Hashtopolis\\inc\\mail', static function () use (&$mailCallCount): bool {
 			$mailCallCount++;
 			return false;
-		};
-		$GLOBALS['user_utils_error_log_mock'] = static function ($message) use (&$userUtilsErrorLogMessages): bool {
+		});
+		\hashtopolis_set_test_mock('Hashtopolis\\inc\\utils\\error_log', static function ($message) use (&$userUtilsErrorLogMessages): bool {
 			$userUtilsErrorLogMessages[] = $message;
 			return true;
-		};
+		});
 
 		UserUtils::createUser($username, $username . '@example.com', $this->createRightGroup()->getId(), $this->createAdminUser());
 		$this->createdUsernames[] = $username;

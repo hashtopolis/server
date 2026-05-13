@@ -1,76 +1,22 @@
 <?php
 
-namespace Hashtopolis\inc {
-	function is_file($path) {
-		if (isset($GLOBALS['notification_email_is_file_mock']) && is_callable($GLOBALS['notification_email_is_file_mock'])) {
-			return $GLOBALS['notification_email_is_file_mock']($path);
-		}
-		return \is_file($path);
-	}
-
-	function mail($to, $subject, $message, $additionalHeaders = null, $additionalParams = null) {
-		if (isset($GLOBALS['notification_email_mail_mock']) && is_callable($GLOBALS['notification_email_mail_mock'])) {
-			return $GLOBALS['notification_email_mail_mock']($to, $subject, $message, $additionalHeaders, $additionalParams);
-		}
-		if ($additionalParams === null) {
-			return \mail($to, $subject, $message, $additionalHeaders ?? '');
-		}
-		return \mail($to, $subject, $message, $additionalHeaders ?? '', $additionalParams);
-	}
-
-	function error_log($message, $messageType = 0, $destination = null, $additionalHeaders = null) {
-		if (isset($GLOBALS['notification_email_error_log_mock']) && is_callable($GLOBALS['notification_email_error_log_mock'])) {
-			return $GLOBALS['notification_email_error_log_mock']($message, $messageType, $destination, $additionalHeaders);
-		}
-		if ($destination === null) {
-			return \error_log($message, $messageType);
-		}
-		if ($additionalHeaders === null) {
-			return \error_log($message, $messageType, $destination);
-		}
-		return \error_log($message, $messageType, $destination, $additionalHeaders);
-	}
-}
-
-namespace Hashtopolis\inc\notifications {
-	function error_log($message, $messageType = 0, $destination = null, $additionalHeaders = null) {
-		if (isset($GLOBALS['notification_email_error_log_mock']) && is_callable($GLOBALS['notification_email_error_log_mock'])) {
-			return $GLOBALS['notification_email_error_log_mock']($message, $messageType, $destination, $additionalHeaders);
-		}
-		if ($destination === null) {
-			return \error_log($message, $messageType);
-		}
-		if ($additionalHeaders === null) {
-			return \error_log($message, $messageType, $destination);
-		}
-		return \error_log($message, $messageType, $destination, $additionalHeaders);
-	}
-}
-
 namespace Tests\Inc\Notifications {
 
   use Hashtopolis\inc\notifications\HashtopolisNotificationEmail;
   use PHPUnit\Framework\TestCase;
 
+  require_once(dirname(__FILE__) . '/../TestMocks.php');
   require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 
   final class HashtopolisNotificationEmailTest extends TestCase {
     protected function setUp(): void {
       parent::setUp();
 
-      unset(
-        $GLOBALS['notification_email_is_file_mock'],
-        $GLOBALS['notification_email_mail_mock'],
-        $GLOBALS['notification_email_error_log_mock']
-      );
+      \hashtopolis_clear_test_mocks();
     }
 
     protected function tearDown(): void {
-      unset(
-        $GLOBALS['notification_email_is_file_mock'],
-        $GLOBALS['notification_email_mail_mock'],
-        $GLOBALS['notification_email_error_log_mock']
-      );
+      \hashtopolis_clear_test_mocks();
 
       parent::tearDown();
     }
@@ -79,17 +25,17 @@ namespace Tests\Inc\Notifications {
       $mailCallCount = 0;
       $errorLogMessages = [];
 
-      $GLOBALS['notification_email_is_file_mock'] = static function ($path): bool {
+      \hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
         return false;
-      };
-      $GLOBALS['notification_email_mail_mock'] = static function () use (&$mailCallCount): bool {
+      });
+      \hashtopolis_set_test_mock('Hashtopolis\\inc\\mail', static function () use (&$mailCallCount): bool {
         $mailCallCount++;
         return true;
-      };
-      $GLOBALS['notification_email_error_log_mock'] = static function ($message) use (&$errorLogMessages): bool {
+      });
+      \hashtopolis_set_test_mock('Hashtopolis\\inc\\notifications\\error_log', static function ($message) use (&$errorLogMessages): bool {
         $errorLogMessages[] = $message;
         return true;
-      };
+      });
 
       $notification = $this->createNotification();
       $notification->sendMessage('<p>html</p>##########plain', 'Subject');
@@ -102,17 +48,17 @@ namespace Tests\Inc\Notifications {
       $mailCalls = [];
       $errorLogMessages = [];
 
-      $GLOBALS['notification_email_is_file_mock'] = static function ($path): bool {
+      \hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
         return true;
-      };
-      $GLOBALS['notification_email_mail_mock'] = static function ($to, $subject, $message, $additionalHeaders = null, $additionalParams = null) use (&$mailCalls): bool {
+      });
+      \hashtopolis_set_test_mock('Hashtopolis\\inc\\mail', static function ($to, $subject, $message, $additionalHeaders = null, $additionalParams = null) use (&$mailCalls): bool {
         $mailCalls[] = [$to, $subject, $message, $additionalHeaders, $additionalParams];
         return true;
-      };
-      $GLOBALS['notification_email_error_log_mock'] = static function ($message) use (&$errorLogMessages): bool {
+      });
+      \hashtopolis_set_test_mock('Hashtopolis\\inc\\notifications\\error_log', static function ($message) use (&$errorLogMessages): bool {
         $errorLogMessages[] = $message;
         return true;
-      };
+      });
 
       $notification = $this->createNotification();
       $notification->sendMessage('<p>html</p>##########plain', 'Subject');
@@ -128,17 +74,17 @@ namespace Tests\Inc\Notifications {
       $mailCallCount = 0;
       $errorLogMessages = [];
 
-      $GLOBALS['notification_email_is_file_mock'] = static function ($path): bool {
+      \hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
         return true;
-      };
-      $GLOBALS['notification_email_mail_mock'] = static function () use (&$mailCallCount): bool {
+      });
+      \hashtopolis_set_test_mock('Hashtopolis\\inc\\mail', static function () use (&$mailCallCount): bool {
         $mailCallCount++;
         return false;
-      };
-      $GLOBALS['notification_email_error_log_mock'] = static function ($message) use (&$errorLogMessages): bool {
+      });
+      \hashtopolis_set_test_mock('Hashtopolis\\inc\\notifications\\error_log', static function ($message) use (&$errorLogMessages): bool {
         $errorLogMessages[] = $message;
         return true;
-      };
+      });
 
       $notification = $this->createNotification();
       $notification->sendMessage('<p>html</p>##########plain', 'Subject');
