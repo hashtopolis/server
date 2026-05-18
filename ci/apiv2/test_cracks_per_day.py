@@ -1,4 +1,3 @@
-import re
 from datetime import date
 
 from hashtopolis import Hashlist, Helper
