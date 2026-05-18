@@ -28,10 +28,10 @@ class CorsHackMiddleware implements MiddlewareInterface {
     $envBackend = getenv('HASHTOPOLIS_BACKEND_URL');
     $envFrontendPort = getenv('HASHTOPOLIS_FRONTEND_PORT');
     
-    if ($envBackend !== false || $envFrontendPort !== false) {
+    if (($envBackend !== false || $envFrontendPort !== false) && $requestHttpOrigin != "") {
       $requestHttpOrigin = explode('://', $requestHttpOrigin)[1];
+
       $envBackend = explode('://', $envBackend)[1];
-      
       $envBackend = explode('/', $envBackend)[0];
       
       $requestHttpOriginUrl = substr($requestHttpOrigin, 0, strrpos($requestHttpOrigin, ":")); //Needs to use strrpos in case of ipv6 because of multiple ':' characters
@@ -41,24 +41,30 @@ class CorsHackMiddleware implements MiddlewareInterface {
       
       if ($requestHttpOriginUrl === $envBackendUrl || (in_array($requestHttpOriginUrl, $localhostSynonyms) && in_array($envBackendUrl, $localhostSynonyms))) {
         //Origin URL matches, now check the port too
-        $requestHttpOriginPort = substr($requestHttpOrigin, strrpos($requestHttpOrigin, ":") + 1); //Needs to use strrpos in case of ipv6 because of multiple ':' characters
-        $envBackendPort = substr($envBackend, strrpos($envBackend, ":") + 1);
-        
-        if ($requestHttpOriginPort === $envFrontendPort || $requestHttpOriginPort === $envBackendPort) {
-          $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'));
+        if (substr($requestHttpOrigin, -1) !== "]" && str_contains($requestHttpOrigin, ":")) {
+          $requestHttpOriginPort = substr($requestHttpOrigin, strrpos($requestHttpOrigin, ":") + 1); //Needs to use strrpos in case of ipv6 because of multiple ':' characters
+          $envBackendPort = substr($envBackend, strrpos($envBackend, ":") + 1);
+          
+          if ($requestHttpOriginPort === $envFrontendPort || $requestHttpOriginPort === $envBackendPort) {
+            $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'));
+          }
+          else {
+            error_log("CORS error: Allow-Origin port doesn't match: the value from the request is {$requestHttpOriginPort} but expected {$envFrontendPort} or {$envBackendPort}. Try switching the frontend port back to the default value (4200) in the docker-compose.");
+            die();
+          }
         }
         else {
-          error_log("CORS error: Allow-Origin port doesn't match. Try switching the frontend port back to the default value (4200) in the docker-compose.");
-          die();
+          //No port given in the request origin, all checks passed
+          $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'));
         }
       }
       else {
-        error_log("CORS error: Allow-Origin URL doesn't match. Is the HASHTOPOLIS_BACKEND_URL in the .env file the correct one?");
+        error_log("CORS error: Allow-Origin URL doesn't match: the value from the request is {$requestHttpOriginUrl} but expected {$envBackendUrl}. Is the HASHTOPOLIS_BACKEND_URL in the .env file the correct one?");
         die();
       }
     }
     else {
-      //No backend URL given in .env file, switch to default allow all
+      //No backend URL given in .env file or no origin supplied in the request, switch to default allow all
       $response = $response->withHeader('Access-Control-Allow-Origin', '*');
     }
     
