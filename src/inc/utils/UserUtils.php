@@ -25,6 +25,7 @@ use Hashtopolis\inc\templating\Template;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
+use RuntimeException;
 
 class UserUtils {
   /**
@@ -244,7 +245,7 @@ class UserUtils {
     
     $subject = "Account at " . APP_NAME;
     if (Util::isMailConfigured() && !Util::sendMail($email, $subject, $tmpl->render($obj), $tmplPlain->render($obj))) {
-      error_log("Unable to send mail to user with subject: " . $subject);
+      throw new RuntimeException("Unable to send mail to user with subject: " . $subject);
     }
     
     // create log entry and check if notification sending is needed

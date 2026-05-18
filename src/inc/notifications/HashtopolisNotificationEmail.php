@@ -3,6 +3,8 @@
 namespace Hashtopolis\inc\notifications;
 
 use Hashtopolis\inc\Util;
+use PHPUnit\Event\Runtime\Runtime;
+use RuntimeException;
 
 class HashtopolisNotificationEmail extends HashtopolisNotification {
   protected     $receiver;
@@ -21,7 +23,7 @@ class HashtopolisNotificationEmail extends HashtopolisNotification {
   function sendMessage($message, $subject) {
     $message = explode("##########", $message);
     if (Util::isMailConfigured() && !Util::sendMail($this->receiver, $subject, $message[0], $message[1])) {
-      error_log("Unable to send notification mail with subject: " . $subject);
+      throw new RuntimeException("Unable to send notification mail with subject: " . $subject);
     }
   }
 }

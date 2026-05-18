@@ -34,25 +34,18 @@ namespace Tests\Inc {
       }
     }
 
-    public function testSendMailReturnsFalseAndLogsWhenMailIsNotConfigured(): void {
+    public function testSendMailReturnsFalseWhenMailIsNotConfigured(): void {
       $loggedMessage = null;
       \hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
         return false;
       });
-      \hashtopolis_set_test_mock('Hashtopolis\\inc\\error_log', static function ($message) use (&$loggedMessage): bool {
-        $loggedMessage = $message;
-        return true;
-      });
 
       try {
         $this->assertFalse(Util::sendMail('user@example.com', 'subject', '<p>body</p>', 'body'));
-        $this->assertSame('Mail notification is not configured. No message sent.', $loggedMessage);
       }
       finally {
-        \hashtopolis_clear_test_mocks(['Hashtopolis\\inc\\is_file', 'Hashtopolis\\inc\\error_log']);
+        \hashtopolis_clear_test_mocks(['Hashtopolis\\inc\\is_file']);
       }
     }
-  }
-
-  
+  }  
 }

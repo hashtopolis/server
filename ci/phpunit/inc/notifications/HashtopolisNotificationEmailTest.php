@@ -32,16 +32,11 @@ namespace Tests\Inc\Notifications {
         $mailCallCount++;
         return true;
       });
-      \hashtopolis_set_test_mock('Hashtopolis\\inc\\notifications\\error_log', static function ($message) use (&$errorLogMessages): bool {
-        $errorLogMessages[] = $message;
-        return true;
-      });
 
       $notification = $this->createNotification();
       $notification->sendMessage('<p>html</p>##########plain', 'Subject');
 
       $this->assertSame(0, $mailCallCount);
-      $this->assertSame([], $errorLogMessages);
     }
 
     public function testSendMessageCallsSendMailWhenMailIsConfigured(): void {
@@ -55,10 +50,6 @@ namespace Tests\Inc\Notifications {
         $mailCalls[] = [$to, $subject, $message, $additionalHeaders, $additionalParams];
         return true;
       });
-      \hashtopolis_set_test_mock('Hashtopolis\\inc\\notifications\\error_log', static function ($message) use (&$errorLogMessages): bool {
-        $errorLogMessages[] = $message;
-        return true;
-      });
 
       $notification = $this->createNotification();
       $notification->sendMessage('<p>html</p>##########plain', 'Subject');
@@ -70,9 +61,8 @@ namespace Tests\Inc\Notifications {
       $this->assertStringContainsString('plain', $mailCalls[0][2]);
     }
 
-    public function testSendMessageLogsWhenConfiguredSendMailFails(): void {
+    public function testSendMessageThrowsWhenConfiguredSendMailFails(): void {
       $mailCallCount = 0;
-      $errorLogMessages = [];
 
       \hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
         return true;
@@ -81,18 +71,14 @@ namespace Tests\Inc\Notifications {
         $mailCallCount++;
         return false;
       });
-      \hashtopolis_set_test_mock('Hashtopolis\\inc\\notifications\\error_log', static function ($message) use (&$errorLogMessages): bool {
-        $errorLogMessages[] = $message;
-        return true;
-      });
 
       $notification = $this->createNotification();
-      $notification->sendMessage('<p>html</p>##########plain', 'Subject');
-
-      $this->assertSame(1, $mailCallCount);
-      $this->assertSame([
-        'Unable to send notification mail with subject: Subject',
-      ], $errorLogMessages);
+      $this->expectException(\Exception::class);
+      try {
+        $notification->sendMessage('<p>html</p>##########plain', 'Subject');
+      } finally {
+        $this->assertSame(1, $mailCallCount);
+      }
     }
 
     private function createNotification(): HashtopolisNotificationEmail {
