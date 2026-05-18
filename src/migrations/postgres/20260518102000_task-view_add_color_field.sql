@@ -1,4 +1,4 @@
-CREATE VIEW TaskWrapperDisplay AS SELECT 
+CREATE OR REPLACE VIEW TaskWrapperDisplay AS SELECT
     tw.taskWrapperId AS taskWrapperId, tw.priority AS taskWrapperPriority, tw.maxAgents AS taskWrapperMaxAgents,
     tw.taskType AS taskType, tw.hashlistId AS hashlistId, tw.accessGroupId AS accessGroupId,
     tw.taskWrapperName AS taskWrapperName, tw.isArchived AS taskWrapperIsArchived, tw.cracked AS cracked,
