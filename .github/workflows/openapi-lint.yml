@@ -1,0 +1,43 @@
+name: OpenAPI Lint
+
+on:
+  push:
+    branches:
+    - master
+    - dev
+  pull_request:
+    branches:
+    - master
+    - dev
+
+permissions:
+  contents: read
+
+jobs:
+  openapi-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Start Hashtopolis server
+        uses: ./.github/actions/start-hashtopolis
+        with:
+          db_system: mysql
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-openapi-spectral6.15.1-redocly2.24.0
+      - name: Install OpenAPI tooling
+        run: npm install -g @stoplight/spectral-cli@6.15.1 @redocly/cli@2.24.0
+      - name: Download OpenAPI schema
+        run: wget -q http://localhost:8080/api/v2/openapi.json -O openapi.json
+      - name: Lint OpenAPI schema with Redocly
+        continue-on-error: true
+        run: redocly lint openapi.json
+      - name: Lint OpenAPI schema with Spectral
+        run: spectral lint openapi.json --ruleset .github/openapi/spectral-jsonapi.yml -D
