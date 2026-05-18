@@ -48,13 +48,13 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
     $yearStart = mktime(0, 0, 0, 1, 1, (int) date('Y'));
     $counts = Factory::getHashFactory()->filterCracksOnTimestamp($yearStart);
 
-    $ret = self::createJsonResponse(data: $counts);
+    $ret = self::createJsonResponse(meta: $counts);
     
     $body = $response->getBody();
     $body->write($this->ret2json($ret));
 
     return $response->withStatus(200)
-      ->withHeader("Content-Type", 'application/json');
+      ->withHeader("Content-Type", 'application/vnd.api+json;');
   }
 
   public static function register($app): void {

@@ -54,7 +54,7 @@ class HashFactory extends AbstractModelFactory {
     $timeCracked = Hash::TIME_CRACKED;
     $isCracked = Hash::IS_CRACKED;
     $dbType = StartupConfig::getInstance()->getDatabaseType();
-    $to_timestamp = ($dbType == "postgress") ? "TO_TIMESTAMP" : "FROM_UNIXTIME";
+    $to_timestamp = ($dbType == "postgres") ? "TO_TIMESTAMP" : "FROM_UNIXTIME";
 
     $hashTable = $this->getModelName();
     $hashBinaryTable = Factory::getHashBinaryFactory()->getModelName();
@@ -68,7 +68,7 @@ class HashFactory extends AbstractModelFactory {
     //   ORDER BY day;
     $query = "SELECT DATE(". $to_timestamp . "(" . $timeCracked . ")) AS day, COUNT(*) AS total FROM (" 
     . $select_statement . $hashTable . " UNION ALL " . $select_statement . $hashBinaryTable . ") x WHERE " . 
-    $timeCracked . " > ? AND " .  $isCracked . " = 1 GROUP BY day ORDER BY day;";
+    $timeCracked . " >= ? AND " .  $isCracked . " = 1 GROUP BY day ORDER BY day;";
 
     $vals = [$timestamp];
 
@@ -76,7 +76,7 @@ class HashFactory extends AbstractModelFactory {
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_KEY_PAIR);
   }
   
   /**
