@@ -4,6 +4,9 @@ namespace Hashtopolis\dba\models;
 
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\StartupConfig;
+use PDO;
 
 class HashFactory extends AbstractModelFactory {
   function getModelName(): string {
@@ -45,6 +48,35 @@ class HashFactory extends AbstractModelFactory {
     }
     $dict = $conv;
     return new Hash($dict['hashid'], $dict['hashlistid'], $dict['hash'], $dict['salt'], $dict['plaintext'], $dict['timecracked'], $dict['chunkid'], $dict['iscracked'], $dict['crackpos']);
+  }
+
+  function filterCracksOnTimestamp(int $timestamp) {
+    $timeCracked = Hash::TIME_CRACKED;
+    $isCracked = Hash::IS_CRACKED;
+    $dbType = StartupConfig::getInstance()->getDatabaseType();
+    $to_timestamp = ($dbType == "postgress") ? "TO_TIMESTAMP" : "FROM_UNIXTIME";
+
+    $hashTable = $this->getModelName();
+    $hashBinaryTable = Factory::getHashBinaryFactory()->getModelName();
+
+    $select_statement = "SELECT " . $timeCracked . ", " . $isCracked . " FROM ";
+
+    //SELECT DATE(FROM_UNIXTIME(timeCracked)) AS day, COUNT(*) AS total 
+    //  FROM (SELECT timeCracked, isCracked from `Hash` UNION ALL SELECT timeCracked, isCracked FROM `HashBinary`) x
+    //   where timeCracked > ? AND isCracked = 1 
+    //   GROUP BY day 
+    //   ORDER BY day;
+    $query = "SELECT DATE(". $to_timestamp . "(" . $timeCracked . ")) AS day, COUNT(*) AS total FROM (" 
+    . $select_statement . $hashTable . " UNION ALL " . $select_statement . $hashBinaryTable . ") x WHERE " . 
+    $timeCracked . " > ? AND " .  $isCracked . " = 1 GROUP BY day ORDER BY day;";
+
+    $vals = [$timestamp];
+
+    $dbh = self::getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
   
   /**

@@ -38,43 +38,20 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
   }
 
   /**
-   * Returns a map of date -> crack count for every day from January 1st of the
-   * current year up to and including today.
+    * Returns a map of date -> crack count for days with at least one crack from
+    * January 1st of the current year up to and including today. Days with no
+    * cracks are omitted from the response.
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
 
     $yearStart = mktime(0, 0, 0, 1, 1, (int) date('Y'));
-    $now = time();
+    $counts = Factory::getHashFactory()->filterCracksOnTimestamp($yearStart);
 
-    $filters = [
-      new QueryFilter(Hash::IS_CRACKED, 1, "="),
-      new QueryFilter(Hash::TIME_CRACKED, $yearStart, ">="),
-      new QueryFilter(Hash::TIME_CRACKED, $now, "<="),
-    ];
-
-    $counts = [];
-
-    foreach (Factory::getHashFactory()->filter([Factory::FILTER => $filters]) as $hash) {
-      $day = date('Y-m-d', $hash->getTimeCracked());
-      $counts[$day] = ($counts[$day] ?? 0) + 1;
-    }
-
-    $binaryFilters = [
-      new QueryFilter(HashBinary::IS_CRACKED, 1, "="),
-      new QueryFilter(HashBinary::TIME_CRACKED, $yearStart, ">="),
-      new QueryFilter(HashBinary::TIME_CRACKED, $now, "<="),
-    ];
-
-    foreach (Factory::getHashBinaryFactory()->filter([Factory::FILTER => $binaryFilters]) as $hash) {
-      $day = date('Y-m-d', $hash->getTimeCracked());
-      $counts[$day] = ($counts[$day] ?? 0) + 1;
-    }
-
-    ksort($counts);
-
+    $ret = self::createJsonResponse(data: $counts);
+    
     $body = $response->getBody();
-    $body->write(json_encode($counts, JSON_THROW_ON_ERROR));
+    $body->write($this->ret2json($ret));
 
     return $response->withStatus(200)
       ->withHeader("Content-Type", 'application/json');
