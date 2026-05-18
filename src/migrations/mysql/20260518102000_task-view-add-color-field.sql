@@ -1,4 +1,5 @@
-CREATE OR REPLACE VIEW TaskWrapperDisplay AS SELECT
+DROP VIEW IF EXISTS TaskWrapperDisplay;
+CREATE VIEW TaskWrapperDisplay AS SELECT
     tw.taskWrapperId AS taskWrapperId, tw.priority AS taskWrapperPriority, tw.maxAgents AS taskWrapperMaxAgents,
     tw.taskType AS taskType, tw.hashlistId AS hashlistId, tw.accessGroupId AS accessGroupId,
     tw.taskWrapperName AS taskWrapperName, tw.isArchived AS taskWrapperIsArchived, tw.cracked AS cracked,
@@ -9,7 +10,7 @@ CREATE OR REPLACE VIEW TaskWrapperDisplay AS SELECT
     CASE WHEN tw.taskType = 0 THEN t.taskName ELSE tw.taskWrapperName END AS displayName,
     h.hashlistName AS hashlistName, h.hashCount AS hashCount, h.cracked as hashlistCracked,
     ht.hashTypeId AS hashTypeId, ht.description AS hashTypeDescription, ag.groupName AS groupName
-FROM TaskWrapper tw 
+FROM TaskWrapper tw
     LEFT JOIN Task t ON tw.taskType = 0 AND t.taskWrapperId = tw.taskWrapperId
     INNER JOIN Hashlist h ON tw.hashlistId = h.hashlistId
     INNER JOIN HashType ht on h.hashTypeId = ht.hashTypeId
