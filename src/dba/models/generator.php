@@ -354,7 +354,7 @@ $CONF['RegVoucher'] = [
 ];
 $CONF['RightGroup'] = [
   'columns' => [
-    ['name' => 'rightGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id'],
+    ['name' => 'rightGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'rightGroupId'],
     ['name' => 'groupName', 'read_only' => False, 'type' => 'str(50)', 'alias' => 'name'],
     ['name' => 'permissions', 'read_only' => False, 'type' => 'dict', 'subtype' => 'bool', 'null' => True],
   ],
