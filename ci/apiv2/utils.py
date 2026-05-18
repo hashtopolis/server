@@ -11,7 +11,7 @@ import zipfile
 
 import confidence
 
-from hashtopolis import ApiToken
+from hashtopolis import Model
 from hashtopolis import AccessGroup
 from hashtopolis import Helper
 from hashtopolis import Agent
@@ -36,6 +36,9 @@ from hashtopolis import Voucher
 
 from hashtopolis_agent import DummyAgent
 
+class ApiToken(Model, uri="/ui/apiTokens"):
+    def delete(obj):
+        pass  # we override the delete function for the tests as tokens cannot be deleted, but the teardown always calls delete after a test
 
 def _do_create_obj_from_file(model_class, file_prefix, extra_payload={}, **kwargs):
     file_id = kwargs.get('file_id') or '001'
