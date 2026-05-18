@@ -3,7 +3,6 @@
 namespace Hashtopolis\inc\notifications;
 
 use Hashtopolis\inc\Util;
-use PHPUnit\Event\Runtime\Runtime;
 use RuntimeException;
 
 class HashtopolisNotificationEmail extends HashtopolisNotification {

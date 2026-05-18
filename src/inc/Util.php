@@ -1343,6 +1343,10 @@ class Util {
     return ($a->getDispatchTime() < $b->getDispatchTime()) ? -1 : 1;
   }
   
+  /**
+   * Check if email sending is configured by looking for config file
+   * @return bool true if configured, false if not.
+   */
   public static function isMailConfigured(): bool {
     $path = '/etc/ssmtp/ssmtp.conf';
     return is_file($path);

@@ -26,7 +26,6 @@ use Hashtopolis\inc\templating\Template;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
-use RuntimeException;
 
 class UserUtils {
   /**
@@ -210,6 +209,7 @@ class UserUtils {
    * @throws HTException
    * @throws HttpConflict
    * @throws HttpError
+   * @throws InternalError
    */
   public static function createUser(string $username, string $email, int $rightGroupId, User $adminUser, bool $isValid = true, int $session_lifetime = 3600): User {
     $username = htmlentities($username, ENT_QUOTES, "UTF-8");
