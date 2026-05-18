@@ -79,7 +79,7 @@ class ApiTokenAPI extends AbstractModelAPI {
       $this->getRightGroup($this->getCurrentUser()->getRightGroupId())->getPermissions()
     );
 
-    // Modern CRUD scope dict: true iff the perm was requested AND the user has it.
+    // Modern CRUD scope dict: true if the perm was requested AND the user has it.
     $requestedScopes = [];
     foreach ($userCrudPerms as $perm => $granted) {
       $requestedScopes[$perm] = $granted && in_array($perm, $scopes, true);
