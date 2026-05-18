@@ -12,6 +12,8 @@ use Hashtopolis\dba\QueryFilter;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+use function PHPUnit\Framework\isEmpty;
+
 class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
     return "/api/v2/helper/getCracksPerDay";
@@ -47,8 +49,10 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
 
     $yearStart = mktime(0, 0, 0, 1, 1, (int) date('Y'));
     $counts = Factory::getHashFactory()->filterCracksOnTimestamp($yearStart);
-
     $ret = self::createJsonResponse(meta: $counts);
+    if(isEmpty($counts)) {
+      $ret["meta"] = [];
+    }
     
     $body = $response->getBody();
     $body->write($this->ret2json($ret));
