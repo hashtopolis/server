@@ -15,6 +15,7 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\JwtApiKey;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\InternalError;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DNotificationObjectType;
@@ -245,7 +246,7 @@ class UserUtils {
     
     $subject = "Account at " . APP_NAME;
     if (Util::isMailConfigured() && !Util::sendMail($email, $subject, $tmpl->render($obj), $tmplPlain->render($obj))) {
-      throw new RuntimeException("Unable to send mail to user with subject: " . $subject);
+      throw new InternalError("User account created but unable to send mail to user with subject: " . $subject);
     }
     
     // create log entry and check if notification sending is needed

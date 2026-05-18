@@ -22,6 +22,7 @@ use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\RightGroup;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\utils\UserUtils;
+use Hashtopolis\inc\apiv2\error\InternalError;
 use PHPUnit\Framework\TestCase;
 
 require_once(dirname(__FILE__) . '/../TestMocks.php');
@@ -116,10 +117,9 @@ final class UserUtilsTest extends TestCase {
       return false;
     });
 
-    //TODO: Check if the user is still created
     $this->createdUsernames[] = $username;
     
-    $this->expectException(\Exception::class);
+    $this->expectException(InternalError::class);
     try {
       UserUtils::createUser($username, $username . '@example.com', $this->createRightGroup()->getId(), $this->createAdminUser());
     } finally {
