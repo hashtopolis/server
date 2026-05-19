@@ -180,7 +180,7 @@ $CONF['CrackerBinaryType'] = [
   'columns' => [
     ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'typeName', 'read_only' => False, 'type' => 'str(30)'],
-    ['name' => 'isChunkingAvailable', 'read_only' => False, 'type' => 'bool'],
+    ['name' => 'isChunkingAvailable', 'read_only' => False, 'null' => True, 'type' => 'bool'],
   ],
 ];
 $CONF['File'] = [
