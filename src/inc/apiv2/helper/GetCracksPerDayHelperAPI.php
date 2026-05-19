@@ -11,6 +11,7 @@ use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\QueryFilter;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use stdClass;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -51,7 +52,7 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
     $counts = Factory::getHashFactory()->filterCracksOnTimestamp($yearStart);
     $ret = self::createJsonResponse(meta: $counts);
     if(empty($counts)) {
-      $ret["meta"] = [];
+      $ret["meta"] = new stdClass();
     }
     
     $body = $response->getBody();
