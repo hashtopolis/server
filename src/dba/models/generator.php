@@ -453,6 +453,7 @@ $CONF['TaskWrapperDisplay'] = [
     ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'taskName', 'read_only' => False, 'type' => 'str(256)'],
+    ['name' => 'color', 'read_only' => False, 'type' => 'str(50)', 'null' => True],
     ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'chunkTime', 'read_only' => False, 'type' => 'int'],
     ['name' => 'statusTimer', 'read_only' => False, 'type' => 'int'],

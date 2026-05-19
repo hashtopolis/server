@@ -17,6 +17,7 @@ class TaskWrapperDisplay extends AbstractModel {
   private ?int $cracked;
   private ?int $taskId;
   private ?string $taskName;
+  private ?string $color;
   private ?string $attackCmd;
   private ?int $chunkTime;
   private ?int $statusTimer;
@@ -35,7 +36,7 @@ class TaskWrapperDisplay extends AbstractModel {
   private ?string $hashTypeDescription;
   private ?string $groupName;
   
-  function __construct(?int $taskWrapperId, ?int $taskWrapperPriority, ?int $taskWrapperMaxAgents, ?int $taskType, ?int $hashlistId, ?int $accessGroupId, ?string $taskWrapperName, ?string $displayName, ?int $taskWrapperIsArchived, ?int $cracked, ?int $taskId, ?string $taskName, ?string $attackCmd, ?int $chunkTime, ?int $statusTimer, ?int $keyspace, ?int $keyspaceProgress, ?int $taskPriority, ?int $taskMaxAgents, ?int $isSmall, ?int $isCpuTask, ?int $taskIsArchived, ?int $taskUsePreprocessor, ?string $hashlistName, ?int $hashCount, ?int $hashlistCracked, ?int $hashTypeId, ?string $hashTypeDescription, ?string $groupName) {
+  function __construct(?int $taskWrapperId, ?int $taskWrapperPriority, ?int $taskWrapperMaxAgents, ?int $taskType, ?int $hashlistId, ?int $accessGroupId, ?string $taskWrapperName, ?string $displayName, ?int $taskWrapperIsArchived, ?int $cracked, ?int $taskId, ?string $taskName, ?string $color, ?string $attackCmd, ?int $chunkTime, ?int $statusTimer, ?int $keyspace, ?int $keyspaceProgress, ?int $taskPriority, ?int $taskMaxAgents, ?int $isSmall, ?int $isCpuTask, ?int $taskIsArchived, ?int $taskUsePreprocessor, ?string $hashlistName, ?int $hashCount, ?int $hashlistCracked, ?int $hashTypeId, ?string $hashTypeDescription, ?string $groupName) {
     $this->taskWrapperId = $taskWrapperId;
     $this->taskWrapperPriority = $taskWrapperPriority;
     $this->taskWrapperMaxAgents = $taskWrapperMaxAgents;
@@ -48,6 +49,7 @@ class TaskWrapperDisplay extends AbstractModel {
     $this->cracked = $cracked;
     $this->taskId = $taskId;
     $this->taskName = $taskName;
+    $this->color = $color;
     $this->attackCmd = $attackCmd;
     $this->chunkTime = $chunkTime;
     $this->statusTimer = $statusTimer;
@@ -81,6 +83,7 @@ class TaskWrapperDisplay extends AbstractModel {
     $dict['cracked'] = $this->cracked;
     $dict['taskId'] = $this->taskId;
     $dict['taskName'] = $this->taskName;
+    $dict['color'] = $this->color;
     $dict['attackCmd'] = $this->attackCmd;
     $dict['chunkTime'] = $this->chunkTime;
     $dict['statusTimer'] = $this->statusTimer;
@@ -116,6 +119,7 @@ class TaskWrapperDisplay extends AbstractModel {
     $dict['cracked'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "cracked", "public" => False, "dba_mapping" => False];
     $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "taskId", "public" => False, "dba_mapping" => False];
     $dict['taskName'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskName", "public" => False, "dba_mapping" => False];
+    $dict['color'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "color", "public" => False, "dba_mapping" => False];
     $dict['attackCmd'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "attackCmd", "public" => False, "dba_mapping" => False];
     $dict['chunkTime'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "chunkTime", "public" => False, "dba_mapping" => False];
     $dict['statusTimer'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "statusTimer", "public" => False, "dba_mapping" => False];
@@ -247,6 +251,14 @@ class TaskWrapperDisplay extends AbstractModel {
   
   function setTaskName(?string $taskName): void {
     $this->taskName = $taskName;
+  }
+  
+  function getColor(): ?string {
+    return $this->color;
+  }
+  
+  function setColor(?string $color): void {
+    $this->color = $color;
   }
   
   function getAttackCmd(): ?string {
@@ -397,6 +409,7 @@ class TaskWrapperDisplay extends AbstractModel {
   const CRACKED = "cracked";
   const TASK_ID = "taskId";
   const TASK_NAME = "taskName";
+  const COLOR = "color";
   const ATTACK_CMD = "attackCmd";
   const CHUNK_TIME = "chunkTime";
   const STATUS_TIMER = "statusTimer";
