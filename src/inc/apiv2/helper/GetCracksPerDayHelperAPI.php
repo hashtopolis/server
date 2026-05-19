@@ -50,7 +50,7 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
     $yearStart = mktime(0, 0, 0, 1, 1, (int) date('Y'));
     $counts = Factory::getHashFactory()->filterCracksOnTimestamp($yearStart);
     $ret = self::createJsonResponse(meta: $counts);
-    if(isEmpty($counts)) {
+    if(empty($counts)) {
       $ret["meta"] = [];
     }
     
