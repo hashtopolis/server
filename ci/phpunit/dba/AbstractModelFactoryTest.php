@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\DBA;
+namespace dba;
 
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\models\Hashlist;

@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Inc\Notifications {
+namespace inc\notifications {
 
   use Hashtopolis\inc\notifications\HashtopolisNotificationEmail;
   use PHPUnit\Framework\TestCase;
 
-  require_once(dirname(__FILE__) . '/../TestMocks.php');
+  require_once(dirname(__FILE__) . '/../../TestMocks.php');
   require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 
   final class HashtopolisNotificationEmailTest extends TestCase {

@@ -14,7 +14,7 @@ namespace Hashtopolis\inc\templating {
   }
 }
 
-namespace Tests\Inc\Utils {
+namespace inc\utils {
 
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
@@ -25,7 +25,7 @@ use Hashtopolis\inc\utils\UserUtils;
 use Hashtopolis\inc\apiv2\error\InternalError;
 use PHPUnit\Framework\TestCase;
 
-require_once(dirname(__FILE__) . '/../TestMocks.php');
+require_once(dirname(__FILE__) . '/../../TestMocks.php');
 require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 
 final class UserUtilsTest extends TestCase {

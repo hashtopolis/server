@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Inc {
+namespace inc {
   use Hashtopolis\inc\Util;
   use PHPUnit\Framework\TestCase;
 
-  require_once(dirname(__FILE__) . '/TestMocks.php');
+  require_once(dirname(__FILE__) . '/../TestMocks.php');
   require_once(dirname(__FILE__) . '/../../../src/inc/startup/include.php');
 
   final class UtilTest extends TestCase {
