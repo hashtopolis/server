@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\dba\Factory;
@@ -39,17 +40,25 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
   public function getParamsSwagger(): array {
     return [];
   }
-
+  
   /**
-    * Returns a map of date -> crack count for days with at least one crack from
-    * January 1st of the current year up to and including today. Days with no
-    * cracks are omitted from the response.
+   * Returns a map of date -> crack count for days with at least one crack from
+   * January 1st of the current year up to and including today. Days with no
+   * cracks are omitted from the response.
+   * @throws Exception
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
 
     $yearStart = mktime(0, 0, 0, 1, 1, (int) date('Y'));
-    $counts = Factory::getHashFactory()->filterCracksOnTimestamp($yearStart);
+    $qF1 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
+    $qF2 = new QueryFilter(Hash::TIME_CRACKED, $yearStart, ">");
+    $counts = Factory::getHashFactory()->columnTimeseriesFilter([Factory::FILTER => [$qF1, $qF2]], Hash::TIME_CRACKED);
+    $counts2 = Factory::getHashBinaryFactory()->columnTimeseriesFilter([Factory::FILTER => [$qF1, $qF2]], Hash::TIME_CRACKED);
+    foreach ($counts2 as $key => $value) {
+      $counts[$key] = ($counts[$key] ?? 0) + $value;
+    }
+    
     $ret = self::createJsonResponse(meta: $counts);
     if(empty($counts)) {
       $ret["meta"] = new stdClass();

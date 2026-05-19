@@ -506,6 +506,37 @@ abstract class AbstractModelFactory {
     return $row['sum'];
   }
   
+  /**
+   * Create a timeseries with counts per day for a given table.
+   *
+   * @param array $options can contain FILTER options to select which entries should match to be counted (e.g. also if the timeseries should only be over a certain amount of day)
+   * @param string $timeColumn table column which should be used to be use for the 'day' grouping
+   * @return array list of [day => count] entries
+   * @throws Exception
+   */
+  public function columnTimeseriesFilter(array $options, string $timeColumn): array {
+    $dbType = StartupConfig::getInstance()->getDatabaseType();
+    $to_timestamp = ($dbType == "postgres") ? "TO_TIMESTAMP" : "FROM_UNIXTIME";
+
+    $query = "SELECT DATE(" . $to_timestamp . "(". self::getMappedModelKey($this->getNullObject(), $timeColumn) . ")) AS day, COUNT(*) AS total";
+    
+    $query .= " FROM ". $this->getMappedModelTable();
+    
+    $vals = array();
+    
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
+    }
+    
+    $query .= " GROUP BY day ORDER BY day";
+
+    $dbh = self::getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    
+    return $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_KEY_PAIR);
+  }
+  
   public function countFilter($options) {
     $query = "SELECT COUNT(*) AS count ";
     $query = $query . " FROM " . $this->getMappedModelTable();
