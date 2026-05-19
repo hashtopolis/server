@@ -93,7 +93,7 @@ class Encryption {
   private static function getCount($string, $mincycles = 3000, $maxcycles = 5000) {
     $count = 0;
     for ($x = 0; $x < strlen($string); $x++) {
-      $count += $x * ord($string[$x]) * pow($x, 15);
+      $count += $x * ord($string[$x]) * bcpowmod($x, 15, 10000);
       $count = $count % 10000;
     }
     return $count % $maxcycles + $mincycles;
