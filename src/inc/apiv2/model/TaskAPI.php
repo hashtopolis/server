@@ -216,8 +216,7 @@ class TaskAPI extends AbstractModelAPI {
       }
       if (is_null($aggregateFieldsets) || in_array("chunkSize", $aggregateFieldsets['task'])) {
         $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-        $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-        $aggregatedData["chunkSize"] = count($chunks, COUNT_NORMAL);
+        $aggregatedData["chunkSize"] = Factory::getChunkFactory()->countFilter([Factory::FILTER => $qF]);
       }
       if (is_null($aggregateFieldsets) || in_array("taskExtraDetails", $aggregateFieldsets['task'])) {
         $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
