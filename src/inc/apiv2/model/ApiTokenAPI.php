@@ -11,6 +11,7 @@ use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\StartupConfig;
 
+use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\JwtTokenUtils;
 
 class ApiTokenAPI extends AbstractModelAPI {
@@ -74,19 +75,15 @@ class ApiTokenAPI extends AbstractModelAPI {
     //Scopes is an array of permissions in format [permFileTaskUpdate, permAgentDelete]
     $scopes = explode(",", $data["scopes"]);
 
-    $allPermissions = $this->getRightGroup($this->getCurrentUser()->getRightGroupId())->getPermissions();
-    if ($allPermissions == 'ALL') {
-      // Special (legacy) case for administrative access, enable all available permissions
-      $all_perms = array_keys(self::$acl_mapping);
-      $rightgroup_perms = array_combine($all_perms, array_fill(0, count($all_perms), true));
-    }
-    else {
-      $rightgroup_perms = json_decode($allPermissions, true);
-    }
-    $NotAllowedPerms = array_filter($rightgroup_perms, fn($v) => $v === false);
-    $allowedPerms = array_intersect_key($rightgroup_perms, array_flip($scopes));
+    $userCrudPerms = AccessUtils::getPermissionArrayConverted(
+      $this->getRightGroup($this->getCurrentUser()->getRightGroupId())->getPermissions()
+    );
 
-    $requestedScopes = $allowedPerms + $NotAllowedPerms;
+    // Modern CRUD scope dict: true if the perm was requested AND the user has it.
+    $requestedScopes = [];
+    foreach ($userCrudPerms as $perm => $granted) {
+      $requestedScopes[$perm] = $granted && in_array($perm, $scopes, true);
+    }
 
     $secret = StartupConfig::getInstance()->getPepper(0);
     $iat = $data[JwtApiKey::START_VALID];

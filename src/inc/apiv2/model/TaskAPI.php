@@ -136,6 +136,18 @@ class TaskAPI extends AbstractModelAPI {
       "files" => ['type' => 'array', 'subtype' => 'int'],
     ];
   }
+
+  public function getAggregateFieldsets(): array {
+    return [
+      'task' => [
+        'assignedAgents',
+        'dispatched',
+        'searched',
+        'isActive',
+        'taskExtraDetails',
+      ]
+    ];
+  }
   
   /**
    * @throws HttpError

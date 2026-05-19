@@ -85,10 +85,7 @@ class CurrentUserHelperAPI extends AbstractHelperAPI {
     $app->patch($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\CurrentUserHelperAPI:actionPatch");
   }
   
-  /**
-   * getCurrentUser is different because it returns via another function
-   */
   public static function getResponse(): array|string|null {
-    return null;
+    return "User";
   }
 }

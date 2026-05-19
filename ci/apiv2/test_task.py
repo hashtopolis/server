@@ -237,6 +237,10 @@ class TaskTest(BaseTest):
         # UPDATE tasks SET isArchived = $taskState WHERE taskWrapperId = $wrapper->getId()
         # This test validates that the query pattern works correctly.
 
+    def test_acl(self):
+        model_obj = self.create_test_object()
+        self._test_acl_list(model_obj, {'permTaskRead': True})
+
     def test_toggle_archive_task_invalid_type_error(self):
         """Test that toggleArchiveTask throws an error for invalid task types"""
         # Create a normal task

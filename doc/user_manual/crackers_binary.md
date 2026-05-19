@@ -16,7 +16,7 @@ This page displays some basic information about all the crackers configured in h
 
 As mentioned above, Hashtopolis supports other crackers than Hashcat. To deploy a new cracker, two steps are required, first the creation of the type of cracker and then adding a version for it. 
 
-By clicking on the ``*New Cracker*'' button, a new page opens in which you can set the name for the new cracker and declare if the chunking is available for this cracker. In order to be compatible with chunking, a cracker must have the following features:
+By clicking on the ``*New Cracker*'' button, a new page opens in which you can set the name for the new cracker. <!-- and declare if the chunking is available for this cracker. In order to be compatible with chunking, a cracker must have the following features:--> A cracker must have the following features in order to split the work into chunks:
 
 - **--keyspace**: calculate the size of the task to be distributed.
 - **--skip**: define the starting point from where the hashcat instance should start working on the keyspace.
@@ -24,7 +24,8 @@ By clicking on the ``*New Cracker*'' button, a new page opens in which you can s
 
 In other words, the keyspace is the total amount of work related to a task. The combination of skip and limit will define a portion of the keyspace, also called chunk, on wich an agent will be working. That is the main features required to distribute a task among the several agents.
 
-If chunking is not available for a cracker, then a task cannot be split and it must be run by a single agent. WHen selecting such type of cracker during the task creation, the ["small task"](./tasks.md#advanced-parameters) flag will be enabled by default. 
+<!-- If chunking is not available for a cracker, then a task cannot be split and it must be run by a single agent. When selecting such type of cracker during the task creation, the ["small task"](./tasks.md#advanced-parameters) flag will be enabled by default. 
+-->
 
 > [!CAUTION]
 > Creating a new type of cracker is not a simple plug-and-play process with Hashtopolis. In addition to defining the new cracker type, you must also modify the agent itself. Specifically, this involves writing a dedicated Python handler file for your cracker.

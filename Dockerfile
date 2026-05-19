@@ -49,9 +49,10 @@ RUN apt-get update \
     && apt-get -y install mariadb-client postgresql-client libpq-dev \
     && apt-get -y install libpng-dev \
     && apt-get -y install ssmtp \
+    && rm -f /etc/ssmtp/ssmtp.conf \
     \
     # Install extensions (optional)
-    && docker-php-ext-install pdo_mysql pgsql pdo_pgsql gd \
+    && docker-php-ext-install pdo_mysql pgsql pdo_pgsql gd bcmath \
     \
     # Install Composer
     && curl -sS https://getcomposer.org/installer | php \
@@ -94,7 +95,7 @@ COPY --from=prebuild /usr/local/cargo/bin/sqlx /usr/bin/
 COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 
 # Install composer
-COPY composer.json ${HASHTOPOLIS_DOCUMENT_ROOT}/../
+COPY composer.json composer.lock ${HASHTOPOLIS_DOCUMENT_ROOT}/../
 RUN composer install --working-dir=${HASHTOPOLIS_DOCUMENT_ROOT}/..
 
 ENV DEBIAN_FRONTEND=dialog
@@ -122,7 +123,7 @@ RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
     \
     # Configuring PHP \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
-	&& echo "display_errors = on" >> /usr/local/etc/php/conf.d/custom.ini \
+	&& echo "display_errors = 1" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
@@ -163,7 +164,8 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
     && echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
-    && echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini
+    && echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "display_errors = 0" >> /usr/local/etc/php/conf.d/custom.ini
 
 USER www-data
 # ----END----

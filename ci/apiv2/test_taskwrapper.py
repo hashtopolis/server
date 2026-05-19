@@ -71,3 +71,7 @@ class TaskWrapperTest(BaseTest):
         self.assertEqual(len(objs), 1, "Should only create 1 TaskWrapper")
         self.assertEqual(taskwrapper, objs[0],
                          "Returned create_supertask object != object found by filter")
+
+    def test_acl(self):
+        model_obj = self.create_test_object()
+        self._test_acl_list(model_obj, {'permTaskWrapperRead': True})

@@ -126,16 +126,13 @@ class OpenAPISchemaUtils {
   }
   
   //TODO relationship array is unnecessarily indexed in the swagger UI
-  static function makeRelationships($class, $uri): array {
+  static function makeRelationships($relationshipsNames, $uri): array {
     $properties = [];
-    $relationshipsNames = array_merge(array_keys($class->getToOneRelationships()), array_keys($class->getToManyRelationships()));
     sort($relationshipsNames);
     foreach ($relationshipsNames as $relationshipName) {
       $self = $uri . "/relationships/" . $relationshipName;
       $related = $uri . "/" . $relationshipName;
-      $properties[] = [
-        "properties" => [
-          $relationshipName => [
+      $properties[$relationshipName] = [
             "type" => "object",
             "properties" => [
               "links" => [
@@ -152,9 +149,6 @@ class OpenAPISchemaUtils {
                 ]
               ]
             ]
-          ]
-        
-        ]
       ];
     }
     return $properties;
@@ -166,19 +160,18 @@ class OpenAPISchemaUtils {
         Must always be set to `1.0.0` in compliant servers.",
       "schema" => [
         "type" => "string",
-        "enum" => "enum: ['1.0.0']"
+        "enum" => ['1.0.0']
       ]
     ];
   }
   
   //TODO expandables array is unnecessarily indexed in the swagger UI
-  static function makeExpandables($class, $container): array {
+  static function makeExpandables($expandables, $container): array {
     $properties = [];
-    $expandables = array_merge($class->getToOneRelationships(), $class->getToManyRelationships());
     foreach ($expandables as $expand => $expandVal) {
       $expandClass = $expandVal["relationType"];
       $expandApiClass = new ($container->get('classMapper')->get($expandClass))($container);
-      $properties[] = [
+      $properties[$expand] = [
         "properties" => [
           "id" => [
             "type" => "integer"
@@ -197,20 +190,44 @@ class OpenAPISchemaUtils {
     return $properties;
   }
   
-  static function mapToProperties($map): array {
-    $properties = array_map(function ($value) {
-      return [
-        "type" => "string",
-        "default" => $value,
-      ];
-    }, $map);
-    return [
-      "type" => "array",
-      "items" => [
-        "type" => "object",
-        "properties" => $properties
-      ]
-    ];
+  static function mapToProperties(mixed $value): array {
+    if (is_null($value)) {
+      return ["nullable" => true, "type" => "string"];
+    } elseif (is_bool($value)) {
+      return ["type" => "boolean", "example" => $value];
+    } elseif (is_int($value)) {
+      return ["type" => "integer", "example" => $value];
+    } elseif (is_float($value)) {
+      return ["type" => "number", "example" => $value];
+    } elseif (is_string($value)) {
+      return ["type" => "string", "example" => $value];
+    } elseif (is_array($value)) {
+      if (empty($value)) {
+        return ["type" => "array"];
+      }
+      if (array_is_list($value)) {
+        /* Merge properties from all items to capture the most complete schema */
+        $mergedProperties = [];
+        foreach ($value as $item) {
+          $itemSchema = self::mapToProperties($item);
+          if (isset($itemSchema['properties'])) {
+            $mergedProperties = array_merge($mergedProperties, $itemSchema['properties']);
+          }
+        }
+        $itemSchema = self::mapToProperties($value[0]);
+        if (!empty($mergedProperties)) {
+          $itemSchema['properties'] = $mergedProperties;
+        }
+        return ["type" => "array", "items" => $itemSchema];
+      } else {
+        $properties = [];
+        foreach ($value as $key => $val) {
+          $properties[$key] = self::mapToProperties($val);
+        }
+        return ["type" => "object", "properties" => $properties];
+      }
+    }
+    return ["type" => "string"];
   }
   
   /**
