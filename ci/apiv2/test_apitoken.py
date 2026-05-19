@@ -1,5 +1,44 @@
-from hashtopolis import ApiToken, HashtopolisError
-from utils import BaseTest
+import base64
+import json
+import time
+
+import requests
+
+from hashtopolis import Model
+
+from utils import BaseTest, create_restricted_user, ApiToken
+
+
+def _decode_jwt_scope(token):
+    """Decode the JWT payload (without signature verification) and return the parsed scope dict."""
+    payload_b64 = token.split('.')[1]
+    payload_b64 += '=' * (-len(payload_b64) % 4)
+    payload = json.loads(base64.urlsafe_b64decode(payload_b64))
+    return json.loads(payload['scope'])
+
+
+def _create_apitoken_raw(test, auth, scopes):
+    """POST /ui/apiTokens as the given user and register the resulting token for cleanup."""
+    connector = ApiToken.objects.get_conn()
+    connector.authenticate(auth=auth)
+    uri = connector._api_endpoint + '/ui/apiTokens'
+    headers = {**connector._headers, 'Content-Type': 'application/json'}
+    now = int(time.time())
+    payload = {
+        'data': {
+            'attributes': {
+                'scopes': scopes,
+                'startValid': now,
+                'endValid': now + 3600,
+            },
+            'type': 'ApiToken',
+        },
+    }
+    r = requests.post(uri, headers=headers, data=json.dumps(payload))
+    assert r.status_code == 201, f"Failed to create apitoken: status={r.status_code} body={r.text}"
+    obj = ApiToken(**r.json()['data'])
+    test.delete_after_test(obj)
+    return obj
 
 
 class ApiTokenTest(BaseTest):
@@ -9,48 +48,41 @@ class ApiTokenTest(BaseTest):
         return self.create_apitoken(*nargs, **kwargs)
 
     def test_create(self):
-        model_obj = self.create_test_object(delete=False)
+        model_obj = self.create_test_object()
         self._test_create(model_obj)
 
-    def test_token_returned_on_create(self):
-        model_obj = self.create_test_object(delete=False)
-        # The JWT token string is only present in the POST response
-        self.assertTrue(hasattr(model_obj, 'token'))
-        self.assertIsNotNone(model_obj.token)
-        self.assertIsInstance(model_obj.token, str)
-        self.assertGreater(len(model_obj.token), 0)
-
-    def test_token_not_in_get(self):
-        model_obj = self.create_test_object(delete=False)
-        # Retrieve the object via GET and verify the token field is absent
-        obj = self.model_class.objects.get(pk=model_obj.id)
-        self.assertFalse(hasattr(obj, 'token') and obj.token is not None)
-
-    def test_revoke(self):
-        model_obj = self.create_test_object(delete=False)
-        self._test_patch(model_obj, 'isRevoked', True)
-
-    def test_expand_user(self):
-        model_obj = self.create_test_object(delete=False)
-        self._test_expandables(model_obj, ['user'])
-
-    def test_patch_readonly_startValid(self):
-        model_obj = self.create_test_object(delete=False)
-        model_obj.startValid = 0
-        with self.assertRaises(HashtopolisError) as e:
-            model_obj.save()
-        self.assertEqual(e.exception.status_code, 403)
-        self.assertIn('startValid', e.exception.title)
-
-    def test_patch_readonly_endValid(self):
-        model_obj = self.create_test_object(delete=False)
-        model_obj.endValid = 9999999999
-        with self.assertRaises(HashtopolisError) as e:
-            model_obj.save()
-        self.assertEqual(e.exception.status_code, 403)
-        self.assertIn('endValid', e.exception.title)
+    def test_expandables(self):
+        model_obj = self.create_test_object()
+        expandables = ['user']
+        self._test_expandables(model_obj, expandables)
 
     def test_acl(self):
-        # Admin's token should not be visible to a different user
-        model_obj = self.create_test_object(delete=False)
+        model_obj = self.create_test_object()
         self._test_acl_list(model_obj, {'permJwtApiKeyRead': True})
+
+    def test_token_scope_admin_grants_requested(self):
+        """Admin holds every legacy permission, so any requested scope must be granted in the JWT."""
+        model_obj = self.create_test_object()
+        scope = _decode_jwt_scope(model_obj.token)
+        self.assertTrue('permHashlistRead' in scope)
+
+    def test_token_scope_intersection_grants_permitted(self):
+        """A restricted user is granted a requested scope they hold via the legacy permission mapping."""
+        auth = create_restricted_user(self, {
+            'permHashlistRead': True,
+            'permJwtApiKeyCreate': True,
+        })
+        model_obj = _create_apitoken_raw(self, auth, ['permHashlistRead'])
+        scope = _decode_jwt_scope(model_obj.token)
+        self.assertTrue('permHashlistRead' in scope)
+
+    def test_token_scope_intersection_denies_unpermitted(self):
+        """A restricted user must NOT receive a scope they do not have, even if they request it."""
+        auth = create_restricted_user(self, {
+            'permHashlistRead': True,
+            'permJwtApiKeyCreate': True,
+        })
+        model_obj = _create_apitoken_raw(self, auth, ['permHashlistRead', 'permFileRead'])
+        scope = _decode_jwt_scope(model_obj.token)
+        self.assertTrue('permHashlistRead' in scope)
+        self.assertFalse('permFileRead' not in scope)

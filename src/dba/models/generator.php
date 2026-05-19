@@ -292,8 +292,8 @@ $CONF['JwtApiKey'] = [
     ['name' => 'jwtApiKeyId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'startValid', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'endValid', 'read_only' => True, 'type' => 'int64'],
-    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'relation' => 'User'],
-    ['name' => 'isRevoked', 'read_only' => False, 'type' => 'bool'],
+    ['name' => 'userId', 'read_only' => True, 'null' => True, 'type' => 'int', 'relation' => 'User'],
+    ['name' => 'isRevoked', 'read_only' => False, 'null' => True, 'type' => 'bool'],
   ],
 ];
 $CONF['LogEntry'] = [
@@ -354,7 +354,7 @@ $CONF['RegVoucher'] = [
 ];
 $CONF['RightGroup'] = [
   'columns' => [
-    ['name' => 'rightGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id'],
+    ['name' => 'rightGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'rightGroupId'],
     ['name' => 'groupName', 'read_only' => False, 'type' => 'str(50)', 'alias' => 'name'],
     ['name' => 'permissions', 'read_only' => False, 'type' => 'dict', 'subtype' => 'bool', 'null' => True],
   ],
@@ -408,7 +408,7 @@ $CONF['Task'] = [
     ['name' => 'useNewBench', 'read_only' => True, 'type' => 'bool'],
     ['name' => 'skipKeyspace', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinary'],
-    ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinaryType'],
+    ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'null' => True, 'type' => 'int', 'relation' => 'CrackerBinaryType'], // TODO: this will be removed in the future as it's redundant
     ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'TaskWrapper'],
     ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'notes', 'read_only' => False, 'type' => 'str(65535)'],
@@ -475,7 +475,7 @@ $CONF['TaskWrapperDisplay'] = [
 ];
 $CONF['User'] = [
   'columns' => [
-    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id', 'public' => True],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'userId', 'public' => True],
     ['name' => 'username', 'read_only' => True, 'type' => 'str(100)', 'alias' => 'name', 'public' => True],
     ['name' => 'email', 'read_only' => False, 'type' => 'str(150)'],
     ['name' => 'passwordHash', 'read_only' => True, 'type' => 'str(256)', 'protected' => True, 'private' => True],
