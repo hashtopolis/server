@@ -1,51 +1,52 @@
 <?php
 
-namespace inc {
-  use Hashtopolis\inc\Util;
-  use PHPUnit\Framework\TestCase;
+namespace inc;
 
-  require_once(dirname(__FILE__) . '/../TestMocks.php');
-  require_once(dirname(__FILE__) . '/../../../src/inc/startup/include.php');
+use Hashtopolis\inc\Util;
+use PHPUnit\Framework\TestCase;
 
-  final class UtilTest extends TestCase {
-    public function testIsMailConfiguredReturnsFalseWithoutSsmtpConfig(): void {
-      \hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
-        return false;
-      });
+require_once(dirname(__FILE__) . '/../TestMocks.php');
+require_once(dirname(__FILE__) . '/../../../src/inc/startup/include.php');
 
-      try {
-        $this->assertFalse(Util::isMailConfigured());
-      }
-      finally {
-        \hashtopolis_clear_test_mocks(['Hashtopolis\\inc\\is_file']);
-      }
+final class UtilTest extends TestCase {
+  public function testIsMailConfiguredReturnsFalseWithoutSsmtpConfig(): void {
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
+      return false;
+    });
+    
+    try {
+      $this->assertFalse(Util::isMailConfigured());
     }
-
-    public function testIsMailConfiguredReturnsTrueWithSsmtpConfig(): void {
-      \hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
-        return true;
-      });
-
-      try {
-        $this->assertTrue(Util::isMailConfigured());
-      }
-      finally {
-        \hashtopolis_clear_test_mocks(['Hashtopolis\\inc\\is_file']);
-      }
+    finally {
+      \hashtopolis_clear_test_mocks(['Hashtopolis\\inc\\is_file']);
     }
-
-    public function testSendMailReturnsFalseWhenMailIsNotConfigured(): void {
-      $loggedMessage = null;
-      \hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
-        return false;
-      });
-
-      try {
-        $this->assertFalse(Util::sendMail('user@example.com', 'subject', '<p>body</p>', 'body'));
-      }
-      finally {
-        \hashtopolis_clear_test_mocks(['Hashtopolis\\inc\\is_file']);
-      }
+  }
+  
+  public function testIsMailConfiguredReturnsTrueWithSsmtpConfig(): void {
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
+      return true;
+    });
+    
+    try {
+      $this->assertTrue(Util::isMailConfigured());
     }
-  }  
+    finally {
+      \hashtopolis_clear_test_mocks(['Hashtopolis\\inc\\is_file']);
+    }
+  }
+  
+  public function testSendMailReturnsFalseWhenMailIsNotConfigured(): void {
+    $loggedMessage = null;
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\is_file', static function ($path): bool {
+      return false;
+    });
+    
+    try {
+      $this->assertFalse(Util::sendMail('user@example.com', 'subject', '<p>body</p>', 'body'));
+    }
+    finally {
+      \hashtopolis_clear_test_mocks(['Hashtopolis\\inc\\is_file']);
+    }
+  }
 }
+

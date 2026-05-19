@@ -2,20 +2,19 @@
 
 namespace dba;
 
-use Hashtopolis\dba\ContainFilter;
+use TestBase;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\OrderFilter;
 use Exception;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\utils\AccessUtils;
-use PHPUnit\Framework\TestCase;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\User;
 
-require_once(dirname(__FILE__) . '/../../../src/inc/startup/include.php');
+require_once(dirname(__FILE__) . '/../TestBase.php');
 
-final class AbstractModelFactoryTest extends TestCase {
+final class AbstractModelFactoryTest extends TestBase {
   /**
    * @throws Exception
    */
@@ -48,12 +47,9 @@ final class AbstractModelFactoryTest extends TestCase {
    */
   public function testColumnFilter(): void {
     // add some data
-    $hashlist_1 = new Hashlist(null, "hashlist 1", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 0, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0);
-    $hashlist_2 = new Hashlist(null, "hashlist 2", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 1, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0);
-    $hashlist_3 = new Hashlist(null, "hashlist 3", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 0, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0);
-    $hashlist_1 = Factory::getHashlistFactory()->save($hashlist_1);
-    $hashlist_2 = Factory::getHashlistFactory()->save($hashlist_2);
-    $hashlist_3 = Factory::getHashlistFactory()->save($hashlist_3);
+    $hashlist_1 = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 1", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 0, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
+    $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 2", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 1, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
+    $hashlist_3 = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 3", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 0, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
     
     $oF = new OrderFilter(Hashlist::HASHLIST_ID, "ASC");
     
@@ -67,8 +63,5 @@ final class AbstractModelFactoryTest extends TestCase {
     $qF = new QueryFilter(Hashlist::CRACKED, 0, ">");
     $ids = Factory::getHashlistFactory()->columnFilter([Factory::FILTER => $qF, Factory::ORDER => $oF], Hashlist::HASHLIST_ID);
     $this->assertSame([], $ids);
-    
-    // clean up
-    Factory::getHashlistFactory()->massDeletion([Factory::FILTER => new ContainFilter(Hashlist::HASHLIST_ID, [$hashlist_1->getId(), $hashlist_2->getId(), $hashlist_3->getId()])]);
   }
 }

@@ -3,23 +3,12 @@
 namespace inc\notifications {
 
   use Hashtopolis\inc\notifications\HashtopolisNotificationEmail;
-  use PHPUnit\Framework\TestCase;
-
-  require_once(dirname(__FILE__) . '/../../TestMocks.php');
+  use TestBase;
+  
+  require_once(dirname(__FILE__) . '/../../TestBase.php');
   require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 
-  final class HashtopolisNotificationEmailTest extends TestCase {
-    protected function setUp(): void {
-      parent::setUp();
-
-      \hashtopolis_clear_test_mocks();
-    }
-
-    protected function tearDown(): void {
-      \hashtopolis_clear_test_mocks();
-
-      parent::tearDown();
-    }
+  final class HashtopolisNotificationEmailTest extends TestBase {
 
     public function testSendMessageDoesNotCallSendMailWhenMailIsNotConfigured(): void {
       $mailCallCount = 0;

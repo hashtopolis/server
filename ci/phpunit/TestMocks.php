@@ -1,5 +1,19 @@
 <?php
 
+namespace Hashtopolis\inc\templating {
+  class Template {
+    private string $name;
+    
+    public function __construct(string $name) {
+      $this->name = $name;
+    }
+    
+    public function render($data): string {
+      return $this->name . ':' . json_encode($data);
+    }
+  }
+}
+
 namespace {
   function hashtopolis_set_test_mock(string $name, callable $mock): void {
     $GLOBALS['hashtopolis_test_mocks'][$name] = $mock;
