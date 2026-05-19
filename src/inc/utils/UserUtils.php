@@ -15,6 +15,7 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\JwtApiKey;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\InternalError;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DNotificationObjectType;
@@ -208,6 +209,7 @@ class UserUtils {
    * @throws HTException
    * @throws HttpConflict
    * @throws HttpError
+   * @throws InternalError
    */
   public static function createUser(string $username, string $email, int $rightGroupId, User $adminUser, bool $isValid = true, int $session_lifetime = 3600): User {
     $username = htmlentities($username, ENT_QUOTES, "UTF-8");
@@ -241,7 +243,11 @@ class UserUtils {
     $tmpl = new Template("email/creation");
     $tmplPlain = new Template("email/creation.plain");
     $obj = array('username' => $username, 'password' => $newPass, 'url' => Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL));
-    Util::sendMail($email, "Account at " . APP_NAME, $tmpl->render($obj), $tmplPlain->render($obj));
+    
+    $subject = "Account at " . APP_NAME;
+    if (Util::isMailConfigured() && !Util::sendMail($email, $subject, $tmpl->render($obj), $tmplPlain->render($obj))) {
+      throw new InternalError("User account created but unable to send mail to user with subject: " . $subject);
+    }
     
     // create log entry and check if notification sending is needed
     Util::createLogEntry("User", $adminUser->getId(), DLogEntry::INFO, "New User created: " . $user->getUsername());
