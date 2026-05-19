@@ -1385,12 +1385,9 @@ class Util {
     $htmlMessage .= $text;
     $htmlMessage .= "\r\n\r\n--" . $boundary . "--";
     
-    set_error_handler(function() { error_log("Error sending mail"); });
     if (!mail($address, $subject, $plainMessage . $htmlMessage, $headers)) {
-      restore_error_handler();
       return false;
     }
-    restore_error_handler();
     return true;
   }
   
