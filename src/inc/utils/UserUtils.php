@@ -40,7 +40,7 @@ class UserUtils {
    * @param User $adminUser
    * @throws HTException
    */
-  public static function deleteUser($userId, $adminUser) {
+  public static function deleteUser(int $userId, User $adminUser): void {
     $user = UserUtils::getUser($userId);
     if ($user->getId() == $adminUser->getId()) {
       throw new HTException("You cannot delete yourself!");
@@ -103,7 +103,7 @@ class UserUtils {
    * @param int $userId
    * @throws HTException
    */
-  public static function enableUser($userId) {
+  public static function enableUser(int $userId): void {
     $user = UserUtils::getUser($userId);
     Factory::getUserFactory()->set($user, User::IS_VALID, 1);
   }
@@ -131,7 +131,7 @@ class UserUtils {
    * @param User $adminUser
    * @throws HTException
    */
-  public static function setRights($userId, $groupId, $adminUser) {
+  public static function setRights(int $userId, int $groupId, User $adminUser): void {
     $group = AccessControlUtils::getGroup($groupId);
     $user = UserUtils::getUser($userId);
     if ($user->getId() == $adminUser->getId()) {
@@ -159,7 +159,7 @@ class UserUtils {
    * 5. Generates a new salt and hash for the new password.
    * 6. Updates the user's password hash, salt, and resets the computed password flag.
    */
-  public static function changePassword($user, $oldPassword, $newPassword, $confirmPassword) {
+  public static function changePassword(User $user, string $oldPassword, string $newPassword, string $confirmPassword): void {
     if (!Encryption::passwordVerify($oldPassword, $user->getPasswordSalt(), $user->getPasswordHash())) {
       throw new HttpError("Your old password is wrong!");
     }
@@ -184,7 +184,7 @@ class UserUtils {
    * @param User $adminUser
    * @throws HTException
    */
-  public static function setPassword($userId, $password, $adminUser) {
+  public static function setPassword(int $userId, string $password, User $adminUser): void {
     $user = UserUtils::getUser($userId);
     if ($user->getId() == $adminUser->getId()) {
       throw new HTException("To change your own password go to your settings!");
@@ -205,6 +205,7 @@ class UserUtils {
    * @param int $rightGroupId
    * @param User $adminUser
    * @param bool $isValid
+   * @param int $session_lifetime
    * @return User
    * @throws HTException
    * @throws HttpConflict
@@ -262,7 +263,7 @@ class UserUtils {
    * @return User
    * @throws HTException
    */
-  public static function getUser($userId) {
+  public static function getUser(int $userId): User {
     $user = Factory::getUserFactory()->get($userId);
     if ($user == null) {
       throw new HTException("Invalid user ID!");

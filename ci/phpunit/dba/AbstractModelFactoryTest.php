@@ -1,8 +1,7 @@
 <?php
 
-namespace dba;
+namespace Hashtopolis\dba;
 
-use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
@@ -10,15 +9,12 @@ use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\HealthCheck;
 use Hashtopolis\dba\models\HealthCheckAgent;
+use Hashtopolis\TestBase;
 use Random\RandomException;
-use TestBase;
 use Hashtopolis\dba\models\Hashlist;
-use Hashtopolis\dba\OrderFilter;
 use Exception;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\utils\AccessUtils;
-use Hashtopolis\dba\Factory;
-use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\User;
 
 require_once(dirname(__FILE__) . '/../TestBase.php');

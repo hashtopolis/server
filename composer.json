@@ -57,7 +57,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\DBA\\": "ci/phpunit/dba/"
+            "Hashtopolis\\": "ci/phpunit/"
         }
     },
     "scripts": {
