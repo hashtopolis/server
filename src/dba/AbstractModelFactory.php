@@ -142,6 +142,7 @@ abstract class AbstractModelFactory {
    * database
    * @param $model AbstractModel model to save
    * @return AbstractModel|null
+   * @throws Exception
    */
   public function save(AbstractModel $model): ?AbstractModel {
     $dict = $model->getKeyValueDict();

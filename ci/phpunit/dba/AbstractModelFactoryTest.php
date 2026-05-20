@@ -149,6 +149,30 @@ final class AbstractModelFactoryTest extends TestBase {
   }
   
   /**
+   * Test creating a hash type object and saving it.
+   *
+   * @return void
+   */
+  public function testSaveModelSuccessStaticId(): void {
+    $hashType = new HashType(100000, 'placeholder', 0, 0);
+    $hashType = Factory::getHashTypeFactory()->save($hashType);
+    $this->registerDatabaseObject(Factory::getHashTypeFactory(), $hashType);
+    $this->assertEquals(100000, $hashType->getId());
+  }
+  
+  /**
+   * Test creating a hash type object without providing an id and let it auto increment.
+   *
+   * @return void
+   */
+  public function testSaveModelSuccessNoId(): void {
+    $hashType = new HashType(null, 'placeholder', 0, 0);
+    $hashType = Factory::getHashTypeFactory()->save($hashType);
+    $this->registerDatabaseObject(Factory::getHashTypeFactory(), $hashType);
+    $this->assertNotEquals(null, $hashType->getId());
+  }
+  
+  /**
    * Tests the case with entries but none of them matching to the timeseries filter used so the counts array is empty.
    *
    * @return void
