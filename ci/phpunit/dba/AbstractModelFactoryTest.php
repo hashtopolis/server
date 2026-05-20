@@ -2,7 +2,10 @@
 
 namespace dba;
 
+use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\models\Hash;
+use Hashtopolis\dba\models\HashType;
+use Hashtopolis\dba\models\HealthCheckAgent;
 use TestBase;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\OrderFilter;
@@ -23,6 +26,73 @@ final class AbstractModelFactoryTest extends TestBase {
     $db = Factory::getAgentFactory()->getDB(true);
     
     $this->assertNotNull($db);
+  }
+  
+  /**
+   * For non-mapped tables, the mapped table should be the same.
+   *
+   * @return void
+   */
+  public function testGetMappedModelTableWithoutMapping(): void {
+    $agentFactory = Factory::getAgentFactory();
+    $this->assertEquals($agentFactory->getModelTable(), $agentFactory->getMappedModelTable());
+  }
+  
+  /**
+   * For mapped tables, the mapped table should have the prefix
+   *
+   * @return void
+   */
+  public function testGetMappedModelTableWithMapping(): void {
+    $userFactory = Factory::getUserFactory();
+    $this->assertEquals("htp_" . $userFactory->getModelTable(), $userFactory->getMappedModelTable());
+  }
+  
+  /**
+   * Test with a normal model where no remapping is needed.
+   *
+   * @return void
+   */
+  public function testGetMappedModelKeysWithoutRemapping(): void {
+    $hashType = new HashType(null, 'placeholder', 0, 0);
+    $dict = $hashType->getKeyValueDict();
+    $dict_mapped = AbstractModelFactory::getMappedModelKeys($hashType);
+    $this->assertEquals(array_keys($dict), $dict_mapped);
+  }
+  
+  /**
+   * Test with a model where remapping is needed on a column
+   *
+   * @return void
+   */
+  public function testGetMappedModelKeysWithRemapping(): void {
+    $healthCheckAgent = new HealthCheckAgent(null, 1, 1, 0, 0, 0, 0, 5, '');
+    $dict = $healthCheckAgent->getKeyValueDict();
+    $dict_mapped = AbstractModelFactory::getMappedModelKeys($healthCheckAgent);
+    $this->assertNotEquals(array_keys($dict), $dict_mapped);
+    $this->assertContains("htp_end", $dict_mapped);
+  }
+  
+  /**
+   * Test that for a non-mapped key the return value just remains the same as it was before
+   *
+   * @return void
+   */
+  public function testGetMappedModelKeyWithoutRemapping(): void {
+    $hashType = new HashType(null, 'placeholder', 0, 0);
+    $key_mapped = AbstractModelFactory::getMappedModelKey($hashType, HashType::IS_SALTED);
+    $this->assertEquals(HashType::IS_SALTED, $key_mapped);
+  }
+  
+  /**
+   * Test that for a aapped key the return value gets mapped
+   *
+   * @return void
+   */
+  public function testGetMappedModelKeyWithRemapping(): void {
+    $healthCheckAgent = new HealthCheckAgent(null, 1, 1, 0, 0, 0, 0, 5, '');
+    $key_mapped = AbstractModelFactory::getMappedModelKey($healthCheckAgent, HealthCheckAgent::END);
+    $this->assertEquals("htp_end", $key_mapped);
   }
   
   /**
