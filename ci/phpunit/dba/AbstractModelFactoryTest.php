@@ -3,8 +3,12 @@
 namespace dba;
 
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\CrackerBinary;
+use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\models\HashType;
+use Hashtopolis\dba\models\HealthCheck;
 use Hashtopolis\dba\models\HealthCheckAgent;
 use Random\RandomException;
 use TestBase;
@@ -97,6 +101,127 @@ final class AbstractModelFactoryTest extends TestBase {
   }
   
   /**
+   * Test creating a hash type object and saving it.
+   *
+   * @return void
+   * @throws RandomException
+   */
+  public function testSaveModelSuccessStaticId(): void {
+    $id = 100000 + random_int(10, 999);
+    $hashType = new HashType($id, 'placeholder', 0, 0);
+    $hashType = Factory::getHashTypeFactory()->save($hashType);
+    $this->registerDatabaseObject(Factory::getHashTypeFactory(), $hashType);
+    $this->assertEquals($id, $hashType->getId());
+  }
+  
+  /**
+   * Test creating a hash type object without providing an id and let it auto increment.
+   *
+   * @return void
+   */
+  public function testSaveModelSuccessNoId(): void {
+    $hashType = new HashType(null, 'placeholder', 0, 0);
+    $hashType = Factory::getHashTypeFactory()->save($hashType);
+    $this->registerDatabaseObject(Factory::getHashTypeFactory(), $hashType);
+    $this->assertNotEquals(null, $hashType->getId());
+  }
+  
+  /**
+   * Test just updating a model without any change, should remain the same in the database.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testUpdateModelSuccessNoChanges(): void {
+    $hashType = new HashType(null, 'placeholder', 0, 0);
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), $hashType);
+    $this->assertNotNull($hashType->getId());
+    
+    Factory::getHashTypeFactory()->update($hashType);
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType->getId());
+    $this->assertEquals($hashType->getKeyValueDict(), $hashTypeUpdated->getKeyValueDict());
+  }
+  
+  /**
+   * Test updating a model with a single change.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testUpdateModelSuccessSingleChange(): void {
+    $hashType = new HashType(null, 'placeholder', 0, 0);
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), $hashType);
+    $this->assertNotNull($hashType->getId());
+    $this->assertTrue($hashType instanceof HashType);
+    
+    $hashType->setDescription('HashType X');
+    Factory::getHashTypeFactory()->update($hashType);
+    
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType->getId());
+    $this->assertEquals('HashType X', $hashTypeUpdated->getDescription());
+  }
+  
+  /**
+   * Test updating a model with a single change on a column which needs to be mapped to check mapping functionality.
+   * We have to create some objects first and then be able to create a HealthCheckAgent relation where the column
+   * 'end' needs to be mapped in the database as it is a reserved keyword. We check that we get the update from a
+   * re-read from the database
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testUpdateModelSuccessSingleChangeOnMappedColumn(): void {
+    $agent = new Agent(null, '', '', 0, '', '', 0, 0, 0, '', '', 0, '', null, 0, '');
+    $agent = $this->createDatabaseObject(Factory::getAgentFactory(), $agent);
+    
+    $hashType = new HashType(null, 'placeholder', 0, 0);
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), $hashType);
+    
+    $crackerBinaryType = new CrackerBinaryType(null, '', 0);
+    $crackerBinaryType = $this->createDatabaseObject(Factory::getCrackerBinaryTypeFactory(), $crackerBinaryType);
+    
+    $crackerBinary = new CrackerBinary(null, $crackerBinaryType->getId(), '', '', '');
+    $crackerBinary = $this->createDatabaseObject(Factory::getCrackerBinaryFactory(), $crackerBinary);
+    
+    $healthCheck = new HealthCheck(null, 0, 0, 0, $hashType->getId(), $crackerBinary->getId(), 0, '');
+    $healthCheck = $this->createDatabaseObject(Factory::getHealthCheckFactory(), $healthCheck);
+    
+    $healthCheckAgent = new HealthCheckAgent(null, $healthCheck->getId(), $agent->getId(), 0, 0, 0, 0, 0, '');
+    $healthCheckAgent = $this->createDatabaseObject(Factory::getHealthCheckAgentFactory(), $healthCheckAgent);
+    $this->assertNotNull($healthCheckAgent->getId());
+    $this->assertTrue($healthCheckAgent instanceof HealthCheckAgent);
+    
+    $healthCheckAgent->setEnd(9999);
+    Factory::getHealthCheckAgentFactory()->update($healthCheckAgent);
+    
+    $healthCheckAgentUpdated = Factory::getHealthCheckAgentFactory()->get($healthCheckAgent->getId());
+    $this->assertEquals(9999, $healthCheckAgentUpdated->getEnd());
+  }
+  
+  /**
+   * Test updating a model with multiple changed columns.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testUpdateModelSuccessMultipleChanges(): void {
+    $hashType = new HashType(null, 'placeholder', 0, 0);
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), $hashType);
+    $this->assertNotNull($hashType->getId());
+    $this->assertTrue($hashType instanceof HashType);
+    
+    $hashType->setDescription('HashType X');
+    $hashType->setIsSalted(1);
+    $hashType->setIsSlowHash(1);
+    Factory::getHashTypeFactory()->update($hashType);
+    
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType->getId());
+    $this->assertEquals('HashType X', $hashTypeUpdated->getDescription());
+    $this->assertEquals(1, $hashType->getIsSalted());
+    $this->assertEquals(1, $hashType->getIsSlowHash());
+  }
+  
+  /**
    * Tests both cases to be used on a simple QueryFilter with no result.
    * When single is true, null must be returned if no matching entry was found, empty array otherwise
    *
@@ -147,32 +272,6 @@ final class AbstractModelFactoryTest extends TestBase {
     $counts = Factory::getHashFactory()->columnTimeseriesFilter([], Hash::TIME_CRACKED);
     
     $this->assertSame([], $counts);
-  }
-  
-  /**
-   * Test creating a hash type object and saving it.
-   *
-   * @return void
-   * @throws RandomException
-   */
-  public function testSaveModelSuccessStaticId(): void {
-    $id = 100000 + random_int(10,999);
-    $hashType = new HashType($id, 'placeholder', 0, 0);
-    $hashType = Factory::getHashTypeFactory()->save($hashType);
-    $this->registerDatabaseObject(Factory::getHashTypeFactory(), $hashType);
-    $this->assertEquals($id, $hashType->getId());
-  }
-  
-  /**
-   * Test creating a hash type object without providing an id and let it auto increment.
-   *
-   * @return void
-   */
-  public function testSaveModelSuccessNoId(): void {
-    $hashType = new HashType(null, 'placeholder', 0, 0);
-    $hashType = Factory::getHashTypeFactory()->save($hashType);
-    $this->registerDatabaseObject(Factory::getHashTypeFactory(), $hashType);
-    $this->assertNotEquals(null, $hashType->getId());
   }
   
   /**

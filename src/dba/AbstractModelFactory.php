@@ -248,6 +248,7 @@ abstract class AbstractModelFactory {
    * Returns the return of PDO::execute()
    * @param $model AbstractModel model to update
    * @return PDOStatement
+   * @throws Exception
    */
   public function update(AbstractModel $model): PDOStatement {
     $dict = $model->getKeyValueDict();
