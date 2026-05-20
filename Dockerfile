@@ -52,7 +52,7 @@ RUN apt-get update \
     && rm -f /etc/ssmtp/ssmtp.conf \
     \
     # Install extensions (optional)
-    && docker-php-ext-install pdo_mysql pgsql pdo_pgsql gd \
+    && docker-php-ext-install pdo_mysql pgsql pdo_pgsql gd bcmath \
     \
     # Install Composer
     && curl -sS https://getcomposer.org/installer | php \
