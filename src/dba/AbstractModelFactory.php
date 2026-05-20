@@ -80,6 +80,12 @@ abstract class AbstractModelFactory {
    */
   abstract function createObjectFromDict(string $pk, array $dict): AbstractModel;
   
+  /**
+   * Return the model name in the table, which is the same normally, unless mapping is required. In a mapping case,
+   * the configured prefix is added.
+   *
+   * @return string
+   */
   public function getMappedModelTable(): string {
     if ($this->isMapping()) {
       return self::MAPPING_PREFIX . $this->getModelName();
@@ -94,7 +100,7 @@ abstract class AbstractModelFactory {
    * @param AbstractModel $model
    * @return array list of keys of the model (mapped where needed)
    */
-  private static function getMappedModelKeys(AbstractModel $model): array {
+  public static function getMappedModelKeys(AbstractModel $model): array {
     // check the keys of the table for required mapping from features
     $keys = [];
     $features = $model->getFeatures();
@@ -110,6 +116,8 @@ abstract class AbstractModelFactory {
   }
   
   /**
+   * Get the key for a model how it's represented in the database itself. For non-mapped keys the value just remains.
+   *
    * @param AbstractModel $model
    * @param string $key
    * @return string
@@ -134,6 +142,7 @@ abstract class AbstractModelFactory {
    * database
    * @param $model AbstractModel model to save
    * @return AbstractModel|null
+   * @throws Exception
    */
   public function save(AbstractModel $model): ?AbstractModel {
     $dict = $model->getKeyValueDict();
@@ -239,6 +248,7 @@ abstract class AbstractModelFactory {
    * Returns the return of PDO::execute()
    * @param $model AbstractModel model to update
    * @return PDOStatement
+   * @throws Exception
    */
   public function update(AbstractModel $model): PDOStatement {
     $dict = $model->getKeyValueDict();

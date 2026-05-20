@@ -1,15 +1,12 @@
 <?php
 
-namespace Tests\inc\apiv2\util;
+namespace Hashtopolis\inc\apiv2\util;
 
 use PHPUnit\Framework\TestCase;
 
-use Exception;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 
 use Slim\Factory\AppFactory;
-use Slim\Psr7\Request;
-use Hashtopolis\inc\apiv2\util\CorsHackMiddleware;
 
 class DummyRequest {
   private string $http_origin;
@@ -28,6 +25,7 @@ final class CorsHackMiddlewareTest extends TestCase {
    * Tests all possible valid localhost variations with different ports.
    *
    * @return void
+   * @throws HttpForbidden
    */
   public function testValidLocalhostVariations(): void {
     $this->expectNotToPerformAssertions();
@@ -97,7 +95,8 @@ final class CorsHackMiddlewareTest extends TestCase {
     $response = $app->getResponseFactory()->createResponse();
 
     $request->setHeaderLine("http://127.0.0.1:4201");
-    $this->expectException(CorsHackMiddleware::CheckCORS($request, $response));
+    
+    CorsHackMiddleware::CheckCORS($request, $response);
   }
 
   /**
@@ -118,7 +117,8 @@ final class CorsHackMiddlewareTest extends TestCase {
     $response = $app->getResponseFactory()->createResponse();
 
     $request->setHeaderLine("http://evil.com:4200");
-    $this->expectException(CorsHackMiddleware::CheckCORS($request, $response));
+    
+    CorsHackMiddleware::CheckCORS($request, $response);
   }
 
   /**
@@ -139,7 +139,8 @@ final class CorsHackMiddlewareTest extends TestCase {
     $response = $app->getResponseFactory()->createResponse();
 
     $request->setHeaderLine("http://137.137.137.1:4200");
-    $this->expectException(CorsHackMiddleware::CheckCORS($request, $response));
+    
+    CorsHackMiddleware::CheckCORS($request, $response);
   }
 
   /**
@@ -160,13 +161,15 @@ final class CorsHackMiddlewareTest extends TestCase {
     $response = $app->getResponseFactory()->createResponse();
 
     $request->setHeaderLine("http://hashtopolis-cluster.com:4201");
-    $this->expectException(CorsHackMiddleware::CheckCORS($request, $response));
+    
+    CorsHackMiddleware::CheckCORS($request, $response);
   }
-
+  
   /**
    * Tests a valid domain without port as origin.
-   * 
-  */ 
+   *
+   * @throws HttpForbidden
+   */
   public function testValidDomainWithoutPort(): void {
     $this->expectNotToPerformAssertions();
 
@@ -202,12 +205,13 @@ final class CorsHackMiddlewareTest extends TestCase {
     $request->setHeaderLine("https://hashtopolis-cluster.com");
     CorsHackMiddleware::CheckCORS($request, $response);
   }
-
+  
   /**
    * Tests a valid https-domain with port as origin but configured http-backend-url.
    * The http:// or https:// are not part of the CORS checks.
-   * 
-  */ 
+   *
+   * @throws HttpForbidden
+   */
   public function testValidHttpsDomainWithPortWithHttpConfig(): void {
     $this->expectNotToPerformAssertions();
 
@@ -223,11 +227,12 @@ final class CorsHackMiddlewareTest extends TestCase {
     $request->setHeaderLine("https://hashtopolis-cluster.com:8080");
     CorsHackMiddleware::CheckCORS($request, $response);
   }
-
+  
   /**
    * Tests a valid domain with a differnt frontend port as origin.
-   * 
-  */ 
+   *
+   * @throws HttpForbidden
+   */
   public function testValidDomainWithoutDifferentFrontendPort(): void {
     $this->expectNotToPerformAssertions();
 

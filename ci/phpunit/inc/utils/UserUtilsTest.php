@@ -1,17 +1,18 @@
 <?php
 
-namespace inc\utils;
+namespace Hashtopolis\inc\utils;
 
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\RightGroup;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\QueryFilter;
-use Hashtopolis\inc\utils\UserUtils;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\InternalError;
-use TestBase;
+use Hashtopolis\inc\HTException;
+use Hashtopolis\TestBase;
 
 require_once(dirname(__FILE__) . '/../../TestBase.php');
-require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 
 final class UserUtilsTest extends TestBase {
   protected function setUp(): void {
@@ -22,6 +23,12 @@ final class UserUtilsTest extends TestBase {
     \hashtopolis_clear_test_mocks();
   }
   
+  /**
+   * @throws InternalError
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpConflict
+   */
   public function testCreateUserDoesNotCallSendMailWhenMailIsNotConfigured(): void {
     $mailCallCount = 0;
     $username = $this->uniqueUsername('mail_disabled');
@@ -41,6 +48,12 @@ final class UserUtilsTest extends TestBase {
     $this->assertSame(0, $mailCallCount);
   }
   
+  /**
+   * @throws InternalError
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpConflict
+   */
   public function testCreateUserCallsSendMailWhenMailIsConfigured(): void {
     $mailCalls = [];
     $username = $this->uniqueUsername('mail_enabled');
@@ -61,6 +74,11 @@ final class UserUtilsTest extends TestBase {
     $this->assertSame('Account at ' . APP_NAME, $mailCalls[0][1]);
   }
   
+  /**
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpConflict
+   */
   public function testCreateUserThrowsWhenConfiguredSendMailFails(): void {
     $mailCallCount = 0;
     $username = $this->uniqueUsername('mail_failure');
