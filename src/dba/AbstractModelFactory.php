@@ -87,6 +87,13 @@ abstract class AbstractModelFactory {
     return $this->getModelName();
   }
   
+  /**
+   * Get all the attribute keys of a model prepared with the mapping prefix where needed. The returned keys are then named
+   * exactly how they are present in the database.
+   *
+   * @param AbstractModel $model
+   * @return array list of keys of the model (mapped where needed)
+   */
   private static function getMappedModelKeys(AbstractModel $model): array {
     // check the keys of the table for required mapping from features
     $keys = [];

@@ -3,7 +3,6 @@
 namespace dba;
 
 use Hashtopolis\dba\models\Hash;
-use Hashtopolis\inc\utils\AccessGroupUtils;
 use TestBase;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\OrderFilter;
@@ -67,19 +66,31 @@ final class AbstractModelFactoryTest extends TestBase {
     $this->assertSame([], $ids);
   }
   
+  /**
+   * Tests the case with no entries in a timeseries filter.
+   *
+   * @return void
+   * @throws Exception
+   */
   public function testTimeseriesFilterEmpty(): void {
     $counts = Factory::getHashFactory()->columnTimeseriesFilter([], Hash::TIME_CRACKED);
     
     $this->assertSame([], $counts);
   }
   
+  /**
+   * Tests the case with entries but none of them matching to the timeseries filter used so the counts array is empty.
+   *
+   * @return void
+   * @throws Exception
+   */
   public function testTimeseriesFilterNoneCracked(): void {
-    $timeLimit = time() - 3600*24*30; // one month back
+    $timeLimit = time() - 3600 * 24 * 30; // one month back
     
     $hashlist = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, 'hashlist', DHashlistFormat::PLAIN, 0, 100, ':', 0, 0, 0, 0, 1, '', 0, 0, 0));
     $hashTemplate = new Hash(null, $hashlist->getId(), 'hash', 'salt', '', 0, null, 0, 0);
     
-    for($i = 0; $i < 1000; $i++) {
+    for ($i = 0; $i < 1000; $i++) {
       $this->createDatabaseObject(Factory::getHashFactory(), clone $hashTemplate);
     }
     
@@ -90,19 +101,26 @@ final class AbstractModelFactoryTest extends TestBase {
     $this->assertSame([], $counts);
   }
   
+  /**
+   * Tests with entries existing (both matching and not matching the filters) to return the correct amount of counts
+   * per day.
+   *
+   * @return void
+   * @throws Exception
+   */
   public function testTimeseriesFilter(): void {
-    $timeLimit = time() - 3600*24*30; // one month back
+    $timeLimit = time() - 3600 * 24 * 30; // one month back
     
     $hashlist = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, 'hashlist', DHashlistFormat::PLAIN, 0, 100, ':', 0, 0, 0, 0, 1, '', 0, 0, 0));
     $hashTemplate = new Hash(null, $hashlist->getId(), 'hash', 'salt', 'plaintext', 0, null, 1, 0);
     
     $hashes = [];
-    for($i = 0, $j = 0; $i < 1000; $i++) {
+    for ($i = 0, $j = 0; $i < 1000; $i++) {
       $hash = clone $hashTemplate;
       $hash->setTimeCracked($timeLimit + $i - 10 + $j * 3600 * 24); // 10 hashes will fall out of the tested timeseries range
       $hash->setIsCracked(($i % 10) > 0); // every tenth hash is not cracked
       $hashes[] = $this->createDatabaseObject(Factory::getHashFactory(), $hash);
-      if ($i % 23 == 0){
+      if ($i % 23 == 0) {
         $j++;
       }
     }
@@ -113,12 +131,12 @@ final class AbstractModelFactoryTest extends TestBase {
     
     // build the array on our own to compare
     $expected = [];
-    foreach($hashes as $hash) {
-      if($hash->getisCracked() != 1) {
+    foreach ($hashes as $hash) {
+      if ($hash->getisCracked() != 1) {
         continue;
       }
       $day = date('Y-m-d', $hash->getTimeCracked());
-      if(!isset($expected[$day])){
+      if (!isset($expected[$day])) {
         $expected[$day] = 0;
       }
       $expected[$day]++;
