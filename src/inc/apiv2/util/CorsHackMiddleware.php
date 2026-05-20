@@ -9,12 +9,14 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response;
 use Slim\Routing\RouteContext;
 
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
+
 /* This middleware will append the response header Access-Control-Allow-Methods with all allowed methods */
 class CorsHackMiddleware implements MiddlewareInterface {
   public function process(Request $request, RequestHandler $handler): Response {
     $response = $handler->handle($request);
     
-    return $this::addCORSHeaders($request, $response);
+    return CorsHackMiddleware::addCORSHeaders($request, $response);
   }
   
   public static function addCORSHeaders(Request $request, $response) {
@@ -23,6 +25,18 @@ class CorsHackMiddleware implements MiddlewareInterface {
     $methods = $routingResults->getAllowedMethods();
     
     $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
+
+    $response = CorsHackMiddleware::CheckCORS($request, $response);
+    
+    $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
+    $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
+    
+    // Optional: Allow Ajax CORS requests with Authorization header
+    // $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+    return $response;
+  }
+
+  public static function CheckCORS($request, $response): Response {
     $requestHttpOrigin = $request->getHeaderLine('HTTP_ORIGIN');
     
     $envBackend = getenv('HASHTOPOLIS_BACKEND_URL');
@@ -49,8 +63,7 @@ class CorsHackMiddleware implements MiddlewareInterface {
             $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'));
           }
           else {
-            error_log("CORS error: Allow-Origin port doesn't match: the value from the request is {$requestHttpOriginPort} but expected {$envFrontendPort} or {$envBackendPort}. Try switching the frontend port back to the default value (4200) in the docker-compose.");
-            die();
+            throw new HttpForbidden("CORS error: Allow-Origin port doesn't match: the value from the request is {$requestHttpOriginPort} but expected {$envFrontendPort} or {$envBackendPort}. Try switching the frontend port back to the default value (4200) in the docker-compose.");
           }
         }
         else {
@@ -59,20 +72,14 @@ class CorsHackMiddleware implements MiddlewareInterface {
         }
       }
       else {
-        error_log("CORS error: Allow-Origin URL doesn't match: the value from the request is {$requestHttpOriginUrl} but expected {$envBackendUrl}. Is the HASHTOPOLIS_BACKEND_URL in the .env file the correct one?");
-        die();
+        throw new HttpForbidden("CORS error: Allow-Origin URL doesn't match: the value from the request is {$requestHttpOriginUrl} but expected {$envBackendUrl}. Is the HASHTOPOLIS_BACKEND_URL in the .env file the correct one?");
       }
     }
     else {
       //No backend URL given in .env file or no origin supplied in the request, switch to default allow all
       $response = $response->withHeader('Access-Control-Allow-Origin', '*');
     }
-    
-    $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
-    $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
-    
-    // Optional: Allow Ajax CORS requests with Authorization header
-    // $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+
     return $response;
   }
 }
