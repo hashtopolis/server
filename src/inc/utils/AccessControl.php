@@ -4,22 +4,25 @@ namespace Hashtopolis\inc\utils;
 
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\RightGroup;
 use Hashtopolis\inc\defines\DAccessControl;
 use Hashtopolis\inc\Login;
 use Hashtopolis\inc\UI;
 
 class AccessControl {
-  private $user;
-  private $rightGroup;
+  //TODO: Changed because of AccessControlTest.testPermissionLoginWithoutLoggedInUserDenies, 
+  //Access to rightGroup will throw if accessed before initialized.
+  private ?User $user = null;
+  private ?RightGroup $rightGroup = null;
   
-  private static $instance = null;
+  private static ?self $instance = null;
   
   /**
    * @param User $user
    * @param int $groupId
    * @return AccessControl
    */
-  public static function getInstance($user = null, $groupId = 0) {
+  public static function getInstance(?User $user = null, int $groupId = 0): self {
     if ($user != null || $groupId != 0) {
       self::$instance = new AccessControl($user, $groupId);
     }
@@ -32,7 +35,7 @@ class AccessControl {
   /**
    * @return User
    */
-  public function getUser() {
+  public function getUser(): ?User {
     return $this->user;
   }
   
@@ -41,7 +44,7 @@ class AccessControl {
    * @param $user User
    * @param $groupId int
    */
-  private function __construct($user = null, $groupId = 0) {
+  private function __construct(?User $user = null, int $groupId = 0) {
     $this->user = $user;
     if ($this->user != null) {
       $this->rightGroup = Factory::getRightGroupFactory()->get($this->user->getRightGroupId());
@@ -54,7 +57,7 @@ class AccessControl {
   /**
    * Force a reload of the permissions from the database
    */
-  public function reload() {
+  public function reload(): void {
     if ($this->user != null) {
       $this->rightGroup = Factory::getRightGroupFactory()->get($this->user->getRightGroupId());
     }
@@ -64,7 +67,8 @@ class AccessControl {
    * If access is not granted, permission denied page will be shown
    * @param $perm string|string[]
    */
-  public function checkPermission($perm) {
+  public function checkPermission(string|array $perm): void {
+    //TODO: This one seems a bit off here? Throw an exception to be handled appropriate by the caller?
     if (!$this->hasPermission($perm)) {
       UI::permissionError();
     }
@@ -74,7 +78,7 @@ class AccessControl {
    * @param $singlePerm string
    * @return bool
    */
-  public function givenByDependency($singlePerm) {
+  public function givenByDependency(string $singlePerm): bool {
     $constants = DAccessControl::getConstants();
     foreach ($constants as $constant) {
       if (is_array($constant) && $singlePerm == $constant[0] && $this->hasPermission($constant)) {
@@ -91,7 +95,7 @@ class AccessControl {
    * @param $perm string|string[]
    * @return bool true if access is granted
    */
-  public function hasPermission($perm) {
+  public function hasPermission(string|array $perm): bool {
     if ($perm == DAccessControl::PUBLIC_ACCESS) {
       return true;
     }
