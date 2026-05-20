@@ -40,7 +40,7 @@ class TaskTest(BaseTest):
 
     def test_number_of_chunks(self):
         task_containing_chunks = self.create_test_agent_object()
-        self.assertEqual(task_containing_chunks.chunkSize, 3)
+        self.assertEqual(task_containing_chunks.totalNumberOfChunks, 3)
 
     def test_patch_color_null(self):
         task = self.create_test_object()
