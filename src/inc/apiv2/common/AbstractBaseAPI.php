@@ -174,33 +174,6 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * Overridable function to aggregate data in the object. Used for Tasks and Agents.
-   *
-   * @param object $object The object to aggregate data from.
-   * @param array &$includedData Array passed by reference; implementations can add related resources
-   *   for inclusion in the response by appending to this array.
-   * @return array Aggregated data as key-value pairs.
-   *
-   * Implementations should use $includedData to collect related resources that should be included
-   * in the API response, such as related entities or additional data.
-   */
-  public function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
-    return [];
-  }
-
-  /**
-   * Return supported aggregate fieldsets/options for this endpoint.
-   *
-   * Format:
-   * [
-   *   'resourceKey' => ['option1', 'option2']
-   * ]
-   */
-  public function getAggregateFieldsets(): array {
-    return [];
-  }
-  
-  /**
    * Take all the dba features and converts them to a list.
    * It uses the data from the generator and replaces the keys with the aliases.
    * structure: hashlist: name: [dbname => hashlistId]
