@@ -1,9 +1,21 @@
 from hashtopolis import Task, TaskWrapper
 from utils import BaseTest
+from hashtopolis_agent import ProcessState
 
 
 class TaskTest(BaseTest):
     model_class = Task
+
+    def create_test_agent_object(self, *nargs, delete=True, **kwargs):
+        retval = self.create_agent_with_task(*nargs, **kwargs)
+        dummy_agent = retval['dummy_agent']
+        # add two more chunks to the task, so that we have more than one chunk to test with
+        dummy_agent.send_process(progress=100, state=ProcessState.EXHAUSTED)
+        dummy_agent.get_chunk()
+        dummy_agent.send_process(progress=50)
+        dummy_agent.send_process(progress=100, state=ProcessState.EXHAUSTED)
+        dummy_agent.get_chunk()
+        return Task.objects.get(taskId=retval['task'].id)
 
     def create_test_object(self, **kwargs):
         hashlist_kwargs = kwargs.copy()
@@ -25,6 +37,10 @@ class TaskTest(BaseTest):
     def test_patch(self):
         model_obj = self.create_test_object()
         self._test_patch(model_obj, 'taskName')
+
+    def test_number_of_chunks(self):
+        task_containing_chunks = self.create_test_agent_object()
+        self.assertEqual(task_containing_chunks.totalNumberOfChunks, 3)
 
     def test_patch_color_null(self):
         task = self.create_test_object()

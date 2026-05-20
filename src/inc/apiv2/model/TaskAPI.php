@@ -214,7 +214,10 @@ class TaskAPI extends AbstractModelAPI {
         $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
         $aggregatedData["status"] = TaskUtils::getStatus($chunks, $keyspace, $keyspaceProgress);
       }
-
+      if (is_null($aggregateFieldsets) || in_array("totalNumberOfChunks", $aggregateFieldsets['task'])) {
+        $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+        $aggregatedData["totalNumberOfChunks"] = Factory::getChunkFactory()->countFilter([Factory::FILTER => $qF]);
+      }
       if (is_null($aggregateFieldsets) || in_array("taskExtraDetails", $aggregateFieldsets['task'])) {
         $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
         if (!isset($chunks)){
