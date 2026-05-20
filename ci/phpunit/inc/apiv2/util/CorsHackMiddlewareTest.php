@@ -2,33 +2,14 @@
 
 namespace Tests\inc\apiv2\util;
 
-use Hashtopolis\dba\ContainFilter;
-use Hashtopolis\dba\models\Hashlist;
-use Hashtopolis\dba\OrderFilter;
-use Hashtopolis\inc\defines\DHashlistFormat;
-use Hashtopolis\inc\utils\AccessUtils;
-use Hashtopolis\dba\Factory;
-use Hashtopolis\dba\QueryFilter;
-use Hashtopolis\dba\models\User;
-
+use PHPUnit\Framework\TestCase;
 
 use Exception;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
-use PHPUnit\Framework\TestCase;
 
 use Slim\Factory\AppFactory;
-use Hashtopolis\inc\apiv2\util\CorsHackMiddleware;
-
-use Psr\Http\Message\ServerRequestInterface as Request2;
-
 use Slim\Psr7\Request;
-
-//Remove later:
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Slim\Psr7\Response;
-use Slim\Routing\RouteContext;
-
+use Hashtopolis\inc\apiv2\util\CorsHackMiddleware;
 
 class DummyRequest {
   private string $http_origin;
