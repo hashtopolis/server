@@ -86,7 +86,7 @@ final class AbstractModelFactoryTest extends TestBase {
   }
   
   /**
-   * Test that for a aapped key the return value gets mapped
+   * Test that for a mapped key the return value gets mapped
    *
    * @return void
    */
@@ -213,8 +213,8 @@ final class AbstractModelFactoryTest extends TestBase {
     
     $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType->getId());
     $this->assertEquals('HashType X', $hashTypeUpdated->getDescription());
-    $this->assertEquals(1, $hashType->getIsSalted());
-    $this->assertEquals(1, $hashType->getIsSlowHash());
+    $this->assertEquals(1, $hashTypeUpdated->getIsSalted());
+    $this->assertEquals(1, $hashTypeUpdated->getIsSlowHash());
   }
   
   /**
