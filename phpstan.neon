@@ -1,6 +1,9 @@
 parameters:
     paths:
         - src/inc/apiv2
+        - ci/phpunit/dba
+        - ci/phpunit/inc
+        - ci/phpunit/TestBase.php
     level: 4
     treatPhpDocTypesAsCertain: false 
     scanDirectories:
