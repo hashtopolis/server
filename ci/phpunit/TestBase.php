@@ -16,6 +16,7 @@ class TestBase extends TestCase {
   private array  $databaseObjects;
   protected User $adminUser;
   
+  #[Override]
   protected function setUp(): void {
     parent::setUp();
     
@@ -25,6 +26,7 @@ class TestBase extends TestCase {
     \hashtopolis_clear_test_mocks();
   }
   
+  #[Override]
   protected function tearDown(): void {
     \hashtopolis_clear_test_mocks();
     
