@@ -6,6 +6,7 @@ use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\HealthCheckAgent;
+use Random\RandomException;
 use TestBase;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\OrderFilter;
@@ -152,12 +153,14 @@ final class AbstractModelFactoryTest extends TestBase {
    * Test creating a hash type object and saving it.
    *
    * @return void
+   * @throws RandomException
    */
   public function testSaveModelSuccessStaticId(): void {
-    $hashType = new HashType(100000, 'placeholder', 0, 0);
+    $id = 100000 + random_int(10,999);
+    $hashType = new HashType($id, 'placeholder', 0, 0);
     $hashType = Factory::getHashTypeFactory()->save($hashType);
     $this->registerDatabaseObject(Factory::getHashTypeFactory(), $hashType);
-    $this->assertEquals(100000, $hashType->getId());
+    $this->assertEquals($id, $hashType->getId());
   }
   
   /**
@@ -190,7 +193,8 @@ final class AbstractModelFactoryTest extends TestBase {
     
     $qF1 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
     $qF2 = new QueryFilter(Hash::TIME_CRACKED, $timeLimit, ">");
-    $counts = Factory::getHashFactory()->columnTimeseriesFilter([Factory::FILTER => [$qF1, $qF2]], Hash::TIME_CRACKED);
+    $qF3 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
+    $counts = Factory::getHashFactory()->columnTimeseriesFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], Hash::TIME_CRACKED);
     
     $this->assertSame([], $counts);
   }
@@ -221,7 +225,8 @@ final class AbstractModelFactoryTest extends TestBase {
     
     $qF1 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
     $qF2 = new QueryFilter(Hash::TIME_CRACKED, $timeLimit, ">");
-    $counts = Factory::getHashFactory()->columnTimeseriesFilter([Factory::FILTER => [$qF1, $qF2]], Hash::TIME_CRACKED);
+    $qF3 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
+    $counts = Factory::getHashFactory()->columnTimeseriesFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], Hash::TIME_CRACKED);
     
     // build the array on our own to compare
     $expected = [];
