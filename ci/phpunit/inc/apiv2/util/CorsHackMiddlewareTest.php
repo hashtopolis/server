@@ -162,4 +162,85 @@ final class CorsHackMiddlewareTest extends TestCase {
     $request->setHeaderLine("http://hashtopolis-cluster.com:4201");
     $this->expectException(CorsHackMiddleware::CheckCORS($request, $response));
   }
+
+  /**
+   * Tests a valid domain without port as origin.
+   * 
+  */ 
+  public function testValidDomainWithoutPort(): void {
+    $this->expectNotToPerformAssertions();
+
+    putenv("HASHTOPOLIS_BACKEND_URL=http://hashtopolis-cluster.com/api/v2");
+    putenv("HASHTOPOLIS_FRONTEND_PORT=4200");
+
+    $app = AppFactory::create();
+    
+    $request = new DummyRequest();
+
+    $response = $app->getResponseFactory()->createResponse();
+
+    $request->setHeaderLine("http://hashtopolis-cluster.com");
+    CorsHackMiddleware::CheckCORS($request, $response);
+  }
+
+  /**
+   * Tests a valid https-domain without port as origin.
+   * 
+  */ 
+  public function testValidHttpsDomainWithoutPort(): void {
+    $this->expectNotToPerformAssertions();
+
+    putenv("HASHTOPOLIS_BACKEND_URL=https://hashtopolis-cluster.com/api/v2");
+    putenv("HASHTOPOLIS_FRONTEND_PORT=4200");
+
+    $app = AppFactory::create();
+    
+    $request = new DummyRequest();
+
+    $response = $app->getResponseFactory()->createResponse();
+
+    $request->setHeaderLine("https://hashtopolis-cluster.com");
+    CorsHackMiddleware::CheckCORS($request, $response);
+  }
+
+  /**
+   * Tests a valid https-domain with port as origin but configured http-backend-url.
+   * The http:// or https:// are not part of the CORS checks.
+   * 
+  */ 
+  public function testValidHttpsDomainWithPortWithHttpConfig(): void {
+    $this->expectNotToPerformAssertions();
+
+    putenv("HASHTOPOLIS_BACKEND_URL=http://hashtopolis-cluster.com:8080/api/v2");
+    putenv("HASHTOPOLIS_FRONTEND_PORT=4200");
+
+    $app = AppFactory::create();
+    
+    $request = new DummyRequest();
+
+    $response = $app->getResponseFactory()->createResponse();
+
+    $request->setHeaderLine("https://hashtopolis-cluster.com:8080");
+    CorsHackMiddleware::CheckCORS($request, $response);
+  }
+
+  /**
+   * Tests a valid domain with a differnt frontend port as origin.
+   * 
+  */ 
+  public function testValidDomainWithoutDifferentFrontendPort(): void {
+    $this->expectNotToPerformAssertions();
+
+    putenv("HASHTOPOLIS_BACKEND_URL=http://hashtopolis-cluster.com:8080/api/v2");
+    putenv("HASHTOPOLIS_FRONTEND_PORT=5000");
+
+    $app = AppFactory::create();
+    
+    $request = new DummyRequest();
+
+    $response = $app->getResponseFactory()->createResponse();
+
+    $request->setHeaderLine("https://hashtopolis-cluster.com:5000");
+    CorsHackMiddleware::CheckCORS($request, $response);
+  }
 }
