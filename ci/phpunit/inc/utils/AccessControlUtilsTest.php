@@ -13,7 +13,6 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DLimits;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\defines\DAccessControl;
-use Hashtopolis\inc\utils\AccessControlUtils;
 use Hashtopolis\TestBase;
 use Override;
 
@@ -25,15 +24,19 @@ final class AccessControlUtilsTest extends TestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->group = $this->createDatabaseObject(
+    $group = $this->createDatabaseObject(
       Factory::getRightGroupFactory(),
       new RightGroup(null, 'phpunit-' . uniqid('', true), '[]')
     );
+    $this->assertTrue($group instanceof RightGroup);
+    $this->group = $group;
 
-    $this->otherGroup = $this->createDatabaseObject(
+    $otherGroup = $this->createDatabaseObject(
       Factory::getRightGroupFactory(),
       new RightGroup(null, 'phpunit-' . uniqid('', true), '[]')
     );
+    $this->assertTrue($otherGroup instanceof RightGroup);
+    $this->otherGroup = $otherGroup;
   }
 
   #[Override]
@@ -137,7 +140,7 @@ final class AccessControlUtilsTest extends TestBase {
   public function testUpdateNonexistentGroupThrowsException() {
     $this->expectException(HTException::class);
     AccessControlUtils::updateGroupPermissions(
-      -3, 
+      -3,
       [DAccessControl::CRACKER_BINARY_ACCESS => true],
     );
   }
@@ -145,7 +148,7 @@ final class AccessControlUtilsTest extends TestBase {
   public function testUpdateAdminPermissionsIsNotAllowed(): void {
     $this->expectException(HTException::class);
     AccessControlUtils::updateGroupPermissions(
-      $this->adminUser->getRightGroupId(), 
+      $this->adminUser->getRightGroupId(),
       [DAccessControl::CRACKER_BINARY_ACCESS => true],
     );
   }
