@@ -9,6 +9,7 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\models\UserFactory;
 use Hashtopolis\inc\utils\UserUtils;
 use PHPUnit\Framework\TestCase;
+use Override;
 
 require_once(dirname(__FILE__) . '/TestMocks.php');
 require_once(dirname(__FILE__) . '/../../src/inc/startup/include.php');
@@ -25,6 +26,10 @@ class TestBase extends TestCase {
     $this->databaseObjects = [];
     $this->adminUser = new User(1, 'admin', 'admin@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, 1, '', '', '', '', '');
     
+    //TODO: Avoid test warnings, is this right or should it rather be solved in code?
+    $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $_SERVER['SERVER_PORT'] = $_SERVER['SERVER_PORT'] ?? 80;
+
     \hashtopolis_clear_test_mocks();
   }
   
