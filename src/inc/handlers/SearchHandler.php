@@ -4,7 +4,7 @@ namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\DataSet;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\models\Hash;
@@ -36,7 +36,7 @@ class SearchHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

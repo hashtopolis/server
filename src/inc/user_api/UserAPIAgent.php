@@ -4,7 +4,7 @@ namespace Hashtopolis\inc\user_api;
 
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
-use Exception;
+use Throwable;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\models\AccessGroupAgent;
@@ -72,7 +72,7 @@ class UserAPIAgent extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       $this->sendErrorResponse($QUERY[UQuery::SECTION], $QUERY[UQuery::REQUEST], $e->getMessage());
     }
   }

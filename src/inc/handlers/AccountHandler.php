@@ -4,7 +4,7 @@ namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\utils\AccountUtils;
-use Exception;
+use Throwable;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\defines\DAccountAction;
 use Hashtopolis\inc\Login;
@@ -78,7 +78,7 @@ class AccountHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
     

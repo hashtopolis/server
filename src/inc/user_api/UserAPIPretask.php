@@ -2,7 +2,7 @@
 
 namespace Hashtopolis\inc\user_api;
 
-use Exception;
+use Throwable;
 use Hashtopolis\inc\defines\UQuery;
 use Hashtopolis\inc\defines\UQueryTask;
 use Hashtopolis\inc\defines\UResponseTask;
@@ -53,7 +53,7 @@ class UserAPIPretask extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
