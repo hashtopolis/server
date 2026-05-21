@@ -703,6 +703,7 @@ final class AbstractModelFactoryTest extends TestBase {
     // build the array on our own to compare
     $expected = [];
     foreach ($hashes as $hash) {
+      $this->assertTrue($hash instanceof Hash);
       if ($hash->getisCracked() != 1) {
         continue;
       }

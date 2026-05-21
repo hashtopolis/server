@@ -50,9 +50,9 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
 
-    $yearStart = mktime(0, 0, 0, 1, 1, (int) date('Y'));
+    $start = time() - 3600 * 24 * 365;
     $qF1 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
-    $qF2 = new QueryFilter(Hash::TIME_CRACKED, $yearStart, ">");
+    $qF2 = new QueryFilter(Hash::TIME_CRACKED, $start, ">");
     $counts = Factory::getHashFactory()->columnTimeseriesFilter([Factory::FILTER => [$qF1, $qF2]], Hash::TIME_CRACKED);
     $counts2 = Factory::getHashBinaryFactory()->columnTimeseriesFilter([Factory::FILTER => [$qF1, $qF2]], Hash::TIME_CRACKED);
     foreach ($counts2 as $key => $value) {
