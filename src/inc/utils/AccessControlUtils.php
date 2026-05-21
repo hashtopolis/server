@@ -17,7 +17,7 @@ class AccessControlUtils {
    * @param int $groupId
    * @return User[]
    */
-  public static function getMembers($groupId): ?array {
+  public static function getMembers($groupId): array {
     $qF = new QueryFilter(User::RIGHT_GROUP_ID, $groupId, "=");
     return Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
   }
@@ -25,7 +25,7 @@ class AccessControlUtils {
   /**
    * @return RightGroup[]
    */
-  public static function getGroups(): ?array {
+  public static function getGroups(): array {
     return Factory::getRightGroupFactory()->filter([]);
   }
   

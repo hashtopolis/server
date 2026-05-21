@@ -26,7 +26,7 @@ class TestBase extends TestCase {
     $this->databaseObjects = [];
     $this->adminUser = new User(1, 'admin', 'admin@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, 1, '', '', '', '', '');
     
-    //TODO: Avoid test warnings, is this right or should it rather be solved in code?
+    // Avoid test warnings
     $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] ?? 'localhost';
     $_SERVER['SERVER_PORT'] = $_SERVER['SERVER_PORT'] ?? 80;
 

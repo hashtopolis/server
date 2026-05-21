@@ -10,8 +10,6 @@ use Hashtopolis\inc\Login;
 use Hashtopolis\inc\UI;
 
 class AccessControl {
-  //TODO: Changed because of AccessControlTest.testPermissionLoginWithoutLoggedInUserDenies, 
-  //Access to rightGroup will throw if accessed before initialized.
   private ?User $user = null;
   private ?RightGroup $rightGroup = null;
   
@@ -68,7 +66,6 @@ class AccessControl {
    * @param $perm string|string[]
    */
   public function checkPermission(string|array $perm): void {
-    //TODO: This one seems a bit off here? Throw an exception to be handled appropriate by the caller?
     if (!$this->hasPermission($perm)) {
       UI::permissionError();
     }

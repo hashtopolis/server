@@ -43,7 +43,7 @@ class AccessGroupUtils {
   /**
    * @return AccessGroup[]
    */
-  public static function getGroups(): ?array {
+  public static function getGroups(): array {
     return Factory::getAccessGroupFactory()->filter([]);
   }
   
@@ -128,7 +128,7 @@ class AccessGroupUtils {
    * @param int $groupId
    * @throws HTException
    */
-  public static function addUser($userId, $groupId) {
+  public static function addUser(int $userId, int $groupId): void {
     $group = AccessGroupUtils::getGroup($groupId);
     $user = UserUtils::getUser($userId);
     

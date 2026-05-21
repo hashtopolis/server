@@ -61,7 +61,6 @@ final class AccessControlTest extends TestBase {
   }
 
   public function testReloadReloadsTheRightsGroupForUser(): void {
-    //TODO: Check code style ok, (calling with one arg per line, instead of long lines?)
     $group = $this->createDatabaseObject(
       Factory::getRightGroupFactory(),
       new RightGroup(null, 'phpunit-' . uniqid('', true), '{}')

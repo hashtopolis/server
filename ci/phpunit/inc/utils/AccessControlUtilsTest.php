@@ -119,7 +119,7 @@ final class AccessControlUtilsTest extends TestBase {
     $this->assertTrue($permissions[DAccessControl::MANAGE_TASK_ACCESS]);
   }
 
-  //TODO: This seems off, we can write stuff in the permissions, we maybe should check that the permission is actually valid or throw.
+  //Note: We do not enforce what to write in the permissions
   public function testAddNonExistentPermissionToGroup(): void {
     $nonexistentPermission = "nonexistent";
     AccessControlUtils::addToPermissions(

@@ -257,9 +257,16 @@ final class AccessGroupUtilsTest extends TestBase {
 
   public function testDeleteGroupReassignsDependentEntitiesToDefaultGroup(): void {
     $defaultGroup = AccessUtils::getOrCreateDefaultAccessGroup();
-    $groupToDelete = Factory::getAccessGroupFactory()->save(new AccessGroup(null, 'delete_group_' . uniqid()));
-    Factory::getAccessGroupUserFactory()->save(new AccessGroupUser(null, $groupToDelete->getId(), $this->firstUser->getId()));
-    Factory::getAccessGroupAgentFactory()->save(new AccessGroupAgent(null, $groupToDelete->getId(), $this->firstAgent->getId()));
+    $groupToDelete = $this->createAccessGroup('delete_group_');
+
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $groupToDelete->getId(), $this->firstUser->getId()),
+    );
+    $this->createDatabaseObject(
+      Factory::getAccessGroupAgentFactory(),
+      new AccessGroupAgent(null, $groupToDelete->getId(), $this->firstAgent->getId()),
+    );
 
     $hashType = $this->createHashType();
     $hashlist = $this->createHashlist($groupToDelete, $hashType);
