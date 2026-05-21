@@ -15,6 +15,7 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\JwtApiKey;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\InternalError;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DNotificationObjectType;
@@ -39,7 +40,7 @@ class UserUtils {
    * @param User $adminUser
    * @throws HTException
    */
-  public static function deleteUser($userId, $adminUser) {
+  public static function deleteUser(int $userId, User $adminUser): void {
     $user = UserUtils::getUser($userId);
     if ($user->getId() == $adminUser->getId()) {
       throw new HTException("You cannot delete yourself!");
@@ -102,7 +103,7 @@ class UserUtils {
    * @param int $userId
    * @throws HTException
    */
-  public static function enableUser($userId) {
+  public static function enableUser(int $userId): void {
     $user = UserUtils::getUser($userId);
     Factory::getUserFactory()->set($user, User::IS_VALID, 1);
   }
@@ -130,7 +131,7 @@ class UserUtils {
    * @param User $adminUser
    * @throws HTException
    */
-  public static function setRights($userId, $groupId, $adminUser) {
+  public static function setRights(int $userId, int $groupId, User $adminUser): void {
     $group = AccessControlUtils::getGroup($groupId);
     $user = UserUtils::getUser($userId);
     if ($user->getId() == $adminUser->getId()) {
@@ -158,7 +159,7 @@ class UserUtils {
    * 5. Generates a new salt and hash for the new password.
    * 6. Updates the user's password hash, salt, and resets the computed password flag.
    */
-  public static function changePassword($user, $oldPassword, $newPassword, $confirmPassword) {
+  public static function changePassword(User $user, string $oldPassword, string $newPassword, string $confirmPassword): void {
     if (!Encryption::passwordVerify($oldPassword, $user->getPasswordSalt(), $user->getPasswordHash())) {
       throw new HttpError("Your old password is wrong!");
     }
@@ -183,7 +184,7 @@ class UserUtils {
    * @param User $adminUser
    * @throws HTException
    */
-  public static function setPassword($userId, $password, $adminUser) {
+  public static function setPassword(int $userId, string $password, User $adminUser): void {
     $user = UserUtils::getUser($userId);
     if ($user->getId() == $adminUser->getId()) {
       throw new HTException("To change your own password go to your settings!");
@@ -204,10 +205,12 @@ class UserUtils {
    * @param int $rightGroupId
    * @param User $adminUser
    * @param bool $isValid
+   * @param int $session_lifetime
    * @return User
    * @throws HTException
    * @throws HttpConflict
    * @throws HttpError
+   * @throws InternalError
    */
   public static function createUser(string $username, string $email, int $rightGroupId, User $adminUser, bool $isValid = true, int $session_lifetime = 3600): User {
     $username = htmlentities($username, ENT_QUOTES, "UTF-8");
@@ -241,7 +244,11 @@ class UserUtils {
     $tmpl = new Template("email/creation");
     $tmplPlain = new Template("email/creation.plain");
     $obj = array('username' => $username, 'password' => $newPass, 'url' => Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL));
-    Util::sendMail($email, "Account at " . APP_NAME, $tmpl->render($obj), $tmplPlain->render($obj));
+    
+    $subject = "Account at " . APP_NAME;
+    if (Util::isMailConfigured() && !Util::sendMail($email, $subject, $tmpl->render($obj), $tmplPlain->render($obj))) {
+      throw new InternalError("User account created but unable to send mail to user with subject: " . $subject);
+    }
     
     // create log entry and check if notification sending is needed
     Util::createLogEntry("User", $adminUser->getId(), DLogEntry::INFO, "New User created: " . $user->getUsername());
@@ -256,7 +263,7 @@ class UserUtils {
    * @return User
    * @throws HTException
    */
-  public static function getUser($userId) {
+  public static function getUser(int $userId): User {
     $user = Factory::getUserFactory()->get($userId);
     if ($user == null) {
       throw new HTException("Invalid user ID!");

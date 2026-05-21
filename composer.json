@@ -18,19 +18,20 @@
     ],
     "require": {
         "php": "^8.2",
+        "ext-gd": "*",
         "ext-json": "*",
         "ext-pdo": "*",
-        "ext-gd" : "*",
         "composer/semver": "^3.4",
         "crell/api-problem": "^3.6",
+        "firebase/php-jwt": "7.0.2",
+        "jimtools/basic-auth": "^1.0",
         "jimtools/jwt-auth": "^3.0",
         "middlewares/encoder": "^2.1",
         "middlewares/negotiation": "^2.1",
         "monolog/monolog": "^2.8",
         "php-di/php-di": "7.0.7",
         "slim/psr7": "^1.5",
-        "slim/slim": "^4.10",
-        "tuupola/slim-basic-auth": "^3.3"
+        "slim/slim": "^4.10"
     },
     "require-dev": {
         "phpspec/prophecy-phpunit": "^2.0",
@@ -56,7 +57,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\DBA\\": "ci/phpunit/dba/"
+            "Hashtopolis\\": "ci/phpunit/"
         }
     },
     "scripts": {

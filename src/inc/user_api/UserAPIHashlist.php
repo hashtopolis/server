@@ -2,7 +2,7 @@
 
 namespace Hashtopolis\inc\user_api;
 
-use Exception;
+use Throwable;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\inc\defines\DHashlistFormat;
@@ -61,7 +61,7 @@ class UserAPIHashlist extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }

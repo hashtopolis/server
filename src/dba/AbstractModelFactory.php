@@ -80,6 +80,12 @@ abstract class AbstractModelFactory {
    */
   abstract function createObjectFromDict(string $pk, array $dict): AbstractModel;
   
+  /**
+   * Return the model name in the table, which is the same normally, unless mapping is required. In a mapping case,
+   * the configured prefix is added.
+   *
+   * @return string
+   */
   public function getMappedModelTable(): string {
     if ($this->isMapping()) {
       return self::MAPPING_PREFIX . $this->getModelName();
@@ -87,7 +93,14 @@ abstract class AbstractModelFactory {
     return $this->getModelName();
   }
   
-  private static function getMappedModelKeys(AbstractModel $model): array {
+  /**
+   * Get all the attribute keys of a model prepared with the mapping prefix where needed. The returned keys are then named
+   * exactly how they are present in the database.
+   *
+   * @param AbstractModel $model
+   * @return array list of keys of the model (mapped where needed)
+   */
+  public static function getMappedModelKeys(AbstractModel $model): array {
     // check the keys of the table for required mapping from features
     $keys = [];
     $features = $model->getFeatures();
@@ -103,6 +116,8 @@ abstract class AbstractModelFactory {
   }
   
   /**
+   * Get the key for a model how it's represented in the database itself. For non-mapped keys the value just remains.
+   *
    * @param AbstractModel $model
    * @param string $key
    * @return string
@@ -127,6 +142,7 @@ abstract class AbstractModelFactory {
    * database
    * @param $model AbstractModel model to save
    * @return AbstractModel|null
+   * @throws Exception
    */
   public function save(AbstractModel $model): ?AbstractModel {
     $dict = $model->getKeyValueDict();
@@ -232,6 +248,7 @@ abstract class AbstractModelFactory {
    * Returns the return of PDO::execute()
    * @param $model AbstractModel model to update
    * @return PDOStatement
+   * @throws Exception
    */
   public function update(AbstractModel $model): PDOStatement {
     $dict = $model->getKeyValueDict();
@@ -504,6 +521,37 @@ abstract class AbstractModelFactory {
     
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     return $row['sum'];
+  }
+  
+  /**
+   * Create a timeseries with counts per day for a given table.
+   *
+   * @param array $options can contain FILTER options to select which entries should match to be counted (e.g. also if the timeseries should only be over a certain amount of day)
+   * @param string $timeColumn table column which should be used to be use for the 'day' grouping
+   * @return array list of [day => count] entries
+   * @throws Exception
+   */
+  public function columnTimeseriesFilter(array $options, string $timeColumn): array {
+    $dbType = StartupConfig::getInstance()->getDatabaseType();
+    $to_timestamp = ($dbType == "postgres") ? "TO_TIMESTAMP" : "FROM_UNIXTIME";
+
+    $query = "SELECT DATE(" . $to_timestamp . "(". self::getMappedModelKey($this->getNullObject(), $timeColumn) . ")) AS day, COUNT(*) AS total";
+    
+    $query .= " FROM ". $this->getMappedModelTable();
+    
+    $vals = array();
+    
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
+    }
+    
+    $query .= " GROUP BY day ORDER BY day";
+
+    $dbh = self::getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    
+    return $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_KEY_PAIR);
   }
   
   public function countFilter($options) {

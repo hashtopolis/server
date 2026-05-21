@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\user_api;
 
 use Hashtopolis\inc\utils\AgentUtils;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DTaskTypes;
@@ -105,7 +105,7 @@ class UserAPITask extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }

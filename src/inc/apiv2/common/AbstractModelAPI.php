@@ -554,11 +554,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
   }
   
-  protected static function getMinMaxCursor($apiClass, string $sort, array $filters, $request, $aliasedfeatures) {
+  protected static function getMinMaxCursor($apiClass, string $sort, array $filters, $request, $aliasedfeatures, bool $reverseSort) {
     $filters[Factory::LIMIT] = new LimitFilter(1);
     // Descending queries are used to retrieve the last element. For this all sorts have to be reversed, since
     // if all order queries are reversed and limit to 1, you will retrieve the last element.
-    $reverseSort = $sort == "DESC";
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $sort, $reverseSort);
     $orderFilters = [];
     // TODO this logic is now done twice, once for the max and once for the min, this should be moved outside this function
@@ -622,17 +621,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     /* Generate filters */
     $filters = $apiClass->getFilters($request);
     $qFs_Filter = $apiClass->makeFilter($filters, $apiClass, $joinFilters);
-    $group = Factory::getRightGroupFactory()->get($apiClass->getCurrentUser()->getRightGroupId());
-    if ($group->getPermissions() !== 'ALL') { // Only add permission filters when no admin user
-      $aFs_ACL = $apiClass->getFilterACL();
-      if (isset($aFs_ACL[Factory::FILTER])) {
-        $qFs_Filter = array_merge($aFs_ACL[Factory::FILTER], $qFs_Filter);
-      }
-      if (isset($aFs_ACL[Factory::JOIN])) {
-        foreach($aFs_ACL[Factory::JOIN] as $filter) {
-          if(!$apiClass::checkJoinExists($joinFilters, $filter->getOtherFactory()->getModelName())) {
-            $joinFilters[] = $filter;
-          }
+    
+    //only need the normal filters for pagination
+    $pagination_filters = $qFs_Filter;
+
+    $aFs_ACL = $apiClass->getFilterACL();
+    if (isset($aFs_ACL[Factory::FILTER])) {
+      $qFs_Filter = array_merge($aFs_ACL[Factory::FILTER], $qFs_Filter);
+    }
+    if (isset($aFs_ACL[Factory::JOIN])) {
+      foreach($aFs_ACL[Factory::JOIN] as $filter) {
+        if(!$apiClass::checkJoinExists($joinFilters, $filter->getOtherFactory()->getModelName())) {
+          $joinFilters[] = $filter;
         }
       }
     }
@@ -651,9 +651,17 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     //this is used to reverse the array to show the data correctly for the user 
     $reverseArray = false;
 
+    if ($isNegativeSort) {
+      $firstCursorSort = "DESC";
+      $lastCursorSort = "ASC";
+    } else {
+      $firstCursorSort = "ASC";
+      $lastCursorSort = "DESC";
+    }
+
     $aFs[Factory::JOIN] = $joinFilters;
-    $firstCursorObject = $apiClass->getMinMaxCursor($apiClass, "ASC", $aFs, $request, $aliasedfeatures);
-    $lastCursorObject = $apiClass->getMinMaxCursor($apiClass, "DESC", $aFs, $request, $aliasedfeatures);
+    $firstCursorObject = $apiClass->getMinMaxCursor($apiClass, $firstCursorSort, $aFs, $request, $aliasedfeatures, false);
+    $lastCursorObject = $apiClass->getMinMaxCursor($apiClass, $lastCursorSort, $aFs, $request, $aliasedfeatures, true);
 
     if (!$isNegativeSort && !isset($pageBefore) && isset($pageAfter)) {
       // this happens when going to the next page while having an ascending sort
@@ -730,12 +738,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       $primary_cursor_key = key($primary_cursor);
       // Special filtering of id to use for uniform access to model primary key
       $primary_cursor_key = $primary_cursor_key == 'id' ? array_column($aliasedfeatures, 'alias', 'dbname')[$apiClass->getPrimaryKey()] : $primary_cursor_key;
-      $secondary_cursor = $decoded_cursor["secondary"];
+      $secondary_cursor = array_key_exists("secondary", $decoded_cursor) ? $decoded_cursor["secondary"] : null;
       if ($secondary_cursor) {
         $secondary_cursor_key = key($secondary_cursor);
         $secondary_cursor_key = $secondary_cursor_key == '_id' ? array_column($aliasedfeatures, 'alias', 'dbname')[$apiClass->getPrimaryKey()] : $secondary_cursor_key;
         $finalFs[Factory::FILTER][] = new PaginationFilter($primary_cursor_key, current($primary_cursor),
-          $operator, $secondary_cursor_key, current($secondary_cursor), $qFs_Filter
+          $operator, $secondary_cursor_key, current($secondary_cursor), $pagination_filters
         );
       }
       else {
@@ -1620,7 +1628,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if ($relationKey == null) {
       throw new HttpError('Relation does not exist!');
     }
-    if ($relation['readonly'] === true) {
+    if (isset($relation["readonly"]) && $relation['readonly'] === true) {
       throw new HttpError('This relationship is readonly');
     }
     

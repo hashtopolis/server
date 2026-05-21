@@ -8,7 +8,7 @@ if (!$enabled || $enabled == 'false') {
 
 date_default_timezone_set("UTC");
 error_reporting(E_ALL ^ E_DEPRECATED);
-ini_set("display_errors", '1');
+
 /**
  * Treat warnings as error, very useful during unit testing.
  * TODO: How-ever during Xdebug debugging under VS Code, this is very
@@ -41,6 +41,7 @@ use Hashtopolis\inc\apiv2\helper\ExportWordlistHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetAccessGroupsHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetAgentBinaryHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetCracksOfTaskHelper;
+use Hashtopolis\inc\apiv2\helper\GetCracksPerDayHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetBestTasksAgent;
 use Hashtopolis\inc\apiv2\helper\GetFileHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetTaskProgressImageHelperAPI;
@@ -276,6 +277,7 @@ GetAccessGroupsHelperAPI::register($app);
 GetAgentBinaryHelperAPI::register($app);
 GetBestTasksAgent::register($app);
 GetCracksOfTaskHelper::register($app);
+GetCracksPerDayHelperAPI::register($app);
 GetFileHelperAPI::register($app);
 GetTaskProgressImageHelperAPI::register($app);
 GetUserPermissionHelperAPI::register($app);

@@ -13,6 +13,7 @@ use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\File;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DHashcatStatus;
@@ -25,7 +26,7 @@ class AccessGroupUtils {
    * @param int $groupId
    * @return AccessGroupUser[]
    */
-  public static function getUsers($groupId) {
+  public static function getUsers(int $groupId): array {
     $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $groupId, "=");
     return Factory::getAccessGroupUserFactory()->filter([Factory::FILTER => $qF]);
   }
@@ -34,7 +35,7 @@ class AccessGroupUtils {
    * @param int $groupId
    * @return AccessGroupAgent[]
    */
-  public static function getAgents($groupId) {
+  public static function getAgents(int $groupId): array {
     $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $groupId, "=");
     return Factory::getAccessGroupAgentFactory()->filter([Factory::FILTER => $qF]);
   }
@@ -42,7 +43,7 @@ class AccessGroupUtils {
   /**
    * @return AccessGroup[]
    */
-  public static function getGroups() {
+  public static function getGroups(): array {
     return Factory::getAccessGroupFactory()->filter([]);
   }
   
@@ -52,7 +53,7 @@ class AccessGroupUtils {
    * @throws HttpError
    * @throws HttpConflict
    */
-  public static function createGroup($groupName) {
+  public static function createGroup(string $groupName): AccessGroup {
     if (strlen($groupName) == 0 || strlen($groupName) > DLimits::ACCESS_GROUP_MAX_LENGTH) {
       throw new HttpError("Access group name is too short or too long!");
     }
@@ -70,7 +71,7 @@ class AccessGroupUtils {
   /**
    * @throws HTException
    */
-  public static function rename($accessGroupId, $newname) {
+  public static function rename(int $accessGroupId, string $newname): void {
     $accessGroup = AccessGroupUtils::getGroup($accessGroupId);
     $name = htmlentities($newname, ENT_QUOTES, "UTF-8");
     if (strlen($name) == 0) {
@@ -84,7 +85,7 @@ class AccessGroupUtils {
    * @param $user
    * @throws HTException
    */
-  public static function abortChunksGroup($groupId, $user) {
+  public static function abortChunksGroup(int $groupId, User $user): void {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     if (!in_array($groupId, $accessGroups)) {
       throw new HTException("User is not a member of this access group!");
@@ -107,7 +108,7 @@ class AccessGroupUtils {
    * @param int $groupId
    * @throws HTException
    */
-  public static function addAgent($agentId, $groupId) {
+  public static function addAgent(int $agentId, int $groupId): void {
     $group = AccessGroupUtils::getGroup($groupId);
     $agent = AgentUtils::getAgent($agentId);
     
@@ -127,7 +128,7 @@ class AccessGroupUtils {
    * @param int $groupId
    * @throws HTException
    */
-  public static function addUser($userId, $groupId) {
+  public static function addUser(int $userId, int $groupId): void {
     $group = AccessGroupUtils::getGroup($groupId);
     $user = UserUtils::getUser($userId);
     
@@ -147,7 +148,7 @@ class AccessGroupUtils {
    * @param int $groupId
    * @throws HTException
    */
-  public static function removeAgent($agentId, $groupId) {
+  public static function removeAgent(int $agentId, int $groupId): void {
     $group = AccessGroupUtils::getGroup($groupId);
     $agent = AgentUtils::getAgent($agentId);
     
@@ -165,7 +166,7 @@ class AccessGroupUtils {
    * @param int $groupId
    * @throws HTException
    */
-  public static function removeUser($userId, $groupId) {
+  public static function removeUser(int $userId, int $groupId): void {
     $group = AccessGroupUtils::getGroup($groupId);
     $user = UserUtils::getUser($userId);
     
@@ -182,7 +183,7 @@ class AccessGroupUtils {
    * @param int $groupId
    * @throws HTException
    */
-  public static function deleteGroup($groupId) {
+  public static function deleteGroup(int $groupId): void {
     $group = AccessGroupUtils::getGroup($groupId);
     $default = AccessUtils::getOrCreateDefaultAccessGroup();
     if ($default->getId() == $group->getId()) {
@@ -221,7 +222,7 @@ class AccessGroupUtils {
    * @return AccessGroup
    * @throws HTException
    */
-  public static function getGroup($groupId) {
+  public static function getGroup(int $groupId): AccessGroup {
     $group = Factory::getAccessGroupFactory()->get($groupId);
     if ($group === null) {
       throw new HTException("Invalid group!");

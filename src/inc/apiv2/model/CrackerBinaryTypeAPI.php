@@ -43,7 +43,7 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
   function getAllPostParameters(array $features): array {
     
     //for documentation purposes isChunkingAvailable has to be removed
-    // because it is currently not settable by the user
+    // because it is currently not settable by the user and not fully supported yet
     $features = parent::getAllPostParameters($features);
     unset($features[CrackerBinaryType::IS_CHUNKING_AVAILABLE]);
     return $features;

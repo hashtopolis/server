@@ -84,3 +84,7 @@ class AgentTest(BaseTest):
         agents = [self.create_agent() for i in range(5)]
         active_attributes = [True for i in range(5)]
         Agent.objects.patch_many(agents, active_attributes, "isActive")
+
+    def test_acl(self):
+        model_obj = self.create_test_object()
+        self._test_acl_list(model_obj, {'permAgentRead': True})

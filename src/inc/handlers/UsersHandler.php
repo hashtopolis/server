@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\defines\DUserAction;
 use Hashtopolis\inc\Login;
 use Hashtopolis\inc\UI;
@@ -52,7 +52,7 @@ class UsersHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

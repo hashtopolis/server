@@ -4,6 +4,7 @@ namespace Hashtopolis\inc\user_api;
 
 use Hashtopolis\inc\utils\ConfigUtils;
 use Exception;
+use Throwable;
 use Hashtopolis\dba\models\Config;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DConfigType;
@@ -36,7 +37,7 @@ class UserAPIConfig extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }

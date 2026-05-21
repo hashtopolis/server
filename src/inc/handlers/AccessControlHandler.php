@@ -4,7 +4,7 @@ namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\utils\AccessControlUtils;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\defines\DAccessControlAction;
 use Hashtopolis\inc\UI;
 
@@ -37,7 +37,7 @@ class AccessControlHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

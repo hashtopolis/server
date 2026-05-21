@@ -130,11 +130,8 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     }
   }
   
-  /**
-   * getfile is different because it returns actual binary data.
-   */
-  public static function getResponse(): null {
-    return null;
+  public static function getResponse(): array {
+    return ["file" => "abc.txt", "size" => 123];
   }
   
   /**  File import API
@@ -165,11 +162,14 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
       $update_metadata = [];
       $list = explode(",", $update["upload_metadata_raw"]);
       foreach ($list as $item) {
-        list($key, $b64val) = explode(" ", $item, 2);
-        if ($b64val == null) {
+        if (!str_contains($item, " ")) {
           // Some keys dont have a value
-          $update_metadata[$key] = null;
+          $update_metadata[$item] = null;
+          continue;
         }
+
+        list($key, $b64val) = explode(" ", $item, 2);
+        
         if (($val = base64_decode($b64val, true)) === false) {
           $response->getBody()->write("Error Upload-Metadata '$key' invalid base64 encoding");
           return $response->withStatus(400);
@@ -422,7 +422,6 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     $importFiles = $this->scanImportDirectory();
     return self::getMetaResponse($importFiles, $request, $response);
   }
-  
   
   static public function register(App $app): void {
     $me = get_called_class();

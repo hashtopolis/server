@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\defines\DPretaskAction;
 use Hashtopolis\inc\utils\PretaskUtils;
 use Hashtopolis\inc\UI;
@@ -71,7 +71,7 @@ class PretaskHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

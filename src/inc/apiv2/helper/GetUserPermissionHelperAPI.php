@@ -70,8 +70,8 @@ class GetUserPermissionHelperAPI extends AbstractHelperAPI {
   /**
    * getAccessGroups is different because it returns via another function
    */
-  public static function getResponse(): array|string|null {
-    return null;
+  public static function getResponse(): string {
+    return "RightGroup";
   }
 }
 
