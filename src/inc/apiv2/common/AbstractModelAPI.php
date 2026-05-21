@@ -622,17 +622,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     /* Generate filters */
     $filters = $apiClass->getFilters($request);
     $qFs_Filter = $apiClass->makeFilter($filters, $apiClass, $joinFilters);
-    $group = Factory::getRightGroupFactory()->get($apiClass->getCurrentUser()->getRightGroupId());
-    if ($group->getPermissions() !== 'ALL') { // Only add permission filters when no admin user
-      $aFs_ACL = $apiClass->getFilterACL();
-      if (isset($aFs_ACL[Factory::FILTER])) {
-        $qFs_Filter = array_merge($aFs_ACL[Factory::FILTER], $qFs_Filter);
-      }
-      if (isset($aFs_ACL[Factory::JOIN])) {
-        foreach($aFs_ACL[Factory::JOIN] as $filter) {
-          if(!$apiClass::checkJoinExists($joinFilters, $filter->getOtherFactory()->getModelName())) {
-            $joinFilters[] = $filter;
-          }
+    $aFs_ACL = $apiClass->getFilterACL();
+    if (isset($aFs_ACL[Factory::FILTER])) {
+      $qFs_Filter = array_merge($aFs_ACL[Factory::FILTER], $qFs_Filter);
+    }
+    if (isset($aFs_ACL[Factory::JOIN])) {
+      foreach($aFs_ACL[Factory::JOIN] as $filter) {
+        if(!$apiClass::checkJoinExists($joinFilters, $filter->getOtherFactory()->getModelName())) {
+          $joinFilters[] = $filter;
         }
       }
     }
