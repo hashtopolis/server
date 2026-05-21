@@ -1,6 +1,6 @@
 <?php
 
-namespace inc\utils;
+namespace Hashtopolis\inc\utils;
 
 require_once(dirname(__FILE__) . '/../../TestBase.php');
 require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
@@ -10,8 +10,8 @@ use Hashtopolis\dba\models\RightGroup;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\defines\DAccessControl;
 use Hashtopolis\inc\utils\AccessControl;
+use Hashtopolis\TestBase;
 use ReflectionClass;
-use TestBase;
 
 final class AccessControlTest extends TestBase {
   protected function setUp(): void {

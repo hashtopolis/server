@@ -1,6 +1,6 @@
 <?php
 
-namespace inc\utils;
+namespace Hashtopolis\inc\utils;
 
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\AccessGroup;
@@ -10,7 +10,9 @@ use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\Hashlist;
+use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\RightGroup;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
@@ -26,8 +28,8 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AccessGroupUtils;
 use Hashtopolis\inc\utils\UserUtils;
+use Hashtopolis\TestBase;
 use Override;
-use TestBase;
 
 require_once(dirname(__FILE__) . '/../../TestBase.php');
 require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
@@ -144,7 +146,8 @@ final class AccessGroupUtilsTest extends TestBase {
   }
 
   public function testAbortChunksGroupOnlyAbortsInitAndRunningChunks(): void {
-    $hashlist = $this->createHashlist($this->firstGroup);
+    $hashType = $this->createHashType();
+    $hashlist = $this->createHashlist($this->firstGroup, $hashType);
     $crackerBinaryType = $this->createCrackerBinaryType();
     $crackerBinary = $this->createCrackerBinary($crackerBinaryType);
     $taskWrapper = $this->createTaskWrapper($this->firstGroup, $hashlist);
@@ -252,11 +255,36 @@ final class AccessGroupUtilsTest extends TestBase {
     AccessGroupUtils::deleteGroup($defaultGroup->getId());
   }
 
-  
-  
+  public function testDeleteGroupReassignsDependentEntitiesToDefaultGroup(): void {
+    $defaultGroup = AccessUtils::getOrCreateDefaultAccessGroup();
+    $groupToDelete = Factory::getAccessGroupFactory()->save(new AccessGroup(null, 'delete_group_' . uniqid()));
+    Factory::getAccessGroupUserFactory()->save(new AccessGroupUser(null, $groupToDelete->getId(), $this->firstUser->getId()));
+    Factory::getAccessGroupAgentFactory()->save(new AccessGroupAgent(null, $groupToDelete->getId(), $this->firstAgent->getId()));
 
-  
+    $hashType = $this->createHashType();
+    $hashlist = $this->createHashlist($groupToDelete, $hashType);
+    $taskWrapper = $this->createTaskWrapper($groupToDelete, $hashlist);
+    $file = $this->createFile($groupToDelete);
 
+    AccessGroupUtils::deleteGroup($groupToDelete->getId());
+
+    $updatedHashlist = Factory::getHashlistFactory()->get($hashlist->getId());
+    $updatedTaskWrapper = Factory::getTaskWrapperFactory()->get($taskWrapper->getId());
+    $updatedFile = Factory::getFileFactory()->get($file->getId());
+    $deletedGroup = Factory::getAccessGroupFactory()->get($groupToDelete->getId());
+    $remainingUsers = AccessGroupUtils::getUsers($groupToDelete->getId());
+    $remainingAgents = AccessGroupUtils::getAgents($groupToDelete->getId());
+
+    $this->assertInstanceOf(Hashlist::class, $updatedHashlist);
+    $this->assertSame($defaultGroup->getId(), $updatedHashlist->getAccessGroupId());
+    $this->assertInstanceOf(TaskWrapper::class, $updatedTaskWrapper);
+    $this->assertSame($defaultGroup->getId(), $updatedTaskWrapper->getAccessGroupId());
+    $this->assertInstanceOf(File::class, $updatedFile);
+    $this->assertSame($defaultGroup->getId(), $updatedFile->getAccessGroupId());
+    $this->assertNull($deletedGroup);
+    $this->assertSame([], $remainingUsers);
+    $this->assertSame([], $remainingAgents);
+  }
   
   /*
    * Local test helpers
@@ -293,10 +321,19 @@ final class AccessGroupUtilsTest extends TestBase {
     return $user;
   }
 
-  private function createHashlist(AccessGroup $group): Hashlist {
+  private function createHashType(): HashType {
+    $hashType = $this->createDatabaseObject(
+      Factory::getHashTypeFactory(),
+      new HashType(null, 'hash_type_' . uniqid(), 0, 0)
+    );
+    $this->assertTrue($hashType instanceof HashType);
+    return $hashType;
+  }
+
+  private function createHashlist(AccessGroup $group, HashType $hashType): Hashlist {
     $hashlist = $this->createDatabaseObject(
       Factory::getHashlistFactory(),
-      new Hashlist(null, 'hashlist_' . uniqid(), DHashlistFormat::PLAIN, 0, 1, ':', 0, 0, 0, 0, $group->getId(), '', 0, 0, 0)
+      new Hashlist(null, 'hashlist_' . uniqid(), DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, 0, 0, 0, $group->getId(), '', 0, 0, 0)
     );
     $this->assertTrue($hashlist instanceof Hashlist);
     return $hashlist;
@@ -345,5 +382,14 @@ final class AccessGroupUtilsTest extends TestBase {
     );
     $this->assertTrue($chunk instanceof Chunk);
     return $chunk;
+  }
+
+  private function createFile(AccessGroup $group): File {
+    $file = $this->createDatabaseObject(
+      Factory::getFileFactory(),
+      new File(null, 'file_' . uniqid(), 0, 0, 0, $group->getId(), 0)
+    );
+    $this->assertTrue($file instanceof File);
+    return $file;
   }
 }

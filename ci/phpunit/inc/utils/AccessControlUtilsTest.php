@@ -1,6 +1,6 @@
 <?php
 
-namespace inc\utils;
+namespace Hashtopolis\inc\utils;
 
 require_once(dirname(__FILE__) . '/../../TestBase.php');
 require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
@@ -14,10 +14,8 @@ use Hashtopolis\inc\defines\DLimits;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\defines\DAccessControl;
 use Hashtopolis\inc\utils\AccessControlUtils;
+use Hashtopolis\TestBase;
 use Override;
-use TestBase;
-
-
 
 final class AccessControlUtilsTest extends TestBase {
   private RightGroup $group;
