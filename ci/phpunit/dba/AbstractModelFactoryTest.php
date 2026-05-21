@@ -10,7 +10,6 @@ use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\HealthCheck;
 use Hashtopolis\dba\models\HealthCheckAgent;
 use Hashtopolis\TestBase;
-use phpDocumentor\Reflection\Types\Integer;
 use Random\RandomException;
 use Hashtopolis\dba\models\Hashlist;
 use Exception;
@@ -766,6 +765,107 @@ final class AbstractModelFactoryTest extends TestBase {
   public function testGetFromDBInvalidIDMapped(): void {
     $result = Factory::getUserFactory()->getFromDB(999999999);
     $this->assertNull($result);
+  }
+  
+  /**
+   * Test with no filtering at all, check if the correct objects are returned and the expected number.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFilterNoFilter(): void {
+    $users = Factory::getUserFactory()->filter([]);
+    
+    // to avoid having issues if the database is not empty, we cross check with the count filter that the same amount of objects is returned
+    $count = Factory::getUserFactory()->countFilter([]);
+    $this->assertEquals($count, count($users));
+    
+    foreach ($users as $user) {
+      $this->assertTrue($user instanceof User);
+    }
+  }
+  
+  /**
+   * Test retrieving some matching entries of entries in the table with a normal filter.
+   *
+   * @return void
+   */
+  public function testFilterNormalFilter(): void {
+    $testid = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    
+    $qF1 = new QueryFilter(HashType::IS_SALTED, 50, ">");
+    $qF2 = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $hashtypes = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+    $this->assertCount(2, $hashtypes);
+    foreach ($hashtypes as $hashtype) {
+      $this->assertTrue($hashtype instanceof HashType);
+      $this->assertTrue($hashtype->getIsSalted() > 50);
+    }
+  }
+  
+  /**
+   * Test retrieving some matching entries of entries in the table with a normal filter with specific sorting.
+   *
+   * @return void
+   */
+  public function testFilterNormalFilterWithOrderDesc(): void {
+    $testid = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    
+    $qF1 = new QueryFilter(HashType::IS_SALTED, 50, ">");
+    $qF2 = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $oF = new OrderFilter(HashType::IS_SALTED, "DESC");
+    $hashtypes = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+    $this->assertCount(2, $hashtypes);
+    $this->assertEquals(125, $hashtypes[0]->getIsSalted());
+    $this->assertEquals(72, $hashtypes[1]->getIsSalted());
+  }
+  
+  /**
+   * Test retrieving some matching entries of entries in the table with a normal filter but limit entries
+   *
+   * @return void
+   */
+  public function testFilterNormalFilterWithLimit(): void {
+    $testid = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 3, 0));
+    
+    $qF = new QueryFilter(HashType::IS_SLOW_HASH, 0, "=");
+    $lF = new LimitFilter(2);
+    $hashtypes = Factory::getHashTypeFactory()->filter([Factory::FILTER => $qF, Factory::LIMIT => $lF]);
+    $this->assertCount(2, $hashtypes);
+    foreach ($hashtypes as $hashtype) {
+      $this->assertTrue($hashtype instanceof HashType);
+      $this->assertTrue($hashtype->getIsSlowHash() == 0);
+    }
+  }
+  
+  /**
+   * Test retrieving some matching entries of entries but only request one single.
+   *
+   * @return void
+   */
+  public function testFilterNormalFilterSingle(): void {
+    $testid = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    
+    $qF1 = new QueryFilter(HashType::IS_SLOW_HASH, 0, "=");
+    $qF2 = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $oF = new OrderFilter(HashType::HASH_TYPE_ID, "ASC");
+    $hashtype = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF], true);
+    $this->assertTrue($hashtype instanceof HashType);
+    $this->assertEquals(1, $hashtype->getIsSalted());
+    $this->assertEquals('hashtype1' . $testid, $hashtype->getDescription());
   }
   
   /**

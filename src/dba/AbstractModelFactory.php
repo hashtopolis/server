@@ -214,20 +214,6 @@ abstract class AbstractModelFactory {
   
   /**
    * @param $arr array
-   * @return Group[]
-   */
-  private function getGroups(array $arr): array {
-    if (!is_array($arr[Factory::GROUP])) {
-      $arr[Factory::GROUP] = array($arr[Factory::GROUP]);
-    }
-    if (isset($arr[Factory::GROUP])) {
-      return $arr[Factory::GROUP];
-    }
-    return array();
-  }
-  
-  /**
-   * @param $arr array
    * @return Join[]
    */
   private function getJoins(array $arr): array {
@@ -621,6 +607,7 @@ abstract class AbstractModelFactory {
    *
    * @param $pk string primary key
    * @return AbstractModel|null the with pk associated model or Null
+   * @throws Exception
    */
   public function get($pk) {
     return $this->getFromDB($pk);
@@ -703,10 +690,6 @@ abstract class AbstractModelFactory {
       $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
-    if (array_key_exists(Factory::GROUP, $options)) {
-      $query .= $this->applyGroups($this->getGroups($options));
-    }
-    
     // Apply order filter
     if (!array_key_exists(Factory::ORDER, $options)) {
       // Add a asc order on the primary keys as a standard
@@ -754,8 +737,9 @@ abstract class AbstractModelFactory {
    * @param array $options
    * @param bool $single
    * @return array|AbstractModel|null
+   * @throws Exception
    */
-  public function filter(array $options, bool $single = false) {
+  public function filter(array $options, bool $single = false): array|AbstractModel|null {
     // Check if we need to join and if so pass on to internal Function
     if (array_key_exists(Factory::JOIN, $options)) {
       return $this->filterWithJoin($options);
@@ -767,10 +751,6 @@ abstract class AbstractModelFactory {
     
     if (array_key_exists(Factory::FILTER, $options)) {
       $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
-    }
-    
-    if (array_key_exists(Factory::GROUP, $options)) {
-      $query .= $this->applyGroups($this->getGroups($options));
     }
     
     if (!array_key_exists(Factory::ORDER, $options)) {
