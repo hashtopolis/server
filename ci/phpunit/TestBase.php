@@ -1,6 +1,8 @@
 <?php
 
 
+namespace Hashtopolis;
+
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\models\User;

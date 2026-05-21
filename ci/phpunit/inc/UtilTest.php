@@ -1,12 +1,10 @@
 <?php
 
-namespace inc;
+namespace Hashtopolis\inc;
 
-use Hashtopolis\inc\Util;
 use PHPUnit\Framework\TestCase;
 
-require_once(dirname(__FILE__) . '/../TestMocks.php');
-require_once(dirname(__FILE__) . '/../../../src/inc/startup/include.php');
+require_once(dirname(__FILE__) . '/../TestBase.php');
 
 final class UtilTest extends TestCase {
   public function testIsMailConfiguredReturnsFalseWithoutSsmtpConfig(): void {
