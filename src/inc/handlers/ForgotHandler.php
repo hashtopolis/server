@@ -2,7 +2,7 @@
 
 namespace Hashtopolis\inc\handlers;
 
-use Exception;
+use Throwable;
 use Hashtopolis\inc\defines\DForgotAction;
 use Hashtopolis\inc\UI;
 use Hashtopolis\inc\utils\UserUtils;
@@ -24,7 +24,7 @@ class ForgotHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

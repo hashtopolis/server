@@ -4,7 +4,7 @@ namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\DataSet;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\utils\FileDownloadUtils;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\FileTask;
@@ -150,7 +150,7 @@ class TaskHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

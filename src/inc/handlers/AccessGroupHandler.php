@@ -4,7 +4,7 @@ namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\utils\AccessGroupUtils;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\defines\DAccessGroupAction;
 use Hashtopolis\inc\UI;
 
@@ -46,7 +46,7 @@ class AccessGroupHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

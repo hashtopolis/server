@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\utils\FileUtils;
 use Hashtopolis\inc\defines\DFileAction;
 use Hashtopolis\inc\UI;
@@ -45,7 +45,7 @@ class FileHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

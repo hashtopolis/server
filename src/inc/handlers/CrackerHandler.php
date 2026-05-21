@@ -4,7 +4,7 @@ namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\utils\CrackerUtils;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\defines\DCrackerBinaryAction;
 use Hashtopolis\inc\UI;
 
@@ -45,7 +45,7 @@ class CrackerHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

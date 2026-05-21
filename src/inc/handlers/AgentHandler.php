@@ -4,7 +4,7 @@ namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\utils\AgentUtils;
-use Exception;
+use Throwable;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\defines\DAgentAction;
 use Hashtopolis\inc\HTException;
@@ -104,7 +104,7 @@ class AgentHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
