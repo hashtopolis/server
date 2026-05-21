@@ -13,6 +13,7 @@ use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\File;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DHashcatStatus;
@@ -42,7 +43,7 @@ class AccessGroupUtils {
   /**
    * @return AccessGroup[]
    */
-  public static function getGroups() {
+  public static function getGroups(): ?array {
     return Factory::getAccessGroupFactory()->filter([]);
   }
   
@@ -84,7 +85,7 @@ class AccessGroupUtils {
    * @param $user
    * @throws HTException
    */
-  public static function abortChunksGroup($groupId, $user) {
+  public static function abortChunksGroup(int $groupId, User $user): void {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     if (!in_array($groupId, $accessGroups)) {
       throw new HTException("User is not a member of this access group!");
@@ -107,7 +108,7 @@ class AccessGroupUtils {
    * @param int $groupId
    * @throws HTException
    */
-  public static function addAgent($agentId, $groupId) {
+  public static function addAgent(int $agentId, int $groupId): void {
     $group = AccessGroupUtils::getGroup($groupId);
     $agent = AgentUtils::getAgent($agentId);
     
