@@ -276,12 +276,13 @@ abstract class AbstractModelFactory {
   }
   
   /**
-   * Atomically sets the given keys of this model to the given values
+   * Atomically sets the given keys of this model to the given values without setting all other values (like ->update() does)
    *
    * Returns the return of PDO::execute()
    * @param $model AbstractModel primary key of model
    * @param $arr array key-value associations for update
    * @return PDOStatement
+   * @throws Exception
    */
   public function mset(AbstractModel &$model, array $arr): PDOStatement {
     $query = "UPDATE " . $this->getMappedModelTable() . " SET ";
@@ -304,13 +305,14 @@ abstract class AbstractModelFactory {
   }
   
   /**
-   * Atomically sets the given key of this model to the given value
+   * Atomically sets the given key of this model to the given value without altering other values
    *
    * Returns the return of PDO::execute()
    * @param $model AbstractModel primary key of model
    * @param $key string key of the column to update
    * @param $value
    * @return PDOStatement
+   * @throws Exception
    */
   public function set(AbstractModel &$model, string $key, $value): PDOStatement {
     $query = "UPDATE " . $this->getMappedModelTable() . " SET " . self::getMappedModelKey($model, $key) . "=?";
@@ -328,15 +330,20 @@ abstract class AbstractModelFactory {
   }
   
   /**
-   * Increments the given key of this model by the given value
+   * Increments the given key of this model by the given value atomically
    *
    * Returns the return of PDO::execute()
    * @param $model AbstractModel primary key of model
    * @param $key string key of the column to update
    * @param $value int amount of increment
    * @return PDOStatement
+   * @throws Exception
    */
   public function inc(AbstractModel &$model, string $key, int $value = 1): PDOStatement {
+    if ($value <= 0) {
+      throw new Exception("Cannot increment by zero or negative values!");
+    }
+    
     $mapped_key = self::getMappedModelKey($model, $key);
     $query = "UPDATE " . $this->getMappedModelTable() . " SET " . $mapped_key . "=" . $mapped_key . "+?";
     
@@ -360,8 +367,13 @@ abstract class AbstractModelFactory {
    * @param $key string key of the column to update
    * @param $value int amount of increment
    * @return PDOStatement
+   * @throws Exception
    */
   public function dec(AbstractModel &$model, string $key, int $value = 1): PDOStatement {
+    if ($value <= 0) {
+      throw new Exception("Cannot decrement by zero or negative values!");
+    }
+    
     $mapped_key = self::getMappedModelKey($model, $key);
     $query = "UPDATE " . $this->getMappedModelTable() . " SET " . $mapped_key . "=" . $mapped_key . "-?";
     
@@ -380,6 +392,7 @@ abstract class AbstractModelFactory {
   /**
    * @param $models AbstractModel[]
    * @return bool|PDOStatement
+   * @throws Exception
    */
   public function massSave(array $models): bool|PDOStatement {
     if (sizeof($models) == 0) {
@@ -427,6 +440,7 @@ abstract class AbstractModelFactory {
    * @param $sumColumn string column to apply OP to
    * @param $op string either min or max
    * @return mixed
+   * @throws Exception
    */
   public function minMaxFilter(array $options, string $sumColumn, string $op): mixed {
     if (strtolower($op) == "min") {
@@ -452,10 +466,13 @@ abstract class AbstractModelFactory {
     return $row['column_' . strtolower($op)];
   }
   
-  public function multicolAggregationFilter($options, $aggregations) {
-    //$options: as usual
-    //$columns: array of Aggregation objects
-    
+  /**
+   * @param $options array as usual, to filter and join
+   * @param $aggregations array of Aggregation objects
+   * @return mixed
+   * @throws Exception
+   */
+  public function multicolAggregationFilter(array $options, array $aggregations): mixed {
     $elements = [];
     foreach ($aggregations as $aggregation) {
       $elements[] = $aggregation->getQueryString($this);
@@ -484,6 +501,7 @@ abstract class AbstractModelFactory {
    * @param $options array options of query (filters and joins)
    * @param $column string single column key which should be retrieved
    * @return array of the column entries returned from this query
+   * @throws Exception
    */
   public function columnFilter(array $options, string $column): array {
     $query = "SELECT " . Util::createPrefixedString($this->getMappedModelTable(), [self::getMappedModelKey($this->getNullObject(), $column)]);
@@ -534,10 +552,10 @@ abstract class AbstractModelFactory {
   public function columnTimeseriesFilter(array $options, string $timeColumn): array {
     $dbType = StartupConfig::getInstance()->getDatabaseType();
     $to_timestamp = ($dbType == "postgres") ? "TO_TIMESTAMP" : "FROM_UNIXTIME";
-
-    $query = "SELECT DATE(" . $to_timestamp . "(". self::getMappedModelKey($this->getNullObject(), $timeColumn) . ")) AS day, COUNT(*) AS total";
     
-    $query .= " FROM ". $this->getMappedModelTable();
+    $query = "SELECT DATE(" . $to_timestamp . "(" . self::getMappedModelKey($this->getNullObject(), $timeColumn) . ")) AS day, COUNT(*) AS total";
+    
+    $query .= " FROM " . $this->getMappedModelTable();
     
     $vals = array();
     
@@ -546,12 +564,12 @@ abstract class AbstractModelFactory {
     }
     
     $query .= " GROUP BY day ORDER BY day";
-
+    
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
-    return $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_KEY_PAIR);
+    return $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_KEY_PAIR);
   }
   
   public function countFilter($options) {

@@ -167,20 +167,7 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testUpdateModelSuccessSingleChangeOnMappedColumn(): void {
-    $agent = new Agent(null, '', '', 0, '', '', 0, 0, 0, '', '', 0, '', null, 0, '');
-    $agent = $this->createDatabaseObject(Factory::getAgentFactory(), $agent);
-    
-    $hashType = new HashType(null, 'placeholder', 0, 0);
-    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), $hashType);
-    
-    $crackerBinaryType = new CrackerBinaryType(null, '', 0);
-    $crackerBinaryType = $this->createDatabaseObject(Factory::getCrackerBinaryTypeFactory(), $crackerBinaryType);
-    
-    $crackerBinary = new CrackerBinary(null, $crackerBinaryType->getId(), '', '', '');
-    $crackerBinary = $this->createDatabaseObject(Factory::getCrackerBinaryFactory(), $crackerBinary);
-    
-    $healthCheck = new HealthCheck(null, 0, 0, 0, $hashType->getId(), $crackerBinary->getId(), 0, '');
-    $healthCheck = $this->createDatabaseObject(Factory::getHealthCheckFactory(), $healthCheck);
+    [$agent, $healthCheck] = $this->setupHealthCheck();
     
     $healthCheckAgent = new HealthCheckAgent(null, $healthCheck->getId(), $agent->getId(), 0, 0, 0, 0, 0, '');
     $healthCheckAgent = $this->createDatabaseObject(Factory::getHealthCheckAgentFactory(), $healthCheckAgent);
@@ -215,6 +202,406 @@ final class AbstractModelFactoryTest extends TestBase {
     $this->assertEquals('HashType X', $hashTypeUpdated->getDescription());
     $this->assertEquals(1, $hashTypeUpdated->getIsSalted());
     $this->assertEquals(1, $hashTypeUpdated->getIsSlowHash());
+  }
+  
+  /**
+   * Tests if values with mset() are set properly
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testMsetSuccess(): void {
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 0, 0));
+    Factory::getHashTypeFactory()->mset($hashType, [HashType::IS_SALTED => 1, HashType::IS_SLOW_HASH => 1]);
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType->getId());
+    $this->assertEquals(1, $hashTypeUpdated->getIsSalted());
+    $this->assertEquals(1, $hashTypeUpdated->getIsSlowHash());
+  }
+  
+  /**
+   * Tests two separate mset requests on different objects and make sure that both changes survive if they are not on the same column
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testMsetSuccessTwoObjects(): void {
+    $hashType1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 0, 0));
+    $hashType2 = clone $hashType1;
+    $this->assertTrue($hashType1 instanceof HashType);
+    $this->assertTrue($hashType2 instanceof HashType);
+    
+    $hashType1->setDescription('something else');
+    Factory::getHashTypeFactory()->mset($hashType1, [HashType::DESCRIPTION => 'something else']);
+    
+    $this->assertEquals('something else', $hashType1->getDescription());
+    $this->assertEquals('placeholder', $hashType2->getDescription());
+    
+    $hashType2->setIsSalted(1);
+    Factory::getHashTypeFactory()->mset($hashType2, [HashType::IS_SALTED => 1]);
+    
+    $this->assertEquals(0, $hashType1->getIsSalted());
+    $this->assertEquals(1, $hashType2->getIsSalted());
+    
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType1->getId());
+    $this->assertEquals(1, $hashTypeUpdated->getIsSalted());
+    $this->assertEquals('something else', $hashTypeUpdated->getDescription());
+  }
+  
+  /**
+   * Tests if values with set() are set properly
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testSetSuccess(): void {
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 0, 0));
+    Factory::getHashTypeFactory()->set($hashType, HashType::IS_SALTED, 1);
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType->getId());
+    $this->assertEquals(1, $hashTypeUpdated->getIsSalted());
+    $this->assertEquals(0, $hashTypeUpdated->getIsSlowHash());
+  }
+  
+  /**
+   * Tests two separate set requests on different objects and make sure that both changes survive if they are not on the same column
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testSetSuccessTwoObjects(): void {
+    $hashType1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 0, 0));
+    $hashType2 = clone $hashType1;
+    $this->assertTrue($hashType1 instanceof HashType);
+    $this->assertTrue($hashType2 instanceof HashType);
+    
+    $hashType1->setDescription('something else');
+    Factory::getHashTypeFactory()->set($hashType1, HashType::DESCRIPTION, 'something else');
+    
+    $this->assertEquals('something else', $hashType1->getDescription());
+    $this->assertEquals('placeholder', $hashType2->getDescription());
+    
+    $hashType2->setIsSalted(1);
+    Factory::getHashTypeFactory()->set($hashType2, HashType::IS_SALTED, 1);
+    
+    $this->assertEquals(0, $hashType1->getIsSalted());
+    $this->assertEquals(1, $hashType2->getIsSalted());
+    
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType1->getId());
+    $this->assertEquals(1, $hashTypeUpdated->getIsSalted());
+    $this->assertEquals('something else', $hashTypeUpdated->getDescription());
+  }
+  
+  /**
+   * Tests if values with inc() are set properly
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testIncSuccess(): void {
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 1, 0));
+    Factory::getHashTypeFactory()->inc($hashType, HashType::IS_SALTED);
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType->getId());
+    $this->assertEquals(2, $hashTypeUpdated->getIsSalted());
+  }
+  
+  /**
+   * Tests if values with inc() are set properly when incrementing more than 1 at a step
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testIncSuccessValue(): void {
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 1, 0));
+    Factory::getHashTypeFactory()->inc($hashType, HashType::IS_SALTED, 5);
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType->getId());
+    $this->assertEquals(6, $hashTypeUpdated->getIsSalted());
+  }
+  
+  /**
+   * Test if we increment on different instances of the same database objects, the value at the end matches all increments together
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testIncSuccessTwoObjects(): void {
+    $hashType1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 1, 0));
+    $hashType2 = Factory::getHashTypeFactory()->get($hashType1->getId()); // retrieve an independent copy
+    $this->assertTrue($hashType1 instanceof HashType);
+    
+    Factory::getHashTypeFactory()->inc($hashType1, HashType::IS_SALTED, 2);
+    
+    $this->assertEquals(3, $hashType1->getIsSalted());
+    $this->assertEquals(1, $hashType2->getIsSalted());
+    
+    Factory::getHashTypeFactory()->inc($hashType2, HashType::IS_SALTED, 20);
+    
+    $this->assertEquals(23, $hashType2->getIsSalted());
+    
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType1->getId());
+    $this->assertEquals(23, $hashTypeUpdated->getIsSalted());
+  }
+  
+  /**
+   * Tests that inc() is not accepting negative values (should be done with dec())
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testIncFailNegative(): void {
+    $this->expectException(Exception::class);
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 10, 0));
+    Factory::getHashTypeFactory()->inc($hashType, HashType::IS_SALTED, -5);
+  }
+  
+  /**
+   * Tests that inc() is not accepting zero value
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testIncFailZero(): void {
+    $this->expectException(Exception::class);
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 10, 0));
+    Factory::getHashTypeFactory()->inc($hashType, HashType::IS_SALTED, 0);
+  }
+  
+  /**
+   * Tests if values with dec() are set properly
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testDecSuccess(): void {
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 10, 0));
+    Factory::getHashTypeFactory()->dec($hashType, HashType::IS_SALTED);
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType->getId());
+    $this->assertEquals(9, $hashTypeUpdated->getIsSalted());
+  }
+  
+  /**
+   * Tests if values with dec() are set properly when decrementing more than 1 at a step
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testDecSuccessValue(): void {
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 10, 0));
+    Factory::getHashTypeFactory()->dec($hashType, HashType::IS_SALTED, 6);
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType->getId());
+    $this->assertEquals(4, $hashTypeUpdated->getIsSalted());
+  }
+  
+  /**
+   * Test if we decrement on different instances of the same database objects, the value at the end matches all decrements together
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testDecSuccessTwoObjects(): void {
+    $hashType1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 50, 0));
+    $hashType2 = Factory::getHashTypeFactory()->get($hashType1->getId()); // retrieve an independent copy
+    $this->assertTrue($hashType1 instanceof HashType);
+    
+    Factory::getHashTypeFactory()->dec($hashType1, HashType::IS_SALTED, 2);
+    
+    $this->assertEquals(48, $hashType1->getIsSalted());
+    $this->assertEquals(50, $hashType2->getIsSalted());
+    
+    Factory::getHashTypeFactory()->dec($hashType2, HashType::IS_SALTED, 20);
+    
+    $this->assertEquals(28, $hashType2->getIsSalted());
+    
+    $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType1->getId());
+    $this->assertEquals(28, $hashTypeUpdated->getIsSalted());
+  }
+  
+  /**
+   * Tests that dec() is not accepting negative values (should be done with inc())
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testDecFailNegative(): void {
+    $this->expectException(Exception::class);
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 10, 0));
+    Factory::getHashTypeFactory()->dec($hashType, HashType::IS_SALTED, -5);
+  }
+  
+  /**
+   * Tests that dec() is not accepting zero value
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testDecFailZero(): void {
+    $this->expectException(Exception::class);
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 10, 0));
+    Factory::getHashTypeFactory()->dec($hashType, HashType::IS_SALTED, 0);
+  }
+  
+  /**
+   * Test creation of multiple objects with massSave() and check that they are existing afterwards
+   *
+   * @throws Exception
+   */
+  public function testMassSaveSuccess(): void {
+    $testid = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 2, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 3, 0));
+    
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $list = Factory::getHashTypeFactory()->filter([Factory::FILTER => $qF]);
+    $this->assertEquals(3, count($list));
+    foreach ($list as $hashType) {
+      $this->assertNotNull($hashType->getId());
+    }
+    $this->registerDatabaseObjects(Factory::getHashTypeFactory(), $list);
+  }
+  
+  /**
+   * Test creation of multiple objects with massSave() with objects already providing primary keys
+   *
+   * @throws Exception
+   */
+  public function testMassSaveSuccessWithPKs(): void {
+    $testid = uniqid();
+    $idOffset = random_int(123456, 999999);
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType($idOffset + 0, 'hashtype1' . $testid, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType($idOffset + 1, 'hashtype2' . $testid, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType($idOffset + 2, 'hashtype3' . $testid, 72, 0));
+    
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $list = Factory::getHashTypeFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => new OrderFilter(HashType::HASH_TYPE_ID, "ASC")]);
+    $this->assertEquals(3, count($list));
+    foreach ($list as $hashType) {
+      $this->assertNotNull($hashType->getId());
+      $this->assertEquals($idOffset, $hashType->getId());
+      $idOffset++;
+    }
+    $this->registerDatabaseObjects(Factory::getHashTypeFactory(), $list);
+  }
+  
+  /**
+   * Test that massSave() returns false if no models are given
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testMassSaveFailEmpty(): void {
+    $ret = Factory::getHashTypeFactory()->massSave([]);
+    $this->assertFalse($ret);
+  }
+  
+  /**
+   * Test if the max operation if giving the correct max values for two different columns
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testMinMaxFilterSuccessMax(): void {
+    $testid = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $max_1 = Factory::getHashTypeFactory()->minMaxFilter([Factory::FILTER => $qF], HashType::IS_SALTED, "MAX");
+    $max_2 = Factory::getHashTypeFactory()->minMaxFilter([Factory::FILTER => $qF], HashType::IS_SLOW_HASH, "MAX");
+    
+    $this->assertEquals(125, $max_1);
+    $this->assertEquals(0, $max_2);
+  }
+  
+  /**
+   * Test if the min operation if giving the correct min values for two different columns
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testMinMaxFilterSuccessMin(): void {
+    $testid = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $min_1 = Factory::getHashTypeFactory()->minMaxFilter([Factory::FILTER => $qF], HashType::IS_SALTED, "MIN");
+    $min_2 = Factory::getHashTypeFactory()->minMaxFilter([Factory::FILTER => $qF], HashType::IS_SLOW_HASH, "MIN");
+    
+    $this->assertEquals(1, $min_1);
+    $this->assertEquals(0, $min_2);
+  }
+  
+  /**
+   * Test if the min operation works on a mapped column
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testMinMaxFilterSuccessMappedColumn(): void {
+    $min = Factory::getHealthCheckAgentFactory()->minMaxFilter([], HealthCheckAgent::END, "MIN");
+    $this->assertEquals(0, $min);
+  }
+  
+  /**
+   * Test if we can retrieve the MIN and MAX of a column with one multicolumn aggregation.
+   *
+   * @throws Exception
+   */
+  public function testMulticolAggregationFilterSuccess(): void {
+    $testid = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $aggregations = [];
+    $aggregations[] = new Aggregation(HashType::IS_SALTED, "MAX");
+    $aggregations[] = new Aggregation(HashType::IS_SALTED, "MIN");
+    
+    $results = Factory::getHashTypeFactory()->multicolAggregationFilter([Factory::FILTER => $qF], $aggregations);
+    foreach ($aggregations as $aggregation) {
+      $this->assertArrayHasKey($aggregation->getName(), $results);
+    }
+    $this->assertEquals(125, $results[$aggregations[0]->getName()]);
+    $this->assertEquals(1, $results[$aggregations[1]->getName()]);
+  }
+  
+  // TODO: create tests for multicolAggregationFilter using JOINS
+  
+  /**
+   * Test receiving the column of a query.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testColumnFilterSuccess(): void {
+    $testid = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $column = Factory::getHashTypeFactory()->columnFilter([Factory::FILTER => $qF], HashType::IS_SALTED);
+    $this->assertEquals([1, 125, 72], $column);
+  }
+  
+  /**
+   * Test receiving the column of a query on a mapped column
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testColumnFilterSuccessMappedColumn(): void {
+    [$agent, $healthCheck] = $this->setupHealthCheck();
+    
+    $this->createDatabaseObject(Factory::getHealthCheckAgentFactory(), new HealthCheckAgent(null, $healthCheck->getId(), $agent->getId(), 0, 0, 0, 0, 0, ''));
+    $this->createDatabaseObject(Factory::getHealthCheckAgentFactory(), new HealthCheckAgent(null, $healthCheck->getId(), $agent->getId(), 0, 0, 0, 0, 345, ''));
+    $this->createDatabaseObject(Factory::getHealthCheckAgentFactory(), new HealthCheckAgent(null, $healthCheck->getId(), $agent->getId(), 0, 0, 0, 0, 7, ''));
+    
+    $qF = new QueryFilter(HealthCheckAgent::AGENT_ID, $agent->getId(), "=");
+    $column = Factory::getHealthCheckAgentFactory()->columnFilter([Factory::FILTER => $qF], HealthCheckAgent::END);
+    $this->assertEquals([0, 345, 7], $column);
   }
   
   /**
@@ -338,5 +725,27 @@ final class AbstractModelFactoryTest extends TestBase {
     
     $this->assertEquals(array_sum($expected), array_sum($counts));
     $this->assertSame($expected, $counts);
+  }
+  
+  /**
+   * @return array[Agent, HealthCheck]
+   */
+  private function setUpHealthCheck(): array {
+    $agent = new Agent(null, '', '', 0, '', '', 0, 0, 0, '', '', 0, '', null, 0, '');
+    $agent = $this->createDatabaseObject(Factory::getAgentFactory(), $agent);
+    
+    $hashType = new HashType(null, 'placeholder', 0, 0);
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), $hashType);
+    
+    $crackerBinaryType = new CrackerBinaryType(null, '', 0);
+    $crackerBinaryType = $this->createDatabaseObject(Factory::getCrackerBinaryTypeFactory(), $crackerBinaryType);
+    
+    $crackerBinary = new CrackerBinary(null, $crackerBinaryType->getId(), '', '', '');
+    $crackerBinary = $this->createDatabaseObject(Factory::getCrackerBinaryFactory(), $crackerBinary);
+    
+    $healthCheck = new HealthCheck(null, 0, 0, 0, $hashType->getId(), $crackerBinary->getId(), 0, '');
+    $healthCheck = $this->createDatabaseObject(Factory::getHealthCheckFactory(), $healthCheck);
+    
+    return [$agent, $healthCheck];
   }
 }

@@ -55,4 +55,10 @@ class TestBase extends TestCase {
   public function registerDatabaseObject(AbstractModelFactory $factory, AbstractModel $obj): void {
     $this->databaseObjects[] = ["factory" => $factory, "object" => $obj];
   }
+  
+  public function registerDatabaseObjects(AbstractModelFactory $factory, array $objects): void {
+    foreach ($objects as $object) {
+      $this->databaseObjects[] = ["factory" => $factory, "object" => $object];
+    }
+  }
 }
