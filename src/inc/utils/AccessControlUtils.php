@@ -17,7 +17,7 @@ class AccessControlUtils {
    * @param int $groupId
    * @return User[]
    */
-  public static function getMembers($groupId) {
+  public static function getMembers(int $groupId): array {
     $qF = new QueryFilter(User::RIGHT_GROUP_ID, $groupId, "=");
     return Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
   }
@@ -25,14 +25,14 @@ class AccessControlUtils {
   /**
    * @return RightGroup[]
    */
-  public static function getGroups() {
+  public static function getGroups(): array {
     return Factory::getRightGroupFactory()->filter([]);
   }
   
   /**
    * @throws HTException
    */
-  public static function addToPermissions($groupId, $perm) {
+  public static function addToPermissions(int $groupId, array $perm): void {
     $group = AccessControlUtils::getGroup($groupId);
     $current_permissions = $group->getPermissions();
     if ($current_permissions == 'ALL') {
@@ -46,11 +46,11 @@ class AccessControlUtils {
   
   /**
    * @param int $groupId
-   * @param array $perm
+   * @param array $perm - Array of strings, permission-1|0
    * @return boolean
    * @throws HTException
    */
-  public static function updateGroupPermissions($groupId, $perm) {
+  public static function updateGroupPermissions(int $groupId, array $perm): bool {
     $group = AccessControlUtils::getGroup($groupId);
     if ($group->getPermissions() == 'ALL') {
       throw new HTException("Administrator group cannot be changed!");
@@ -116,7 +116,7 @@ class AccessControlUtils {
    * @throws HttpError
    * @throws HTException
    */
-  public static function deleteGroup($groupId) {
+  public static function deleteGroup(int $groupId): void {
     $group = AccessControlUtils::getGroup($groupId);
     $qF = new QueryFilter(User::RIGHT_GROUP_ID, $group->getId(), "=");
     $count = Factory::getUserFactory()->countFilter([Factory::FILTER => $qF]);
@@ -133,7 +133,7 @@ class AccessControlUtils {
    * @return RightGroup
    * @throws HTException
    */
-  public static function getGroup($groupId) {
+  public static function getGroup(int $groupId): RightGroup {
     $group = Factory::getRightGroupFactory()->get($groupId);
     if ($group === null) {
       throw new HTException("Invalid group!");
