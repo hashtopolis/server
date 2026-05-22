@@ -1,4 +1,4 @@
-FROM rust:1.91-slim-trixie AS prebuild
+FROM rust:1.94-slim-trixie AS prebuild
 
 RUN apt-get update && apt-get install -y pkg-config libssl-dev
 
