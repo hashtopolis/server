@@ -3,6 +3,7 @@
 
 namespace Hashtopolis;
 
+use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\models\User;
@@ -53,13 +54,41 @@ class TestBase extends TestCase {
     parent::tearDown();
   }
   
+  /**
+   * used to create an object in the database and then register it directly for deletion to be cleaned up after the test
+   *
+   * @param AbstractModelFactory $factory
+   * @param AbstractModel $obj
+   * @return AbstractModel
+   * @throws Exception
+   */
   public function createDatabaseObject(AbstractModelFactory $factory, AbstractModel $obj): AbstractModel {
     $obj = $factory->save($obj);
     $this->registerDatabaseObject($factory, $obj);
     return $obj;
   }
   
+  /**
+   * used to just register an already existing database object during the tests to be deleted at the end
+   *
+   * @param AbstractModelFactory $factory
+   * @param AbstractModel $obj
+   * @return void
+   */
   public function registerDatabaseObject(AbstractModelFactory $factory, AbstractModel $obj): void {
     $this->databaseObjects[] = ["factory" => $factory, "object" => $obj];
+  }
+  
+  /**
+   * used to just register already existing database objects during the tests to be deleted at the end
+   *
+   * @param AbstractModelFactory $factory
+   * @param array $objects
+   * @return void
+   */
+  public function registerDatabaseObjects(AbstractModelFactory $factory, array $objects): void {
+    foreach ($objects as $object) {
+      $this->databaseObjects[] = ["factory" => $factory, "object" => $object];
+    }
   }
 }

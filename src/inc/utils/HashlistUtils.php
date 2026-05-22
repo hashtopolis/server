@@ -525,7 +525,9 @@ class HashlistUtils {
       if ($bufferCount > 1000) {
         foreach ($hashlists as $l) {
           $ll = Factory::getHashlistFactory()->get($l->getId());
-          Factory::getHashlistFactory()->inc($ll, Hashlist::CRACKED, $crackedIn[$ll->getId()]);
+          if ($crackedIn[$ll->getId()] > 0) {
+            Factory::getHashlistFactory()->inc($ll, Hashlist::CRACKED, $crackedIn[$ll->getId()]);
+          }
         }
         foreach ($hashlists as $l) {
           $crackedIn[$l->getId()] = 0;
@@ -546,17 +548,19 @@ class HashlistUtils {
     //finish
     foreach ($hashlists as $l) {
       $ll = Factory::getHashlistFactory()->get($l->getId());
-      Factory::getHashlistFactory()->inc($ll, Hashlist::CRACKED, $crackedIn[$ll->getId()]);
+      if ($crackedIn[$ll->getId()] > 0) {
+        Factory::getHashlistFactory()->inc($ll, Hashlist::CRACKED, $crackedIn[$ll->getId()]);
+      }
     }
     if (sizeof($zaps) > 0) {
       Factory::getZapFactory()->massSave($zaps);
     }
     
-    if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
+    if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST && array_sum($crackedIn) > 0) {
       $hashlist = Factory::getHashlistFactory()->get($hashlist->getId());
       Factory::getHashlistFactory()->inc($hashlist, Hashlist::CRACKED, array_sum($crackedIn));
     }
-    if (sizeof($inSuperHashlists) > 0) {
+    if (sizeof($inSuperHashlists) > 0 && array_sum($crackedIn) > 0) {
       $total = array_sum($crackedIn);
       foreach ($inSuperHashlists as $super) {
         $superHashlist = Factory::getHashlistFactory()->get($super->getParentHashlistId());

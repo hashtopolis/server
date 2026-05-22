@@ -214,20 +214,6 @@ abstract class AbstractModelFactory {
   
   /**
    * @param $arr array
-   * @return Group[]
-   */
-  private function getGroups(array $arr): array {
-    if (!is_array($arr[Factory::GROUP])) {
-      $arr[Factory::GROUP] = array($arr[Factory::GROUP]);
-    }
-    if (isset($arr[Factory::GROUP])) {
-      return $arr[Factory::GROUP];
-    }
-    return array();
-  }
-  
-  /**
-   * @param $arr array
    * @return Join[]
    */
   private function getJoins(array $arr): array {
@@ -276,12 +262,13 @@ abstract class AbstractModelFactory {
   }
   
   /**
-   * Atomically sets the given keys of this model to the given values
+   * Atomically sets the given keys of this model to the given values without setting all other values (like ->update() does)
    *
    * Returns the return of PDO::execute()
    * @param $model AbstractModel primary key of model
    * @param $arr array key-value associations for update
    * @return PDOStatement
+   * @throws Exception
    */
   public function mset(AbstractModel &$model, array $arr): PDOStatement {
     $query = "UPDATE " . $this->getMappedModelTable() . " SET ";
@@ -304,13 +291,14 @@ abstract class AbstractModelFactory {
   }
   
   /**
-   * Atomically sets the given key of this model to the given value
+   * Atomically sets the given key of this model to the given value without altering other values
    *
    * Returns the return of PDO::execute()
    * @param $model AbstractModel primary key of model
    * @param $key string key of the column to update
    * @param $value
    * @return PDOStatement
+   * @throws Exception
    */
   public function set(AbstractModel &$model, string $key, $value): PDOStatement {
     $query = "UPDATE " . $this->getMappedModelTable() . " SET " . self::getMappedModelKey($model, $key) . "=?";
@@ -328,15 +316,20 @@ abstract class AbstractModelFactory {
   }
   
   /**
-   * Increments the given key of this model by the given value
+   * Increments the given key of this model by the given value atomically
    *
    * Returns the return of PDO::execute()
    * @param $model AbstractModel primary key of model
    * @param $key string key of the column to update
    * @param $value int amount of increment
    * @return PDOStatement
+   * @throws Exception
    */
   public function inc(AbstractModel &$model, string $key, int $value = 1): PDOStatement {
+    if ($value <= 0) {
+      throw new Exception("Cannot increment by zero or negative values!");
+    }
+    
     $mapped_key = self::getMappedModelKey($model, $key);
     $query = "UPDATE " . $this->getMappedModelTable() . " SET " . $mapped_key . "=" . $mapped_key . "+?";
     
@@ -360,8 +353,13 @@ abstract class AbstractModelFactory {
    * @param $key string key of the column to update
    * @param $value int amount of increment
    * @return PDOStatement
+   * @throws Exception
    */
   public function dec(AbstractModel &$model, string $key, int $value = 1): PDOStatement {
+    if ($value <= 0) {
+      throw new Exception("Cannot decrement by zero or negative values!");
+    }
+    
     $mapped_key = self::getMappedModelKey($model, $key);
     $query = "UPDATE " . $this->getMappedModelTable() . " SET " . $mapped_key . "=" . $mapped_key . "-?";
     
@@ -380,6 +378,7 @@ abstract class AbstractModelFactory {
   /**
    * @param $models AbstractModel[]
    * @return bool|PDOStatement
+   * @throws Exception
    */
   public function massSave(array $models): bool|PDOStatement {
     if (sizeof($models) == 0) {
@@ -427,6 +426,7 @@ abstract class AbstractModelFactory {
    * @param $sumColumn string column to apply OP to
    * @param $op string either min or max
    * @return mixed
+   * @throws Exception
    */
   public function minMaxFilter(array $options, string $sumColumn, string $op): mixed {
     if (strtolower($op) == "min") {
@@ -452,10 +452,13 @@ abstract class AbstractModelFactory {
     return $row['column_' . strtolower($op)];
   }
   
-  public function multicolAggregationFilter($options, $aggregations) {
-    //$options: as usual
-    //$columns: array of Aggregation objects
-    
+  /**
+   * @param $options array as usual, to filter and join
+   * @param $aggregations array of Aggregation objects
+   * @return mixed
+   * @throws Exception
+   */
+  public function multicolAggregationFilter(array $options, array $aggregations): mixed {
     $elements = [];
     foreach ($aggregations as $aggregation) {
       $elements[] = $aggregation->getQueryString($this);
@@ -484,6 +487,7 @@ abstract class AbstractModelFactory {
    * @param $options array options of query (filters and joins)
    * @param $column string single column key which should be retrieved
    * @return array of the column entries returned from this query
+   * @throws Exception
    */
   public function columnFilter(array $options, string $column): array {
     $query = "SELECT " . Util::createPrefixedString($this->getMappedModelTable(), [self::getMappedModelKey($this->getNullObject(), $column)]);
@@ -505,7 +509,13 @@ abstract class AbstractModelFactory {
     return $stmt->fetchAll(PDO::FETCH_COLUMN);
   }
   
-  public function sumFilter($options, $sumColumn) {
+  /**
+   * @param $options array options with filters
+   * @param $sumColumn string column to sum up
+   * @return int
+   * @throws Exception
+   */
+  public function sumFilter(array $options, string $sumColumn): int {
     $query = "SELECT SUM(" . self::getMappedModelKey($this->getNullObject(), $sumColumn) . ") AS sum ";
     $query = $query . " FROM " . $this->getMappedModelTable();
     
@@ -520,6 +530,9 @@ abstract class AbstractModelFactory {
     $stmt->execute($vals);
     
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row['sum'] == null) {
+      return 0;
+    }
     return $row['sum'];
   }
   
@@ -534,10 +547,10 @@ abstract class AbstractModelFactory {
   public function columnTimeseriesFilter(array $options, string $timeColumn): array {
     $dbType = StartupConfig::getInstance()->getDatabaseType();
     $to_timestamp = ($dbType == "postgres") ? "TO_TIMESTAMP" : "FROM_UNIXTIME";
-
-    $query = "SELECT DATE(" . $to_timestamp . "(". self::getMappedModelKey($this->getNullObject(), $timeColumn) . ")) AS day, COUNT(*) AS total";
     
-    $query .= " FROM ". $this->getMappedModelTable();
+    $query = "SELECT DATE(" . $to_timestamp . "(" . self::getMappedModelKey($this->getNullObject(), $timeColumn) . ")) AS day, COUNT(*) AS total";
+    
+    $query .= " FROM " . $this->getMappedModelTable();
     
     $vals = array();
     
@@ -546,15 +559,20 @@ abstract class AbstractModelFactory {
     }
     
     $query .= " GROUP BY day ORDER BY day";
-
+    
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
-    return $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_KEY_PAIR);
+    return $stmt->fetchAll(PDO::FETCH_GROUP | PDO::FETCH_KEY_PAIR);
   }
   
-  public function countFilter($options) {
+  /**
+   * @param $options array options with filter and join
+   * @return int
+   * @throws Exception
+   */
+  public function countFilter(array $options): int {
     $query = "SELECT COUNT(*) AS count ";
     $query = $query . " FROM " . $this->getMappedModelTable();
     
@@ -573,6 +591,9 @@ abstract class AbstractModelFactory {
     $stmt->execute($vals);
     
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row['count'] === null) {
+      return 0;
+    }
     return $row['count'];
   }
   
@@ -586,6 +607,7 @@ abstract class AbstractModelFactory {
    *
    * @param $pk string primary key
    * @return AbstractModel|null the with pk associated model or Null
+   * @throws Exception
    */
   public function get($pk) {
     return $this->getFromDB($pk);
@@ -600,6 +622,7 @@ abstract class AbstractModelFactory {
    *
    * @param $pk string primary key
    * @return AbstractModel|null the with pk associated model or Null
+   * @throws Exception
    */
   public function getFromDB($pk): ?AbstractModel {
     $keys = self::getMappedModelKeys($this->getNullObject());
@@ -633,6 +656,7 @@ abstract class AbstractModelFactory {
    *
    * @param $options array containing option settings
    * @return AbstractModel[]|AbstractModel Returns a list of matching objects or Null
+   * @throws Exception
    */
   private function filterWithJoin(array $options): array|AbstractModel {
     $vals = array();
@@ -664,10 +688,6 @@ abstract class AbstractModelFactory {
     // Apply all normal filter to this query
     if (array_key_exists(Factory::FILTER, $options)) {
       $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
-    }
-    
-    if (array_key_exists(Factory::GROUP, $options)) {
-      $query .= $this->applyGroups($this->getGroups($options));
     }
     
     // Apply order filter
@@ -717,8 +737,9 @@ abstract class AbstractModelFactory {
    * @param array $options
    * @param bool $single
    * @return array|AbstractModel|null
+   * @throws Exception
    */
-  public function filter(array $options, bool $single = false) {
+  public function filter(array $options, bool $single = false): array|AbstractModel|null {
     // Check if we need to join and if so pass on to internal Function
     if (array_key_exists(Factory::JOIN, $options)) {
       return $this->filterWithJoin($options);
@@ -730,10 +751,6 @@ abstract class AbstractModelFactory {
     
     if (array_key_exists(Factory::FILTER, $options)) {
       $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
-    }
-    
-    if (array_key_exists(Factory::GROUP, $options)) {
-      $query .= $this->applyGroups($this->getGroups($options));
     }
     
     if (!array_key_exists(Factory::ORDER, $options)) {
@@ -783,6 +800,7 @@ abstract class AbstractModelFactory {
   /**
    * @param $vals
    * @param $filters Filter|Filter[]
+   * @param bool $isJoinFilter
    * @return string
    */
   private function applyFilters(&$vals, Filter|array $filters, bool $isJoinFilter = false): string {
@@ -827,6 +845,10 @@ abstract class AbstractModelFactory {
     return " ORDER BY " . implode(", ", $orderQueries);
   }
   
+  /**
+   * @param $joins
+   * @return string
+   */
   private function applyJoins($joins): string {
     $query = "";
     foreach ($joins as $join) {
@@ -842,12 +864,21 @@ abstract class AbstractModelFactory {
     return $query;
   }
   
-  //applylimit is slightly different than the other apply functions, since you can only limit by a single value
-  //the $limit argument is a single object LimitFilter object instead of an array of objects.
+  /**
+   * applylimit is slightly different than the other apply functions, since you can only limit by a single value
+   * the $limit argument is a single object LimitFilter object instead of an array of objects.
+   *
+   * @param $limit
+   * @return string
+   */
   private function applyLimit($limit): string {
     return " LIMIT " . $limit->getQueryString($this);
   }
   
+  /**
+   * @param $groups
+   * @return string
+   */
   private function applyGroups($groups): string {
     $groupsQueries = array();
     if (!is_array($groups)) {
@@ -866,6 +897,7 @@ abstract class AbstractModelFactory {
    * It returns the return of the execute query.
    * @param $model AbstractModel
    * @return bool
+   * @throws Exception
    */
   public function delete($model): bool {
     if ($model != null) {
@@ -882,6 +914,7 @@ abstract class AbstractModelFactory {
   /**
    * @param $options array
    * @return PDOStatement
+   * @throws Exception
    */
   public function massDeletion(array $options): PDOStatement {
     $query = "DELETE FROM " . $this->getMappedModelTable();
@@ -902,9 +935,10 @@ abstract class AbstractModelFactory {
    * @param $matchingColumn
    * @param $updateColumn
    * @param $updates MassUpdateSet[]
-   * @return null
+   * @return bool|null
+   * @throws Exception
    */
-  public function massSingleUpdate($matchingColumn, $updateColumn, array $updates) {
+  public function massSingleUpdate($matchingColumn, $updateColumn, array $updates): ?bool {
     $query = "UPDATE " . $this->getMappedModelTable();
     
     if (sizeof($updates) == 0) {
@@ -939,6 +973,11 @@ abstract class AbstractModelFactory {
     return $stmt->execute($vals);
   }
   
+  /**
+   * @param $options
+   * @return bool
+   * @throws Exception
+   */
   public function massUpdate($options): bool {
     $query = "UPDATE " . $this->getMappedModelTable();
     
@@ -979,6 +1018,7 @@ abstract class AbstractModelFactory {
   /**
    * Returns the DB connection if possible
    * @param bool $test
+   * @param array $testProperties
    * @return ?PDO
    * @throws Exception
    */
