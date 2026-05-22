@@ -129,6 +129,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         $apiMethod = ($apiMethod == "processPost" && $name != "ImportFileHelperAPI") ? "actionPost" : $apiMethod;
         $reflectionApiMethod = new ReflectionMethod($class::class, $apiMethod);
         $paths[$path][$method]["description"] = OpenAPISchemaUtils::parsePhpDoc($reflectionApiMethod->getDocComment());
+        $paths[$path][$method]["summary"] = OpenAPISchemaUtils::parsePhpDoc($reflectionApiMethod->getDocComment());
         $parameters = $class->getCreateValidFeatures();
         $properties = OpenAPISchemaUtils::makeProperties($parameters);
         $amountProperties = count($properties);
@@ -154,6 +155,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ]
           ];
         }
+
         elseif ($method == "get") {
           $paths[$path][$method]["parameters"] = $class->getParamsSwagger();
         }
@@ -184,6 +186,12 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             "description" => "successful operation",
           ];
         }
+        $required_scopes = $class->getRequiredPermissions($method);
+        $paths[$path][$method]["security"] = [
+          [
+            "bearerAuth" => $required_scopes
+          ]
+        ];
         continue;
       };
       
@@ -382,6 +390,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       ];
       
       $paths[$path][$method]["description"] = OpenAPISchemaUtils::makeDescription($isRelation, $method, $singleObject);
+      $paths[$path][$method]["summary"] = OpenAPISchemaUtils::makeDescription($isRelation, $method, $singleObject);
       
       if ($isRelation && in_array($method, ["post", "patch", "delete"], true)) {
         $paths[$path][$method]["responses"]["204"] =
@@ -728,6 +737,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         "tags" => [
           "Login"
         ],
+        "summary" => "Obtain an authentication token",
         "requestBody" => [
           "required" => true,
           "content" => [
@@ -1022,7 +1032,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             "description" => "JWT Authorization header using the Bearer scheme.",
             "scheme" => "bearer",
             "bearerFormat" => "JWT",
-            "scopes" => array_values($unique_all_scopes),
+            // "scopes" => array_values($unique_all_scopes),
           ],
           "basicAuth" => [
             "type" => "http",

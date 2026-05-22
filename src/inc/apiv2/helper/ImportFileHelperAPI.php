@@ -372,6 +372,9 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
       ->WithHeader("Access-Control-Expose-Headers", "Tus-Resumable, Upload-Length, Upload-Offset");
   }
   
+  /**
+   * Deletes the upload and meta file, if they exist. This can be used by the client to cancel an upload.
+   */
   function processDelete(Request $request, Response $response, array $args): Response {
     /* Return 404 if entry is not found */
     $filename_upload = self::getUploadPath($args['id']);
@@ -418,6 +421,9 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     return array();
   }
   
+  /**
+   * Retrieves the file and its size
+   */
   function processGet(Request $request, Response $response, array $args): Response {
     $importFiles = $this->scanImportDirectory();
     return self::getMetaResponse($importFiles, $request, $response);

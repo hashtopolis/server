@@ -355,6 +355,18 @@ class OpenAPISchemaUtils {
         else {
           $description = "PATCH request to update attributes of a single object.";
         }
+      case "delete":
+        if ($isRelation) {
+          if ($singleObject) {
+            $description = "DELETE request to update a to one relationship.";
+          }
+          else {
+            $description = "DELETE request to update a to-many relationship link.";
+          }
+        }
+        else {
+          $description = "DELETE request to update attributes of a single object.";
+        }
     }
     return $description;
   }

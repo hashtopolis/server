@@ -37,7 +37,6 @@ jobs:
       - name: Download OpenAPI schema
         run: wget -q http://localhost:8080/api/v2/openapi.json -O openapi.json
       - name: Lint OpenAPI schema with Redocly
-        continue-on-error: true
         run: redocly lint openapi.json
       - name: Lint OpenAPI schema with Spectral
         run: spectral lint openapi.json --ruleset .github/openapi/spectral-jsonapi.yml -D
