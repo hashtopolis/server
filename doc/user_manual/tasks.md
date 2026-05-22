@@ -26,7 +26,7 @@ To create a new task, click on the button "+ New Task" on the *Tasks > Show Task
 
 These additional task configuration options allow greater control over execution and resource usage.
 
-8. **Chunk size**: Defines the expected processing time for each chunk<span title="A portion of the keyspace assigned to an agent for cracking. If an agent fails or a chunk times out, it will be reassigned.">ℹ️</span> of this task. Default value is set in [Settings](./settings_and_configuration.md#benchmark-chunk).
+8. **Chunk time**: Defines the expected processing time for each chunk<span title="A portion of the keyspace assigned to an agent for cracking. If an agent fails or a chunk times out, it will be reassigned.">ℹ️</span> of this task. Default value is set in [Settings](./settings_and_configuration.md#benchmark-chunk).
 
 9. **Status timer**: How often agents report task progress to the server. Default value is set in [Settings](./settings_and_configuration.md#activity-registration).
 
