@@ -15,7 +15,7 @@ It is possible to be informed about various events via different channels. The f
 
 - Chatbot
 - Discord
-- Email
+- Email (check how to setup the smtp server in the [Advanced Installation / Hashtopolis mail setup](../installation_guidelines/advanced_install.md#hashtopolis-mail-setup-sendmail-or-postfix))
 - Telegram
 - Slack
 

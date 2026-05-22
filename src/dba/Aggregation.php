@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\dba;
 
+use RuntimeException;
+
 class Aggregation {
   private string $column;
   private string $function;
@@ -15,8 +17,18 @@ class Aggregation {
   
   function __construct(string $column, string $function, ?AbstractModelFactory $overrideFactory = null) {
     $this->column = $column;
-    $this->function = $function;
+    $this->function = strtoupper($function);
     $this->overrideFactory = $overrideFactory;
+    
+    // test for function validity
+    if (!in_array($this->function, [Aggregation::SUM, Aggregation::MAX, Aggregation::MIN, Aggregation::COUNT])) {
+      throw new RuntimeException("Invalid function for aggregation!");
+    }
+    
+    // in case an overrideFactory used, check that the column is matching
+    if ($this->overrideFactory != null && !in_array($this->column, array_keys($this->overrideFactory->getNullObject()->getKeyValueDict()))) {
+      throw new RuntimeException("Provided column for aggregation does not match to overrideFactory!");
+    }
   }
   
   function getName(): string {
@@ -27,6 +39,10 @@ class Aggregation {
     if ($this->overrideFactory != null) {
       $factory = $this->overrideFactory;
     }
+    else if (!in_array($this->column, array_keys($factory->getNullObject()->getKeyValueDict()))) {
+      throw new RuntimeException("Provided column for aggregation does not match to factory!");
+    }
+    
     $table = "";
     if ($includeTable) {
       $table = $factory->getMappedModelTable() . ".";

@@ -461,11 +461,12 @@ abstract class AbstractModelFactory {
   public function multicolAggregationFilter(array $options, array $aggregations): mixed {
     $elements = [];
     foreach ($aggregations as $aggregation) {
-      $elements[] = $aggregation->getQueryString($this);
+      $elements[] = $aggregation->getQueryString($this, isset($options[Factory::JOIN]));
     }
     
     $query = "SELECT " . join(",", $elements);
-    $query = $query . " FROM " . $this->getMappedModelTable();
+    
+    $query .= " FROM " . $this->getMappedModelTable();
     
     $vals = array();
     
@@ -846,11 +847,15 @@ abstract class AbstractModelFactory {
   }
   
   /**
-   * @param $joins
+   * @param array|Join $joins
    * @return string
    */
-  private function applyJoins($joins): string {
+  private function applyJoins(Join|array $joins): string {
     $query = "";
+    if (!is_array($joins)) {
+      $joins = array($joins);
+    }
+    
     foreach ($joins as $join) {
       $joinFactory = $join->getOtherFactory();
       $localFactory = $this;

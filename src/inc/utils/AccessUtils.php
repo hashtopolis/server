@@ -2,18 +2,19 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\QueryFilter;
-use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\File;
+use Hashtopolis\dba\models\Task;
 use Hashtopolis\inc\apiv2\common\AbstractBaseAPI;
 use Hashtopolis\inc\Util;
 
@@ -23,7 +24,7 @@ class AccessUtils {
    * @param User $user
    * @return boolean
    */
-  public static function userCanAccessHashlists($hashlists, $user) {
+  public static function userCanAccessHashlists(Hashlist|array $hashlists, User $user): bool {
     if (!is_array($hashlists)) {
       $hashlists = array($hashlists);
     }
@@ -41,7 +42,7 @@ class AccessUtils {
    * @param $val string permission as they are stored in the legacy way in the DB in the RightGroup table
    * @return array
    */
-  public static function getPermissionArrayConverted($val) {
+  public static function getPermissionArrayConverted(string $val): array {
     $all_perms = array_unique(array_merge(...array_values(AbstractBaseAPI::$acl_mapping)));
     
     if ($val == 'ALL') {
@@ -73,7 +74,7 @@ class AccessUtils {
    * @param $user User
    * @return bool true if user has access to agent
    */
-  public static function userCanAccessAgent($agent, $user) {
+  public static function userCanAccessAgent(Agent $agent, User $user): bool {
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
     $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
@@ -94,7 +95,7 @@ class AccessUtils {
    * @param User $user
    * @return boolean
    */
-  public static function userCanAccessTask($taskWrapper, $user) {
+  public static function userCanAccessTask(TaskWrapper $taskWrapper, User $user): bool {
     $accessGroupIds = Util::getAccessGroupIds($user->getId());
     if (!in_array($taskWrapper->getAccessGroupId(), $accessGroupIds)) {
       return false;
@@ -107,7 +108,7 @@ class AccessUtils {
    * @param User $user
    * @return boolean
    */
-  public static function userCanAccessFile($file, $user) {
+  public static function userCanAccessFile(File $file, User $user): bool {
     $accessGroupIds = Util::getAccessGroupIds($user->getId());
     if (!in_array($file->getAccessGroupId(), $accessGroupIds)) {
       return false;
@@ -120,7 +121,7 @@ class AccessUtils {
    * @param $accessGroupsUser AccessGroup[]
    * @return AccessGroup[]
    */
-  public static function intersection($accessGroupsAgent, $accessGroupsUser) {
+  public static function intersection(array $accessGroupsAgent, array $accessGroupsUser): array {
     if (sizeof($accessGroupsUser) == 0 || sizeof($accessGroupsAgent) == 0) {
       return array();
     }
@@ -140,7 +141,7 @@ class AccessUtils {
    * @param $user User
    * @return AccessGroup[]
    */
-  public static function getAccessGroupsOfUser($user) {
+  public static function getAccessGroupsOfUser(User $user): array {
     $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", Factory::getAccessGroupUserFactory());
     $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
@@ -165,7 +166,7 @@ class AccessUtils {
    *
    * @return AccessGroup
    */
-  public static function getOrCreateDefaultAccessGroup() {
+  public static function getOrCreateDefaultAccessGroup(): AccessGroup {
     $accessGroup = Factory::getAccessGroupFactory()->get(1);
     if ($accessGroup == null) {
       // this should never happen anymore (unless someone deleted access group with ID 1)
@@ -180,7 +181,7 @@ class AccessUtils {
    * @param $task Task
    * @return bool true if agent is allowed to access task
    */
-  public static function agentCanAccessTask($agent, $task) {
+  public static function agentCanAccessTask(Agent $agent, Task $task): bool {
     // load access groups of agent
     $accessGroups = AccessUtils::getAccessGroupsOfAgent($agent);
     $accessGroupsIds = Util::arrayOfIds($accessGroups);
