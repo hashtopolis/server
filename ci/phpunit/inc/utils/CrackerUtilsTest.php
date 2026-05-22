@@ -9,16 +9,17 @@ use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\CrackerUtils;
-use PHPUnit\Framework\TestCase;
+use Hashtopolis\TestBase;
 
-require_once dirname(__FILE__) . '/../../../src/inc/startup/include.php';
+require_once(dirname(__FILE__) . '/../../TestBase.php');
+require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 
 /**
  * Unit tests for CrackerUtils.
  * setUp creates a CrackerBinaryType and one CrackerBinary to use as fixtures.
- * tearDown removes them so the database is left clean after every test.
+ * TestBase::tearDown() cleans them up in reverse registration order (binary before type).
  */
-final class CrackerUtilsTest extends TestCase {
+final class CrackerUtilsTest extends TestBase {
 
   private ?CrackerBinaryType $type   = null;
   private ?CrackerBinary     $binary = null;
@@ -27,18 +28,15 @@ final class CrackerUtilsTest extends TestCase {
   // These records provide valid IDs for the "happy path" tests and a known
   // duplicate name for the conflict test.
   protected function setUp(): void {
-    $this->type = Factory::getCrackerBinaryTypeFactory()->save(
+    parent::setUp();
+    $this->type = $this->createDatabaseObject(
+      Factory::getCrackerBinaryTypeFactory(),
       new CrackerBinaryType(null, 'test-crackerutils-type', 1)
     );
-    $this->binary = Factory::getCrackerBinaryFactory()->save(
+    $this->binary = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
       new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com', 'testcracker')
     );
-  }
-
-  // Removes the binary first (FK), then the type so no constraint violations occur.
-  protected function tearDown(): void {
-    if ($this->binary) { Factory::getCrackerBinaryFactory()->delete($this->binary); }
-    if ($this->type)   { Factory::getCrackerBinaryTypeFactory()->delete($this->type); }
   }
 
   // Verifies that getBinary() throws HTException when the ID does not match
@@ -91,11 +89,10 @@ final class CrackerUtilsTest extends TestCase {
   }
 
   // Verifies the full happy path: createBinary() creates and returns a new
-  // CrackerBinary when all fields are valid. The binary is deleted immediately
-  // after the assertion so it does not interfere with tearDown.
+  // CrackerBinary when all fields are valid.
   public function testCreateBinary_ValidInput_CreatesBinary(): void {
     $b = CrackerUtils::createBinary('9.9.9', 'newcracker', 'http://example.com/dl', $this->type->getId());
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
     $this->assertSame('9.9.9', $b->getVersion());
-    Factory::getCrackerBinaryFactory()->delete($b);
   }
 }

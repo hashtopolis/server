@@ -11,11 +11,12 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\utils\ChunkUtils;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
+use Hashtopolis\TestBase;
 
-require_once dirname(__FILE__) . '/../../../src/inc/startup/include.php';
+require_once(dirname(__FILE__) . '/../../TestBase.php');
+require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 
-final class ChunkUtilsTest extends TestCase {
+final class ChunkUtilsTest extends TestBase {
 
   // Injects a fake DataSet into the SConfig singleton via Reflection,
   // so tests can control config values without touching the database.
@@ -140,4 +141,6 @@ final class ChunkUtilsTest extends TestCase {
     $task->method('getKeyspace')->willReturn(1000);
     $this->assertNull(ChunkUtils::createNewChunk($task, $this->createMock(Assignment::class)));
   }
+
+  // TODO: handleExistingChunk() and createNewChunk() require further test coverage.
 }

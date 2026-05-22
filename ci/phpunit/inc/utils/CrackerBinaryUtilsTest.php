@@ -7,46 +7,36 @@ use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\CrackerBinaryUtils;
-use PHPUnit\Framework\TestCase;
+use Hashtopolis\TestBase;
 
-require_once dirname(__FILE__) . '/../../../src/inc/startup/include.php';
+
+require_once(dirname(__FILE__) . '/../../TestBase.php');
+require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 
 /**
  * Unit tests for CrackerBinaryUtils.
  * setUp creates a dedicated CrackerBinaryType so tests are isolated.
- * tearDown removes all binaries and the type created during the test.
+ * TestBase::tearDown() cleans up all registered objects in reverse order (binaries before type).
  */
-final class CrackerBinaryUtilsTest extends TestCase {
+final class CrackerBinaryUtilsTest extends TestBase {
 
-  private ?CrackerBinaryType $type    = null;
-  private array               $binaries = [];
+  private ?CrackerBinaryType $type = null;
 
-  // Creates a fresh CrackerBinaryType before each test so every test starts
-  // with an empty set of binaries registered under that type.
   protected function setUp(): void {
-    $this->type = Factory::getCrackerBinaryTypeFactory()->save(
+    parent::setUp();
+    $this->type = $this->createDatabaseObject(
+      Factory::getCrackerBinaryTypeFactory(),
       new CrackerBinaryType(null, 'test-crackerbinaryutils-type', 1)
     );
   }
 
-  // Deletes every CrackerBinary created during the test, then the type itself.
-  // Order matters: binaries must go first due to the FK constraint.
-  protected function tearDown(): void {
-    foreach ($this->binaries as $b) {
-      Factory::getCrackerBinaryFactory()->delete($b);
-    }
-    Factory::getCrackerBinaryTypeFactory()->delete($this->type);
-    $this->binaries = [];
-  }
-
   // Helper: saves a CrackerBinary with the given version under the shared type
-  // and registers it for cleanup so tearDown always removes it.
+  // and registers it for automatic cleanup via TestBase.
   private function addBinary(string $version): CrackerBinary {
-    $b = Factory::getCrackerBinaryFactory()->save(
+    return $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
       new CrackerBinary(null, $this->type->getId(), $version, 'http://example.com', 'testcracker')
     );
-    $this->binaries[] = $b;
-    return $b;
   }
 
   // Verifies that getNewestVersion() throws HTException when no CrackerBinary

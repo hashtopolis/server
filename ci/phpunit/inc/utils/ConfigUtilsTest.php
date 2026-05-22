@@ -5,16 +5,17 @@ namespace Tests\Utils;
 use Hashtopolis\dba\models\Config;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\ConfigUtils;
-use PHPUnit\Framework\TestCase;
+use Hashtopolis\TestBase;
 
-require_once dirname(__FILE__) . '/../../../src/inc/startup/include.php';
+require_once(dirname(__FILE__) . '/../../TestBase.php');
+require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 
 /**
  * Unit tests for ConfigUtils.
  * Uses the pre-seeded "chunktime" config row that every Hashtopolis install
  * has, so no fixture creation is needed and tearDown is not required.
  */
-final class ConfigUtilsTest extends TestCase {
+final class ConfigUtilsTest extends TestBase {
 
   // Fetched once per test — holds the live "chunktime" Config record from DB.
   private ?Config $existingConfig = null;
@@ -22,6 +23,7 @@ final class ConfigUtilsTest extends TestCase {
   // Loads the "chunktime" config before every test so tests have a real
   // Config object with a known item name and a valid database ID.
   protected function setUp(): void {
+    parent::setUp();
     $this->existingConfig = ConfigUtils::get('chunktime');
   }
 
@@ -51,10 +53,11 @@ final class ConfigUtilsTest extends TestCase {
   // database write when the provided value is identical to the stored value.
   // This is the no-op path that avoids unnecessary DB updates.
   public function testUpdateSingleConfig_SameValue_ReturnsEarlyWithoutException(): void {
+    $this->expectNotToPerformAssertions();
     $sameValue = $this->existingConfig->getValue();
     // Passing the same value back — the method must detect no change and return.
     ConfigUtils::updateSingleConfig($this->existingConfig->getId(), [Config::VALUE => $sameValue]);
-    $this->assertTrue(true); // reaching here confirms no exception was thrown
+    
   }
 
   // Verifies that updateSingleConfig() throws HTException when the given ID
