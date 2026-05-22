@@ -41,14 +41,14 @@ final class CrackerBinaryUtilsTest extends TestBase {
 
   // Verifies that getNewestVersion() throws HTException when no CrackerBinary
   // rows exist for the given type — there is nothing to pick the newest from.
-  public function testGetNewestVersion_NoBinaries_ThrowsHTException(): void {
+  public function testGetNewestVersionNoBinariesThrowsHTException(): void {
     $this->expectException(HTException::class);
     CrackerBinaryUtils::getNewestVersion($this->type->getId());
   }
 
   // Verifies that getNewestVersion() returns the only available binary when
   // exactly one version is registered under the type.
-  public function testGetNewestVersion_SingleBinary_ReturnsThatBinary(): void {
+  public function testGetNewestVersionSingleBinaryReturnsThatBinary(): void {
     $binary = $this->addBinary('1.0.0');
     $result = CrackerBinaryUtils::getNewestVersion($this->type->getId());
     $this->assertSame($binary->getId(), $result->getId());
@@ -57,7 +57,7 @@ final class CrackerBinaryUtilsTest extends TestBase {
   // Verifies that getNewestVersion() correctly picks the highest semantic version
   // when multiple binaries are registered. The comparison uses Composer\Semver
   // so "2.5.0" must beat "1.9.9" even though 1.9.9 was added after 2.5.0.
-  public function testGetNewestVersion_MultipleBinaries_ReturnsHighestVersion(): void {
+  public function testGetNewestVersionMultipleBinariesReturnsHighestVersion(): void {
     $this->addBinary('1.0.0');
     $newest = $this->addBinary('2.5.0');
     $this->addBinary('1.9.9');
@@ -67,7 +67,7 @@ final class CrackerBinaryUtilsTest extends TestBase {
 
   // Verifies that getNewestVersion() handles non-sequential insertion order
   // correctly — the oldest version added last must not be chosen as newest.
-  public function testGetNewestVersion_OutOfOrderInsert_StillReturnsHighest(): void {
+  public function testGetNewestVersionOutOfOrderInsertStillReturnsHighest(): void {
     $newest = $this->addBinary('3.0.0');
     $this->addBinary('1.0.0');
     $this->addBinary('2.0.0');

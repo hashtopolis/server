@@ -41,56 +41,56 @@ final class CrackerUtilsTest extends TestBase {
 
   // Verifies that getBinary() throws HTException when the ID does not match
   // any row — the caller must handle the "binary not found" case.
-  public function testGetBinary_InvalidId_ThrowsHTException(): void {
+  public function testGetBinaryInvalidIdThrowsHTException(): void {
     $this->expectException(HTException::class);
     CrackerUtils::getBinary(99999);
   }
 
   // Verifies that getBinaryType() throws HTException when the ID does not match
   // any row — the caller must handle the "type not found" case.
-  public function testGetBinaryType_InvalidId_ThrowsHTException(): void {
+  public function testGetBinaryTypeInvalidIdThrowsHTException(): void {
     $this->expectException(HTException::class);
     CrackerUtils::getBinaryType(99999);
   }
 
   // Verifies that getBinary() returns the correct CrackerBinary when the ID
   // matches the record created in setUp.
-  public function testGetBinary_ValidId_ReturnsBinary(): void {
+  public function testGetBinaryValidIdReturnsBinary(): void {
     $result = CrackerUtils::getBinary($this->binary->getId());
     $this->assertSame($this->binary->getId(), $result->getId());
   }
 
   // Verifies that getBinaryType() returns the correct CrackerBinaryType when
   // the ID matches the record created in setUp.
-  public function testGetBinaryType_ValidId_ReturnsBinaryType(): void {
+  public function testGetBinaryTypeValidIdReturnsBinaryType(): void {
     $result = CrackerUtils::getBinaryType($this->type->getId());
     $this->assertSame($this->type->getId(), $result->getId());
   }
 
   // Verifies that createBinaryType() throws HttpError when an empty string is
   // passed as the type name — an empty name is not a valid cracker identifier.
-  public function testCreateBinaryType_EmptyName_ThrowsHttpError(): void {
+  public function testCreateBinaryTypeEmptyNameThrowsHttpError(): void {
     $this->expectException(HttpError::class);
     CrackerUtils::createBinaryType('');
   }
 
   // Verifies that createBinaryType() throws HttpConflict when a type with the
   // same name already exists in the database (setUp created "test-crackerutils-type").
-  public function testCreateBinaryType_DuplicateName_ThrowsHttpConflict(): void {
+  public function testCreateBinaryTypeDuplicateNameThrowsHttpConflict(): void {
     $this->expectException(HttpConflict::class);
     CrackerUtils::createBinaryType('test-crackerutils-type');
   }
 
   // Verifies that createBinary() throws HttpError when any required field is
   // empty. Uses a valid type ID so the method reaches the field validation.
-  public function testCreateBinary_EmptyVersion_ThrowsHttpError(): void {
+  public function testCreateBinaryEmptyVersionThrowsHttpError(): void {
     $this->expectException(HttpError::class);
     CrackerUtils::createBinary('', 'testcracker', 'http://example.com', $this->type->getId());
   }
 
   // Verifies the full happy path: createBinary() creates and returns a new
   // CrackerBinary when all fields are valid.
-  public function testCreateBinary_ValidInput_CreatesBinary(): void {
+  public function testCreateBinaryValidInputCreatesBinary(): void {
     $b = CrackerUtils::createBinary('9.9.9', 'newcracker', 'http://example.com/dl', $this->type->getId());
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
     $this->assertSame('9.9.9', $b->getVersion());

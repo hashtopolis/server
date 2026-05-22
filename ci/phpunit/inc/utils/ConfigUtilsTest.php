@@ -29,21 +29,21 @@ final class ConfigUtilsTest extends TestBase {
 
   // Verifies that get() returns the correct Config object when the item exists.
   // Uses "chunktime" which is always present in the default database.
-  public function testGet_KnownItem_ReturnsConfig(): void {
+  public function testGetKnownItemReturnsConfig(): void {
     $config = ConfigUtils::get('chunktime');
     $this->assertSame('chunktime', $config->getItem());
   }
 
   // Verifies that get() throws HTException when the item does not exist.
   // Uses a deliberately nonsensical key that will never be in the database.
-  public function testGet_UnknownItem_ThrowsHTException(): void {
+  public function testGetUnknownItemThrowsHTException(): void {
     $this->expectException(HTException::class);
     ConfigUtils::get('nonexistent_item_xyz_999');
   }
 
   // Verifies that updateSingleConfig() throws HTException when the attributes
   // array contains no VALUE key, meaning no new value was provided.
-  public function testUpdateSingleConfig_MissingValue_ThrowsHTException(): void {
+  public function testUpdateSingleConfigMissingValueThrowsHTException(): void {
     $this->expectException(HTException::class);
     // Empty attributes array — Config::VALUE key is absent, triggering the guard.
     ConfigUtils::updateSingleConfig($this->existingConfig->getId(), []);
@@ -52,7 +52,7 @@ final class ConfigUtilsTest extends TestBase {
   // Verifies that updateSingleConfig() returns early without performing any
   // database write when the provided value is identical to the stored value.
   // This is the no-op path that avoids unnecessary DB updates.
-  public function testUpdateSingleConfig_SameValue_ReturnsEarlyWithoutException(): void {
+  public function testUpdateSingleConfigSameValueReturnsEarlyWithoutException(): void {
     $this->expectNotToPerformAssertions();
     $sameValue = $this->existingConfig->getValue();
     // Passing the same value back — the method must detect no change and return.
@@ -62,7 +62,7 @@ final class ConfigUtilsTest extends TestBase {
 
   // Verifies that updateSingleConfig() throws HTException when the given ID
   // does not match any row in the Config table.
-  public function testUpdateSingleConfig_InvalidId_ThrowsHTException(): void {
+  public function testUpdateSingleConfigInvalidIdThrowsHTException(): void {
     $this->expectException(HTException::class);
     ConfigUtils::updateSingleConfig(99999, [Config::VALUE => 'anything']);
   }
