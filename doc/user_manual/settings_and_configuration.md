@@ -87,7 +87,7 @@
 
 ## Notification Settings
 
-- **Notification Sender Email**:  Email address used as the sender for outgoing notifications.
+- **Notification Sender Email**:  Email address used as the sender for outgoing notifications (check how to setup the smtp server in the [Advanced Installation / Hashtopolis mail setup](../installation_guidelines/advanced_install.md#hashtopolis-mail-setup-sendmail-or-postfix)).
 
 - **Sender's Display Name**:  The name displayed as the sender in notification emails.
 
