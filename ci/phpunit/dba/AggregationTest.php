@@ -6,6 +6,8 @@ use Exception;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\models\HashType;
+use Hashtopolis\dba\models\HealthCheckAgent;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\TestBase;
 use RuntimeException;
 
@@ -100,6 +102,8 @@ final class AggregationTest extends TestBase {
    */
   public function testAggregationInvalidFunction(): void {
     $this->expectException(RuntimeException::class);
+    $this->expectExceptionMessage("Invalid function for aggregation!");
+    
     new Aggregation(HashType::IS_SLOW_HASH, "INVALID");
   }
   
@@ -108,8 +112,41 @@ final class AggregationTest extends TestBase {
    *
    * @return void
    */
+  public function testAggregationInvalidColumnOverride(): void {
+    $this->expectException(RuntimeException::class);
+    $this->expectExceptionMessage("Provided column for aggregation does not match to overrideFactory!");
+    
+    new Aggregation(HashType::IS_SLOW_HASH, Aggregation::MAX, Factory::getFileFactory());
+  }
+  
+  /**
+   * Test providing an invalid factory with the aggregation.
+   *
+   * @throws Exception
+   */
   public function testAggregationInvalidColumn(): void {
     $this->expectException(RuntimeException::class);
-    new Aggregation(HashType::IS_SLOW_HASH, Aggregation::MAX, Factory::getFileFactory());
+    $this->expectExceptionMessage("Provided column for aggregation does not match to factory!");
+    
+    $aggregation = new Aggregation(HashType::IS_SLOW_HASH, Aggregation::MAX);
+    $aggregation->getQueryString(Factory::getFileFactory());
+  }
+  
+  /**
+   * Test include table functionality.
+   */
+  public function testAggregationTableInclude(): void {
+    $aggregation = new Aggregation(HashType::HASH_TYPE_ID, Aggregation::COUNT);
+    $query = $aggregation->getQueryString(Factory::getHashTypeFactory(), true);
+    $this->assertEquals("COUNT(HashType.hashTypeId) AS count_hashtypeid", $query);
+  }
+  
+  /**
+   * Test if the mapping of a table happens when needed.
+   */
+  public function testAggregationTableMapping(): void {
+    $aggregation = new Aggregation(User::USERNAME, Aggregation::COUNT);
+    $query = $aggregation->getQueryString(Factory::getUserFactory(), true);
+    $this->assertEquals("COUNT(htp_User.username) AS count_username", $query);
   }
 }

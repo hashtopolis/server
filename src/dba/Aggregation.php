@@ -39,6 +39,10 @@ class Aggregation {
     if ($this->overrideFactory != null) {
       $factory = $this->overrideFactory;
     }
+    else if (!in_array($this->column, array_keys($factory->getNullObject()->getKeyValueDict()))) {
+      throw new RuntimeException("Provided column for aggregation does not match to factory!");
+    }
+    
     $table = "";
     if ($includeTable) {
       $table = $factory->getMappedModelTable() . ".";
