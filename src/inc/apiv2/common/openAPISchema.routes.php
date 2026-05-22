@@ -1029,10 +1029,9 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         "securitySchemes" => [
           "bearerAuth" => [
             "type" => "http",
-            "description" => "JWT Authorization header using the Bearer scheme.",
+            "description" => "JWT Authorization header using the Bearer scheme. Allowing the following scopes: " . implode(",<br>", $unique_all_scopes),
             "scheme" => "bearer",
             "bearerFormat" => "JWT",
-            // "scopes" => array_values($unique_all_scopes),
           ],
           "basicAuth" => [
             "type" => "http",
