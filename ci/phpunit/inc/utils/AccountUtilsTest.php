@@ -193,11 +193,6 @@ final class AccountUtilsTest extends TestBase {
 		$this->assertSame(0, $reloadedUser->getIsComputedPassword());
 	}
 
-  
-
-  
-  
-
   private function assertCheckOTPKeepsYubikeyEnabledForValidSlot(int $validSlot): void {
 		$user = $this->createUser('valid_yubikey_user_' . $validSlot);
 		$user->setYubikey(1);
