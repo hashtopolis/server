@@ -2,9 +2,12 @@
 
 namespace Hashtopolis\dba;
 
+use Hashtopolis\dba\models\AccessGroup;
+use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\HealthCheck;
@@ -866,6 +869,131 @@ final class AbstractModelFactoryTest extends TestBase {
     $this->assertTrue($hashtype instanceof HashType);
     $this->assertEquals(1, $hashtype->getIsSalted());
     $this->assertEquals('hashtype1' . $testid, $hashtype->getDescription());
+  }
+  
+  /**
+   * Test with no filtering at all, check if the correct objects are returned and the expected number.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFilterWithJoinsNoFilter(): void {
+    $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroup::ACCESS_GROUP_ID);
+    $joined = Factory::getFileFactory()->filter([Factory::JOIN => $jF]);
+    
+    // to avoid having issues if the database is not empty, we cross check with the count filter that the same amount of objects is returned
+    $count = Factory::getFileFactory()->countFilter([]);
+    $this->assertEquals($count, count($joined[Factory::getFileFactory()->getModelName()]));
+    $this->assertEquals(count($joined[Factory::getFileFactory()->getModelName()]), count($joined[Factory::getAccessGroupFactory()->getModelName()]));
+    
+    foreach ($joined[Factory::getFileFactory()->getModelName()] as $file) {
+      $this->assertTrue($file instanceof File);
+    }
+    foreach ($joined[Factory::getAccessGroupFactory()->getModelName()] as $accessGroup) {
+      $this->assertTrue($accessGroup instanceof AccessGroup);
+    }
+  }
+  
+  /**
+   * Test retrieving some matching entries of entries in the table with a normal filter.
+   *
+   * @return void
+   */
+  public function testFilterWithJoinsNormalFilter(): void {
+    $testid = uniqid();
+    
+    $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup1' . $testid));
+    $accessGroup2 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup2' . $testid));
+    $this->assertTrue($accessGroup1 instanceof AccessGroup);
+    
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testid, 1, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testid, 1, 0, 0, $accessGroup2->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testid, 1, 0, 0, $accessGroup1->getId(), 1));
+    
+    $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup1->getGroupName(), "=", Factory::getAccessGroupFactory());
+    $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+    $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    $this->assertCount(2, $joined[Factory::getFileFactory()->getModelName()]);
+    
+    $this->assertTrue($joined[Factory::getFileFactory()->getModelName()][0] instanceof File);
+    $this->assertTrue($joined[Factory::getFileFactory()->getModelName()][1] instanceof File);
+    
+    $this->assertEquals('file1' . $testid, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
+    $this->assertEquals('file3' . $testid, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
+    
+    $this->assertTrue($joined[Factory::getAccessGroupFactory()->getModelName()][0] instanceof AccessGroup);
+    $this->assertTrue($joined[Factory::getAccessGroupFactory()->getModelName()][1] instanceof AccessGroup);
+    
+    $this->assertEquals($joined[Factory::getAccessGroupFactory()->getModelName()][0]->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()][1]->getId());
+  }
+  
+  /**
+   * Test retrieving some matching entries of entries in the table with a normal filter with specific sorting.
+   *
+   * @return void
+   */
+  public function testFilterWithJoinsNormalFilterWithOrderDesc(): void {
+    $testid = uniqid();
+    
+    $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup1' . $testid));
+    $accessGroup2 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup2' . $testid));
+    $this->assertTrue($accessGroup1 instanceof AccessGroup);
+    
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testid, 1, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testid, 2, 0, 0, $accessGroup2->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testid, 3, 0, 0, $accessGroup1->getId(), 1));
+    
+    $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup1->getGroupName(), "=", Factory::getAccessGroupFactory());
+    $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+    $oF = new OrderFilter(File::SIZE, "DESC");
+    $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF, Factory::ORDER => $oF]);
+    $this->assertCount(2, $joined[Factory::getFileFactory()->getModelName()]);
+    
+    $this->assertTrue($joined[Factory::getFileFactory()->getModelName()][0] instanceof File);
+    $this->assertTrue($joined[Factory::getFileFactory()->getModelName()][1] instanceof File);
+    
+    $this->assertEquals('file3' . $testid, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
+    $this->assertEquals('file1' . $testid, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
+    
+    $this->assertTrue($joined[Factory::getAccessGroupFactory()->getModelName()][0] instanceof AccessGroup);
+    $this->assertTrue($joined[Factory::getAccessGroupFactory()->getModelName()][1] instanceof AccessGroup);
+    
+    $this->assertEquals($joined[Factory::getAccessGroupFactory()->getModelName()][0]->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()][1]->getId());
+  }
+  
+  /**
+   * Test retrieving some matching entries of entries in the table with a normal filter but limit entries
+   *
+   * @return void
+   */
+  public function testFilterWithJoinsNormalFilterWithLimit(): void {
+    $testid = uniqid();
+    
+    $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup1' . $testid));
+    $accessGroup2 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup2' . $testid));
+    $this->assertTrue($accessGroup1 instanceof AccessGroup);
+    
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testid, 1, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testid, 2, 0, 0, $accessGroup2->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testid, 3, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file4' . $testid, 4, 0, 0, $accessGroup1->getId(), 1));
+    
+    $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup1->getGroupName(), "=", Factory::getAccessGroupFactory());
+    $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+    $lF = new LimitFilter(2);
+    $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF, Factory::LIMIT => $lF]);
+    $this->assertCount(2, $joined[Factory::getFileFactory()->getModelName()]);
+    
+    $this->assertTrue($joined[Factory::getFileFactory()->getModelName()][0] instanceof File);
+    $this->assertTrue($joined[Factory::getFileFactory()->getModelName()][1] instanceof File);
+    
+    $this->assertEquals('file1' . $testid, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
+    $this->assertEquals('file3' . $testid, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
+    
+    $this->assertTrue($joined[Factory::getAccessGroupFactory()->getModelName()][0] instanceof AccessGroup);
+    $this->assertTrue($joined[Factory::getAccessGroupFactory()->getModelName()][1] instanceof AccessGroup);
+    
+    $this->assertEquals($joined[Factory::getAccessGroupFactory()->getModelName()][0]->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()][1]->getId());
   }
   
   /**
