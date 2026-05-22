@@ -6,6 +6,7 @@ use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\models\Task;
@@ -142,6 +143,13 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
           $aggregatedData["timeSpent"] = $timeSpent;
           $aggregatedData["currentSpeed"] = $currentSpeed;
           $aggregatedData["cprogress"] = $cProgress;
+
+          $assignedAgents = [];
+          if (is_null($aggregateFieldsets) || in_array("assignedAgents", $aggregateFieldsets['task'])) {
+            $qF = new QueryFilter(Assignment::TASK_ID, $object->getTaskId(), "=");
+            $assignedAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
+            $aggregatedData["totalAssignedAgents"] = $assignedAgents;
+          }
         }
       }
     }
