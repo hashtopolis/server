@@ -5,6 +5,8 @@ namespace Hashtopolis\inc\utils;
 use Hashtopolis\inc\utils\UserUtils;
 use Hashtopolis\inc\utils\TaskUtils;
 
+use Exception;
+
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
@@ -316,7 +318,7 @@ final class TaskUtilsTest extends TestBase {
   //TODO make use of the user-create function that will be in the UserUtilsTest
   public function createUser(): User {
     $user = UserUtils::createUser('phpunit-' . uniqid(), 'phpunit-' . uniqid() . '@example.com', 1, UserUtils::getUser(1));
-    $this->assertTrue($user instanceof User);
+    $this->registerDatabaseObject(Factory::getUserFactory(), $user);
     return $user;
   }
 
