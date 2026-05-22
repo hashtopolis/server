@@ -317,7 +317,7 @@ services:
 
 #### 4. Configure sender identity in Hashtopolis
 
-In Hashtopolis config, set:
+In Hashtopolis Config - Notifications / Sender Settings, set:
 
 - emailSender
 - emailSenderName
@@ -327,7 +327,8 @@ These values are used in From headers.
 #### 5. Restart and test
 
 - Restart backend container.
-- Trigger a password reset or user creation mail.
+- Create a 'New Notification' in your user notification page (see [Notifications page](../user_manual/user-settings.md#notifications) for more details) for example for a 'newTask'. 
+- Trigger the notification accordingly, e.g. by creating a new task.
 - If it fails, inspect backend logs and postfix logs.
 
 ---
