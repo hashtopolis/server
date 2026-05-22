@@ -1120,7 +1120,7 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testColumnFilter(): void {
-    $isSalted = random_int(1, 100);
+    $isSalted = random_int(2, 100);
     $testid = uniqid();
     
     $hashlist_1 = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 1" . $testid, DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, $isSalted, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
