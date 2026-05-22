@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\ApiUtils;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\defines\DApiAction;
 use Hashtopolis\inc\UI;
 
@@ -46,7 +46,7 @@ class ApiHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\user_api;
 
 use Hashtopolis\inc\utils\AccessGroupUtils;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\defines\UQuery;
 use Hashtopolis\inc\defines\UQueryGroup;
 use Hashtopolis\inc\defines\UQueryTask;
@@ -47,7 +47,7 @@ class UserAPIGroup extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }

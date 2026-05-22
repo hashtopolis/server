@@ -5,7 +5,6 @@ namespace Hashtopolis\inc\handlers;
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\DataSet;
-use Exception;
 use Hashtopolis\dba\models\NotificationSetting;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
@@ -48,7 +47,7 @@ class NotificationHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

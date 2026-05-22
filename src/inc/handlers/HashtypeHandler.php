@@ -2,7 +2,7 @@
 
 namespace Hashtopolis\inc\handlers;
 
-use Exception;
+use Throwable;
 use Hashtopolis\inc\defines\DHashtypeAction;
 use Hashtopolis\inc\utils\HashtypeUtils;
 use Hashtopolis\inc\Login;
@@ -29,7 +29,7 @@ class HashtypeHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

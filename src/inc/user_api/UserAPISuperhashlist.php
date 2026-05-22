@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\user_api;
 
 use Hashtopolis\inc\utils\AccessUtils;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\defines\UQuery;
@@ -36,7 +36,7 @@ class UserAPISuperhashlist extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }

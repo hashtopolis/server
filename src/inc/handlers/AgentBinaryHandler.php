@@ -4,7 +4,7 @@ namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\utils\AgentBinaryUtils;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\defines\DAgentBinaryAction;
 use Hashtopolis\inc\Login;
 use Hashtopolis\inc\UI;
@@ -52,7 +52,7 @@ class AgentBinaryHandler implements Handler {
           break;
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
-use Exception;
+use Throwable;
 use Hashtopolis\inc\defines\DHealthCheckAction;
 use Hashtopolis\inc\utils\HealthUtils;
 use Hashtopolis\inc\HTException;
@@ -33,7 +33,7 @@ class HealthHandler implements Handler {
           throw new HTException("Invalid action!");
       }
     }
-    catch (Exception $e) {
+    catch (Throwable $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
