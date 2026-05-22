@@ -149,4 +149,12 @@ final class AggregationTest extends TestBase {
     $query = $aggregation->getQueryString(Factory::getUserFactory(), true);
     $this->assertEquals("COUNT(htp_User.username) AS count_username", $query);
   }
+  
+  /**
+   * Test that the name is correctly constructed and all is lowercase.
+   */
+  public function testAggregationGetName(): void {
+    $aggregation = new Aggregation(User::IS_COMPUTED_PASSWORD, Aggregation::COUNT);
+    $this->assertEquals("count_iscomputedpassword", $aggregation->getName());
+  }
 }
