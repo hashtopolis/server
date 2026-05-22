@@ -7,3 +7,6 @@ parameters:
     scanDirectories:
         - src/dba
         - src/inc
+    excludePaths:
+        # Exclude the DBA tests due PHPStan doing weird complaints
+        - ci/phpunit/dba/AbstractModelFactoryTest.php
