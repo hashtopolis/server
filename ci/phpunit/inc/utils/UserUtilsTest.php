@@ -3,7 +3,6 @@
 namespace Hashtopolis\inc\utils;
 
 use Hashtopolis\dba\Factory;
-use Hashtopolis\dba\models\RightGroup;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
@@ -100,12 +99,6 @@ final class UserUtilsTest extends TestBase {
       $this->assertSame(1, $mailCallCount);
       $this->registerDatabaseObject(Factory::getUserFactory(), Factory::getUserFactory()->filter([Factory::FILTER => new QueryFilter(User::USERNAME, $username, "=")], true));
     }
-  }
-  
-  private function createRightGroup(): RightGroup {
-    $group = $this->createDatabaseObject(Factory::getRightGroupFactory(), new RightGroup(null, 'phpunit-' . uniqid('', true), '[]'));
-    $this->assertTrue($group instanceof RightGroup);
-    return $group;
   }
   
   private function uniqueUsername(string $prefix): string {
