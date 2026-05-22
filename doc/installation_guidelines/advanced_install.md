@@ -261,3 +261,180 @@ Afterwards, you can start up the containers again which should then be in a comp
 ```
 docker compose up -d
 ```
+
+## Hashtopolis Mail Setup (Sendmail or Postfix)
+
+This guide gives the fastest ways to make mail sending work in Hashtopolis to be used for sending notifications
+
+### Important Hashtopolis-specific requirement
+
+Current backend logic considers mail "configured" only if this file exists:
+
+- /etc/ssmtp/ssmtp.conf
+
+Even when using sendmail or postfix, you should still provide this file (it can be minimal) so Hashtopolis enables email sending.
+
+### Recommended easiest path: Postfix relay + existing backend image
+
+This is the easiest because the backend image already supports an ssmtp config mount.
+
+#### 1. Prepare a postfix relay (host or separate container)
+
+Configure postfix as a null client / relay host. Typical key setting in postfix main.cf:
+
+- relayhost = [smtp.your-provider.tld]:587
+
+Also configure SASL and TLS as needed by your provider.
+
+#### 2. Create ssmtp.conf in your project root
+
+Use the provided template as base:
+
+- copy ssmtp.conf.example to ssmtp.conf
+
+Example values:
+
+- root=admin@your-domain.tld
+- mailhub=host.docker.internal:25
+- rewriteDomain=your-domain.tld
+- UseTLS=No
+- UseSTARTTLS=No
+- FromLineOverride=yes
+
+If your postfix relay requires auth/TLS on another port, set mailhub and TLS/auth values accordingly.
+
+#### 3. Mount ssmtp.conf into Hashtopolis backend container
+
+In docker-compose.mysql.yml or docker-compose.postgres.yml, enable this volume:
+
+```yaml
+services:
+  hashtopolis-backend:
+    volumes:
+      - hashtopolis:/usr/local/share/hashtopolis:Z
+      - ./ssmtp.conf:/etc/ssmtp/ssmtp.conf
+```
+
+#### 4. Configure sender identity in Hashtopolis
+
+In Hashtopolis config, set:
+
+- emailSender
+- emailSenderName
+
+These values are used in From headers.
+
+#### 5. Restart and test
+
+- Restart backend container.
+- Trigger a password reset or user creation mail.
+- If it fails, inspect backend logs and postfix logs.
+
+---
+
+### Alternative path: direct sendmail/postfix inside backend container
+
+Use this only if you specifically need local MTA delivery from the backend container.
+
+#### 1. Build a custom backend image
+
+Install postfix or sendmail package and ensure /usr/sbin/sendmail exists.
+
+#### 2. Keep Hashtopolis mail gate satisfied
+
+Create the file below inside the container (even if unused by your MTA logic):
+
+- /etc/ssmtp/ssmtp.conf
+
+A minimal placeholder is enough:
+
+```conf
+root=postmaster@localhost
+mailhub=localhost
+FromLineOverride=yes
+```
+
+#### 3. Ensure PHP uses sendmail interface
+
+Set php sendmail_path appropriately (commonly default is already fine):
+
+- sendmail_path = "/usr/sbin/sendmail -t -i"
+
+#### 4. Test sendmail manually, then from Hashtopolis
+
+Manual test example:
+
+```bash
+printf "Subject: test\n\nhello" | /usr/sbin/sendmail you@example.com
+```
+
+Then test Hashtopolis-triggered mail events.
+
+---
+
+### Troubleshooting checklist
+
+- /etc/ssmtp/ssmtp.conf exists inside backend container.
+- emailSender and emailSenderName are set in Hashtopolis config.
+- DNS/network from backend to relay is reachable.
+- Relay accepts sender domain and authentication method.
+- PHP can execute /usr/sbin/sendmail successfully.
+
+---
+
+### Gmail quick test example (no own SMTP server)
+
+Use this section to test mail locally with a Gmail account.
+
+#### Prerequisites
+
+- Enable 2-Step Verification on your Google account.
+- Create a Google App Password (do not use your normal Gmail password).
+
+#### Example ssmtp.conf for Gmail
+
+Create or update ssmtp.conf in your project root with values like:
+
+```conf
+root=youraddress@gmail.com
+mailhub=smtp.gmail.com:587
+rewriteDomain=gmail.com
+UseTLS=Yes
+UseSTARTTLS=Yes
+AuthUser=youraddress@gmail.com
+AuthPass=your_16_char_google_app_password
+AuthMethod=LOGIN
+FromLineOverride=yes
+```
+
+#### Mount the file in Docker Compose
+
+Make sure the backend service has this volume enabled:
+
+```yaml
+services:
+  hashtopolis-backend:
+    volumes:
+      - hashtopolis:/usr/local/share/hashtopolis:Z
+      - ./ssmtp.conf:/etc/ssmtp/ssmtp.conf
+```
+
+#### Hashtopolis sender settings
+
+In Hashtopolis server config:
+
+- emailSender = youraddress@gmail.com
+- emailSenderName = Hashtopolis Local Test
+
+#### Local test flow
+
+1. Restart the backend container.
+2. Trigger a password reset email for a user with your Gmail address.
+3. Check your inbox (and spam folder).
+
+#### If Gmail test fails
+
+- Verify AuthPass is an App Password, not your account password.
+- Verify port 587 outbound is allowed from your Docker environment.
+- Check backend container logs for mail/sendmail errors.
+- Confirm /etc/ssmtp/ssmtp.conf exists inside the backend container.
