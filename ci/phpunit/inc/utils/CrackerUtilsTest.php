@@ -2,6 +2,7 @@
 
 namespace Tests\Utils;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
@@ -21,8 +22,8 @@ require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
  */
 final class CrackerUtilsTest extends TestBase {
 
-  private ?CrackerBinaryType $type   = null;
-  private ?CrackerBinary     $binary = null;
+  private ?AbstractModel $type = null;
+  private ?AbstractModel $binary = null;
 
   // Creates a CrackerBinaryType and one CrackerBinary before each test.
   // These records provide valid IDs for the "happy path" tests and a known

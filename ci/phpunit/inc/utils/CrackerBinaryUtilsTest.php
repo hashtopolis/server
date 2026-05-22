@@ -2,6 +2,7 @@
 
 namespace Tests\Utils;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
@@ -20,7 +21,7 @@ require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
  */
 final class CrackerBinaryUtilsTest extends TestBase {
 
-  private ?CrackerBinaryType $type = null;
+  private ?AbstractModel $type = null;
 
   protected function setUp(): void {
     parent::setUp();
@@ -32,7 +33,7 @@ final class CrackerBinaryUtilsTest extends TestBase {
 
   // Helper: saves a CrackerBinary with the given version under the shared type
   // and registers it for automatic cleanup via TestBase.
-  private function addBinary(string $version): CrackerBinary {
+  private function addBinary(string $version): AbstractModel {
     return $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
       new CrackerBinary(null, $this->type->getId(), $version, 'http://example.com', 'testcracker')
