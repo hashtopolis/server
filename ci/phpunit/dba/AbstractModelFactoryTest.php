@@ -224,15 +224,12 @@ final class AbstractModelFactoryTest extends TestBase {
   /**
    * Tests two separate mset requests on different objects and make sure that both changes survive if they are not on the same column
    *
-   * @var HashType $hashType1
-   * @var HashType $hashType2
-   *
    * @return void
    * @throws Exception
    */
   public function testMsetSuccessTwoObjects(): void {
     $hashType1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 0, 0));
-    $hashType2 = clone $hashType1;
+    $hashType2 = Factory::getHashTypeFactory()->get($hashType1->getId());
     $this->assertTrue($hashType1 instanceof HashType);
     $this->assertTrue($hashType2 instanceof HashType);
     
