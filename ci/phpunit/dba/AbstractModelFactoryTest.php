@@ -224,6 +224,9 @@ final class AbstractModelFactoryTest extends TestBase {
   /**
    * Tests two separate mset requests on different objects and make sure that both changes survive if they are not on the same column
    *
+   * @var HashType $hashType1
+   * @var HashType $hashType2
+   *
    * @return void
    * @throws Exception
    */
@@ -1120,17 +1123,19 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testColumnFilter(): void {
-    $isSalted = random_int(9999, 999999);
+    $isSalted = random_int(1, 100);
+    $testid = uniqid();
     
-    $hashlist_1 = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 1", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, $isSalted, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
-    $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 2", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 1, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
-    $hashlist_3 = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 3", DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, $isSalted, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
+    $hashlist_1 = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 1" . $testid, DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, $isSalted, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
+    $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 2" . $testid, DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 1, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
+    $hashlist_3 = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 3" . $testid, DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, $isSalted, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
     
     $oF = new OrderFilter(Hashlist::HASHLIST_ID, "ASC");
     
     // test column filter to retrieve some of their IDs
-    $qF = new QueryFilter(Hashlist::IS_SALTED, $isSalted, "=");
-    $ids = Factory::getHashlistFactory()->columnFilter([Factory::FILTER => $qF, Factory::ORDER => $oF], Hashlist::HASHLIST_ID);
+    $qF1 = new QueryFilter(Hashlist::IS_SALTED, $isSalted, "=");
+    $qF2 = new LikeFilter(Hashlist::HASHLIST_NAME, "%" . $testid);
+    $ids = Factory::getHashlistFactory()->columnFilter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF], Hashlist::HASHLIST_ID);
     
     // hashlist 1 and 3 should be returned
     $this->assertSame([$hashlist_1->getId(), $hashlist_3->getId()], $ids);
@@ -1141,7 +1146,7 @@ final class AbstractModelFactoryTest extends TestBase {
   }
   
   /**
-   * @return array[Agent, HealthCheck]
+   * @return array
    */
   private function setUpHealthCheck(): array {
     $agent = new Agent(null, '', '', 0, '', '', 0, 0, 0, '', '', 0, '', null, 0, '');
