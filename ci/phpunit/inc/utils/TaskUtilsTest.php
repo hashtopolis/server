@@ -16,7 +16,7 @@ use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\defines\DTaskTypes;
 
-use TestBase;
+use Hashtopolis\TestBase;
 
 //TODO remove:
 use Hashtopolis\dba\models\RightGroup;
