@@ -1,0 +1,109 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Vast AI - Rent Instance</h2>
+{%TEMPLATE->struct/messages%}
+{{IF [[vastApiKey]] === '' }}<h5><strong>Error: </strong>Missing Vast.ai API Key, add one <a href="/config.php?view=8">here</a></h5>{{ENDIF}}
+{{IF [[infoMessage]] != '' }}<h5><strong>Info:</strong> [[infoMessage]] {{ENDIF}}
+{{IF [[apiError]] != '' }}<h5><strong>Vast.ai API Error:</strong> [[apiError]] {{ENDIF}}
+<div class="card">
+  <div class="table-responsive">
+    <!--Instance details-->
+    <table class="table table-bordered">
+	<div class="card">
+    <div class="table-responsive">
+    {{IF [[rentType]] != 'bulk'}}
+      <tr>
+          <td>Total Cost ($/hr)</td>
+          <td>[[gpu.getVal('dph_total')]]</td>
+      </tr>
+      <tr>
+          <td>Reliability</td>
+          <td>[[gpu.getFloatVal100('reliability2',2)]] %</td>
+      </tr>
+      <tr>
+          <td>GPU(s) Name</td>
+          <td>[[gpu.getVal('gpu_name')]] x [[gpu.getVal('num_gpus')]]</td>
+      </tr>
+      <tr>
+          <td>GPU RAM (MB)</td>
+          <td>[[gpu.getVal('gpu_ram')]]</td>
+      </tr>
+      <tr>
+          <td>CPU Name</td>
+          <td>[[gpu.getVal('cpu_name')]]</td>
+      </tr>
+      <tr>
+          <td>CPU Threads</td>
+          <td>[[gpu.getVal('cpu_cores_effective')]]</td>
+      </tr>
+      <tr>
+          <td>CPU RAM (MB)</td>
+          <td>[[gpu.getVal('cpu_ram')]]</td>
+      </tr>
+      <tr>
+          <td>Internet Upload Cost ($/GB)</td>
+          <td>[[gpu.getFloatVal('inet_up_cost',2)]]</td>
+      </tr>
+      <tr>
+          <td>Internet Download Cost ($/GB)</td>
+          <td>[[gpu.getFloatVal('inet_down_cost',2)]]</td>
+      </tr>
+      <tr>
+          <td>Storage Cost ($/GB/Month)</td>
+          <td>[[gpu.getFloatVal('storage_cost',2)]]</td>
+      </tr>
+      <tr>
+          <td>Verification Status</td>
+          <td>[[gpu.getVal('verification')]]</td>
+      </tr>
+      <tr>
+          <td>Rentable</td>
+          <td>{{IF [[gpu.getVal('rentable')]]}} True {{ELSE}} False {{ENDIF}}</td>
+      </tr>
+      <tr>
+          <td>Interruptible</td>
+          <td>{{IF [[gpu.getVal('is_bid')]]}} True {{ELSE}} False {{ENDIF}}</td>
+      </tr>
+    </div>
+    </div>
+    </table>
+
+    <!--User-definable values-->
+    <form action="vastaiAgentsRent.php" method="POST">
+    <input type="hidden" name="csrf" value="[[csrf]]">
+    <table class="table table-bordered">
+	<div class="card">
+    <div class="table-responsive">
+      <tr>
+        <td>ID</td>
+        <td>[[gpu.getVal('id')]]</td>
+        <input type="hidden" name="rent" value="single">
+        <input type="hidden" value="on" name="vastid-[[gpu.getVal('id')]]">
+      </tr>
+      <tr>
+        <td>Price ($/Hr)</td>
+        <td><input type="text" disabled="disabled" class='form-control' name="price" value="[[gpu.getVal('dph_total')]]"></td>
+      </tr>
+      <tr>
+        <td>Disk Storage Needed (GB)</td>
+        <td><input type="text" class='form-control' name="disk" value="16"></td>
+      </tr>
+      <tr>
+          {{ENDIF}}
+        {{IF [[posted]] === true }}
+          {{IF [[rentSuccess]] === true }}
+            <td colspan="2">RENTAL SUCCESSFUL, Your image should appear <a href="vastaiAgents.php">here</a> in a few seconds. It may take between 3 to 15 minutes to join hashtopolis, depending on the instance.</td>
+          {{ELSE}}
+            <td colspan="2">RENTAL FAILED, error: [[rentError]]</td>
+          {{ENDIF}}
+        {{ELSE}}
+        <td colspan="2"><input {{IF [[posted]] === true}}disabled="disabled"{{ENDIF}} type="submit" class='form-control btn-success' value="RENT THIS INSTANCE" ></td>
+        {{ENDIF}}
+      </tr>
+    </div>
+    </div>
+    </table>
+    </form>
+  </div>
+</div>
+{%TEMPLATE->struct/foot%}

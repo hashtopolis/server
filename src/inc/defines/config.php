@@ -108,6 +108,12 @@ class DConfig {
   const NOTIFICATIONS_PROXY_PORT   = "notificationsProxyPort";
   const NOTIFICATIONS_PROXY_TYPE   = "notificationsProxyType";
   
+  // Section: VastAI
+  const VAST_AI_API_KEY = "vastAiApiKey";
+  const VAST_IMAGE_URL = "vastImageUrl";
+  const VAST_IMAGE_LOGIN = "vastImageLogin";
+  const VAST_HASHTOPOLIS_BASE_URL = "vastHashtopolisBaseUrl";
+
   static function getConstants() {
     try {
       $oClass = new ReflectionClass(__CLASS__);
@@ -272,6 +278,14 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::HC_ERROR_IGNORE:
         return DConfigType::STRING_INPUT;
+      case DConfig::VAST_AI_API_KEY:
+        return DConfigType::STRING_INPUT;
+      case DConfig::VAST_IMAGE_URL:
+        return DConfigType::STRING_INPUT;
+      case DConfig::VAST_IMAGE_LOGIN:
+        return DConfigType::STRING_INPUT;
+      case DConfig::VAST_HASHTOPOLIS_BASE_URL:
+        return DConfigType::STRING_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -406,6 +420,14 @@ class DConfig {
         return "Also send 'isComplete' for each task on the User API when listing all tasks (might affect performance)";
       case DConfig::HC_ERROR_IGNORE:
         return "Ignore error messages from crackers which contain given strings (multiple values separated by comma)";
+      case DConfig::VAST_AI_API_KEY:
+        return "Vast.ai API Key from <a href=\"https://vast.ai\">vast.ai</a>";
+      case DConfig::VAST_IMAGE_URL:
+        return "Docker image url to be loaded by Vast.ai instances. Do not change this unless you know the image to be compatible";
+      case DConfig::VAST_IMAGE_LOGIN:
+        return "Docker image login string. ex (without quotes): '-u bob -p 9d8df!fd89ufZ docker.io'. This is optional, but prevents the instances you rent from hitting the docker per-IP address rate limit. A hub.docker.com account is free to create <a href=\hub.docker.com\">here</a>. The email/password option is recommended for ease of use.";
+      case DConfig::VAST_HASHTOPOLIS_BASE_URL:
+        return "The root URL of this hashtopolis server where the Vast.ai images should connect. Note: If using HTTPS, the certificate MUST be valid. The URL MUST also be accessible via the internet. ex: https://example.com:8443";
     }
     return $config;
   }

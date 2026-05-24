@@ -1,0 +1,82 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Current Vast.AI Instances</h2>
+{{IF [[vastApiKey]] === '' }}<h5><strong>Error: </strong>Missing Vast.ai API Key, add one <a href="/config.php?view=8">here</a></h5>{{ENDIF}}
+{{IF [[infoMessage]] != '' }}<h5><strong>Info:</strong> [[infoMessage]] {{ENDIF}}
+{{IF [[apiError]] != '' }}<h5><strong>Vast.ai API Error:</strong> [[apiError]] {{ENDIF}}
+{%TEMPLATE->struct/messages%}
+{%TEMPLATE->tasks/autorefresh%}
+<td>&nbsp;</td>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered table-sm" id="agents">
+      <thead>
+        <tr>
+          <th>Destroy</th>
+          <th>ID</th>
+          <th>Total Cost ($/hr)</th>
+          <th>Status</th>
+          <th>GPU(s)</th>
+          <th>GPU RAM (MB)</th>
+          <th>CPU Name</th>
+          <th>CPU Threads</th>
+          <th>CPU RAM (MB)</th>
+          <th>Verification Status</th>
+          <th>Inet Cost Upload ($/GB)</th>
+          <th>Inet Cost Download ($/GB)</th>
+          <th>Storage Cost ($/GB/Month)</th>
+          <th>Interruptible</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        {{FOREACH gpu;[[gpus]]}}
+          <tr>
+            {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]]}} 
+              <td>
+                <form action="vastaiAgents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[gpu.getVal('id')]]?')) return false;">
+                  <input type="hidden" name="destroy" value="[[gpu.getVal('id')]]">
+                  <input type="hidden" name="startingVoucher" value="[[gpu.getStartingVoucher()]]">
+                  <input type="hidden" name="csrf" value="[[csrf]]">
+                  <button type="submit" class='btn btn-warning' data-toggle="tooltip" data-placement="top" title="Destroy Instance"><i class="fas fa-trash" aria-hidden="true" ></i></button>
+                </form>
+              </td>
+            {{ELSE}}
+              <td>&nbsp;</td>
+            {{ENDIF}}
+            <td>[[gpu.getVal('id')]]</td>
+            <td>[[gpu.getFloatVal('dph_total',2)]]</td>
+            <td>[[gpu.getVal('actual_status')]]</td>
+            <td>[[gpu.getVal('gpu_name')]] x [[gpu.getVal('num_gpus')]]</td>
+            <td>[[gpu.getVal('gpu_ram')]]</td>
+            <td>[[gpu.getVal('cpu_name')]]</td>
+            <td>[[gpu.getVal('cpu_cores')]]</td>
+            <td>[[gpu.getVal('cpu_ram')]]</td>
+            <td>[[gpu.getVal('verification')]]</td>
+            <td>[[gpu.getFloatVal('inet_up_cost',2)]]</td>
+            <td>[[gpu.getFloatVal('inet_down_cost',2)]]</td>
+            <td>[[gpu.getVal('storage_cost')]]</td>
+            <td>{{IF [[gpu.getVal('is_bid')]]}} True {{ELSE}} False {{ENDIF}}</td>
+          </tr>
+          <tr>
+		  <td colspan="3">Uptime:  [[gpu.getUptime()]] <sub><br>ssh -p [[gpu.getVal('ssh_port')]] root@[[gpu.getVal('ssh_host')]]</sub> </td>
+              <td colspan="8"> [[gpu.getVal('status_msg')]] </td>
+          </tr>
+        {{ENDFOREACH}}
+      </tbody>
+    </table>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#agents').DataTable({
+          pageLength: 50,
+          "order": [ [0, 'asc'] ],
+          "columnDefs": [
+            { "orderable": false, "targets": [5, 7] },
+            { "orderable": true, "targets": [0, 1, 2, 3, 4, 6] }
+          ]
+        });
+      });
+    </script>
+  </div>
+</div>
+{%TEMPLATE->struct/foot%}

@@ -1,0 +1,47 @@
+<form action="vastaiAgentsSearch.php" method="GET">
+    <input type='hidden' name='search' value='true'>
+    <input type="hidden" name="csrf" value="[[csrf]]">
+
+    <table class="table table-bordered table-sm" >
+    <thead>
+        <th> Max Cost ($/hr)</th>
+        <th> GPU Name</th>
+        <th> Min GPU RAM (MB)</th>
+        <th> Min CPU RAM (MB)</th>
+    </thead>
+    <tr>
+        <td> <input type="text" class="form-control" name="dph_total" value="[[search_dph_total]]" size=10> </td>
+        <td> <input type="text" class="form-control" name="gpu_name" value="[[search_gpu_name]]" size=10> </td>
+        <td> <input type="text" class="form-control" name="gpu_ram" value="[[search_gpu_ram]]" size=10> </td>
+        <td> <input type="text" class="form-control" name="cpu_ram" value="[[search_cpu_ram]]" size=10> </td>
+    </tr>
+    <thead>
+        <th>Disk Size (GB)</th>
+        <th>CPU Threads</th>
+        <th> Reliability (.8 is 80%)</th>
+    </thead>
+    <tr>
+        <td> <input type="text" class="form-control" name="disk_space" value="[[search_disk_space]]" size=10> </td>
+        <td> <input type="text" class="form-control" name="cpu_cores" value="[[search_cpu_cores]]" size=10> </td>
+        <td> <input type="text" class="form-control" name="reliability2" value="[[search_reliability2]]" size=10> </td>
+    </tr>
+
+    <tr>
+        <input type="hidden" name="verified" value="off" />
+        <td colspan="5"> Verified: <input colspan="5" type="checkbox" name="verified" size="10" {{IF [[verifiedChecked]] == true}} checked="checked" {{ENDIF}}> </td>
+    </tr>
+    <tr>
+        <input type="hidden" name="uninterruptible" value="off" />
+        <td colspan="5"> Uninterruptible (cannot be outbid): <input type="checkbox" name="uninterruptible" size="10" {{IF [[uninterruptibleChecked]] == true}} checked="checked" {{ENDIF}}> </td>
+    </tr>
+    <tr>
+        <input type="hidden" name="datacenter" value="off" />
+        <td colspan="5"> Trusted Datacenters Only (secure cloud): <input type="checkbox" name="datacenter" size="10" {{IF [[datacenterChecked]] == true}} checked="checked" {{ENDIF}}> </td>
+    </tr>
+    <tr>
+        <td colspan="5"><input class="btn btn-success" type="submit" value="Search GPUs"/></td>
+    </tr>
+
+    </table>
+</form>
+<br>
