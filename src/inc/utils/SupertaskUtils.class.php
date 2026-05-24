@@ -350,6 +350,7 @@ class SupertaskUtils {
   /**
    * @param string $name
    * @param boolean $isCpuOnly
+   * @param int $maxAgents
    * @param boolean $isSmall
    * @param boolean $useOptimized
    * @param int $crackerBinaryTypeId
