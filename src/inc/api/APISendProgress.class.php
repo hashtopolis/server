@@ -445,10 +445,34 @@ class APISendProgress extends APIBasic {
     }
     
     switch ($state) {
-      case DHashcatStatus::EXHAUSTED:
+        case DHashcatStatus::EXHAUSTED:
         // the chunk has finished (exhausted)
         Factory::getChunkFactory()->mset($chunk, [Chunk::SPEED => 0, Chunk::PROGRESS => 10000, Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength()]);
         DServerLog::log(DServerLog::TRACE, "Chunk is exhausted (cracker status)", [$this->agent, $chunk]);
+
+        $timeTaken = $chunk->getSolveTime() - $chunk->getDispatchTime();
+        if($timeTaken < 0) break; // prevent math & logic errors
+
+        $differenceToChunk = $task->getChunkTime() / $timeTaken;
+        // Limit how much difference a chunk can have to the previous.
+        $differenceToChunk = ($differenceToChunk > 1.5) ? 1.5 : $differenceToChunk;
+        $differenceToChunk = ($differenceToChunk < (2/3)) ? (2/3) : $differenceToChunk;
+        if ($differenceToChunk > 0.8 && $differenceToChunk < 1.2) break;
+
+        if($task->getStaticChunks() === 0) { // Not static chunks
+            $qF1 = new QueryFilter(Assignment::AGENT_ID, $chunk->getAgentId(), "=");
+            $qF2 = new QueryFilter(Assignment::TASK_ID, $chunk->getTaskId(), "=");
+            $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]])[0];
+
+            $benchmark = $assignment->getBenchmark();
+            $benchmarkParts = explode(":", $benchmark);
+            if($benchmarkParts[0] == 0 || count($benchmarkParts) != 2) break;
+            $newBenchmark = $differenceToChunk * $benchmarkParts[0];
+            $assignment->setBenchmark(round($newBenchmark).":".round($benchmarkParts[1]));
+            DServerLog::log(DServerLog::INFO, "{$timeTaken}---{$task->getChunkTime}", [$this->agent, $assignment]);
+            DServerLog::log(DServerLog::INFO, "Multiplied the benchmark of agent by ".round($differenceToChunk,2), [$this->agent, $assignment]);
+            Factory::getAssignmentFactory()->update($assignment);
+        }
         break;
       case DHashcatStatus::CRACKED:
         // the chunk has finished (cracked whole hashList)
