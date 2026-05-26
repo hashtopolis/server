@@ -6,22 +6,12 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\AccessGroupUser;
-use Hashtopolis\dba\models\Agent;
-use Hashtopolis\dba\models\CrackerBinary;
-use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\models\File;
-use Hashtopolis\dba\models\FileTask;
 use Hashtopolis\dba\models\Hash;
-use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\models\LogEntry;
-use Hashtopolis\dba\models\RightGroup;
-use Hashtopolis\dba\models\Task;
-use Hashtopolis\dba\models\TaskWrapper;
-use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractBaseAPI;
 use Hashtopolis\inc\defines\DAccessControl;
-use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\TestBase;
 use Override;
 
@@ -435,116 +425,5 @@ final class AccessUtilsTest extends TestBase {
     $this->createFileTask($file, $task);
 
     $this->assertTrue(AccessUtils::agentCanAccessTask($agent, $task));
-  }
-  
-  /*
-   * Local test helpers
-   */
-  //TODO: Should we try refactor common methods to base?
-  private function createAccessGroup(string $prefix): AccessGroup {
-    $group = $this->createDatabaseObject(
-      Factory::getAccessGroupFactory(),
-      new AccessGroup(null, $prefix . '_' . uniqid())
-    );
-    $this->assertTrue($group instanceof AccessGroup);
-    return $group;
-  }
-
-  private function createRightGroup(): RightGroup {
-    $group = $this->createDatabaseObject(
-      Factory::getRightGroupFactory(),
-      new RightGroup(null, 'phpunit-' . uniqid('', true), '[]')
-    );
-    $this->assertTrue($group instanceof RightGroup);
-    return $group;
-  }
-
-  private function createUser(string $prefix): User {
-    $username = $prefix . '_' . uniqid();
-    $user = UserUtils::createUser($username, $username . '@example.com', $this->createRightGroup()->getId(), $this->adminUser);
-    $this->registerDatabaseObject(Factory::getUserFactory(), $user);
-    return $user;
-  }
-
-  private function createHashType(): HashType {
-    $hashType = $this->createDatabaseObject(
-      Factory::getHashTypeFactory(),
-      new HashType(null, 'hash_type_' . uniqid(), 0, 0)
-    );
-    $this->assertTrue($hashType instanceof HashType);
-    return $hashType;
-  }
-
-  private function createHashlist(AccessGroup $group, HashType $hashType, int $isSecret = 0): Hashlist {
-    $hashlist = $this->createDatabaseObject(
-      Factory::getHashlistFactory(),
-      new Hashlist(null, 'hashlist_' . uniqid(), DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, $isSecret, 0, 0, $group->getId(), '', 0, 0, 0)
-    );
-    $this->assertTrue($hashlist instanceof Hashlist);
-    return $hashlist;
-  }
-
-  private function createTaskWrapper(AccessGroup $group, Hashlist $hashlist): TaskWrapper {
-    $taskWrapper = $this->createDatabaseObject(
-      Factory::getTaskWrapperFactory(),
-      new TaskWrapper(null, 1, 1, 0, $hashlist->getId(), $group->getId(), 'wrapper_' . uniqid(), 0, 0)
-    );
-    $this->assertTrue($taskWrapper instanceof TaskWrapper);
-    return $taskWrapper;
-  }
-
-  private function createCrackerBinaryType(): CrackerBinaryType {
-    $crackerBinaryType = $this->createDatabaseObject(
-      Factory::getCrackerBinaryTypeFactory(),
-      new CrackerBinaryType(null, 'type_' . uniqid(), 1)
-    );
-    $this->assertTrue($crackerBinaryType instanceof CrackerBinaryType);
-    return $crackerBinaryType;
-  }
-
-  private function createCrackerBinary(CrackerBinaryType $crackerBinaryType): CrackerBinary {
-    $crackerBinary = $this->createDatabaseObject(
-      Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $crackerBinaryType->getId(), '1.0.' . uniqid(), 'https://example.invalid/' . uniqid(), 'binary_' . uniqid())
-    );
-    $this->assertTrue($crackerBinary instanceof CrackerBinary);
-    return $crackerBinary;
-  }
-
-  private function createTask(TaskWrapper $taskWrapper, CrackerBinary $crackerBinary, CrackerBinaryType $crackerBinaryType): Task {
-    $task = $this->createDatabaseObject(
-      Factory::getTaskFactory(),
-      new Task(null, 'task_' . uniqid(), '--attack-mode 0', 60, 30, 0, 0, 1, 1, '#ffffff', 0, 0, 0, 0, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId(), 0, '', 0, 0, 0, 0, '')
-    );
-    $this->assertTrue($task instanceof Task);
-    return $task;
-  }
-
-  private function createFile(AccessGroup $group, int $isSecret = 0): File {
-    $file = $this->createDatabaseObject(
-      Factory::getFileFactory(),
-      new File(null, 'file_' . uniqid(), 0, $isSecret, 0, $group->getId(), 0)
-    );
-    $this->assertTrue($file instanceof File);
-    return $file;
-  }
-
-  private function createFileTask(File $file, Task $task): FileTask {
-    $fileTask = $this->createDatabaseObject(
-      Factory::getFileTaskFactory(),
-      new FileTask(null, $file->getId(), $task->getId())
-    );
-    $this->assertTrue($fileTask instanceof FileTask);
-    return $fileTask;
-  }
-
-  private function createAgent(string $prefix, int $isTrusted = 1): Agent {
-    $suffix = uniqid();
-    $agent = $this->createDatabaseObject(
-      Factory::getAgentFactory(),
-      new Agent(null, $prefix . '_' . $suffix, 'uid_' . $suffix, 0, '[]', '', 0, 1, $isTrusted, 'token_' . $suffix, 'idle', time(), '127.0.0.1', null, 0, 'sig_' . $suffix)
-    );
-    $this->assertTrue($agent instanceof Agent);
-    return $agent;
   }
 }
