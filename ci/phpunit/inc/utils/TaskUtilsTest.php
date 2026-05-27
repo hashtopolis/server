@@ -18,10 +18,7 @@ use Hashtopolis\dba\models\User;
 require_once(dirname(__FILE__) . '/../../TestBase.php');
 
 final class TaskUtilsTest extends TestBase {
-  private User $user1;
-  private TaskWrapper $taskWrapper1, $taskWrapper2, $taskWrapper3;
-  private Task $task1, $task2, $task3;
-
+  
   protected function setUp(): void {
     parent::setUp();
   }
