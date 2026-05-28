@@ -63,6 +63,9 @@
                         ddl.options.add(opt);
                     }
                 </script>
+                <label class="mx-1" title="Skip any pretask whose identical attack has already been fully completed against this hashlist">
+                  <input type="checkbox" name="skipCompleted" value="1"> Skip completed
+                </label>
                 <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} mx-1' value="Create Supertask">
               </form>
             </td>

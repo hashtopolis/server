@@ -247,9 +247,15 @@ class SupertaskUtils {
    * @param int $supertaskId
    * @param int $hashlistId
    * @param int $crackerId
+   * @param bool $skipCompleted when true, pretasks whose equivalent attack has already been fully
+   *                            exhausted against the hashlist are skipped instead of being
+   *                            re-instantiated (see TaskUtils::findCompletedEquivalent). Default
+   *                            false preserves the previous behavior for all existing callers.
+   * @return array{taskWrapper: TaskWrapper|null, skippedPretasks: array<int, array{pretaskId: int, matchingTaskId: int}>}
+   *         the created TaskWrapper (null when every pretask was skipped) and the list of skipped pretasks
    * @throws HTException
    */
-  public static function runSupertask($supertaskId, $hashlistId, $crackerId) {
+  public static function runSupertask($supertaskId, $hashlistId, $crackerId, $skipCompleted = false) {
     $supertask = Factory::getSupertaskFactory()->get($supertaskId);
     if ($supertask == null) {
       throw new HTException("Invalid supertask ID!");
@@ -270,30 +276,62 @@ class SupertaskUtils {
     $joined = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var $pretasks Pretask[] */
     $pretasks = $joined[Factory::getPretaskFactory()->getModelName()];
-    
-    Factory::getAgentFactory()->getDB()->beginTransaction();
-    
-    $wrapperPriority = 0;
-    $wrapperMaxAgents = 0;
-    foreach ($pretasks as $pretask) {
-      if ($wrapperPriority == 0 || $wrapperPriority > $pretask->getPriority()) {
-        $wrapperPriority = $pretask->getPriority();
-      }
-    }
-    
-    $taskWrapper = new TaskWrapper(null, $wrapperPriority, $wrapperMaxAgents, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName(), 0, 0);
-    $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
-    
+
+    // Resolve the effective task spec for each pretask, and (when requested) skip the ones whose
+    // equivalent attack has already been fully exhausted on this hashlist. The skip check only
+    // reads, so it runs before opening the transaction.
+    $skippedPretasks = [];
+    $toRun = [];
     foreach ($pretasks as $pretask) {
       $crackerBinaryId = $cracker->getId();
       if ($cracker->getCrackerBinaryTypeId() != $pretask->getCrackerBinaryTypeId()) {
         $crackerBinaryId = CrackerBinaryUtils::getNewestVersion($pretask->getCrackerBinaryTypeId())->getId();
       }
-      
+      $attackCmd = $pretask->getAttackCmd();
+      if ($hashlist->getHexSalt() == 1 && strpos($attackCmd, "--hex-salt") === false) {
+        $attackCmd = "--hex-salt " . $attackCmd;
+      }
+      if ($skipCompleted) {
+        $match = TaskUtils::findCompletedEquivalent(
+          $hashlist->getId(),
+          $attackCmd,
+          TaskUtils::getFileIdsOfPretask($pretask),
+          $crackerBinaryId,
+          $cracker->getCrackerBinaryTypeId()
+        );
+        if ($match !== null) {
+          $skippedPretasks[] = ["pretaskId" => $pretask->getId(), "matchingTaskId" => $match->getId()];
+          continue;
+        }
+      }
+      $toRun[] = ["pretask" => $pretask, "attackCmd" => $attackCmd, "crackerBinaryId" => $crackerBinaryId];
+    }
+
+    // Every pretask was already completed: do not create an empty wrapper.
+    if (count($toRun) == 0 && $skipCompleted) {
+      return ["taskWrapper" => null, "skippedPretasks" => $skippedPretasks];
+    }
+
+    Factory::getAgentFactory()->getDB()->beginTransaction();
+
+    $wrapperPriority = 0;
+    $wrapperMaxAgents = 0;
+    foreach ($toRun as $item) {
+      $pretask = $item["pretask"];
+      if ($wrapperPriority == 0 || $wrapperPriority > $pretask->getPriority()) {
+        $wrapperPriority = $pretask->getPriority();
+      }
+    }
+
+    $taskWrapper = new TaskWrapper(null, $wrapperPriority, $wrapperMaxAgents, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName(), 0, 0);
+    $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
+
+    foreach ($toRun as $item) {
+      $pretask = $item["pretask"];
       $task = new Task(
         null,
         $pretask->getTaskName(),
-        $pretask->getAttackCmd(),
+        $item["attackCmd"],
         $pretask->getChunkTime(),
         $pretask->getStatusTimer(),
         0,
@@ -305,7 +343,7 @@ class SupertaskUtils {
         $pretask->getIsCpuTask(),
         $pretask->getUseNewBench(),
         0,
-        $crackerBinaryId,
+        $item["crackerBinaryId"],
         $cracker->getCrackerBinaryTypeId(),
         $taskWrapper->getId(),
         0,
@@ -316,14 +354,12 @@ class SupertaskUtils {
         0,
         ''
       );
-      if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
-        $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
-      }
       $task = Factory::getTaskFactory()->save($task);
       TaskUtils::copyPretaskFiles($pretask, $task);
     }
-    
+
     Factory::getAgentFactory()->getDB()->commit();
+    return ["taskWrapper" => $taskWrapper, "skippedPretasks" => $skippedPretasks];
   }
   
   /**

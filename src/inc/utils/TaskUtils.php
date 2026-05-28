@@ -1272,7 +1272,107 @@ class TaskUtils {
     /** @var $files File[] */
     return $joined[Factory::getFileFactory()->getModelName()];
   }
-  
+
+  /**
+   * @param Task $task
+   * @return int[] the file ids attached to the task via FileTask
+   */
+  public static function getFileIdsOfTask($task) {
+    $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=");
+    $fileTasks = Factory::getFileTaskFactory()->filter([Factory::FILTER => $qF]);
+    $fileIds = [];
+    foreach ($fileTasks as $fileTask) {
+      $fileIds[] = $fileTask->getFileId();
+    }
+    return $fileIds;
+  }
+
+  /**
+   * @param Pretask $pretask
+   * @return int[] the file ids attached to the pretask via FilePretask
+   */
+  public static function getFileIdsOfPretask($pretask) {
+    $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=");
+    $filePretasks = Factory::getFilePretaskFactory()->filter([Factory::FILTER => $qF]);
+    $fileIds = [];
+    foreach ($filePretasks as $filePretask) {
+      $fileIds[] = $filePretask->getFileId();
+    }
+    return $fileIds;
+  }
+
+  /**
+   * Normalizes an attack command for duplicate comparison by collapsing runs of
+   * whitespace into single spaces and trimming. Flag ordering is intentionally
+   * NOT normalized: a different flag order is treated as a different attack and
+   * will not be skipped (conservative).
+   *
+   * @param string|null $attackCmd
+   * @return string
+   */
+  public static function normalizeAttackCmd($attackCmd) {
+    return trim(preg_replace('/\s+/', ' ', $attackCmd ?? ''));
+  }
+
+  /**
+   * Finds an existing, fully-exhausted Task on the given hashlist that is an exact
+   * duplicate of the supplied attack specification. Used to optionally skip
+   * re-running pretasks that have already been completed against the target
+   * hashlist when applying a supertask (or a single pretask).
+   *
+   * A Task is considered a match when ALL of the following hold:
+   *  - it belongs to a TaskWrapper on $hashlistId
+   *  - normalized attackCmd equality (see normalizeAttackCmd())
+   *  - identical set of fileIds (via FileTask) compared to $fileIds
+   *  - crackerBinaryId AND crackerBinaryTypeId equality
+   *  - it is fully exhausted: keyspace > 0 AND keyspaceProgress >= keyspace
+   *
+   * Archived tasks count as matches (an archived-but-exhausted task already did
+   * its work). Partial tasks (keyspace 0, or progress < keyspace) never match,
+   * since the remaining keyspace is still valuable work.
+   *
+   * @param int $hashlistId
+   * @param string $attackCmd        effective attack command (after any --hex-salt prefixing)
+   * @param int[] $fileIds           file ids that would be attached to the new task
+   * @param int $crackerBinaryId     resolved cracker binary id that would be used
+   * @param int $crackerBinaryTypeId resolved cracker binary type id that would be used
+   * @return Task|null the matching completed Task, or null if none exists
+   */
+  public static function findCompletedEquivalent($hashlistId, $attackCmd, $fileIds, $crackerBinaryId, $crackerBinaryTypeId) {
+    $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlistId, "=");
+    $wrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => $qF]);
+    if (count($wrappers) == 0) {
+      return null;
+    }
+
+    $normalizedCmd = self::normalizeAttackCmd($attackCmd);
+    $wantedFileIds = array_map('intval', $fileIds);
+    sort($wantedFileIds);
+
+    $cF = new ContainFilter(Task::TASK_WRAPPER_ID, Util::arrayOfIds($wrappers));
+    $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $cF]);
+    foreach ($tasks as $task) {
+      // must be fully exhausted; partials still have valuable work left
+      if ($task->getKeyspace() <= 0 || $task->getKeyspaceProgress() < $task->getKeyspace()) {
+        continue;
+      }
+      // a hashcat version change invalidates the dedup (conservative)
+      if ($task->getCrackerBinaryId() != $crackerBinaryId || $task->getCrackerBinaryTypeId() != $crackerBinaryTypeId) {
+        continue;
+      }
+      if (self::normalizeAttackCmd($task->getAttackCmd()) !== $normalizedCmd) {
+        continue;
+      }
+      $taskFileIds = array_map('intval', self::getFileIdsOfTask($task));
+      sort($taskFileIds);
+      if ($taskFileIds !== $wantedFileIds) {
+        continue;
+      }
+      return $task;
+    }
+    return null;
+  }
+
   /**
    * @param int $supertaskId
    * @param User $user

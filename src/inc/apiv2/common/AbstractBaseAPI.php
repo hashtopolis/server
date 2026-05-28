@@ -1636,7 +1636,7 @@ abstract class AbstractBaseAPI {
   /**
    * Get single Resource
    */
-  protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode = 200): Response {
+  protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode = 200, array $extraMeta = []): Response {
     $apiClass->preCommon($request);  
     $validExpandables = $apiClass->getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);
@@ -1670,7 +1670,7 @@ abstract class AbstractBaseAPI {
     $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' . $linksQuery : '');
     $links = ["self" => $linksSelf];
     
-    $metaData = [];
+    $metaData = $extraMeta;
     if ($apiClass->permissionErrors !== null) {
       $metaData["Include errors"] = $apiClass->permissionErrors;
     }
