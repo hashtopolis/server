@@ -94,11 +94,11 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
 
       $aggregatedData['status'] = $status;
       
+      $keyspace = $object->getKeyspace();
+      $keyspaceProgress = $object->getKeyspaceProgress();
+      
       if ($object->getTaskType() === DTaskTypes::NORMAL) {
         $task = $tasks[0];
-        
-        $keyspace = $task->getKeyspace();
-        $keyspaceProgress = $task->getKeyspaceProgress();
         
         if (is_null($aggregateFieldsets) || in_array("dispatched", $aggregateFieldsets['taskwrapperdisplay'])) {
             $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
