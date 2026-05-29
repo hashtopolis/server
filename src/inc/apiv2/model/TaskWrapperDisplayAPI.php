@@ -93,21 +93,23 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
       }
 
       $aggregatedData['status'] = $status;
-
+      
       $keyspace = $object->getKeyspace();
       $keyspaceProgress = $object->getKeyspaceProgress();
       
       if ($object->getTaskType() === DTaskTypes::NORMAL) {
+        $task = $tasks[0];
+        
         if (is_null($aggregateFieldsets) || in_array("dispatched", $aggregateFieldsets['taskwrapperdisplay'])) {
             $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
-          }
+        }
         
         if (is_null($aggregateFieldsets) || in_array("searched", $aggregateFieldsets['taskwrapperdisplay'])) {
-          $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
+          $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($task), $keyspace);
         }
 
         if (!isset($chunks)){
-          $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+          $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
           $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
         }
         
@@ -137,7 +139,6 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
             }
           }
 
-          $keyspace = $object->getKeyspace();
           $estimatedTime = ($keyspace > 0 && $cProgress > 0) ? round($timeSpent / ($cProgress / $keyspace) - $timeSpent) : 0;
           $aggregatedData["estimatedTime"] = $estimatedTime;
           $aggregatedData["timeSpent"] = $timeSpent;
@@ -146,7 +147,7 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
 
           $assignedAgents = [];
           if (is_null($aggregateFieldsets) || in_array("assignedAgents", $aggregateFieldsets['task'])) {
-            $qF = new QueryFilter(Assignment::TASK_ID, $object->getTaskId(), "=");
+            $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
             $assignedAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
             $aggregatedData["totalAssignedAgents"] = $assignedAgents;
           }
