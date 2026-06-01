@@ -52,8 +52,8 @@ if (!$initialSetup && StartupConfig::getInstance()->getDatabaseType() == "mysql"
 }
 
 $output = [];
-$database_uri = StartupConfig::getInstance()->getDatabaseType() . "://" . StartupConfig::getInstance()->getDatabaseUser() . ":" . StartupConfig::getInstance()->getDatabasePassword() . "@" . StartupConfig::getInstance()->getDatabaseServer() . ":" . StartupConfig::getInstance()->getDatabasePort() . "/" . StartupConfig::getInstance()->getDatabaseDB();
-exec('/usr/bin/sqlx migrate run --source ' . dirname(__FILE__) . '/../../migrations/' . StartupConfig::getInstance()->getDatabaseType() . '/ -D ' . $database_uri, $output, $retval);
+$database_uri = StartupConfig::getInstance()->getDatabaseType() . "://" . rawurlencode(StartupConfig::getInstance()->getDatabaseUser()) . ":" . rawurlencode(StartupConfig::getInstance()->getDatabasePassword()) . "@" . StartupConfig::getInstance()->getDatabaseServer() . ":" . StartupConfig::getInstance()->getDatabasePort() . "/" . StartupConfig::getInstance()->getDatabaseDB();
+exec('/usr/bin/sqlx migrate run --source ' . escapeshellarg(dirname(__FILE__) . '/../../migrations/' . StartupConfig::getInstance()->getDatabaseType() . '/') . ' -D ' . escapeshellarg($database_uri), $output, $retval);
 if ($retval !== 0) {
   echo "Failed to run migrations: \n" . implode("\n", $output);
   exit(-1);
