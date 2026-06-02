@@ -1091,7 +1091,7 @@ abstract class AbstractBaseAPI {
       }
       array_push($required_perms, ...$expandedPerms);
     }
-    $permissionResponse = $this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $permsExpandMatching);
+    $permissionResponse = $this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $request->getAttribute("aud"), $permsExpandMatching);
     $expands_to_remove = [];
     
     // remove expands with missing permissions
@@ -1406,7 +1406,7 @@ abstract class AbstractBaseAPI {
   /**
    * Validate permissions
    */
-  protected function validatePermissions(string $permissions, array $required_perms, string $method, array $permsExpandMatching = []): bool|array {
+  protected function validatePermissions(string $permissions, array $required_perms, string $method, string $aud, array $permsExpandMatching = []): bool|array {
     // Retrieve permissions from RightGroup part of the User
     
     if ($permissions == 'ALL') {
@@ -1417,17 +1417,21 @@ abstract class AbstractBaseAPI {
     else {
       $rightgroup_perms = json_decode($permissions, true);
     }
+
+    if ($aud === "user_hashtopolis") {
+      // Validate if no undefined permissions are set in $acl_mapping for the legacy permissions
+      assert(count(array_diff(array_keys($rightgroup_perms), array_keys(self::$acl_mapping))) == 0);
+      // Create listing of available permissions for user
+      $user_available_perms = array();
+      foreach ($rightgroup_perms as $rightgroup_perm => $permission_set) {
+        if ($permission_set) {
+          $user_available_perms = array_unique(array_merge($user_available_perms, self::$acl_mapping[$rightgroup_perm]));
+        }
+      };
+    } else {
+      $user_available_perms = array_keys($rightgroup_perms, true, true);
+    }
     
-    // Validate if no undefined permissions are set in $acl_mapping
-    assert(count(array_diff(array_keys($rightgroup_perms), array_keys(self::$acl_mapping))) == 0);
-    
-    // Create listing of available permissions for user
-    $user_available_perms = array();
-    foreach ($rightgroup_perms as $rightgroup_perm => $permission_set) {
-      if ($permission_set) {
-        $user_available_perms = array_unique(array_merge($user_available_perms, self::$acl_mapping[$rightgroup_perm]));
-      }
-    };
     
     // Sort to display values in a unified format for user and debugging
     sort($required_perms);
@@ -1541,7 +1545,7 @@ abstract class AbstractBaseAPI {
       );
     }
     
-    if ($this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod()) === FALSE) {
+    if ($this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $request->getAttribute("aud")) === FALSE) {
       throw new HttpForbidden(join('||', $this->permissionErrors));
     }
   }

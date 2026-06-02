@@ -26,6 +26,7 @@ class JWTBeforeHandler implements BeforeHandlerInterface {
       }
     }
     // adds the decoded userId and scope to the request attributes
-    return $request->withAttribute("userId", $arguments["decoded"]["userId"])->withAttribute("scope", $arguments["decoded"]["scope"]);
+    return $request->withAttribute("userId", $arguments["decoded"]["userId"])->withAttribute("scope", $arguments["decoded"]["scope"])
+                    ->withAttribute("aud", $arguments["decoded"]["aud"]);
   }
 }
