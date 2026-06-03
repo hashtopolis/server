@@ -25,7 +25,9 @@ class JWTBeforeHandler implements BeforeHandlerInterface {
         throw new HttpForbidden("Token is revoked");
       }
     }
-    // adds the decoded userId and scope to the request attributes
-    return $request->withAttribute("userId", $arguments["decoded"]["userId"])->withAttribute("scope", $arguments["decoded"]["scope"]);
+    // adds the decoded userId, scope and aud to the request attributes
+    $aud = $arguments["decoded"]["aud"] ?? "user_hashtopolis";
+    return $request->withAttribute("userId", $arguments["decoded"]["userId"])->withAttribute("scope", $arguments["decoded"]["scope"])
+                    ->withAttribute("aud", $aud);
   }
 }
