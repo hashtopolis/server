@@ -1,5 +1,37 @@
 # Changelog
 
+## v1.0.0-rainbow6 -> v1.0.0-rc1
+
+**Bugfixes**
+
+- Get correct intersection of legacy api permissions instead of new CRUD (#2067)
+- Setting alias properly for right group primary key (#2085)
+- Fixed missing color labeling of tasks (#2053)
+- Fixed float cast warnings on the old UI for dev builds (#2087)
+- Fixed chunk count missing on task details and percentage sign missing (#2099)
+- Fixed CORS errors (#2080)
+- Fixed file upload metadata handling (#2126)
+- Check for existing of array key before accessing it (#2122)
+- Fixed pagination with reverse sort on no unique keys (#2127)
+- Check for null value before strlen (#2155)
+- Correctly use task object to aggregate task information (#2169)
+- Fixed URL-encode and shell-escape sqlx migration DSN (#2175)
+- Adding migration to fix mysql silently altering table entries on autoincrement (#2192)
+- Fixed apitoken permission check by correctly parsing the permissions (#2196)
+
+**Enhancements**
+
+- Removed rule splitting (#1992)
+- Upgrade composer packages (#2056)
+- Configured sendmail in dev/ci environments to return immediately (#2055)
+- Removed isChunkingAvilable references (#2075)
+- Moved display error handling to dockerfile (#2002)
+- Added enhancement backend endpoint for hash heatmap (#2068)
+- Added estimated time, timespent, currentspeed and currentprogress to taskwrapper view (#2101)
+- Access groups also should be enforced on admin permissions (#2116)
+- Update time filter to use one year from current time (#2133)
+- Added assigned agents to taskwrapperdisplay (#2154)
+
 ## v1.0.0-rainbow5 -> v1.0.0-rainbow6
 
 **Bugfixes**
