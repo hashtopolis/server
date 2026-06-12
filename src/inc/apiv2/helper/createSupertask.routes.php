@@ -42,7 +42,8 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
     SupertaskUtils::runSupertask(
         $supertaskTemplate->getId(),
         $hashlist->getId(),
-        $crackerBinary->getId()
+        $crackerBinary->getId(),
+        $this->getCurrentUser()
     );
    
     /* Quick to retrieve newly created TaskWrapper */

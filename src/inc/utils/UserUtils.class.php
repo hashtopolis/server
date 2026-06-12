@@ -6,6 +6,7 @@ use DBA\AccessGroupUser;
 use DBA\Session;
 use DBA\NotificationSetting;
 use DBA\Agent;
+use DBA\TaskWrapper;
 use DBA\Factory;
 
 class UserUtils {
@@ -41,6 +42,9 @@ class UserUtils {
     $qF = new QueryFilter(Agent::USER_ID, $user->getId(), "=");
     $uS = new UpdateSet(Agent::USER_ID, null);
     Factory::getAgentFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+    $qF = new QueryFilter(TaskWrapper::USER_ID, $user->getId(), "=");
+    $uS = new UpdateSet(TaskWrapper::USER_ID, null);
+    Factory::getTaskWrapperFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
     $qF = new QueryFilter(Session::USER_ID, $user->getId(), "=");
     Factory::getSessionFactory()->massDeletion([Factory::FILTER => $qF]);
     $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=");

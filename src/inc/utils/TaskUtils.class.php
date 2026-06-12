@@ -809,7 +809,7 @@ class TaskUtils {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(null, $priority, $maxAgents, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "", 0, 0);
+    $taskWrapper = new TaskWrapper(null, $priority, $maxAgents, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "", 0, 0, $user->getId());
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
     $task = new Task(
@@ -896,7 +896,7 @@ class TaskUtils {
     }
     
     // create new tasks as supertask
-    $newWrapper = new TaskWrapper(null, 0, 0, DTaskTypes::SUPERTASK, $taskWrapper->getHashlistId(), $taskWrapper->getAccessGroupId(), $task->getTaskName() . " (From Rule Split)", 0, 0);
+    $newWrapper = new TaskWrapper(null, 0, 0, DTaskTypes::SUPERTASK, $taskWrapper->getHashlistId(), $taskWrapper->getAccessGroupId(), $task->getTaskName() . " (From Rule Split)", 0, 0, $taskWrapper->getUserId());
     $newWrapper = Factory::getTaskWrapperFactory()->save($newWrapper);
     $prio = sizeof($newFiles) + 1;
     foreach ($newFiles as $newFile) {

@@ -997,7 +997,8 @@ CREATE TABLE `TaskWrapper` (
   `accessGroupId`   INT(11)      DEFAULT NULL,
   `taskWrapperName` VARCHAR(100) NOT NULL,
   `isArchived`      TINYINT(4)   NOT NULL,
-  `cracked`         INT(11)      NOT NULL
+  `cracked`         INT(11)      NOT NULL,
+  `userId`          INT(11)      DEFAULT NULL
 )ENGINE = InnoDB;
 
 CREATE TABLE `User` (
@@ -1252,6 +1253,7 @@ ALTER TABLE `TaskWrapper`
   ADD PRIMARY KEY (`taskWrapperId`),
   ADD KEY `hashlistId` (`hashlistId`),
   ADD KEY `priority` (`priority`),
+  ADD KEY `userId` (`userId`),
   ADD KEY `isArchived` (`isArchived`),
   ADD KEY `accessGroupId` (`accessGroupId`);
 
@@ -1506,7 +1508,8 @@ ALTER TABLE `TaskDebugOutput`
 
 ALTER TABLE `TaskWrapper`
   ADD CONSTRAINT `TaskWrapper_ibfk_1` FOREIGN KEY (`hashlistId`)    REFERENCES `Hashlist` (`hashlistId`),
-  ADD CONSTRAINT `TaskWrapper_ibfk_2` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`);
+  ADD CONSTRAINT `TaskWrapper_ibfk_2` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`),
+  ADD CONSTRAINT `TaskWrapper_ibfk_3` FOREIGN KEY (`userId`)        REFERENCES `User` (`userId`);
 
 ALTER TABLE `User`
   ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);

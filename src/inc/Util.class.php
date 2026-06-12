@@ -470,10 +470,16 @@ class Util {
     $oF2 = new OrderFilter(TaskWrapper::TASK_WRAPPER_ID, "DESC");
     $taskWrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => [$oF1, $oF2]]);
     
+    $usernames = array();
+    foreach (Factory::getUserFactory()->filter([]) as $u) {
+      $usernames[$u->getId()] = $u->getUsername();
+    }
+    
     $taskList = array();
     foreach ($taskWrappers as $taskWrapper) {
       $set = new DataSet();
       $set->addValue('taskType', $taskWrapper->getTaskType());
+      $set->addValue('taskOwner', (isset($usernames[$taskWrapper->getUserId()])) ? $usernames[$taskWrapper->getUserId()] : "");
       
       $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
       if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {

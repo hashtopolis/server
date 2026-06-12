@@ -331,7 +331,7 @@ class UserAPITask extends UserAPIBasic {
     if (!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::TASK_HASHLIST]) || !isset($QUERY[UQueryTask::TASK_CRACKER_VERSION])) {
       throw new HTException("Invalid query!");
     }
-    SupertaskUtils::runSupertask($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::TASK_HASHLIST], $QUERY[UQueryTask::TASK_CRACKER_VERSION]);
+    SupertaskUtils::runSupertask($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::TASK_HASHLIST], $QUERY[UQueryTask::TASK_CRACKER_VERSION], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
   
@@ -343,7 +343,7 @@ class UserAPITask extends UserAPIBasic {
     if (!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::TASK_HASHLIST]) || !isset($QUERY[UQueryTask::TASK_CRACKER_VERSION])) {
       throw new HTException("Invalid query!");
     }
-    PretaskUtils::runPretask($QUERY[UQueryTask::PRETASK_ID], $QUERY[UQueryTask::TASK_HASHLIST], $QUERY[UQueryTask::TASK_NAME], $QUERY[UQueryTask::TASK_CRACKER_VERSION]);
+    PretaskUtils::runPretask($QUERY[UQueryTask::PRETASK_ID], $QUERY[UQueryTask::TASK_HASHLIST], $QUERY[UQueryTask::TASK_NAME], $QUERY[UQueryTask::TASK_CRACKER_VERSION], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
   

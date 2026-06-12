@@ -424,6 +424,7 @@ $CONF['TaskWrapper'] = [
     ['name' => 'taskWrapperName', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'cracked', 'read_only' => False, 'type' => 'int', 'protected' => True],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'null' => True],
   ],
 ];
 $CONF['User'] = [

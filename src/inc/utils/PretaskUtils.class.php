@@ -222,7 +222,7 @@ class PretaskUtils {
    * @param int $crackerBinaryId
    * @throws HTException
    */
-  public static function runPretask($pretaskId, $hashlistId, $name, $crackerBinaryId) {
+  public static function runPretask($pretaskId, $hashlistId, $name, $crackerBinaryId, $user = null) {
     $pretask = Factory::getPretaskFactory()->get($pretaskId);
     if ($pretask == null) {
       throw new HTException("Invalid preconfigured task ID!");
@@ -244,7 +244,7 @@ class PretaskUtils {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(null, $pretask->getPriority(), $pretask->getMaxAgents(), DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0, 0);
+    $taskWrapper = new TaskWrapper(null, $pretask->getPriority(), $pretask->getMaxAgents(), DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0, 0, ($user != null) ? $user->getId() : null);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
     $task = new Task(
