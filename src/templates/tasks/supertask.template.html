@@ -8,6 +8,9 @@
     {{ENDIF}}
   </td>
   <td>
+    [[set.getVal('taskOwner')]]
+  </td>
+  <td>
     {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
       <a href="hashlists.php?id=[[set.getVal('hashlistId')]]">[[set.getVal('hashlistName')]]</a>
     {{ELSE}}

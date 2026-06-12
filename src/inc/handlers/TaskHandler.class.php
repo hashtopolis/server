@@ -258,7 +258,7 @@ class TaskHandler implements Handler {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(null, $priority, $maxAgents, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0, 0);
+    $taskWrapper = new TaskWrapper(null, $priority, $maxAgents, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0, 0, Login::getInstance()->getUserID());
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
     if (AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {

@@ -12,8 +12,9 @@ class TaskWrapper extends AbstractModel {
   private $taskWrapperName;
   private $isArchived;
   private $cracked;
+  private $userId;
   
-  function __construct($taskWrapperId, $priority, $maxAgents, $taskType, $hashlistId, $accessGroupId, $taskWrapperName, $isArchived, $cracked) {
+  function __construct($taskWrapperId, $priority, $maxAgents, $taskType, $hashlistId, $accessGroupId, $taskWrapperName, $isArchived, $cracked, $userId = null) {
     $this->taskWrapperId = $taskWrapperId;
     $this->priority = $priority;
     $this->maxAgents = $maxAgents;
@@ -23,6 +24,7 @@ class TaskWrapper extends AbstractModel {
     $this->taskWrapperName = $taskWrapperName;
     $this->isArchived = $isArchived;
     $this->cracked = $cracked;
+    $this->userId = $userId;
   }
   
   function getKeyValueDict() {
@@ -36,6 +38,7 @@ class TaskWrapper extends AbstractModel {
     $dict['taskWrapperName'] = $this->taskWrapperName;
     $dict['isArchived'] = $this->isArchived;
     $dict['cracked'] = $this->cracked;
+    $dict['userId'] = $this->userId;
     
     return $dict;
   }
@@ -51,6 +54,7 @@ class TaskWrapper extends AbstractModel {
     $dict['taskWrapperName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskWrapperName"];
     $dict['isArchived'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isArchived"];
     $dict['cracked'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "cracked"];
+    $dict['userId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => True, "private" => False, "alias" => "userId"];
 
     return $dict;
   }
@@ -143,6 +147,14 @@ class TaskWrapper extends AbstractModel {
     $this->cracked = $cracked;
   }
   
+  function getUserId() {
+    return $this->userId;
+  }
+  
+  function setUserId($userId) {
+    $this->userId = $userId;
+  }
+  
   const TASK_WRAPPER_ID = "taskWrapperId";
   const PRIORITY = "priority";
   const MAX_AGENTS = "maxAgents";
@@ -152,6 +164,7 @@ class TaskWrapper extends AbstractModel {
   const TASK_WRAPPER_NAME = "taskWrapperName";
   const IS_ARCHIVED = "isArchived";
   const CRACKED = "cracked";
+  const USER_ID = "userId";
 
   const PERM_CREATE = "permTaskWrapperCreate";
   const PERM_READ = "permTaskWrapperRead";

@@ -240,7 +240,7 @@ class SupertaskUtils {
    * @param int $crackerId
    * @throws HTException
    */
-  public static function runSupertask($supertaskId, $hashlistId, $crackerId) {
+  public static function runSupertask($supertaskId, $hashlistId, $crackerId, $user = null) {
     $supertask = Factory::getSupertaskFactory()->get($supertaskId);
     if ($supertask == null) {
       throw new HTException("Invalid supertask ID!");
@@ -272,7 +272,7 @@ class SupertaskUtils {
       }
     }    
 
-    $taskWrapper = new TaskWrapper(null, $wrapperPriority, $wrapperMaxAgents, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName(), 0, 0);
+    $taskWrapper = new TaskWrapper(null, $wrapperPriority, $wrapperMaxAgents, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName(), 0, 0, ($user != null) ? $user->getId() : null);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
     foreach ($pretasks as $pretask) {

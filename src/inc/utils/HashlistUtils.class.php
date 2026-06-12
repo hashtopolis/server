@@ -112,7 +112,7 @@ class HashlistUtils {
           $taskPriority = $priorityBase + $task->getPriority();
         }
         $taskMaxAgent = $task->getMaxAgents();
-        $taskWrapper = new TaskWrapper(null, $taskPriority, $taskMaxAgent, DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0, 0);
+        $taskWrapper = new TaskWrapper(null, $taskPriority, $taskMaxAgent, DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0, 0, ($user != null) ? $user->getId() : null);
         $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
         
         $newTask = new Task(

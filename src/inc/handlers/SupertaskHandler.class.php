@@ -18,7 +18,7 @@ class SupertaskHandler implements Handler {
           break;
         case DSupertaskAction::APPLY_SUPERTASK:
           AccessControl::getInstance()->checkPermission(DSupertaskAction::APPLY_SUPERTASK_PERM);
-          SupertaskUtils::runSupertask($_POST['supertask'], $_POST['hashlist'], $_POST['crackerBinaryVersionId']);
+          SupertaskUtils::runSupertask($_POST['supertask'], $_POST['hashlist'], $_POST['crackerBinaryVersionId'], Login::getInstance()->getUser());
           header("Location: tasks.php");
           die();
         case DSupertaskAction::IMPORT_SUPERTASK:
