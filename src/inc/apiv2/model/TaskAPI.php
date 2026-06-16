@@ -199,7 +199,7 @@ class TaskAPI extends AbstractModelAPI {
     /** @var $object Task */
     $aggregatedData = [];
     
-    if (array_key_exists('task', $aggregateFieldsets)) {
+    if (!is_null($aggregateFieldsets) && array_key_exists('task', $aggregateFieldsets)) {
       $aggregateFieldsets['task'] = explode(",", $aggregateFieldsets['task']);
       
       if (in_array("assignedAgents", $aggregateFieldsets['task'])) {

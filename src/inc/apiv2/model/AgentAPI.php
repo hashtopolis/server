@@ -78,7 +78,7 @@ class AgentAPI extends AbstractModelAPI {
       $includedData["chunks"][$agentId] = [$active_chunk];
     }
     
-    if (array_key_exists('agent', $aggregateFieldsets)) {
+    if (!is_null($aggregateFieldsets) && array_key_exists('agent', $aggregateFieldsets)) {
       $aggregateFieldsets['agent'] = explode(",", $aggregateFieldsets['agent']);
       
       if (in_array("crackingTime", $aggregateFieldsets['agent'])) {

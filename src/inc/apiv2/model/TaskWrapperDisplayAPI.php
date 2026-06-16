@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
+use Hashtopolis\dba\Aggregation;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
@@ -61,95 +63,118 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
       ]
     ];
   }
-
-  //TODO make aggregate data queryable and not included by default
+  
+  public function getAggregateFieldsets(): array {
+    return [
+      'taskwrapperdisplay' => [
+        'totalAssignedAgents',
+        'dispatched',
+        'searched',
+        'status',
+        'currentSpeed',
+        'estimatedTime',
+        'cprogress',
+        'timeSpent'
+      ]
+    ];
+  }
+  
+  /**
+   * @param object $object
+   * @param array $includedData
+   * @param array|null $aggregateFieldsets
+   * @return array
+   * @throws Exception
+   */
   function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     $aggregatedData = [];
-    if (is_null($aggregateFieldsets) || array_key_exists('taskwrapperdisplay', $aggregateFieldsets)) {
-      $tasks = TaskUtils::getTasksOfWrapper($object->getId());
-      $completed = 0;
-      $total = 0;
-      $status = 0;
-      foreach($tasks as $task) {
-        $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-        $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-        $taskStatus = TaskUtils::getStatus($chunks, $task->getKeyspace(), $task->getKeyspaceProgress());
-        // if one task of the wrapper is running, it is running
-        if ($taskStatus === 1) {
-          $status = 1;
-          break;
+    
+    if (!is_null($aggregateFieldsets) && array_key_exists('taskwrapperdisplay', $aggregateFieldsets)) {
+      $aggregateFieldsets['taskwrapperdisplay'] = explode(",", $aggregateFieldsets['taskwrapperdisplay']);
+      
+      if (in_array("status", $aggregateFieldsets['taskwrapperdisplay'])) {
+        // TODO: this could be optimized by only requesting taskId, keyspace and keyspaceProgress of all tasks of that wrapper (columnFilter)
+        $tasks = TaskUtils::getTasksOfWrapper($object->getId());
+        $completed = 0;
+        $total = 0;
+        $status = 0;
+        foreach($tasks as $task) {
+          $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+          $qF2 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+          $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+          $taskStatus = TaskUtils::getStatus($chunks, $task->getKeyspace(), $task->getKeyspaceProgress());
+          // if one task of the wrapper is running, it is running
+          if ($taskStatus === 1) {
+            $status = 1;
+            break;
+          }
+          if ($taskStatus === 3) {
+            $completed++;
+          }
+          $total++;
         }
-        if ($taskStatus === 3) {
-          $completed++;
+        if ($status !== 1) {
+          if ($total > 0 && $completed === $total) {
+            $status = 3;
+          } else {
+            $status = 2;
+          }
         }
-        $total++;
+        $aggregatedData['status'] = $status;
       }
-      if ($status !== 1) {
-        if ($total > 0 && $completed === $total) {
-          $status = 3;
-        } else {
-          $status = 2;
-        }
+      
+      if (in_array("totalAssignedAgents", $aggregateFieldsets['taskwrapperdisplay'])) {
+        $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $object->getId(), "=", Factory::getTaskFactory());
+        $jF = new JoinFilter(Factory::getTaskFactory(), Assignment::TASK_ID, Task::TASK_ID);
+        
+        $assignedAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+        $aggregatedData["totalAssignedAgents"] = $assignedAgents;
       }
-
-      $aggregatedData['status'] = $status;
       
       $keyspace = $object->getKeyspace();
       $keyspaceProgress = $object->getKeyspaceProgress();
       
       if ($object->getTaskType() === DTaskTypes::NORMAL) {
+        $tasks = TaskUtils::getTasksOfWrapper($object->getId());
         $task = $tasks[0];
         
-        if (is_null($aggregateFieldsets) || in_array("dispatched", $aggregateFieldsets['taskwrapperdisplay'])) {
+        if (in_array("dispatched", $aggregateFieldsets['taskwrapperdisplay'])) {
             $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
         }
         
-        if (is_null($aggregateFieldsets) || in_array("searched", $aggregateFieldsets['taskwrapperdisplay'])) {
+        if (in_array("searched", $aggregateFieldsets['taskwrapperdisplay'])) {
           $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($task), $keyspace);
         }
-
-        if (!isset($chunks)){
-          $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-          $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+        
+        if (in_array("currentSpeed", $aggregateFieldsets['taskwrapperdisplay'])) {
+          $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+          $qF2 = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
+          $qF3 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+          $agg = new Aggregation(Chunk::SPEED, Aggregation::SUM);
+          $speed = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], [$agg])[$agg->getName()];
+          if ($speed == null) {
+            $speed = 0;
+          }
+          $aggregatedData["currentSpeed"] = $speed;
         }
         
-        if (is_null($aggregateFieldsets) || in_array("taskExtraDetails", $aggregateFieldsets['taskwrapperdisplay'])) {
-          $currentSpeed = 0;
-          $cProgress = 0;
+        if (in_array("estimatedTime", $aggregateFieldsets['taskwrapperdisplay']) ||
+          in_array("timeSpent", $aggregateFieldsets['taskwrapperdisplay']) ||
+          in_array("cprogress", $aggregateFieldsets['taskwrapperdisplay'])) {
           
-          foreach ($chunks as $chunk) {
-            $cProgress += $chunk->getCheckpoint() - $chunk->getSkip();
-            if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
-              $currentSpeed += $chunk->getSpeed();
-            }
+          $cProgress = TaskUtils::getTaskProgress($task);
+          if (in_array("cprogress", $aggregateFieldsets['taskwrapperdisplay'])) {
+            $aggregatedData["cprogress"] = $cProgress;
           }
-          $timeChunks = $chunks;
-          usort($timeChunks, ["Hashtopolis\inc\Util", "compareChunksTime"]);
-          $timeSpent = 0;
-          $current = 0;
           
-          foreach ($timeChunks as $c) {
-            if ($c->getDispatchTime() > $current) {
-              $timeSpent += $c->getSolveTime() - $c->getDispatchTime();
-              $current = $c->getSolveTime();
-            }
-            else if ($c->getSolveTime() > $current) {
-              $timeSpent += $c->getSolveTime() - $current;
-              $current = $c->getSolveTime();
-            }
+          $timeSpent = TaskUtils::getTimeSpentOnTask($task);
+          
+          if (in_array("timeSpent", $aggregateFieldsets['taskwrapperdisplay'])) {
+            $aggregatedData["timeSpent"] = $timeSpent;
           }
-
-          $estimatedTime = ($keyspace > 0 && $cProgress > 0) ? round($timeSpent / ($cProgress / $keyspace) - $timeSpent) : 0;
-          $aggregatedData["estimatedTime"] = $estimatedTime;
-          $aggregatedData["timeSpent"] = $timeSpent;
-          $aggregatedData["currentSpeed"] = $currentSpeed;
-          $aggregatedData["cprogress"] = $cProgress;
-
-          $assignedAgents = [];
-          if (is_null($aggregateFieldsets) || in_array("assignedAgents", $aggregateFieldsets['task'])) {
-            $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-            $assignedAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
-            $aggregatedData["totalAssignedAgents"] = $assignedAgents;
+          
+          if (in_array("estimatedTime", $aggregateFieldsets['taskwrapperdisplay'])) {
+            $aggregatedData["estimatedTime"] = ($keyspace > 0 && $cProgress > 0) ? round($timeSpent / ($cProgress / $keyspace) - $timeSpent) : 0;
           }
         }
       }

@@ -78,7 +78,7 @@ class PreTaskAPI extends AbstractModelAPI {
   function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     $aggregatedData = [];
     
-    if (array_key_exists('pretask', $aggregateFieldsets)) {
+    if (!is_null($aggregateFieldsets) && array_key_exists('pretask', $aggregateFieldsets)) {
       $aggregateFieldsets['pretask'] = explode(",", $aggregateFieldsets['pretask']);
       
       if (in_array("auxiliaryKeyspace", $aggregateFieldsets['pretask'])) {
