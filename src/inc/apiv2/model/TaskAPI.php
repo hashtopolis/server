@@ -196,7 +196,7 @@ class TaskAPI extends AbstractModelAPI {
    * @throws Exception
    */
   function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
-    /** @var $object Task */
+    /** @var Task $object */
     $aggregatedData = [];
     
     if (!is_null($aggregateFieldsets) && array_key_exists('task', $aggregateFieldsets)) {
@@ -269,7 +269,7 @@ class TaskAPI extends AbstractModelAPI {
   }
   
   protected function deleteObject(object $object): void {
-    /** @var $object Task */
+    /** @var Task $object */
     TaskUtils::deleteTask($object);
   }
   
