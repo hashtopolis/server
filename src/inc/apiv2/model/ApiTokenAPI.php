@@ -108,7 +108,7 @@ class ApiTokenAPI extends AbstractModelAPI {
     return $token->getId();
   }
 
-  function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
+  function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     // $token is only set in POST, this way the actual token is only returned after creation.
     $aggregatedData = [];
     $token = $this->getJwtToken();

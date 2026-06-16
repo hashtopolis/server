@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
+use Hashtopolis\dba\Aggregation;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\inc\defines\DHashcatStatus;
@@ -45,16 +47,27 @@ class AgentAPI extends AbstractModelAPI {
     ];
   }
   
+  public function getAggregateFieldsets(): array {
+    return [
+      'agent' => [
+        'crackingTime',
+      ]
+    ];
+  }
+  
   /**
    * Overridable function to aggregate data in the object. active chunk of agent is appended to
    * $included_data.
    *
    * @param object $object the agent object were data is aggregated from
-   * @param array &$included_data
+   * @param array &$includedData
    * @param array|null $aggregateFieldsets
    * @return array not used here
+   * @throws Exception
    */
-  function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
+  function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
+    $aggregatedData = [];
+    
     $agentId = $object->getId();
     $qFs = [];
     $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
@@ -62,10 +75,25 @@ class AgentAPI extends AbstractModelAPI {
     
     $active_chunk = Factory::getChunkFactory()->filter([Factory::FILTER => $qFs], true);
     if ($active_chunk !== NULL) {
-      $included_data["chunks"][$agentId] = [$active_chunk];
+      $includedData["chunks"][$agentId] = [$active_chunk];
     }
     
-    return [];
+    if (array_key_exists('agent', $aggregateFieldsets)) {
+      $aggregateFieldsets['agent'] = explode(",", $aggregateFieldsets['agent']);
+      
+      if (in_array("crackingTime", $aggregateFieldsets['agent'])) {
+        // in order to make sense of the diff, we need to make sure that both values solve time and dispatch time are set (i.e. >0).
+        $qF1 = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
+        $qF2 = new QueryFilter(Chunk::SOLVE_TIME, ">", 0);
+        $qF3 = new QueryFilter(Chunk::DISPATCH_TIME, ">", 0);
+        $agg1 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::SUM);
+        $agg2 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::SUM);
+        $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], [$agg1, $agg2]);
+        $aggregatedData["crackingTime"] = $results[$agg1->getName()] - $results[$agg2->getName()];
+      }
+    }
+    
+    return $aggregatedData;
   }
   
   protected function getSingleACL(User $user, object $object): bool {
