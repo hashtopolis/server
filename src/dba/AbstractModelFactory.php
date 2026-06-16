@@ -486,13 +486,19 @@ abstract class AbstractModelFactory {
   
   /**
    * @param $options array options of query (filters and joins)
-   * @param $column string single column key which should be retrieved
+   * @param $columns array|string single column key or array of column keys which should be retrieved
    * @return array of the column entries returned from this query
    * @throws Exception
    */
-  public function columnFilter(array $options, string $column): array {
-    $query = "SELECT " . Util::createPrefixedString($this->getMappedModelTable(), [self::getMappedModelKey($this->getNullObject(), $column)]);
-    $query = $query . " FROM " . $this->getMappedModelTable();
+  public function columnFilter(array $options, array|string $columns): array {
+    if (!is_array($columns)) {
+      $columns = [$columns];
+    }
+    $elements = [];
+    foreach ($columns as $column) {
+      $elements[] = Util::createPrefixedString($this->getMappedModelTable(), [self::getMappedModelKey($this->getNullObject(), $column)]);
+    }
+    $query = "SELECT " . join(",", $elements) . " FROM " . $this->getMappedModelTable();
     
     $vals = array();
     
@@ -502,12 +508,18 @@ abstract class AbstractModelFactory {
     if (array_key_exists(Factory::FILTER, $options)) {
       $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
+    if (array_key_exists(Factory::ORDER, $options)) {
+      $query .= $this->applyOrder($options[Factory::ORDER]);
+    }
     
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
-    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    if (sizeof($elements) == 1) {
+      return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+    return $stmt->fetchAll(PDO::FETCH_NUM);
   }
   
   /**

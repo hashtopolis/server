@@ -590,6 +590,49 @@ final class AbstractModelFactoryTest extends TestBase {
   }
   
   /**
+   * Test receiving the column of a query with an order
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testColumnFilterSuccessOrdered(): void {
+    $testid = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $oF = new OrderFilter(HashType::IS_SALTED, "ASC");
+    $column = Factory::getHashTypeFactory()->columnFilter([Factory::FILTER => $qF, Factory::ORDER => $oF], HashType::IS_SALTED);
+    $this->assertEquals([1, 72, 125], $column);
+    
+    $oF = new OrderFilter(HashType::IS_SALTED, "DESC");
+    $column = Factory::getHashTypeFactory()->columnFilter([Factory::FILTER => $qF, Factory::ORDER => $oF], HashType::IS_SALTED);
+    $this->assertEquals([125, 72, 1], $column);
+  }
+  
+  /**
+   * Test querying multiple columns with the column filter
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testColumnFilterSuccessMultiple(): void {
+    $testid = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 1));
+    
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $columns = Factory::getHashTypeFactory()->columnFilter([Factory::FILTER => $qF], [HashType::IS_SALTED, HashType::IS_SLOW_HASH]);
+    $this->assertEquals([[1, 0], [125, 0], [72, 1]], $columns);
+    
+    $oF = new OrderFilter(HashType::IS_SALTED, "ASC");
+    $columns = Factory::getHashTypeFactory()->columnFilter([Factory::FILTER => $qF, Factory::ORDER => $oF], [HashType::IS_SALTED, HashType::IS_SLOW_HASH]);
+    $this->assertEquals([[1, 0], [72, 1], [125, 0]], $columns);
+  }
+  
+  /**
    * Test receiving the column of a query on a mapped column
    *
    * @return void
@@ -1137,8 +1180,9 @@ final class AbstractModelFactoryTest extends TestBase {
     // hashlist 1 and 3 should be returned
     $this->assertSame([$hashlist_1->getId(), $hashlist_3->getId()], $ids);
     
-    $qF = new QueryFilter(Hashlist::CRACKED, 5000, ">");
-    $ids = Factory::getHashlistFactory()->columnFilter([Factory::FILTER => $qF, Factory::ORDER => $oF], Hashlist::HASHLIST_ID);
+    $qF1 = new QueryFilter(Hashlist::CRACKED, 5000, ">");
+    $qF2 = new LikeFilter(Hashlist::HASHLIST_NAME, "%" . $testid);
+    $ids = Factory::getHashlistFactory()->columnFilter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF], Hashlist::HASHLIST_ID);
     $this->assertSame([], $ids);
   }
   

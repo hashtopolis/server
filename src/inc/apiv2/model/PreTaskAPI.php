@@ -68,24 +68,34 @@ class PreTaskAPI extends AbstractModelAPI {
     return $pretask->getId();
   }
   
-  //TODO make aggregate data queryable and not included by default
+  
+  /**
+   * @param object $object
+   * @param array $includedData
+   * @param array|null $aggregateFieldsets
+   * @return array
+   */
   function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     $aggregatedData = [];
-    if (is_null($aggregateFieldsets) || array_key_exists('pretask', $aggregateFieldsets)) {
+    
+    if (array_key_exists('pretask', $aggregateFieldsets)) {
+      $aggregateFieldsets['pretask'] = explode(",", $aggregateFieldsets['pretask']);
       
-      $qF1 = new QueryFilter(FilePretask::PRETASK_ID, $object->getId(), "=", Factory::getFilePretaskFactory());
-      $jF1 = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
-      $files = Factory::getFileFactory()->filter([Factory::FILTER => $qF1, Factory::JOIN => $jF1]);
-      $files = $files[Factory::getFileFactory()->getModelName()];
-      
-      $lineCountProduct = 1;
-      foreach ($files as $file) {
-        $lineCount = $file->getLineCount();
-        if ($lineCount !== null) {
-          $lineCountProduct = $lineCountProduct * $lineCount;
+      if (in_array("auxiliaryKeyspace", $aggregateFieldsets['pretask'])) {
+        $qF1 = new QueryFilter(FilePretask::PRETASK_ID, $object->getId(), "=", Factory::getFilePretaskFactory());
+        $jF1 = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
+        $files = Factory::getFileFactory()->filter([Factory::FILTER => $qF1, Factory::JOIN => $jF1]);
+        $files = $files[Factory::getFileFactory()->getModelName()];
+        
+        $lineCountProduct = 1;
+        foreach ($files as $file) {
+          $lineCount = $file->getLineCount();
+          if ($lineCount !== null) {
+            $lineCountProduct = $lineCountProduct * $lineCount;
+          }
         }
+        $aggregatedData["auxiliaryKeyspace"] = $lineCountProduct;
       }
-      $aggregatedData["auxiliaryKeyspace"] = $lineCountProduct;
     }
     
     return $aggregatedData;
