@@ -15,7 +15,7 @@ class TaskTest(BaseTest):
         dummy_agent.send_process(progress=50)
         dummy_agent.send_process(progress=100, state=ProcessState.EXHAUSTED)
         dummy_agent.get_chunk()
-        return Task.objects.get(taskId=retval['task'].id)
+        return Task.objects.params(**{"aggregate[task]": "totalNumberOfChunks"}).get(taskId=retval['task'].id)
 
     def create_test_object(self, **kwargs):
         hashlist_kwargs = kwargs.copy()
