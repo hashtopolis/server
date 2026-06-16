@@ -702,7 +702,7 @@ abstract class AbstractModelFactory {
     if (array_key_exists(Factory::FILTER, $options)) {
       $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
-    
+
     // Apply order filter
     if (!array_key_exists(Factory::ORDER, $options)) {
       // Add a asc order on the primary keys as a standard
@@ -718,7 +718,7 @@ abstract class AbstractModelFactory {
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
-    
+
     $res = array();
     $values = array();
     foreach ($factories as $factory) {
@@ -828,19 +828,28 @@ abstract class AbstractModelFactory {
         continue;
       }
       $v = $filter->getValue();
-      if (is_array($v)) {
-        foreach ($v as $val) {
-          $vals[] = $val;
-        }
-      }
-      else {
-        $vals[] = $v;
-      }
+      $this->getAllArrayValues($vals, $v);
     }
     if ($isJoinFilter) {
       return " AND " . implode(" AND ", $parts);
     }
     return " WHERE " . implode(" AND ", $parts);
+  }
+
+  /**
+   * @param $vals
+   * @param $element
+   * @return array
+   */
+  private function getAllArrayValues(&$vals, $element) {
+    if (!is_array($element)) {
+      $vals[] = $element;
+      return;
+    }
+
+    foreach($element as $v) {
+      $this->getAllArrayValues($vals, $v);
+    }
   }
   
   /**
