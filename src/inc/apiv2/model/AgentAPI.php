@@ -84,8 +84,8 @@ class AgentAPI extends AbstractModelAPI {
       if (in_array("crackingTime", $aggregateFieldsets['agent'])) {
         // in order to make sense of the diff, we need to make sure that both values solve time and dispatch time are set (i.e. >0).
         $qF1 = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
-        $qF2 = new QueryFilter(Chunk::SOLVE_TIME, ">", 0);
-        $qF3 = new QueryFilter(Chunk::DISPATCH_TIME, ">", 0);
+        $qF2 = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
+        $qF3 = new QueryFilter(Chunk::DISPATCH_TIME, 0, ">");
         $agg1 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::SUM);
         $agg2 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::SUM);
         $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], [$agg1, $agg2]);
