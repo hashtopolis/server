@@ -13,14 +13,23 @@ use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\models\File;
+use Hashtopolis\dba\models\FileDownload;
 use Hashtopolis\dba\models\FileTask;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\models\HashType;
+use Hashtopolis\dba\models\HealthCheck;
+use Hashtopolis\dba\models\HealthCheckAgent;
+use Hashtopolis\dba\models\JwtApiKey;
 use Hashtopolis\dba\models\RightGroup;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\models\UserFactory;
+use Hashtopolis\inc\defines\DHealthCheckAgentStatus;
+use Hashtopolis\inc\defines\DHealthCheckMode;
+use Hashtopolis\inc\defines\DHealthCheckStatus;
+use Hashtopolis\inc\defines\DHealthCheckType;
+use Hashtopolis\inc\defines\DFileDownloadStatus;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\utils\UserUtils;
@@ -157,19 +166,46 @@ class TestBase extends TestCase {
     return $crackerBinary;
   }
   
-  protected function createTask(TaskWrapper $taskWrapper, CrackerBinary $crackerBinary, CrackerBinaryType $crackerBinaryType): Task {
+  protected function createTask(TaskWrapper $taskWrapper, CrackerBinary $crackerBinary, CrackerBinaryType $crackerBinaryType, ?int $usePreprocessor = null, string $preprocessorCommand = ''): Task {
     $task = $this->createDatabaseObject(
       Factory::getTaskFactory(),
-      new Task(null, 'task_' . uniqid(), '--attack-mode 0', 60, 30, 0, 0, 1, 1, '#ffffff', 0, 0, 0, 0, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId(), 0, '', 0, 0, 0, 0, '')
+      new Task(null, 'task_' . uniqid(), '--attack-mode 0', 60, 30, 0, 0, 1, 1, '#ffffff', 0, 0, 0, 0, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId(), 0, '', 0, 0, 0, $usePreprocessor ?? 0, $preprocessorCommand)
     );
     $this->assertTrue($task instanceof Task);
     return $task;
   }
   
-  protected function createFile(AccessGroup $group, int $isSecret = 0): File {
+  protected function createJwtApiKey(User $user, ?int $startValid = null, ?int $endValid = null, int $isRevoked = 0): JwtApiKey {
+    $key = $this->createDatabaseObject(
+      Factory::getJwtApiKeyFactory(),
+      new JwtApiKey(null, $startValid ?? time(), $endValid ?? time() + 3600, $user->getId(), $isRevoked)
+    );
+    $this->assertTrue($key instanceof JwtApiKey);
+    return $key;
+  }
+
+  protected function createHealthCheck(CrackerBinary $crackerBinary, int $status = DHealthCheckStatus::PENDING, int $checkType = DHealthCheckType::BRUTE_FORCE, int $hashtypeId = DHealthCheckMode::MD5, int $expectedCracks = 0, string $attackCmd = ''): HealthCheck {
+    $check = $this->createDatabaseObject(
+      Factory::getHealthCheckFactory(),
+      new HealthCheck(null, time(), $status, $checkType, $hashtypeId, $crackerBinary->getId(), $expectedCracks, $attackCmd)
+    );
+    $this->assertTrue($check instanceof HealthCheck);
+    return $check;
+  }
+
+  protected function createHealthCheckAgent(HealthCheck $healthCheck, Agent $agent, int $status = DHealthCheckAgentStatus::PENDING, int $cracked = 0, int $numGpus = 0, int $start = 0, int $end = 0, string $errors = ''): HealthCheckAgent {
+    $agentCheck = $this->createDatabaseObject(
+      Factory::getHealthCheckAgentFactory(),
+      new HealthCheckAgent(null, $healthCheck->getId(), $agent->getId(), $status, $cracked, $numGpus, $start, $end, $errors)
+    );
+    $this->assertTrue($agentCheck instanceof HealthCheckAgent);
+    return $agentCheck;
+  }
+
+  protected function createFile(AccessGroup $group, int $isSecret = 0, ?string $filename = null, int $size = 0, int $fileType = 0, int $lineCount = 0): File {
     $file = $this->createDatabaseObject(
       Factory::getFileFactory(),
-      new File(null, 'file_' . uniqid(), 0, $isSecret, 0, $group->getId(), 0)
+      new File(null, $filename ?? 'file_' . uniqid(), $size, $isSecret, $fileType, $group->getId(), $lineCount)
     );
     $this->assertTrue($file instanceof File);
     return $file;
@@ -182,6 +218,15 @@ class TestBase extends TestCase {
     );
     $this->assertTrue($fileTask instanceof FileTask);
     return $fileTask;
+  }
+
+  protected function createFileDownload(int $fileId, int $status = DFileDownloadStatus::PENDING): FileDownload {
+    $fileDownload = $this->createDatabaseObject(
+      Factory::getFileDownloadFactory(),
+      new FileDownload(null, time(), $fileId, $status)
+    );
+    $this->assertTrue($fileDownload instanceof FileDownload);
+    return $fileDownload;
   }
   
   protected function createAgent(string $prefix, int $isTrusted = 1): Agent {
