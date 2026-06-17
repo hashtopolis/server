@@ -75,6 +75,5 @@ final class FileDownloadUtilsTest extends TestBase {
   
   public function testRemoveFileIsNoopForNonExistent(): void {
     FileDownloadUtils::removeFile(-1);
-    $this->assertTrue(true);
   }
 }

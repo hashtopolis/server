@@ -51,7 +51,6 @@ final class LockUtilsTest extends TestBase {
     LockUtils::get(self::TEST_LOCK);
     LockUtils::get(self::TEST_LOCK);
     LockUtils::release(self::TEST_LOCK);
-    $this->assertTrue(true);
   }
   
   public function testReleaseReleasesLockForReacquisition(): void {
@@ -60,12 +59,10 @@ final class LockUtilsTest extends TestBase {
     
     LockUtils::get(self::TEST_LOCK);
     LockUtils::release(self::TEST_LOCK);
-    $this->assertTrue(true);
   }
   
   public function testReleaseIsNoopForUnknownLock(): void {
     LockUtils::release('nonexistent.lock');
-    $this->assertTrue(true);
   }
   
   public function testDeleteLockFileRemovesExistingLockFile(): void {
@@ -82,7 +79,6 @@ final class LockUtilsTest extends TestBase {
   
   public function testDeleteLockFileDoesNotThrowForMissingFile(): void {
     LockUtils::deleteLockFile(999002);
-    $this->assertTrue(true);
   }
   
   public function testDeleteLockFileCleansUpOnlySpecifiedTask(): void {
