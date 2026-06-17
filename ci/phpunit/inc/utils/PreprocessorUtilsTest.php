@@ -340,7 +340,7 @@ final class PreprocessorUtilsTest extends TestBase {
     $this->expectException(HTException::class);
     PreprocessorUtils::editPreprocessor(
       $this->preprocessor->getId(), 'name' . uniqid(), 'binary', 'https://example.com/f.zip',
-      '', '', 'limit`test&'
+      '', '', 'limit`test`'
     );
   }
 
