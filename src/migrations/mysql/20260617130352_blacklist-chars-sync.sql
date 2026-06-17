@@ -1,0 +1,1 @@
+-- This migration is only a placeholder to keep migrations parallel
