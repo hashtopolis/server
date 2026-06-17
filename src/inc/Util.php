@@ -967,9 +967,10 @@ class Util {
    * @param $string string
    * @return bool true if at least one character is in the blacklist
    */
-  public static function containsBlacklistedChars($string) {
-    for ($i = 0; $i < strlen(SConfig::getInstance()->getVal(DConfig::BLACKLIST_CHARS)); $i++) {
-      if (strpos($string, SConfig::getInstance()->getVal(DConfig::BLACKLIST_CHARS)[$i]) !== false) {
+  public static function containsBlacklistedChars(string $string): bool {
+    $blacklisted = SConfig::getInstance()->getVal(DConfig::BLACKLIST_CHARS);
+    for ($i = 0; $i < strlen($blacklisted); $i++) {
+      if (str_contains($string, $blacklisted[$i])) {
         return true;
       }
     }
