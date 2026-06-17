@@ -716,6 +716,7 @@ abstract class AbstractBaseAPI {
         if (!array_key_exists($name, $availableFieldsets)) {
           throw new HttpError("Invalid aggregation object requested!");
         }
+        $aggregateFieldset = explode(",", $aggregateFieldset);
         foreach ($aggregateFieldset as $field) {
           if (!in_array($field, $availableFieldsets[$name])) {
             throw new HttpError("Invalid aggregation requested!");
