@@ -11,6 +11,7 @@ require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 final class LockUtilsTest extends TestBase {
   private const TEST_LOCK = 'phpunit_test.lock';
   private const LOCK_DIR  = __DIR__ . '/../../../../src/inc/utils/locks';
+  private string $lockFile;
   
   #[Override]
   protected function setUp(): void {
@@ -51,7 +52,7 @@ final class LockUtilsTest extends TestBase {
     LockUtils::get(self::TEST_LOCK);
     LockUtils::get(self::TEST_LOCK);
     LockUtils::release(self::TEST_LOCK);
-    $this->assertFileExists($this->lockFile);
+    $this->assertFileDoesNotExist($this->lockFile);
   }
   
   public function testReleaseReleasesLockForReacquisition(): void {
@@ -60,7 +61,7 @@ final class LockUtilsTest extends TestBase {
     
     LockUtils::get(self::TEST_LOCK);
     LockUtils::release(self::TEST_LOCK);
-    $this->assertFileExists($this->lockFile);
+    $this->assertFileDoesNotExist($this->lockFile);
   }
   
   public function testReleaseIsNoopForUnknownLock(): void {
@@ -84,7 +85,7 @@ final class LockUtilsTest extends TestBase {
     $taskId = 999002;
     LockUtils::deleteLockFile($taskId);
     $lockFilePath = self::LOCK_DIR . '/' . Lock::CHUNKING . $taskId;
-    $this->assertFileExists($lockFilePath);
+    $this->assertFileDoesNotExist($lockFilePath);
   }
   
   public function testDeleteLockFileCleansUpOnlySpecifiedTask(): void {
