@@ -9,6 +9,8 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
+use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\StartupConfig;
 
 use Hashtopolis\inc\utils\AccessUtils;
@@ -17,15 +19,15 @@ use Hashtopolis\inc\utils\JwtTokenUtils;
 class ApiTokenAPI extends AbstractModelAPI {
   const API_AUD = "api_hashtopolis";
   private ?string $jwtToken = null;
-
+  
   private function setJwtToken(string $token): void {
-      $this->jwtToken = $token;
+    $this->jwtToken = $token;
   }
-
+  
   private function getJwtToken(): ?string {
     return $this->jwtToken;
   }
-
+  
   public static function getBaseUri(): string {
     return "/api/v2/ui/apiTokens";
   }
@@ -48,14 +50,14 @@ class ApiTokenAPI extends AbstractModelAPI {
       ]
     ];
   }
-
+  
   public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return [
       "scopes" => ['type' => 'array', 'subtype' => 'string']
     ];
   }
-
+  
   protected function getSingleACL(User $user, object $object): bool {
     return ($object->getUserId() === $user->getId());
   }
@@ -68,29 +70,31 @@ class ApiTokenAPI extends AbstractModelAPI {
       ]
     ];
   }
+  
   /**
    * @throws HttpError
+   * @throws ResourceNotFoundError
    */
   protected function createObject(array $data): int {
     //Scopes is an array of permissions in format [permFileTaskUpdate, permAgentDelete]
     $scopes = explode(",", $data["scopes"]);
-
+    
     $userCrudPerms = AccessUtils::getPermissionArrayConverted(
       $this->getRightGroup($this->getCurrentUser()->getRightGroupId())->getPermissions()
     );
-
+    
     // Modern CRUD scope dict: true if the perm was requested AND the user has it.
     $requestedScopes = [];
     foreach ($userCrudPerms as $perm => $granted) {
       $requestedScopes[$perm] = $granted && in_array($perm, $scopes, true);
     }
-
+    
     $secret = StartupConfig::getInstance()->getPepper(0);
     $iat = $data[JwtApiKey::START_VALID];
     $expires = $data[JwtApiKey::END_VALID];
     $token = JwtTokenUtils::createKey($this->getCurrentUser()->getId(), $iat, $expires);
     $jti = $token->getId();
-
+    
     $payload = [
       "iat" => $iat,
       "exp" => $expires,
@@ -99,15 +103,15 @@ class ApiTokenAPI extends AbstractModelAPI {
       "scope" => json_encode($requestedScopes),
       "iss" => "Hashtopolis",
       "aud" => $this::API_AUD,
-      "kid" =>  hash("sha256", $secret)
+      "kid" => hash("sha256", $secret)
     ];
-
+    
     $tokenEncoded = JWT::encode($payload, $secret, "HS256");
     $this->setJwtToken($tokenEncoded);
-
+    
     return $token->getId();
   }
-
+  
   function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     // $token is only set in POST, this way the actual token is only returned after creation.
     $aggregatedData = [];
@@ -115,12 +119,13 @@ class ApiTokenAPI extends AbstractModelAPI {
     if ($token !== null) {
       $aggregatedData["token"] = $token;
     }
-
-    return $aggregatedData;
+    
+    return array_merge_recursive($aggregatedData, parent::aggregateData($object, $includedData, $aggregateFieldsets));
   }
   
   /**
-   * @throws HttpError
+   * @param object $object
+   * @throws HttpForbidden
    */
   protected function deleteObject(object $object): void {
     JwtTokenUtils::deleteKey($object);

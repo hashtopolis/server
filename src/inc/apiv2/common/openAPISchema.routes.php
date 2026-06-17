@@ -699,8 +699,8 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
               if (empty($options)) {
                 continue;
               }
-              $aggregateExamples["aggregate[" . $fieldset . "]"] = implode(",", $options);
-              $aggregateDescriptionParts[] = $fieldset . ": " . implode(", ", $options);
+              $aggregateExamples["aggregate[" . $fieldset . "]"] = implode(",", array_keys($options));
+              $aggregateDescriptionParts[] = $fieldset . ": " . implode(", ", array_keys($options));
             }
 
             if (!empty($aggregateExamples)) {

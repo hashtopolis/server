@@ -772,7 +772,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     // Convert objects to data resources 
     foreach ($objects as $object) {
-      // Create object  
+      // Create object
       $newObject = $apiClass->obj2Resource($object, $expandResult, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
       $includedResources = $apiClass->processExpands($apiClass, $expands, $object, $expandResult, $includedResources, $request->getQueryParams()['fields'] ?? null, $request->getQueryParams()['aggregate'] ?? null);
       

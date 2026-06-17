@@ -28,18 +28,19 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/taskwrapperdisplays";
   }
-
+  
   public static function getAvailableMethods(): array {
     return ['GET'];
   }
+  
   public function getRequiredPermissions(string $method): array {
     return [Task::PERM_READ, TaskWrapper::PERM_READ];
   }
-
+  
   public static function getDBAclass(): string {
     return TaskWrapperDisplay::class;
   }
-
+  
   protected function getSingleACL(User $user, object $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
@@ -49,9 +50,9 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
     $wrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::JOIN => $jF])[Factory::getTaskWrapperFactory()->getModelName()];
     return count($wrappers) > 0;
   }
-
+  
   protected function getFilterACL(): array {
-
+    
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     
     return [
@@ -67,142 +68,171 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
   public function getAggregateFieldsets(): array {
     return [
       'taskwrapperdisplay' => [
-        'totalAssignedAgents',
-        'dispatched',
-        'searched',
-        'status',
-        'currentSpeed',
-        'estimatedTime',
-        'cprogress',
-        'timeSpent'
+        'totalAssignedAgents' => [$this, 'getAggregateTotalAssignedAgents'],
+        'dispatched' => [$this, 'getAggregateDispatched'],
+        'searched' => [$this, 'getAggregateSearched'],
+        'status' => [$this, 'getAggregateStatus'],
+        'currentSpeed' => [$this, 'getAggregateCurrentSpeed'],
+        'estimatedTime' => [$this, 'getAggregateEstimatedTime'],
+        'cprogress' => [$this, 'getAggregateCProgress'],
+        'timeSpent' => [$this, 'getAggregateTimeSpent'],
       ]
     ];
   }
   
   /**
-   * @param object $object
-   * @param array $includedData
-   * @param array|null $aggregateFieldsets
-   * @return array
    * @throws Exception
    */
-  function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
-    $aggregatedData = [];
+  protected function getAggregateTotalAssignedAgents(object $object): int {
+    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $object->getId(), "=", Factory::getTaskFactory());
+    $jF = new JoinFilter(Factory::getTaskFactory(), Assignment::TASK_ID, Task::TASK_ID);
     
-    if (!is_null($aggregateFieldsets) && array_key_exists('taskwrapperdisplay', $aggregateFieldsets)) {
-      $aggregateFieldsets['taskwrapperdisplay'] = explode(",", $aggregateFieldsets['taskwrapperdisplay']);
-      
-      if (in_array("status", $aggregateFieldsets['taskwrapperdisplay'])) {
-        // TODO: this could be optimized by only requesting taskId, keyspace and keyspaceProgress of all tasks of that wrapper (columnFilter)
-        $tasks = TaskUtils::getTasksOfWrapper($object->getId());
-        $completed = 0;
-        $total = 0;
-        $status = 0;
-        foreach($tasks as $task) {
-          $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-          $qF2 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
-          $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
-          $taskStatus = TaskUtils::getStatus($chunks, $task->getKeyspace(), $task->getKeyspaceProgress());
-          // if one task of the wrapper is running, it is running
-          if ($taskStatus === 1) {
-            $status = 1;
-            break;
-          }
-          if ($taskStatus === 3) {
-            $completed++;
-          }
-          $total++;
-        }
-        if ($status !== 1) {
-          if ($total > 0 && $completed === $total) {
-            $status = 3;
-          } else {
-            $status = 2;
-          }
-        }
-        $aggregatedData['status'] = $status;
+    return Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+  }
+  
+  /**
+   * @throws HttpError
+   */
+  protected function getAggregateDispatched(object $object): string {
+    if ($object->getTaskType() !== DTaskTypes::NORMAL) {
+      throw new HttpError("Not possible to aggregate dispatched on other types than normal task!");
+    }
+    
+    $keyspace = $object->getKeyspace();
+    $keyspaceProgress = $object->getKeyspaceProgress();
+    return Util::showperc($keyspaceProgress, $keyspace);
+  }
+  
+  /**
+   * @throws HttpError
+   * @throws Exception
+   */
+  protected function getAggregateSearched(object $object): string {
+    if ($object->getTaskType() !== DTaskTypes::NORMAL) {
+      throw new HttpError("Not possible to aggregate searched on other types than normal task!");
+    }
+    
+    $keyspace = $object->getKeyspace();
+    $task = TaskUtils::getTasksOfWrapper($object->getId())[0];
+    return Util::showperc(TaskUtils::getTaskProgress($task), $keyspace);
+  }
+  
+  protected function getAggregateStatus(object $object): int {
+    // TODO: this could be optimized by only requesting taskId, keyspace and keyspaceProgress of all tasks of that wrapper (columnFilter)
+    $tasks = TaskUtils::getTasksOfWrapper($object->getId());
+    $completed = 0;
+    $total = 0;
+    $status = 0;
+    foreach ($tasks as $task) {
+      $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+      $qF2 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+      $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+      $taskStatus = TaskUtils::getStatus($chunks, $task->getKeyspace(), $task->getKeyspaceProgress());
+      // if one task of the wrapper is running, it is running
+      if ($taskStatus === 1) {
+        $status = 1;
+        break;
       }
-      
-      if (in_array("totalAssignedAgents", $aggregateFieldsets['taskwrapperdisplay'])) {
-        $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $object->getId(), "=", Factory::getTaskFactory());
-        $jF = new JoinFilter(Factory::getTaskFactory(), Assignment::TASK_ID, Task::TASK_ID);
-        
-        $assignedAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-        $aggregatedData["totalAssignedAgents"] = $assignedAgents;
+      if ($taskStatus === 3) {
+        $completed++;
       }
-      
-      $keyspace = $object->getKeyspace();
-      $keyspaceProgress = $object->getKeyspaceProgress();
-      
-      if ($object->getTaskType() === DTaskTypes::NORMAL) {
-        $tasks = TaskUtils::getTasksOfWrapper($object->getId());
-        $task = $tasks[0];
-        
-        if (in_array("dispatched", $aggregateFieldsets['taskwrapperdisplay'])) {
-            $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
-        }
-        
-        if (in_array("searched", $aggregateFieldsets['taskwrapperdisplay'])) {
-          $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($task), $keyspace);
-        }
-        
-        if (in_array("currentSpeed", $aggregateFieldsets['taskwrapperdisplay'])) {
-          $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-          $qF2 = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
-          $qF3 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
-          $agg = new Aggregation(Chunk::SPEED, Aggregation::SUM);
-          $speed = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], [$agg])[$agg->getName()];
-          if ($speed == null) {
-            $speed = 0;
-          }
-          $aggregatedData["currentSpeed"] = $speed;
-        }
-        
-        if (in_array("estimatedTime", $aggregateFieldsets['taskwrapperdisplay']) ||
-          in_array("timeSpent", $aggregateFieldsets['taskwrapperdisplay']) ||
-          in_array("cprogress", $aggregateFieldsets['taskwrapperdisplay'])) {
-          
-          $cProgress = TaskUtils::getTaskProgress($task);
-          if (in_array("cprogress", $aggregateFieldsets['taskwrapperdisplay'])) {
-            $aggregatedData["cprogress"] = $cProgress;
-          }
-          
-          $timeSpent = TaskUtils::getTimeSpentOnTask($task);
-          
-          if (in_array("timeSpent", $aggregateFieldsets['taskwrapperdisplay'])) {
-            $aggregatedData["timeSpent"] = $timeSpent;
-          }
-          
-          if (in_array("estimatedTime", $aggregateFieldsets['taskwrapperdisplay'])) {
-            $aggregatedData["estimatedTime"] = ($keyspace > 0 && $cProgress > 0) ? round($timeSpent / ($cProgress / $keyspace) - $timeSpent) : 0;
-          }
-        }
+      $total++;
+    }
+    if ($status !== 1) {
+      if ($total > 0 && $completed === $total) {
+        $status = 3;
+      }
+      else {
+        $status = 2;
       }
     }
-    return $aggregatedData;
+    return $status;
   }
-
+  
+  /**
+   * @throws HttpError
+   * @throws Exception
+   */
+  protected function getAggregateCurrentSpeed(object $object): int {
+    if ($object->getTaskType() !== DTaskTypes::NORMAL) {
+      throw new HttpError("Not possible to aggregate currentSpeed on other types than normal task!");
+    }
+    
+    $task = TaskUtils::getTasksOfWrapper($object->getId())[0];
+    
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $qF2 = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
+    $qF3 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+    $agg = new Aggregation(Chunk::SPEED, Aggregation::SUM);
+    $speed = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], [$agg])[$agg->getName()];
+    if ($speed == null) {
+      $speed = 0;
+    }
+    return $speed;
+  }
+  
+  /**
+   * @throws HttpError
+   * @throws Exception
+   */
+  protected function getAggregateEstimatedTime(object $object): int {
+    if ($object->getTaskType() !== DTaskTypes::NORMAL) {
+      throw new HttpError("Not possible to aggregate estimatedTime on other types than normal task!");
+    }
+    
+    $keyspace = $object->getKeyspace();
+    $cProgress = $this->getAggregateCProgress($object);
+    $timeSpent = $this->getAggregateTimeSpent($object);
+    return ($keyspace > 0 && $cProgress > 0) ? round($timeSpent / ($cProgress / $keyspace) - $timeSpent) : 0;
+  }
+  
+  /**
+   * @throws HttpError
+   * @throws Exception
+   */
+  protected function getAggregateCProgress(object $object): int {
+    if ($object->getTaskType() !== DTaskTypes::NORMAL) {
+      throw new HttpError("Not possible to aggregate cprogress on other types than normal task!");
+    }
+    
+    $task = TaskUtils::getTasksOfWrapper($object->getId())[0];
+    return TaskUtils::getTaskProgress($task);
+  }
+  
+  /**
+   * @throws HttpError
+   * @throws Exception
+   */
+  protected function getAggregateTimeSpent(object $object): int {
+    if ($object->getTaskType() !== DTaskTypes::NORMAL) {
+      throw new HttpError("Not possible to aggregate timeSpent on other types than normal task!");
+    }
+    
+    $task = TaskUtils::getTasksOfWrapper($object->getId())[0];
+    return TaskUtils::getTimeSpentOnTask($task);
+  }
+  
   /**
    * @throws HttpError
    */
   protected function createObject(array $data): int {
     throw new HttpError("TaskWrapperDisplays cannot be created via API");
   }
-
+  
   /**
    * @throws HttpError
    */
   public function updateObject(int $objectId, array $data): void {
     throw new HttpError("TaskWrapperDisplays cannot be updated via API");
   }
-
+  
   /**
    * @throws HttpError
    */
   protected function deleteObject(object $object): void {
     throw new HttpError("TaskWrapperDisplays cannot be deleted via API");
   }
-
+  
   public static function getToManyRelationships(): array {
     return [
       'tasks' => [

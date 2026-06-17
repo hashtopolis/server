@@ -50,9 +50,25 @@ class AgentAPI extends AbstractModelAPI {
   public function getAggregateFieldsets(): array {
     return [
       'agent' => [
-        'crackingTime',
+        'crackingTime' => [$this, 'getAggregateCrackingTime'],
       ]
     ];
+  }
+  
+  /**
+   * @param object $object
+   * @return int
+   * @throws Exception
+   */
+  protected function getAggregateCrackingTime(object $object): int {
+    // in order to make sense of the diff, we need to make sure that both values solve time and dispatch time are set (i.e. >0).
+    $qF1 = new QueryFilter(Chunk::AGENT_ID, $object->getId(), "=");
+    $qF2 = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
+    $qF3 = new QueryFilter(Chunk::DISPATCH_TIME, 0, ">");
+    $agg1 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::SUM);
+    $agg2 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::SUM);
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], [$agg1, $agg2]);
+    return $results[$agg1->getName()] - $results[$agg2->getName()];
   }
   
   /**
@@ -66,8 +82,6 @@ class AgentAPI extends AbstractModelAPI {
    * @throws Exception
    */
   function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
-    $aggregatedData = [];
-    
     $agentId = $object->getId();
     $qFs = [];
     $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
@@ -78,22 +92,7 @@ class AgentAPI extends AbstractModelAPI {
       $includedData["chunks"][$agentId] = [$active_chunk];
     }
     
-    if (!is_null($aggregateFieldsets) && array_key_exists('agent', $aggregateFieldsets)) {
-      $aggregateFieldsets['agent'] = explode(",", $aggregateFieldsets['agent']);
-      
-      if (in_array("crackingTime", $aggregateFieldsets['agent'])) {
-        // in order to make sense of the diff, we need to make sure that both values solve time and dispatch time are set (i.e. >0).
-        $qF1 = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
-        $qF2 = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
-        $qF3 = new QueryFilter(Chunk::DISPATCH_TIME, 0, ">");
-        $agg1 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::SUM);
-        $agg2 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::SUM);
-        $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], [$agg1, $agg2]);
-        $aggregatedData["crackingTime"] = $results[$agg1->getName()] - $results[$agg2->getName()];
-      }
-    }
-    
-    return $aggregatedData;
+    return parent::aggregateData($object, $includedData, $aggregateFieldsets);
   }
   
   protected function getSingleACL(User $user, object $object): bool {

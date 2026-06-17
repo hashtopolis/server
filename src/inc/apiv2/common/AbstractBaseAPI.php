@@ -8,9 +8,7 @@ use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\error\InternalError;
 use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\utils\AccessControl;
-use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\defines\DAccessControl;
-use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\inc\HTException;
 use JsonException;
@@ -183,17 +181,35 @@ abstract class AbstractBaseAPI {
    *
    * Implementations should use $includedData to collect related resources that should be included
    * in the API response, such as related entities or additional data.
+   * @throws HttpError
    */
   public function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
-    return [];
+    $aggregatedData = [];
+    
+    if (is_array($aggregateFieldsets)) {
+      $fieldsets = $this->getAggregateFieldsets();
+      foreach ($fieldsets as $name => $fieldset) {
+        if (array_key_exists($name, $aggregateFieldsets)) {
+          $aggregateFieldsets[$name] = explode(",", $aggregateFieldsets[$name]);
+          foreach($aggregateFieldsets[$name] as $field) {
+            if(!array_key_exists($field, $fieldset)) {
+              throw new HttpError("Invalid aggregation requested!");
+            }
+            $aggregatedData[$field] = $fieldset[$field]($object);
+          }
+        }
+      }
+    }
+    return $aggregatedData;
   }
   
   /**
-   * Return supported aggregate fieldsets/options for this endpoint.
+   * Return supported aggregate fieldsets/options for this endpoint, providing a callback to call to actually retrieve
+   * this aggregation on a specific object. All callbacks expect one argument being the api object.
    *
    * Format:
    * [
-   *   'resourceKey' => ['option1', 'option2']
+   *   'resourceKey' => ['option1' => [class, function], 'option2' => [class, function]]
    * ]
    */
   public function getAggregateFieldsets(): array {
@@ -708,21 +724,6 @@ abstract class AbstractBaseAPI {
       // use instance of this when the object is of the dba class of this api endpoint.
       // This way its possible to set object attributes in the post to be used in the aggregateData function.
       $apiClassObject = $this;
-    }
-    
-    if (is_array($aggregateFieldsets)) {
-      $availableFieldsets = $apiClassObject->getAggregateFieldsets();
-      foreach ($aggregateFieldsets as $name => $aggregateFieldset) {
-        if (!array_key_exists($name, $availableFieldsets)) {
-          throw new HttpError("Invalid aggregation object requested!");
-        }
-        $aggregateFieldset = explode(",", $aggregateFieldset);
-        foreach ($aggregateFieldset as $field) {
-          if (!in_array($field, $availableFieldsets[$name])) {
-            throw new HttpError("Invalid aggregation requested!");
-          }
-        }
-      }
     }
     
     $aggregatedData = $apiClassObject->aggregateData($obj, $expandResult, $aggregateFieldsets);
