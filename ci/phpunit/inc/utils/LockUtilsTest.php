@@ -17,6 +17,7 @@ final class LockUtilsTest extends TestBase {
     parent::setUp();
     $this->releaseTestLock();
     $this->cleanupLockFiles();
+    $this->lockFile = self::LOCK_DIR . '/' . self::TEST_LOCK;
   }
   
   #[Override]
@@ -42,8 +43,7 @@ final class LockUtilsTest extends TestBase {
   
   public function testGetCreatesAndAcquiresLock(): void {
     LockUtils::get(self::TEST_LOCK);
-    $lockFile = self::LOCK_DIR . '/' . self::TEST_LOCK;
-    $this->assertFileExists($lockFile);
+    $this->assertFileExists($this->lockFile);
     LockUtils::release(self::TEST_LOCK);
   }
   
@@ -51,6 +51,7 @@ final class LockUtilsTest extends TestBase {
     LockUtils::get(self::TEST_LOCK);
     LockUtils::get(self::TEST_LOCK);
     LockUtils::release(self::TEST_LOCK);
+    $this->assertFileExists($this->lockFile);
   }
   
   public function testReleaseReleasesLockForReacquisition(): void {
@@ -59,10 +60,12 @@ final class LockUtilsTest extends TestBase {
     
     LockUtils::get(self::TEST_LOCK);
     LockUtils::release(self::TEST_LOCK);
+    $this->assertFileExists($this->lockFile);
   }
   
   public function testReleaseIsNoopForUnknownLock(): void {
     LockUtils::release('nonexistent.lock');
+    $this->assertFileDoesNotExist(self::LOCK_DIR . '/nonexistent.lock');
   }
   
   public function testDeleteLockFileRemovesExistingLockFile(): void {
@@ -78,7 +81,10 @@ final class LockUtilsTest extends TestBase {
   }
   
   public function testDeleteLockFileDoesNotThrowForMissingFile(): void {
-    LockUtils::deleteLockFile(999002);
+    $taskId = 999002;
+    LockUtils::deleteLockFile($taskId);
+    $lockFilePath = self::LOCK_DIR . '/' . Lock::CHUNKING . $taskId;
+    $this->assertFileExists($lockFilePath);
   }
   
   public function testDeleteLockFileCleansUpOnlySpecifiedTask(): void {

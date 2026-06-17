@@ -137,7 +137,7 @@ final class PreprocessorUtilsTest extends TestBase {
     $this->expectException(HttpError::class);
     PreprocessorUtils::addPreprocessor(
       'name', 'binary', 'https://example.com/b.zip',
-      '--keyspace', '--skip', '--limit`test`'
+      '--keyspace', '--skip', '--limit&test&'
     );
   }
 
@@ -255,7 +255,7 @@ final class PreprocessorUtilsTest extends TestBase {
 
   public function testEditLimitCommandThrowsForBlacklistedChars(): void {
     $this->expectException(HTException::class);
-    PreprocessorUtils::editLimitCommand($this->preprocessor->getId(), 'limit`test`');
+    PreprocessorUtils::editLimitCommand($this->preprocessor->getId(), 'limit&test&');
   }
 
   public function testEditPreprocessorUpdatesAllFields(): void {
@@ -299,7 +299,7 @@ final class PreprocessorUtilsTest extends TestBase {
   public function testEditPreprocessorThrowsForEmptyBinaryName(): void {
     $this->expectException(HTException::class);
     PreprocessorUtils::editPreprocessor(
-      $this->preprocessor->getId(), 'name', '', 'https://example.com/f.zip',
+      $this->preprocessor->getId(), 'name' . uniqid(), '', 'https://example.com/f.zip',
       '', '', ''
     );
   }
@@ -307,7 +307,7 @@ final class PreprocessorUtilsTest extends TestBase {
   public function testEditPreprocessorThrowsForEmptyUrl(): void {
     $this->expectException(HTException::class);
     PreprocessorUtils::editPreprocessor(
-      $this->preprocessor->getId(), 'name', 'binary', '',
+      $this->preprocessor->getId(), 'name' . uniqid(), 'binary', '',
       '', '', ''
     );
   }
@@ -315,7 +315,7 @@ final class PreprocessorUtilsTest extends TestBase {
   public function testEditPreprocessorThrowsForBlacklistedBinaryName(): void {
     $this->expectException(HTException::class);
     PreprocessorUtils::editPreprocessor(
-      $this->preprocessor->getId(), 'name', 'bad|binary', 'https://example.com/f.zip',
+      $this->preprocessor->getId(), 'name' . uniqid(), 'bad|binary', 'https://example.com/f.zip',
       '', '', ''
     );
   }
@@ -323,7 +323,7 @@ final class PreprocessorUtilsTest extends TestBase {
   public function testEditPreprocessorThrowsForBlacklistedKeyspace(): void {
     $this->expectException(HTException::class);
     PreprocessorUtils::editPreprocessor(
-      $this->preprocessor->getId(), 'name', 'binary', 'https://example.com/f.zip',
+      $this->preprocessor->getId(), 'name' . uniqid(), 'binary', 'https://example.com/f.zip',
       'keyspace;rm', '', ''
     );
   }
@@ -331,7 +331,7 @@ final class PreprocessorUtilsTest extends TestBase {
   public function testEditPreprocessorThrowsForBlacklistedSkip(): void {
     $this->expectException(HTException::class);
     PreprocessorUtils::editPreprocessor(
-      $this->preprocessor->getId(), 'name', 'binary', 'https://example.com/f.zip',
+      $this->preprocessor->getId(), 'name' . uniqid(), 'binary', 'https://example.com/f.zip',
       '', 'skip$test', ''
     );
   }
@@ -339,14 +339,14 @@ final class PreprocessorUtilsTest extends TestBase {
   public function testEditPreprocessorThrowsForBlacklistedLimit(): void {
     $this->expectException(HTException::class);
     PreprocessorUtils::editPreprocessor(
-      $this->preprocessor->getId(), 'name', 'binary', 'https://example.com/f.zip',
+      $this->preprocessor->getId(), 'name' . uniqid(), 'binary', 'https://example.com/f.zip',
       '', '', 'limit`test`'
     );
   }
 
   public function testEditPreprocessorConvertsEmptyCommandsToNull(): void {
     PreprocessorUtils::editPreprocessor(
-      $this->preprocessor->getId(), 'name', 'binary', 'https://example.com/f.zip',
+      $this->preprocessor->getId(), 'name' . uniqid(), 'binary', 'https://example.com/f.zip',
       '', '', ''
     );
 
