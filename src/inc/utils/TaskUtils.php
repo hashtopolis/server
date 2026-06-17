@@ -1395,7 +1395,7 @@ class TaskUtils {
   
   /**
    * @param $task Task
-   * @return mixed
+   * @return int
    * @throws Exception
    */
   public static function getTaskProgress(Task $task): int {
