@@ -93,9 +93,9 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
   /**
    * @throws HttpError
    */
-  protected function getAggregateDispatched(object $object): string {
+  protected function getAggregateDispatched(object $object): ?string {
     if ($object->getTaskType() !== DTaskTypes::NORMAL) {
-      throw new HttpError("Not possible to aggregate dispatched on other types than normal task!");
+      return null;
     }
     
     $keyspace = $object->getKeyspace();
@@ -107,9 +107,9 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
    * @throws HttpError
    * @throws Exception
    */
-  protected function getAggregateSearched(object $object): string {
+  protected function getAggregateSearched(object $object): ?string {
     if ($object->getTaskType() !== DTaskTypes::NORMAL) {
-      throw new HttpError("Not possible to aggregate searched on other types than normal task!");
+      return null;
     }
     
     $keyspace = $object->getKeyspace();
@@ -153,9 +153,9 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
    * @throws HttpError
    * @throws Exception
    */
-  protected function getAggregateCurrentSpeed(object $object): int {
+  protected function getAggregateCurrentSpeed(object $object): ?int {
     if ($object->getTaskType() !== DTaskTypes::NORMAL) {
-      throw new HttpError("Not possible to aggregate currentSpeed on other types than normal task!");
+      return null;
     }
     
     $task = TaskUtils::getTasksOfWrapper($object->getId())[0];
@@ -175,9 +175,9 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
    * @throws HttpError
    * @throws Exception
    */
-  protected function getAggregateEstimatedTime(object $object): int {
+  protected function getAggregateEstimatedTime(object $object): ?int {
     if ($object->getTaskType() !== DTaskTypes::NORMAL) {
-      throw new HttpError("Not possible to aggregate estimatedTime on other types than normal task!");
+      return null;
     }
     
     $keyspace = $object->getKeyspace();
@@ -190,9 +190,9 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
    * @throws HttpError
    * @throws Exception
    */
-  protected function getAggregateCProgress(object $object): int {
+  protected function getAggregateCProgress(object $object): ?int {
     if ($object->getTaskType() !== DTaskTypes::NORMAL) {
-      throw new HttpError("Not possible to aggregate cprogress on other types than normal task!");
+      return null;
     }
     
     $task = TaskUtils::getTasksOfWrapper($object->getId())[0];
@@ -203,9 +203,9 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
    * @throws HttpError
    * @throws Exception
    */
-  protected function getAggregateTimeSpent(object $object): int {
+  protected function getAggregateTimeSpent(object $object): ?int {
     if ($object->getTaskType() !== DTaskTypes::NORMAL) {
-      throw new HttpError("Not possible to aggregate timeSpent on other types than normal task!");
+      return null;
     }
     
     $task = TaskUtils::getTasksOfWrapper($object->getId())[0];

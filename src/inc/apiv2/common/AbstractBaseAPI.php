@@ -191,11 +191,14 @@ abstract class AbstractBaseAPI {
       foreach ($fieldsets as $name => $fieldset) {
         if (array_key_exists($name, $aggregateFieldsets)) {
           $aggregateFieldsets[$name] = explode(",", $aggregateFieldsets[$name]);
-          foreach($aggregateFieldsets[$name] as $field) {
-            if(!array_key_exists($field, $fieldset)) {
+          foreach ($aggregateFieldsets[$name] as $field) {
+            if (!array_key_exists($field, $fieldset)) {
               throw new HttpError("Invalid aggregation requested!");
             }
-            $aggregatedData[$field] = $fieldset[$field]($object);
+            $data = $fieldset[$field]($object);
+            if ($data !== null) {
+              $aggregatedData[$field] = $data;
+            }
           }
         }
       }
