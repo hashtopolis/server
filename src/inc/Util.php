@@ -706,7 +706,7 @@ class Util {
       $metaDirectory = $tusDirectory . DIRECTORY_SEPARATOR . "meta" . DIRECTORY_SEPARATOR;
       $expiration_time = time() + 3600;
       if (file_exists($metaDirectory) && is_dir($metaDirectory)) {
-        if ($metaDirectoryHandler = opendir($metaDirectory)){
+        if ($metaDirectoryHandler = opendir($metaDirectory)) {
           while ($file = readdir($metaDirectoryHandler)) {
             if (str_ends_with($file, ".meta")) {
               $metaFile = $metaDirectory . $file;
@@ -719,7 +719,7 @@ class Util {
                 if (file_exists($metaFile)) {
                   unlink($metaFile);
                 }
-                if (file_exists($uploadFile)){
+                if (file_exists($uploadFile)) {
                   unlink($uploadFile);
                 }
               }
@@ -1352,7 +1352,7 @@ class Util {
     $path = '/etc/ssmtp/ssmtp.conf';
     return is_file($path);
   }
-
+  
   /**
    * This sends a given email with text and subject to the address.
    *
@@ -1575,6 +1575,27 @@ class Util {
         $entry->setVal($dir);
         Factory::getStoredValueFactory()->update($entry);
       }
+    }
+  }
+  
+  /**
+   * Run the migration on one generation (default is actual generation which is 0).
+   *
+   * @param int $generation
+   * @return void
+   */
+  public static function runDatabaseMigration(int $generation = 0): void {
+    $generationPath = "";
+    if ($generation > 0) {
+      $generationPath = ".$generation";
+    }
+    
+    $output = [];
+    $database_uri = StartupConfig::getInstance()->getDatabaseType() . "://" . rawurlencode(StartupConfig::getInstance()->getDatabaseUser()) . ":" . rawurlencode(StartupConfig::getInstance()->getDatabasePassword()) . "@" . StartupConfig::getInstance()->getDatabaseServer() . ":" . StartupConfig::getInstance()->getDatabasePort() . "/" . StartupConfig::getInstance()->getDatabaseDB();
+    exec('/usr/bin/sqlx migrate run --source ' . escapeshellarg(dirname(__FILE__) . '/../../migrations/' . StartupConfig::getInstance()->getDatabaseType() . $generationPath . '/') . ' -D ' . escapeshellarg($database_uri), $output, $retval);
+    if ($retval !== 0) {
+      echo "Failed to run migrations: \n" . implode("\n", $output);
+      exit(-1);
     }
   }
 }

@@ -51,13 +51,16 @@ if (!$initialSetup && StartupConfig::getInstance()->getDatabaseType() == "mysql"
   include(dirname(__FILE__) . "/../../install/updates/update.php");
 }
 
-$output = [];
-$database_uri = StartupConfig::getInstance()->getDatabaseType() . "://" . rawurlencode(StartupConfig::getInstance()->getDatabaseUser()) . ":" . rawurlencode(StartupConfig::getInstance()->getDatabasePassword()) . "@" . StartupConfig::getInstance()->getDatabaseServer() . ":" . StartupConfig::getInstance()->getDatabasePort() . "/" . StartupConfig::getInstance()->getDatabaseDB();
-exec('/usr/bin/sqlx migrate run --source ' . escapeshellarg(dirname(__FILE__) . '/../../migrations/' . StartupConfig::getInstance()->getDatabaseType() . '/') . ' -D ' . escapeshellarg($database_uri), $output, $retval);
-if ($retval !== 0) {
-  echo "Failed to run migrations: \n" . implode("\n", $output);
-  exit(-1);
-}
+/*
+ * Here we would have to check what current migrations branch the setup is on (if it's not $initialSetup):
+ * - check the oldest entry to identify which generation we are on
+ * - check the newest entry to see if still a migration on the current generation is needed
+ * - after that, we fake in the entry of the newer generation, run migration on this new generation
+ * - if needed (because there are more generations available), run the previous step again
+ */
+
+// run database migration on current generation to be fully up-to-date
+Util::runDatabaseMigration();
 
 if ($initialSetup === true) {
   // if peppers are not set, generate them and save them
