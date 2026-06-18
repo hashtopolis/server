@@ -46,6 +46,34 @@ class PreTaskAPI extends AbstractModelAPI {
     ];
   }
   
+  public function getAggregateFieldsets(): array {
+    return [
+      'pretask' => [
+        'auxiliaryKeyspace' => [$this, 'getAggregateAuxiliaryKeyspace'],
+      ]
+    ];
+  }
+  
+  /**
+   * @param object $object
+   * @return int
+   */
+  protected function getAggregateAuxiliaryKeyspace(object $object): int {
+    $qF1 = new QueryFilter(FilePretask::PRETASK_ID, $object->getId(), "=", Factory::getFilePretaskFactory());
+    $jF1 = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
+    $files = Factory::getFileFactory()->filter([Factory::FILTER => $qF1, Factory::JOIN => $jF1]);
+    $files = $files[Factory::getFileFactory()->getModelName()];
+    
+    $lineCountProduct = 1;
+    foreach ($files as $file) {
+      $lineCount = $file->getLineCount();
+      if ($lineCount !== null) {
+        $lineCountProduct = $lineCountProduct * $lineCount;
+      }
+    }
+    return $lineCountProduct;
+  }
+  
   /**
    * @throws HttpError
    */
@@ -66,29 +94,6 @@ class PreTaskAPI extends AbstractModelAPI {
       $data[PreTask::PRIORITY]
     );
     return $pretask->getId();
-  }
-  
-  //TODO make aggregate data queryable and not included by default
-  function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
-    $aggregatedData = [];
-    if (is_null($aggregateFieldsets) || array_key_exists('pretask', $aggregateFieldsets)) {
-      
-      $qF1 = new QueryFilter(FilePretask::PRETASK_ID, $object->getId(), "=", Factory::getFilePretaskFactory());
-      $jF1 = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
-      $files = Factory::getFileFactory()->filter([Factory::FILTER => $qF1, Factory::JOIN => $jF1]);
-      $files = $files[Factory::getFileFactory()->getModelName()];
-      
-      $lineCountProduct = 1;
-      foreach ($files as $file) {
-        $lineCount = $file->getLineCount();
-        if ($lineCount !== null) {
-          $lineCountProduct = $lineCountProduct * $lineCount;
-        }
-      }
-      $aggregatedData["auxiliaryKeyspace"] = $lineCountProduct;
-    }
-    
-    return $aggregatedData;
   }
   
   protected function getUpdateHandlers($id, $current_user): array {

@@ -8,9 +8,7 @@ use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\error\InternalError;
 use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\utils\AccessControl;
-use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\defines\DAccessControl;
-use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\inc\HTException;
 use JsonException;
@@ -183,17 +181,38 @@ abstract class AbstractBaseAPI {
    *
    * Implementations should use $includedData to collect related resources that should be included
    * in the API response, such as related entities or additional data.
+   * @throws HttpError
    */
   public function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
-    return [];
+    $aggregatedData = [];
+    
+    if (is_array($aggregateFieldsets)) {
+      $fieldsets = $this->getAggregateFieldsets();
+      foreach ($fieldsets as $name => $fieldset) {
+        if (array_key_exists($name, $aggregateFieldsets)) {
+          $aggregateFieldsets[$name] = explode(",", $aggregateFieldsets[$name]);
+          foreach ($aggregateFieldsets[$name] as $field) {
+            if (!array_key_exists($field, $fieldset)) {
+              throw new HttpError("Invalid aggregation requested!");
+            }
+            $data = $fieldset[$field]($object);
+            if ($data !== null) {
+              $aggregatedData[$field] = $data;
+            }
+          }
+        }
+      }
+    }
+    return $aggregatedData;
   }
-
+  
   /**
-   * Return supported aggregate fieldsets/options for this endpoint.
+   * Return supported aggregate fieldsets/options for this endpoint, providing a callback to call to actually retrieve
+   * this aggregation on a specific object. All callbacks expect one argument being the api object.
    *
    * Format:
    * [
-   *   'resourceKey' => ['option1', 'option2']
+   *   'resourceKey' => ['option1' => [class, function], 'option2' => [class, function]]
    * ]
    */
   public function getAggregateFieldsets(): array {
@@ -658,6 +677,7 @@ abstract class AbstractBaseAPI {
    * Convert DB object JSON:API Resource Object
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
+   * @throws HttpError
    */
   protected function obj2Resource(object $obj, array &$expandResult = [], ?array $sparseFieldsets = null, ?array $aggregateFieldsets = null): array {
     // Convert values to JSON supported types
@@ -702,11 +722,13 @@ abstract class AbstractBaseAPI {
     
     if ($this instanceof AbstractModelAPI && get_class($obj) !== $this->getDBAClass()) {
       $apiClassObject = new $apiClass($this->container);
-    } else {
+    }
+    else {
       // use instance of this when the object is of the dba class of this api endpoint.
       // This way its possible to set object attributes in the post to be used in the aggregateData function.
       $apiClassObject = $this;
     }
+    
     $aggregatedData = $apiClassObject->aggregateData($obj, $expandResult, $aggregateFieldsets);
     $attributes = array_merge($attributes, $aggregatedData);
     
@@ -1124,9 +1146,9 @@ abstract class AbstractBaseAPI {
   function getFilters(Request $request): array {
     return $this->getQueryParameterFamily($request, 'filter');
   }
-
+  
   protected static function checkJoinExists(array $joins, string $modelName) {
-    foreach($joins as $join) {
+    foreach ($joins as $join) {
       if ($join->getOtherFactory()->getModelName() === $modelName) {
         return true;
       }
@@ -1154,13 +1176,13 @@ abstract class AbstractBaseAPI {
       $cast_key = $matches['key'] == 'id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
       if (strpos($cast_key, ".")) {
         //When the key contains a "." it should be a relation in format: "task.taskname" where task is the relation.
-          $relationObject = $this->retrieveRelationKey($cast_key);
-          $factory = $relationObject->factory;
-          $cast_key = $relationObject->cast_key;
-          if (!self::checkJoinExists($joinFilters, $factory->getModelName())) {
-            $joinFilters[] = new JoinFilter($factory, $relationObject->joinKey, $relationObject->key);
-          }
-          $features = $relationObject->features_relation;
+        $relationObject = $this->retrieveRelationKey($cast_key);
+        $factory = $relationObject->factory;
+        $cast_key = $relationObject->cast_key;
+        if (!self::checkJoinExists($joinFilters, $factory->getModelName())) {
+          $joinFilters[] = new JoinFilter($factory, $relationObject->joinKey, $relationObject->key);
+        }
+        $features = $relationObject->features_relation;
       }
       
       if (!array_key_exists($cast_key, $features)) {
@@ -1259,7 +1281,7 @@ abstract class AbstractBaseAPI {
     }
     return $qFs;
   }
-
+  
   /**
    * Retrieves the relation from a sort/filter value. ex task.taskName when task is a relation for the current
    * Model endpoint. This works only for relations of 1 deep
@@ -1277,17 +1299,19 @@ abstract class AbstractBaseAPI {
         $key = $relations[$relationString]['key'];
         $features_relation = $relationFeatures;
         $value = $parts[1];
-        return (object) [
+        return (object)[
           "factory" => $factory,
           "joinKey" => $joinKey,
           "key" => $key,
           "features_relation" => $features_relation,
           "cast_key" => $value
         ];
-      } else {
+      }
+      else {
         throw new HttpError("Invalid relation: " . $relationString);
       }
-    } else {
+    }
+    else {
       throw new HttpForbidden("Invalid key, multiple '.' found in key, but only relationships of one deep is allowed");
     }
   }
@@ -1376,7 +1400,7 @@ abstract class AbstractBaseAPI {
     $expandKeys = array_keys($expandResult);
     $diffs = array_diff($expandKeys, $expands);
     $expands = array_merge($expands, $diffs);
-
+    
     foreach ($expands as $expand) {
       if (!array_key_exists($object->getId(), $expandResult[$expand])) {
         continue;
@@ -1417,7 +1441,7 @@ abstract class AbstractBaseAPI {
     else {
       $rightgroup_perms = json_decode($permissions, true);
     }
-
+    
     if ($aud === "user_hashtopolis") {
       // Validate if no undefined permissions are set in $acl_mapping for the legacy permissions
       assert(count(array_diff(array_keys($rightgroup_perms), array_keys(self::$acl_mapping))) == 0);
@@ -1428,7 +1452,8 @@ abstract class AbstractBaseAPI {
           $user_available_perms = array_unique(array_merge($user_available_perms, self::$acl_mapping[$rightgroup_perm]));
         }
       };
-    } else {
+    }
+    else {
       $user_available_perms = array_keys($rightgroup_perms, true, true);
     }
     
@@ -1641,7 +1666,7 @@ abstract class AbstractBaseAPI {
    * Get single Resource
    */
   protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode = 200): Response {
-    $apiClass->preCommon($request);  
+    $apiClass->preCommon($request);
     $validExpandables = $apiClass->getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);
     

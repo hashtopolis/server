@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\inc\DataSet;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupAgent;
@@ -124,7 +125,7 @@ class TaskUtils {
     $task = TaskUtils::getTask($taskId, $user);
     Factory::getTaskFactory()->set($task, Task::NOTES, $notes);
   }
-
+  
   // Function for taskwrapper api to determine based on the chunks if a task is running, idle or completed.
   // Status 1 is running, 2 is idle and 3 is completed.
   public static function getStatus($chunks, $keyspace, $keyspaceProgress) {
@@ -132,10 +133,11 @@ class TaskUtils {
     $status = 2;
     if ($keyspaceProgress >= $keyspace && $keyspaceProgress > 0) {
       $status = 3;
-    } else {
+    }
+    else {
       $now = time();
       $chunkTimeOut = SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT);
-
+      
       foreach ($chunks as $chunk) {
         if ($now - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $chunkTimeOut && $chunk->getProgress() < 10000) {
           $status = 1;
@@ -863,7 +865,8 @@ class TaskUtils {
     }
     else if ($benchtype != 'speed' && $benchtype != 'runtime') {
       throw new HttpError("Invalid benchmark type!");
-    } else if ($enforcePipe < 0 || $enforcePipe > 1) {
+    }
+    else if ($enforcePipe < 0 || $enforcePipe > 1) {
       throw new HttpError("Invalid enforce pipe value");
     }
     $benchtype = ($benchtype == 'speed') ? 1 : 0;
@@ -1390,13 +1393,47 @@ class TaskUtils {
       ($task->getMaxAgents() > 0 && $numAssignments >= $task->getMaxAgents()); // at least maxAgents agents are already assigned
   }
   
-  public static function getTaskProgress($task) {
+  /**
+   * @param $task Task
+   * @return int
+   * @throws Exception
+   */
+  public static function getTaskProgress(Task $task): int {
     $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     
     $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
     $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
     $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2]);
-    $progress = $results[$agg1->getName()] - $results[$agg2->getName()];
-    return $progress;
+    return $results[$agg1->getName()] - $results[$agg2->getName()];
+  }
+  
+  /**
+   * Get the time spent on a task (not including parallel running).
+   *
+   * @param Task $task
+   * @return int
+   * @throws Exception
+   */
+  public static function getTimeSpentOnTask(Task $task): int {
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $qF2 = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
+    $qF3 = new QueryFilter(Chunk::DISPATCH_TIME, 0, ">");
+    $oF = new OrderFilter(Chunk::DISPATCH_TIME, "ASC");
+    $columnRows = Factory::getChunkFactory()->columnFilter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::ORDER => $oF], [Chunk::DISPATCH_TIME, Chunk::SOLVE_TIME]);
+    
+    $timeSpent = 0;
+    $current = 0;
+    
+    foreach ($columnRows as $row) {
+      if ($row[0] > $current) {
+        $timeSpent += $row[1] - $row[0];
+        $current = $row[1];
+      }
+      else if ($row[1] > $current) {
+        $timeSpent += $row[1] - $current;
+        $current = $row[1];
+      }
+    }
+    return $timeSpent;
   }
 }

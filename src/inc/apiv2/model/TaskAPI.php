@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
+use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DPrince;
 use Hashtopolis\inc\utils\AccessUtils;
@@ -136,17 +138,110 @@ class TaskAPI extends AbstractModelAPI {
       "files" => ['type' => 'array', 'subtype' => 'int'],
     ];
   }
-
+  
   public function getAggregateFieldsets(): array {
     return [
       'task' => [
-        'assignedAgents',
-        'dispatched',
-        'searched',
-        'isActive',
-        'taskExtraDetails',
+        'totalAssignedAgents' => [$this, 'getAggregateTotalAssignedAgents'],
+        'dispatched' => [$this, 'getAggregateDispatched'],
+        'searched' => [$this, 'getAggregateSearched'],
+        'status' => [$this, 'getAggregateStatus'],
+        'totalNumberOfChunks' => [$this, 'getAggregateTotalChunks'],
+        'currentSpeed' => [$this, 'getAggregateCurrentSpeed'],
+        'estimatedTime' => [$this, 'getAggregateEstimatedTime'],
+        'cprogress' => [$this, 'getAggregateCProgress'],
+        'timeSpent' => [$this, 'getAggregateTimeSpent'],
       ]
     ];
+  }
+  
+  /**
+   * @throws Exception
+   */
+  protected function getAggregateTotalAssignedAgents(object $object): int {
+    $qF = new QueryFilter(Assignment::TASK_ID, $object->getId(), "=");
+    return Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
+  }
+  
+  protected function getAggregateDispatched(object $object): string {
+    /** @var Task $object */
+    $keyspace = $object->getKeyspace();
+    $keyspaceProgress = $object->getKeyspaceProgress();
+    return Util::showperc($keyspaceProgress, $keyspace);
+  }
+  
+  /**
+   * @throws Exception
+   */
+  protected function getAggregateSearched(object $object): string {
+    /** @var Task $object */
+    $keyspace = $object->getKeyspace();
+    return Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
+  }
+  
+  protected function getAggregateStatus(object $object): int {
+    /** @var Task $object */
+    $keyspace = $object->getKeyspace();
+    $keyspaceProgress = $object->getKeyspaceProgress();
+    
+    // the filter for progress is needed so we reduce the checked chunks numbers by a lot
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+    $qF2 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+    return TaskUtils::getStatus($chunks, $keyspace, $keyspaceProgress);
+  }
+  
+  /**
+   * @throws Exception
+   */
+  protected function getAggregateTotalChunks(object $object): int {
+    $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+    return Factory::getChunkFactory()->countFilter([Factory::FILTER => $qF]);
+  }
+  
+  /**
+   * @throws Exception
+   */
+  protected function getAggregateCurrentSpeed(object $object): int {
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+    $qF2 = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
+    $qF3 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+    $agg = new Aggregation(Chunk::SPEED, Aggregation::SUM);
+    $speed = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], [$agg])[$agg->getName()];
+    if ($speed == null) {
+      $speed = 0;
+    }
+    return $speed;
+  }
+  
+  /**
+   * @throws Exception
+   */
+  protected function getAggregateEstimatedTime(object $object): int {
+    /** @var Task $object */
+    $keyspace = $object->getKeyspace();
+    
+    // not a 100% efficient, but we would have to break up the nice generic handling of the aggregations to deal with this
+    $cProgress = $this->getAggregateCProgress($object);
+    $timeSpent = $this->getAggregateTimeSpent($object);
+    
+    return ($keyspace > 0 && $cProgress > 0) ? round($timeSpent / ($cProgress / $keyspace) - $timeSpent) : 0;
+  }
+  
+  /**
+   * @throws Exception
+   */
+  protected function getAggregateCProgress(object $object): int {
+    /** @var Task $object */
+    return TaskUtils::getTaskProgress($object);
+  }
+  
+  /**
+   * @throws Exception
+   */
+  protected function getAggregateTimeSpent(object $object): int {
+    /** @var Task $object */
+    return TaskUtils::getTimeSpentOnTask($object);
   }
   
   /**
@@ -182,88 +277,8 @@ class TaskAPI extends AbstractModelAPI {
     return $task->getId();
   }
   
-  //TODO make aggregate data queryable and not included by default
-  function aggregateData(object $object, array &$included_data = [], ?array $aggregateFieldsets = null): array {
-    $aggregatedData = [];
-    
-    if (is_null($aggregateFieldsets) || array_key_exists('task', $aggregateFieldsets)) {
-      if (!is_null($aggregateFieldsets)) {
-        $aggregateFieldsets['task'] = explode(",", $aggregateFieldsets['task']);
-      }
-      
-      $assignedAgents = [];
-      if (is_null($aggregateFieldsets) || in_array("assignedAgents", $aggregateFieldsets['task'])) {
-        $qF = new QueryFilter(Assignment::TASK_ID, $object->getId(), "=");
-        $assignedAgents = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
-        $aggregatedData["totalAssignedAgents"] = $assignedAgents;
-      }
-      $keyspace = $object->getKeyspace();
-      $keyspaceProgress = $object->getKeyspaceProgress();
-      
-      if (is_null($aggregateFieldsets) || in_array("dispatched", $aggregateFieldsets['task'])) {
-        $aggregatedData["dispatched"] = Util::showperc($keyspaceProgress, $keyspace);
-      }
-      
-      if (is_null($aggregateFieldsets) || in_array("searched", $aggregateFieldsets['task'])) {
-        $aggregatedData["searched"] = Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
-      }
-
-      $chunks = null;
-      if (is_null($aggregateFieldsets) || in_array("isActive", $aggregateFieldsets['task'])) {
-        $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-        $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-        $aggregatedData["status"] = TaskUtils::getStatus($chunks, $keyspace, $keyspaceProgress);
-      }
-      if (is_null($aggregateFieldsets) || in_array("totalNumberOfChunks", $aggregateFieldsets['task'])) {
-        $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-        $aggregatedData["totalNumberOfChunks"] = Factory::getChunkFactory()->countFilter([Factory::FILTER => $qF]);
-      }
-      if (is_null($aggregateFieldsets) || in_array("taskExtraDetails", $aggregateFieldsets['task'])) {
-        $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-        if (!isset($chunks)){
-          $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-        }
-        
-        $currentSpeed = 0;
-        $cProgress = 0;
-        
-        foreach ($chunks as $chunk) {
-          $cProgress += $chunk->getCheckpoint() - $chunk->getSkip();
-          if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
-            $currentSpeed += $chunk->getSpeed();
-          }
-        }
-          
-        $timeChunks = $chunks;
-        usort($timeChunks, ["Hashtopolis\inc\Util", "compareChunksTime"]);
-        $timeSpent = 0;
-        $current = 0;
-        
-        foreach ($timeChunks as $c) {
-          if ($c->getDispatchTime() > $current) {
-            $timeSpent += $c->getSolveTime() - $c->getDispatchTime();
-            $current = $c->getSolveTime();
-          }
-          else if ($c->getSolveTime() > $current) {
-            $timeSpent += $c->getSolveTime() - $current;
-            $current = $c->getSolveTime();
-          }
-        }
-
-        $keyspace = $object->getKeyspace();
-        $estimatedTime = ($keyspace > 0 && $cProgress > 0) ? round($timeSpent / ($cProgress / $keyspace) - $timeSpent) : 0;
-        
-        $aggregatedData["estimatedTime"] = $estimatedTime;
-        $aggregatedData["timeSpent"] = $timeSpent;
-        $aggregatedData["currentSpeed"] = $currentSpeed;
-        $aggregatedData["cprogress"] = $cProgress;
-      }
-    }
-
-    return $aggregatedData;
-  }
-  
   protected function deleteObject(object $object): void {
+    /** @var Task $object */
     TaskUtils::deleteTask($object);
   }
   
