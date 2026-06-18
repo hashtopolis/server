@@ -7,12 +7,15 @@ use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\AccessGroup;
+use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\models\File;
+use Hashtopolis\dba\models\FileDownload;
 use Hashtopolis\dba\models\FileTask;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\models\HashType;
@@ -96,6 +99,15 @@ class TestBase extends TestCase {
     return $relation;
   }
   
+  protected function createAccessGroupAgent(Agent $agent, AccessGroup $accessGroup): AccessGroupAgent {
+    $accessGroupAgent = $this->createDatabaseObject(
+      Factory::getAccessGroupAgentFactory(),
+      new AccessGroupAgent(null, $accessGroup->getId(), $agent->getId())
+    );
+    $this->assertTrue($accessGroupAgent instanceof AccessGroupAgent);
+    return $accessGroupAgent;
+  }
+
   protected function createRightGroup(): RightGroup {
     $group = $this->createDatabaseObject(
       Factory::getRightGroupFactory(),
@@ -183,6 +195,15 @@ class TestBase extends TestCase {
     $this->assertTrue($fileTask instanceof FileTask);
     return $fileTask;
   }
+
+  protected function createFileDownload(File $file): FileDownload {
+    $fileDownload = $this->createDatabaseObject(
+      Factory::getFileDownloadFactory(),
+      new FileDownload(null, time(), $file->getId(), DFileDownloadStatus::PENDING)
+    );
+    $this->assertTrue($fileDownload instanceof FileDownload);
+    return $fileDownload;
+  }
   
   protected function createAgent(string $prefix, int $isTrusted = 1): Agent {
     $suffix = uniqid();
@@ -192,6 +213,15 @@ class TestBase extends TestCase {
     );
     $this->assertTrue($agent instanceof Agent);
     return $agent;
+  }
+
+  protected function createAssignment(int $taskId, int $agentId): Assignment {
+    $assignment = $this->createDatabaseObject(
+      Factory::getAssignmentFactory(),
+      new Assignment(null, $taskId, $agentId, "1")
+    );
+    $this->assertTrue($assignment instanceof Assignment);
+    return $assignment;
   }
   
   /**

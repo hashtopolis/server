@@ -856,7 +856,7 @@ class TaskUtils {
       throw new HttpError("Preprocessor command contains blacklisted characters!");
     }
     else if (!is_numeric($chunkTime) || $chunkTime < 1) {
-      throw new HttpError("Invalid chunk size!");
+      throw new HttpError("Invalid chunk time!");
     }
     else if (!is_numeric($status) || $status < 1) {
       throw new HttpError("Invalid status timer!");
@@ -954,11 +954,11 @@ class TaskUtils {
     // get all TaskWrappers which we have access to
     $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroups);
     $qF2 = new QueryFilter(TaskWrapper::PRIORITY, 0, (SConfig::getInstance()->getVal(DConfig::PRIORITY_0_START)) ? ">=" : ">");
-    $qF3 = new QueryFilter(TaskWrapper::IS_ARCHIVED, 0, "=");
     if ($all) {
       // if we want to retrieve all tasks which are accessible, we also show the ones with 0 priority
       $qF2 = new QueryFilter(TaskWrapper::PRIORITY, 0, ">=");
     }
+    $qF3 = new QueryFilter(TaskWrapper::IS_ARCHIVED, 0, "=");
     $oF = new OrderFilter(TaskWrapper::PRIORITY, "DESC");
     $taskWrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::ORDER => $oF]);
     
@@ -1364,7 +1364,7 @@ class TaskUtils {
   }
   
   /**
-   * Get the number of agents - apart from given agent -.working on given task.
+   * Get the number of agents - apart from given agent - working on given task.
    *
    * @param $task
    * @param $agent
