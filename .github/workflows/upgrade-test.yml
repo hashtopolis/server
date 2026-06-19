@@ -134,9 +134,9 @@ jobs:
         if: always()
         run: |
           if [ "${{ matrix.db-type }}" = "postgres" ]; then
-            docker exec db psql -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} -c "SELECT * FROM _sqlx_migrations;"
+            docker exec db psql -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} -c "SELECT version, description, installed_on, success, encode(checksum, 'hex') AS checksum, execution_time FROM _sqlx_migrations ORDER BY version;"
           else
-            docker exec db mysql -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} -e "SELECT * FROM _sqlx_migrations;"
+            docker exec db mysql -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} -e "SELECT version, description, installed_on, success, HEX(checksum) AS checksum, execution_time FROM _sqlx_migrations ORDER BY version;"
           fi
 
       - name: Cleanup
