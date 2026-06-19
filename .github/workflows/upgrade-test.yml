@@ -1,0 +1,110 @@
+name: Upgrade Test
+
+on:
+  push:
+    branches: [master, dev]
+  pull_request:
+    branches: [master, dev]
+  workflow_dispatch:
+
+env:
+  DB_NAME: hashtopolis
+  DB_USER: hashtopolis
+  DB_PASS: hashtopolis
+
+jobs:
+  upgrade-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        start-tag: [v0.14.0, v1.0.0-rainbow]
+        db-type: [postgres, mysql]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build new image from repository
+        run: docker build -t hashtopolis/backend:test .
+
+      - name: Set up Docker network and volumes
+        run: |
+          docker network create ht-test-net
+          docker volume create ht-data
+          docker volume create ht-db
+
+      - name: Start database container
+        run: |
+          if [ "${{ matrix.db-type }}" = "postgres" ]; then
+            docker run -d --network ht-test-net --name db \
+              -e POSTGRES_DB=${{ env.DB_NAME }} \
+              -e POSTGRES_USER=${{ env.DB_USER }} \
+              -e POSTGRES_PASSWORD=${{ env.DB_PASS }} \
+              -v ht-db:/var/lib/postgresql/data \
+              postgres:18
+          else
+            docker run -d --network ht-test-net --name db \
+              -e MYSQL_ROOT_PASSWORD=${{ env.DB_PASS }} \
+              -e MYSQL_DATABASE=${{ env.DB_NAME }} \
+              -e MYSQL_USER=${{ env.DB_USER }} \
+              -e MYSQL_PASSWORD=${{ env.DB_PASS }} \
+              -v ht-db:/var/lib/mysql \
+              mysql:8.4
+          fi
+
+      - name: Wait for database to be ready
+        run: |
+          if [ "${{ matrix.db-type }}" = "postgres" ]; then
+            until docker exec db pg_isready -U ${{ env.DB_USER }}; do sleep 2; done
+          else
+            until docker exec db mysqladmin ping -u root -p${{ env.DB_PASS }} --silent; do sleep 2; done
+          fi
+          echo "Database ready"
+
+      - name: Start old backend (${{ matrix.start-tag }})
+        run: |
+          docker run -d --network ht-test-net --name backend \
+            -e HASHTOPOLIS_DB_TYPE=${{ matrix.db-type }} \
+            -e HASHTOPOLIS_DB_USER=${{ env.DB_USER }} \
+            -e HASHTOPOLIS_DB_PASS=${{ env.DB_PASS }} \
+            -e HASHTOPOLIS_DB_HOST=db \
+            -e HASHTOPOLIS_DB_DATABASE=${{ env.DB_NAME }} \
+            -e HASHTOPOLIS_ADMIN_USER=admin \
+            -e HASHTOPOLIS_ADMIN_PASSWORD=hashtopolis \
+            -v ht-data:/usr/local/share/hashtopolis \
+            hashtopolis/backend:${{ matrix.start-tag }}
+
+      - name: Wait for old backend initialization
+        run: |
+          timeout 180 bash -c 'until docker logs backend 2>&1 | grep -q "Initialization complete!"; do sleep 3; done'
+          echo "Old backend initialized"
+
+      - name: Stop old backend and start new backend
+        run: |
+          docker stop backend
+          docker rm backend
+          docker run -d --network ht-test-net --name backend \
+            -e HASHTOPOLIS_DB_TYPE=${{ matrix.db-type }} \
+            -e HASHTOPOLIS_DB_USER=${{ env.DB_USER }} \
+            -e HASHTOPOLIS_DB_PASS=${{ env.DB_PASS }} \
+            -e HASHTOPOLIS_DB_HOST=db \
+            -e HASHTOPOLIS_DB_DATABASE=${{ env.DB_NAME }} \
+            -e HASHTOPOLIS_ADMIN_USER=admin \
+            -e HASHTOPOLIS_ADMIN_PASSWORD=hashtopolis \
+            -v ht-data:/usr/local/share/hashtopolis \
+            hashtopolis/backend:test
+
+      - name: Wait for new backend initialization
+        run: |
+          timeout 180 bash -c 'until docker logs backend 2>&1 | grep -q "Initialization complete!"; do sleep 3; done'
+          echo "New backend initialized - upgrade test passed"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker stop backend 2>/dev/null || true
+          docker rm backend 2>/dev/null || true
+          docker stop db 2>/dev/null || true
+          docker rm db 2>/dev/null || true
+          docker network rm ht-test-net 2>/dev/null || true
+          docker volume rm ht-db ht-data 2>/dev/null || true
