@@ -40,7 +40,7 @@ jobs:
               -e POSTGRES_DB=${{ env.DB_NAME }} \
               -e POSTGRES_USER=${{ env.DB_USER }} \
               -e POSTGRES_PASSWORD=${{ env.DB_PASS }} \
-              -v ht-db:/var/lib/postgresql/data \
+              -v ht-db:/var/lib/postgresql \
               postgres:18
           else
             docker run -d --network ht-test-net --name db \
