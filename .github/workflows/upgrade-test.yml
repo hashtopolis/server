@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        start-tag: [v0.14.0, v1.0.0-rainbow]
+        start-tag: [v0.14.1, v1.0.0-rainbow]
         db-type: [postgres, mysql]
       fail-fast: false
 
