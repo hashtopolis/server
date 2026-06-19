@@ -96,6 +96,7 @@ if (!$initialSetup) {
       
       // we are on an older generation branch, we need to migrate
       // make sure we are up-to-date on this generation
+      echo "Running migration on current generation to be up-to-date...\n";
       MigrationUtils::runDatabaseMigration($generation);
       
       // jump to next migration
@@ -106,10 +107,13 @@ if (!$initialSetup) {
       }
       
       // clear migration table
+      echo "Clearing migration table...\n";
       Factory::get_sqlx_migrationsFactory()->massDeletion([]);
       
       // add first entry
+      echo "Add initial migration entry...\n";
       Factory::get_sqlx_migrationsFactory()->save($entry);
+      echo "Generation switch from " . ($generation + 1) . " to $generation completed!\n";
     }
   }
   catch (Exception $e) {
