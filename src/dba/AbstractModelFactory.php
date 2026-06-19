@@ -106,10 +106,14 @@ abstract class AbstractModelFactory {
   /**
    * @param AbstractModel $model
    * @param string $key unmapped column name
-   * @return string placeholder SQL fragment ("?" or "decode(?, 'hex')")
+   * @return string placeholder SQL fragment ("?" or db-specific hex-to-binary function)
    */
   private static function binaryPlaceholder(AbstractModel $model, string $key): string {
-    return self::isBinaryColumn($model, $key) ? "decode(?, 'hex')" : "?";
+    if (!self::isBinaryColumn($model, $key)) {
+      return "?";
+    }
+    $dbType = StartupConfig::getInstance()->getDatabaseType();
+    return $dbType === 'mysql' ? "UNHEX(?)" : "decode(?, 'hex')";
   }
 
   /**

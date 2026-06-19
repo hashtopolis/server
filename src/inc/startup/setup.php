@@ -67,6 +67,11 @@ if (!$initialSetup) {
   $oF = new OrderFilter(_sqlx_migrations::VERSION, "ASC");
   $firstEntry = Factory::get_sqlx_migrationsFactory()->filter([Factory::ORDER => $oF], true);
   
+  if ($firstEntry == null) {
+    echo "Unable to identify migrations position!\n";
+    exit(-1);
+  }
+  
   // identify the generation we are on
   $allGenerations = MigrationUtils::getAllGenerations(StartupConfig::getInstance()->getDatabaseType());
   $generation = -1;
@@ -107,7 +112,7 @@ if (!$initialSetup) {
       Factory::get_sqlx_migrationsFactory()->save($entry);
     }
   }
-  catch(Exception $e) {
+  catch (Exception $e) {
     echo "Failed to run generation upgrade: $e\n";
     exit(-1);
   }
