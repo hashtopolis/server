@@ -94,6 +94,25 @@ abstract class AbstractModelFactory {
   }
   
   /**
+   * @param AbstractModel $model
+   * @param string $key unmapped column name
+   * @return bool
+   */
+  private static function isBinaryColumn(AbstractModel $model, string $key): bool {
+    $features = $model->getFeatures();
+    return isset($features[$key]['type']) && $features[$key]['type'] === 'binary';
+  }
+
+  /**
+   * @param AbstractModel $model
+   * @param string $key unmapped column name
+   * @return string placeholder SQL fragment ("?" or "decode(?, 'hex')")
+   */
+  private static function binaryPlaceholder(AbstractModel $model, string $key): string {
+    return self::isBinaryColumn($model, $key) ? "decode(?, 'hex')" : "?";
+  }
+
+  /**
    * Get all the attribute keys of a model prepared with the mapping prefix where needed. The returned keys are then named
    * exactly how they are present in the database.
    *
@@ -148,6 +167,7 @@ abstract class AbstractModelFactory {
     $dict = $model->getKeyValueDict();
     
     $query = "INSERT INTO " . $this->getMappedModelTable();
+    $origKeys = array_keys($dict);
     $vals = array_values($dict);
     
     $keys = self::getMappedModelKeys($model);
@@ -155,12 +175,15 @@ abstract class AbstractModelFactory {
     if ($vals[0] === -1 || $vals[0] === null) {
       array_splice($vals, 0, 1);
       array_splice($keys, 0, 1);
+      array_splice($origKeys, 0, 1);
     }
     
     $query .= " (" . implode(",", $keys) . ") ";
-    $placeHolder = " (" . implode(",", array_fill(0, count($keys), "?")) . ")";
-    
-    $query = $query . " VALUES " . $placeHolder;
+    $placeholders = [];
+    foreach ($origKeys as $k) {
+      $placeholders[] = self::binaryPlaceholder($model, $k);
+    }
+    $query = $query . " VALUES (" . implode(",", $placeholders) . ")";
     
     $dbh = $this->getDB();
     $stmt = $dbh->prepare($query);
@@ -241,15 +264,14 @@ abstract class AbstractModelFactory {
     
     $query = "UPDATE " . $this->getMappedModelTable() . " SET ";
     
+    $origKeys = array_keys($dict);
     $values = array_values($dict);
-    $keys = self::getMappedModelKeys($model);
+    $mappedKeys = self::getMappedModelKeys($model);
     
-    for ($i = 0; $i < count($keys); $i++) {
-      if ($i != count($keys) - 1) {
-        $query .= $keys[$i] . "=?, ";
-      }
-      else {
-        $query .= $keys[$i] . "=?";
+    for ($i = 0; $i < count($mappedKeys); $i++) {
+      $query .= $mappedKeys[$i] . "=" . self::binaryPlaceholder($model, $origKeys[$i]);
+      if ($i < count($mappedKeys) - 1) {
+        $query .= ", ";
       }
     }
     
@@ -275,7 +297,7 @@ abstract class AbstractModelFactory {
     $elements = [];
     $values = [];
     foreach ($arr as $key => $val) {
-      $elements[] = self::getMappedModelKey($model, $key) . "=? ";
+      $elements[] = self::getMappedModelKey($model, $key) . "=" . self::binaryPlaceholder($model, $key) . " ";
       $values[] = $val;
     }
     $query .= implode(", ", $elements);
@@ -301,7 +323,7 @@ abstract class AbstractModelFactory {
    * @throws Exception
    */
   public function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    $query = "UPDATE " . $this->getMappedModelTable() . " SET " . self::getMappedModelKey($model, $key) . "=?";
+    $query = "UPDATE " . $this->getMappedModelTable() . " SET " . self::getMappedModelKey($model, $key) . "=" . self::binaryPlaceholder($model, $key);
     
     $values = [];
     $query = $query . " WHERE " . $model->getPrimaryKey() . "=?";
@@ -386,6 +408,7 @@ abstract class AbstractModelFactory {
     }
     
     $keys = self::getMappedModelKeys($models[0]);
+    $origKeys = array_keys($models[0]->getKeyValueDict());
     $query = "INSERT INTO " . $this->getMappedModelTable();
     
     $pkInclude = false;
@@ -394,15 +417,20 @@ abstract class AbstractModelFactory {
     }
     else {
       array_splice($keys, 0, 1);
+      array_splice($origKeys, 0, 1);
     }
     
     $query .= " (" . implode(",", $keys) . ") ";
-    $placeHolder = " (" . implode(",", array_fill(0, count($keys), "?")) . ")";
+    $placeholders = [];
+    foreach ($origKeys as $k) {
+      $placeholders[] = self::binaryPlaceholder($models[0], $k);
+    }
+    $placeHolderStr = " (" . implode(",", $placeholders) . ")";
     
     $query = $query . " VALUES ";
     $vals = array();
     for ($x = 0; $x < sizeof($models); $x++) {
-      $query .= $placeHolder;
+      $query .= $placeHolderStr;
       if ($x < sizeof($models) - 1) {
         $query .= ", ";
       }

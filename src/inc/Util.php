@@ -1577,25 +1577,4 @@ class Util {
       }
     }
   }
-  
-  /**
-   * Run the migration on one generation (default is actual generation which is 0).
-   *
-   * @param int $generation
-   * @return void
-   */
-  public static function runDatabaseMigration(int $generation = 0): void {
-    $generationPath = "";
-    if ($generation > 0) {
-      $generationPath = ".$generation";
-    }
-    
-    $output = [];
-    $database_uri = StartupConfig::getInstance()->getDatabaseType() . "://" . rawurlencode(StartupConfig::getInstance()->getDatabaseUser()) . ":" . rawurlencode(StartupConfig::getInstance()->getDatabasePassword()) . "@" . StartupConfig::getInstance()->getDatabaseServer() . ":" . StartupConfig::getInstance()->getDatabasePort() . "/" . StartupConfig::getInstance()->getDatabaseDB();
-    exec('/usr/bin/sqlx migrate run --source ' . escapeshellarg(dirname(__FILE__) . '/../migrations/' . StartupConfig::getInstance()->getDatabaseType() . $generationPath . '/') . ' -D ' . escapeshellarg($database_uri), $output, $retval);
-    if ($retval !== 0) {
-      echo "Failed to run migrations: \n" . implode("\n", $output);
-      exit(-1);
-    }
-  }
 }

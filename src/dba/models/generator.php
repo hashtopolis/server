@@ -97,7 +97,7 @@ $CONF['AgentError'] = [
 $CONF['AgentStat'] = [
   'columns' => [
     ['name' => 'agentStatId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'protected' => True, 'type' => 'int',  'relation' => 'Agent'],
+    ['name' => 'agentId', 'read_only' => True, 'protected' => True, 'type' => 'int', 'relation' => 'Agent'],
     ['name' => 'statType', 'read_only' => True, 'protected' => True, 'type' => 'int'],
     ['name' => 'time', 'read_only' => True, 'protected' => True, 'type' => 'int64'],
     ['name' => 'value', 'read_only' => True, 'protected' => True, 'type' => 'array', 'subtype' => 'int'],
@@ -549,6 +549,17 @@ $CONF['HashlistHashlist'] = [
   ],
 ];
 
+$CONF['_sqlx_migrations'] = [
+  'columns' => [
+    ['name' => 'version', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
+    ['name' => 'description', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
+    ['name' => 'installed_on', 'read_only' => True, 'type' => 'datetime', 'protected' => True],
+    ['name' => 'success', 'read_only' => True, 'type' => 'bool', 'protected' => True],
+    ['name' => 'checksum', 'read_only' => True, 'type' => 'binary', 'protected' => True],
+    ['name' => 'execution_time', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ]
+];
+
 /**
  * @throws Exception
  */
@@ -563,6 +574,12 @@ function getTypingType($str, $nullable = false): string {
     return ($nullable ? '?' : '') . 'int';
   }
   if ($str == 'array' || $str == 'dict') {
+    return ($nullable ? '?' : '') . 'string';
+  }
+  if ($str == 'datetime') {
+    return ($nullable ? '?' : '') . 'string';
+  }
+  if ($str == 'binary') {
     return ($nullable ? '?' : '') . 'string';
   }
   throw new Exception("Cannot convert type " . $str);
@@ -646,6 +663,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $dict = [];
   $dict2 = [];
   $mapping = [];
+  $streaming = [];
   foreach ($COLUMNS as $COLUMN) {
     $col = strtolower($COLUMN['name']);
     if (sizeof($dict) == 0) {
@@ -658,15 +676,26 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
       if (array_key_exists("dba_mapping", $COLUMN) && $COLUMN['dba_mapping']) {
         $mapping[] = "\$dict['$col'] = \$dict['htp_$col'];";
       }
+      if (array_key_exists("type", $COLUMN) && $COLUMN['type'] == 'binary') {
+        $streaming[] = "if (is_resource(\$dict['$col'])) {\n      \$t = stream_get_contents(\$dict['$col']);\n      fclose(\$dict['$col']);\n      \$dict['$col'] = bin2hex(\$t);\n    }";
+      }
     }
   }
   $class = str_replace("__MODEL_DICT__", implode(", ", $dict), $class);
   $class = str_replace("__MODEL__DICT2__", implode(", ", $dict2), $class);
+  
   if (count($mapping) > 0) {
     $class = str_replace("__MODEL_MAPPING_DICT__", "\n    " . implode("\n    ", $mapping), $class);
   }
   else {
     $class = str_replace("__MODEL_MAPPING_DICT__", "", $class);
+  }
+  
+  if (count($streaming) > 0) {
+    $class = str_replace("__MODEL_STREAMING_DICT__", "\n    " . implode("\n    ", $streaming), $class);
+  }
+  else {
+    $class = str_replace("__MODEL_STREAMING_DICT__", "", $class);
   }
   
   file_put_contents(dirname(__FILE__) . "/" . $NAME . "Factory.php", $class);

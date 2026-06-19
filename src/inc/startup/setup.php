@@ -5,15 +5,18 @@
  **/
 
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\_sqlx_migrations;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\RightGroup;
 use Hashtopolis\dba\models\StoredValue;
 use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\Util;
 use Hashtopolis\inc\utils\AccessUtils;
+use Hashtopolis\inc\utils\MigrationUtils;
 
 session_start();
 
@@ -59,8 +62,59 @@ if (!$initialSetup && StartupConfig::getInstance()->getDatabaseType() == "mysql"
  * - if needed (because there are more generations available), run the previous step again
  */
 
+if (!$initialSetup) {
+  // retrieve the oldest migration
+  $oF = new OrderFilter(_sqlx_migrations::VERSION, "ASC");
+  $firstEntry = Factory::get_sqlx_migrationsFactory()->filter([Factory::ORDER => $oF], true);
+  
+  // identify the generation we are on
+  $allGenerations = MigrationUtils::getAllGenerations(StartupConfig::getInstance()->getDatabaseType());
+  $generation = -1;
+  foreach ($allGenerations as $gen => $migrations) {
+    if (sizeof($migrations) == 0) {
+      continue;
+    }
+    if (explode("_", $migrations[0])[0] == $firstEntry->getId()) {
+      $generation = $gen;
+      break;
+    }
+  }
+  
+  if ($generation == -1) {
+    echo "Could not determine current migrations generation, aborting...\n";
+    exit(-1);
+  }
+  
+  try {
+    while ($generation > 0) {
+      echo "Upgrading to a new sqlx migrations generation (current $generation)...\n";
+      
+      // we are on an older generation branch, we need to migrate
+      // make sure we are up-to-date on this generation
+      MigrationUtils::runDatabaseMigration($generation);
+      
+      // jump to next migration
+      $generation--;
+      $entry = MigrationUtils::getMigrationStartEntry($generation);
+      if ($entry === null) {
+        throw new Exception("Failed to retrieve initial migration information for generation $generation!");
+      }
+      
+      // clear migration table
+      Factory::get_sqlx_migrationsFactory()->massDeletion([]);
+      
+      // add first entry
+      Factory::get_sqlx_migrationsFactory()->save($entry);
+    }
+  }
+  catch(Exception $e) {
+    echo "Failed to run generation upgrade: $e\n";
+    exit(-1);
+  }
+}
+
 // run database migration on current generation to be fully up-to-date
-Util::runDatabaseMigration();
+MigrationUtils::runDatabaseMigration();
 
 if ($initialSetup === true) {
   // if peppers are not set, generate them and save them
