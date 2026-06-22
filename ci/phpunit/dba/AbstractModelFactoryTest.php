@@ -447,12 +447,12 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testMassSaveSuccess(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 2, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 3, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 2, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 3, 0));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $list = Factory::getHashTypeFactory()->filter([Factory::FILTER => $qF]);
     $this->assertEquals(3, count($list));
     foreach ($list as $hashType) {
@@ -467,13 +467,13 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testMassSaveSuccessWithPKs(): void {
-    $testid = uniqid();
+    $testId = uniqid();
     $idOffset = random_int(123456, 999999);
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType($idOffset + 0, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType($idOffset + 1, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType($idOffset + 2, 'hashtype3' . $testid, 72, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType($idOffset + 0, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType($idOffset + 1, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType($idOffset + 2, 'hashtype3' . $testId, 72, 0));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $list = Factory::getHashTypeFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => new OrderFilter(HashType::HASH_TYPE_ID, "ASC")]);
     $this->assertEquals(3, count($list));
     foreach ($list as $hashType) {
@@ -502,12 +502,12 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testMinMaxFilterSuccessMax(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $max_1 = Factory::getHashTypeFactory()->minMaxFilter([Factory::FILTER => $qF], HashType::IS_SALTED, "MAX");
     $max_2 = Factory::getHashTypeFactory()->minMaxFilter([Factory::FILTER => $qF], HashType::IS_SLOW_HASH, "MAX");
     
@@ -522,12 +522,12 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testMinMaxFilterSuccessMin(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $min_1 = Factory::getHashTypeFactory()->minMaxFilter([Factory::FILTER => $qF], HashType::IS_SALTED, "MIN");
     $min_2 = Factory::getHashTypeFactory()->minMaxFilter([Factory::FILTER => $qF], HashType::IS_SLOW_HASH, "MIN");
     
@@ -552,12 +552,12 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testMulticolAggregationFilterSuccess(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $aggregations = [];
     $aggregations[] = new Aggregation(HashType::IS_SALTED, "MAX");
     $aggregations[] = new Aggregation(HashType::IS_SALTED, "MIN");
@@ -579,12 +579,12 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testColumnFilterSuccess(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $column = Factory::getHashTypeFactory()->columnFilter([Factory::FILTER => $qF], HashType::IS_SALTED);
     $this->assertEquals([1, 125, 72], $column);
   }
@@ -596,12 +596,12 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testColumnFilterSuccessOrdered(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $oF = new OrderFilter(HashType::IS_SALTED, "ASC");
     $column = Factory::getHashTypeFactory()->columnFilter([Factory::FILTER => $qF, Factory::ORDER => $oF], HashType::IS_SALTED);
     $this->assertEquals([1, 72, 125], $column);
@@ -618,12 +618,12 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testColumnFilterSuccessMultiple(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 1));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 1));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $columns = Factory::getHashTypeFactory()->columnFilter([Factory::FILTER => $qF], [HashType::IS_SALTED, HashType::IS_SLOW_HASH]);
     $this->assertEquals([[1, 0], [125, 0], [72, 1]], $columns);
     
@@ -657,12 +657,12 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testSumFilter(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $sum = Factory::getHashTypeFactory()->sumFilter([Factory::FILTER => $qF], HashType::IS_SALTED);
     $this->assertEquals(198, $sum);
   }
@@ -769,12 +769,12 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testCountFilter(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $sum = Factory::getHashTypeFactory()->countFilter([Factory::FILTER => $qF]);
     $this->assertEquals(3, $sum);
   }
@@ -838,13 +838,13 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testFilterNormalFilter(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
     $qF1 = new QueryFilter(HashType::IS_SALTED, 50, ">");
-    $qF2 = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF2 = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $hashtypes = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
     $this->assertCount(2, $hashtypes);
     foreach ($hashtypes as $hashtype) {
@@ -860,13 +860,13 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testFilterNormalFilterWithOrderDesc(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
     $qF1 = new QueryFilter(HashType::IS_SALTED, 50, ">");
-    $qF2 = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF2 = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $oF = new OrderFilter(HashType::IS_SALTED, "DESC");
     $hashtypes = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
     $this->assertCount(2, $hashtypes);
@@ -881,11 +881,11 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testFilterNormalFilterWithLimit(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 3, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 3, 0));
     
     $qF = new QueryFilter(HashType::IS_SLOW_HASH, 0, "=");
     $lF = new LimitFilter(2);
@@ -904,18 +904,18 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testFilterNormalFilterSingle(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
     $qF1 = new QueryFilter(HashType::IS_SLOW_HASH, 0, "=");
-    $qF2 = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF2 = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $oF = new OrderFilter(HashType::HASH_TYPE_ID, "ASC");
     $hashtype = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF], true);
     $this->assertTrue($hashtype instanceof HashType);
     $this->assertEquals(1, $hashtype->getIsSalted());
-    $this->assertEquals('hashtype1' . $testid, $hashtype->getDescription());
+    $this->assertEquals('hashtype1' . $testId, $hashtype->getDescription());
   }
   
   /**
@@ -948,15 +948,15 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testFilterWithJoinsNormalFilter(): void {
-    $testid = uniqid();
+    $testId = uniqid();
     
-    $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup1' . $testid));
-    $accessGroup2 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup2' . $testid));
+    $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup1' . $testId));
+    $accessGroup2 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup2' . $testId));
     $this->assertTrue($accessGroup1 instanceof AccessGroup);
     
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testid, 1, 0, 0, $accessGroup1->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testid, 1, 0, 0, $accessGroup2->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testid, 1, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testId, 1, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testId, 1, 0, 0, $accessGroup2->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testId, 1, 0, 0, $accessGroup1->getId(), 1));
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup1->getGroupName(), "=", Factory::getAccessGroupFactory());
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
@@ -966,8 +966,8 @@ final class AbstractModelFactoryTest extends TestBase {
     $this->assertTrue($joined[Factory::getFileFactory()->getModelName()][0] instanceof File);
     $this->assertTrue($joined[Factory::getFileFactory()->getModelName()][1] instanceof File);
     
-    $this->assertEquals('file1' . $testid, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
-    $this->assertEquals('file3' . $testid, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
+    $this->assertEquals('file1' . $testId, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
+    $this->assertEquals('file3' . $testId, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
     
     $this->assertTrue($joined[Factory::getAccessGroupFactory()->getModelName()][0] instanceof AccessGroup);
     $this->assertTrue($joined[Factory::getAccessGroupFactory()->getModelName()][1] instanceof AccessGroup);
@@ -982,15 +982,15 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testFilterWithJoinsNormalFilterWithOrderDesc(): void {
-    $testid = uniqid();
+    $testId = uniqid();
     
-    $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup1' . $testid));
-    $accessGroup2 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup2' . $testid));
+    $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup1' . $testId));
+    $accessGroup2 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup2' . $testId));
     $this->assertTrue($accessGroup1 instanceof AccessGroup);
     
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testid, 1, 0, 0, $accessGroup1->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testid, 2, 0, 0, $accessGroup2->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testid, 3, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testId, 1, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testId, 2, 0, 0, $accessGroup2->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testId, 3, 0, 0, $accessGroup1->getId(), 1));
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup1->getGroupName(), "=", Factory::getAccessGroupFactory());
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
@@ -1001,8 +1001,8 @@ final class AbstractModelFactoryTest extends TestBase {
     $this->assertTrue($joined[Factory::getFileFactory()->getModelName()][0] instanceof File);
     $this->assertTrue($joined[Factory::getFileFactory()->getModelName()][1] instanceof File);
     
-    $this->assertEquals('file3' . $testid, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
-    $this->assertEquals('file1' . $testid, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
+    $this->assertEquals('file3' . $testId, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
+    $this->assertEquals('file1' . $testId, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
     
     $this->assertTrue($joined[Factory::getAccessGroupFactory()->getModelName()][0] instanceof AccessGroup);
     $this->assertTrue($joined[Factory::getAccessGroupFactory()->getModelName()][1] instanceof AccessGroup);
@@ -1017,16 +1017,16 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testFilterWithJoinsNormalFilterWithLimit(): void {
-    $testid = uniqid();
+    $testId = uniqid();
     
-    $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup1' . $testid));
-    $accessGroup2 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup2' . $testid));
+    $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup1' . $testId));
+    $accessGroup2 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup2' . $testId));
     $this->assertTrue($accessGroup1 instanceof AccessGroup);
     
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testid, 1, 0, 0, $accessGroup1->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testid, 2, 0, 0, $accessGroup2->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testid, 3, 0, 0, $accessGroup1->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file4' . $testid, 4, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testId, 1, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testId, 2, 0, 0, $accessGroup2->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testId, 3, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file4' . $testId, 4, 0, 0, $accessGroup1->getId(), 1));
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup1->getGroupName(), "=", Factory::getAccessGroupFactory());
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
@@ -1037,8 +1037,8 @@ final class AbstractModelFactoryTest extends TestBase {
     $this->assertTrue($joined[Factory::getFileFactory()->getModelName()][0] instanceof File);
     $this->assertTrue($joined[Factory::getFileFactory()->getModelName()][1] instanceof File);
     
-    $this->assertEquals('file1' . $testid, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
-    $this->assertEquals('file3' . $testid, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
+    $this->assertEquals('file1' . $testId, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
+    $this->assertEquals('file3' . $testId, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
     
     $this->assertTrue($joined[Factory::getAccessGroupFactory()->getModelName()][0] instanceof AccessGroup);
     $this->assertTrue($joined[Factory::getAccessGroupFactory()->getModelName()][1] instanceof AccessGroup);
@@ -1052,12 +1052,12 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testMassDeletionSuccess(): void {
-    $testid = uniqid();
-    Factory::getHashTypeFactory()->save(new HashType(null, 'hashtype1' . $testid, 1, 0));
-    Factory::getHashTypeFactory()->save(new HashType(null, 'hashtype2' . $testid, 125, 0));
-    Factory::getHashTypeFactory()->save(new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    Factory::getHashTypeFactory()->save(new HashType(null, 'hashtype1' . $testId, 1, 0));
+    Factory::getHashTypeFactory()->save(new HashType(null, 'hashtype2' . $testId, 125, 0));
+    Factory::getHashTypeFactory()->save(new HashType(null, 'hashtype3' . $testId, 72, 0));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     Factory::getHashTypeFactory()->massDeletion([Factory::FILTER => $qF]);
     
     $count = Factory::getHashTypeFactory()->countFilter([Factory::FILTER => $qF]);
@@ -1070,10 +1070,10 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testMassSingleUpdate(): void {
-    $testid = uniqid();
-    $hashtype1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $hashtype3 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $hashtype1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $hashtype3 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
     $updates = [];
     $updates[] = new MassUpdateSet($hashtype1->getId(), 5);
@@ -1081,7 +1081,7 @@ final class AbstractModelFactoryTest extends TestBase {
     
     Factory::getHashTypeFactory()->massSingleUpdate(HashType::HASH_TYPE_ID, HashType::IS_SALTED, $updates);
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $sum = Factory::getHashTypeFactory()->sumFilter([Factory::FILTER => $qF], HashType::IS_SALTED);
     $this->assertEquals(139, $sum);
   }
@@ -1092,10 +1092,10 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testMassSingleUpdateNoEffect(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
     $updates = [];
     $updates[] = new MassUpdateSet(999999, 5);
@@ -1103,7 +1103,7 @@ final class AbstractModelFactoryTest extends TestBase {
     
     Factory::getHashTypeFactory()->massSingleUpdate(HashType::HASH_TYPE_ID, HashType::IS_SALTED, $updates);
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $sum = Factory::getHashTypeFactory()->sumFilter([Factory::FILTER => $qF], HashType::IS_SALTED);
     $this->assertEquals(198, $sum);
   }
@@ -1114,13 +1114,13 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testMassUpdateSuccess(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
     $uS = new UpdateSet(HashType::IS_SALTED, 1);
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     Factory::getHashTypeFactory()->massUpdate([Factory::UPDATE => $uS, Factory::FILTER => $qF]);
     
     $sum = Factory::getHashTypeFactory()->sumFilter([Factory::FILTER => $qF], HashType::IS_SALTED);
@@ -1133,16 +1133,16 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testMassUpdateNoEffect(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
     $uS = new UpdateSet(HashType::IS_SALTED, 1);
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%aaaa" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%aaaa" . $testId);
     Factory::getHashTypeFactory()->massUpdate([Factory::UPDATE => $uS, Factory::FILTER => $qF]);
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $sum = Factory::getHashTypeFactory()->sumFilter([Factory::FILTER => $qF], HashType::IS_SALTED);
     $this->assertEquals(198, $sum);
   }
@@ -1171,24 +1171,24 @@ final class AbstractModelFactoryTest extends TestBase {
    */
   public function testColumnFilter(): void {
     $isSalted = random_int(2, 100);
-    $testid = uniqid();
+    $testId = uniqid();
     
-    $hashlist_1 = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 1" . $testid, DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, $isSalted, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
-    $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 2" . $testid, DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 1, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
-    $hashlist_3 = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 3" . $testid, DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, $isSalted, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
+    $hashlist_1 = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 1" . $testId, DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, $isSalted, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
+    $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 2" . $testId, DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, 1, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
+    $hashlist_3 = $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, "hashlist 3" . $testId, DHashlistFormat::PLAIN, 0, 0, ':', 0, 0, 0, $isSalted, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), "", 0, 0, 0));
     
     $oF = new OrderFilter(Hashlist::HASHLIST_ID, "ASC");
     
     // test column filter to retrieve some of their IDs
     $qF1 = new QueryFilter(Hashlist::IS_SALTED, $isSalted, "=");
-    $qF2 = new LikeFilter(Hashlist::HASHLIST_NAME, "%" . $testid);
+    $qF2 = new LikeFilter(Hashlist::HASHLIST_NAME, "%" . $testId);
     $ids = Factory::getHashlistFactory()->columnFilter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF], Hashlist::HASHLIST_ID);
     
     // hashlist 1 and 3 should be returned
     $this->assertSame([$hashlist_1->getId(), $hashlist_3->getId()], $ids);
     
     $qF1 = new QueryFilter(Hashlist::CRACKED, 5000, ">");
-    $qF2 = new LikeFilter(Hashlist::HASHLIST_NAME, "%" . $testid);
+    $qF2 = new LikeFilter(Hashlist::HASHLIST_NAME, "%" . $testId);
     $ids = Factory::getHashlistFactory()->columnFilter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF], Hashlist::HASHLIST_ID);
     $this->assertSame([], $ids);
   }

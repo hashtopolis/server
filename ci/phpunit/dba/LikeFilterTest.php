@@ -211,25 +211,25 @@ final class LikeFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterLikeNotMatch(): void {
-    $testid = uniqid();
+    $testId = uniqid();
     $hashType = $this->createHashType();
-    $ag = $this->createAccessGroup('ag_' . $testid);
+    $ag = $this->createAccessGroup('ag_' . $testId);
     $this->createDatabaseObject(
       Factory::getHashlistFactory(),
-      new Hashlist(null, 'keep_' . $testid, DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, 0, 0, 0, $ag->getId(), '', 0, 0, 0)
+      new Hashlist(null, 'keep_' . $testId, DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, 0, 0, 0, $ag->getId(), '', 0, 0, 0)
     );
     $this->createDatabaseObject(
       Factory::getHashlistFactory(),
-      new Hashlist(null, 'exclude_' . $testid, DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, 0, 0, 0, $ag->getId(), '', 0, 0, 0)
+      new Hashlist(null, 'exclude_' . $testId, DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, 0, 0, 0, $ag->getId(), '', 0, 0, 0)
     );
     
-    $scope = new LikeFilter(Hashlist::HASHLIST_NAME, '%' . $testid . '%');
-    $exclude = new LikeFilter(Hashlist::HASHLIST_NAME, '%exclude_' . $testid . '%');
+    $scope = new LikeFilter(Hashlist::HASHLIST_NAME, '%' . $testId . '%');
+    $exclude = new LikeFilter(Hashlist::HASHLIST_NAME, '%exclude_' . $testId . '%');
     $exclude->setMatch(false);
     $results = Factory::getHashlistFactory()->filter([Factory::FILTER => [$scope, $exclude]]);
     
     $this->assertCount(1, $results);
-    $this->assertEquals('keep_' . $testid, $results[0]->getHashlistName());
+    $this->assertEquals('keep_' . $testId, $results[0]->getHashlistName());
   }
   
   /**
@@ -239,13 +239,13 @@ final class LikeFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterLikeNoMatch(): void {
-    $testid = uniqid();
+    $testId = uniqid();
     $hashType = $this->createHashType();
-    $ag = $this->createAccessGroup('ag_' . $testid);
+    $ag = $this->createAccessGroup('ag_' . $testId);
     $this->createHashlist($ag, $hashType);
     $this->createHashlist($ag, $hashType);
     
-    $filter = new LikeFilter(Hashlist::HASHLIST_NAME, '%nomatch_' . $testid . '%');
+    $filter = new LikeFilter(Hashlist::HASHLIST_NAME, '%nomatch_' . $testId . '%');
     $results = Factory::getHashlistFactory()->filter([Factory::FILTER => $filter]);
     
     $this->assertCount(0, $results);
@@ -258,10 +258,10 @@ final class LikeFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterLikeMappedTable(): void {
-    $testid = uniqid();
-    $user = $this->createUser('mapped_' . $testid);
+    $testId = uniqid();
+    $user = $this->createUser('mapped_' . $testId);
     
-    $filter = new LikeFilter(User::USERNAME, '%mapped_' . $testid . '%');
+    $filter = new LikeFilter(User::USERNAME, '%mapped_' . $testId . '%');
     $results = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);
     
     $this->assertCount(1, $results);

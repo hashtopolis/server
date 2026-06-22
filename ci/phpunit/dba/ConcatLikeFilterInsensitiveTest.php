@@ -64,13 +64,13 @@ final class ConcatLikeFilterInsensitiveTest extends TestBase {
    * @throws Exception
    */
   public function testFilterCaseInsensitive(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'HelloWorld' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'helloworld' . $testid, 0, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'other' . $testid, 0, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'HelloWorld' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'helloworld' . $testId, 0, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'other' . $testId, 0, 0));
     
     $col = new ConcatColumn(HashType::DESCRIPTION, Factory::getHashTypeFactory());
-    $filter = new ConcatLikeFilterInsensitive([$col], '%helloworld' . $testid);
+    $filter = new ConcatLikeFilterInsensitive([$col], '%helloworld' . $testId);
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => $filter]);
     
     $this->assertCount(2, $result);
@@ -83,11 +83,11 @@ final class ConcatLikeFilterInsensitiveTest extends TestBase {
    * @throws Exception
    */
   public function testFilterCaseInsensitiveNoMatch(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'HelloWorld' . $testid, 1, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'HelloWorld' . $testId, 1, 0));
     
     $col = new ConcatColumn(HashType::DESCRIPTION, Factory::getHashTypeFactory());
-    $filter = new ConcatLikeFilterInsensitive([$col], '%nonexistent' . $testid);
+    $filter = new ConcatLikeFilterInsensitive([$col], '%nonexistent' . $testId);
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => $filter]);
     
     $this->assertCount(0, $result);

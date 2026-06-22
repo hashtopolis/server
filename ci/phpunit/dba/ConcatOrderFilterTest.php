@@ -59,12 +59,12 @@ final class ConcatOrderFilterTest extends TestBase {
    * @throws Exception
    */
   public function testOrderAsc(): void {
-    $testid = uniqid();
-    $ht1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'a' . $testid, 1, 0));
-    $ht2 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'b' . $testid, 5, 0));
-    $ht3 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'c' . $testid, 3, 0));
+    $testId = uniqid();
+    $ht1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'a' . $testId, 1, 0));
+    $ht2 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'b' . $testId, 5, 0));
+    $ht3 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'c' . $testId, 3, 0));
     
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $col = new ConcatColumn(HashType::IS_SALTED, Factory::getHashTypeFactory());
     $oF = new ConcatOrderFilter([$col], 'ASC');
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => $lF, Factory::ORDER => $oF]);
@@ -82,12 +82,12 @@ final class ConcatOrderFilterTest extends TestBase {
    * @throws Exception
    */
   public function testOrderDesc(): void {
-    $testid = uniqid();
-    $ht1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'a' . $testid, 1, 0));
-    $ht2 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'b' . $testid, 5, 0));
-    $ht3 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'c' . $testid, 3, 0));
+    $testId = uniqid();
+    $ht1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'a' . $testId, 1, 0));
+    $ht2 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'b' . $testId, 5, 0));
+    $ht3 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'c' . $testId, 3, 0));
     
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $col = new ConcatColumn(HashType::IS_SALTED, Factory::getHashTypeFactory());
     $oF = new ConcatOrderFilter([$col], 'DESC');
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => $lF, Factory::ORDER => $oF]);

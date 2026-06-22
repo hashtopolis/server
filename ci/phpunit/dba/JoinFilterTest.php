@@ -89,13 +89,13 @@ final class JoinFilterTest extends TestBase {
    * @throws Exception
    */
   public function testJoinInner(): void {
-    $testid = uniqid();
-    $ag1 = $this->createAccessGroup('ag1_' . $testid);
-    $ag2 = $this->createAccessGroup('ag2_' . $testid);
+    $testId = uniqid();
+    $ag1 = $this->createAccessGroup('ag1_' . $testId);
+    $ag2 = $this->createAccessGroup('ag2_' . $testId);
     
-    $this->createFile($ag1, 0, 'file1_' . $testid, 10);
-    $this->createFile($ag2, 0, 'file2_' . $testid, 20);
-    $this->createFile($ag1, 0, 'file3_' . $testid, 30);
+    $this->createFile($ag1, 0, 'file1_' . $testId, 10);
+    $this->createFile($ag2, 0, 'file2_' . $testId, 20);
+    $this->createFile($ag1, 0, 'file3_' . $testId, 30);
     
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroup::ACCESS_GROUP_ID);
     $joined = Factory::getFileFactory()->filter([Factory::JOIN => $jF]);
@@ -117,21 +117,21 @@ final class JoinFilterTest extends TestBase {
    * @throws Exception
    */
   public function testJoinWithFilter(): void {
-    $testid = uniqid();
-    $ag1 = $this->createAccessGroup('ag1_' . $testid);
-    $ag2 = $this->createAccessGroup('ag2_' . $testid);
+    $testId = uniqid();
+    $ag1 = $this->createAccessGroup('ag1_' . $testId);
+    $ag2 = $this->createAccessGroup('ag2_' . $testId);
     
-    $this->createFile($ag1, 0, 'file1_' . $testid, 10);
-    $this->createFile($ag2, 0, 'file2_' . $testid, 20);
-    $this->createFile($ag1, 0, 'file3_' . $testid, 30);
+    $this->createFile($ag1, 0, 'file1_' . $testId, 10);
+    $this->createFile($ag2, 0, 'file2_' . $testId, 20);
+    $this->createFile($ag1, 0, 'file3_' . $testId, 30);
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $ag1->getGroupName(), '=', Factory::getAccessGroupFactory());
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroup::ACCESS_GROUP_ID);
     $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     
     $this->assertCount(2, $joined[Factory::getFileFactory()->getModelName()]);
-    $this->assertEquals('file1_' . $testid, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
-    $this->assertEquals('file3_' . $testid, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
+    $this->assertEquals('file1_' . $testId, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
+    $this->assertEquals('file3_' . $testId, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
   }
   
   /**
@@ -141,13 +141,13 @@ final class JoinFilterTest extends TestBase {
    * @throws Exception
    */
   public function testJoinWithOrder(): void {
-    $testid = uniqid();
-    $ag1 = $this->createAccessGroup('ag1_' . $testid);
-    $ag2 = $this->createAccessGroup('ag2_' . $testid);
+    $testId = uniqid();
+    $ag1 = $this->createAccessGroup('ag1_' . $testId);
+    $ag2 = $this->createAccessGroup('ag2_' . $testId);
     
-    $this->createFile($ag1, 0, 'file1_' . $testid, 10);
-    $this->createFile($ag2, 0, 'file2_' . $testid, 20);
-    $this->createFile($ag1, 0, 'file3_' . $testid, 30);
+    $this->createFile($ag1, 0, 'file1_' . $testId, 10);
+    $this->createFile($ag2, 0, 'file2_' . $testId, 20);
+    $this->createFile($ag1, 0, 'file3_' . $testId, 30);
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $ag1->getGroupName(), '=', Factory::getAccessGroupFactory());
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroup::ACCESS_GROUP_ID);
@@ -155,8 +155,8 @@ final class JoinFilterTest extends TestBase {
     $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF, Factory::ORDER => $oF]);
     
     $this->assertCount(2, $joined[Factory::getFileFactory()->getModelName()]);
-    $this->assertEquals('file3_' . $testid, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
-    $this->assertEquals('file1_' . $testid, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
+    $this->assertEquals('file3_' . $testId, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
+    $this->assertEquals('file1_' . $testId, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
   }
   
   /**
@@ -167,21 +167,21 @@ final class JoinFilterTest extends TestBase {
    * @throws Exception
    */
   public function testJoinWithQueryFilters(): void {
-    $testid = uniqid();
-    $ag1 = $this->createAccessGroup('ag1_' . $testid);
-    $ag2 = $this->createAccessGroup('ag2_' . $testid);
+    $testId = uniqid();
+    $ag1 = $this->createAccessGroup('ag1_' . $testId);
+    $ag2 = $this->createAccessGroup('ag2_' . $testId);
     
-    $this->createFile($ag1, 0, 'file1_' . $testid, 10);
-    $this->createFile($ag2, 0, 'file2_' . $testid, 20);
-    $this->createFile($ag1, 0, 'file3_' . $testid, 30);
+    $this->createFile($ag1, 0, 'file1_' . $testId, 10);
+    $this->createFile($ag2, 0, 'file2_' . $testId, 20);
+    $this->createFile($ag1, 0, 'file3_' . $testId, 30);
     
     $qFJoin = new QueryFilter(AccessGroup::GROUP_NAME, $ag1->getGroupName(), '=', Factory::getAccessGroupFactory());
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroup::ACCESS_GROUP_ID, null, JoinFilter::INNER, [$qFJoin]);
     $joined = Factory::getFileFactory()->filter([Factory::JOIN => $jF]);
     
     $this->assertCount(2, $joined[Factory::getFileFactory()->getModelName()]);
-    $this->assertEquals('file1_' . $testid, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
-    $this->assertEquals('file3_' . $testid, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
+    $this->assertEquals('file1_' . $testId, $joined[Factory::getFileFactory()->getModelName()][0]->getFilename());
+    $this->assertEquals('file3_' . $testId, $joined[Factory::getFileFactory()->getModelName()][1]->getFilename());
   }
   
   /**
@@ -192,9 +192,9 @@ final class JoinFilterTest extends TestBase {
    * @throws Exception
    */
   public function testJoinMappedTable(): void {
-    $testid = uniqid();
-    $user = $this->createUser('user_' . $testid);
-    $ag = $this->createAccessGroup('ag_' . $testid);
+    $testId = uniqid();
+    $user = $this->createUser('user_' . $testId);
+    $ag = $this->createAccessGroup('ag_' . $testId);
     $this->createAccessGroupUser($user, $ag);
     
     $jF = new JoinFilter(Factory::getUserFactory(), AccessGroupUser::USER_ID, User::USER_ID);
@@ -216,9 +216,9 @@ final class JoinFilterTest extends TestBase {
    * @throws Exception
    */
   public function testJoinMultipleInner(): void {
-    $testid = uniqid();
-    $user = $this->createUser('user_' . $testid);
-    $ag = $this->createAccessGroup('ag_' . $testid);
+    $testId = uniqid();
+    $user = $this->createUser('user_' . $testId);
+    $ag = $this->createAccessGroup('ag_' . $testId);
     $this->createAccessGroupUser($user, $ag);
     
     $jF1 = new JoinFilter(Factory::getUserFactory(), AccessGroupUser::USER_ID, User::USER_ID);
@@ -242,14 +242,14 @@ final class JoinFilterTest extends TestBase {
    * @throws Exception
    */
   public function testJoinLeft(): void {
-    $testid = uniqid();
-    $ag1 = $this->createAccessGroup('ag1_' . $testid);
-    $ag2 = $this->createAccessGroup('ag2_' . $testid);
-    $this->createFile($ag1, 0, 'file1_' . $testid, 10);
-    $this->createFile($ag1, 0, 'file2_' . $testid, 20);
+    $testId = uniqid();
+    $ag1 = $this->createAccessGroup('ag1_' . $testId);
+    $ag2 = $this->createAccessGroup('ag2_' . $testId);
+    $this->createFile($ag1, 0, 'file1_' . $testId, 10);
+    $this->createFile($ag1, 0, 'file2_' . $testId, 20);
     
     $jF = new JoinFilter(Factory::getFileFactory(), AccessGroup::ACCESS_GROUP_ID, File::ACCESS_GROUP_ID, null, JoinFilter::LEFT);
-    $qF = new LikeFilter(AccessGroup::GROUP_NAME, '%' . $testid . '%', Factory::getAccessGroupFactory());
+    $qF = new LikeFilter(AccessGroup::GROUP_NAME, '%' . $testId . '%', Factory::getAccessGroupFactory());
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     
     $this->assertCount(3, $joined[Factory::getAccessGroupFactory()->getModelName()]);
@@ -268,14 +268,14 @@ final class JoinFilterTest extends TestBase {
    * @throws Exception
    */
   public function testJoinRight(): void {
-    $testid = uniqid();
-    $ag1 = $this->createAccessGroup('ag1_' . $testid);
-    $ag2 = $this->createAccessGroup('ag2_' . $testid);
-    $this->createFile($ag1, 0, 'file1_' . $testid, 10);
-    $this->createFile($ag1, 0, 'file2_' . $testid, 20);
+    $testId = uniqid();
+    $ag1 = $this->createAccessGroup('ag1_' . $testId);
+    $ag2 = $this->createAccessGroup('ag2_' . $testId);
+    $this->createFile($ag1, 0, 'file1_' . $testId, 10);
+    $this->createFile($ag1, 0, 'file2_' . $testId, 20);
     
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroup::ACCESS_GROUP_ID, null, JoinFilter::RIGHT);
-    $qF = new LikeFilter(AccessGroup::GROUP_NAME, '%' . $testid . '%', Factory::getAccessGroupFactory());
+    $qF = new LikeFilter(AccessGroup::GROUP_NAME, '%' . $testId . '%', Factory::getAccessGroupFactory());
     $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     
     $this->assertCount(3, $joined[Factory::getFileFactory()->getModelName()]);

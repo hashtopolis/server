@@ -86,12 +86,12 @@ final class ComparisonFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterEquality(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testid, 5, 5));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testid, 5, 10));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testid, 0, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testId, 5, 5));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testId, 5, 10));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testId, 0, 0));
     
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $cF = new ComparisonFilter(HashType::IS_SALTED, HashType::IS_SLOW_HASH, '=');
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$lF, $cF]]);
     
@@ -108,12 +108,12 @@ final class ComparisonFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterNotEqual(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testid, 5, 5));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testid, 5, 10));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testid, 0, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testId, 5, 5));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testId, 5, 10));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testId, 0, 0));
     
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $cF = new ComparisonFilter(HashType::IS_SALTED, HashType::IS_SLOW_HASH, '!=');
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$lF, $cF]]);
     
@@ -130,12 +130,12 @@ final class ComparisonFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterGreaterThan(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testid, 3, 1));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testid, 0, 5));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testid, 10, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testId, 3, 1));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testId, 0, 5));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testId, 10, 0));
     
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $cF = new ComparisonFilter(HashType::IS_SALTED, HashType::IS_SLOW_HASH, '>');
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$lF, $cF]]);
     
@@ -152,12 +152,12 @@ final class ComparisonFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterLessThan(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testid, 1, 3));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testid, 5, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testid, 0, 10));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testId, 1, 3));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testId, 5, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testId, 0, 10));
     
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $cF = new ComparisonFilter(HashType::IS_SALTED, HashType::IS_SLOW_HASH, '<');
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$lF, $cF]]);
     
@@ -174,11 +174,11 @@ final class ComparisonFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterNoMatch(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testid, 1, 3));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testid, 5, 10));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testId, 1, 3));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testId, 5, 10));
     
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $cF = new ComparisonFilter(HashType::IS_SALTED, HashType::IS_SLOW_HASH, '=');
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$lF, $cF]]);
     
@@ -192,12 +192,12 @@ final class ComparisonFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterWithColumnFilter(): void {
-    $testid = uniqid();
-    $ht1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testid, 50, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testid, 0, 50));
-    $ht3 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testid, 50, 0));
+    $testId = uniqid();
+    $ht1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testId, 50, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testId, 0, 50));
+    $ht3 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testId, 50, 0));
     
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $cF = new ComparisonFilter(HashType::IS_SALTED, HashType::IS_SLOW_HASH, '>');
     $ids = Factory::getHashTypeFactory()->columnFilter([Factory::FILTER => [$lF, $cF]], HashType::HASH_TYPE_ID);
     

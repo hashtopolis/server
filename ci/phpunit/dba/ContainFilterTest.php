@@ -20,7 +20,7 @@ final class ContainFilterTest extends TestBase {
       $filter->getQueryString(Factory::getHashlistFactory())
     );
   }
-
+  
   /** Verify multi-element array produces 'col IN (?,?,?)'. */
   public function testQueryStringMultipleValues(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1, 2, 3]);
@@ -29,7 +29,7 @@ final class ContainFilterTest extends TestBase {
       $filter->getQueryString(Factory::getHashlistFactory())
     );
   }
-
+  
   /** Verify table prefix is included when includeTable=true. */
   public function testQueryStringWithTable(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1]);
@@ -38,7 +38,7 @@ final class ContainFilterTest extends TestBase {
       $filter->getQueryString(Factory::getHashlistFactory(), true)
     );
   }
-
+  
   /** Verify NOT IN (?,?) with the notIn flag set to true. */
   public function testQueryStringNotIn(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1, 2], null, true);
@@ -47,7 +47,7 @@ final class ContainFilterTest extends TestBase {
       $filter->getQueryString(Factory::getHashlistFactory())
     );
   }
-
+  
   /** Verify NOT IN with table prefix produces 'Table.col NOT IN (?,?)'. */
   public function testQueryStringNotInWithTable(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1, 2], null, true);
@@ -56,7 +56,7 @@ final class ContainFilterTest extends TestBase {
       $filter->getQueryString(Factory::getHashlistFactory(), true)
     );
   }
-
+  
   /** Verify empty value array produces 'FALSE' (match nothing). */
   public function testQueryStringEmptyValues(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, []);
@@ -65,7 +65,7 @@ final class ContainFilterTest extends TestBase {
       $filter->getQueryString(Factory::getHashlistFactory())
     );
   }
-
+  
   /** Verify empty value array with notIn=true produces 'TRUE' (match everything). */
   public function testQueryStringEmptyValuesInverse(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [], null, true);
@@ -74,7 +74,7 @@ final class ContainFilterTest extends TestBase {
       $filter->getQueryString(Factory::getHashlistFactory())
     );
   }
-
+  
   /** Verify mapped table name (htp_User) is used with IN. */
   public function testQueryStringMappedTable(): void {
     $filter = new ContainFilter(User::USER_ID, [1]);
@@ -83,7 +83,7 @@ final class ContainFilterTest extends TestBase {
       $filter->getQueryString(Factory::getUserFactory(), true)
     );
   }
-
+  
   /** Verify overrideFactory forces column resolution from the override regardless of the passed factory. */
   public function testQueryStringOverrideFactory(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1], Factory::getHashlistFactory());
@@ -92,7 +92,7 @@ final class ContainFilterTest extends TestBase {
       $filter->getQueryString(Factory::getUserFactory())
     );
   }
-
+  
   /** Verify mapped column name (htp_end) is used when the column has dba_mapping=True. */
   public function testQueryStringMappedColumn(): void {
     $filter = new ContainFilter(HealthCheckAgent::END, [1, 2]);
@@ -101,7 +101,7 @@ final class ContainFilterTest extends TestBase {
       $filter->getQueryString(Factory::getHealthCheckAgentFactory())
     );
   }
-
+  
   /** Verify mapped column name (htp_end) with table prefix produces 'Table.htp_end IN (?)'. */
   public function testQueryStringMappedColumnWithTable(): void {
     $filter = new ContainFilter(HealthCheckAgent::END, [1]);
@@ -110,7 +110,7 @@ final class ContainFilterTest extends TestBase {
       $filter->getQueryString(Factory::getHealthCheckAgentFactory(), true)
     );
   }
-
+  
   /** Verify NOT IN (?) with mapped column and notIn=true. */
   public function testQueryStringMappedColumnNotIn(): void {
     $filter = new ContainFilter(HealthCheckAgent::END, [1], null, true);
@@ -119,13 +119,13 @@ final class ContainFilterTest extends TestBase {
       $filter->getQueryString(Factory::getHealthCheckAgentFactory())
     );
   }
-
+  
   /** Verify getValue returns the array passed to the constructor. */
   public function testGetValue(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1, 2, 3]);
     $this->assertEquals([1, 2, 3], $filter->getValue());
   }
-
+  
   /** Verify getHasValue returns true for a non-empty array. */
   public function testGetHasValue(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1]);
@@ -139,16 +139,16 @@ final class ContainFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterIn(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testid, 5, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testid, 10, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht4' . $testid, 20, 0));
-
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testId, 5, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testId, 10, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht4' . $testId, 20, 0));
+    
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $cF = new ContainFilter(HashType::IS_SALTED, [1, 10]);
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$lF, $cF]]);
-
+    
     $this->assertCount(2, $result);
     foreach ($result as $ht) {
       $this->assertContains($ht->getIsSalted(), [1, 10]);
@@ -162,16 +162,16 @@ final class ContainFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterNotIn(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testid, 5, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testid, 10, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht4' . $testid, 20, 0));
-
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testId, 5, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testId, 10, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht4' . $testId, 20, 0));
+    
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $cF = new ContainFilter(HashType::IS_SALTED, [1, 10], null, true);
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$lF, $cF]]);
-
+    
     $this->assertCount(2, $result);
     foreach ($result as $ht) {
       $this->assertContains($ht->getIsSalted(), [5, 20]);
@@ -185,13 +185,13 @@ final class ContainFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterEmptyValues(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testid, 1, 0));
-
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testId, 1, 0));
+    
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $cF = new ContainFilter(HashType::IS_SALTED, []);
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$lF, $cF]]);
-
+    
     $this->assertCount(0, $result);
   }
   
@@ -202,14 +202,14 @@ final class ContainFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterEmptyValuesInverse(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testid, 5, 0));
-
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testId, 5, 0));
+    
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $cF = new ContainFilter(HashType::IS_SALTED, [], null, true);
     $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$lF, $cF]]);
-
+    
     $this->assertCount(2, $result);
   }
   
@@ -220,15 +220,15 @@ final class ContainFilterTest extends TestBase {
    * @throws Exception
    */
   public function testFilterInWithColumnFilter(): void {
-    $testid = uniqid();
-    $ht1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testid, 5, 0));
-    $ht3 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testid, 10, 0));
-
-    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $testId = uniqid();
+    $ht1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2' . $testId, 5, 0));
+    $ht3 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3' . $testId, 10, 0));
+    
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $cF = new ContainFilter(HashType::IS_SALTED, [1, 10]);
     $ids = Factory::getHashTypeFactory()->columnFilter([Factory::FILTER => [$lF, $cF]], HashType::HASH_TYPE_ID);
-
+    
     $this->assertCount(2, $ids);
     $this->assertEqualsCanonicalizing([$ht1->getId(), $ht3->getId()], $ids);
   }

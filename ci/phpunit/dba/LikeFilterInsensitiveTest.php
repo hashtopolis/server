@@ -82,9 +82,9 @@ final class LikeFilterInsensitiveTest extends TestBase {
    * @throws Exception
    */
   public function testFilterLikeBasic(): void {
-    $testid = uniqid();
+    $testId = uniqid();
     $hashType = $this->createHashType();
-    $ag = $this->createAccessGroup('ag_' . $testid);
+    $ag = $this->createAccessGroup('ag_' . $testId);
     $this->createHashlist($ag, $hashType);
     $this->createHashlist($ag, $hashType);
     $this->createHashlist($ag, $hashType);
@@ -106,20 +106,20 @@ final class LikeFilterInsensitiveTest extends TestBase {
    * @throws Exception
    */
   public function testFilterLikeCaseInsensitive(): void {
-    $testid = uniqid();
+    $testId = uniqid();
     $hashType = $this->createHashType();
-    $ag = $this->createAccessGroup('ag_' . $testid);
+    $ag = $this->createAccessGroup('ag_' . $testId);
     
     $this->createDatabaseObject(
       Factory::getHashlistFactory(),
-      new Hashlist(null, 'TestCase_' . $testid, DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, 0, 0, 0, $ag->getId(), '', 0, 0, 0)
+      new Hashlist(null, 'TestCase_' . $testId, DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, 0, 0, 0, $ag->getId(), '', 0, 0, 0)
     );
     $this->createDatabaseObject(
       Factory::getHashlistFactory(),
-      new Hashlist(null, 'testcase_' . $testid, DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, 0, 0, 0, $ag->getId(), '', 0, 0, 0)
+      new Hashlist(null, 'testcase_' . $testId, DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, 0, 0, 0, $ag->getId(), '', 0, 0, 0)
     );
     
-    $filter = new LikeFilterInsensitive(Hashlist::HASHLIST_NAME, '%testcase_' . $testid . '%');
+    $filter = new LikeFilterInsensitive(Hashlist::HASHLIST_NAME, '%testcase_' . $testId . '%');
     $results = Factory::getHashlistFactory()->filter([Factory::FILTER => $filter]);
     
     $this->assertCount(2, $results);
@@ -132,13 +132,13 @@ final class LikeFilterInsensitiveTest extends TestBase {
    * @throws Exception
    */
   public function testFilterLikeNoMatch(): void {
-    $testid = uniqid();
+    $testId = uniqid();
     $hashType = $this->createHashType();
-    $ag = $this->createAccessGroup('ag_' . $testid);
+    $ag = $this->createAccessGroup('ag_' . $testId);
     $this->createHashlist($ag, $hashType);
     $this->createHashlist($ag, $hashType);
     
-    $filter = new LikeFilterInsensitive(Hashlist::HASHLIST_NAME, '%nomatch_' . $testid . '%');
+    $filter = new LikeFilterInsensitive(Hashlist::HASHLIST_NAME, '%nomatch_' . $testId . '%');
     $results = Factory::getHashlistFactory()->filter([Factory::FILTER => $filter]);
     
     $this->assertCount(0, $results);
@@ -151,10 +151,10 @@ final class LikeFilterInsensitiveTest extends TestBase {
    * @throws Exception
    */
   public function testFilterLikeMappedTable(): void {
-    $testid = uniqid();
-    $user = $this->createUser('mapped_' . $testid);
+    $testId = uniqid();
+    $user = $this->createUser('mapped_' . $testId);
     
-    $filter = new LikeFilterInsensitive(User::USERNAME, '%mapped_' . $testid . '%');
+    $filter = new LikeFilterInsensitive(User::USERNAME, '%mapped_' . $testId . '%');
     $results = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);
     
     $this->assertCount(1, $results);
