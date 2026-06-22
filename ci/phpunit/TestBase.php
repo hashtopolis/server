@@ -36,6 +36,7 @@ use Hashtopolis\inc\defines\DFileDownloadStatus;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\utils\UserUtils;
 use PHPUnit\Framework\TestCase;
 use Override;
@@ -46,6 +47,7 @@ require_once(dirname(__FILE__) . '/../../src/inc/startup/include.php');
 
 class TestBase extends TestCase {
   private array  $databaseObjects;
+  private string $savedDbType;
   protected User $adminUser;
   
   #[Override]
@@ -53,6 +55,7 @@ class TestBase extends TestCase {
     parent::setUp();
     
     $this->databaseObjects = [];
+    $this->savedDbType = (string)getenv('HASHTOPOLIS_DB_TYPE');
     $this->adminUser = new User(1, 'admin', 'admin@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, 1, '', '', '', '', '');
     
     // Avoid test warnings
@@ -81,6 +84,16 @@ class TestBase extends TestCase {
         $factory->delete($object);
       }
     }
+    
+    // Restore the DB type environment variable so putenv() in one test
+    // does not leak into the next test (affects LikeFilter etc.)
+    if ($this->savedDbType !== '') {
+      putenv('HASHTOPOLIS_DB_TYPE=' . $this->savedDbType);
+    }
+    else {
+      putenv('HASHTOPOLIS_DB_TYPE');
+    }
+    StartupConfig::getInstance(true);
     
     parent::tearDown();
   }
