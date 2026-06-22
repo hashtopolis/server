@@ -835,6 +835,7 @@ final class AbstractModelFactoryTest extends TestBase {
    * Test retrieving some matching entries of entries in the table with a normal filter.
    *
    * @return void
+   * @throws Exception
    */
   public function testFilterNormalFilter(): void {
     $testid = uniqid();
@@ -856,6 +857,7 @@ final class AbstractModelFactoryTest extends TestBase {
    * Test retrieving some matching entries of entries in the table with a normal filter with specific sorting.
    *
    * @return void
+   * @throws Exception
    */
   public function testFilterNormalFilterWithOrderDesc(): void {
     $testid = uniqid();
@@ -876,6 +878,7 @@ final class AbstractModelFactoryTest extends TestBase {
    * Test retrieving some matching entries of entries in the table with a normal filter but limit entries
    *
    * @return void
+   * @throws Exception
    */
   public function testFilterNormalFilterWithLimit(): void {
     $testid = uniqid();
@@ -898,6 +901,7 @@ final class AbstractModelFactoryTest extends TestBase {
    * Test retrieving some matching entries of entries but only request one single.
    *
    * @return void
+   * @throws Exception
    */
   public function testFilterNormalFilterSingle(): void {
     $testid = uniqid();
@@ -941,6 +945,7 @@ final class AbstractModelFactoryTest extends TestBase {
    * Test retrieving some matching entries of entries in the table with a normal filter.
    *
    * @return void
+   * @throws Exception
    */
   public function testFilterWithJoinsNormalFilter(): void {
     $testid = uniqid();
@@ -974,6 +979,7 @@ final class AbstractModelFactoryTest extends TestBase {
    * Test retrieving some matching entries of entries in the table with a normal filter with specific sorting.
    *
    * @return void
+   * @throws Exception
    */
   public function testFilterWithJoinsNormalFilterWithOrderDesc(): void {
     $testid = uniqid();
@@ -1008,6 +1014,7 @@ final class AbstractModelFactoryTest extends TestBase {
    * Test retrieving some matching entries of entries in the table with a normal filter but limit entries
    *
    * @return void
+   * @throws Exception
    */
   public function testFilterWithJoinsNormalFilterWithLimit(): void {
     $testid = uniqid();
@@ -1188,6 +1195,7 @@ final class AbstractModelFactoryTest extends TestBase {
   
   /**
    * @return array
+   * @throws Exception
    */
   private function setUpHealthCheck(): array {
     $agent = new Agent(null, '', '', 0, '', '', 0, 0, 0, '', '', 0, '', null, 0, '');

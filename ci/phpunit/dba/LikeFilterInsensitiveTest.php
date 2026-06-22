@@ -78,6 +78,8 @@ final class LikeFilterInsensitiveTest extends TestBase {
   /**
    * Create 3 hashlists and filter on hashlistName with a matching prefix.
    * Only the 2 hashlists whose name contains the prefix should be returned.
+   *
+   * @throws Exception
    */
   public function testFilterLikeBasic(): void {
     $testid = uniqid();
@@ -100,6 +102,7 @@ final class LikeFilterInsensitiveTest extends TestBase {
    * Create 2 hashlists with names that have the same content but different
    * casing (e.g. "FindMe_xxx" and "findme_yyy") and filter with a case-
    * insensitive LIKE — both should match.
+   *
    * @throws Exception
    */
   public function testFilterLikeCaseInsensitive(): void {
@@ -125,6 +128,8 @@ final class LikeFilterInsensitiveTest extends TestBase {
   /**
    * Filter on hashlistName with a pattern that matches none of the existing
    * hashlists — the result array should be empty.
+   *
+   * @throws Exception
    */
   public function testFilterLikeNoMatch(): void {
     $testid = uniqid();
@@ -142,6 +147,8 @@ final class LikeFilterInsensitiveTest extends TestBase {
   /**
    * Filter User::USERNAME using UserFactory (isMapping() = True).
    * Verifies the mapped table name (htp_User) resolves correctly in an actual query.
+   *
+   * @throws Exception
    */
   public function testFilterLikeMappedTable(): void {
     $testid = uniqid();

@@ -12,6 +12,7 @@ use Hashtopolis\TestBase;
 require_once(dirname(__FILE__) . '/../TestBase.php');
 
 final class ContainFilterTest extends TestBase {
+  /** Verify single-element array produces 'col IN (?)'. */
   public function testQueryStringSingleValue(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1]);
     $this->assertEquals(
@@ -20,6 +21,7 @@ final class ContainFilterTest extends TestBase {
     );
   }
 
+  /** Verify multi-element array produces 'col IN (?,?,?)'. */
   public function testQueryStringMultipleValues(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1, 2, 3]);
     $this->assertEquals(
@@ -28,6 +30,7 @@ final class ContainFilterTest extends TestBase {
     );
   }
 
+  /** Verify table prefix is included when includeTable=true. */
   public function testQueryStringWithTable(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1]);
     $this->assertEquals(
@@ -36,6 +39,7 @@ final class ContainFilterTest extends TestBase {
     );
   }
 
+  /** Verify NOT IN (?,?) with the notIn flag set to true. */
   public function testQueryStringNotIn(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1, 2], null, true);
     $this->assertEquals(
@@ -44,6 +48,7 @@ final class ContainFilterTest extends TestBase {
     );
   }
 
+  /** Verify NOT IN with table prefix produces 'Table.col NOT IN (?,?)'. */
   public function testQueryStringNotInWithTable(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1, 2], null, true);
     $this->assertEquals(
@@ -52,6 +57,7 @@ final class ContainFilterTest extends TestBase {
     );
   }
 
+  /** Verify empty value array produces 'FALSE' (match nothing). */
   public function testQueryStringEmptyValues(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, []);
     $this->assertEquals(
@@ -60,6 +66,7 @@ final class ContainFilterTest extends TestBase {
     );
   }
 
+  /** Verify empty value array with notIn=true produces 'TRUE' (match everything). */
   public function testQueryStringEmptyValuesInverse(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [], null, true);
     $this->assertEquals(
@@ -68,6 +75,7 @@ final class ContainFilterTest extends TestBase {
     );
   }
 
+  /** Verify mapped table name (htp_User) is used with IN. */
   public function testQueryStringMappedTable(): void {
     $filter = new ContainFilter(User::USER_ID, [1]);
     $this->assertEquals(
@@ -76,6 +84,7 @@ final class ContainFilterTest extends TestBase {
     );
   }
 
+  /** Verify overrideFactory forces column resolution from the override regardless of the passed factory. */
   public function testQueryStringOverrideFactory(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1], Factory::getHashlistFactory());
     $this->assertEquals(
@@ -84,6 +93,7 @@ final class ContainFilterTest extends TestBase {
     );
   }
 
+  /** Verify mapped column name (htp_end) is used when the column has dba_mapping=True. */
   public function testQueryStringMappedColumn(): void {
     $filter = new ContainFilter(HealthCheckAgent::END, [1, 2]);
     $this->assertEquals(
@@ -92,6 +102,7 @@ final class ContainFilterTest extends TestBase {
     );
   }
 
+  /** Verify mapped column name (htp_end) with table prefix produces 'Table.htp_end IN (?)'. */
   public function testQueryStringMappedColumnWithTable(): void {
     $filter = new ContainFilter(HealthCheckAgent::END, [1]);
     $this->assertEquals(
@@ -100,6 +111,7 @@ final class ContainFilterTest extends TestBase {
     );
   }
 
+  /** Verify NOT IN (?) with mapped column and notIn=true. */
   public function testQueryStringMappedColumnNotIn(): void {
     $filter = new ContainFilter(HealthCheckAgent::END, [1], null, true);
     $this->assertEquals(
@@ -108,17 +120,22 @@ final class ContainFilterTest extends TestBase {
     );
   }
 
+  /** Verify getValue returns the array passed to the constructor. */
   public function testGetValue(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1, 2, 3]);
     $this->assertEquals([1, 2, 3], $filter->getValue());
   }
 
+  /** Verify getHasValue returns true for a non-empty array. */
   public function testGetHasValue(): void {
     $filter = new ContainFilter(Hashlist::HASHLIST_ID, [1]);
     $this->assertTrue($filter->getHasValue());
   }
   
   /**
+   * Create 4 hash types with isSalted 1, 5, 10, 20 and filter IN (1, 10).
+   * Only the 2 matching rows should be returned.
+   *
    * @throws Exception
    */
   public function testFilterIn(): void {
@@ -139,6 +156,9 @@ final class ContainFilterTest extends TestBase {
   }
   
   /**
+   * Create 4 hash types with isSalted 1, 5, 10, 20 and filter NOT IN (1, 10).
+   * Only the 2 non-matching rows (5, 20) should be returned.
+   *
    * @throws Exception
    */
   public function testFilterNotIn(): void {
@@ -159,6 +179,9 @@ final class ContainFilterTest extends TestBase {
   }
   
   /**
+   * Create a hash type and filter with IN ([]) — empty values produce
+   * 'FALSE', so the result should be empty.
+   *
    * @throws Exception
    */
   public function testFilterEmptyValues(): void {
@@ -173,6 +196,9 @@ final class ContainFilterTest extends TestBase {
   }
   
   /**
+   * Create 2 hash types and filter with NOT IN ([]) — empty inverse
+   * produces 'TRUE', so all scoped rows should be returned.
+   *
    * @throws Exception
    */
   public function testFilterEmptyValuesInverse(): void {
@@ -188,6 +214,9 @@ final class ContainFilterTest extends TestBase {
   }
   
   /**
+   * Use columnFilter with IN (1, 10) — only the 2 matching hash type IDs
+   * should be returned.
+   *
    * @throws Exception
    */
   public function testFilterInWithColumnFilter(): void {

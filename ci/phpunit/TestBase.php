@@ -25,6 +25,9 @@ use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\models\UserFactory;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\InternalError;
 use Hashtopolis\inc\defines\DHealthCheckAgentStatus;
 use Hashtopolis\inc\defines\DHealthCheckMode;
 use Hashtopolis\inc\defines\DHealthCheckStatus;
@@ -32,6 +35,7 @@ use Hashtopolis\inc\defines\DHealthCheckType;
 use Hashtopolis\inc\defines\DFileDownloadStatus;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\defines\DTaskTypes;
+use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\UserUtils;
 use PHPUnit\Framework\TestCase;
 use Override;
@@ -54,10 +58,13 @@ class TestBase extends TestCase {
     // Avoid test warnings
     $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] ?? 'localhost';
     $_SERVER['SERVER_PORT'] = $_SERVER['SERVER_PORT'] ?? 80;
-
+    
     \hashtopolis_clear_test_mocks();
   }
   
+  /**
+   * @throws HTException
+   */
   #[Override]
   protected function tearDown(): void {
     \hashtopolis_clear_test_mocks();
@@ -78,6 +85,9 @@ class TestBase extends TestCase {
     parent::tearDown();
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createChunk(Task $task, Agent $agent, int $state): Chunk {
     $chunk = $this->createDatabaseObject(
       Factory::getChunkFactory(),
@@ -87,6 +97,9 @@ class TestBase extends TestCase {
     return $chunk;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createAccessGroup(string $prefix): AccessGroup {
     $group = $this->createDatabaseObject(
       Factory::getAccessGroupFactory(),
@@ -96,6 +109,9 @@ class TestBase extends TestCase {
     return $group;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createAccessGroupUser(User $user, AccessGroup $accessGroup): AccessGroupUser {
     $relation = $this->createDatabaseObject(
       Factory::getAccessGroupUserFactory(),
@@ -105,6 +121,9 @@ class TestBase extends TestCase {
     return $relation;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createRightGroup(): RightGroup {
     $group = $this->createDatabaseObject(
       Factory::getRightGroupFactory(),
@@ -114,6 +133,12 @@ class TestBase extends TestCase {
     return $group;
   }
   
+  /**
+   * @throws InternalError
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpConflict
+   */
   protected function createUser(string $prefix): User {
     $username = $prefix . '_' . uniqid();
     $user = UserUtils::createUser($username, $username . '@example.com', $this->createRightGroup()->getId(), $this->adminUser);
@@ -121,6 +146,9 @@ class TestBase extends TestCase {
     return $user;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createHashType(): HashType {
     $hashType = $this->createDatabaseObject(
       Factory::getHashTypeFactory(),
@@ -130,6 +158,9 @@ class TestBase extends TestCase {
     return $hashType;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createHashlist(AccessGroup $group, HashType $hashType, int $isSecret = 0): Hashlist {
     $hashlist = $this->createDatabaseObject(
       Factory::getHashlistFactory(),
@@ -139,6 +170,9 @@ class TestBase extends TestCase {
     return $hashlist;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createTaskWrapper(AccessGroup $group, Hashlist $hashlist, int $taskType = DTaskTypes::NORMAL): TaskWrapper {
     $taskWrapper = $this->createDatabaseObject(
       Factory::getTaskWrapperFactory(),
@@ -148,6 +182,9 @@ class TestBase extends TestCase {
     return $taskWrapper;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createCrackerBinaryType(): CrackerBinaryType {
     $crackerBinaryType = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
@@ -157,6 +194,9 @@ class TestBase extends TestCase {
     return $crackerBinaryType;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createCrackerBinary(CrackerBinaryType $crackerBinaryType): CrackerBinary {
     $crackerBinary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
@@ -166,6 +206,9 @@ class TestBase extends TestCase {
     return $crackerBinary;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createTask(TaskWrapper $taskWrapper, CrackerBinary $crackerBinary, CrackerBinaryType $crackerBinaryType, ?int $usePreprocessor = null, string $preprocessorCommand = ''): Task {
     $task = $this->createDatabaseObject(
       Factory::getTaskFactory(),
@@ -175,6 +218,9 @@ class TestBase extends TestCase {
     return $task;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createJwtApiKey(User $user, ?int $startValid = null, ?int $endValid = null, int $isRevoked = 0): JwtApiKey {
     $key = $this->createDatabaseObject(
       Factory::getJwtApiKeyFactory(),
@@ -183,7 +229,10 @@ class TestBase extends TestCase {
     $this->assertTrue($key instanceof JwtApiKey);
     return $key;
   }
-
+  
+  /**
+   * @throws Exception
+   */
   protected function createHealthCheck(CrackerBinary $crackerBinary, int $status = DHealthCheckStatus::PENDING, int $checkType = DHealthCheckType::BRUTE_FORCE, int $hashtypeId = DHealthCheckMode::MD5, int $expectedCracks = 0, string $attackCmd = ''): HealthCheck {
     $check = $this->createDatabaseObject(
       Factory::getHealthCheckFactory(),
@@ -192,7 +241,10 @@ class TestBase extends TestCase {
     $this->assertTrue($check instanceof HealthCheck);
     return $check;
   }
-
+  
+  /**
+   * @throws Exception
+   */
   protected function createHealthCheckAgent(HealthCheck $healthCheck, Agent $agent, int $status = DHealthCheckAgentStatus::PENDING, int $cracked = 0, int $numGpus = 0, int $start = 0, int $end = 0, string $errors = ''): HealthCheckAgent {
     $agentCheck = $this->createDatabaseObject(
       Factory::getHealthCheckAgentFactory(),
@@ -201,7 +253,10 @@ class TestBase extends TestCase {
     $this->assertTrue($agentCheck instanceof HealthCheckAgent);
     return $agentCheck;
   }
-
+  
+  /**
+   * @throws Exception
+   */
   protected function createFile(AccessGroup $group, int $isSecret = 0, ?string $filename = null, int $size = 0, int $fileType = 0, int $lineCount = 0): File {
     $file = $this->createDatabaseObject(
       Factory::getFileFactory(),
@@ -211,6 +266,9 @@ class TestBase extends TestCase {
     return $file;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createFileTask(File $file, Task $task): FileTask {
     $fileTask = $this->createDatabaseObject(
       Factory::getFileTaskFactory(),
@@ -219,7 +277,10 @@ class TestBase extends TestCase {
     $this->assertTrue($fileTask instanceof FileTask);
     return $fileTask;
   }
-
+  
+  /**
+   * @throws Exception
+   */
   protected function createFileDownload(int $fileId, int $status = DFileDownloadStatus::PENDING): FileDownload {
     $fileDownload = $this->createDatabaseObject(
       Factory::getFileDownloadFactory(),
@@ -229,6 +290,9 @@ class TestBase extends TestCase {
     return $fileDownload;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function createAgent(string $prefix, int $isTrusted = 1): Agent {
     $suffix = uniqid();
     $agent = $this->createDatabaseObject(

@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba;
 
+use Exception;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\File;
@@ -84,6 +85,8 @@ final class JoinFilterTest extends TestBase {
    * INNER JOIN File with AccessGroup on accessGroupId.
    * Creates 3 files across 2 groups — all rows match, so both result
    * arrays contain 3 entries.
+   *
+   * @throws Exception
    */
   public function testJoinInner(): void {
     $testid = uniqid();
@@ -110,6 +113,8 @@ final class JoinFilterTest extends TestBase {
   /**
    * INNER JOIN combined with a QueryFilter on the joined table (AccessGroup).
    * Only files belonging to ag1 should be returned.
+   *
+   * @throws Exception
    */
   public function testJoinWithFilter(): void {
     $testid = uniqid();
@@ -132,6 +137,8 @@ final class JoinFilterTest extends TestBase {
   /**
    * INNER JOIN combined with a filter and ORDER BY DESC on File::SIZE.
    * Files belonging to ag1 should be returned in descending size order.
+   *
+   * @throws Exception
    */
   public function testJoinWithOrder(): void {
     $testid = uniqid();
@@ -156,6 +163,8 @@ final class JoinFilterTest extends TestBase {
    * INNER JOIN with the filter pushed directly into JoinFilter's
    * queryFilters parameter instead of via Factory::FILTER.
    * Same expected result as testJoinWithFilter.
+   *
+   * @throws Exception
    */
   public function testJoinWithQueryFilters(): void {
     $testid = uniqid();
@@ -179,12 +188,14 @@ final class JoinFilterTest extends TestBase {
    * INNER JOIN AccessGroupUser with User on userId.
    * UserFactory has isMapping() = True, so the join table is htp_User.
    * Verifies the mapped table name works correctly in a real query.
+   *
+   * @throws Exception
    */
   public function testJoinMappedTable(): void {
     $testid = uniqid();
     $user = $this->createUser('user_' . $testid);
     $ag = $this->createAccessGroup('ag_' . $testid);
-    $agu = $this->createAccessGroupUser($user, $ag);
+    $this->createAccessGroupUser($user, $ag);
     
     $jF = new JoinFilter(Factory::getUserFactory(), AccessGroupUser::USER_ID, User::USER_ID);
     $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $ag->getId(), '=');
@@ -201,6 +212,8 @@ final class JoinFilterTest extends TestBase {
    * Two simultaneous INNER JOINs: AccessGroupUser joined with User
    * (on userId) AND with AccessGroup (on accessGroupId).
    * Verifies multiple joins are applied correctly.
+   *
+   * @throws Exception
    */
   public function testJoinMultipleInner(): void {
     $testid = uniqid();
@@ -225,6 +238,8 @@ final class JoinFilterTest extends TestBase {
    * LEFT JOIN AccessGroup (main) → File (joined) on accessGroupId.
    * ag2 has no files, so the third row has a File with null ID,
    * confirming LEFT JOIN preserves all rows from the main table.
+   *
+   * @throws Exception
    */
   public function testJoinLeft(): void {
     $testid = uniqid();
@@ -249,6 +264,8 @@ final class JoinFilterTest extends TestBase {
    * RIGHT JOIN File (main) ← AccessGroup (joined) on accessGroupId.
    * ag2 has no files, so the third row has a File with null ID,
    * confirming RIGHT JOIN preserves all rows from the joined table.
+   *
+   * @throws Exception
    */
   public function testJoinRight(): void {
     $testid = uniqid();

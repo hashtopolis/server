@@ -11,6 +11,7 @@ use Hashtopolis\TestBase;
 require_once(dirname(__FILE__) . '/../TestBase.php');
 
 final class ConcatOrderFilterTest extends TestBase {
+  /** Verify ASC ordering with a single column produces 'CONCAT(col) ASC'. */
   public function testQueryStringSingleColumnAsc(): void {
     $col = new ConcatColumn(Hashlist::HASHLIST_ID, Factory::getHashlistFactory());
     $order = new ConcatOrderFilter([$col], 'ASC');
@@ -20,6 +21,7 @@ final class ConcatOrderFilterTest extends TestBase {
     );
   }
   
+  /** Verify DESC ordering with a single column produces 'CONCAT(col) DESC'. */
   public function testQueryStringSingleColumnDesc(): void {
     $col = new ConcatColumn(Hashlist::HASHLIST_NAME, Factory::getHashlistFactory());
     $order = new ConcatOrderFilter([$col], 'DESC');
@@ -29,6 +31,7 @@ final class ConcatOrderFilterTest extends TestBase {
     );
   }
   
+  /** Verify multiple columns produce 'CONCAT(col1, col2) ASC'. */
   public function testQueryStringMultipleColumns(): void {
     $col1 = new ConcatColumn(Hashlist::HASHLIST_ID, Factory::getHashlistFactory());
     $col2 = new ConcatColumn(Hashlist::HASHLIST_NAME, Factory::getHashlistFactory());
@@ -39,6 +42,7 @@ final class ConcatOrderFilterTest extends TestBase {
     );
   }
   
+  /** Verify column from a mapped-table factory returns 'CONCAT(col) ASC'. */
   public function testQueryStringMappedColumn(): void {
     $col = new ConcatColumn(User::USERNAME, Factory::getUserFactory());
     $order = new ConcatOrderFilter([$col], 'ASC');
@@ -49,6 +53,9 @@ final class ConcatOrderFilterTest extends TestBase {
   }
   
   /**
+   * Create 3 hash types and order them ASC by isSalted.
+   * Verifies the correct sort order (1, 3, 5).
+   *
    * @throws Exception
    */
   public function testOrderAsc(): void {
@@ -69,6 +76,9 @@ final class ConcatOrderFilterTest extends TestBase {
   }
   
   /**
+   * Create 3 hash types and order them DESC by isSalted.
+   * Verifies the correct sort order (5, 3, 1).
+   *
    * @throws Exception
    */
   public function testOrderDesc(): void {

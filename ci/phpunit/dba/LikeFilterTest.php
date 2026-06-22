@@ -186,6 +186,8 @@ final class LikeFilterTest extends TestBase {
   /**
    * Create 3 hashlists and filter on hashlistName with a matching prefix.
    * All 3 hashlists whose name contains the prefix should be returned.
+   *
+   * @throws Exception
    */
   public function testFilterLikeBasic(): void {
     $hashType = $this->createHashType();
@@ -196,7 +198,7 @@ final class LikeFilterTest extends TestBase {
     
     $filter = new LikeFilter(Hashlist::HASHLIST_NAME, 'hashlist_%');
     $results = Factory::getHashlistFactory()->filter([Factory::FILTER => $filter]);
-
+    
     $this->assertCount(3, $results);
     foreach ($results as $hl) {
       $this->assertInstanceOf(Hashlist::class, $hl);
@@ -212,11 +214,11 @@ final class LikeFilterTest extends TestBase {
     $testid = uniqid();
     $hashType = $this->createHashType();
     $ag = $this->createAccessGroup('ag_' . $testid);
-    $hl1 = $this->createDatabaseObject(
+    $this->createDatabaseObject(
       Factory::getHashlistFactory(),
       new Hashlist(null, 'keep_' . $testid, DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, 0, 0, 0, $ag->getId(), '', 0, 0, 0)
     );
-    $hl2 = $this->createDatabaseObject(
+    $this->createDatabaseObject(
       Factory::getHashlistFactory(),
       new Hashlist(null, 'exclude_' . $testid, DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, 0, 0, 0, $ag->getId(), '', 0, 0, 0)
     );
@@ -225,7 +227,7 @@ final class LikeFilterTest extends TestBase {
     $exclude = new LikeFilter(Hashlist::HASHLIST_NAME, '%exclude_' . $testid . '%');
     $exclude->setMatch(false);
     $results = Factory::getHashlistFactory()->filter([Factory::FILTER => [$scope, $exclude]]);
-
+    
     $this->assertCount(1, $results);
     $this->assertEquals('keep_' . $testid, $results[0]->getHashlistName());
   }
@@ -233,6 +235,8 @@ final class LikeFilterTest extends TestBase {
   /**
    * Filter on hashlistName with a pattern that matches none of the existing
    * hashlists — the result array should be empty.
+   *
+   * @throws Exception
    */
   public function testFilterLikeNoMatch(): void {
     $testid = uniqid();
@@ -243,13 +247,15 @@ final class LikeFilterTest extends TestBase {
     
     $filter = new LikeFilter(Hashlist::HASHLIST_NAME, '%nomatch_' . $testid . '%');
     $results = Factory::getHashlistFactory()->filter([Factory::FILTER => $filter]);
-
+    
     $this->assertCount(0, $results);
   }
   
   /**
    * Filter User::USERNAME using UserFactory (isMapping() = True).
    * Verifies the mapped table name (htp_User) resolves correctly in an actual query.
+   *
+   * @throws Exception
    */
   public function testFilterLikeMappedTable(): void {
     $testid = uniqid();
@@ -257,7 +263,7 @@ final class LikeFilterTest extends TestBase {
     
     $filter = new LikeFilter(User::USERNAME, '%mapped_' . $testid . '%');
     $results = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);
-
+    
     $this->assertCount(1, $results);
     $this->assertInstanceOf(User::class, $results[0]);
     $this->assertEquals($user->getId(), $results[0]->getId());

@@ -11,11 +11,13 @@ use Hashtopolis\TestBase;
 require_once(dirname(__FILE__) . '/../TestBase.php');
 
 final class ComparisonFilterTest extends TestBase {
+  /** Verify column-vs-column equality produces 'col1=col2'. */
   public function testBasicEquality(): void {
     $filter = new ComparisonFilter(Hashlist::HASHLIST_ID, Hashlist::HASH_TYPE_ID, '=');
     $this->assertEquals('hashlistId=hashTypeId', $filter->getQueryString(Factory::getHashlistFactory()));
   }
   
+  /** Verify table prefix is included: 'Table.col1=Table.col2'. */
   public function testWithTablePrefix(): void {
     $filter = new ComparisonFilter(Hashlist::HASHLIST_ID, Hashlist::HASH_TYPE_ID, '=');
     $this->assertEquals(
@@ -24,6 +26,7 @@ final class ComparisonFilterTest extends TestBase {
     );
   }
   
+  /** Verify mapped table name (htp_User) is used in both column references. */
   public function testWithMappedTable(): void {
     $filter = new ComparisonFilter(User::USERNAME, User::EMAIL, '=');
     $this->assertEquals(
@@ -32,6 +35,7 @@ final class ComparisonFilterTest extends TestBase {
     );
   }
   
+  /** Verify all operators (!=, <, >, <=, >=) produce the correct query string. */
   public function testDifferentOperators(): void {
     $factory = Factory::getHashlistFactory();
     $ops = ['!=', '<', '>', '<=', '>='];
@@ -40,19 +44,21 @@ final class ComparisonFilterTest extends TestBase {
       $this->assertEquals(
         "hashlistId{$op}hashTypeId",
         $filter->getQueryString($factory),
-        "Operator {$op} should produce hashlistId{$op}hashTypeId"
+        "Operator $op should produce hashlistId{$op}hashTypeId"
       );
     }
   }
   
+  /** Verify overrideFactory resolves columns from the override regardless of the passed factory. */
   public function testOverrideFactory(): void {
     $filter = new ComparisonFilter(Hashlist::HASHLIST_ID, Hashlist::HASH_TYPE_ID, '=', Factory::getHashlistFactory());
     $this->assertEquals(
       'hashlistId=hashTypeId',
-      $filter->getQueryString(Factory::getUserFactory(), false)
+      $filter->getQueryString(Factory::getUserFactory())
     );
   }
   
+  /** Verify overrideFactory with table prefix uses the override's table name. */
   public function testOverrideFactoryWithTable(): void {
     $filter = new ComparisonFilter(Hashlist::HASHLIST_ID, Hashlist::HASH_TYPE_ID, '=', Factory::getHashlistFactory());
     $this->assertEquals(
@@ -61,17 +67,22 @@ final class ComparisonFilterTest extends TestBase {
     );
   }
   
+  /** Verify getValue returns null (comparison filters have no bound value). */
   public function testGetValueReturnsNull(): void {
     $filter = new ComparisonFilter(Hashlist::HASHLIST_ID, Hashlist::HASH_TYPE_ID, '=');
     $this->assertNull($filter->getValue());
   }
   
+  /** Verify getHasValue returns false (comparison filters have no bound value). */
   public function testGetHasValueReturnsFalse(): void {
     $filter = new ComparisonFilter(Hashlist::HASHLIST_ID, Hashlist::HASH_TYPE_ID, '=');
     $this->assertFalse($filter->getHasValue());
   }
   
   /**
+   * Create 3 hash types and filter where isSalted = isSlowHash.
+   * 2 out of 3 rows should match.
+   *
    * @throws Exception
    */
   public function testFilterEquality(): void {
@@ -91,6 +102,9 @@ final class ComparisonFilterTest extends TestBase {
   }
   
   /**
+   * Create 3 hash types and filter where isSalted != isSlowHash.
+   * Only 1 row (5 vs 10) should match.
+   *
    * @throws Exception
    */
   public function testFilterNotEqual(): void {
@@ -110,6 +124,9 @@ final class ComparisonFilterTest extends TestBase {
   }
   
   /**
+   * Create 3 hash types and filter where isSalted > isSlowHash.
+   * 2 rows (3>1, 10>0) should match.
+   *
    * @throws Exception
    */
   public function testFilterGreaterThan(): void {
@@ -129,6 +146,9 @@ final class ComparisonFilterTest extends TestBase {
   }
   
   /**
+   * Create 3 hash types and filter where isSalted < isSlowHash.
+   * 2 rows (1<3, 0<10) should match.
+   *
    * @throws Exception
    */
   public function testFilterLessThan(): void {
@@ -148,6 +168,9 @@ final class ComparisonFilterTest extends TestBase {
   }
   
   /**
+   * Create 2 hash types where isSalted != isSlowHash and filter with '='.
+   * No rows should match.
+   *
    * @throws Exception
    */
   public function testFilterNoMatch(): void {
@@ -163,6 +186,9 @@ final class ComparisonFilterTest extends TestBase {
   }
   
   /**
+   * Use columnFilter with ComparisonFilter (isSalted > isSlowHash).
+   * Only IDs of the 2 matching rows should be returned.
+   *
    * @throws Exception
    */
   public function testFilterWithColumnFilter(): void {
