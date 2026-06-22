@@ -3,7 +3,12 @@
 namespace Hashtopolis\dba;
 
 use Exception;
+use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\CrackerBinary;
+use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\models\HashType;
+use Hashtopolis\dba\models\HealthCheck;
+use Hashtopolis\dba\models\HealthCheckAgent;
 use Hashtopolis\TestBase;
 
 require_once(dirname(__FILE__) . '/../TestBase.php');
@@ -101,7 +106,7 @@ final class MassUpdateSetTest extends TestBase {
     $this->assertTrue($ht1 instanceof HashType);
     
     $updates = [
-      new MassUpdateSet($ht1->getDescription(), 200),
+      new MassUpdateSet($ht1->getDescription(), 100),
     ];
     
     $result = Factory::getHashTypeFactory()->massSingleUpdate(
@@ -116,7 +121,7 @@ final class MassUpdateSetTest extends TestBase {
     $this->assertCount(3, $results);
     foreach ($results as $ht) {
       if ($ht->getDescription() === $ht1->getDescription()) {
-        $this->assertEquals(200, $ht->getIsSalted());
+        $this->assertEquals(100, $ht->getIsSalted());
       }
       else {
         $this->assertEquals(0, $ht->getIsSalted());
@@ -134,5 +139,49 @@ final class MassUpdateSetTest extends TestBase {
       HashType::DESCRIPTION, HashType::IS_SALTED, []
     );
     $this->assertNull($result);
+  }
+  
+  /**
+   * massSingleUpdate with a mapped update column (HealthCheckAgent::END → htp_end).
+   * Create 3 HealthCheckAgent rows, update 2, verify the changes.
+   *
+   * @throws Exception
+   */
+  public function testMassSingleUpdateWithMappedColumn(): void {
+    $testId = uniqid();
+    $prefix = 'hca_' . $testId;
+    $agent = $this->createDatabaseObject(Factory::getAgentFactory(), new Agent(null, '', '', 0, '', '', 0, 0, 0, '', '', 0, '', null, 0, ''));
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, $prefix . '_ht', 0, 0));
+    $cbt = $this->createDatabaseObject(Factory::getCrackerBinaryTypeFactory(), new CrackerBinaryType(null, '', 0));
+    $cb = $this->createDatabaseObject(Factory::getCrackerBinaryFactory(), new CrackerBinary(null, $cbt->getId(), '', '', ''));
+    $healthCheck = $this->createDatabaseObject(Factory::getHealthCheckFactory(), new HealthCheck(null, 0, 0, 0, $hashType->getId(), $cb->getId(), 0, ''));
+    
+    $hca1 = $this->createDatabaseObject(Factory::getHealthCheckAgentFactory(), new HealthCheckAgent(null, $healthCheck->getId(), $agent->getId(), 0, 0, 0, 0, 100, ''));
+    $hca2 = $this->createDatabaseObject(Factory::getHealthCheckAgentFactory(), new HealthCheckAgent(null, $healthCheck->getId(), $agent->getId(), 0, 0, 0, 0, 200, ''));
+    $this->createDatabaseObject(Factory::getHealthCheckAgentFactory(), new HealthCheckAgent(null, $healthCheck->getId(), $agent->getId(), 0, 0, 0, 0, 300, ''));
+    
+    $this->assertTrue($hca1 instanceof HealthCheckAgent);
+    $this->assertTrue($hca2 instanceof HealthCheckAgent);
+    
+    $updates = [
+      new MassUpdateSet($hca1->getId(), 999),
+      new MassUpdateSet($hca2->getId(), 888),
+    ];
+    
+    $result = Factory::getHealthCheckAgentFactory()->massSingleUpdate(
+      HealthCheckAgent::HEALTH_CHECK_AGENT_ID, HealthCheckAgent::END, $updates
+    );
+    
+    $this->assertTrue($result);
+    
+    $scope1 = new QueryFilter(HealthCheckAgent::HEALTH_CHECK_AGENT_ID, $hca1->getId(), '=');
+    $updated1 = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => $scope1], true);
+    $this->assertInstanceOf(HealthCheckAgent::class, $updated1);
+    $this->assertEquals(999, $updated1->getEnd());
+    
+    $scope2 = new QueryFilter(HealthCheckAgent::HEALTH_CHECK_AGENT_ID, $hca2->getId(), '=');
+    $updated2 = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => $scope2], true);
+    $this->assertInstanceOf(HealthCheckAgent::class, $updated2);
+    $this->assertEquals(888, $updated2->getEnd());
   }
 }

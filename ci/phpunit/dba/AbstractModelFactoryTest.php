@@ -19,6 +19,7 @@ use Exception;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\User;
+use Hashtopolis\inc\StartupConfig;
 
 require_once(dirname(__FILE__) . '/../TestBase.php');
 
@@ -569,8 +570,6 @@ final class AbstractModelFactoryTest extends TestBase {
     $this->assertEquals(125, $results[$aggregations[0]->getName()]);
     $this->assertEquals(1, $results[$aggregations[1]->getName()]);
   }
-  
-  // TODO: create tests for multicolAggregationFilter using JOINS
   
   /**
    * Test receiving the column of a query.
@@ -1191,6 +1190,172 @@ final class AbstractModelFactoryTest extends TestBase {
     $qF2 = new LikeFilter(Hashlist::HASHLIST_NAME, "%" . $testId);
     $ids = Factory::getHashlistFactory()->columnFilter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF], Hashlist::HASHLIST_ID);
     $this->assertSame([], $ids);
+  }
+  
+  /**
+   * Create a HashType, save it, delete it, verify it is gone.
+   *
+   * @throws Exception
+   */
+  public function testDeleteSuccess(): void {
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'delete_test_' . uniqid(), 0, 0));
+    $this->assertNotNull($hashType->getId());
+    
+    $result = Factory::getHashTypeFactory()->delete($hashType);
+    $this->assertTrue($result);
+    
+    $deleted = Factory::getHashTypeFactory()->getFromDB($hashType->getId());
+    $this->assertNull($deleted);
+  }
+  
+  /**
+   * Pass a valid 6-element testProperties to getDB(true, ...).
+   * Without a real DB driver the connection fails and null is returned.
+   *
+   * @throws Exception
+   */
+  public function testGetDBWithTestProperties(): void {
+    $properties = [
+      'user' => 'testuser',
+      'pass' => 'testpass',
+      'type' => 'mysql',
+      'server' => 'localhost',
+      'port' => '3306',
+      'db' => 'testdb',
+    ];
+    $db = Factory::getHashTypeFactory()->getDB(true, $properties);
+    $this->assertNull($db);
+  }
+  
+  /**
+   * Set an unknown DB type and call getDB(true) — should return null.
+   *
+   * @throws Exception
+   */
+  public function testGetDBUnknownTypeReturnsNull(): void {
+    putenv('HASHTOPOLIS_DB_TYPE=sqlite');
+    StartupConfig::getInstance(true);
+    $db = Factory::getHashTypeFactory()->getDB(true);
+    $this->assertNull($db);
+  }
+  
+  /**
+   * Use columnFilter with a JOIN to retrieve filenames scoped by group.
+   *
+   * @throws Exception
+   */
+  public function testColumnFilterWithJoin(): void {
+    $testId = uniqid();
+    
+    $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag1_' . $testId));
+    $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag2_' . $testId));
+    
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1_' . $testId, 1, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2_' . $testId, 2, 0, 0, $accessGroup1->getId(), 1));
+    
+    $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroup::ACCESS_GROUP_ID);
+    $filenames = Factory::getFileFactory()->columnFilter(
+      [Factory::JOIN => $jF], File::FILENAME
+    );
+    
+    $this->assertCount(2, $filenames);
+    foreach ($filenames as $name) {
+      $this->assertStringContainsString($testId, $name);
+    }
+  }
+  
+  /**
+   * multicolAggregationFilter combined with a JoinFilter.
+   *
+   * @throws Exception
+   */
+  public function testMulticolAggregationWithJoin(): void {
+    $testId = uniqid();
+    
+    $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag1_' . $testId));
+    $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag2_' . $testId));
+    
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1_' . $testId, 10, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2_' . $testId, 20, 0, 0, $accessGroup1->getId(), 1));
+    
+    $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroup::ACCESS_GROUP_ID);
+    $aggregations = [
+      new Aggregation(File::SIZE, 'MAX'),
+      new Aggregation(File::SIZE, 'MIN'),
+    ];
+    
+    $results = Factory::getFileFactory()->multicolAggregationFilter(
+      [Factory::JOIN => $jF], $aggregations
+    );
+    
+    $this->assertEquals(20, $results[$aggregations[0]->getName()]);
+    $this->assertEquals(10, $results[$aggregations[1]->getName()]);
+  }
+  
+  /**
+   * JoinFilter with overrideOwnFactory set to a non-null factory.
+   * The override resolves match1 through the override's model.
+   *
+   * @throws Exception
+   */
+  public function testFilterWithJoinOverrideOwnFactory(): void {
+    $testId = uniqid();
+    
+    $accessGroup = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag_' . $testId));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file_' . $testId, 1, 0, 0, $accessGroup->getId(), 1));
+    
+    $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup->getGroupName(), '=', Factory::getAccessGroupFactory());
+    $jF = new JoinFilter(
+      Factory::getAccessGroupFactory(),
+      AccessGroup::ACCESS_GROUP_ID,
+      AccessGroup::ACCESS_GROUP_ID,
+      Factory::getAccessGroupFactory()
+    );
+    $joined = Factory::getFileFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => $qF]);
+    
+    $fileModelName = Factory::getFileFactory()->getModelName();
+    $this->assertCount(1, $joined[$fileModelName]);
+    $this->assertEquals('file_' . $testId, $joined[$fileModelName][0]->getFilename());
+  }
+  
+  /**
+   * JoinFilter with query filters applied as AND in the JOIN's ON clause.
+   *
+   * @throws Exception
+   */
+  public function testFilterWithJoinQueryFilters(): void {
+    $testId = uniqid();
+    
+    $accessGroup = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag_' . $testId));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1_' . $testId, 1, 0, 0, $accessGroup->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2_' . $testId, 2, 0, 0, $accessGroup->getId(), 1));
+    
+    $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup->getGroupName(), '=', Factory::getAccessGroupFactory());
+    $jF = new JoinFilter(
+      Factory::getAccessGroupFactory(),
+      File::ACCESS_GROUP_ID,
+      AccessGroup::ACCESS_GROUP_ID,
+      null,
+      JoinFilter::INNER,
+      [$qF]
+    );
+    $joined = Factory::getFileFactory()->filter([Factory::JOIN => $jF]);
+    
+    $fileModelName = Factory::getFileFactory()->getModelName();
+    $this->assertCount(2, $joined[$fileModelName]);
+    foreach ($joined[$fileModelName] as $file) {
+      $this->assertStringContainsString($testId, $file->getFilename());
+    }
+  }
+  
+  /**
+   * Pass an invalid op string to minMaxFilter — it defaults to MAX.
+   *
+   * @throws Exception
+   */
+  public function testMinMaxFilterWithInvalidOp(): void {
+    $result = Factory::getHealthCheckAgentFactory()->minMaxFilter([], HealthCheckAgent::END, 'INVALID');
+    $this->assertEquals(0, $result ?? 0);
   }
   
   /**
