@@ -9,7 +9,6 @@ use Hashtopolis\dba\Factory;
 
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\AgentStat;
-use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\ExistsFilter;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
@@ -43,7 +42,7 @@ class AgentStatAPI extends AbstractModelAPI {
     
     return [
       Factory::FILTER => [
-        new ExistsFilter(Factory::getAccessGroupAgentFactory(), AccessGroupAgent::AGENT_ID, Agent::AGENT_ID, [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory())]),
+        new ExistsFilter(Factory::getAccessGroupAgentFactory(), AccessGroupAgent::AGENT_ID, AgentStat::AGENT_ID, [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory())]),
       ]
     ];
   }
