@@ -90,8 +90,8 @@ final class LikeFilterInsensitiveTest extends TestBase {
     $filter = new LikeFilterInsensitive(Hashlist::HASHLIST_NAME, 'hashlist_%');
     $results = Factory::getHashlistFactory()->filter([Factory::FILTER => $filter]);
     
-    $this->assertCount(3, $results[Factory::getHashlistFactory()->getModelName()]);
-    foreach ($results[Factory::getHashlistFactory()->getModelName()] as $hl) {
+    $this->assertCount(3, $results);
+    foreach ($results as $hl) {
       $this->assertInstanceOf(Hashlist::class, $hl);
     }
   }
@@ -119,7 +119,7 @@ final class LikeFilterInsensitiveTest extends TestBase {
     $filter = new LikeFilterInsensitive(Hashlist::HASHLIST_NAME, '%testcase_' . $testid . '%');
     $results = Factory::getHashlistFactory()->filter([Factory::FILTER => $filter]);
     
-    $this->assertCount(2, $results[Factory::getHashlistFactory()->getModelName()]);
+    $this->assertCount(2, $results);
   }
   
   /**
@@ -136,7 +136,7 @@ final class LikeFilterInsensitiveTest extends TestBase {
     $filter = new LikeFilterInsensitive(Hashlist::HASHLIST_NAME, '%nomatch_' . $testid . '%');
     $results = Factory::getHashlistFactory()->filter([Factory::FILTER => $filter]);
     
-    $this->assertCount(0, $results[Factory::getHashlistFactory()->getModelName()]);
+    $this->assertCount(0, $results);
   }
   
   /**
@@ -150,8 +150,8 @@ final class LikeFilterInsensitiveTest extends TestBase {
     $filter = new LikeFilterInsensitive(User::USERNAME, '%mapped_' . $testid . '%');
     $results = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);
     
-    $this->assertCount(1, $results[Factory::getUserFactory()->getModelName()]);
-    $this->assertInstanceOf(User::class, $results[Factory::getUserFactory()->getModelName()][0]);
-    $this->assertEquals($user->getId(), $results[Factory::getUserFactory()->getModelName()][0]->getId());
+    $this->assertCount(1, $results);
+    $this->assertInstanceOf(User::class, $results[0]);
+    $this->assertEquals($user->getId(), $results[0]->getId());
   }
 }

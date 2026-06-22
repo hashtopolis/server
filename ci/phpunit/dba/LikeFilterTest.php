@@ -196,9 +196,9 @@ final class LikeFilterTest extends TestBase {
     
     $filter = new LikeFilter(Hashlist::HASHLIST_NAME, 'hashlist_%');
     $results = Factory::getHashlistFactory()->filter([Factory::FILTER => $filter]);
-    
-    $this->assertCount(3, $results[Factory::getHashlistFactory()->getModelName()]);
-    foreach ($results[Factory::getHashlistFactory()->getModelName()] as $hl) {
+
+    $this->assertCount(3, $results);
+    foreach ($results as $hl) {
       $this->assertInstanceOf(Hashlist::class, $hl);
     }
   }
@@ -221,12 +221,13 @@ final class LikeFilterTest extends TestBase {
       new Hashlist(null, 'exclude_' . $testid, DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, 0, 0, 0, $ag->getId(), '', 0, 0, 0)
     );
     
-    $filter = new LikeFilter(Hashlist::HASHLIST_NAME, '%exclude_' . $testid . '%');
-    $filter->setMatch(false);
-    $results = Factory::getHashlistFactory()->filter([Factory::FILTER => $filter]);
-    
-    $this->assertCount(1, $results[Factory::getHashlistFactory()->getModelName()]);
-    $this->assertEquals('keep_' . $testid, $results[Factory::getHashlistFactory()->getModelName()][0]->getHashlistName());
+    $scope = new LikeFilter(Hashlist::HASHLIST_NAME, '%' . $testid . '%');
+    $exclude = new LikeFilter(Hashlist::HASHLIST_NAME, '%exclude_' . $testid . '%');
+    $exclude->setMatch(false);
+    $results = Factory::getHashlistFactory()->filter([Factory::FILTER => [$scope, $exclude]]);
+
+    $this->assertCount(1, $results);
+    $this->assertEquals('keep_' . $testid, $results[0]->getHashlistName());
   }
   
   /**
@@ -242,8 +243,8 @@ final class LikeFilterTest extends TestBase {
     
     $filter = new LikeFilter(Hashlist::HASHLIST_NAME, '%nomatch_' . $testid . '%');
     $results = Factory::getHashlistFactory()->filter([Factory::FILTER => $filter]);
-    
-    $this->assertCount(0, $results[Factory::getHashlistFactory()->getModelName()]);
+
+    $this->assertCount(0, $results);
   }
   
   /**
@@ -256,9 +257,9 @@ final class LikeFilterTest extends TestBase {
     
     $filter = new LikeFilter(User::USERNAME, '%mapped_' . $testid . '%');
     $results = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);
-    
-    $this->assertCount(1, $results[Factory::getUserFactory()->getModelName()]);
-    $this->assertInstanceOf(User::class, $results[Factory::getUserFactory()->getModelName()][0]);
-    $this->assertEquals($user->getId(), $results[Factory::getUserFactory()->getModelName()][0]->getId());
+
+    $this->assertCount(1, $results);
+    $this->assertInstanceOf(User::class, $results[0]);
+    $this->assertEquals($user->getId(), $results[0]->getId());
   }
 }

@@ -184,10 +184,11 @@ final class JoinFilterTest extends TestBase {
     $testid = uniqid();
     $user = $this->createUser('user_' . $testid);
     $ag = $this->createAccessGroup('ag_' . $testid);
-    $this->createAccessGroupUser($user, $ag);
+    $agu = $this->createAccessGroupUser($user, $ag);
     
     $jF = new JoinFilter(Factory::getUserFactory(), AccessGroupUser::USER_ID, User::USER_ID);
-    $joined = Factory::getAccessGroupUserFactory()->filter([Factory::JOIN => $jF]);
+    $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $ag->getId(), '=');
+    $joined = Factory::getAccessGroupUserFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     
     $this->assertCount(1, $joined[Factory::getAccessGroupUserFactory()->getModelName()]);
     $this->assertCount(1, $joined[Factory::getUserFactory()->getModelName()]);
@@ -209,7 +210,8 @@ final class JoinFilterTest extends TestBase {
     
     $jF1 = new JoinFilter(Factory::getUserFactory(), AccessGroupUser::USER_ID, User::USER_ID);
     $jF2 = new JoinFilter(Factory::getAccessGroupFactory(), AccessGroupUser::ACCESS_GROUP_ID, AccessGroup::ACCESS_GROUP_ID);
-    $joined = Factory::getAccessGroupUserFactory()->filter([Factory::JOIN => [$jF1, $jF2]]);
+    $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $ag->getId(), '=');
+    $joined = Factory::getAccessGroupUserFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => [$jF1, $jF2]]);
     
     $this->assertCount(1, $joined[Factory::getAccessGroupUserFactory()->getModelName()]);
     $this->assertCount(1, $joined[Factory::getUserFactory()->getModelName()]);
@@ -232,7 +234,8 @@ final class JoinFilterTest extends TestBase {
     $this->createFile($ag1, 0, 'file2_' . $testid, 20);
     
     $jF = new JoinFilter(Factory::getFileFactory(), AccessGroup::ACCESS_GROUP_ID, File::ACCESS_GROUP_ID, null, JoinFilter::LEFT);
-    $joined = Factory::getAccessGroupFactory()->filter([Factory::JOIN => $jF]);
+    $qF = new LikeFilter(AccessGroup::GROUP_NAME, '%' . $testid . '%', Factory::getAccessGroupFactory());
+    $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     
     $this->assertCount(3, $joined[Factory::getAccessGroupFactory()->getModelName()]);
     $this->assertCount(3, $joined[Factory::getFileFactory()->getModelName()]);
@@ -255,7 +258,8 @@ final class JoinFilterTest extends TestBase {
     $this->createFile($ag1, 0, 'file2_' . $testid, 20);
     
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroup::ACCESS_GROUP_ID, null, JoinFilter::RIGHT);
-    $joined = Factory::getFileFactory()->filter([Factory::JOIN => $jF]);
+    $qF = new LikeFilter(AccessGroup::GROUP_NAME, '%' . $testid . '%', Factory::getAccessGroupFactory());
+    $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     
     $this->assertCount(3, $joined[Factory::getFileFactory()->getModelName()]);
     $this->assertCount(3, $joined[Factory::getAccessGroupFactory()->getModelName()]);
