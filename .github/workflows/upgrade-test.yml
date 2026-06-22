@@ -24,9 +24,15 @@ jobs:
         include:
           - start-tag: v0.14.1
             db-type: mysql
+          - start-tag: v0.14.8
+            db-type: mysql
           - start-tag: v1.0.0-rainbow5
             db-type: mysql
           - start-tag: v1.0.0-rainbow5
+            db-type: postgres
+          - start-tag: v1.0.0-rc1
+            db-type: mysql
+          - start-tag: v1.0.0-rc1
             db-type: postgres
       fail-fast: false
 
@@ -42,7 +48,7 @@ jobs:
           docker volume create ht-data
           docker volume create ht-db
 
-      - name: Start database container
+      - name: Start database container with ${{ matrix.db-type }}
         run: |
           if [ "${{ matrix.db-type }}" = "postgres" ]; then
             docker run -d --network ht-test-net --name db \
@@ -79,7 +85,7 @@ jobs:
           fi
           echo "Database ready"
 
-      - name: Start old backend (${{ matrix.start-tag }})
+      - name: Start backend version ${{ matrix.start-tag }}
         run: |
           docker run -d --network ht-test-net --name backend \
             -e HASHTOPOLIS_DB_TYPE=${{ matrix.db-type }} \
@@ -92,20 +98,20 @@ jobs:
             -v ht-data:/usr/local/share/hashtopolis \
             hashtopolis/backend:${{ matrix.start-tag }}
 
-      - name: Wait for old backend initialization
+      - name: Wait for backend initialization
         run: |
           timeout 60 bash -c 'until docker logs backend 2>&1 | grep -q "Initialization complete!"; do sleep 3; done'
-          echo "Old backend initialized"
+          echo "Backend initialized"
 
-      - name: Stop old backend
+      - name: Stop backend ${{ matrix.start-tag }}
         run: |
           docker stop backend
 
-      - name: Show old backend logs
+      - name: Show backend ${{ matrix.start-tag }} logs
         if: always()
         run: docker logs backend
 
-      - name: Remove old backend
+      - name: Remove backend
         run: docker rm backend
 
       - name: Start new backend

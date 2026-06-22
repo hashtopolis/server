@@ -1,4 +1,4 @@
-name: Hashtopolis
+name: Test Run (PyTest, PHPUnittest)
 
 on:
   push:
