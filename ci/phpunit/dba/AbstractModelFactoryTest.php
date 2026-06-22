@@ -1215,6 +1215,10 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testGetDBWithTestProperties(): void {
+    $ref = new \ReflectionProperty(AbstractModelFactory::class, 'dbh');
+    $orig = $ref->getValue(null);
+    $ref->setValue(null, null);
+    
     $properties = [
       'user' => 'testuser',
       'pass' => 'testpass',
@@ -1225,6 +1229,8 @@ final class AbstractModelFactoryTest extends TestBase {
     ];
     $db = Factory::getHashTypeFactory()->getDB(true, $properties);
     $this->assertNull($db);
+    
+    $ref->setValue(null, $orig);
   }
   
   /**
@@ -1233,10 +1239,16 @@ final class AbstractModelFactoryTest extends TestBase {
    * @throws Exception
    */
   public function testGetDBUnknownTypeReturnsNull(): void {
+    $ref = new \ReflectionProperty(AbstractModelFactory::class, 'dbh');
+    $orig = $ref->getValue(null);
+    $ref->setValue(null, null);
+    
     putenv('HASHTOPOLIS_DB_TYPE=sqlite');
     StartupConfig::getInstance(true);
     $db = Factory::getHashTypeFactory()->getDB(true);
     $this->assertNull($db);
+    
+    $ref->setValue(null, $orig);
   }
   
   /**
