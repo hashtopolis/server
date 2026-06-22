@@ -338,7 +338,7 @@ $CONF['Pretask'] = [
     ['name' => 'color', 'read_only' => False, 'type' => 'str(20)'],
     ['name' => 'isSmall', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'isCpuTask', 'read_only' => False, 'type' => 'bool'],
-    ['name' => 'useNewBench', 'read_only' => True, 'type' => 'bool'],
+    ['name' => 'useNewBench', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'priority', 'read_only' => False, 'type' => 'int'],
     ['name' => 'maxAgents', 'read_only' => False, 'type' => 'int'],
     ['name' => 'isMaskImport', 'read_only' => False, 'type' => 'bool'],
