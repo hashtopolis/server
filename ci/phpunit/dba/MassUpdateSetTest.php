@@ -54,6 +54,9 @@ final class MassUpdateSetTest extends TestBase {
     $ht2 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2_' . $testId, 0, 0));
     $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3_' . $testId, 0, 0));
     
+    $this->assertTrue($ht1 instanceof HashType);
+    $this->assertTrue($ht2 instanceof HashType);
+    
     $updates = [
       new MassUpdateSet($ht1->getDescription(), 99),
       new MassUpdateSet($ht2->getDescription(), 88),
@@ -94,6 +97,8 @@ final class MassUpdateSetTest extends TestBase {
     $ht1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht1_' . $testId, 0, 0));
     $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht2_' . $testId, 0, 0));
     $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3_' . $testId, 0, 0));
+    
+    $this->assertTrue($ht1 instanceof HashType);
     
     $updates = [
       new MassUpdateSet($ht1->getDescription(), 999),
