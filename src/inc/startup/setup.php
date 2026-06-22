@@ -91,7 +91,7 @@ if ($initialSetup === true) {
   if (getenv('HASHTOPOLIS_ADMIN_PASSWORD') !== false) {
     $password = getenv('HASHTOPOLIS_ADMIN_PASSWORD');
   }
-  $email = "admin@localhost";
+  $email = "htp-admin@localhost.local";
   
   Factory::getAgentFactory()->getDB()->beginTransaction();
   
