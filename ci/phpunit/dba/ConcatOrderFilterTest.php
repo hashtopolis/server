@@ -1,0 +1,90 @@
+<?php
+
+namespace Hashtopolis\dba;
+
+use Exception;
+use Hashtopolis\dba\models\HashType;
+use Hashtopolis\dba\models\Hashlist;
+use Hashtopolis\dba\models\User;
+use Hashtopolis\TestBase;
+
+require_once(dirname(__FILE__) . '/../TestBase.php');
+
+final class ConcatOrderFilterTest extends TestBase {
+  public function testQueryStringSingleColumnAsc(): void {
+    $col = new ConcatColumn(Hashlist::HASHLIST_ID, Factory::getHashlistFactory());
+    $order = new ConcatOrderFilter([$col], 'ASC');
+    $this->assertEquals(
+      'CONCAT(hashlistId) ASC',
+      $order->getQueryString(Factory::getHashlistFactory())
+    );
+  }
+  
+  public function testQueryStringSingleColumnDesc(): void {
+    $col = new ConcatColumn(Hashlist::HASHLIST_NAME, Factory::getHashlistFactory());
+    $order = new ConcatOrderFilter([$col], 'DESC');
+    $this->assertEquals(
+      'CONCAT(hashlistName) DESC',
+      $order->getQueryString(Factory::getHashlistFactory())
+    );
+  }
+  
+  public function testQueryStringMultipleColumns(): void {
+    $col1 = new ConcatColumn(Hashlist::HASHLIST_ID, Factory::getHashlistFactory());
+    $col2 = new ConcatColumn(Hashlist::HASHLIST_NAME, Factory::getHashlistFactory());
+    $order = new ConcatOrderFilter([$col1, $col2], 'ASC');
+    $this->assertEquals(
+      'CONCAT(hashlistId, hashlistName) ASC',
+      $order->getQueryString(Factory::getHashlistFactory())
+    );
+  }
+  
+  public function testQueryStringMappedColumn(): void {
+    $col = new ConcatColumn(User::USERNAME, Factory::getUserFactory());
+    $order = new ConcatOrderFilter([$col], 'ASC');
+    $this->assertEquals(
+      'CONCAT(username) ASC',
+      $order->getQueryString(Factory::getUserFactory())
+    );
+  }
+  
+  /**
+   * @throws Exception
+   */
+  public function testOrderAsc(): void {
+    $testid = uniqid();
+    $ht1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'a' . $testid, 1, 0));
+    $ht2 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'b' . $testid, 5, 0));
+    $ht3 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'c' . $testid, 3, 0));
+    
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $col = new ConcatColumn(HashType::IS_SALTED, Factory::getHashTypeFactory());
+    $oF = new ConcatOrderFilter([$col], 'ASC');
+    $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => $lF, Factory::ORDER => $oF]);
+    
+    $this->assertCount(3, $result);
+    $this->assertEquals($ht1->getId(), $result[0]->getId());
+    $this->assertEquals($ht3->getId(), $result[1]->getId());
+    $this->assertEquals($ht2->getId(), $result[2]->getId());
+  }
+  
+  /**
+   * @throws Exception
+   */
+  public function testOrderDesc(): void {
+    $testid = uniqid();
+    $ht1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'a' . $testid, 1, 0));
+    $ht2 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'b' . $testid, 5, 0));
+    $ht3 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'c' . $testid, 3, 0));
+    
+    $lF = new LikeFilter(HashType::DESCRIPTION, '%' . $testid);
+    $col = new ConcatColumn(HashType::IS_SALTED, Factory::getHashTypeFactory());
+    $oF = new ConcatOrderFilter([$col], 'DESC');
+    $result = Factory::getHashTypeFactory()->filter([Factory::FILTER => $lF, Factory::ORDER => $oF]);
+    
+    $this->assertCount(3, $result);
+    $this->assertEquals($ht2->getId(), $result[0]->getId());
+    $this->assertEquals($ht3->getId(), $result[1]->getId());
+    $this->assertEquals($ht1->getId(), $result[2]->getId());
+  }
+}

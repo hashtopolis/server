@@ -6,11 +6,11 @@ class ConcatOrderFilter extends Order {
   /**
    * @var ConcatColumn[] $columns
    */
-  private $columns;
-  private $type;
+  private array  $columns;
+  private string $type;
   
   /**
-   * @param string[] $columns
+   * @param ConcatColumn[] $columns
    * @param string $type
    */
   function __construct(array $columns, string $type) {
