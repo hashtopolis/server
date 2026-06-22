@@ -100,6 +100,20 @@ class PretaskTest(BaseTest):
         self.assertEqual(e.exception.status_code, 400)
         self.assertEqual(e.exception.title, "Key 'isCpuTask' is not of type boolean")
 
+    def test_patch_useNewBench(self):
+        model_obj = self.create_test_object()
+        self._test_patch(model_obj, 'useNewBench', 1)
+        model_obj = self.create_test_object()
+        self._test_patch(model_obj, 'useNewBench', True)
+
+    def test_patch_invalid_useNewBench(self):
+        model_obj = self.create_test_object()
+        model_obj.useNewBench = "test"
+        with self.assertRaises(HashtopolisError) as e:
+            model_obj.save()
+        self.assertEqual(e.exception.status_code, 400)
+        self.assertEqual(e.exception.title, "Key 'useNewBench' is not of type boolean")
+
     def test_delete(self):
         model_obj = self.create_test_object(delete=False)
         self._test_delete(model_obj)
