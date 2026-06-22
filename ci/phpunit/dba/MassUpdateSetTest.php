@@ -101,7 +101,7 @@ final class MassUpdateSetTest extends TestBase {
     $this->assertTrue($ht1 instanceof HashType);
     
     $updates = [
-      new MassUpdateSet($ht1->getDescription(), 444),
+      new MassUpdateSet($ht1->getDescription(), 200),
     ];
     
     $result = Factory::getHashTypeFactory()->massSingleUpdate(
@@ -116,7 +116,7 @@ final class MassUpdateSetTest extends TestBase {
     $this->assertCount(3, $results);
     foreach ($results as $ht) {
       if ($ht->getDescription() === $ht1->getDescription()) {
-        $this->assertEquals(444, $ht->getIsSalted());
+        $this->assertEquals(200, $ht->getIsSalted());
       }
       else {
         $this->assertEquals(0, $ht->getIsSalted());
