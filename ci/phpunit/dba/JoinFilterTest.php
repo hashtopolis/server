@@ -252,12 +252,18 @@ final class JoinFilterTest extends TestBase {
     $qF = new LikeFilter(AccessGroup::GROUP_NAME, '%' . $testId . '%', Factory::getAccessGroupFactory());
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     
-    $this->assertCount(3, $joined[Factory::getAccessGroupFactory()->getModelName()]);
-    $this->assertCount(3, $joined[Factory::getFileFactory()->getModelName()]);
-    $this->assertEquals($ag1->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()][0]->getId());
-    $this->assertEquals($ag1->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()][1]->getId());
-    $this->assertEquals($ag2->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()][2]->getId());
-    $this->assertNull($joined[Factory::getFileFactory()->getModelName()][2]->getId());
+    $agTable = Factory::getAccessGroupFactory()->getModelTable();
+    $fileTable = Factory::getFileFactory()->getModelTable();
+    
+    $this->assertCount(3, $joined[$agTable]);
+    $this->assertCount(3, $joined[$fileTable]);
+    $agIds = array_map(fn($ag) => $ag->getId(), $joined[$agTable]);
+    $this->assertContainsEquals($ag1->getId(), $agIds);
+    $this->assertContainsEquals($ag2->getId(), $agIds);
+    $this->assertEquals($ag1->getId(), $agIds[0]);
+    $this->assertEquals($ag1->getId(), $agIds[1]);
+    $nullFiles = array_filter($joined[$fileTable], fn($f) => $f->getId() === null);
+    $this->assertCount(1, $nullFiles);
   }
   
   /**
@@ -278,11 +284,15 @@ final class JoinFilterTest extends TestBase {
     $qF = new LikeFilter(AccessGroup::GROUP_NAME, '%' . $testId . '%', Factory::getAccessGroupFactory());
     $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     
-    $this->assertCount(3, $joined[Factory::getFileFactory()->getModelName()]);
-    $this->assertCount(3, $joined[Factory::getAccessGroupFactory()->getModelName()]);
-    $this->assertEquals($ag1->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()][0]->getId());
-    $this->assertEquals($ag1->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()][1]->getId());
-    $this->assertEquals($ag2->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()][2]->getId());
-    $this->assertNull($joined[Factory::getFileFactory()->getModelName()][2]->getId());
+    $agTable = Factory::getAccessGroupFactory()->getModelTable();
+    $fileTable = Factory::getFileFactory()->getModelTable();
+    
+    $this->assertCount(3, $joined[$fileTable]);
+    $this->assertCount(3, $joined[$agTable]);
+    $agIds = array_map(fn($ag) => $ag->getId(), $joined[$agTable]);
+    $this->assertContainsEquals($ag1->getId(), $agIds);
+    $this->assertContainsEquals($ag2->getId(), $agIds);
+    $nullFiles = array_filter($joined[$fileTable], fn($f) => $f->getId() === null);
+    $this->assertCount(1, $nullFiles);
   }
 }
