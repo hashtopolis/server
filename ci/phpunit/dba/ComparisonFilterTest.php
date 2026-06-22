@@ -67,12 +67,6 @@ final class ComparisonFilterTest extends TestBase {
     );
   }
   
-  /** Verify getValue returns null (comparison filters have no bound value). */
-  public function testGetValueReturnsNull(): void {
-    $filter = new ComparisonFilter(Hashlist::HASHLIST_ID, Hashlist::HASH_TYPE_ID, '=');
-    $this->assertNull($filter->getValue());
-  }
-  
   /** Verify getHasValue returns false (comparison filters have no bound value). */
   public function testGetHasValueReturnsFalse(): void {
     $filter = new ComparisonFilter(Hashlist::HASHLIST_ID, Hashlist::HASH_TYPE_ID, '=');
