@@ -6,6 +6,7 @@ use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\inc\utils\AssignmentUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
+use Hashtopolis\dba\ExistsFilter;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Hashlist;
@@ -48,13 +49,12 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     
     return [
       Factory::JOIN => [
-        new JoinFilter(Factory::getAccessGroupAgentFactory(), Assignment::AGENT_ID, AccessGroupAgent::AGENT_ID),
         new JoinFilter(Factory::getTaskFactory(), Assignment::TASK_ID, Task::TASK_ID),
         new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskFactory()),
         new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID, Factory::getTaskWrapperFactory()),
       ],
       Factory::FILTER => [
-        new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory()),
+        new ExistsFilter(Factory::getAccessGroupAgentFactory(), AccessGroupAgent::AGENT_ID, Agent::AGENT_ID, [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory())]),
         new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory()),
       ]
     ];

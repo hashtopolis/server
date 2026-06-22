@@ -16,7 +16,6 @@ use Hashtopolis\dba\models\AgentError;
 use Hashtopolis\dba\models\AgentStat;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Chunk;
-use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\User;
