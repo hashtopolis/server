@@ -27,17 +27,17 @@ class TaskWrapperDisplayTest(BaseTest):
 
         helper = Helper()
         task_wrapper = helper.create_supertask(supertask, hashlist, cracker)
-        task_wrapper_display = TaskWrapperDisplay.objects.params(**{"aggregate[taskwrapperdisplay]": "timeSpent,dispatched,searched,currentSpeed,cprogress"}).get(taskWrapperId=task_wrapper.id)
-        assert not any([hasattr(task_wrapper_display, attr) for attr in ['timeSpent' ,'searched', 'dispatched', 'currentSpeed', 'cprogress']]), "Attribute 'timeSpent' should not be set"
+        aggregate_attrs = ['timeSpent', 'searched', 'dispatched', 'currentSpeed', 'cprogress']
+        task_wrapper_display = TaskWrapperDisplay.objects.params(**{"aggregate[taskwrapperdisplay]": ','.join(aggregate_attrs)}).get(taskWrapperId=task_wrapper.id)
+        self.assertFalse(any(hasattr(task_wrapper_display, attr) for attr in aggregate_attrs), f"Aggregate attributes should not be set: {', '.join(aggregate_attrs)}")
 
     def test_aggregate_data_on_normal_task(self):
         task_wrapper_display_object = self.create_test_object()
-        task_wrapper_display = TaskWrapperDisplay.objects.params(**{"aggregate[taskwrapperdisplay]": "totalAssignedAgents,searched,dispatched,status,currentSpeed"}).get(taskWrapperId=task_wrapper_display_object.id)
         aggregate_attrs = ['totalAssignedAgents', 'searched', 'dispatched', 'status', 'currentSpeed']
-        self.assertTrue(all(hasattr(task_wrapper_display, a) for a in aggregate_attrs),
-                        f"Aggregate attributes should be set: {', '.join(aggregate_attrs)}")
+        task_wrapper_display = TaskWrapperDisplay.objects.params(**{"aggregate[taskwrapperdisplay]": ','.join(aggregate_attrs)}).get(taskWrapperId=task_wrapper_display_object.id)
+        self.assertTrue(all(hasattr(task_wrapper_display, a) for a in aggregate_attrs), f"Aggregate attributes should be set: {', '.join(aggregate_attrs)}")
         self.assertIsNotNone(re.fullmatch(r"\d+", str(task_wrapper_display.totalAssignedAgents)), "Attribute 'totalAssignedAgents' should be numeric")
-        self.assertIsNotNone(re.fullmatch(r"\d+\.\d{2}", str(task_wrapper_display.searched)), "Attribute 'searched' should be a decimal string")
-        self.assertIsNotNone(re.fullmatch(r"\d+\.\d{2}", str(task_wrapper_display.dispatched)), "Attribute 'dispatched' should be a decimal string")
-        self.assertIsInstance(task_wrapper_display.status, int)
-        self.assertIsInstance(task_wrapper_display.currentSpeed, int)
+        self.assertIsNotNone(re.fullmatch(r"\d?\d?\d\.\d{2}", str(task_wrapper_display.searched)), "Attribute 'searched' should be a decimal string")
+        self.assertIsNotNone(re.fullmatch(r"\d?\d?\d\.\d{2}", str(task_wrapper_display.dispatched)), "Attribute 'dispatched' should be a decimal string")
+        self.assertIsInstance(task_wrapper_display.status, int, "Attribute 'status' should be of type int")
+        self.assertIsInstance(task_wrapper_display.currentSpeed, int, "Attribute 'currentSpeed' should be of type int")
