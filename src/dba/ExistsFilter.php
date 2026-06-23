@@ -7,6 +7,7 @@ class ExistsFilter extends Filter {
   private string $subqueryMatchKey;
   private string $outerMatchKey;
   private array $filters;
+  private ?QueryFilter $baseFilter;
   private bool $inverse;
 
   /**
@@ -25,6 +26,7 @@ class ExistsFilter extends Filter {
     string $subqueryMatchKey,
     string $outerMatchKey,
     array $filters = [],
+    ?QueryFilter $baseFilter = null,
     bool $inverse = false
   ) {
     /** @var Filter[] $filters */
@@ -32,6 +34,7 @@ class ExistsFilter extends Filter {
     $this->subqueryMatchKey = $subqueryMatchKey;
     $this->outerMatchKey = $outerMatchKey;
     $this->filters = $filters;
+    $this->baseFilter = $baseFilter;
     $this->inverse = $inverse;
   }
 
@@ -51,6 +54,10 @@ class ExistsFilter extends Filter {
       $query .= " AND " . implode(" AND ", $parts);
     }
     $query .= ")";
+
+    if ($this->baseFilter !== null) {
+      $query = "(" . $query . " OR " . $this->baseFilter->getQueryString($factory, true) . ")";
+    }
 
     return $query;
   }
