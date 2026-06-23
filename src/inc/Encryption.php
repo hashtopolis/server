@@ -2,9 +2,6 @@
 
 namespace Hashtopolis\inc;
 
-use Hashtopolis\inc\StartupConfig;
-use Hashtopolis\inc\Util;
-
 /**
  * Bundle of static functions to generate password hashes, session keys, random strings
  * and other crypt functions
@@ -16,13 +13,12 @@ class Encryption {
    * @param int $id sessionID
    * @param int $startTime time of the session start
    * @param string $username username of the user the session belongs to
-   * @return string base64 encoded hash
+   * @return string hex encoded hash
    */
-  public static function sessionHash($id, $startTime, $username) {
+  public static function sessionHash(int $id, int $startTime, string $username): string {
     $KEY = pack('H*', hash("sha256", $startTime));
     $cycles = Encryption::getCount($username . $startTime, 500, 1000);
     $CIPHER = $username . $startTime;
-    $CIPHER = openssl_encrypt($CIPHER, 'blowfish', $KEY, 0, substr(StartupConfig::getInstance()->getPepper(0), 0, 8));
     for ($x = 0; $x < $cycles; $x++) {
       $KEY = pack('H*', hash("sha256", $CIPHER . $id . StartupConfig::getInstance()->getPepper(0) . $KEY));
     }
@@ -35,7 +31,7 @@ class Encryption {
    * @param string $string password to check
    * @return boolean true if password is complex enough, false if not
    */
-  public static function validPassword($string) {
+  public static function validPassword(string $string): bool {
     if (strlen($string) < 8) {
       return false;
     }
@@ -67,14 +63,19 @@ class Encryption {
    * @param string $salt salt which belongs to the password
    * @return string hash
    */
-  public static function passwordHash($password, $salt) {
+  public static function passwordHash(string $password, string $salt): string {
     $CIPHER = StartupConfig::getInstance()->getPepper(1) . $password . $salt;
     $options = array('cost' => 12);
-    $CIPHER = password_hash($CIPHER, PASSWORD_BCRYPT, $options);
-    return $CIPHER;
+    return password_hash($CIPHER, PASSWORD_BCRYPT, $options);
   }
   
-  public static function passwordVerify($password, $salt, $hash) {
+  /**
+   * @param string $password
+   * @param string $salt
+   * @param string $hash
+   * @return bool
+   */
+  public static function passwordVerify(string $password, string $salt, string $hash): bool {
     $CIPHER = StartupConfig::getInstance()->getPepper(1) . $password . $salt;
     if (!password_verify($CIPHER, $hash)) {
       return false;
@@ -86,17 +87,17 @@ class Encryption {
    * Get the number of cycles for a given string
    *
    * @param string $string
-   * @param int $mincycles
-   * @param int $maxcycles
+   * @param int $minCycles
+   * @param int $maxCycles
    * @return int num cycles
    */
-  private static function getCount($string, $mincycles = 3000, $maxcycles = 5000) {
+  private static function getCount(string $string, int $minCycles = 3000, int $maxCycles = 5000): int {
     $count = 0;
     for ($x = 0; $x < strlen($string); $x++) {
       $count += $x * ord($string[$x]) * bcpowmod($x, 15, 10000);
       $count = $count % 10000;
     }
-    return $count % $maxcycles + $mincycles;
+    return $count % $maxCycles + $minCycles;
   }
   
   /**
@@ -106,11 +107,10 @@ class Encryption {
    * @param string $username username to validate
    * @return string base64 encoded hash
    */
-  public static function validationHash($id, $username) {
+  public static function validationHash(int $id, string $username): string {
     $KEY = pack('H*', hash("sha256", $id));
     $cycles = Encryption::getCount($username . StartupConfig::getInstance()->getPepper(2), 500, 1000);
     $CIPHER = $id . $username;
-    $CIPHER = openssl_encrypt($CIPHER, 'blowfish', $KEY, 0, substr(StartupConfig::getInstance()->getPepper(2), 0, 8));
     for ($x = 0; $x < $cycles; $x++) {
       $KEY = pack('H*', hash("sha256", $CIPHER . $id . StartupConfig::getInstance()->getPepper(2) . $username . $KEY));
     }
