@@ -3,6 +3,7 @@
 require_once(dirname(__FILE__) . "/AbstractModel.php");
 require_once(dirname(__FILE__) . "/AbstractModelFactory.php");
 require_once(dirname(__FILE__) . "/Aggregation.php");
+require_once(dirname(__FILE__) . "/ExistFilter.php");
 require_once(dirname(__FILE__) . "/Filter.php");
 require_once(dirname(__FILE__) . "/Order.php");
 require_once(dirname(__FILE__) . "/ConcatColumn.php");
