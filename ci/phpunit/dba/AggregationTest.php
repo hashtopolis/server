@@ -6,7 +6,6 @@ use Exception;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\models\HashType;
-use Hashtopolis\dba\models\HealthCheckAgent;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\TestBase;
 use RuntimeException;
@@ -20,12 +19,12 @@ final class AggregationTest extends TestBase {
    * @throws Exception
    */
   public function testAggregationSuccessAllFunctions(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 125, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 0));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $aggregations = [];
     $aggregations[] = new Aggregation(HashType::IS_SALTED, Aggregation::MAX);
     $aggregations[] = new Aggregation(HashType::IS_SALTED, Aggregation::MIN);
@@ -48,12 +47,12 @@ final class AggregationTest extends TestBase {
    * @throws Exception
    */
   public function testAggregationSuccessMixedColumns(): void {
-    $testid = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 0));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 0, 5));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 9));
+    $testId = uniqid();
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 0, 5));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 9));
     
-    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testid);
+    $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $aggregations = [];
     $aggregations[] = new Aggregation(HashType::IS_SALTED, Aggregation::MAX);
     $aggregations[] = new Aggregation(HashType::IS_SLOW_HASH, Aggregation::MIN);
@@ -74,16 +73,16 @@ final class AggregationTest extends TestBase {
    * @throws Exception
    */
   public function testAggregationSuccessWithJoin(): void {
-    $testid = uniqid();
-    $hashtype1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testid, 1, 10));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testid, 0, 5));
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testid, 72, 9));
+    $testId = uniqid();
+    $hashtype1 = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 10));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 0, 5));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 9));
     
-    $accessGroup = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup1' . $testid));
+    $accessGroup = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup1' . $testId));
     
-    $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, 'hashlist1' . $testid, 0, $hashtype1->getId(), 0, 0, 0, 0, 0, 0, $accessGroup->getId(), '', 0, 0, 0));
+    $this->createDatabaseObject(Factory::getHashlistFactory(), new Hashlist(null, 'hashlist1' . $testId, 0, $hashtype1->getId(), 0, 0, 0, 0, 0, 0, $accessGroup->getId(), '', 0, 0, 0));
     
-    $qF = new LikeFilter(HASHLIST::HASHLIST_NAME, "%" . $testid, Factory::getHashlistFactory());
+    $qF = new LikeFilter(HASHLIST::HASHLIST_NAME, "%" . $testId, Factory::getHashlistFactory());
     $jF = new JoinFilter(Factory::getHashlistFactory(), HashType::HASH_TYPE_ID, Hashlist::HASH_TYPE_ID);
     
     $aggregations = [];
