@@ -8,6 +8,7 @@ use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\dba\ContainFilter;
+use Hashtopolis\dba\ExistsFilter;
 use Hashtopolis\dba\Factory;
 
 use Hashtopolis\dba\models\AccessGroup;
@@ -17,7 +18,6 @@ use Hashtopolis\dba\models\AgentError;
 use Hashtopolis\dba\models\AgentStat;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Chunk;
-use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\User;
@@ -107,9 +107,8 @@ class AgentAPI extends AbstractModelAPI {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     
     return [
-      Factory::JOIN => [
-        new JoinFilter(Factory::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID)
-      ], Factory::FILTER => [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory()),
+      Factory::FILTER => [
+        new ExistsFilter(Factory::getAccessGroupAgentFactory(), AccessGroupAgent::AGENT_ID, Agent::AGENT_ID, [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory())])
       ]
     ];
   }
