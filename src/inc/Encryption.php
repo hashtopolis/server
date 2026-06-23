@@ -105,7 +105,7 @@ class Encryption {
    *
    * @param int $id userID to validate
    * @param string $username username to validate
-   * @return string base64 encoded hash
+   * @return string hex encoded hash
    */
   public static function validationHash(int $id, string $username): string {
     $KEY = pack('H*', hash("sha256", $id));
