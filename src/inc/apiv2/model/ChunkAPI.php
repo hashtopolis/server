@@ -5,6 +5,7 @@ namespace Hashtopolis\inc\apiv2\model;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\ContainFilter;
+use Hashtopolis\dba\ExistsFilter;
 use Hashtopolis\dba\Factory;
 
 use Hashtopolis\dba\models\Agent;
@@ -48,16 +49,17 @@ class ChunkAPI extends AbstractModelAPI {
   
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
-    
+    $baseFilter = new QueryFilter(Chunk::AGENT_ID, null, "=");
     return [
       Factory::JOIN => [
-        new JoinFilter(Factory::getAccessGroupAgentFactory(), Chunk::AGENT_ID, AccessGroupAgent::AGENT_ID),
         new JoinFilter(Factory::getTaskFactory(), Chunk::TASK_ID, Task::TASK_ID),
         new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskFactory()),
         new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID, Factory::getTaskWrapperFactory()),
       ],
       Factory::FILTER => [
-        new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory()),
+        // Exists filter is needed because user and agent can match in multiple accessgroups,
+        // Making an inner join return too much elements, which would result in duplicate chunks being returned
+        new ExistsFilter(Factory::getAccessGroupAgentFactory(), AccessGroupAgent::AGENT_ID, Chunk::AGENT_ID, [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory())], $baseFilter),
         new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory()),
       ]
     ];

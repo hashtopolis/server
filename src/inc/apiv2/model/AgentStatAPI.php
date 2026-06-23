@@ -7,8 +7,9 @@ use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 
+use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\AgentStat;
-use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\ExistsFilter;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -40,11 +41,8 @@ class AgentStatAPI extends AbstractModelAPI {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     
     return [
-      Factory::JOIN => [
-        new JoinFilter(Factory::getAccessGroupAgentFactory(), AgentStat::AGENT_ID, AccessGroupAgent::AGENT_ID),
-      ],
       Factory::FILTER => [
-        new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory()),
+        new ExistsFilter(Factory::getAccessGroupAgentFactory(), AccessGroupAgent::AGENT_ID, AgentStat::AGENT_ID, [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory())]),
       ]
     ];
   }

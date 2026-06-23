@@ -4,6 +4,7 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
+use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\JoinFilter;
@@ -15,6 +16,7 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\Util;
+use Hashtopolis\dba\ExistsFilter;
 
 
 class AgentErrorAPI extends AbstractModelAPI {
@@ -56,14 +58,13 @@ class AgentErrorAPI extends AbstractModelAPI {
     
     return [
       Factory::JOIN => [
-        new JoinFilter(Factory::getAccessGroupAgentFactory(), AgentError::AGENT_ID, AccessGroupAgent::AGENT_ID),
         new JoinFilter(Factory::getTaskFactory(), AgentError::TASK_ID, Task::TASK_ID),
         new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskFactory()),
         new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID, Factory::getTaskWrapperFactory()),
       ],
       Factory::FILTER => [
-        new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory()),
         new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory()),
+        new ExistsFilter(Factory::getAccessGroupAgentFactory(), AccessGroupAgent::AGENT_ID, AgentError::AGENT_ID, [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory())]),
       ]
     ];
   }
