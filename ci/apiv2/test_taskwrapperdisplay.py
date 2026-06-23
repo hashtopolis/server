@@ -1,4 +1,4 @@
-from hashtopolis import TaskWrapperDisplay, Helper, TaskWrapper
+from hashtopolis import TaskWrapperDisplay, Helper
 import re
 
 from utils import BaseTest
