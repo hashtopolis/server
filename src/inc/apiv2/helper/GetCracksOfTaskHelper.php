@@ -2,8 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\Chunk;
-use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DHashlistFormat;
@@ -89,18 +89,12 @@ class GetCracksOfTaskHelper extends AbstractHelperAPI {
     else {
       $hashFactory = Factory::getHashBinaryFactory();
     }
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-    $chunkIds = array();
-    foreach ($chunks as $chunk) {
-      $chunkIds[] = $chunk->getId();
-    }
-    $queryFilters[] = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
+    $queryFilters[] = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=", Factory::getChunkFactory());
     $queryFilters[] = new QueryFilter(Hash::IS_CRACKED, 1, "=");
-    $hashes = $hashFactory->filter([Factory::FILTER => $queryFilters]);
+    $jF = new JoinFilter(Factory::getChunkFactory(), Hash::CHUNK_ID, Chunk::CHUNK_ID);
+    $joined = $hashFactory->filter([Factory::FILTER => $queryFilters, Factory::JOIN => $jF]);
     $converted = [];
-    
-    foreach ($hashes as $hash) {
+    foreach ($joined[$hashFactory->getModelName()] as $hash) {
       $converted[] = self::obj2Resource($hash);
     }
     $ret = self::createJsonResponse(data: $converted);
