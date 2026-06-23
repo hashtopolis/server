@@ -4,7 +4,6 @@ namespace Hashtopolis\inc\apiv2\helper;
 
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\Chunk;
-use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DHashlistFormat;
@@ -95,7 +94,7 @@ class GetCracksOfTaskHelper extends AbstractHelperAPI {
     $jF = new JoinFilter(Factory::getChunkFactory(), Hash::CHUNK_ID, Chunk::CHUNK_ID);
     $joined = $hashFactory->filter([Factory::FILTER => $queryFilters, Factory::JOIN => $jF]);
     $converted = [];
-    foreach ($joined['Hash'] as $hash) {
+    foreach ($joined[$hashFactory->getModelName()] as $hash) {
       $converted[] = self::obj2Resource($hash);
     }
     $ret = self::createJsonResponse(data: $converted);
