@@ -49,7 +49,7 @@ class ChunkAPI extends AbstractModelAPI {
   
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
-    $baseFilter = new QueryFilter(Chunk::AGENT_ID, null, "IS");
+    $baseFilter = new QueryFilter(Chunk::AGENT_ID, null, "=");
     return [
       Factory::JOIN => [
         new JoinFilter(Factory::getTaskFactory(), Chunk::TASK_ID, Task::TASK_ID),
