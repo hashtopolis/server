@@ -228,7 +228,7 @@ class DConfig {
       DConfig::SHOW_TASK_PERFORMANCE => "Show cracks/minute for tasks which are running.",
       DConfig::AGENT_STAT_LIMIT => "Maximal number of data points showing of agent gpu data.",
       DConfig::AGENT_DATA_LIFETIME => "Minimum time in seconds how long agent gpu/cpu utilisation and gpu temperature data is kept on the server.",
-      DConfig::AGENT_STAT_TENSION => "Draw straigth lines in agent data graph  instead of bezier curves.",
+      DConfig::AGENT_STAT_TENSION => "Draw straight lines in agent data graph  instead of bezier curves.",
       DConfig::MULTICAST_ENABLE => "Enable UDP multicast distribution of files to agents. (Make sure you did all the preparation before activating)<br>You can read more informations here: <a href='https://github.com/hashtopolis/runner/blob/master/README.md' target='_blank'>https://github.com/hashtopolis/runner</a>",
       DConfig::MULTICAST_DEVICE => "Network device of the server to be used for the multicast distribution.",
       DConfig::MULTICAST_TR_ENABLE => "Instead of the built in UFTP flow control, use a static set transfer rate<br>(Important: Setting this value wrong can affect the functionality, only use this if you are sure this transfer rate is feasible)",
