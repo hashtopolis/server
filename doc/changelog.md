@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.0.0-rc1 -> v1.0.0-rc2
+
+**Bugfixes**
+
+- Removed outdated includes from dba init (#2234)
+- Added migration to add backtick to postgres default blacklist charaters (#2236)
+- Fixed pagination bug (#2231)
+- Setting the default admin email to a valid address (#2244)
+- Fixed filter ACL returning duplicate elements for agents (#2250)
+
+**Enhancements**
+
+- Aggregation improvements (#2230)
+- Added basic contribution guidelines (#2243)
+- Attribute useNewBench is made patchable (#2245)
+- Refactored queries in order to fetch Chunk and Hash entities at once (#2258)
+- Additional unittests and removal of legacy openssl calls (#2259)
+- Added documentation for versioning, branch handling and release process (#2263)
+
 ## v1.0.0-rainbow6 -> v1.0.0-rc1
 
 **Bugfixes**
