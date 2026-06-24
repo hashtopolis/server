@@ -132,20 +132,3 @@ docker load --input hashtopolis-frontend.tar
 docker compose up
 ```
 
-<!-- ## New user interface: technical preview
-
-> [!NOTE]
-> The APIv2 and UIv2 are a technical preview. Currently, when enabled, everyone through the new API will be fully admin!
-
-To enable 'version 2' of the API:
-
-1. Stop your containers
-
-2. set the HASHTOPOLIS_APIV2_ENABLE to 1 inside the .env file.
-
-3. Relaunch the containers
-```
-docker compose up --detach
-```
-
-4. Access the technical preview via: ```http://127.0.0.1:4200``` using the default credentials user=admin and password=hashtopolis, unless modified in the .env file. -->
