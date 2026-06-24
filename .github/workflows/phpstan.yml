@@ -4,11 +4,9 @@ on:
   push:
     branches:
     - master
-    - dev
   pull_request:
     branches:
     - master
-    - dev
 
 jobs:
   phpstan:
@@ -27,6 +25,6 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
-      
+
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse

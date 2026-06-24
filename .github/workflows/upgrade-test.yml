@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - master
-      - dev
   pull_request:
     branches:
       - master
-      - dev
   workflow_dispatch:
 
 env:
@@ -33,6 +31,10 @@ jobs:
           - start-tag: v1.0.0-rc1
             db-type: mysql
           - start-tag: v1.0.0-rc1
+            db-type: postgres
+          - start-tag: v1.0.0-rc2
+            db-type: mysql
+          - start-tag: v1.0.0-rc2
             db-type: postgres
       fail-fast: false
 
