@@ -234,7 +234,7 @@ class StartupConfig {
   }
   
   public function getVersion(): string {
-    return "v1.0.0-rc1";
+    return "v1.0.0-rc2";
   }
   
   public function getBuild(): string {
