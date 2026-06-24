@@ -26,7 +26,7 @@
 
 When submitting a pull request that includes database migration scripts, adhere to the following:
 
-- **Never alter an existing migration script** that has been released or lived on `dev`/`master` for any amount of time. Changing a released migration will leave setups that already applied the unaltered script in an inconsistent state that cannot be recovered without manual intervention or deletion.
+- **Never alter an existing migration script** that has been released or lived on `master` for any amount of time. Changing a released migration will leave setups that already applied the unaltered script in an inconsistent state that cannot be recovered without manual intervention or deletion.
 
 - **One migration per atomic change** — Create a new migration script for each distinct feature or change. The database must be in a healthy, consistent state between every migration.
 
