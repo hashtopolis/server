@@ -706,7 +706,7 @@ class Util {
       $metaDirectory = $tusDirectory . DIRECTORY_SEPARATOR . "meta" . DIRECTORY_SEPARATOR;
       $expiration_time = time() + 3600;
       if (file_exists($metaDirectory) && is_dir($metaDirectory)) {
-        if ($metaDirectoryHandler = opendir($metaDirectory)){
+        if ($metaDirectoryHandler = opendir($metaDirectory)) {
           while ($file = readdir($metaDirectoryHandler)) {
             if (str_ends_with($file, ".meta")) {
               $metaFile = $metaDirectory . $file;
@@ -719,7 +719,7 @@ class Util {
                 if (file_exists($metaFile)) {
                   unlink($metaFile);
                 }
-                if (file_exists($uploadFile)){
+                if (file_exists($uploadFile)) {
                   unlink($uploadFile);
                 }
               }
@@ -1352,7 +1352,7 @@ class Util {
     $path = '/etc/ssmtp/ssmtp.conf';
     return is_file($path);
   }
-
+  
   /**
    * This sends a given email with text and subject to the address.
    *

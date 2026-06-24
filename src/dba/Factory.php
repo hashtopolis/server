@@ -48,6 +48,7 @@ use Hashtopolis\dba\models\FileTaskFactory;
 use Hashtopolis\dba\models\FilePretaskFactory;
 use Hashtopolis\dba\models\SupertaskPretaskFactory;
 use Hashtopolis\dba\models\HashlistHashlistFactory;
+use Hashtopolis\dba\models\_sqlx_migrationsFactory;
 
 class Factory {
   private static ?AccessGroupFactory $accessGroupFactory = null;
@@ -96,6 +97,7 @@ class Factory {
   private static ?FilePretaskFactory $filePretaskFactory = null;
   private static ?SupertaskPretaskFactory $supertaskPretaskFactory = null;
   private static ?HashlistHashlistFactory $hashlistHashlistFactory = null;
+  private static ?_sqlx_migrationsFactory $_sqlx_migrationsFactory = null;
   
   public static function getAccessGroupFactory(): AccessGroupFactory {
     if (self::$accessGroupFactory == null) {
@@ -554,6 +556,16 @@ class Factory {
       return $f;
     } else {
       return self::$hashlistHashlistFactory;
+    }
+  }
+  
+  public static function get_sqlx_migrationsFactory(): _sqlx_migrationsFactory {
+    if (self::$_sqlx_migrationsFactory == null) {
+      $f = new _sqlx_migrationsFactory();
+      self::$_sqlx_migrationsFactory = $f;
+      return $f;
+    } else {
+      return self::$_sqlx_migrationsFactory;
     }
   }
   

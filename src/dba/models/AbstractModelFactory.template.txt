@@ -43,7 +43,7 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;
     }
-    $dict = $conv;__MODEL_MAPPING_DICT__
+    $dict = $conv;__MODEL_MAPPING_DICT____MODEL_STREAMING_DICT__
     return new __MODEL_NAME__(__MODEL__DICT2__);
   }
   

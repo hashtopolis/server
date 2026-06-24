@@ -5,8 +5,6 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\defines\DConfig;
 
-require_once(dirname(__FILE__) . "/../../inc/defines/Dconfig.php");
-
 if (!isset($PRESENT["v0.14.x_pagination"])) {
   $qF = new QueryFilter(Config::ITEM, DConfig::DEFAULT_PAGE_SIZE, "=");
   $item = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
