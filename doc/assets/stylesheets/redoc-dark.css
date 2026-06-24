@@ -1,0 +1,43 @@
+/* Redoc-Darkmode nur aktiv, wenn MkDocs das 'slate'-Theme verwendet */
+body[data-md-color-scheme="slate"] .redoc-wrap {
+  background-color: #121212 !important;
+  color: #e0e0e0 !important;
+}
+
+/* Überschriften */
+body[data-md-color-scheme="slate"] .redoc-wrap h1,
+body[data-md-color-scheme="slate"] .redoc-wrap h2,
+body[data-md-color-scheme="slate"] .redoc-wrap h3 {
+  color: #ffffff !important;
+}
+
+/* Codeblöcke */
+body[data-md-color-scheme="slate"] .redoc-wrap code {
+  background-color: #1e1e1e !important;
+  color: #e0e0e0 !important;
+}
+
+/* Response-Boxen */
+body[data-md-color-scheme="slate"] .response-box,
+body[data-md-color-scheme="slate"] .response {
+  background-color: #1e1e1e !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #333 !important;
+}
+
+/* (Optional) Sidebar-Hintergrund */
+body[data-md-color-scheme="slate"] .menu-content {
+  background-color: #1e1e1e !important;
+}
+
+/* (Optional) Sidebar-Textfarbe */
+body[data-md-color-scheme="slate"] .menu-content * {
+  color: #e0e0e0 !important;
+}
+
+/* (Optional) Suchfeld */
+body[data-md-color-scheme="slate"] input[type="text"] {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+  border: 1px solid #444 !important;
+}

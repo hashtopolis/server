@@ -1,11 +1,23 @@
 <?php
 
-use DBA\APiKey;
-use DBA\QueryFilter;
-use DBA\Factory;
-use DBA\User;
+use Hashtopolis\dba\models\ApiKey;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\User;
+use Hashtopolis\inc\CSRF;
+use Hashtopolis\inc\DataSet;
+use Hashtopolis\inc\defines\DViewControl;
+use Hashtopolis\inc\defines\UApi;
+use Hashtopolis\inc\defines\USection;
+use Hashtopolis\inc\handlers\ApiHandler;
+use Hashtopolis\inc\Login;
+use Hashtopolis\inc\Menu;
+use Hashtopolis\inc\templating\Template;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessControl;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));

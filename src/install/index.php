@@ -1,21 +1,34 @@
 <?php
 
-use DBA\AccessGroupUser;
-use DBA\QueryFilter;
-use DBA\RightGroup;
-use DBA\User;
-use DBA\Factory;
-use DBA\StoredValue;
+use Hashtopolis\dba\models\AccessGroupUser;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\models\RightGroup;
+use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\StoredValue;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\Encryption;
+use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\StartupConfig;
+use Hashtopolis\inc\templating\Template;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessUtils;
+use Hashtopolis\inc\utils\ConfigUtils;
 
-require_once(dirname(__FILE__) . "/../inc/load.php");
+/**
+ * @deprecated
+ * This whole install is deprecated and very likely is or will be broken in the future and removed.
+ */
 
-$write_files = array(".", "../inc/Encryption.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../");
+require_once(dirname(__FILE__) . "/../inc/startup/load.php");
 
+$write_files = array(".", "../inc/Encryption.class.php", "../inc/startup/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../");
+
+global $INSTALL;
 if ($INSTALL) {
   die("Installation is already done!");
 }
-
-/** @var array $CONN */
 
 $STEP = 0;
 if (isset($_COOKIE['step'])) {
@@ -84,9 +97,9 @@ switch ($STEP) {
     file_put_contents(dirname(__FILE__) . "/../import/.htaccess", "Order deny,allow\nDeny from all");
 
     // save version and build into database
-    $version = new StoredValue("version", explode("+", $VERSION)[0]);
+    $version = new StoredValue("version", explode("+", StartupConfig::getInstance()->getVersion())[0]);
     Factory::getStoredValueFactory()->save($version);
-    $build = new StoredValue("build", $BUILD);
+    $build = new StoredValue("build", StartupConfig::getInstance()->getBuild());
     Factory::getStoredValueFactory()->save($build);
     setcookie("step", "", time() - 10);
     setcookie("prev", "", time() - 10);
@@ -124,9 +137,10 @@ switch ($STEP) {
         'pass' => $_POST['pass'],
         'server' => $_POST['server'],
         'db' => $_POST['db'],
-        'port' => $_POST['port']
+        'port' => $_POST['port'],
+        'type' => 'mysql',
       );
-      if (Factory::getUserFactory()->getDB(true) === null) {
+      if (Factory::getUserFactory()->getDB(true, $CONN) === null) {
         //connection not valid
         $fail = true;
       }

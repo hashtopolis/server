@@ -1,6 +1,6 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
-use DBA\Factory;
+use Hashtopolis\dba\Factory;
 
 if (!isset($PRESENT["v0.14.x_attackCmd"])) {
   Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Task` MODIFY `attackCmd` TEXT NOT NULL;");

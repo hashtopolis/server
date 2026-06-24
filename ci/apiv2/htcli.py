@@ -21,7 +21,9 @@ import hashtopolis
 from utils import find_stale_test_objects
 
 logger = logging.getLogger(__name__)
-click_log.basic_config(logger)
+
+root_logger = logging.getLogger()
+click_log.basic_config(root_logger)
 
 ALL_MODELS = [x[1] for x in inspect.getmembers(hashtopolis, inspect.isclass)
               if issubclass(x[1], hashtopolis.Model) and x[1] is not hashtopolis.Model]
@@ -39,7 +41,7 @@ def run():
 
 @run.command()
 @click.option('-c', '--commit', is_flag=True, help="Non-interactive mode")
-@click_log.simple_verbosity_option(logger)
+@click_log.simple_verbosity_option(root_logger)
 def delete_test_data(commit):
     if commit is False:
         prefix = '[DRY-RUN]'
@@ -59,13 +61,13 @@ def delete_test_data(commit):
 @main.command()
 @click.argument('model_plural', type=click.Choice([x.verbose_name_plural for x in ALL_MODELS], case_sensitive=True))
 @click.option('-b', '--brief', 'is_brief', is_flag=True, help="Condense output to list of items")
-@click.option('--expand', 'opt_expand', help="Comma seperated list of items to expand", multiple=True)
+@click.option('--include', 'opt_include', help="Comma seperated list of relations to include", multiple=True)
 @click.option('--fields', 'opt_fields', help="Comma seperated list of fields to display", multiple=True)
 @click.option('--filter', 'opt_filter', help="Filter objects based on filter provided", multiple=True)
 @click.option('--ordering', 'opt_ordering', help="Field to select for ordering output", multiple=True)
 @click.option('--max_results', 'opt_max_results', default=None, help="Maximum results to display", type=int)
-@click_log.simple_verbosity_option(logger)
-def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter, opt_max_results, opt_ordering):
+@click_log.simple_verbosity_option(root_logger)
+def list(model_plural, is_brief, opt_include, opt_fields, opt_filter, opt_max_results, opt_ordering):
     model_class = [x for x in ALL_MODELS if x.verbose_name_plural == model_plural][0]
 
     def get_opt_list(options):
@@ -76,7 +78,7 @@ def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter, opt_max_res
             return ()
 
     # Parse options and arguments
-    expand = get_opt_list(opt_expand)
+    include = get_opt_list(opt_include)
     filter = dict([filter_item.split('=', 1) for filter_item in get_opt_list(opt_filter) if filter_item])
     display_field_filter = get_opt_list(opt_fields)
 
@@ -85,9 +87,9 @@ def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter, opt_max_res
 
     # Retrieve objects
     if not opt_filter:
-        objs = model_class.objects.all(expand, max_results=opt_max_results)
+        objs = model_class.objects.prefetch_related(*include).all()[:opt_max_results]
     else:
-        objs = model_class.objects.filter(expand, max_results=opt_max_results, **filter)
+        objs = model_class.objects.prefetch_related(*include).filter(**filter)[:opt_max_results]
 
     # Display objects
     if is_brief is True:
@@ -113,5 +115,4 @@ def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter, opt_max_res
 
 
 if __name__ == '__main__':
-    logging.basicConfig()
     main()

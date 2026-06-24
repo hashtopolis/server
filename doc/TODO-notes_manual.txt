@@ -1,0 +1,18 @@
+# What still has to be done
+- in advanced install there should be a note about files in www-data format etc
+- lots of screenshots and diagrams to make the text fancier
+- details about the config files, structure of repos etc.
+- booting from PxE, running hashtopolis as a service ?
+- Check if any difference for Agent overview in new interface
+- Hashtypes --> review hashcat --exam
+- make an example of supertask builder to make it clearer
+- Task overview is missing !!!
+- Creating an example of preprocessors in the preprocessors binary to simplify the related section in task creation
+- Explaining the global interface of hashtopolis
+- Check the style of the manual, page, buttons, code etc should always be within the same style
+- Agent installation is not compliant with v2
+- Pictures for installation
+- Sein: Review contribution guidelines
+- Hashlist page, define what is cracking position
+- change the port 8080 to 4200 in the installation part + add a note for the old ui
+- Mac OS installation

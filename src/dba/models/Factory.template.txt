@@ -1,6 +1,8 @@
 <?php
 
-namespace DBA;
+namespace Hashtopolis\dba;
+
+__MODEL_INCLUDE__
 
 class Factory {
   __MODEL_STATIC__
@@ -11,5 +13,5 @@ class Factory {
   const JOIN = "join";
   const ORDER = "order";
   const UPDATE = "update";
-  const GROUP = "group";
+  const LIMIT = "limit";
 }

@@ -1,16 +1,23 @@
 <?php
 
-use DBA\Agent;
-use DBA\ContainFilter;
-use DBA\Hash;
-use DBA\HashBinary;
-use DBA\Hashlist;
-use DBA\OrderFilter;
-use DBA\QueryFilter;
-use DBA\Factory;
-use DBA\Assignment;
+use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\ContainFilter;
+use Hashtopolis\dba\models\Hash;
+use Hashtopolis\dba\models\HashBinary;
+use Hashtopolis\dba\models\Hashlist;
+use Hashtopolis\dba\OrderFilter;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\Assignment;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DHashlistFormat;
+use Hashtopolis\inc\defines\DOperatingSystem;
+use Hashtopolis\inc\defines\DViewControl;
+use Hashtopolis\inc\SConfig;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessControl;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 AccessControl::getInstance()->checkPermission(DViewControl::GETHASHLIST_VIEW_PERM);
 
@@ -57,7 +64,7 @@ switch ($format) {
       $limit = 0;
       $size = SConfig::getInstance()->getVal(DConfig::BATCH_SIZE);
       do {
-        $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
+        $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $size OFFSET $limit");
         $qF1 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
         $qF2 = new QueryFilter(Hash::IS_CRACKED, 0, "=");
         if ($brain) {

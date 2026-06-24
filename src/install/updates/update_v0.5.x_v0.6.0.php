@@ -1,21 +1,22 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
-use DBA\AgentBinary;
-use DBA\QueryFilter;
-use DBA\RightGroup;
-use DBA\User;
-use DBA\Factory;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\models\RightGroup;
+use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\UpdateSet;
+use Hashtopolis\inc\Util;
 
 /** @noinspection PhpIncludeInspection */
 require_once(dirname(__FILE__) . "/../../inc/db.php");
 require_once(dirname(__FILE__) . "/../../dba/init.php");
-require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
+require_once(dirname(__FILE__) . "/../../inc/Util.php");
 
 echo "Apply updates...\n";
 
 echo "Check agent binaries... ";
-Util::checkAgentVersion("python", "0.1.4");
-Util::checkAgentVersion("csharp", "0.52.2");
+Util::checkAgentVersionLegacy("python", "0.1.4");
+Util::checkAgentVersionLegacy("csharp", "0.52.2");
 echo "\n";
 
 echo "Create new permissions... ";

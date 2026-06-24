@@ -1,0 +1,17 @@
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+         colors="true">
+
+    <source>
+        <include>
+            <!-- Point this to your source code directory -->
+            <directory suffix=".php">src/</directory>
+        </include>
+    </source>
+
+    <testsuites>
+        <testsuite name="PHPUnit Tests">
+            <directory>ci/phpunit/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

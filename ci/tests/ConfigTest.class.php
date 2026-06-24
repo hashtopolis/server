@@ -1,5 +1,11 @@
 <?php
 
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DProxyTypes;
+
+/**
+ * @deprecated
+ */
 class ConfigTest extends HashtopolisTest {
   protected $minVersion = "0.7.0";
   protected $maxVersion = "master";

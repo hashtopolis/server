@@ -1,22 +1,26 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
-use DBA\Factory;
-use DBA\File;
-use DBA\Config;
-use DBA\ConfigSection;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\File;
+use Hashtopolis\dba\models\Config;
+use Hashtopolis\dba\models\ConfigSection;
+use Hashtopolis\dba\UpdateSet;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessUtils;
 
 /** @noinspection PhpIncludeInspection */
 require_once(dirname(__FILE__) . "/../../inc/db.php");
 require_once(dirname(__FILE__) . "/../../dba/init.php");
-require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
-require_once(dirname(__FILE__) . "/../../inc/utils/AccessUtils.class.php");
-require_once(dirname(__FILE__) . "/../../inc/defines/config.php");
+require_once(dirname(__FILE__) . "/../../inc/Util.php");
+require_once(dirname(__FILE__) . "/../../inc/utils/AccessUtils.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DConfig.php");
 
 echo "Apply updates...\n";
 
 echo "Check agent binaries... ";
-Util::checkAgentVersion("python", "0.2.0");
-Util::checkAgentVersion("csharp", "0.52.4");
+Util::checkAgentVersionLegacy("python", "0.2.0");
+Util::checkAgentVersionLegacy("csharp", "0.52.4");
 echo "\n";
 
 echo "Add debug output tables... ";

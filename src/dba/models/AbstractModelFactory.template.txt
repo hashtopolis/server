@@ -1,30 +1,36 @@
 <?php
 
-namespace DBA;
+namespace Hashtopolis\dba\models;
+
+use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\Util;
 
 class __MODEL_NAME__Factory extends AbstractModelFactory {
-  function getModelName() {
+  function getModelName(): string {
     return "__MODEL_NAME__";
   }
   
-  function getModelTable() {
+  function getModelTable(): string {
     return "__MODEL_NAME__";
   }
+
+  function isMapping(): bool {
+    return __MODEL_DBA_MAPPING__;
+  }
   
-  function isCachable() {
+  function isCachable(): bool {
     return false;
   }
   
-  function getCacheValidTime() {
+  function getCacheValidTime(): int {
     return -1;
   }
   
   /**
    * @return __MODEL_NAME__
    */
-  function getNullObject() {
-    $o = new __MODEL_NAME__(__MODEL_DICT__);
-    return $o;
+  function getNullObject(): __MODEL_NAME__ {
+    return new __MODEL_NAME__(__MODEL_DICT__);
   }
   
   /**
@@ -32,9 +38,13 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
    * @param array $dict
    * @return __MODEL_NAME__
    */
-  function createObjectFromDict($pk, $dict) {
-    $o = new __MODEL_NAME__(__MODEL__DICT2__);
-    return $o;
+  function createObjectFromDict($pk, $dict): __MODEL_NAME__ {
+    $conv = [];
+    foreach ($dict as $key => $val) {
+      $conv[strtolower($key)] = $val;
+    }
+    $dict = $conv;__MODEL_MAPPING_DICT____MODEL_STREAMING_DICT__
+    return new __MODEL_NAME__(__MODEL__DICT2__);
   }
   
   /**
@@ -42,7 +52,7 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
    * @param bool $single
    * @return __MODEL_NAME__|__MODEL_NAME__[]
    */
-  function filter($options, $single = false) {
+  function filter(array $options, bool $single = false): __MODEL_NAME__|array|null {
     $join = false;
     if (array_key_exists('join', $options)) {
       $join = true;
@@ -66,9 +76,9 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
   
   /**
    * @param string $pk
-   * @return __MODEL_NAME__
+   * @return ?__MODEL_NAME__
    */
-  function get($pk) {
+  function get($pk): ?__MODEL_NAME__ {
     return Util::cast(parent::get($pk), __MODEL_NAME__::class);
   }
   
@@ -76,7 +86,7 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
    * @param __MODEL_NAME__ $model
    * @return __MODEL_NAME__
    */
-  function save($model) {
+  function save($model): __MODEL_NAME__ {
     return Util::cast(parent::save($model), __MODEL_NAME__::class);
   }
 }

@@ -1,4 +1,10 @@
-FROM alpine/git as preprocess
+FROM rust:1.94-slim-trixie AS prebuild
+
+RUN apt-get update && apt-get install -y pkg-config libssl-dev
+
+RUN cargo install --locked sqlx-cli --no-default-features --features native-tls,mysql,postgres
+
+FROM alpine/git AS preprocess
 
 COPY .gi[t] /.git
 
@@ -24,6 +30,9 @@ ENV HASHTOPOLIS_IMPORT_PATH=${HASHTOPOLIS_PATH}/import
 ENV HASHTOPOLIS_LOG_PATH=${HASHTOPOLIS_PATH}/log
 ENV HASHTOPOLIS_CONFIG_PATH=${HASHTOPOLIS_PATH}/config
 ENV HASHTOPOLIS_BINARIES_PATH=${HASHTOPOLIS_PATH}/binaries
+ENV HASHTOPOLIS_TUS_PATH=/var/tmp/tus
+ENV HASHTOPOLIS_TEMP_UPLOADS_PATH=${HASHTOPOLIS_TUS_PATH}/uploads
+ENV HASHTOPOLIS_TEMP_META_PATH=${HASHTOPOLIS_TUS_PATH}/meta
 
 # Add support for TLS inspection corporate setups, see .env.sample for details
 ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt 
@@ -34,47 +43,59 @@ RUN if [ -n "${CONTAINER_USER_CMD_PRE}" ]; then echo "${CONTAINER_USER_CMD_PRE}"
 # Configure apt and install packages
 RUN apt-get update \
     && apt-get -y install --no-install-recommends apt-utils zip unzip nano ncdu gettext-base 2>&1 \
-    #
-    # Install git, procps, lsb-release (useful for CLI installs)
+    \
+    # Install git, procps, lsb-release (useful for CLI installs) \
     && apt-get -y install git iproute2 procps lsb-release \
-    && apt-get -y install mariadb-client \
+    && apt-get -y install mariadb-client postgresql-client libpq-dev \
     && apt-get -y install libpng-dev \
-\
+    && apt-get -y install ssmtp \
+    && rm -f /etc/ssmtp/ssmtp.conf \
+    \
     # Install extensions (optional)
-    && docker-php-ext-install pdo_mysql gd \
-\
-    # Install composer
+    && docker-php-ext-install pdo_mysql pgsql pdo_pgsql gd bcmath \
+    \
+    # Install Composer
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     # Enable URL rewriting using .htaccess
-    && a2enmod rewrite
+    && a2enmod rewrite \
+    # Enable headers
+    && a2enmod headers \
+    # Clean Up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN sed -i 's/KeepAliveTimeout 5/KeepAliveTimeout 10/' /etc/apache2/apache2.conf
+RUN echo "ServerTokens Prod" >> /etc/apache2/apache2.conf \
+    && echo "ServerSignature Off" >> /etc/apache2/apache2.conf
 
-RUN mkdir -p ${HASHTOPOLIS_DOCUMENT_ROOT} \
-    && mkdir ${HASHTOPOLIS_DOCUMENT_ROOT}/../../.git/ \
-    && mkdir -p ${HASHTOPOLIS_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_PATH} \
-    && chmod g+w ${HASHTOPOLIS_PATH} \
-    && mkdir -p ${HASHTOPOLIS_FILES_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_FILES_PATH} \
-    && chmod g+w ${HASHTOPOLIS_FILES_PATH} \
-    && mkdir -p ${HASHTOPOLIS_IMPORT_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_IMPORT_PATH} \
-    && chmod g+w ${HASHTOPOLIS_IMPORT_PATH} \
-    && mkdir -p ${HASHTOPOLIS_LOG_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_LOG_PATH} \
-    && chmod g+w ${HASHTOPOLIS_LOG_PATH} \
-    && mkdir -p ${HASHTOPOLIS_CONFIG_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_CONFIG_PATH} \
-    && chmod g+w ${HASHTOPOLIS_CONFIG_PATH} \
-    && mkdir -p ${HASHTOPOLIS_BINARIES_PATH} \
-    && chown www-data:www-data ${HASHTOPOLIS_BINARIES_PATH} \
-    && chmod g+w ${HASHTOPOLIS_BINARIES_PATH}
+
+RUN mkdir -p \
+    ${HASHTOPOLIS_DOCUMENT_ROOT} \
+    ${HASHTOPOLIS_DOCUMENT_ROOT}/../../.git/ \
+    ${HASHTOPOLIS_PATH} \
+    ${HASHTOPOLIS_FILES_PATH} \
+    ${HASHTOPOLIS_IMPORT_PATH} \
+    ${HASHTOPOLIS_LOG_PATH} \
+    ${HASHTOPOLIS_CONFIG_PATH} \
+    ${HASHTOPOLIS_BINARIES_PATH} \
+    ${HASHTOPOLIS_TUS_PATH} \
+    ${HASHTOPOLIS_TEMP_UPLOADS_PATH} \
+    ${HASHTOPOLIS_TEMP_META_PATH} \
+    && chown -R www-data:www-data \
+    ${HASHTOPOLIS_PATH} \
+    ${HASHTOPOLIS_TUS_PATH} \
+    && chmod -R g+w \
+    ${HASHTOPOLIS_PATH} \
+    ${HASHTOPOLIS_TUS_PATH}
+
+COPY --from=prebuild /usr/local/cargo/bin/sqlx /usr/bin/
 
 COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 
-COPY composer.json ${HASHTOPOLIS_DOCUMENT_ROOT}/../
+# Install composer
+COPY composer.json composer.lock ${HASHTOPOLIS_DOCUMENT_ROOT}/../
 RUN composer install --working-dir=${HASHTOPOLIS_DOCUMENT_ROOT}/..
 
 ENV DEBIAN_FRONTEND=dialog
@@ -90,7 +111,7 @@ ENTRYPOINT [ "docker-entrypoint.sh" ]
 
 # DEVELOPMENT Image
 # ----BEGIN----
-FROM hashtopolis-server-base as hashtopolis-server-dev
+FROM hashtopolis-server-base AS hashtopolis-server-dev
 
 # Setting up development requirements, install xdebug
 RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
@@ -100,9 +121,9 @@ RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
 	&& echo "xdebug.client_port = 9003" >> /usr/local/etc/php/conf.d/xdebug.ini \
 	&& echo "xdebug.idekey = PHPSTORM" >> /usr/local/etc/php/conf.d/xdebug.ini \
     \
-    # Configuring PHP
+    # Configuring PHP \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
-	&& echo "display_errors = on" >> /usr/local/etc/php/conf.d/custom.ini \
+	&& echo "display_errors = 1" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
@@ -113,14 +134,9 @@ RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
 RUN apt-get update \
     && apt-get install -y python3 python3-pip python3-requests python3-pytest
 
-#TODO: Should source from ./ci/apiv2/requirements.txt
-RUN pip3 install click click_log confidence pytest tuspy --break-system-packages
-
-# Clean up
-RUN apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
-
+# install dependencies from ./ci/apiv2/requirements.txt
+COPY ./ci/apiv2/requirements.txt /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt --break-system-packages
 
 # Adding VSCode user and fixing permissions
 RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \
@@ -137,20 +153,19 @@ USER vscode
 
 # PRODUCTION Image
 # ----BEGIN----
-FROM hashtopolis-server-base as hashtopolis-server-prod
+FROM hashtopolis-server-base AS hashtopolis-server-prod
 
 COPY --chown=www-data:www-data ./src/ $HASHTOPOLIS_DOCUMENT_ROOT
+
+# protect install/update directory
+RUN echo "Order deny,allow\nDeny from all" > "${HASHTOPOLIS_DOCUMENT_ROOT}/install/.htaccess"
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
     && echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
-    \
-    # Clean up
-    && apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+    && echo "display_errors = 0" >> /usr/local/etc/php/conf.d/custom.ini
 
 USER www-data
 # ----END----

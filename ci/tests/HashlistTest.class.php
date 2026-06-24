@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated
+ */
 class HashlistTest extends HashtopolisTest {
   protected $minVersion = "0.7.0";
   protected $maxVersion = "master";
@@ -109,6 +112,7 @@ class HashlistTest extends HashtopolisTest {
       "request" => "importCracked",
       "hashlistId" => 1,
       "separator" => ":",
+      "overwrite" => 0,
       // sending 3 founds of the hashlist
       "data" => "MDAyODA4MGU3ZmE4YzgxMjY4ZWYzNDBkN2Q2OTI2ODE6Zm91bmQxCjAwMmU5NWQ4MmJlMzAzOTZmY2NkMzc1ZmYyM2Y4YjRjOmZvdW5kMgowMDM0YzVlNDE4YWU0ZjJlYmE1OTBhMTY2OTZlZGJiMzpmb3VuZDM=",
       "accessKey" => "mykey"

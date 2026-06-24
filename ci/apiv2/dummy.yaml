@@ -1,0 +1,14 @@
+components:
+  schemas:
+      Hash:
+        type: object
+        properties:
+          id:
+            type: integer
+            minimum: 1
+            readOnly: true
+          userMembers:
+            type: array
+            items:
+              $ref: #/components/schemas/User
+            uniqueItems: true

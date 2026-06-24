@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated
+ */
 class MaxAgentsTest extends HashtopolisTest {
   protected $minVersion = "0.12.0";
   protected $maxVersion = "master";
@@ -126,7 +129,7 @@ class MaxAgentsTest extends HashtopolisTest {
       "action" => "getChunk",
       "taskId" => $task1Id,
       "token" => $agent2["token"]]);
-    if ($response["response"] !== "ERROR" || $response["message"] != "Task already saturated by other agents, no other task available!") {
+    if ($response["response"] !== "ERROR" || $response["message"] != "You are not assigned to this task!") {
       $this->testFailed("MaxAgentsTest:testTaskMaxAgents()", sprintf("Expected getChunk to fail, instead got: %s", implode(", ", $response)));
       return;
     }

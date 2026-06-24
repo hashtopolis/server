@@ -1,6 +1,16 @@
 <?php
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+use Hashtopolis\inc\CSRF;
+use Hashtopolis\inc\defines\DViewControl;
+use Hashtopolis\inc\handlers\SearchHandler;
+use Hashtopolis\inc\Login;
+use Hashtopolis\inc\Menu;
+use Hashtopolis\inc\templating\Template;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessControl;
+
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));

@@ -1,38 +1,18 @@
-# Documentation
+## MKDocs Local Setup
 
-## Hashtopolis Protocol
+1. Make sure you are in the root of the server project and setup a virtual environment there.
+2. Install mkdocs
+3. Install required mkdocs extensions
+4. Start the server
+5. Browse to http://127.0.0.1:8000
 
-The current up-to-date protocol version which Hashtopolis uses to communicate with clients is contained in the `protocol.pdf` file. 
-The documentation for the User API can be found in `user-api/user-api.pdf`, listing all functions which can be called.
-
-## Generic Crackers
-
-Custom crackers which should be able to get distributed with Hashtopolis need to fulfill some minimal requirements as command line options. Shown here with the help function of a generic example implementation (which is available [here](https://github.com/hashtopolis/generic-cracker)):
-
-```
-cracker.exe [options] action
-Generic Cracker compatible with Hashtopolis
-
-Options:
-  -m, --mask <mask>                   Use mask for attack
-  -w, --wordlist <wordlist>           Use wordlist for attack
-  -a, --attacked-hashlist <hashlist>  Hashlist to attack
-  -s, --skip <skip>                   Keyspace to skip at the beginning
-  -l, --length <length>               Length of the keyspace to run
-  --timeout <seconds>                 Stop cracking process after fixed amount of time
-
-Arguments:
-  action                              Action to execute ('keyspace' or 'crack')
+``` bash
+cd hashtopolis
+virtualenv venv
+source venv/bin/activate
+pip3 install mkdocs
+pip3 install $(mkdocs get-deps)
+mkdocs server
 ```
 
-`-m` and `-w` are used to specify the type of attack, but these options are not mandatory to look like this.
-
-Please note that not all Hashtopolis clients are compatible with generic cracker binaries (check their README) and if there are slight differences in the cracker compared to the generic requirements there might be changes required on the client to adapt to another handling schema.
-
-## Slow Algorithms
-
-To extract all Hashcat modes which are flagged as slow hashes, following command can be run inside the hashcat directory:
-
-```
-grep -Hr SLOW_HASH src/modules/ | cut -d: -f1 | sort | cut -d'.' -f1 | sed 's/src\/modules\/module_[0]\?//g'
-```
+When testing the API reference you need to retrieve the openapi.json file from the Hashtopolis server (e.g. via `http://localhost:8080/api/v2/openapi.json) and place it inside this folder.

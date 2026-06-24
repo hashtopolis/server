@@ -1,19 +1,38 @@
 <?php
 
-use DBA\AccessGroupAgent;
-use DBA\Agent;
-use DBA\Assignment;
-use DBA\Chunk;
-use DBA\CrackerBinary;
-use DBA\File;
-use DBA\FileTask;
-use DBA\JoinFilter;
-use DBA\OrderFilter;
-use DBA\Preprocessor;
-use DBA\QueryFilter;
-use DBA\Factory;
+use Hashtopolis\dba\models\AccessGroupAgent;
+use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\Assignment;
+use Hashtopolis\dba\models\Chunk;
+use Hashtopolis\dba\models\CrackerBinary;
+use Hashtopolis\dba\models\File;
+use Hashtopolis\dba\models\FileTask;
+use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\OrderFilter;
+use Hashtopolis\dba\models\Preprocessor;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\CSRF;
+use Hashtopolis\inc\DataSet;
+use Hashtopolis\inc\defines\DAccessControl;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DViewControl;
+use Hashtopolis\inc\handlers\TaskHandler;
+use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\Login;
+use Hashtopolis\inc\Menu;
+use Hashtopolis\inc\SConfig;
+use Hashtopolis\inc\templating\Template;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessControl;
+use Hashtopolis\inc\utils\AccessUtils;
+use Hashtopolis\inc\utils\FileUtils;
+use Hashtopolis\inc\utils\HashlistUtils;
+use Hashtopolis\inc\utils\PreprocessorUtils;
+use Hashtopolis\inc\utils\TaskUtils;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -143,7 +162,7 @@ if (isset($_GET['id'])) {
   UI::add('cProgress', $cProgress);
   
   $timeChunks = $chunks;
-  usort($timeChunks, "Util::compareChunksTime");
+  usort($timeChunks, ["Hashtopolis\inc\Util", "compareChunksTime"]);
   $timeSpent = 0;
   $current = 0;
   foreach ($timeChunks as $c) {
@@ -184,7 +203,7 @@ if (isset($_GET['id'])) {
   UI::add('agentsSpeed', $agentsSpeed);
   
   $assignAgents = array();
-  $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $hashlist->getAccessGroupId(), "=");
+  $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $hashlist->getAccessGroupId(), "=", Factory::getAccessGroupAgentFactory());
   $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroupAgent::AGENT_ID, Agent::AGENT_ID);
   $allAgents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF])[Factory::getAgentFactory()->getModelName()];
   foreach ($allAgents as $agent) {
@@ -257,7 +276,7 @@ if (isset($_GET['id'])) {
       }
       UI::add('page', $page);
       $limit = $page * $chunkPageSize;
-      $oFp = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $chunkPageSize", Factory::getChunkFactory());
+      $oFp = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $chunkPageSize OFFSET $limit", Factory::getChunkFactory());
       UI::add('chunksPageTitle', "All chunks (page " . ($page + 1) . ")");
       
       $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
@@ -413,7 +432,8 @@ else if (isset($_GET['new'])) {
   $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
   UI::add('binaries', Factory::getCrackerBinaryTypeFactory()->filter([]));
   $versions = Factory::getCrackerBinaryFactory()->filter([Factory::ORDER => $oF]);
-  usort($versions, ["Util", "versionComparisonBinary"]);
+  usort($versions, ["Hashtopolis\inc\Util", "versionComparisonBinary"]);
+  $versions = array_reverse($versions);
   UI::add('versions', $versions);
   UI::add('pageTitle', "Create Task");
 }

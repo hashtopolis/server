@@ -1,6 +1,14 @@
 <?php
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+use Hashtopolis\inc\CSRF;
+use Hashtopolis\inc\defines\DViewControl;
+use Hashtopolis\inc\handlers\ForgotHandler;
+use Hashtopolis\inc\templating\Template;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessControl;
+
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 AccessControl::getInstance()->checkPermission(DViewControl::FORGOT_VIEW_PERM);
 

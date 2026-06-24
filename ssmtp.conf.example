@@ -1,0 +1,20 @@
+# The user that gets all the mails (UID < 1000, usually the admin)
+root=username@domain.com
+
+# The mail server (where the mail is sent to)
+mailhub=smtp.domain.com:465
+
+# The address where the mail appears to come from for user authentication.
+rewriteDomain=domain.com
+
+# Use implicit TLS (port 465). When using port 587, change UseSTARTTLS=Yes
+UseTLS=Yes
+UseSTARTTLS=No
+
+# Username/Password
+AuthUser=username
+AuthPass=password
+AuthMethod=PLAIN
+
+# Email 'From header's can override the default domain?
+FromLineOverride=yes

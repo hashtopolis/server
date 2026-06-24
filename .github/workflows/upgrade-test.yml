@@ -1,0 +1,156 @@
+name: Upgrade Test
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+    branches:
+      - master
+      - dev
+  workflow_dispatch:
+
+env:
+  DB_NAME: hashtopolis
+  DB_USER: hashtopolis
+  DB_PASS: hashtopolis
+
+jobs:
+  upgrade-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - start-tag: v0.14.1
+            db-type: mysql
+          - start-tag: v0.14.8
+            db-type: mysql
+          - start-tag: v1.0.0-rainbow5
+            db-type: mysql
+          - start-tag: v1.0.0-rainbow5
+            db-type: postgres
+          - start-tag: v1.0.0-rc1
+            db-type: mysql
+          - start-tag: v1.0.0-rc1
+            db-type: postgres
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build new image from repository
+        run: docker build -t hashtopolis/backend:test .
+
+      - name: Set up Docker network and volumes
+        run: |
+          docker network create ht-test-net
+          docker volume create ht-data
+          docker volume create ht-db
+
+      - name: Start database container with ${{ matrix.db-type }}
+        run: |
+          if [ "${{ matrix.db-type }}" = "postgres" ]; then
+            docker run -d --network ht-test-net --name db \
+              -e POSTGRES_DB=${{ env.DB_NAME }} \
+              -e POSTGRES_USER=${{ env.DB_USER }} \
+              -e POSTGRES_PASSWORD=${{ env.DB_PASS }} \
+              -v ht-db:/var/lib/postgresql \
+              postgres:18
+          else
+            docker run -d --network ht-test-net --name db \
+              -e MYSQL_ROOT_PASSWORD=${{ env.DB_PASS }} \
+              -e MYSQL_DATABASE=${{ env.DB_NAME }} \
+              -e MYSQL_USER=${{ env.DB_USER }} \
+              -e MYSQL_PASSWORD=${{ env.DB_PASS }} \
+              -v ht-db:/var/lib/mysql \
+              mysql:8.4
+          fi
+
+      - name: Wait for database container to be running
+        run: |
+          timeout 120 bash -c '
+            until [ "$(docker container inspect -f "{{.State.Status}}" db 2>/dev/null)" = "running" ]; do
+              sleep 2
+            done
+          '
+          echo "Database container is running"
+
+      - name: Wait for database to accept connections
+        run: |
+          if [ "${{ matrix.db-type }}" = "postgres" ]; then
+            timeout 60 bash -c 'until docker exec db pg_isready -U ${{ env.DB_USER }} 2>/dev/null; do sleep 2; done'
+          else
+            timeout 60 bash -c 'until docker exec db mysqladmin ping -u root -p${{ env.DB_PASS }} --silent 2>/dev/null; do sleep 2; done'
+          fi
+          echo "Database ready"
+
+      - name: Start backend version ${{ matrix.start-tag }}
+        run: |
+          docker run -d --network ht-test-net --name backend \
+            -e HASHTOPOLIS_DB_TYPE=${{ matrix.db-type }} \
+            -e HASHTOPOLIS_DB_USER=${{ env.DB_USER }} \
+            -e HASHTOPOLIS_DB_PASS=${{ env.DB_PASS }} \
+            -e HASHTOPOLIS_DB_HOST=db \
+            -e HASHTOPOLIS_DB_DATABASE=${{ env.DB_NAME }} \
+            -e HASHTOPOLIS_ADMIN_USER=admin \
+            -e HASHTOPOLIS_ADMIN_PASSWORD=hashtopolis \
+            -v ht-data:/usr/local/share/hashtopolis \
+            hashtopolis/backend:${{ matrix.start-tag }}
+
+      - name: Wait for backend initialization
+        run: |
+          timeout 60 bash -c 'until docker logs backend 2>&1 | grep -q "Initialization complete!"; do sleep 3; done'
+          echo "Backend initialized"
+
+      - name: Stop backend ${{ matrix.start-tag }}
+        run: |
+          docker stop backend
+
+      - name: Show backend ${{ matrix.start-tag }} logs
+        if: always()
+        run: docker logs backend
+
+      - name: Remove backend
+        run: docker rm backend
+
+      - name: Start new backend
+        run: |
+          docker run -d --network ht-test-net --name backend \
+            -e HASHTOPOLIS_DB_TYPE=${{ matrix.db-type }} \
+            -e HASHTOPOLIS_DB_USER=${{ env.DB_USER }} \
+            -e HASHTOPOLIS_DB_PASS=${{ env.DB_PASS }} \
+            -e HASHTOPOLIS_DB_HOST=db \
+            -e HASHTOPOLIS_DB_DATABASE=${{ env.DB_NAME }} \
+            -e HASHTOPOLIS_ADMIN_USER=admin \
+            -e HASHTOPOLIS_ADMIN_PASSWORD=hashtopolis \
+            -v ht-data:/usr/local/share/hashtopolis \
+            hashtopolis/backend:test
+
+      - name: Wait for new backend initialization
+        run: |
+          timeout 60 bash -c 'until docker logs backend 2>&1 | grep -q "Initialization complete!"; do sleep 3; done'
+          echo "New backend initialized - upgrade test passed"
+
+      - name: Show new backend logs
+        if: always()
+        run: docker logs backend
+
+      - name: Show migration state
+        if: always()
+        run: |
+          if [ "${{ matrix.db-type }}" = "postgres" ]; then
+            docker exec db psql -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} -c "SELECT version, description, installed_on, success, encode(checksum, 'hex') AS checksum, execution_time FROM _sqlx_migrations ORDER BY version;"
+          else
+            docker exec db mysql -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} -e "SELECT version, description, installed_on, success, HEX(checksum) AS checksum, execution_time FROM _sqlx_migrations ORDER BY version;"
+          fi
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker stop backend 2>/dev/null || true
+          docker rm backend 2>/dev/null || true
+          docker stop db 2>/dev/null || true
+          docker rm db 2>/dev/null || true
+          docker network rm ht-test-net 2>/dev/null || true
+          docker volume rm ht-db ht-data 2>/dev/null || true

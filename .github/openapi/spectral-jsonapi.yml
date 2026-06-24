@@ -1,0 +1,1543 @@
+description: "# [{json:api}](https://jsonapi.org/) - [v1.0](https://jsonapi.org/format/1.0/)\r\n>
+  A Specification for Building APIs in JSON\r\n\r\nJSON:API is a specification for
+  how a client should request that resources be fetched or modified, and how a server
+  should respond to those requests.\r\n\r\nJSON:API is designed to minimize both the
+  number of requests and the amount of data transmitted between clients and servers.
+  This efficiency is achieved without compromising readability, flexibility, or discoverability.\r\n\r\nJSON:API
+  requires use of the JSON:API media type `application/vnd.api+json` for exchanging
+  data.\r\n\r\n\r\n---\r\nThis styleguide ruleset can be found on GitHub: [spectral-jsonapi-ruleset](https://github.com/jmlue42/spectral-jsonapi-ruleset) "
+
+extends: 
+ - spectral:oas
+formats:
+  - oas3.1
+
+aliases:
+  AllContentSchemas:
+    - "$.paths..content['application/vnd.api+json'].schema"
+  
+  ResourceObjects:
+    - "$.paths..responses..content[application/vnd.api+json].schema.properties.data.properties"
+    - "$.paths..responses..content[application/vnd.api+json].schema.properties.data.allOf[*].properties"
+    - "$.paths..responses..content[application/vnd.api+json].schema.properties.data.items.properties"
+    - "$.paths..responses..content[application/vnd.api+json].schema.properties.data.items.allOf[*].properties"
+    - "$.paths..content[application/vnd.api+json].schema.properties.included.items.properties"
+    - "$.paths..content[application/vnd.api+json].schema.properties.included.items.allOf[*].properties"
+    - "$.paths..patch.requestBody.content[application/vnd.api+json].schema.properties.data.properties"
+    - "$.paths..patch.requestBody.content[application/vnd.api+json].schema.properties.data.allOf[*].properties"
+  
+  POSTResourceObjects:
+    - "$.paths..post.requestBody.content[application/vnd.api+json].schema.properties.data.properties"
+    - "$.paths..post.requestBody.content[application/vnd.api+json].schema.properties.data.allOf[*].properties"
+
+  LinkObjects:
+    - "#AllContentSchemas..properties[links]"
+
+  MetaObjects:
+    - "#AllContentSchemas..properties[meta]"
+  
+  Relationships:
+    - "#AllContentSchemas..properties[relationships]"
+
+  RelationshipData:
+    - "#Relationships..data"
+
+  POSTRelationships:
+    - "$.paths..post.requestBody.content[application/vnd.api+json].schema.properties.data.properties[relationships].properties[*]"
+    - "$.paths..post.requestBody.content[application/vnd.api+json].schema.properties.data.allOf[*].properties[relationships].properties[*]"
+
+  PATCHRelationships:
+    - "$.paths..patch.requestBody.content[application/vnd.api+json].schema.properties.data.properties[relationships].properties[*]"
+    - "$.paths..patch.requestBody.content[application/vnd.api+json].schema.properties.data.allOf[*].properties[relationships].properties[*]"
+
+  SingleErrorResponses:
+    - "$.paths..responses[?(@property > '400' && @property < '500')].content[application/vnd.api+json].schema.properties.errors"
+    - "$.paths..responses[?(@property > '500' && @property < '600')].content[application/vnd.api+json].schema.properties.errors"
+    - "$.paths..responses[default].content[application/vnd.api+json].schema.properties.errors"
+  
+  ErrorObjects:
+    - "$.paths..responses[default,400,500].content[application/vnd.api+json].schema.properties.errors.items.properties"
+    - "$.paths..responses[default,400,500].content[application/vnd.api+json].schema.properties.errors.items.allOf[*].properties"
+    - "$.paths..responses[?(@property > '400' && @property < '500')].content[application/vnd.api+json].schema.properties.errors.items.properties"
+    - "$.paths..responses[?(@property > '400' && @property < '500')].content[application/vnd.api+json].schema.properties.errors.items.allOf[*].properties"
+    - "$.paths..responses[?(@property > '500' && @property < '600')].content[application/vnd.api+json].schema.properties.errors.items.properties"
+    - "$.paths..responses[?(@property > '500' && @property < '600')].content[application/vnd.api+json].schema.properties.errors.items.allOf[*].properties"
+
+rules:
+
+# ---------------------------------------------------------------------------
+# Section 4 Content Negotiation
+# ---------------------------------------------------------------------------
+
+  content-type:
+    description: "Clients and Servers **MUST** send all JSON:API data as Content-Type:
+      `application/vnd.api+json` without any media type parameters.\r\n\r\n**Invalid
+      Examples:**\r\n```YAML\r\nrequestBody:\r\n  content:\r\n    application/json\r\n\r\nresponses:\r\n
+      \ '200':\r\n    content:\r\n      application/json\r\n```\r\n\r\n**Valid Examples:**\r\n```YAML\r\nrequestBody:\r\n
+      \ content:\r\n    application/vnd.api+json\r\n\r\nresponses:\r\n  '200':\r\n
+      \   content:\r\n      application/vnd.api+json\r\n```\r\n\r\nRelated specification
+      information can be found [here](https://jsonapi.org/format/1.0/#content-negotiation-servers)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#content-negotiation"
+    message: "content MUST be 'application/vnd.api+json'"
+    severity: error
+    given: 
+      - "$.paths..requestBody.content"
+      - "$.paths..responses..content"
+    then:
+      field: "@key"
+      function: enumeration
+      functionOptions:
+        values:
+          - application/vnd.api+json
+
+  406-response-code:
+    description: "Servers **MUST** document and support response code **406** paths
+      in case of invalid `ACCEPT` media values.\r\n\r\n**Invalid Example:**\r\n```YAML\r\npaths:\r\n
+      \ /myResources:\r\n    get:\r\n      responses:\r\n        '200':\r\n          $ref:
+      '#/components/responses/MyResource_Collection'\r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\npaths:\r\n
+      \ /myResources:\r\n    get:\r\n      responses:\r\n        '200':\r\n          $ref:
+      '#/components/responses/MyResource_Collection'\r\n        '406':\r\n          $ref:
+      '#/components/responses/406Error'\r\n```\r\n\r\nRelated specification information
+      can be found [here](https://jsonapi.org/format/1.0/#content-negotiation-servers)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#content-negotiation-servers"
+    message: "All paths must support response codes: 406"
+    severity: error
+    given: "$.paths..responses"
+    then:
+      field: "406"
+      function: truthy
+
+  415-response-code:
+    description: "Servers **MUST** document and support response code **415** on `POST`
+      or `PATCH` paths in case of invalid `Content-Type` media values.\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\npaths:\r\n  /myResources:\r\n    post:\r\n      responses:\r\n
+      \       '200':\r\n          $ref: '#/components/responses/MyResource_Collection'\r\n```\r\n\r\n**Valid
+      Example:**\r\n```YAML\r\npaths:\r\n  /myResources:\r\n    post:\r\n      responses:\r\n
+      \       '200':\r\n          $ref: '#/components/responses/MyResource_Collection'\r\n
+      \       '415':\r\n          $ref: '#/components/responses/415Error'\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#content-negotiation-servers)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#content-negotiation-servers"
+    message: "POST and PATCH paths must support response code: 415"
+    severity: error
+    given: "$.paths[*][post,patch].responses"
+    then:
+      field: "415"
+      function: truthy
+
+# ---------------------------------------------------------------------------
+# Section 5 Document Structure
+# Section 5.1 Top Level Object Schema
+# ---------------------------------------------------------------------------
+
+  top-level-json-object:
+    description: "A JSON object **MUST** be at the root of every JSON:API request/response
+      body containing data\r\n\r\nValid Examples:\r\n```YAML\r\ncontent:\r\n  application/vnd.api+json:\r\n
+      \   schema:\r\n      type: object\r\n```\r\n\r\nRelated specification information
+      can be found [here](https://jsonapi.org/format/1.0/#document-top-level)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-top-level"
+    message: "Request/response body must be wrapped in root level JSON object"
+    severity: error
+    given: "#AllContentSchemas"
+    then:
+      field: type
+      function: enumeration
+      functionOptions:
+        values:
+          - object
+
+  top-level-json-properties:
+    description: "Root JSON object **MUST** follow the jsonapi schema\r\n\r\n**Schema
+      Rules:**\r\n- **MUST** contain at least one of: `data`, `errors`, `meta` properties\r\n-
+      `data` and `errors` **MAY NOT** coexist in the same document\r\n- **MAY** contain:
+      `jsonapi`,`links`,`included`\r\n- if `included` exists, `data` is **REQUIRED**\r\n\r\n**Invalid
+      Examples:**\r\n```YAML\r\ntype: object\r\nproperties:\r\n    data:\r\n        type:
+      object\r\n    errors:\r\n        type: array\r\n\r\ntype: object\r\nproperties:\r\n
+      \   links:\r\n        type: object\r\n    included:\r\n        type: array\r\n```\r\n\r\n**Valid
+      Examples:**\r\n```YAML\r\ntype: object\r\nproperties:\r\n    jsonapi:\r\n        type:
+      object\r\n    links:\r\n        type: object\r\n    meta:\r\n        type: object\r\n
+      \   data:\r\n        type: object\r\n    included:\r\n        type: array\r\n\r\n\r\ntype:
+      object\r\nproperties:\r\n    errors:\r\n        type: array\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#document-top-level)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-top-level"
+    message: "Root JSON object MUST follow the jsonapi schema"
+    severity: error
+    given: "#AllContentSchemas"
+    then:
+      field: "properties"
+      function: schema
+      functionOptions:
+        dialect: "draft2020-12"
+        schema:
+          type: object
+          anyOf:
+            - required: ["data"]
+            - required: ["errors"]
+            - required: ["meta"]
+          not:
+            anyOf:
+              - required: ["data","errors"]
+          dependentRequired:
+            included: ["data"]
+          properties:
+            data:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - object
+                    - array
+                    - "null"
+            errors:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - array
+            meta:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - object
+            jsonapi:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - object
+            links:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - object
+            included:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - array
+
+# ---------------------------------------------------------------------------
+# Section 5.2 Resource Objects
+# ---------------------------------------------------------------------------
+  
+  resource-object-properties:
+    description: "Verify allowed properties in Resource Objects\r\n\r\n**Allowed properties:**
+      `id`,`type`,`attributes`,`relationships`,`links`,`meta`\r\n\r\n**Invalid Example:**\r\n```YAML\r\ntype:
+      object\r\nproperties:\r\n  id:\r\n    type: string\r\n    format: uri\r\n    example:
+      4257c52f-6c78-4747-8106-e185c081436b\r\n  type:\r\n    type: string\r\n    enum:\r\n
+      \     - resources\r\n  name:\r\n    type: string\r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\ntype:
+      object\r\nrequired:\r\n  - id\r\n  - type\r\n  - attributes\r\n  - relationships\r\nproperties:\r\n
+      \ id:\r\n    type: string\r\n    format: uri\r\n    example: 4257c52f-6c78-4747-8106-e185c081436b\r\n
+      \ type:\r\n    type: string\r\n    enum:\r\n      - resources\r\n  attributes:\r\n
+      \   type: object\r\n  relationships:\r\n    type: object\r\n  meta:\r\n    type:
+      object\r\n  links:\r\n    type: object\r\n```\r\n\r\nRelated specification information
+      can be found [here](https://jsonapi.org/format/1.0/#document-resource-objects)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-resource-objects"
+    message: "'data' objects/items MUST meet Resource Object restrictions"
+    severity: error
+    given: 
+      - "#ResourceObjects"
+      - "#POSTResourceObjects"
+    then:
+      - field: type
+        function: truthy
+      - field: "@key"
+        function: enumeration
+        functionOptions:
+          values:
+            - id
+            - type
+            - attributes
+            - relationships
+            - links
+            - meta
+
+# TODO:// Error throws incorrectly (too much) in an allOf scenario where one item is valid, but the other does not. Changed to warn for now.
+  resource-object-id-required:
+    description: "Verify `id` property exists in Resource Object (except POST requestBody)\r\n\r\n**Valid
+      Example:**\r\n```YAML\r\n# path..responses...\r\n# path.patch.requestBody...\r\n\r\ntype:
+      object\r\nrequired:\r\n  - id\r\n  - type\r\nproperties:\r\n  id:\r\n    type:
+      string\r\n    format: uuid\r\n    example: 4257c52f-6c78-4747-8106-e185c081436b\r\n
+      \ type:\r\n    type: string\r\n  meta:\r\n    type: object\r\n```\r\n**NOTE:**
+      Currently this rule triggers against `allOf` structures unless all items have
+      `id`. Until this is corrected it is set as a warning.\r\n\r\n\r\nRelated specification
+      information can be found [here](https://jsonapi.org/format/1.0/#document-resource-objects)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-resource-objects"
+    message: "Could be missing 'id' property. Please verify the resource."
+    severity: warn
+    given: "#ResourceObjects"
+    then:
+      field: id
+      function: truthy
+
+# ---------------------------------------------------------------------------
+# Section 5.2.1 Resource Objects - Identification
+# ---------------------------------------------------------------------------
+
+  resource-object-property-types:
+    description: "`id` and `type` **MUST** be of type `string`\r\n\r\n**Invalid Example:**\r\n```YAML\r\ntype:
+      object\r\nproperties:\r\n  id:\r\n    type: number\r\n  type:\r\n    type: string\r\n
+      \   enum:\r\n      - resources\r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\ntype:
+      object\r\nrequired:\r\n  - id\r\n  - type\r\nproperties:\r\n  id:\r\n    type:
+      string\r\n    format: uri\r\n    example: 4257c52f-6c78-4747-8106-e185c081436b\r\n
+      \ type:\r\n    type: string\r\n    enum:\r\n      - resources\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#document-resource-object-identification)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-resource-object-identification"
+    message: "'id' and 'type' MUST be of type 'string'"
+    severity: error
+    given: 
+      - "#ResourceObjects.id"
+      - "#ResourceObjects.type"
+      - "#POSTResourceObjects.type"
+    then:
+      field: type
+      function: enumeration
+      functionOptions:
+        values:
+          - string
+
+# ---------------------------------------------------------------------------
+# Section 5.2.2 Resource Objects - Fields
+# ---------------------------------------------------------------------------
+
+  resource-object-reserved-fields:
+    description: "`id` and `type` **MUST NOT** exist in `attributes` or `relationships`\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\ntype: object\r\nrequired:\r\n  - id\r\n  - type\r\n
+      \ - attributes\r\nproperties:\r\n  id:\r\n    type: string\r\n    format: uri\r\n
+      \   example: 4257c52f-6c78-4747-8106-e185c081436b\r\n  type:\r\n    type: string\r\n
+      \   enum:\r\n      - resources\r\n  attributes:\r\n    type: object\r\n    properties:\r\n
+      \     id:\r\n        type: number\r\n      type:\r\n        type: string\r\n```\r\n\r\n**Valid
+      Example:**\r\n```YAML\r\ntype: object\r\nrequired:\r\n  - id\r\n  - type\r\n
+      \ - attributes\r\nproperties:\r\n  id:\r\n    type: string\r\n    format: uri\r\n
+      \   example: 4257c52f-6c78-4747-8106-e185c081436b\r\n  type:\r\n    type: string\r\n
+      \   enum:\r\n      - resources\r\n  attributes:\r\n    type: object\r\n    properties:\r\n
+      \       name:\r\n          type: string\r\n        descrpition:\r\n          type:
+      string\r\n  meta:\r\n    type: object\r\n  links:\r\n    type: object\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#document-resource-object-fields)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-resource-object-fields"
+    message: "'id' and 'type' MUST NOT exist in 'attributes' or 'relationships'"
+    severity: error
+    given: "#AllContentSchemas..properties[attributes,relationships].properties"
+    then:
+      - field: id
+        function: falsy
+      - field: type
+        function: falsy
+
+# ---------------------------------------------------------------------------
+# Section 5.2.3 Resource Objects - Attributes
+# ---------------------------------------------------------------------------
+
+  attributes-object-type:
+    description: "`attributes` property **MUST** be an `object`\r\n\r\n**Invalid Examples:**\r\n```YAML\r\n#
+      data (Resource Object)\r\n# ...  \r\nproperties:\r\n  attributes:\r\n    type:
+      array \r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\n# data (Resource Object)\r\n#
+      ...  \r\nproperties:\r\n  attributes:\r\n    type: object\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#document-resource-object-attributes)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-resource-object-attributes"
+    message: "The value of 'attributes' property MUST be an object"
+    severity: error
+    given: "#AllContentSchemas..properties[attributes]"
+    then:
+      field: type
+      function: enumeration
+      functionOptions:
+        values:
+          - object
+
+  attributes-object-properties:
+    description: "`attributes` object **MUST NOT** contain a `relationships` or `links`
+      property\r\n\r\n**Invalid Example:**\r\n```YAML\r\n# data (Resource Object)\r\n#
+      ...  \r\nproperties:\r\n  attributes:\r\n    type: object\r\n    required:\r\n
+      \     - name\r\n    properties:\r\n      name:\r\n        type: string\r\n        example:
+      do-hickey\r\n      description:\r\n        type: string\r\n        example:
+      thing that does stuff\r\n      links:\r\n        type: array\r\n          items:\r\n
+      \           type: string\r\n      relationships:\r\n        type: array\r\n
+      \         items:\r\n            type: string\r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\n#
+      data (Resource Object)\r\n# ...  \r\nproperties:\r\n  attributes:\r\n    type:
+      object\r\n    required:\r\n      - name\r\n    properties:\r\n      name:\r\n
+      \       type: string\r\n        example: do-hickey\r\n      description:\r\n
+      \       type: string\r\n        example: thing that does stuff\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#document-resource-object-attributes)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-resource-object-attributes"
+    message: "Attributes object MUST NOT contain a 'relationships' or 'links' property"
+    severity: error
+    given: "#AllContentSchemas..properties[attributes]..properties"
+    then:
+      - field: relationships
+        function: falsy
+      - field: links
+        function: falsy
+
+  attributes-object-foreign-keys:
+    description: "Foreign Keys **SHOULD NOT** appear in `attributes`. **RECOMMEND**
+      using `relationships`\r\n\r\nAlthough has-one foreign keys (e.g. author_id)
+      are often stored internally alongside other information to be represented in
+      a resource object, these keys **SHOULD NOT** appear as attributes.\r\n\r\nForiegn
+      keys are supported through the use of [relationships](https://jsonapi.org/format/1.0/#document-resource-object-relationships)
+      and [related resource links](https://jsonapi.org/format/1.0/#document-resource-object-related-resource-links).\r\n\r\n**Example:**
+      Use relationship primary data rather than foreign key.\r\n```YAML\r\ntype: object\r\nproperties:\r\n
+      \ id:\r\n    type: string\r\n    format: uuid\r\n  type:\r\n    type: string\r\n
+      \   enum:\r\n      - widgets\r\n  attributes:\r\n    type: object\r\n      required:\r\n
+      \       - name\r\n      properties:\r\n        account_id:\r\n          type:
+      string\r\n        name:\r\n          type: string\r\n          example: do-hickey\r\n
+      \       description:\r\n          type: string\r\n          example: thing that
+      does stuff\r\n  relationships:\r\n    type: object\r\n    properties:\r\n      manufacturer:
+      #<------ a widget has a relationship with a manufacturer\r\n        type: object\r\n
+      \         required:\r\n            - links\r\n            - data\r\n          properties:\r\n
+      \           data:\r\n              type: object\r\n              properties:\r\n
+      \               id: #<---------- primary/foreign key value\r\n                  type:
+      string\r\n                  format: uuid\r\n                type:\r\n                  type:
+      string\r\n                  enum:\r\n                    - businesses\r\n```\r\n**NOTE:**
+      This would normally be a severity of `hint`, though this can be missed visually
+      in vscode. Until this changes it will be a severity of `info`.\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#document-resource-object-attributes)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-resource-object-attributes"
+    message: "Foreign key? If so, it would be better to remove and use a relationship."
+    severity: info
+    given: "#AllContentSchemas..properties[attributes]..properties[*]~"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: ".*_id$"
+
+# ---------------------------------------------------------------------------
+# Section 5.2.4 Resource Objects - Relationships (Addresses 5.2.6 and 5.3)
+# ---------------------------------------------------------------------------
+
+  relationships-object-type:
+    description: "relationships **MUST** be an `object`\r\n\r\n**Invalid Example:**\r\n```YAML\r\nrelationships:\r\n
+      \ type: array\r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\nrelationships:\r\n
+      \ type: object\r\n```\r\n\r\nRelated specification information can be found
+      [here](https://jsonapi.org/format/1.0/#document-resource-object-relationships)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-resource-object-relationships"
+    message: "Relationships MUST be an object"
+    severity: error
+    given: "#Relationships"
+    then:
+      field: type
+      function: enumeration
+      functionOptions:
+        values:
+          - object
+
+  relationship-schema:
+    description: "relationship object **MUST** follow the schema\r\n\r\n**Schema Rules:**\r\n-
+      **MUST** contain at least one of: `links`,`data`,`meta`\r\n- `links` object
+      **MUST** contain at least one of: `self`, `related`\r\n- `data` **MAY** be `null`,
+      single or array of resource identifiers\r\n- `meta` **MUST** be an `object`\r\n\r\n**Valid
+      Example:**\r\n```YAML\r\n'relationshipNameSingle':\r\n  type: object\r\n  required:\r\n
+      \   - links\r\n    - data\r\n  properties:\r\n    links:\r\n      type: object\r\n
+      \     required:\r\n        - self\r\n        - related\r\n      properties:\r\n
+      \       self:\r\n          $ref: '#/components/schemas/Link'\r\n          example:
+      http://api.domain.com/v1/myResources/{id}/relationships/manufacturers\r\n        related:\r\n
+      \         type: string\r\n          example: http://api.domain.com/v1/manufacturers/{id}\r\n
+      \   data:\r\n      type: object\r\n      required:\r\n        - id\r\n        -
+      type\r\n      properties:\r\n        id:\r\n          type: string\r\n          format:
+      uri\r\n          example: 4257c52f-6c78-4747-8106-e185c081436b\r\n        type:\r\n
+      \         type: string\r\n          enum:\r\n            - 'relationshipNamePlural'\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#document-resource-object-relationships)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-resource-object-relationships"
+    message: "relationship object MUST follow the schema"
+    severity: error
+    given: "#Relationships.properties[*]"
+    then:
+      - field: type
+        function: enumeration
+        functionOptions:
+          values:
+            - object
+      - field: properties
+        function: schema
+        functionOptions:
+          dialect: "draft2020-12"
+          schema:
+            type: object
+            anyOf:
+              - required: ["links"]
+              - required: ["data"]
+              - required: ["meta"]
+            properties:
+              links:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - object
+                  properties:
+                    type: object
+                    anyOf:
+                      - required: ["self"]
+                      - required: ["related"]
+                    properties:
+                      self:
+                        type: object
+                      related:
+                        type: object
+              data:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - object
+                      - array
+                      - "null"
+              meta:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - object
+            additionalProperties: false
+
+  relationship-data-properties:
+    description: "relationship `data` **MAY** only contain: `id`, `type` and `meta`\r\n\r\nInvalid
+      Example:\r\n```YAML\r\ntype: object\r\nrequired:\r\n  - id\r\n  - type\r\nproperties:\r\n
+      \ id:\r\n    type: string\r\n    format: uuid\r\n    example: 2357c52f-6c78-4747-8106-e185c08143aa\r\n
+      \ type:\r\n    type: string\r\n  attributes:\r\n    type: object\r\n  meta:\r\n
+      \   type: object\r\n```\r\n\r\nValid Example:\r\n```YAML\r\ntype: object\r\nrequired:\r\n
+      \ - id\r\n  - type\r\nproperties:\r\n  id:\r\n    type: string\r\n    format:
+      uuid\r\n    example: 2357c52f-6c78-4747-8106-e185c08143aa\r\n  type:\r\n    type:
+      string\r\n  meta:\r\n    type: object\r\n```\r\n\r\nRelated specification information
+      can be found [here](https://jsonapi.org/format/1.0/#document-resource-identifier-objects)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-resource-identifier-objects"
+    message: "relationship data May only contain: 'id', 'type' and 'meta'"
+    severity: error
+    given: 
+      - "#RelationshipData.properties"
+      - "#RelationshipData.allOf[*].properties"
+      - "#RelationshipData.items.properties"
+      - "#RelationshipData.items.allOf[*].properties"
+    then:
+      field: "@key"
+      function: enumeration
+      functionOptions:
+        values:
+          - id
+          - type
+          - meta
+  
+  relationship-data-schema:
+    description: "relationship data items **MUST** follow schema\r\n\r\n**Schema Rules:**\r\n-
+      `id` **MUST** be a `string`\r\n- `type` **MUST** be a `string`\r\n- `meta` **MUST**
+      be an `object`\r\n\r\n**Invalid Examples:**\r\n```YAML\r\ntype: object\r\nrequired:\r\n
+      \ - id\r\n  - type\r\nproperties:\r\n  id:\r\n    type: number\r\n  type:\r\n
+      \   type: number\r\n  meta:\r\n    type: object\r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\ntype:
+      object\r\nrequired:\r\n  - id\r\n  - type\r\nproperties:\r\n  id:\r\n    type:
+      string\r\n    format: uuid\r\n    example: 2357c52f-6c78-4747-8106-e185c08143aa\r\n
+      \ type:\r\n    type: string\r\n  meta:\r\n    type: object   \r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#document-resource-identifier-objects)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-resource-identifier-objects"
+    message: "relationship data items MUST follow schema"
+    severity: error
+    given:
+      - "#RelationshipData.properties"
+      - "#RelationshipData.allOf[0].properties"
+      - "#RelationshipData.items.properties"
+      - "#RelationshipData.items.allOf[0].properties"
+    then:
+      function: schema
+      functionOptions:
+        dialect: "draft2020-12"
+        schema:
+          type: object
+          required: ["id","type"]
+          properties:
+            id:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - string
+            type:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - string
+            meta:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - object
+
+# ---------------------------------------------------------------------------
+# Section 5.5 Resource Objects - Meta Information
+# ---------------------------------------------------------------------------
+
+  meta-object:
+    description: "`meta` property **MUST** be of type `object`\r\n\r\n**Invalid Examples:**\r\n```YAML\r\nproperties:\r\n
+      \ meta:\r\n    type: string \r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\nproperties:\r\n
+      \ meta:\r\n    type: object\r\n```\r\n\r\nRelated specification information
+      can be found [here](https://jsonapi.org/format/1.0/#document-meta)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-meta"
+    message: "'meta' property MUST be of type object"
+    severity: error
+    given: "#MetaObjects"
+    then:
+      field: type
+      function: enumeration
+      functionOptions:
+        values:
+          - object
+
+# ---------------------------------------------------------------------------
+# Section 5.6 Resource Objects - Links
+# ---------------------------------------------------------------------------
+
+  links-object:
+    description: "`links` property **MUST** be an `object`\r\n\r\n**Invalid Examples:**\r\n```YAML\r\nproperties:\r\n
+      \ links:\r\n    type: array \r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\nproperties:\r\n
+      \ links:\r\n    type: object\r\n```\r\n\r\nRelated specification information
+      can be found [here](https://jsonapi.org/format/1.0/#document-links)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-links"
+    message: "'links' property MUST be an object"
+    severity: error
+    given: "#LinkObjects"
+    then:
+      field: type
+      function: enumeration
+      functionOptions:
+        values:
+          - object
+
+  links-object-schema:
+    description: "A link **MUST** be represented as either a `string` containing the
+      link's URL or an `object`.\r\n\r\n**Invalid Examples:**\r\n```YAML\r\nproperties:\r\n
+      \ links:\r\n    type: object\r\n    properties:\r\n        self:\r\n            type:
+      number\r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\nproperties:\r\n  links:\r\n
+      \   type: object\r\n    properties:\r\n        self:\r\n          oneOf:\r\n
+      \           - type: string\r\n              format: uri\r\n            - type:
+      object\r\n              required:\r\n                - href\r\n              properties:\r\n
+      \               href:\r\n                  type: string\r\n                  format:
+      uri\r\n                meta:\r\n                  type: object    \r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#document-links)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-links"
+    message: "'link' properties must be of type string or object"
+    severity: error
+    given: "#LinkObjects.properties[*]..[?(@property === 'type')]^"
+    then:
+      field: type
+      function: enumeration
+      functionOptions:
+        values:
+          - string
+          - object
+
+  links-object-schema-properties:
+    description: "objects contained within a `links` object **MUST** contain `href`
+      (string) and **MAY** contain `meta`\r\n\r\nA link **MUST** be represented as
+      either a `string` containing the link's URL or an `object`.\r\n\r\n**Invalid
+      Examples:**\r\n```YAML\r\nproperties:\r\n  links:\r\n    type: object\r\n    properties:\r\n
+      \       self:\r\n          oneOf:\r\n            - type: string\r\n              format:
+      uri\r\n            - type: object\r\n              properties:\r\n                url:\r\n
+      \                 type: string\r\n                  format: uri\r\n                meta:\r\n
+      \                 type: object    \r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\nproperties:\r\n
+      \ links:\r\n    type: object\r\n    properties:\r\n        self:\r\n          oneOf:\r\n
+      \           - type: string\r\n              format: uri\r\n            - type:
+      object\r\n              required:\r\n                - href\r\n              properties:\r\n
+      \               href:\r\n                  type: string\r\n                  format:
+      uri\r\n                meta:\r\n                  type: object    \r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#document-links)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-links"
+    message: "objects contained within a links object MUST contain 'href' (string) and MAY contain 'meta'"
+    severity: error
+    given: "#LinkObjects.properties..properties"
+    then:
+      - field: "@key"
+        function: enumeration
+        functionOptions:
+          values:
+            - href
+            - meta
+      - field: href
+        function: truthy
+      - field: href.type
+        function: enumeration
+        functionOptions:
+          values:
+            - string
+
+# ---------------------------------------------------------------------------
+# Section 5.7 Resource Objects - JSON:API Object
+# ---------------------------------------------------------------------------
+
+  jsonapi-object:
+    description: "`jsonapi` object **MUST** match schema\r\n\r\n**Schema Rules:**\r\n-
+      `jsonapi` **MUST** be an `object`\r\n- **MUST** contain `string` `version`\r\n\r\n**Valid
+      Example:**\r\n```YAML\r\nproperties:\r\n  jsonapi:\r\n    type: object\r\n    properties:\r\n
+      \     version:\r\n        type: string\r\n        example: '1.0'\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#document-jsonapi-object)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-jsonapi-object"
+    message: "jsonapi object MUST match schema"
+    severity: error
+    given: "#AllContentSchemas..properties[?(@property === 'jsonapi')]"
+    then:
+      - field: type
+        function: enumeration
+        functionOptions:
+          values:
+            - object
+      - field: "properties[*]~"
+        function: enumeration
+        functionOptions:
+          values:
+            - version
+      - field: properties.version
+        function: truthy
+      - field: properties.version.type
+        function: enumeration
+        functionOptions:
+          values:
+            - string
+
+# ---------------------------------------------------------------------------
+# Section 6 Fetching Data
+# Section 6.1
+# Section 6.2 Responses Codes - 200, 404
+# ---------------------------------------------------------------------------
+
+  get-200-response-code:
+    description: "`GET` requests **MUST** support response code 200\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\npaths:\r\n  /myResources/{id}:\r\n    get:\r\n      responses:\r\n
+      \       '404':\r\n          $ref: '#/components/responses/404Error'\r\n```\r\n\r\n**Valid
+      Examples:**\r\n```YAML\r\npaths:\r\n  /myResources/{id}:\r\n    get:\r\n      responses:\r\n
+      \       '200':\r\n          $ref: '#/components/responses/MyResource_Single'\r\n
+      \       '404':\r\n          $ref: '#/components/responses/404Error'\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#fetching-resources-responses)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#fetching-resources-responses"
+    message: "GET paths must support response code: 200"
+    severity: error
+    given: "$.paths[*][get].responses"
+    then:
+      field: "200"
+      function: truthy
+
+# TODO:// verify a 404 response exists on a GET request that returns a single resource
+
+# ---------------------------------------------------------------------------
+# Section 6.3 Fetching Resources - Inclusion of Related Resources
+# ---------------------------------------------------------------------------
+
+  400-response-code:
+    description: "Servers **MUST** document and support response code **400** for
+      all paths\r\n\r\n**Invalid Example:**\r\n```YAML\r\npaths:\r\n  /myResources:\r\n
+      \   get:\r\n      responses:\r\n        '200':\r\n          $ref: '#/components/responses/MyResource_Collection'\r\n```\r\n\r\n**Valid
+      Example:**\r\n```YAML\r\npaths:\r\n  /myResources:\r\n    get:\r\n      responses:\r\n
+      \       '200':\r\n          $ref: '#/components/responses/MyResource_Collection'\r\n
+      \       '400':\r\n          $ref: '#/components/responses/400Error'\r\n```"
+    message: "All paths must support response codes: 400"
+    severity: error
+    given: "$.paths..responses"
+    then:
+      field: "400"
+      function: truthy
+
+  include-parameter:
+    description: "`include` query param **MUST** be a string array (csv)\r\n\r\n**Valid
+      Example:**\r\n```YAML\r\nname: include\r\ndescription: csv formatted parameter
+      of relationship names to include in response\r\nin: query\r\nstyle: form\r\nexplode:
+      false\r\nschema:\r\ntype: array\r\nitems:\r\n    type: string\r\nexample: [\"ratings\",\"comments.author\"]\r\n```\r\nExample
+      query string: `/articles/1?include=comments.author,ratings`\r\n\r\nRelated specification
+      information can be found [here](https://jsonapi.org/format/1.0/#fetching-includes)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#fetching-includes"
+    message: "'include' query param MUST be a string array (csv)"
+    severity: error
+    given: "$.paths..parameters[*][?(@property === 'name' && @ === 'include')]^"
+    then:
+      - field: in
+        function: enumeration
+        functionOptions:
+          values:
+            - query
+      - field: style
+        function: truthy
+      - field: style
+        function: enumeration
+        functionOptions:
+          values:
+            - form
+      - field: explode
+        function: defined
+      - field: explode
+        function: falsy
+      - field: schema
+        function: schema
+        functionOptions:
+          dialect: "draft2020-12"
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - string
+
+# ---------------------------------------------------------------------------
+# Section 6.4 Fetching Resources - Sparse Fieldsets
+# ---------------------------------------------------------------------------
+
+  fields-parameter:
+    description: "`fields` query param **MUST** be a `deepObject`\r\n\r\n**Valid Example:**\r\n```YAML\r\nname:
+      fields\r\ndescription: schema for 'fields' query parameter\r\nin: query\r\nschema:\r\n
+      \ type: object\r\nstyle: deepObject\r\nexample:\r\n  people: \"name\"\r\n  articles:
+      \"title,body\"\r\n```\r\nExample query string: `/articles?fields[articles]=title,body&fields[people]=name`\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#fetching-sparse-fieldsets)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#fetching-sparse-fieldsets"
+    message: "'fields' query param MUST be a deepObject"
+    severity: error
+    given: "$.paths..parameters[*][?(@property === 'name' && @ === 'fields')]^"
+    then:
+      - field: in
+        function: enumeration
+        functionOptions:
+          values:
+            - query
+      - field: style
+        function: truthy
+      - field: style
+        function: enumeration
+        functionOptions:
+          values:
+            - deepObject
+      - field: schema
+        function: schema
+        functionOptions:
+          dialect: "draft2020-12"
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - object
+
+# ---------------------------------------------------------------------------
+# Section 6.5 Fetching Resources - Sorting
+# ---------------------------------------------------------------------------
+
+  sort-parameter:
+    description: "`sort` query param **MUST** be a string array (csv)\r\n\r\n**Valid
+      Example:**\r\n```YAML\r\nname: sort\r\ndescription: csv formatted parameter
+      of fields to sort by\r\nin: query\r\nstyle: form\r\nexplode: false\r\nschema:\r\n
+      \ type: array\r\n  items:\r\n    type: string\r\nexample: [\"-age\",\"name\"]\r\n```\r\nExample
+      query string: `/people?sort=-age,name`\r\n\r\nRelated specification information
+      can be found [here](https://jsonapi.org/format/1.0/#fetching-sorting)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#fetching-sorting"
+    message: "'sort' query param MUST be a string array (csv)"
+    severity: error
+    given: "$.paths..parameters[*][?(@property === 'name' && @ === 'sort')]^"
+    then:
+      - field: in
+        function: enumeration
+        functionOptions:
+          values:
+            - query
+      - field: style
+        function: truthy
+      - field: style
+        function: enumeration
+        functionOptions:
+          values:
+            - form
+      - field: explode
+        function: defined
+      - field: explode
+        function: falsy
+      - field: schema
+        function: schema
+        functionOptions:
+          dialect: "draft2020-12"
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - string
+
+# ---------------------------------------------------------------------------
+# Section 6.6 Fetching Resources - Pagination
+# ---------------------------------------------------------------------------
+
+# TODO:// verify 'page' param only on collections
+  page-parameter:
+    description: "`page` query param **MUST** follow schema\r\n\r\n**Schema Rules:**\r\n-
+      **MUST** be type `object`\r\n- **MUST** be style `deepObject`\r\n- contents
+      depend on strategy:\r\n  - cursor: `string` `cursor` and `int32` `limit`\r\n
+      \ - offset: `int32` `offset` and `int32` `limit`\r\n\r\n**Valid Examples:**\r\n```YAML\r\nname:
+      page\r\ndescription: Paging parameter, cursor based.\r\nin: query\r\nschema:\r\n
+      \ type: object\r\n  required: [\"cursor\",\"limit\"]\r\n  properties:\r\n    cursor:\r\n
+      \     type: string\r\n    limit:\r\n      type: integer\r\n      format: int32\r\nstyle:
+      deepObject\r\n\r\nname: page\r\ndescription: Paging parameter, offset based.\r\nin:
+      query\r\nschema:\r\n  type: object\r\n  required: [\"offset\",\"limit\"]\r\n
+      \ properties:\r\n    cursor:\r\n      type: integer\r\n      format: int32\r\n
+      \   limit:\r\n      type: integer\r\n      format: int32\r\nstyle: deepObject\r\n```\r\nExample
+      query string: \r\n- `/myResources?page[cursor]=fdsJ34lkjSfjsdfk&page[limit]=10`\r\n-
+      `/myResources?page[offset]=2&page[limit]=10`\r\n\r\nRelated specification information
+      can be found [here](https://jsonapi.org/format/1.0/#fetching-pagination)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#fetching-pagination"
+    message: "'page' query param MUST follow schema"
+    severity: error
+    given: "$.paths..parameters[*][?(@property === 'name' && @ === 'page')]^"
+    then:
+      - field: in
+        function: enumeration
+        functionOptions:
+          values:
+            - query
+      - field: style
+        function: truthy
+      - field: style
+        function: enumeration
+        functionOptions:
+          values:
+            - deepObject
+      - field: schema
+        function: schema
+        functionOptions:
+          dialect: "draft2020-12"
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - object
+              properties:
+                type: object
+                additionalProperties: false
+                properties:
+                  cursor:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum: ["string"]
+                  offset:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum: ["integer"]
+                      format:
+                        type: string
+                        enum: ["int32"]
+                      minimum:
+                        type: integer
+                        minimum: 0
+                  limit:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum: ["integer"]
+                      format:
+                        type: string
+                        enum: ["int32"]
+
+# TODO:// verify first,last,prev,next links only on collections
+
+# ---------------------------------------------------------------------------
+# Section 6.7 Fetching Resources - Filtering
+# ---------------------------------------------------------------------------
+
+# TODO:// verify 'filter' param only on collections
+
+# ---------------------------------------------------------------------------
+# Section 7.1 Creating Resources
+# ---------------------------------------------------------------------------
+
+# TODO:// support x-http-method-override: PATCH
+
+  post-requests-single-object:
+    description: "POST requests **MUST** only contain a single resource object\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\ncontent:\r\n  application/vnd.api+json:\r\n    schema:\r\n
+      \     type: object\r\n      required:\r\n        - data\r\n      properties:\r\n
+      \       data:\r\n            type: array\r\n            items: \r\n              $ref:
+      '#/components/schemas/MyResourcePostObject'\r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\ncontent:\r\n
+      \ application/vnd.api+json:\r\n    schema:\r\n      type: object\r\n      required:\r\n
+      \       - data\r\n      properties:\r\n        data:\r\n          $ref: '#/components/schemas/MyResourcePostObject'\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#crud-creating)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-creating"
+    message: "POST requests MAY only contain a single resource object"
+    severity: error
+    given: "$.paths..post.requestBody.content[application/vnd.api+json].schema.properties.data[?(@property==='type' && @ === 'array')]"
+    then:
+      function: falsy
+
+  post-relationships:
+    description: "If relationships exist in POST request, `data` is REQUIRED\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\nrelationships:\r\n  type: object\r\n  properties:\r\n
+      \   manufacturer:\r\n      type: object\r\n      properties:\r\n        links:\r\n
+      \         type: object\r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\nrelationships:\r\n
+      \ type: object\r\n  properties:\r\n    manufacturer:\r\n      type: object\r\n
+      \     properties:\r\n        data:\r\n          type: object\r\n        links:\r\n
+      \         type: object\r\n```\r\n\r\nRelated specification information can be
+      found [here](https://jsonapi.org/format/1.0/#crud-creating)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-creating"
+    message: "If relationships exist in POST request, 'data' is REQUIRED"
+    severity: error
+    given: "#POSTRelationships"
+    then:
+      field: required
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+          items:
+            type: string
+            anyOf:
+              - enum:
+                  - data
+              - enum:
+                  - data
+                  - links
+                  - meta
+
+  403-response-code:
+    description: "Servers **MUST** document and support response code **403** for
+      all paths\r\n\r\n**Invalid Example:**\r\n```YAML\r\npaths:\r\n  /myResources:\r\n
+      \   get:\r\n      responses:\r\n        '200':\r\n          $ref: '#/components/responses/MyResource_Collection'\r\n```\r\n\r\n**Valid
+      Example:**\r\n```YAML\r\npaths:\r\n  /myResources:\r\n    get:\r\n      responses:\r\n
+      \       '200':\r\n          $ref: '#/components/responses/MyResource_Collection'\r\n
+      \       '403':\r\n          $ref: '#/components/responses/403Error'\r\n```"
+    message: "All paths must support response codes: 403"
+    severity: error
+    given: "$.paths..responses"
+    then:
+      field: "403"
+      function: truthy
+
+  201-response-location-header:
+    description: "A POST 201 response **SHOULD** return a `Location` header identifying
+      the location of the newly created resource.\r\n\r\n**Valid Example:**\r\n```YAML\r\nheaders:\r\n
+      \ Location:\r\n    schema:\r\n      type: string\r\n      format: uri\r\n    example:
+      'http://example.com/photos/550e8400-e29b-41d4-a716-446655440000'\r\ncontent:\r\n
+      \ application/vnd.api+json:\r\n    schema:\r\n    type: object\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#crud-creating-responses)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-creating-responses"
+    message: "A POST 201 response SHOULD return a Location header"
+    severity: info
+    given: "$.paths[*][post].responses.201.headers"
+    then:
+      field: Location
+      function: defined
+  
+  post-201-response:
+    description: "A POST 201 response **MUST** return the primary resource\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#crud-creating-responses)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-creating-responses"
+    message: "A POST 201 response MUST return the primary resource"
+    severity: info
+    given: "$.paths[*][post].responses.201.content[application/vnd.api+json].schema"
+    then:
+      field: required
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+          items:
+            type: string
+            anyOf:
+              - enum:
+                  - data
+              - enum:
+                  - data
+                  - meta
+                  - jsonapi
+                  - links
+
+  post-2xx-response-codes:
+    description: "`POST` requests **MUST** support one Of the following 2xx codes:
+      201, 202 or 204\r\n\r\n**Invalid Example:**\r\n```YAML\r\npaths:\r\n  /myResources:\r\n
+      \   post:\r\n      responses:\r\n        '404':\r\n          $ref: '#/components/responses/404Error'\r\n```\r\n\r\n**Valid
+      Examples:**\r\n```YAML\r\npaths:\r\n  /myResources:\r\n    post:\r\n      responses:\r\n
+      \       '201':\r\n          $ref: '#/components/responses/MyResource_Single'\r\n
+      \       '404':\r\n          $ref: '#/components/responses/404Error'\r\n\r\npaths:\r\n
+      \ /myResources:\r\n    post:\r\n      responses:\r\n        '202':\r\n          description:
+      Accepted.\r\n        '404':\r\n          $ref: '#/components/responses/404Error'\r\n\r\npaths:\r\n
+      \ /myResources:\r\n    post:\r\n      responses:\r\n        '204':\r\n          description:
+      Successful Operation. No Content.\r\n        '404':\r\n          $ref: '#/components/responses/404Error'
+      \ \r\n```\r\n\r\nRelated specification information can be found [here](https://jsonapi.org/format/1.0/#crud-creating-responses)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-creating-responses"
+    message: "POST requests MUST support one Of the following 2xx codes: 201, 202 or 204"
+    severity: error
+    given: "$.paths[*][post].responses"
+    then:
+      function: schema
+      functionOptions:
+        dialect: "draft2020-12"
+        schema:
+          type: object
+          anyOf:
+            - required: ["201"]
+            - required: ["202"]
+            - required: ["204"]
+     
+  post-409-response-code:
+    description: "`POST` requests **MUST** document and support response code 409\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\npaths:\r\n  /myResources:\r\n    post:\r\n      responses:\r\n
+      \       '201':\r\n          $ref: '#/components/responses/MyResource_Single'\r\n```\r\n\r\n**Valid
+      Examples:**\r\n```YAML\r\npaths:\r\n  /myResources:\r\n    post:\r\n      responses:\r\n
+      \       '201':\r\n          $ref: '#/components/responses/MyResource_Single'\r\n
+      \       '409':\r\n          $ref: '#/components/responses/409Error'\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#crud-creating-responses)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-creating-responses"
+    message: "POST paths must support response codes: 409"
+    severity: error
+    given: "$.paths[*][post].responses"
+    then:
+      field: "409"
+      function: truthy
+  
+  post-409-response:
+    description: "POST 409 response **SHOULD** return `source` property to identify
+      conflict\r\n\r\n**Example:**\r\n```YAML\r\n# Example showing use of source in
+      error object.\r\n\r\ntype: array\r\nitems:\r\n    type: object\r\n    properties:\r\n
+      \     id:\r\n        type: string\r\n      status:\r\n        type: string\r\n
+      \       enum:\r\n          - 409\r\n      title:\r\n        type: string\r\n
+      \       enum:\r\n          - Conflict\r\n      source:\r\n        type: object\r\n
+      \       properties:\r\n          pointer:\r\n            oneOf:\r\n              -
+      type: string\r\n                format: json-pointer\r\n                example:
+      /data/attributes/id\r\n              - type: array\r\n                items:\r\n
+      \                 type: string\r\n                  format: json-pointer\r\nmaxItems:1\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#crud-creating-responses)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-creating-responses"
+    message: "POST 409 response SHOULD return 'source' property to identify conflict"
+    severity: info
+    given: "$.paths[*][post].responses"
+    then:
+      field: "409"
+      function: falsy
+
+# ---------------------------------------------------------------------------
+# Section 7.2 Updating Resources
+# ---------------------------------------------------------------------------
+
+# TODO:// support x-http-method-override: PATCH
+
+  put-disallowed:
+    description: "`PUT` verb is not allowed in jsonapi, use `PATCH` instead.\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\n/myResources/{id}:\r\n    put:\r\n```\r\n\r\n**Valid
+      Example:**\r\n```YAML\r\n/myResources/{id}:\r\n    patch:\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#crud-updating)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-updating"
+    message: "PUT verb is not allowed in jsonapi, use PATCH instead."
+    severity: error
+    given: "$.paths[*][put]"
+    then:
+      - function: falsy
+
+  patch-requests-single-object:
+    description: "PATCH requests **MUST** only contain a single resource object\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\ncontent:\r\n  application/vnd.api+json:\r\n    schema:\r\n
+      \     type: object\r\n      required:\r\n        - data\r\n      properties:\r\n
+      \       data:\r\n            type: array\r\n            items: \r\n              $ref:
+      '#/components/schemas/MyResourcePostObject'\r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\ncontent:\r\n
+      \ application/vnd.api+json:\r\n    schema:\r\n      type: object\r\n      required:\r\n
+      \       - data\r\n      properties:\r\n        data:\r\n          $ref: '#/components/schemas/MyResourcePostObject'\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#crud-updating)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-creating"
+    message: "PATCH requests MAY only contain a single resource object"
+    severity: error
+    given: "$.paths..patch.requestBody.content[application/vnd.api+json].schema.properties.data[?(@property==='type' && @ === 'array')]"
+    then:
+      function: falsy
+
+  patch-relationships:
+    description: "If relationships exist in PATCH request, `data` is REQUIRED\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\nrelationships:\r\n  type: object\r\n  properties:\r\n
+      \   manufacturer:\r\n      type: object\r\n      properties:\r\n        links:\r\n
+      \         type: object\r\n```\r\n\r\n**Valid Example:**\r\n```YAML\r\nrelationships:\r\n
+      \ type: object\r\n  properties:\r\n    manufacturer:\r\n      type: object\r\n
+      \     properties:\r\n        data:\r\n          type: object\r\n        links:\r\n
+      \         type: object\r\n```\r\n\r\nRelated specification information can be
+      found [here](https://jsonapi.org/format/1.0/#crud-updating-resource-relationships)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-creating"
+    message: "If relationships exist in PAST request, 'data' is REQUIRED"
+    severity: error
+    given: "#PATCHRelationships"
+    then:
+      field: required
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+          items:
+            type: string
+            anyOf:
+              - enum:
+                  - data
+              - enum:
+                  - data
+                  - links
+                  - meta
+
+  patch-2xx-response-codes:
+    description: "`PATCH` requests **MUST** support at least one of the following
+      2xx codes: 200, 202 or 204\r\n\r\n**Invalid Example:**\r\n```YAML\r\npaths:\r\n
+      \ /myResources/{id}:\r\n    patch:\r\n      responses:\r\n        '404':\r\n
+      \         $ref: '#/components/responses/404Error'\r\n```\r\n\r\n**Valid Examples:**\r\n```YAML\r\npaths:\r\n
+      \ /myResources/{id}:\r\n    patch:\r\n      responses:\r\n        '200':\r\n
+      \         $ref: '#/components/responses/MyResource_Single'\r\n        '404':\r\n
+      \         $ref: '#/components/responses/404Error'\r\n\r\npaths:\r\n  /myResources/{id}:\r\n
+      \   patch:\r\n      responses:\r\n        '202':\r\n          description: Accepted.\r\n
+      \       '404':\r\n          $ref: '#/components/responses/404Error'\r\n\r\npaths:\r\n
+      \ /myResources/{id}:\r\n    patch:\r\n      responses:\r\n        '204':\r\n
+      \         description: Successful Operation. No Content.\r\n        '404':\r\n
+      \         $ref: '#/components/responses/404Error'  \r\n```\r\n\r\nRelated specification
+      information can be found [here](https://jsonapi.org/format/1.0/#crud-updating-responses)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-updating-responses"
+    message: "POST requests MUST support at least one of the following 2xx codes: 200, 202 or 204"
+    severity: error
+    given: "$.paths[*][patch].responses"
+    then:
+      function: schema
+      functionOptions:
+        dialect: "draft2020-12"
+        schema:
+          type: object
+          anyOf:
+            - required: ["200"]
+            - required: ["202"]
+            - required: ["204"]
+
+  patch-404-response-code:
+    description: "`PATCH` requests **MUST** support response code 404\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\npaths:\r\n  /myResources/{id}:\r\n    patch:\r\n      responses:\r\n
+      \       '200':\r\n          $ref: '#/components/responses/MyResource_Single'\r\n```\r\n\r\n**Valid
+      Examples:**\r\n```YAML\r\npaths:\r\n  /myResources/{id}:\r\n    patch:\r\n      responses:\r\n
+      \       '200':\r\n          $ref: '#/components/responses/MyResource_Single'\r\n
+      \       '404':\r\n          $ref: '#/components/responses/404Error'\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#crud-updating-responses)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-updating-responses"
+    message: "PATCH requests MUST support response code 404"
+    severity: error
+    given: "$.paths[*][patch].responses"
+    then:
+      field: "404"
+      function: truthy
+
+  patch-409-response-code:
+    description: "`PATCH` requests **MUST** document and support response code 409\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\npaths:\r\n  /myResources/{id}:\r\n    patch:\r\n      responses:\r\n
+      \       '200':\r\n          $ref: '#/components/responses/MyResource_Single'\r\n```\r\n\r\n**Valid
+      Examples:**\r\n```YAML\r\npaths:\r\n  /myResources/{id}:\r\n    patch:\r\n      responses:\r\n
+      \       '200':\r\n          $ref: '#/components/responses/MyResource_Single'\r\n
+      \       '409':\r\n          $ref: '#/components/responses/409Error'\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#crud-updating-responses)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-updating-responses"
+    message: "PATCH requests MUST support response codes: 409"
+    severity: error
+    given: "$.paths[*][patch].responses"
+    then:
+      field: "409"
+      function: truthy
+  
+  patch-409-response:
+    description: "PATCH 409 response **SHOULD** return `source` property to identify
+      conflict\r\n\r\n**Example:**\r\n```YAML\r\n# Example showing use of source in
+      error object.\r\n# Examples describe a conflict between the {id} parameter and
+      the id field in the request body.\r\n\r\ntype: array\r\nitems:\r\n    type:
+      object\r\n    properties:\r\n      id:\r\n        type: string\r\n      status:\r\n
+      \       type: string\r\n        enum:\r\n          - 409\r\n      title:\r\n
+      \       type: string\r\n        enum:\r\n          - Conflict\r\n      source:\r\n
+      \       type: object\r\n        properties:\r\n          pointer:\r\n            oneOf:\r\n
+      \             - type: string\r\n                format: json-pointer\r\n                example:
+      /data/attributes/id\r\n              - type: array\r\n                items:\r\n
+      \                 type: string\r\n                  format: json-pointer\r\n
+      \         parameter:\r\n            type: string\r\n            example: id\r\nmaxItems:1\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#crud-updating-responses)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-updating-responses"
+    message: "PATCH 409 response SHOULD return 'source' property to identify conflict"
+    severity: info
+    given: "$.paths[*][patch].responses"
+    then:
+      field: "409"
+      function: falsy
+
+# ---------------------------------------------------------------------------
+# Section 7.3 Updating Relationships
+# ---------------------------------------------------------------------------
+
+# TODO:// Revisit if/when updating relationships becomes needed
+
+# ---------------------------------------------------------------------------
+# Section 7.4 Deleting Resources
+# ---------------------------------------------------------------------------
+
+  delete-2xx-response-codes:
+    description: "`DELETE` requests **MUST** support at least one of the following
+      2xx codes: 200, 202, or 204\r\n\r\n**Invalid Example:**\r\n```YAML\r\npaths:\r\n
+      \ /myResources/{id}:\r\n    delete:\r\n      responses:\r\n        '404':\r\n
+      \         $ref: '#/components/responses/404Error'\r\n```\r\n\r\n**Valid Examples:**\r\n```YAML\r\npaths:\r\n
+      \ /myResources/{id}:\r\n    delete:\r\n      responses:\r\n        '200':\r\n
+      \         $ref: '#/components/responses/delete_meta_data'\r\n        '404':\r\n
+      \         $ref: '#/components/responses/404Error'\r\n\r\npaths:\r\n  /myResources/{id}:\r\n
+      \   delete:\r\n      responses:\r\n        '202':\r\n          description:
+      Accepted.\r\n        '404':\r\n          $ref: '#/components/responses/404Error'\r\n\r\npaths:\r\n
+      \ /myResources/{id}:\r\n    delete:\r\n      responses:\r\n        '204':\r\n
+      \         description: Successful Operation. No Content.\r\n        '404':\r\n
+      \         $ref: '#/components/responses/404Error'  \r\n```\r\n\r\nRelated specification
+      information can be found [here](https://jsonapi.org/format/1.0/#crud-deleting-responses)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-deleting-responses"
+    message: "DELETE requests MUST support at least one of the following 2xx codes: 200, 202 or 204"
+    severity: error
+    given: "$.paths[*][delete].responses"
+    then:
+      function: schema
+      functionOptions:
+        dialect: "draft2020-12"
+        schema:
+          type: object
+          anyOf:
+            - required: ["200"]
+            - required: ["202"]
+            - required: ["204"]
+
+  delete-404-response-code:
+    description: "`DELETE` requests **MUST** support response code 404\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\npaths:\r\n  /myResources/{id}:\r\n    delete:\r\n      responses:\r\n
+      \       '204':\r\n          description: Successful Operation. No Content.\r\n```\r\n\r\n**Valid
+      Examples:**\r\n```YAML\r\npaths:\r\n  /myResources/{id}:\r\n    delete:\r\n
+      \     responses:\r\n        '204':\r\n          description: Successful Operation.
+      No Content.\r\n        '404':\r\n          $ref: '#/components/responses/404Error'\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#crud-deleting-responses)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-deleting-responses"
+    message: "DELETE requests MUST support response code 404"
+    severity: error
+    given: "$.paths[*][delete].responses"
+    then:
+      field: "404"
+      function: truthy
+
+# ---------------------------------------------------------------------------
+# Section 9 Errors
+# Section 9.1 Errors - Processing Errors
+# ---------------------------------------------------------------------------
+
+  error-processing:
+    description: "When returning multiple errors choose the most generally available
+      response code '400' or '500'. Other error response codes **MUST** return only
+      a single error.\r\n\r\n**Valid Example:** 400 Multiple errors\r\n```YAML\r\n400Error:\r\n
+      \ description: 'Bad Request'\r\n  content:\r\n    application/vnd.api+json:\r\n
+      \     schema:\r\n        type: object\r\n        required:\r\n          - errors\r\n
+      \       properties:\r\n          errors:\r\n            type: array\r\n            items:\r\n
+      \             $ref: '#/components/schemas/BaseErrorObject'\r\n              description:
+      'Bad Request'\r\n```\r\n\r\n**Valid Example:** 401 error - `maxItems: 1`\r\n```YAML\r\n401Error:\r\n
+      \ description: 'Unauthorized: Invalid or Expired Authentication'\r\n  headers:\r\n
+      \   WWWAuthenticate:\r\n      $ref: '#/components/headers/WWWAuthenticate'\r\n
+      \ content:\r\n    application/vnd.api+json:\r\n      schema:\r\n        type:
+      object\r\n        required:\r\n          - errors\r\n        properties:\r\n
+      \         errors:\r\n            type: array\r\n            items:\r\n              allOf:\r\n
+      \               - $ref: '#/components/schemas/BaseErrorObject'\r\n                -
+      type: object\r\n                  description: 'Unauthorized: Invalid or Expired
+      Authentication'\r\n                  properties:\r\n                    status:\r\n
+      \                     enum: \r\n                        - \"401\"\r\n                    title:\r\n
+      \                     enum:\r\n                        - \"Unauthorized\"\r\n
+      \           maxItems: 1\r\n```\r\n\r\nRelated specification information can
+      be found [here](https://jsonapi.org/format/1.0/#errors-processing)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#errors-processing"
+    message: "Error Codes != 400 and != 500 MUST set maxItems to 1"
+    severity: error
+    given: "#SingleErrorResponses"
+    then:
+      - field: maxItems
+        function: truthy
+      - field: maxItems
+        function: enumeration
+        functionOptions:
+          values:
+            - 1
+
+# ---------------------------------------------------------------------------
+# Section 9.2 Errors - Error Object
+# ---------------------------------------------------------------------------
+
+  error-object-schema:
+    description: "error objects **MUST** follow schema\r\n\r\n**Schema Rules:**\r\n-
+      **MAY** contain the following fields: `id`,`links`,`status`,`code`,`title`,`detail`,`source`,`meta`\r\n-
+      `id`,`status`,`code`,`title`,`detail` **MUST** be an `object`\r\n- `links`,`source`,`meta`
+      **MUST** be an `object`\r\n\r\n**Valid Example:** Using all fields\r\n```YAML\r\ntype:
+      object\r\ndescription: JSON:API Error Object\r\nproperties:\r\n  id:\r\n    type:
+      string\r\n    description: a unique identifier for this particular occurrence
+      of the problem\r\n  links:\r\n    type: object\r\n    description: links that
+      lead to further detail about the particular occurrence of the problem\r\n    properties:\r\n
+      \     about:\r\n        $ref: '#/components/schemas/Link'\r\n  status:\r\n    type:
+      string\r\n    description: the HTTP status code applicable to this problem\r\n
+      \ code:\r\n    type: string\r\n    description: an application-specific error
+      code\r\n  title:\r\n    type: string\r\n    description:  a human-readable summary
+      specific of the problem. Usually the http status friendly name.\r\n  detail:\r\n
+      \   type: string\r\n    description:  a human-readable explanation specific
+      to this occurrence of the problem\r\n  source:\r\n    type: object\r\n    description:
+      an object containing references to the source of the error\r\n    properties:\r\n
+      \     pointer:\r\n        description: a JSON Pointer [RFC6901] to the associated
+      entity in the request document\r\n        oneOf:\r\n          - type: string\r\n
+      \           format: json-pointer\r\n          - type: array\r\n            items:\r\n
+      \             type: string\r\n              format: json-pointer\r\n      parameter:\r\n
+      \       description: a string indicating which URI query parameter caused the
+      error\r\n        type: string\r\n  meta:\r\n    type: object\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#error-objects)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#error-objects"
+    message: "Error objects (item object) MUST follow schema"
+    severity: error
+    given: "#ErrorObjects"
+    then:
+      - field: "@key"
+        function: enumeration
+        functionOptions:
+          values:
+            - id
+            - links
+            - status
+            - code
+            - title
+            - detail
+            - source
+            - meta
+      - field: "links.type"
+        function: enumeration
+        functionOptions:
+          values:
+            - object
+      - field: "source.type"
+        function: enumeration
+        functionOptions:
+          values:
+            - object
+      - field: "meta.type"
+        function: enumeration
+        functionOptions:
+          values:
+            - object
+      - field: "status.type"
+        function: enumeration
+        functionOptions:
+          values:
+            - string
+      - field: "code.type"
+        function: enumeration
+        functionOptions:
+          values:
+            - string
+      - field: "title.type"
+        function: enumeration
+        functionOptions:
+          values:
+            - string
+      - field: "detail.type"
+        function: enumeration
+        functionOptions:
+          values:
+            - string
+  
+  error-object-links:
+    description: "error object `links` property **MUST** contain an `about` link.\r\n\r\n**Invalid
+      Example:**\r\n```YAML\r\n# Error Object\r\n# ...\r\nlinks:\r\n  type: object\r\n
+      \ description: links that lead to further detail about the particular occurrence
+      of the problem\r\n  properties:\r\n    self:\r\n      $ref: '#/components/schemas/Link'\r\n```\r\n\r\n**Valid
+      Example:**\r\n```YAML\r\n# Error Object\r\n# ...\r\nlinks:\r\n  type: object\r\n
+      \ description: links that lead to further detail about the particular occurrence
+      of the problem\r\n  properties:\r\n    about:\r\n      $ref: '#/components/schemas/Link'\r\n```\r\n\r\nRelated
+      specification information can be found [here](https://jsonapi.org/format/1.0/#error-objects)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#error-objects"
+    message: "Error object links property MUST contain 'about'"
+    severity: error
+    given: "#ErrorObjects.links.properties"
+    then:
+      - field: "about"
+        function: truthy
+
+  error-object-source-schema:
+    description: "error object `source` **MUST** follow schema\r\n\r\n**Schema Rules:**\r\n-
+      `source` **MUST** be an `object`\r\n- **MUST** contain at least one of: `pointer`
+      or `parameter`\r\n- `parameter` **MUST** be a `string`\r\n- `pointer` **MUST**
+      be a single json-pointer[[RFC6901]](https://tools.ietf.org/html/rfc6901) string
+      or array of json-pointer strings\r\n\r\n**Valid Example:**\r\n```YAML\r\ntype:
+      object\r\ndescription: an object containing references to the source of the
+      error\r\nproperties:\r\n  pointer:\r\n    description: a JSON Pointer [RFC6901]
+      to the associated entity in the request document\r\n    oneOf:\r\n      - type:
+      string\r\n        format: json-pointer\r\n      - type: array\r\n        items:\r\n
+      \         type: string\r\n          format: json-pointer\r\n  parameter:\r\n
+      \   description: a string indicating which URI query parameter caused the error\r\n
+      \   type: string\r\n```\r\n\r\nRelated specification information can be found
+      [here](https://jsonapi.org/format/1.0/#error-objects)."
+    documentationUrl: "https://jsonapi.org/format/1.0/#error-objects"
+    message: "Error object source MUST follow schema"
+    severity: error
+    given: "#ErrorObjects.source"
+    then:
+      field: "properties"
+      function: schema
+      functionOptions:
+        dialect: "draft2020-12"
+        schema:
+          type: object
+          properties:
+            parameter:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: ["string"]
+            pointer:
+              type: object
+              properties:
+                "oneOf":
+                  type: array
+                  items:
+                    oneOf:
+                      - type: object
+                        required: [type,format]
+                        properties:
+                          type:
+                            type: string
+                            enum: ["string"]
+                          format:
+                            type: string
+                            enum: ["json-pointer"]
+                      - type: object
+                        properties:
+                          type:
+                            type: string
+                            enum: ["array"]
+                          items:
+                            type: object
+                            required: [type,format]
+                            properties:
+                              type:
+                                type: string
+                                enum: ["string"]
+                              format:
+                                type: string
+                                enum: ["json-pointer"]

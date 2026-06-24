@@ -1,0 +1,63 @@
+.hero-fullscreen {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* Full height of the viewport */
+  background: url('../images/hero.svg') center center / cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  overflow: hidden;
+}
+
+.hero-fullscreen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4); /* Optional dark overlay */
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  max-width: 90%;
+}
+
+.md-button {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #2196f3;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.md-button:hover {
+  background: #1976d2;
+}
+.md-main__inner {
+  padding-top: 0 !important;
+}
+.footer-icons img {
+  transition: transform 0.2s ease;
+  opacity: 0.8;
+}
+.footer-icons img:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+/* Stronger selector for Material footer */
+.md-footer {
+  background-color: #1e1e1e !important;
+  color: white !important;
+}
+
+.md-footer a {
+  color: #90caf9 !important;
+}
+

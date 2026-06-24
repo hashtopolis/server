@@ -1,12 +1,22 @@
 <?php
 
-use DBA\Hashlist;
-use DBA\HashlistHashlist;
-use DBA\JoinFilter;
-use DBA\QueryFilter;
-use DBA\Factory;
+use Hashtopolis\dba\models\Hashlist;
+use Hashtopolis\dba\models\HashlistHashlist;
+use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\DataSet;
+use Hashtopolis\inc\defines\DAccessControl;
+use Hashtopolis\inc\defines\DHashlistFormat;
+use Hashtopolis\inc\defines\DViewControl;
+use Hashtopolis\inc\Login;
+use Hashtopolis\inc\Menu;
+use Hashtopolis\inc\templating\Template;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\utils\AccessControl;
+use Hashtopolis\inc\utils\HashlistUtils;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));

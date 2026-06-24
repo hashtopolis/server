@@ -1,0 +1,6 @@
+.hero h1 {
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.hero p {
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}

@@ -1,16 +1,28 @@
 <?php
 
-use DBA\Chunk;
-use DBA\ContainFilter;
-use DBA\Hash;
-use DBA\HashBinary;
-use DBA\JoinFilter;
-use DBA\OrderFilter;
-use DBA\QueryFilter;
-use DBA\Task;
-use DBA\Factory;
+use Hashtopolis\dba\models\Chunk;
+use Hashtopolis\dba\ContainFilter;
+use Hashtopolis\dba\models\Hash;
+use Hashtopolis\dba\models\HashBinary;
+use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\OrderFilter;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\models\Task;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\DataSet;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DHashlistFormat;
+use Hashtopolis\inc\defines\DViewControl;
+use Hashtopolis\inc\Login;
+use Hashtopolis\inc\Menu;
+use Hashtopolis\inc\SConfig;
+use Hashtopolis\inc\templating\Template;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessUtils;
+use Hashtopolis\inc\utils\AccessControl;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -58,7 +70,7 @@ if (isset($_GET['hashlist'])) {
   }
   if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
     $hashFactory = Factory::getHashFactory();
-    $hashClass = \DBA\Hash::class;
+    $hashClass = Hash::class;
   }
   else {
     $hashFactory = Factory::getHashBinaryFactory();
@@ -66,7 +78,7 @@ if (isset($_GET['hashlist'])) {
     if ($hashlist->getFormat() == DHashlistFormat::WPA) {
       $isWpa = true;
     }
-    $hashClass = \DBA\HashBinary::class;
+    $hashClass = HashBinary::class;
   }
   $src = "hashlist";
   $srcId = $list->getId();
@@ -85,11 +97,11 @@ else if (isset($_GET['chunk'])) {
   $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get(Factory::getTaskWrapperFactory()->get(Factory::getTaskFactory()->get($chunk->getTaskId())->getTaskWrapperId())->getHashlistId()));
   if ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) {
     $hashFactory = Factory::getHashFactory();
-    $hashClass = \DBA\Hash::class;
+    $hashClass = Hash::class;
   }
   else {
     $hashFactory = Factory::getHashBinaryFactory();
-    $hashClass = \DBA\HashBinary::class;
+    $hashClass = HashBinary::class;
     if ($hashlists[0]->getFormat() == DHashlistFormat::WPA) {
       $isWpa = true;
     }
@@ -114,7 +126,7 @@ else if (isset($_GET['task'])) {
   $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get(Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId())->getHashlistId()));
   if ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) {
     $hashFactory = Factory::getHashFactory();
-    $hashClass = \DBA\Hash::class;
+    $hashClass = Hash::class;
   }
   else {
     $hashFactory = Factory::getHashBinaryFactory();
@@ -122,7 +134,7 @@ else if (isset($_GET['task'])) {
     if ($hashlists[0]->getFormat() == DHashlistFormat::WPA) {
       $isWpa = true;
     }
-    $hashClass = \DBA\HashBinary::class;
+    $hashClass = HashBinary::class;
   }
   
   if (!AccessUtils::userCanAccessHashlists($hashlists, Login::getInstance()->getUser())) {
@@ -208,7 +220,7 @@ UI::add('nextPage', $nextPage);
 UI::add('previousPage', $previousPage);
 UI::add('currentPage', $currentPage);
 
-$oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
+$oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE)) . " OFFSET " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage));
 $hashes = $hashFactory->filter([Factory::FILTER => $queryFilters, Factory::ORDER => $oF]);
 
 if (isset($_GET['crackpos']) && $_GET['crackpos'] == 'true') {
@@ -220,7 +232,7 @@ else {
 
 $output = "";
 foreach ($hashes as $hash) {
-  $hash = \DBA\Util::cast($hash, $hashClass);
+  $hash = \Hashtopolis\dba\Util::cast($hash, $hashClass);
   if ($displaying == "") {
     if (!$binaryFormat) {
       $output .= htmlentities($hash->getHash(), ENT_QUOTES, "UTF-8");

@@ -1,16 +1,26 @@
 <?php
 
-use DBA\AccessGroup;
-use DBA\AccessGroupAgent;
-use DBA\AccessGroupUser;
-use DBA\Agent;
-use DBA\ContainFilter;
-use DBA\JoinFilter;
-use DBA\QueryFilter;
-use DBA\User;
-use DBA\Factory;
+use Hashtopolis\dba\models\AccessGroup;
+use Hashtopolis\dba\models\AccessGroupAgent;
+use Hashtopolis\dba\models\AccessGroupUser;
+use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\ContainFilter;
+use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\CSRF;
+use Hashtopolis\inc\DataSet;
+use Hashtopolis\inc\defines\DViewControl;
+use Hashtopolis\inc\handlers\AccessGroupHandler;
+use Hashtopolis\inc\Login;
+use Hashtopolis\inc\Menu;
+use Hashtopolis\inc\templating\Template;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessControl;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));

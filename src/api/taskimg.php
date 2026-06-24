@@ -4,13 +4,15 @@
  * Draws a graphic about chunk progress
  */
 
-use DBA\Chunk;
-use DBA\OrderFilter;
-use DBA\QueryFilter;
-use DBA\Task;
-use DBA\Factory;
+use Hashtopolis\dba\models\Chunk;
+use Hashtopolis\dba\OrderFilter;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\models\Task;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\defines\DTaskTypes;
+use Hashtopolis\inc\Login;
 
-require_once(dirname(__FILE__) . "/../inc/load.php");
+require_once(dirname(__FILE__) . "/../inc/startup/include.php");
 
 //check if there is a session
 if (!Login::getInstance()->isLoggedin()) {

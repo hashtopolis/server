@@ -1,16 +1,25 @@
 <?php
 
-use DBA\Chunk;
-use DBA\ContainFilter;
-use DBA\Hashlist;
-use DBA\OrderFilter;
-use DBA\JoinFilter;
-use DBA\Task;
-use DBA\QueryFilter;
-use DBA\Factory;
-use DBA\TaskWrapper;
+use Hashtopolis\dba\models\Chunk;
+use Hashtopolis\dba\OrderFilter;
+use Hashtopolis\dba\ContainFilter;
+use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\models\Task;
+use Hashtopolis\dba\models\Hashlist;
+use Hashtopolis\dba\models\TaskWrapper;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\DataSet;
+use Hashtopolis\inc\defines\DViewControl;
+use Hashtopolis\inc\Login;
+use Hashtopolis\inc\Menu;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\templating\Template;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\utils\AccessUtils;
+use Hashtopolis\inc\utils\AccessControl;
 
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -35,7 +44,7 @@ if (!isset($_GET['show'])) {
   $numentries = Factory::getChunkFactory()->countFilter([]);
   UI::add('maxpage', floor($numentries / $PAGESIZE));
   $limit = $page * $PAGESIZE;
-  $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $PAGESIZE", Factory::getChunkFactory());
+  $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $PAGESIZE OFFSET $limit", Factory::getChunkFactory());
   UI::add('all', false);
   UI::add('pageTitle', "Chunks Activity (page " . ($page + 1) . ")");
 }
