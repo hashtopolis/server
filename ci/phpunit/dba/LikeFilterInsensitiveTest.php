@@ -78,15 +78,24 @@ final class LikeFilterInsensitiveTest extends TestBase {
     );
   }
   
-  /**
-   * Verify mapped int64 column (htp_end) — the type check in the current
-   * implementation only covers 'int', not 'int64', so LOWER() is still
-   * applied to the mapped column name.
-   */
+  /** Verify PostgreSQL: mapped int64 column casts with ::text and preserves the htp_ prefix. */
   public function testQueryStringMappedColumn(): void {
+    putenv('HASHTOPOLIS_DB_TYPE=postgres');
+    StartupConfig::getInstance(true);
     $filter = new LikeFilterInsensitive(HealthCheckAgent::END, '%5%');
     $this->assertEquals(
-      'LOWER(HealthCheckAgent.htp_end) LIKE LOWER(?)',
+      'HealthCheckAgent.htp_end::text LIKE LOWER(?)',
+      $filter->getQueryString(Factory::getHealthCheckAgentFactory(), true)
+    );
+  }
+  
+  /** Verify MySQL: mapped int64 column uses CONVERT() and preserves the htp_ prefix. */
+  public function testQueryStringMappedColumnMysql(): void {
+    putenv('HASHTOPOLIS_DB_TYPE=mysql');
+    StartupConfig::getInstance(true);
+    $filter = new LikeFilterInsensitive(HealthCheckAgent::END, '%5%');
+    $this->assertEquals(
+      'CONVERT(HealthCheckAgent.htp_end, CHAR) LIKE LOWER(?)',
       $filter->getQueryString(Factory::getHealthCheckAgentFactory(), true)
     );
   }
@@ -284,5 +293,30 @@ final class LikeFilterInsensitiveTest extends TestBase {
     $this->assertCount(1, $results);
     $this->assertInstanceOf(HealthCheckAgent::class, $results[0]);
     $this->assertEquals($statusValue, $results[0]->getStatus());
+  }
+  
+  /**
+   * Integration test: create a HealthCheckAgent with a specific end value
+   * and filter on HealthCheckAgent::END (mapped int64 column) with
+   * LikeFilterInsensitive. Verifies the mapped int64 cast works end-to-end
+   * on the current database backend.
+   *
+   * @throws Exception
+   */
+  public function testFilterLikeMappedInt64Column(): void {
+    $crackerBinaryType = $this->createCrackerBinaryType();
+    $crackerBinary = $this->createCrackerBinary($crackerBinaryType);
+    $healthCheck = $this->createHealthCheck($crackerBinary);
+    $agent = $this->createAgent('mapped64');
+    
+    $endValue = 42;
+    $this->createHealthCheckAgent($healthCheck, $agent, 0, 0, 0, 0, $endValue);
+    
+    $filter = new LikeFilterInsensitive(HealthCheckAgent::END, '%' . $endValue . '%');
+    $results = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => $filter]);
+    
+    $this->assertCount(1, $results);
+    $this->assertInstanceOf(HealthCheckAgent::class, $results[0]);
+    $this->assertEquals($endValue, $results[0]->getEnd());
   }
 }

@@ -28,7 +28,7 @@ class LikeFilterInsensitive extends Filter {
     $column = $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key);
     
     // test if we do this on an integer column, if yes, we do not apply LOWER() and need to cast it
-    if ($factory->getNullObject()->getFeatures()[$this->key]['type'] == 'int') {
+    if (str_starts_with($factory->getNullObject()->getFeatures()[$this->key]['type'], 'int')) {
       if (StartupConfig::getInstance()->getDatabaseType() == 'postgres') {
         return $column . "::text LIKE LOWER(?)";
       }
