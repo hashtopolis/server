@@ -16,6 +16,22 @@ class FilterTest(BaseTest):
             self.delete_after_test(obj)
         return objs
 
+    def test_filter__icontains_int(self):
+        objs = []
+        for i in [99001, 99002, 99003]:
+            obj = HashType(hashTypeId=i,
+                           description=f"icontains-int {i}",
+                           isSalted=False,
+                           isSlowHash=False).save()
+            objs.append(obj)
+            self.delete_after_test(obj)
+
+        result = HashType.objects.filter(hashTypeId__icontains="9900")
+        self.assertEqual([99001, 99002, 99003], sorted([x.id for x in result]))
+
+        result_single = HashType.objects.filter(hashTypeId__icontains="99003")
+        self.assertEqual([99003], [x.id for x in result_single])
+
     def test_filter(self):
         model_objs = self.create_test_objects()
         objs = HashType.objects.filter(hashTypeId__gte=90000, hashTypeId__lte=91000)
