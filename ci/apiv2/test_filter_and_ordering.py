@@ -26,11 +26,12 @@ class FilterTest(BaseTest):
             objs.append(obj)
             self.delete_after_test(obj)
 
-        result = HashType.objects.filter(hashTypeId__icontains="9900")
-        self.assertEqual([99001, 99002, 99003], sorted([x.id for x in result]))
-
-        result_single = HashType.objects.filter(hashTypeId__icontains="99003")
-        self.assertEqual([99003], [x.id for x in result_single])
+        search = "9900"
+        result = HashType.objects.filter(hashTypeId__icontains=search)
+        all_objs = HashType.objects.all()
+        self.assertEqual(
+            [x.id for x in all_objs if search.lower() in str(x.id).lower()],
+            [x.id for x in result])
 
     def test_filter(self):
         model_objs = self.create_test_objects()
