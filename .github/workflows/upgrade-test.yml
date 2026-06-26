@@ -22,20 +22,31 @@ jobs:
         include:
           - start-tag: v0.14.1
             db-type: mysql
+            db-version: mysql:8.4
           - start-tag: v0.14.8
             db-type: mysql
+            db-version: mysql:8.4
           - start-tag: v1.0.0-rainbow5
             db-type: mysql
+            db-version: mysql:8.4
           - start-tag: v1.0.0-rainbow5
             db-type: postgres
+            db-version: postgres:18
           - start-tag: v1.0.0-rc1
             db-type: mysql
+            db-version: mysql:8.4
           - start-tag: v1.0.0-rc1
             db-type: postgres
+            db-version: postgres:18
           - start-tag: v1.0.0-rc2
             db-type: mysql
+            db-version: mysql:8.4
+          - start-tag: v1.0.0-rc2
+            db-type: mysql
+            db-version: mysql:9.7
           - start-tag: v1.0.0-rc2
             db-type: postgres
+            db-version: postgres:18
       fail-fast: false
 
     steps:
@@ -50,7 +61,7 @@ jobs:
           docker volume create ht-data
           docker volume create ht-db
 
-      - name: Start database container with ${{ matrix.db-type }}
+      - name: Start database container ${{ matrix.db-version }}
         run: |
           if [ "${{ matrix.db-type }}" = "postgres" ]; then
             docker run -d --network ht-test-net --name db \
@@ -58,7 +69,7 @@ jobs:
               -e POSTGRES_USER=${{ env.DB_USER }} \
               -e POSTGRES_PASSWORD=${{ env.DB_PASS }} \
               -v ht-db:/var/lib/postgresql \
-              postgres:18
+              ${{ matrix.db-version }}
           else
             docker run -d --network ht-test-net --name db \
               -e MYSQL_ROOT_PASSWORD=${{ env.DB_PASS }} \
@@ -66,7 +77,7 @@ jobs:
               -e MYSQL_USER=${{ env.DB_USER }} \
               -e MYSQL_PASSWORD=${{ env.DB_PASS }} \
               -v ht-db:/var/lib/mysql \
-              mysql:8.4
+              ${{ matrix.db-version }}
           fi
 
       - name: Wait for database container to be running

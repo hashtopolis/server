@@ -7,14 +7,14 @@ Here are the commands to pull the images from Docker hub. To build the images fr
 ```
 docker pull hashtopolis/backend:latest
 docker pull hashtopolis/frontend:latest
-docker pull mysql:8.0
+docker pull mysql:9.7
 ```
 
 The images can then be saved as .tar archives:
 ```
 docker save hashtopolis/backend:latest --output hashtopolis-backend.tar
 docker save hashtopolis/frontend:latest --output hashtopolis-frontend.tar
-docker save mysql:8.0 --output mysql.tar
+docker save mysql:9.7 --output mysql.tar
 ```
 
 Next, transfer both file to your Hashtopolis server and import them using the following commands:
@@ -185,7 +185,7 @@ services:
       - 8080:80
   db:
     container_name: db
-    image: mysql:8.0
+    image: mysql:9.7
     restart: always
     volumes:
       - db:/var/lib/mysql
