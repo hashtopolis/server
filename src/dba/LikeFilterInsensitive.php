@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\dba;
 
+use Hashtopolis\inc\StartupConfig;
+
 class LikeFilterInsensitive extends Filter {
   private string $key;
   private string $value;
@@ -23,7 +25,17 @@ class LikeFilterInsensitive extends Filter {
       $table = $factory->getMappedModelTable() . ".";
     }
     
-    return "LOWER(" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(),$this->key) . ") LIKE LOWER(?)";
+    $column = $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key);
+    
+    // test if we do this on an integer column, if yes, we do not apply LOWER() and need to cast it
+    if (str_starts_with($factory->getNullObject()->getFeatures()[$this->key]['type'], 'int')) {
+      if (StartupConfig::getInstance()->getDatabaseType() == 'postgres') {
+        return $column . "::text LIKE LOWER(?)";
+      }
+      return "CONVERT(" . $column . ", CHAR) LIKE LOWER(?)";
+    }
+    
+    return "LOWER(" . $column . ") LIKE LOWER(?)";
   }
   
   function getValue(): string {
@@ -33,7 +45,7 @@ class LikeFilterInsensitive extends Filter {
   function getHasValue(): bool {
     return true;
   }
-
+  
   function getKey() {
     return $this->key;
   }
