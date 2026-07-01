@@ -6,6 +6,16 @@ use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\StoredValue;
 use Hashtopolis\TestBase;
+use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\models\ConfigSection;
+use Hashtopolis\dba\models\Config;
+use Hashtopolis\dba\models\ApiGroup;
+use Hashtopolis\dba\models\AgentBinary;
+use Hashtopolis\dba\models\CrackerBinary;
+use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\models\Preprocessor;
+use Hashtopolis\dba\models\RightGroup;
+use Hashtopolis\dba\models\HashType;
 
 require_once(dirname(__FILE__) . '/../TestBase.php');
 
@@ -799,5 +809,229 @@ final class UtilTest extends TestBase {
     $stored = Factory::getStoredValueFactory()->get($key);
     $this->assertEquals($dir, $stored->getVal());
     Factory::getStoredValueFactory()->delete($stored);
+  }
+
+  /**
+   * checkOrCreateInitialObject creates a ConfigSection from array data when it does not exist.
+   *
+   * @throws Exception
+   */
+  public function testCheckOrCreateInitialObjectConfigSectionCreatesNew(): void {
+    $id = 9001;
+    $data = ['configSectionId' => $id, 'sectionName' => 'Test Section'];
+    Util::checkOrCreateInitialObject(Factory::getConfigSectionFactory(), $data);
+    $obj = Factory::getConfigSectionFactory()->get($id);
+    $this->assertNotNull($obj);
+    $this->assertEquals('Test Section', $obj->getSectionName());
+    Factory::getConfigSectionFactory()->delete($obj);
+  }
+
+  /**
+   * checkOrCreateInitialObject does not create a duplicate when the object already exists.
+   *
+   * @throws Exception
+   */
+  public function testCheckOrCreateInitialObjectSkipsExisting(): void {
+    $id = 9002;
+    $data = ['configSectionId' => $id, 'sectionName' => 'Skip Test'];
+    Util::checkOrCreateInitialObject(Factory::getConfigSectionFactory(), $data);
+    Util::checkOrCreateInitialObject(Factory::getConfigSectionFactory(), $data);
+    $obj = Factory::getConfigSectionFactory()->get($id);
+    $this->assertNotNull($obj);
+    Factory::getConfigSectionFactory()->delete($obj);
+  }
+
+  /**
+   * checkOrCreateInitialObject creates a Config entry with all fields set correctly.
+   *
+   * @throws Exception
+   */
+  public function testCheckOrCreateInitialObjectConfig(): void {
+    $csId = 9003;
+    $csData = ['configSectionId' => $csId, 'sectionName' => 'ConfigTest'];
+    Util::checkOrCreateInitialObject(Factory::getConfigSectionFactory(), $csData);
+
+    $id = 9004;
+    $data = ['configId' => $id, 'configSectionId' => $csId, 'item' => 'testItem', 'value' => 'testValue'];
+    Util::checkOrCreateInitialObject(Factory::getConfigFactory(), $data);
+    $obj = Factory::getConfigFactory()->get($id);
+    $this->assertNotNull($obj);
+    $this->assertEquals($csId, $obj->getConfigSectionId());
+    $this->assertEquals('testItem', $obj->getItem());
+    $this->assertEquals('testValue', $obj->getValue());
+
+    Factory::getConfigFactory()->delete($obj);
+    Factory::getConfigSectionFactory()->delete(Factory::getConfigSectionFactory()->get($csId));
+  }
+
+  /**
+   * checkOrCreateInitialObject creates an ApiGroup.
+   *
+   * @throws Exception
+   */
+  public function testCheckOrCreateInitialObjectApiGroup(): void {
+    $id = 9005;
+    $data = ['apiGroupId' => $id, 'name' => 'TestGroup', 'permissions' => 'ALL'];
+    Util::checkOrCreateInitialObject(Factory::getApiGroupFactory(), $data);
+    $obj = Factory::getApiGroupFactory()->get($id);
+    $this->assertNotNull($obj);
+    $this->assertEquals('TestGroup', $obj->getName());
+    $this->assertEquals('ALL', $obj->getPermissions());
+    Factory::getApiGroupFactory()->delete($obj);
+  }
+
+  /**
+   * checkOrCreateInitialObject creates an AgentBinary.
+   *
+   * @throws Exception
+   */
+  public function testCheckOrCreateInitialObjectAgentBinary(): void {
+    $id = 9006;
+    $data = [
+      'agentBinaryId' => $id,
+      'binaryType' => 'python',
+      'version' => '1.0.0',
+      'operatingSystems' => 'Linux',
+      'filename' => 'test.zip',
+      'updateTrack' => 'stable',
+      'updateAvailable' => ''
+    ];
+    Util::checkOrCreateInitialObject(Factory::getAgentBinaryFactory(), $data);
+    $obj = Factory::getAgentBinaryFactory()->get($id);
+    $this->assertNotNull($obj);
+    $this->assertEquals('python', $obj->getBinaryType());
+    $this->assertEquals('1.0.0', $obj->getVersion());
+    $this->assertEquals('Linux', $obj->getOperatingSystems());
+    $this->assertEquals('test.zip', $obj->getFilename());
+    $this->assertEquals('stable', $obj->getUpdateTrack());
+    Factory::getAgentBinaryFactory()->delete($obj);
+  }
+
+  /**
+   * checkOrCreateInitialObject creates a CrackerBinaryType.
+   *
+   * @throws Exception
+   */
+  public function testCheckOrCreateInitialObjectCrackerBinaryType(): void {
+    $id = 9007;
+    $data = ['crackerBinaryTypeId' => $id, 'typeName' => 'testHashcat', 'isChunkingAvailable' => 1];
+    Util::checkOrCreateInitialObject(Factory::getCrackerBinaryTypeFactory(), $data);
+    $obj = Factory::getCrackerBinaryTypeFactory()->get($id);
+    $this->assertNotNull($obj);
+    $this->assertEquals('testHashcat', $obj->getTypeName());
+    $this->assertEquals(1, $obj->getIsChunkingAvailable());
+    Factory::getCrackerBinaryTypeFactory()->delete($obj);
+  }
+
+  /**
+   * checkOrCreateInitialObject creates a CrackerBinary referencing a CrackerBinaryType.
+   *
+   * @throws Exception
+   */
+  public function testCheckOrCreateInitialObjectCrackerBinary(): void {
+    $typeId = 9008;
+    $typeData = ['crackerBinaryTypeId' => $typeId, 'typeName' => 'binType', 'isChunkingAvailable' => 0];
+    Util::checkOrCreateInitialObject(Factory::getCrackerBinaryTypeFactory(), $typeData);
+
+    $id = 9009;
+    $data = [
+      'crackerBinaryId' => $id,
+      'crackerBinaryTypeId' => $typeId,
+      'version' => '7.0.0',
+      'downloadUrl' => 'https://example.com/test.7z',
+      'binaryName' => 'testHashcat'
+    ];
+    Util::checkOrCreateInitialObject(Factory::getCrackerBinaryFactory(), $data);
+    $obj = Factory::getCrackerBinaryFactory()->get($id);
+    $this->assertNotNull($obj);
+    $this->assertEquals($typeId, $obj->getCrackerBinaryTypeId());
+    $this->assertEquals('7.0.0', $obj->getVersion());
+    $this->assertEquals('https://example.com/test.7z', $obj->getDownloadUrl());
+    $this->assertEquals('testHashcat', $obj->getBinaryName());
+
+    Factory::getCrackerBinaryFactory()->delete($obj);
+    Factory::getCrackerBinaryTypeFactory()->delete(Factory::getCrackerBinaryTypeFactory()->get($typeId));
+  }
+
+  /**
+   * checkOrCreateInitialObject creates a Preprocessor.
+   *
+   * @throws Exception
+   */
+  public function testCheckOrCreateInitialObjectPreprocessor(): void {
+    $id = 9010;
+    $data = [
+      'preprocessorId' => $id,
+      'name' => 'TestPrince',
+      'url' => 'https://example.com/test.7z',
+      'binaryName' => 'testPp',
+      'keyspaceCommand' => '--ks',
+      'skipCommand' => '--sk',
+      'limitCommand' => '--lm'
+    ];
+    Util::checkOrCreateInitialObject(Factory::getPreprocessorFactory(), $data);
+    $obj = Factory::getPreprocessorFactory()->get($id);
+    $this->assertNotNull($obj);
+    $this->assertEquals('TestPrince', $obj->getName());
+    $this->assertEquals('testPp', $obj->getBinaryName());
+    $this->assertEquals('--ks', $obj->getKeyspaceCommand());
+    $this->assertEquals('--sk', $obj->getSkipCommand());
+    $this->assertEquals('--lm', $obj->getLimitCommand());
+    Factory::getPreprocessorFactory()->delete($obj);
+  }
+
+  /**
+   * checkOrCreateInitialObject creates a RightGroup.
+   *
+   * @throws Exception
+   */
+  public function testCheckOrCreateInitialObjectRightGroup(): void {
+    $id = 9011;
+    $data = ['rightGroupId' => $id, 'groupName' => 'TestAdmin', 'permissions' => 'ALL'];
+    Util::checkOrCreateInitialObject(Factory::getRightGroupFactory(), $data);
+    $obj = Factory::getRightGroupFactory()->get($id);
+    $this->assertNotNull($obj);
+    $this->assertEquals('TestAdmin', $obj->getGroupName());
+    $this->assertEquals('ALL', $obj->getPermissions());
+    Factory::getRightGroupFactory()->delete($obj);
+  }
+
+  /**
+   * checkOrCreateInitialObject creates a HashType.
+   *
+   * @throws Exception
+   */
+  public function testCheckOrCreateInitialObjectHashType(): void {
+    $id = 99001;
+    $data = ['hashTypeId' => $id, 'description' => 'TestHash', 'isSalted' => 0, 'isSlowHash' => 1];
+    Util::checkOrCreateInitialObject(Factory::getHashTypeFactory(), $data);
+    $obj = Factory::getHashTypeFactory()->get($id);
+    $this->assertNotNull($obj);
+    $this->assertEquals('TestHash', $obj->getDescription());
+    $this->assertEquals(0, $obj->getIsSalted());
+    $this->assertEquals(1, $obj->getIsSlowHash());
+    Factory::getHashTypeFactory()->delete($obj);
+  }
+
+  /**
+   * checkOrCreateInitialObject creates all Config entries from setup.json.
+   *
+   * @throws Exception
+   */
+  public function testCheckOrCreateInitialObjectAllSetupConfigs(): void {
+    $json = json_decode(file_get_contents(__DIR__ . '/../../../src/inc/startup/setup.json'), true);
+    // Ensure ConfigSection dependencies exist
+    foreach ($json['ConfigSection'] as $cs) {
+      Util::checkOrCreateInitialObject(Factory::getConfigSectionFactory(), $cs);
+    }
+    foreach ($json['Config'] as $entry) {
+      Util::checkOrCreateInitialObject(Factory::getConfigFactory(), $entry);
+    }
+    // Verify a sample of entries exist
+    $sampleIds = [1, 9, 12, 25, 35, 50, 60, 79];
+    foreach ($sampleIds as $id) {
+      $obj = Factory::getConfigFactory()->get($id);
+      $this->assertNotNull($obj, "Config entry $id should exist");
+    }
   }
 }
