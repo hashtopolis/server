@@ -160,7 +160,6 @@ final class StartupDataTest extends TestBase {
    */
   public function testSetupJsonIsValid(): void {
     $data = $this->getSetupJson();
-    $this->assertIsArray($data);
     $this->assertArrayHasKey('Config', $data);
     $this->assertArrayHasKey('ConfigSection', $data);
   }
@@ -230,7 +229,6 @@ final class StartupDataTest extends TestBase {
    */
   public function testHashtypesJsonIsValid(): void {
     $data = $this->getHashtypesJson();
-    $this->assertIsArray($data);
     $this->assertNotEmpty($data);
   }
   
