@@ -139,7 +139,7 @@ class TaskUtils {
       $chunkTimeOut = SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT);
       
       foreach ($chunks as $chunk) {
-        if ($now - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $chunkTimeOut && $chunk->getProgress() < 10000) {
+        if ($now - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $chunkTimeOut) {
           $status = 1;
           break;
         }

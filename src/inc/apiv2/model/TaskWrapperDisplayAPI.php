@@ -127,7 +127,7 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
       $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
       $qF2 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
       $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
-      $taskStatus = TaskUtils::getStatus($chunks, $task->getKeyspace(), $task->getKeyspaceProgress());
+      $taskStatus = TaskUtils::getStatus($chunks, $task->getKeyspace(), taskUtils::getTaskProgress($task));
       // if one task of the wrapper is running, it is running
       if ($taskStatus === 1) {
         $status = 1;
