@@ -1,0 +1,3476 @@
+[
+  {
+    "hashTypeId" : 0,
+    "description" : "MD5",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10,
+    "description" : "md5($pass.$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11,
+    "description" : "Joomla < 2.5.18",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 12,
+    "description" : "PostgreSQL",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 20,
+    "description" : "md5($salt.$pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21,
+    "description" : "osCommerce, xt:Commerce",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22,
+    "description" : "Juniper NetScreen/SSG (ScreenOS)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 23,
+    "description" : "Skype",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 24,
+    "description" : "SolarWinds Serv-U",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 30,
+    "description" : "md5(utf16le($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 40,
+    "description" : "md5($salt.utf16le($pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 50,
+    "description" : "HMAC-MD5 (key = $pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 60,
+    "description" : "HMAC-MD5 (key = $salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 70,
+    "description" : "md5(utf16le($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 100,
+    "description" : "SHA1",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 101,
+    "description" : "nsldap, SHA-1(Base64), Netscape LDAP SHA",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 110,
+    "description" : "sha1($pass.$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 111,
+    "description" : "nsldaps, SSHA-1(Base64), Netscape LDAP SSHA",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 112,
+    "description" : "Oracle S: Type (Oracle 11+)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 120,
+    "description" : "sha1($salt.$pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 121,
+    "description" : "SMF (Simple Machines Forum) > v1.1",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 122,
+    "description" : "macOS v10.4, macOS v10.5, macOS v10.6",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 124,
+    "description" : "Django (SHA-1)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 125,
+    "description" : "ArubaOS",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 130,
+    "description" : "sha1(utf16le($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 131,
+    "description" : "MSSQL (2000)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 132,
+    "description" : "MSSQL (2005)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 133,
+    "description" : "PeopleSoft",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 140,
+    "description" : "sha1($salt.utf16le($pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 141,
+    "description" : "Episerver 6.x < .NET 4",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 150,
+    "description" : "HMAC-SHA1 (key = $pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 160,
+    "description" : "HMAC-SHA1 (key = $salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 170,
+    "description" : "sha1(utf16le($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 200,
+    "description" : "MySQL323",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 300,
+    "description" : "MySQL4.1/MySQL5",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 400,
+    "description" : "phpass",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 500,
+    "description" : "md5crypt, MD5 (Unix), Cisco-IOS $1$ (MD5)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 501,
+    "description" : "Juniper IVE",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 600,
+    "description" : "BLAKE2b-512",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 610,
+    "description" : "BLAKE2b-512($pass.$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 620,
+    "description" : "BLAKE2b-512($salt.$pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 900,
+    "description" : "MD4",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1000,
+    "description" : "NTLM",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1100,
+    "description" : "Domain Cached Credentials (DCC), MS Cache",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1300,
+    "description" : "SHA2-224",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1310,
+    "description" : "sha224($pass.$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1320,
+    "description" : "sha224($salt.$pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1400,
+    "description" : "SHA2-256",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1410,
+    "description" : "sha256($pass.$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1411,
+    "description" : "SSHA-256(Base64), LDAP {SSHA256}",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1420,
+    "description" : "sha256($salt.$pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1421,
+    "description" : "hMailServer",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1430,
+    "description" : "sha256(utf16le($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1440,
+    "description" : "sha256($salt.utf16le($pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1441,
+    "description" : "Episerver 6.x >= .NET 4",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1450,
+    "description" : "HMAC-SHA256 (key = $pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1460,
+    "description" : "HMAC-SHA256 (key = $salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1470,
+    "description" : "sha256(utf16le($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1500,
+    "description" : "descrypt, DES (Unix), Traditional DES",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1600,
+    "description" : "Apache $apr1$ MD5, md5apr1, MD5 (APR)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1700,
+    "description" : "SHA2-512",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1710,
+    "description" : "sha512($pass.$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1711,
+    "description" : "SSHA-512(Base64), LDAP {SSHA512}",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1720,
+    "description" : "sha512($salt.$pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1722,
+    "description" : "macOS v10.7",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1730,
+    "description" : "sha512(utf16le($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1731,
+    "description" : "MSSQL (2012, 2014)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1740,
+    "description" : "sha512($salt.utf16le($pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1750,
+    "description" : "HMAC-SHA512 (key = $pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1760,
+    "description" : "HMAC-SHA512 (key = $salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1770,
+    "description" : "sha512(utf16le($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 1800,
+    "description" : "sha512crypt $6$, SHA512 (Unix)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 2000,
+    "description" : "STDOUT",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 2100,
+    "description" : "Domain Cached Credentials 2 (DCC2), MS Cache 2",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 2400,
+    "description" : "Cisco-PIX MD5",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 2410,
+    "description" : "Cisco-ASA MD5",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 2500,
+    "description" : "WPA-EAPOL-PBKDF2",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 2501,
+    "description" : "WPA-EAPOL-PMK",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 2600,
+    "description" : "md5(md5($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 2611,
+    "description" : "vBulletin < v3.8.5",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 2612,
+    "description" : "PHPS",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 2630,
+    "description" : "md5(md5($pass.$salt))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 2711,
+    "description" : "vBulletin >= v3.8.5",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 2811,
+    "description" : "MyBB 1.2+, IPB2+ (Invision Power Board)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 3000,
+    "description" : "LM",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 3100,
+    "description" : "Oracle H: Type (Oracle 7+)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 3200,
+    "description" : "bcrypt $2*$, Blowfish (Unix)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 3500,
+    "description" : "md5(md5(md5($pass)))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 3610,
+    "description" : "md5(md5(md5($pass)).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 3710,
+    "description" : "md5($salt.md5($pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 3711,
+    "description" : "MediaWiki B type",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 3730,
+    "description" : "md5($salt1.strtoupper(md5($salt2.$pass)))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 3800,
+    "description" : "md5($salt.$pass.$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 3910,
+    "description" : "md5(md5($pass).md5($salt))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4010,
+    "description" : "md5($salt.md5($salt.$pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4110,
+    "description" : "md5($salt.md5($pass.$salt))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4300,
+    "description" : "md5(strtoupper(md5($pass)))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4400,
+    "description" : "md5(sha1($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4410,
+    "description" : "md5(sha1($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4420,
+    "description" : "md5(sha1($pass.$salt))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4430,
+    "description" : "md5(sha1($salt.$pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4500,
+    "description" : "sha1(sha1($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4510,
+    "description" : "sha1(sha1($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4520,
+    "description" : "sha1($salt.sha1($pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4521,
+    "description" : "Redmine",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4522,
+    "description" : "PunBB",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4700,
+    "description" : "sha1(md5($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4710,
+    "description" : "sha1(md5($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4711,
+    "description" : "Huawei sha1(md5($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4800,
+    "description" : "iSCSI CHAP authentication, MD5(CHAP)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 4900,
+    "description" : "sha1($salt.$pass.$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 5000,
+    "description" : "sha1(sha1($salt.$pass.$salt))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 5100,
+    "description" : "Half MD5",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 5200,
+    "description" : "Password Safe v3",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 5300,
+    "description" : "IKE-PSK MD5",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 5400,
+    "description" : "IKE-PSK SHA1",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 5500,
+    "description" : "NetNTLMv1 / NetNTLMv1+ESS",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 5600,
+    "description" : "NetNTLMv2",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 5700,
+    "description" : "Cisco-IOS type 4 (SHA256)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 5720,
+    "description" : "Cisco-ISE Hashed Password (SHA256)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 5800,
+    "description" : "Samsung Android Password/PIN",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 6000,
+    "description" : "RIPEMD-160",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 6050,
+    "description" : "HMAC-RIPEMD160 (key = $pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 6060,
+    "description" : "HMAC-RIPEMD160 (key = $salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 6100,
+    "description" : "Whirlpool",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 6211,
+    "description" : "TrueCrypt RIPEMD160 + XTS 512 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6212,
+    "description" : "TrueCrypt RIPEMD160 + XTS 1024 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6213,
+    "description" : "TrueCrypt RIPEMD160 + XTS 1536 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6221,
+    "description" : "TrueCrypt SHA512 + XTS 512 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6222,
+    "description" : "TrueCrypt SHA512 + XTS 1024 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6223,
+    "description" : "TrueCrypt SHA512 + XTS 1536 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6231,
+    "description" : "TrueCrypt Whirlpool + XTS 512 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6232,
+    "description" : "TrueCrypt Whirlpool + XTS 1024 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6233,
+    "description" : "TrueCrypt Whirlpool + XTS 1536 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6241,
+    "description" : "TrueCrypt RIPEMD160 + XTS 512 bit + boot-mode (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6242,
+    "description" : "TrueCrypt RIPEMD160 + XTS 1024 bit + boot-mode (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6243,
+    "description" : "TrueCrypt RIPEMD160 + XTS 1536 bit + boot-mode (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6300,
+    "description" : "AIX {smd5}",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 6400,
+    "description" : "AIX {ssha256}",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6500,
+    "description" : "AIX {ssha512}",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6600,
+    "description" : "1Password, agilekeychain",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6700,
+    "description" : "AIX {ssha1}",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6800,
+    "description" : "LastPass + LastPass sniffed",
+    "isSalted" : 1,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 6900,
+    "description" : "GOST R 34.11-94",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 7000,
+    "description" : "FortiGate (FortiOS)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 7100,
+    "description" : "macOS v10.8+ (PBKDF2-SHA512)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 7200,
+    "description" : "GRUB 2",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 7300,
+    "description" : "IPMI2 RAKP HMAC-SHA1",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 7350,
+    "description" : "IPMI2 RAKP HMAC-MD5",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 7400,
+    "description" : "sha256crypt $5$, SHA256 (Unix)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 7401,
+    "description" : "MySQL $A$ (sha256crypt)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 7500,
+    "description" : "Kerberos 5, etype 23, AS-REQ Pre-Auth",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 7700,
+    "description" : "SAP CODVN B (BCODE)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 7701,
+    "description" : "SAP CODVN B (BCODE) from RFC_READ_TABLE",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 7800,
+    "description" : "SAP CODVN F/G (PASSCODE)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 7801,
+    "description" : "SAP CODVN F/G (PASSCODE) from RFC_READ_TABLE",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 7900,
+    "description" : "Drupal7",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 8000,
+    "description" : "Sybase ASE",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 8100,
+    "description" : "Citrix NetScaler (SHA1)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 8200,
+    "description" : "1Password, cloudkeychain",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 8300,
+    "description" : "DNSSEC (NSEC3)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 8400,
+    "description" : "WBB3 (Woltlab Burning Board)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 8500,
+    "description" : "RACF",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 8501,
+    "description" : "AS/400 DES",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 8600,
+    "description" : "Lotus Notes/Domino 5",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 8700,
+    "description" : "Lotus Notes/Domino 6",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 8800,
+    "description" : "Android FDE <= 4.3",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 8900,
+    "description" : "scrypt",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 9000,
+    "description" : "Password Safe v2",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 9100,
+    "description" : "Lotus Notes/Domino 8",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 9200,
+    "description" : "Cisco-IOS $8$ (PBKDF2-SHA256)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 9300,
+    "description" : "Cisco-IOS $9$ (scrypt)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 9400,
+    "description" : "MS Office 2007",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 9500,
+    "description" : "MS Office 2010",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 9600,
+    "description" : "MS Office 2013",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 9700,
+    "description" : "MS Office <= 2003 $0/$1, MD5 + RC4",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 9710,
+    "description" : "MS Office <= 2003 $0/$1, MD5 + RC4, collider #1",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 9720,
+    "description" : "MS Office <= 2003 $0/$1, MD5 + RC4, collider #2",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 9800,
+    "description" : "MS Office <= 2003 $3/$4, SHA1 + RC4",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 9810,
+    "description" : "MS Office <= 2003 $3, SHA1 + RC4, collider #1",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 9820,
+    "description" : "MS Office <= 2003 $3, SHA1 + RC4, collider #2",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 9900,
+    "description" : "Radmin2",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10000,
+    "description" : "Django (PBKDF2-SHA256)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 10100,
+    "description" : "SipHash",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10200,
+    "description" : "CRAM-MD5",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10300,
+    "description" : "SAP CODVN H (PWDSALTEDHASH) iSSHA-1",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10400,
+    "description" : "PDF 1.1 - 1.3 (Acrobat 2 - 4)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10410,
+    "description" : "PDF 1.1 - 1.3 (Acrobat 2 - 4), collider #1",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10420,
+    "description" : "PDF 1.1 - 1.3 (Acrobat 2 - 4), collider #2",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10500,
+    "description" : "PDF 1.4 - 1.6 (Acrobat 5 - 8)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10510,
+    "description" : "PDF 1.3 - 1.6 (Acrobat 4 - 8) w/ RC4-40",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 10600,
+    "description" : "PDF 1.7 Level 3 (Acrobat 9)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10700,
+    "description" : "PDF 1.7 Level 8 (Acrobat 10 - 11)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10800,
+    "description" : "SHA2-384",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10810,
+    "description" : "sha384($pass.$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10820,
+    "description" : "sha384($salt.$pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10830,
+    "description" : "sha384(utf16le($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10840,
+    "description" : "sha384($salt.utf16le($pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10870,
+    "description" : "sha384(utf16le($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 10900,
+    "description" : "PBKDF2-HMAC-SHA256",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 10901,
+    "description" : "RedHat 389-DS LDAP (PBKDF2-HMAC-SHA256)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 11000,
+    "description" : "PrestaShop",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11100,
+    "description" : "PostgreSQL CRAM (MD5)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11200,
+    "description" : "MySQL CRAM (SHA1)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11300,
+    "description" : "Bitcoin/Litecoin wallet.dat",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 11400,
+    "description" : "SIP digest authentication (MD5)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11500,
+    "description" : "CRC32",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11600,
+    "description" : "7-Zip",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11700,
+    "description" : "GOST R 34.11-2012 (Streebog) 256-bit, big-endian",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11750,
+    "description" : "HMAC-Streebog-256 (key = $pass), big-endian",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11760,
+    "description" : "HMAC-Streebog-256 (key = $salt), big-endian",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11800,
+    "description" : "GOST R 34.11-2012 (Streebog) 512-bit, big-endian",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11850,
+    "description" : "HMAC-Streebog-512 (key = $pass), big-endian",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11860,
+    "description" : "HMAC-Streebog-512 (key = $salt), big-endian",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 11900,
+    "description" : "PBKDF2-HMAC-MD5",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 12000,
+    "description" : "PBKDF2-HMAC-SHA1",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 12001,
+    "description" : "Atlassian (PBKDF2-HMAC-SHA1)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 12100,
+    "description" : "PBKDF2-HMAC-SHA512",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 12150,
+    "description" : "Apache Shiro 1 SHA-512",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 12200,
+    "description" : "eCryptfs",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 12300,
+    "description" : "Oracle T: Type (Oracle 12+)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 12400,
+    "description" : "BSDi Crypt, Extended DES",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 12500,
+    "description" : "RAR3-hp",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 12600,
+    "description" : "ColdFusion 10+",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 12700,
+    "description" : "Blockchain, My Wallet",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 12800,
+    "description" : "MS-AzureSync PBKDF2-HMAC-SHA256",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 12900,
+    "description" : "Android FDE (Samsung DEK)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13000,
+    "description" : "RAR5",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13100,
+    "description" : "Kerberos 5, etype 23, TGS-REP",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 13200,
+    "description" : "AxCrypt 1",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 13300,
+    "description" : "AxCrypt 1 in-memory SHA1",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 13400,
+    "description" : "KeePass (KDBX v2/v3)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 13500,
+    "description" : "PeopleSoft PS_TOKEN",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 13600,
+    "description" : "WinZip",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13711,
+    "description" : "VeraCrypt RIPEMD160 + XTS 512 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13712,
+    "description" : "VeraCrypt RIPEMD160 + XTS 1024 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13713,
+    "description" : "VeraCrypt RIPEMD160 + XTS 1536 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13721,
+    "description" : "VeraCrypt SHA512 + XTS 512 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13722,
+    "description" : "VeraCrypt SHA512 + XTS 1024 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13723,
+    "description" : "VeraCrypt SHA512 + XTS 1536 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13731,
+    "description" : "VeraCrypt Whirlpool + XTS 512 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13732,
+    "description" : "VeraCrypt Whirlpool + XTS 1024 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13733,
+    "description" : "VeraCrypt Whirlpool + XTS 1536 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13741,
+    "description" : "VeraCrypt RIPEMD160 + XTS 512 bit + boot-mode (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13742,
+    "description" : "VeraCrypt RIPEMD160 + XTS 1024 bit + boot-mode (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13743,
+    "description" : "VeraCrypt RIPEMD160 + XTS 1536 bit + boot-mode (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13751,
+    "description" : "VeraCrypt SHA256 + XTS 512 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13752,
+    "description" : "VeraCrypt SHA256 + XTS 1024 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13753,
+    "description" : "VeraCrypt SHA256 + XTS 1536 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13761,
+    "description" : "VeraCrypt SHA256 + XTS 512 bit + boot-mode (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13762,
+    "description" : "VeraCrypt SHA256 + XTS 1024 bit + boot-mode (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13763,
+    "description" : "VeraCrypt SHA256 + XTS 1536 bit + boot-mode (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13771,
+    "description" : "VeraCrypt Streebog-512 + XTS 512 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13772,
+    "description" : "VeraCrypt Streebog-512 + XTS 1024 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13773,
+    "description" : "VeraCrypt Streebog-512 + XTS 1536 bit (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13781,
+    "description" : "VeraCrypt Streebog-512 + XTS 512 bit + boot-mode (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13782,
+    "description" : "VeraCrypt Streebog-512 + XTS 1024 bit + boot-mode (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13783,
+    "description" : "VeraCrypt Streebog-512 + XTS 1536 bit + boot-mode (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 13800,
+    "description" : "Windows Phone 8+ PIN/password",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 13900,
+    "description" : "OpenCart",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 14000,
+    "description" : "DES (PT = $salt, key = $pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 14100,
+    "description" : "3DES (PT = $salt, key = $pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 14200,
+    "description" : "RACF KDFAES",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 14400,
+    "description" : "sha1(CX)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 14500,
+    "description" : "Linux Kernel Crypto API (2.4)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 14600,
+    "description" : "LUKS v1 (legacy)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 14700,
+    "description" : "iTunes backup < 10.0",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 14800,
+    "description" : "iTunes backup >= 10.0",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 14900,
+    "description" : "Skip32 (PT = $salt, key = $pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 15000,
+    "description" : "FileZilla Server >= 0.9.55",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 15100,
+    "description" : "Juniper/NetBSD sha1crypt",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 15200,
+    "description" : "Blockchain, My Wallet, V2",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 15300,
+    "description" : "DPAPI masterkey file v1 (context 1 and 2)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 15310,
+    "description" : "DPAPI masterkey file v1 (context 3)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 15400,
+    "description" : "ChaCha20",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 15500,
+    "description" : "JKS Java Key Store Private Keys (SHA1)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 15600,
+    "description" : "Ethereum Wallet, PBKDF2-HMAC-SHA256",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 15700,
+    "description" : "Ethereum Wallet, SCRYPT",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 15900,
+    "description" : "DPAPI masterkey file v2 (context 1 and 2)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 15910,
+    "description" : "DPAPI masterkey file v2 (context 3)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 16000,
+    "description" : "Tripcode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 16100,
+    "description" : "TACACS+",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 16200,
+    "description" : "Apple Secure Notes",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 16300,
+    "description" : "Ethereum Pre-Sale Wallet, PBKDF2-HMAC-SHA256",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 16400,
+    "description" : "CRAM-MD5 Dovecot",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 16500,
+    "description" : "JWT (JSON Web Token)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 16501,
+    "description" : "Perl Mojolicious session cookie (HMAC-SHA256, >= v9.19)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 16600,
+    "description" : "Electrum Wallet (Salt-Type 1-3)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 16700,
+    "description" : "FileVault 2",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 16800,
+    "description" : "WPA-PMKID-PBKDF2",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 16801,
+    "description" : "WPA-PMKID-PMK",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 16900,
+    "description" : "Ansible Vault",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 17010,
+    "description" : "GPG (AES-128/AES-256 (SHA-1($pass)))",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 17020,
+    "description" : "GPG (AES-128/AES-256 (SHA-512($pass)))",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 17030,
+    "description" : "GPG (AES-128/AES-256 (SHA-256($pass)))",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 17040,
+    "description" : "GPG (CAST5 (SHA-1($pass)))",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 17200,
+    "description" : "PKZIP (Compressed)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 17210,
+    "description" : "PKZIP (Uncompressed)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 17220,
+    "description" : "PKZIP (Compressed Multi-File)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 17225,
+    "description" : "PKZIP (Mixed Multi-File)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 17230,
+    "description" : "PKZIP (Mixed Multi-File Checksum-Only)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 17300,
+    "description" : "SHA3-224",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 17400,
+    "description" : "SHA3-256",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 17500,
+    "description" : "SHA3-384",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 17600,
+    "description" : "SHA3-512",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 17700,
+    "description" : "Keccak-224",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 17800,
+    "description" : "Keccak-256",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 17900,
+    "description" : "Keccak-384",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 18000,
+    "description" : "Keccak-512",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 18100,
+    "description" : "TOTP (HMAC-SHA1)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 18200,
+    "description" : "Kerberos 5, etype 23, AS-REP",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 18300,
+    "description" : "Apple File System (APFS)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 18400,
+    "description" : "Open Document Format (ODF) 1.2 (SHA-256, AES)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 18500,
+    "description" : "sha1(md5(md5($pass)))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 18600,
+    "description" : "Open Document Format (ODF) 1.1 (SHA-1, Blowfish)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 18700,
+    "description" : "Java Object hashCode()",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 18800,
+    "description" : "Blockchain, My Wallet, Second Password (SHA256)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 18900,
+    "description" : "Android Backup",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 19000,
+    "description" : "QNX /etc/shadow (MD5)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 19100,
+    "description" : "QNX /etc/shadow (SHA256)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 19200,
+    "description" : "QNX /etc/shadow (SHA512)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 19210,
+    "description" : "QNX 7 /etc/shadow (SHA512)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 19300,
+    "description" : "sha1($salt1.$pass.$salt2)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 19500,
+    "description" : "Ruby on Rails Restful-Authentication",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 19600,
+    "description" : "Kerberos 5, etype 17, TGS-REP",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 19700,
+    "description" : "Kerberos 5, etype 18, TGS-REP",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 19800,
+    "description" : "Kerberos 5, etype 17, Pre-Auth",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 19900,
+    "description" : "Kerberos 5, etype 18, Pre-Auth",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 20011,
+    "description" : "DiskCryptor SHA512 + XTS 512 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 20012,
+    "description" : "DiskCryptor SHA512 + XTS 1024 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 20013,
+    "description" : "DiskCryptor SHA512 + XTS 1536 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 20200,
+    "description" : "Python passlib pbkdf2-sha512",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 20300,
+    "description" : "Python passlib pbkdf2-sha256",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 20400,
+    "description" : "Python passlib pbkdf2-sha1",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 20500,
+    "description" : "PKZIP Master Key",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 20510,
+    "description" : "PKZIP Master Key (6 byte optimization)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 20600,
+    "description" : "Oracle Transportation Management (SHA256)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 20710,
+    "description" : "sha256(sha256($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 20711,
+    "description" : "AuthMe sha256",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 20712,
+    "description" : "RSA Security Analytics / NetWitness (sha256)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 20720,
+    "description" : "sha256($salt.sha256($pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 20730,
+    "description" : "sha256(sha256($pass.$salt))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 20800,
+    "description" : "sha256(md5($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 20900,
+    "description" : "md5(sha1($pass).md5($pass).sha1($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21000,
+    "description" : "BitShares v0.x - sha512(sha512_bin(pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21100,
+    "description" : "sha1(md5($pass.$salt))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21200,
+    "description" : "md5(sha1($salt).md5($pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21300,
+    "description" : "md5($salt.sha1($salt.$pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21310,
+    "description" : "md5($salt1.sha1($salt2.$pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21400,
+    "description" : "sha256(sha256_bin($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21420,
+    "description" : "sha256($salt.sha256_bin($pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21500,
+    "description" : "SolarWinds Orion",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21501,
+    "description" : "SolarWinds Orion v2",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21600,
+    "description" : "Web2py pbkdf2-sha512",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21700,
+    "description" : "Electrum Wallet (Salt-Type 4)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21800,
+    "description" : "Electrum Wallet (Salt-Type 5)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 21900,
+    "description" : "md5(md5(md5($pass.$salt1)).$salt2)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22000,
+    "description" : "WPA-PBKDF2-PMKID+EAPOL",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22001,
+    "description" : "WPA-PMK-PMKID+EAPOL",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22100,
+    "description" : "BitLocker",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22200,
+    "description" : "Citrix NetScaler (SHA512)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22300,
+    "description" : "sha256($salt.$pass.$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22301,
+    "description" : "Telegram Mobile App Passcode (SHA256)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22400,
+    "description" : "AES Crypt (SHA256)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22500,
+    "description" : "MultiBit Classic .key (MD5)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22600,
+    "description" : "Telegram Desktop < v2.1.14 (PBKDF2-HMAC-SHA1)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22700,
+    "description" : "MultiBit HD (scrypt)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 22800,
+    "description" : "Simpla CMS - md5($salt.$pass.md5($pass))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22911,
+    "description" : "RSA/DSA/EC/OpenSSH Private Keys ($0$)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22921,
+    "description" : "RSA/DSA/EC/OpenSSH Private Keys ($6$)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22931,
+    "description" : "RSA/DSA/EC/OpenSSH Private Keys ($1, $3$)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22941,
+    "description" : "RSA/DSA/EC/OpenSSH Private Keys ($4$)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 22951,
+    "description" : "RSA/DSA/EC/OpenSSH Private Keys ($5$)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 23001,
+    "description" : "SecureZIP AES-128",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 23002,
+    "description" : "SecureZIP AES-192",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 23003,
+    "description" : "SecureZIP AES-256",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 23100,
+    "description" : "Apple Keychain",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 23200,
+    "description" : "XMPP SCRAM PBKDF2-SHA1",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 23300,
+    "description" : "Apple iWork",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 23400,
+    "description" : "Bitwarden",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 23500,
+    "description" : "AxCrypt 2 AES-128",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 23600,
+    "description" : "AxCrypt 2 AES-256",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 23700,
+    "description" : "RAR3-p (Uncompressed)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 23800,
+    "description" : "RAR3-p (Compressed)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 23900,
+    "description" : "BestCrypt v3 Volume Encryption",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 24000,
+    "description" : "BestCrypt v4 Volume Encryption",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 24100,
+    "description" : "MongoDB ServerKey SCRAM-SHA-1",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 24200,
+    "description" : "MongoDB ServerKey SCRAM-SHA-256",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 24300,
+    "description" : "sha1($salt.sha1($pass.$salt))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 24410,
+    "description" : "PKCS#8 Private Keys (PBKDF2-HMAC-SHA1 + 3DES/AES)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 24420,
+    "description" : "PKCS#8 Private Keys (PBKDF2-HMAC-SHA256 + 3DES/AES)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 24500,
+    "description" : "Telegram Desktop >= v2.1.14 (PBKDF2-HMAC-SHA512)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 24600,
+    "description" : "SQLCipher",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 24700,
+    "description" : "Stuffit5",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 24800,
+    "description" : "Umbraco HMAC-SHA1",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 24900,
+    "description" : "Dahua Authentication MD5",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 25000,
+    "description" : "SNMPv3 HMAC-MD5-96/HMAC-SHA1-96",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 25100,
+    "description" : "SNMPv3 HMAC-MD5-96",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 25200,
+    "description" : "SNMPv3 HMAC-SHA1-96",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 25300,
+    "description" : "MS Office 2016 - SheetProtection",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 25400,
+    "description" : "PDF 1.4 - 1.6 (Acrobat 5 - 8) - user and owner pass",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 25500,
+    "description" : "Stargazer Stellar Wallet XLM",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 25600,
+    "description" : "bcrypt(md5($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 25700,
+    "description" : "MurmurHash",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 25800,
+    "description" : "bcrypt(sha1($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 25900,
+    "description" : "KNX IP Secure - Device Authentication Code",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 26000,
+    "description" : "Mozilla key3.db",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 26100,
+    "description" : "Mozilla key4.db",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 26200,
+    "description" : "OpenEdge Progress Encode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 26300,
+    "description" : "FortiGate256 (FortiOS256)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 26401,
+    "description" : "AES-128-ECB NOKDF (PT = $salt, key = $pass)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 26402,
+    "description" : "AES-192-ECB NOKDF (PT = $salt, key = $pass)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 26403,
+    "description" : "AES-256-ECB NOKDF (PT = $salt, key = $pass)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 26500,
+    "description" : "iPhone passcode (UID key + System Keybag)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 26600,
+    "description" : "MetaMask Wallet (needs all data, checks AES-GCM tag)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 26610,
+    "description" : "MetaMask Wallet (short hash, plaintext check)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 26700,
+    "description" : "SNMPv3 HMAC-SHA224-128",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 26800,
+    "description" : "SNMPv3 HMAC-SHA256-192",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 26900,
+    "description" : "SNMPv3 HMAC-SHA384-256",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 27000,
+    "description" : "NetNTLMv1 / NetNTLMv1+ESS (NT)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 27100,
+    "description" : "NetNTLMv2 (NT)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 27200,
+    "description" : "Ruby on Rails Restful Auth (one round, no sitekey)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 27300,
+    "description" : "SNMPv3 HMAC-SHA512-384",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 27400,
+    "description" : "VMware VMX (PBKDF2-HMAC-SHA1 + AES-256-CBC)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 27500,
+    "description" : "VirtualBox (PBKDF2-HMAC-SHA256 & AES-128-XTS)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 27600,
+    "description" : "VirtualBox (PBKDF2-HMAC-SHA256 & AES-256-XTS)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 27700,
+    "description" : "MultiBit Classic .wallet (scrypt)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 27800,
+    "description" : "MurmurHash3",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 27900,
+    "description" : "CRC32C",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 28000,
+    "description" : "CRC64Jones",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 28100,
+    "description" : "Windows Hello PIN/Password",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 28200,
+    "description" : "Exodus Desktop Wallet (scrypt)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 28300,
+    "description" : "Teamspeak 3 (channel hash)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 28400,
+    "description" : "bcrypt(sha512($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 28501,
+    "description" : "Bitcoin WIF private key (P2PKH), compressed",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 28502,
+    "description" : "Bitcoin WIF private key (P2PKH), uncompressed",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 28503,
+    "description" : "Bitcoin WIF private key (P2WPKH, Bech32), compressed",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 28504,
+    "description" : "Bitcoin WIF private key (P2WPKH, Bech32), uncompressed",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 28505,
+    "description" : "Bitcoin WIF private key (P2SH(P2WPKH)), compressed",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 28506,
+    "description" : "Bitcoin WIF private key (P2SH(P2WPKH)), uncompressed",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 28600,
+    "description" : "PostgreSQL SCRAM-SHA-256",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 28700,
+    "description" : "Amazon AWS Signature Version 4",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 28800,
+    "description" : "Kerberos 5, etype 17, DB",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 28900,
+    "description" : "Kerberos 5, etype 18, DB",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29100,
+    "description" : "Flask Session Cookie ($salt.$salt.$pass)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29200,
+    "description" : "Radmin3",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29311,
+    "description" : "TrueCrypt RIPEMD160 + XTS 512 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29312,
+    "description" : "TrueCrypt RIPEMD160 + XTS 1024 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29313,
+    "description" : "TrueCrypt RIPEMD160 + XTS 1536 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29321,
+    "description" : "TrueCrypt SHA512 + XTS 512 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29322,
+    "description" : "TrueCrypt SHA512 + XTS 1024 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29323,
+    "description" : "TrueCrypt SHA512 + XTS 1536 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29331,
+    "description" : "TrueCrypt Whirlpool + XTS 512 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29332,
+    "description" : "TrueCrypt Whirlpool + XTS 1024 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29333,
+    "description" : "TrueCrypt Whirlpool + XTS 1536 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29341,
+    "description" : "TrueCrypt RIPEMD160 + XTS 512 bit + boot-mode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29342,
+    "description" : "TrueCrypt RIPEMD160 + XTS 1024 bit + boot-mode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29343,
+    "description" : "TrueCrypt RIPEMD160 + XTS 1536 bit + boot-mode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29411,
+    "description" : "VeraCrypt RIPEMD160 + XTS 512 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29412,
+    "description" : "VeraCrypt RIPEMD160 + XTS 1024 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29413,
+    "description" : "VeraCrypt RIPEMD160 + XTS 1536 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29421,
+    "description" : "VeraCrypt SHA512 + XTS 512 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29422,
+    "description" : "VeraCrypt SHA512 + XTS 1024 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29423,
+    "description" : "VeraCrypt SHA512 + XTS 1536 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29431,
+    "description" : "VeraCrypt Whirlpool + XTS 512 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29432,
+    "description" : "VeraCrypt Whirlpool + XTS 1024 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29433,
+    "description" : "VeraCrypt Whirlpool + XTS 1536 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29441,
+    "description" : "VeraCrypt RIPEMD160 + XTS 512 bit + boot-mode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29442,
+    "description" : "VeraCrypt RIPEMD160 + XTS 1024 bit + boot-mode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29443,
+    "description" : "VeraCrypt RIPEMD160 + XTS 1536 bit + boot-mode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29451,
+    "description" : "VeraCrypt SHA256 + XTS 512 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29452,
+    "description" : "VeraCrypt SHA256 + XTS 1024 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29453,
+    "description" : "VeraCrypt SHA256 + XTS 1536 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29461,
+    "description" : "VeraCrypt SHA256 + XTS 512 bit + boot-mode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29462,
+    "description" : "VeraCrypt SHA256 + XTS 1024 bit + boot-mode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29463,
+    "description" : "VeraCrypt SHA256 + XTS 1536 bit + boot-mode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29471,
+    "description" : "VeraCrypt Streebog-512 + XTS 512 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29472,
+    "description" : "VeraCrypt Streebog-512 + XTS 1024 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29473,
+    "description" : "VeraCrypt Streebog-512 + XTS 1536 bit",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29481,
+    "description" : "VeraCrypt Streebog-512 + XTS 512 bit + boot-mode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29482,
+    "description" : "VeraCrypt Streebog-512 + XTS 1024 bit + boot-mode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29483,
+    "description" : "VeraCrypt Streebog-512 + XTS 1536 bit + boot-mode",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 29511,
+    "description" : "LUKS v1 SHA-1 + AES",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29512,
+    "description" : "LUKS v1 SHA-1 + Serpent",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29513,
+    "description" : "LUKS v1 SHA-1 + Twofish",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29521,
+    "description" : "LUKS v1 SHA-256 + AES",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29522,
+    "description" : "LUKS v1 SHA-256 + Serpent",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29523,
+    "description" : "LUKS v1 SHA-256 + Twofish",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29531,
+    "description" : "LUKS v1 SHA-512 + AES",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29532,
+    "description" : "LUKS v1 SHA-512 + Serpent",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29533,
+    "description" : "LUKS v1 SHA-512 + Twofish",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29541,
+    "description" : "LUKS v1 RIPEMD-160 + AES",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29542,
+    "description" : "LUKS v1 RIPEMD-160 + Serpent",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29543,
+    "description" : "LUKS v1 RIPEMD-160 + Twofish",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29600,
+    "description" : "Terra Station Wallet (AES256-CBC(PBKDF2($pass)))",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29700,
+    "description" : "KeePass (KDBX v2/v3) - keyfile only",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29800,
+    "description" : "Bisq .wallet (scrypt)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29910,
+    "description" : "ENCsecurity Datavault (PBKDF2/no keychain)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29920,
+    "description" : "ENCsecurity Datavault (PBKDF2/keychain)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29930,
+    "description" : "ENCsecurity Datavault (MD5/no keychain)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29940,
+    "description" : "ENCsecurity Datavault (MD5/keychain)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 30000,
+    "description" : "Python Werkzeug MD5 (HMAC-MD5 (key = $salt))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 30120,
+    "description" : "Python Werkzeug SHA256 (HMAC-SHA256 (key = $salt))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 30420,
+    "description" : "DANE RFC7929/RFC8162 SHA2-256",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 30500,
+    "description" : "md5(md5($salt).md5(md5($pass)))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 30600,
+    "description" : "bcrypt(sha256($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 30601,
+    "description" : "bcrypt(HMAC-SHA256($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 30700,
+    "description" : "Anope IRC Services (enc_sha256)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 30901,
+    "description" : "Bitcoin raw private key (P2PKH), compressed",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 30902,
+    "description" : "Bitcoin raw private key (P2PKH), uncompressed",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 30903,
+    "description" : "Bitcoin raw private key (P2WPKH, Bech32), compressed",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 30904,
+    "description" : "Bitcoin raw private key (P2WPKH, Bech32), uncompressed",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 30905,
+    "description" : "Bitcoin raw private key (P2SH(P2WPKH)), compressed",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 30906,
+    "description" : "Bitcoin raw private key (P2SH(P2WPKH)), uncompressed",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 31000,
+    "description" : "BLAKE2s-256",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 31100,
+    "description" : "ShangMi 3 (SM3)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 31200,
+    "description" : "Veeam VBK",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 31300,
+    "description" : "MS SNTP",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 31400,
+    "description" : "SecureCRT MasterPassphrase v2",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 31500,
+    "description" : "Domain Cached Credentials (DCC), MS Cache (NT)",
+    "isSalted" : 1,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 31600,
+    "description" : "Domain Cached Credentials 2 (DCC2), MS Cache 2, (NT)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 31700,
+    "description" : "md5(md5(md5($pass).$salt1).$salt2)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 31800,
+    "description" : "1Password, mobilekeychain (1Password 8)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 31900,
+    "description" : "MetaMask Mobile Wallet",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32000,
+    "description" : "NetIQ SSPR (MD5)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32010,
+    "description" : "NetIQ SSPR (SHA1)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32020,
+    "description" : "NetIQ SSPR (SHA-1 with Salt)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32030,
+    "description" : "NetIQ SSPR (SHA-256 with Salt)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32031,
+    "description" : "Adobe AEM (SSPR, SHA-256 with Salt)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32040,
+    "description" : "NetIQ SSPR (SHA-512 with Salt)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32041,
+    "description" : "Adobe AEM (SSPR, SHA-512 with Salt)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32050,
+    "description" : "NetIQ SSPR (PBKDF2WithHmacSHA1)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32060,
+    "description" : "NetIQ SSPR (PBKDF2WithHmacSHA256)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32070,
+    "description" : "NetIQ SSPR (PBKDF2WithHmacSHA512)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32100,
+    "description" : "Kerberos 5, etype 17, AS-REP",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32200,
+    "description" : "Kerberos 5, etype 18, AS-REP",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32300,
+    "description" : "Empire CMS (Admin password)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 32410,
+    "description" : "sha512(sha512($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 32420,
+    "description" : "sha512(sha512_bin($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 32500,
+    "description" : "Dogechain.info Wallet",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32600,
+    "description" : "CubeCart (whirlpool($salt.$pass.$salt))",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 32700,
+    "description" : "Kremlin Encrypt 3.0 w/NewDES",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 32800,
+    "description" : "md5(sha1(md5($pass)))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 32900,
+    "description" : "PBKDF1-SHA1",
+    "isSalted" : 1,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 33000,
+    "description" : "md5($salt1.$pass.$salt2)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 33100,
+    "description" : "md5($salt.md5($pass).$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 33300,
+    "description" : "HMAC-BLAKE2S (key = $pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 33400,
+    "description" : "mega.nz password-protected link (PBKDF2-HMAC-SHA512)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 33500,
+    "description" : "RC4 40-bit DropN",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 33501,
+    "description" : "RC4 72-bit DropN",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 33502,
+    "description" : "RC4 104-bit DropN",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 33600,
+    "description" : "RIPEMD-320",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 33650,
+    "description" : "HMAC-RIPEMD320 (key = $pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 33660,
+    "description" : "HMAC-RIPEMD320 (key = $salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 33700,
+    "description" : "Microsoft Online Account (PBKDF2-HMAC-SHA256 + AES256)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 33800,
+    "description" : "WBB4 (Woltlab Burning Board) [bcrypt(bcrypt($pass))]",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 33900,
+    "description" : "Citrix NetScaler (PBKDF2-HMAC-SHA256)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 34000,
+    "description" : "Argon2",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 34100,
+    "description" : "LUKS v2 argon2 + SHA-256 + AES",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 34200,
+    "description" : "MurmurHash64A",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 34201,
+    "description" : "MurmurHash64A (zero seed)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 34211,
+    "description" : "MurmurHash64A truncated (zero seed)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 34300,
+    "description" : "KeePass Argon2 (KDBX v4)",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 34400,
+    "description" : "sha224(sha224($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 34500,
+    "description" : "sha224(sha1($pass))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 34600,
+    "description" : "MD6 (256)",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 34700,
+    "description" : "Blockchain, My Wallet, Legacy Wallets",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 34800,
+    "description" : "BLAKE2b-256",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 34810,
+    "description" : "BLAKE2b-256($pass.$salt)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 34820,
+    "description" : "BLAKE2b-256($salt.$pass)",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 35000,
+    "description" : "SAP CODVN H (PWDSALTEDHASH) isSHA512",
+    "isSalted" : 1,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 35100,
+    "description" : "sm3crypt $sm3$, SM3 (Unix)",
+    "isSalted" : 1,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 35200,
+    "description" : "AS/400 SSHA1",
+    "isSalted" : 1,
+    "isSlowHash" : 0
+  },
+  {
+    "hashTypeId" : 70000,
+    "description" : "Argon2id [Bridged: reference implementation + tunings]",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 70100,
+    "description" : "scrypt [Bridged: Scrypt-Jane SMix]",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 70200,
+    "description" : "scrypt [Bridged: Scrypt-Yescrypt]",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 72000,
+    "description" : "Generic Hash [Bridged: Python Interpreter free-threading]",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 73000,
+    "description" : "Generic Hash [Bridged: Python Interpreter with GIL]",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 99999,
+    "description" : "Plaintext",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  }
+]

@@ -1,0 +1,447 @@
+{
+  "AgentBinary" : [
+    {
+      "agentBinaryId" : 1,
+      "binaryType" : "python",
+      "version" : "0.7.4",
+      "operatingSystems" : "Windows, Linux, OS X",
+      "filename" : "hashtopolis.zip",
+      "updateTrack" : "stable",
+      "updateAvailable" : ""
+    }
+  ],
+  "ApiGroup" : [
+    {
+      "apiGroupId" : 1,
+      "name" : "Administrators",
+      "permissions" : "ALL"
+    }
+  ],
+  "Config" : [
+    {
+      "configId" : 1,
+      "configSectionId" : 1,
+      "item" : "agenttimeout",
+      "value" : "30"
+    },
+    {
+      "configId" : 2,
+      "configSectionId" : 1,
+      "item" : "benchtime",
+      "value" : "30"
+    },
+    {
+      "configId" : 3,
+      "configSectionId" : 1,
+      "item" : "chunktime",
+      "value" : "600"
+    },
+    {
+      "configId" : 4,
+      "configSectionId" : 1,
+      "item" : "chunktimeout",
+      "value" : "30"
+    },
+    {
+      "configId" : 9,
+      "configSectionId" : 1,
+      "item" : "fieldseparator",
+      "value" : ":"
+    },
+    {
+      "configId" : 10,
+      "configSectionId" : 1,
+      "item" : "hashlistAlias",
+      "value" : "#HL#"
+    },
+    {
+      "configId" : 11,
+      "configSectionId" : 1,
+      "item" : "statustimer",
+      "value" : "5"
+    },
+    {
+      "configId" : 12,
+      "configSectionId" : 4,
+      "item" : "timefmt",
+      "value" : "d.m.Y, H:i:s"
+    },
+    {
+      "configId" : 13,
+      "configSectionId" : 1,
+      "item" : "blacklistChars",
+      "value" : "&|`\\\"'{}()[]$<>;"
+    },
+    {
+      "configId" : 14,
+      "configSectionId" : 3,
+      "item" : "numLogEntries",
+      "value" : "5000"
+    },
+    {
+      "configId" : 15,
+      "configSectionId" : 1,
+      "item" : "disptolerance",
+      "value" : "20"
+    },
+    {
+      "configId" : 16,
+      "configSectionId" : 3,
+      "item" : "batchSize",
+      "value" : "50000"
+    },
+    {
+      "configId" : 18,
+      "configSectionId" : 2,
+      "item" : "yubikey_id",
+      "value" : ""
+    },
+    {
+      "configId" : 19,
+      "configSectionId" : 2,
+      "item" : "yubikey_key",
+      "value" : ""
+    },
+    {
+      "configId" : 20,
+      "configSectionId" : 2,
+      "item" : "yubikey_url",
+      "value" : "https://api.yubico.com/wsapi/2.0/verify"
+    },
+    {
+      "configId" : 22,
+      "configSectionId" : 3,
+      "item" : "pagingSize",
+      "value" : "5000"
+    },
+    {
+      "configId" : 23,
+      "configSectionId" : 3,
+      "item" : "plainTextMaxLength",
+      "value" : "200"
+    },
+    {
+      "configId" : 24,
+      "configSectionId" : 3,
+      "item" : "hashMaxLength",
+      "value" : "1024"
+    },
+    {
+      "configId" : 25,
+      "configSectionId" : 5,
+      "item" : "emailSender",
+      "value" : "hashtopolis@example.org"
+    },
+    {
+      "configId" : 26,
+      "configSectionId" : 5,
+      "item" : "emailSenderName",
+      "value" : "Hashtopolis"
+    },
+    {
+      "configId" : 27,
+      "configSectionId" : 5,
+      "item" : "baseHost",
+      "value" : ""
+    },
+    {
+      "configId" : 28,
+      "configSectionId" : 3,
+      "item" : "maxHashlistSize",
+      "value" : "5000000"
+    },
+    {
+      "configId" : 29,
+      "configSectionId" : 4,
+      "item" : "hideImportMasks",
+      "value" : "1"
+    },
+    {
+      "configId" : 30,
+      "configSectionId" : 7,
+      "item" : "telegramBotToken",
+      "value" : ""
+    },
+    {
+      "configId" : 31,
+      "configSectionId" : 5,
+      "item" : "contactEmail",
+      "value" : ""
+    },
+    {
+      "configId" : 32,
+      "configSectionId" : 5,
+      "item" : "voucherDeletion",
+      "value" : "0"
+    },
+    {
+      "configId" : 33,
+      "configSectionId" : 4,
+      "item" : "hashesPerPage",
+      "value" : "1000"
+    },
+    {
+      "configId" : 34,
+      "configSectionId" : 4,
+      "item" : "hideIpInfo",
+      "value" : "0"
+    },
+    {
+      "configId" : 35,
+      "configSectionId" : 1,
+      "item" : "defaultBenchmark",
+      "value" : "1"
+    },
+    {
+      "configId" : 36,
+      "configSectionId" : 4,
+      "item" : "showTaskPerformance",
+      "value" : "0"
+    },
+    {
+      "configId" : 41,
+      "configSectionId" : 4,
+      "item" : "agentStatLimit",
+      "value" : "100"
+    },
+    {
+      "configId" : 42,
+      "configSectionId" : 1,
+      "item" : "agentDataLifetime",
+      "value" : "3600"
+    },
+    {
+      "configId" : 43,
+      "configSectionId" : 4,
+      "item" : "agentStatTension",
+      "value" : "0"
+    },
+    {
+      "configId" : 44,
+      "configSectionId" : 6,
+      "item" : "multicastEnable",
+      "value" : "0"
+    },
+    {
+      "configId" : 45,
+      "configSectionId" : 6,
+      "item" : "multicastDevice",
+      "value" : "eth0"
+    },
+    {
+      "configId" : 46,
+      "configSectionId" : 6,
+      "item" : "multicastTransferRateEnable",
+      "value" : "0"
+    },
+    {
+      "configId" : 47,
+      "configSectionId" : 6,
+      "item" : "multicastTranserRate",
+      "value" : "500000"
+    },
+    {
+      "configId" : 48,
+      "configSectionId" : 1,
+      "item" : "disableTrimming",
+      "value" : "0"
+    },
+    {
+      "configId" : 49,
+      "configSectionId" : 5,
+      "item" : "serverLogLevel",
+      "value" : "20"
+    },
+    {
+      "configId" : 50,
+      "configSectionId" : 7,
+      "item" : "notificationsProxyEnable",
+      "value" : "0"
+    },
+    {
+      "configId" : 60,
+      "configSectionId" : 7,
+      "item" : "notificationsProxyServer",
+      "value" : ""
+    },
+    {
+      "configId" : 61,
+      "configSectionId" : 7,
+      "item" : "notificationsProxyPort",
+      "value" : "8080"
+    },
+    {
+      "configId" : 62,
+      "configSectionId" : 7,
+      "item" : "notificationsProxyType",
+      "value" : "HTTP"
+    },
+    {
+      "configId" : 63,
+      "configSectionId" : 1,
+      "item" : "priority0Start",
+      "value" : "0"
+    },
+    {
+      "configId" : 64,
+      "configSectionId" : 5,
+      "item" : "baseUrl",
+      "value" : ""
+    },
+    {
+      "configId" : 65,
+      "configSectionId" : 4,
+      "item" : "maxSessionLength",
+      "value" : "48"
+    },
+    {
+      "configId" : 66,
+      "configSectionId" : 1,
+      "item" : "hashcatBrainEnable",
+      "value" : "0"
+    },
+    {
+      "configId" : 67,
+      "configSectionId" : 1,
+      "item" : "hashcatBrainHost",
+      "value" : ""
+    },
+    {
+      "configId" : 68,
+      "configSectionId" : 1,
+      "item" : "hashcatBrainPort",
+      "value" : "0"
+    },
+    {
+      "configId" : 69,
+      "configSectionId" : 1,
+      "item" : "hashcatBrainPass",
+      "value" : ""
+    },
+    {
+      "configId" : 70,
+      "configSectionId" : 1,
+      "item" : "hashlistImportCheck",
+      "value" : "0"
+    },
+    {
+      "configId" : 71,
+      "configSectionId" : 5,
+      "item" : "allowDeregister",
+      "value" : "0"
+    },
+    {
+      "configId" : 72,
+      "configSectionId" : 4,
+      "item" : "agentTempThreshold1",
+      "value" : "70"
+    },
+    {
+      "configId" : 73,
+      "configSectionId" : 4,
+      "item" : "agentTempThreshold2",
+      "value" : "80"
+    },
+    {
+      "configId" : 74,
+      "configSectionId" : 4,
+      "item" : "agentUtilThreshold1",
+      "value" : "90"
+    },
+    {
+      "configId" : 75,
+      "configSectionId" : 4,
+      "item" : "agentUtilThreshold2",
+      "value" : "75"
+    },
+    {
+      "configId" : 76,
+      "configSectionId" : 3,
+      "item" : "uApiSendTaskIsComplete",
+      "value" : "0"
+    },
+    {
+      "configId" : 77,
+      "configSectionId" : 1,
+      "item" : "hcErrorIgnore",
+      "value" : "DeviceGetFanSpeed"
+    },
+    {
+      "configId" : 78,
+      "configSectionId" : 3,
+      "item" : "defaultPageSize",
+      "value" : "10000"
+    },
+    {
+      "configId" : 79,
+      "configSectionId" : 3,
+      "item" : "maxPageSize",
+      "value" : "50000"
+    }
+  ],
+  "ConfigSection" : [
+    {
+      "configSectionId" : 1,
+      "sectionName" : "Cracking/Tasks"
+    },
+    {
+      "configSectionId" : 2,
+      "sectionName" : "Yubikey"
+    },
+    {
+      "configSectionId" : 3,
+      "sectionName" : "Finetuning"
+    },
+    {
+      "configSectionId" : 4,
+      "sectionName" : "UI"
+    },
+    {
+      "configSectionId" : 5,
+      "sectionName" : "Server"
+    },
+    {
+      "configSectionId" : 6,
+      "sectionName" : "Multicast"
+    },
+    {
+      "configSectionId" : 7,
+      "sectionName" : "Notifications"
+    }
+  ],
+  "CrackerBinary" : [
+    {
+      "crackerBinaryId" : 1,
+      "crackerBinaryTypeId" : 1,
+      "version" : "7.1.2",
+      "downloadUrl" : "https://hashcat.net/files/hashcat-7.1.2.7z",
+      "binaryName" : "hashcat"
+    }
+  ],
+  "CrackerBinaryType" : [
+    {
+      "crackerBinaryTypeId" : 1,
+      "typeName" : "hashcat",
+      "isChunkingAvailable" : 1
+    }
+  ],
+  "Preprocessor" : [
+    {
+      "preprocessorId" : 1,
+      "name" : "Prince",
+      "url" : "https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z",
+      "binaryName" : "pp",
+      "keyspaceCommand" : "--keyspace",
+      "skipCommand" : "--skip",
+      "limitCommand" : "--limit"
+    }
+  ],
+  "RightGroup" : [
+    {
+      "rightGroupId" : 1,
+      "groupName" : "Administrator",
+      "permissions" : "ALL"
+    }
+  ]
+}
+
