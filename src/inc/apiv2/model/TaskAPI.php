@@ -188,7 +188,7 @@ class TaskAPI extends AbstractModelAPI {
     $qF1 = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
     $qF2 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
-    return TaskUtils::getStatus($chunks, $keyspace, taskUtils::getTaskProgress($object));
+    return TaskUtils::getStatus($chunks, $keyspace, TaskUtils::getTaskProgress($object));
   }
   
   /**
