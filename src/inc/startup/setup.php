@@ -193,12 +193,15 @@ if ($initialSetup === true) {
     Factory::getCrackerBinaryTypeFactory(),
     Factory::getCrackerBinaryFactory(),
     Factory::getPreprocessorFactory(),
-    Factory::getHashTypeFactory()
   ];
   foreach ($factories as $factory) {
     foreach ($objects[$factory->getModelName()] as $object) {
       Util::checkOrCreateInitialObject($factory, $object);
     }
+  }
+  // insert hashtypes
+  foreach ($hashtypes as $hashtype) {
+    Util::checkOrCreateInitialObject(Factory::getHashTypeFactory(), $hashtype);
   }
   
   Factory::getAgentFactory()->getDB()->commit();
