@@ -138,7 +138,7 @@ class DConfig {
       DConfig::NUMBER_LOGENTRIES => DConfigType::NUMBER_INPUT,
       DConfig::TIME_FORMAT => DConfigType::STRING_INPUT,
       DConfig::BASE_URL => DConfigType::STRING_INPUT,
-      Dconfig::DISP_TOLERANCE => DConfigType::NUMBER_INPUT,
+      DConfig::DISP_TOLERANCE => DConfigType::NUMBER_INPUT,
       DConfig::BATCH_SIZE => DConfigType::NUMBER_INPUT,
       DConfig::BASE_HOST => DConfigType::STRING_INPUT,
       DConfig::DONATE_OFF => DConfigType::TICKBOX,
