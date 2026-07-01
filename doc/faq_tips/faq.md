@@ -77,7 +77,7 @@ services:
       - 8080:80
   db:
     container_name: db
-    image: mysql:8.0
+    image: mysql:9.7
     volumes:
       - db:/var/lib/mysql
     environment:
