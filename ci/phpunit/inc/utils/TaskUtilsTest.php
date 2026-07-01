@@ -46,9 +46,9 @@ final class TaskUtilsTest extends TestBase {
    */
   public function testGetStatus(): void {
     $taskObjects = $this->createTaskHelper();
-    $this->assertEquals(3, TaskUtils::getStatus($taskObjects["task"]));
+    $this->assertEquals(2, TaskUtils::getStatus($taskObjects["task"]));
 
-    //TODO test status 1 (running) and 2 (idle) too
+    //TODO test status 1 (running) and 3 (completed) too
   }
 
   /**
