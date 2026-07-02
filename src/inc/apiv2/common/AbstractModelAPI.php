@@ -1716,7 +1716,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $this->preCommon($request);
     $jsonBody = $request->getParsedBody();
     
-    if ($jsonBody === null || !array_key_exists('data', $jsonBody) && is_array($jsonBody['data'])) {
+    if ($jsonBody === null || !array_key_exists('data', $jsonBody) || !is_array($jsonBody['data'])) {
       throw new HttpError('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
     }
     
@@ -1739,10 +1739,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     
     $data = $jsonBody['data'];
-    
-    if (!is_array($data)) {
-      throw new HttpError("Data is not an array, data should be an array of resource records.");
-    }
     
     $factory = (isset($junction_table)) ? self::getModelFactory($junction_table) : self::getModelFactory($relationType);
     if (isset($junction_table)) {
