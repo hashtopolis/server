@@ -2,6 +2,7 @@ parameters:
     paths:
         - src/inc/apiv2
         - ci/phpunit
+        - src/inc/api
     level: 4
     treatPhpDocTypesAsCertain: false 
     scanDirectories:
