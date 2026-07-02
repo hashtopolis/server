@@ -609,7 +609,7 @@ abstract class AbstractBaseAPI {
       $obj = array_map('intval', preg_split("/,/", $val, -1, PREG_SPLIT_NO_EMPTY));
     }
     elseif (str_starts_with($feature['type'], 'str') && $val !== null) {
-      $obj = html_entity_decode($val, ENT_COMPAT, "UTF-8");
+      $obj = $val;
     }
     else {
       // TODO: Check all objects, instead of wild cast to hopefully-JSON compatible object
@@ -632,7 +632,7 @@ abstract class AbstractBaseAPI {
       $val = $obj;
     }
     elseif (str_starts_with($feature['type'], 'str')) {
-      $val = htmlentities($obj, ENT_QUOTES, "UTF-8");
+      $val = $obj;
     }
     elseif ($feature['type'] == 'array' && ($feature['subtype'] == 'int' || $feature['subtype'] == 'string')) {
       $val = implode(",", $obj);
