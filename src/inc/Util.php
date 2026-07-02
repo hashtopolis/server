@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc;
 
+use Exception;
+use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Aggregation;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\AccessGroup;
@@ -1576,5 +1578,19 @@ class Util {
         Factory::getStoredValueFactory()->update($entry);
       }
     }
+  }
+  
+  /**
+   * Checks if a given initial object data with this ID exists and if not, creates it.
+   *
+   * @throws Exception
+   */
+  public static function checkOrCreateInitialObject(AbstractModelFactory $factory, array $data): void {
+    $object = $factory->createObjectFromDict('0', $data);
+    $check = $factory->get($object->getId());
+    if ($check !== null) {
+      return;
+    }
+    $factory->save($object);
   }
 }

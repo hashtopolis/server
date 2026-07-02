@@ -159,7 +159,14 @@ if ($initialSetup === true) {
   }
   $email = "htp-admin@localhost.local";
   
+  // load initial json data
+  $objects = json_decode(file_get_contents(__DIR__ . "/setup.json"), true);
+  $hashtypes = json_decode(file_get_contents(__DIR__ . "/hashtypes.json"), true);
+  
   Factory::getAgentFactory()->getDB()->beginTransaction();
+  
+  // insert right group
+  Util::checkOrCreateInitialObject(Factory::getRightGroupFactory(), $objects[Factory::getRightGroupFactory()->getModelName()][0]);
   
   $qF = new QueryFilter(RightGroup::GROUP_NAME, "Administrator", "=");
   $group = Factory::getRightGroupFactory()->filter([Factory::FILTER => $qF]);
@@ -172,10 +179,30 @@ if ($initialSetup === true) {
   $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
   $user = Factory::getUserFactory()->save($user);
   
-  // create default group
+  // create default access group and associate admin user to it
   $group = AccessUtils::getOrCreateDefaultAccessGroup();
   $groupUser = new AccessGroupUser(null, $group->getId(), $user->getId());
   Factory::getAccessGroupUserFactory()->save($groupUser);
+  
+  // insert additional initial data
+  $factories = [
+    Factory::getConfigSectionFactory(),
+    Factory::getConfigFactory(),
+    Factory::getApiGroupFactory(),
+    Factory::getAgentBinaryFactory(),
+    Factory::getCrackerBinaryTypeFactory(),
+    Factory::getCrackerBinaryFactory(),
+    Factory::getPreprocessorFactory(),
+  ];
+  foreach ($factories as $factory) {
+    foreach ($objects[$factory->getModelName()] as $object) {
+      Util::checkOrCreateInitialObject($factory, $object);
+    }
+  }
+  // insert hashtypes
+  foreach ($hashtypes as $hashtype) {
+    Util::checkOrCreateInitialObject(Factory::getHashTypeFactory(), $hashtype);
+  }
   
   Factory::getAgentFactory()->getDB()->commit();
 }
