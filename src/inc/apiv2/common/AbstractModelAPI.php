@@ -1716,7 +1716,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $this->preCommon($request);
     $jsonBody = $request->getParsedBody();
     
-    if ($jsonBody === null || !array_key_exists('data', $jsonBody) && is_array($jsonBody['data'])) {
+    if ($jsonBody === null || !array_key_exists('data', $jsonBody) || !is_array($jsonBody['data'])) {
       throw new HttpError('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
     }
     
