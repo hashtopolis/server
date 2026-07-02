@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class AgentStatFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class AgentStatFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return AgentStat|AgentStat[]
+   * @return AgentStat|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): AgentStat|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class AgentStatFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?AgentStat
+   * @throws Exception
    */
   function get($pk): ?AgentStat {
     return Util::cast(parent::get($pk), AgentStat::class);
+  }
+
+  /**
+   * @param AgentStat $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof AgentStat);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof AgentStat);
+    return $stmt;
+  }
+
+  /**
+   * @param AgentStat $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof AgentStat);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof AgentStat);
+    return $stmt;
   }
   
   /**
    * @param AgentStat $model
    * @return AgentStat
+   * @throws Exception
    */
   function save($model): AgentStat {
     return Util::cast(parent::save($model), AgentStat::class);

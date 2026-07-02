@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class NotificationSettingFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class NotificationSettingFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return NotificationSetting|NotificationSetting[]
+   * @return NotificationSetting|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): NotificationSetting|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class NotificationSettingFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?NotificationSetting
+   * @throws Exception
    */
   function get($pk): ?NotificationSetting {
     return Util::cast(parent::get($pk), NotificationSetting::class);
+  }
+
+  /**
+   * @param NotificationSetting $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof NotificationSetting);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof NotificationSetting);
+    return $stmt;
+  }
+
+  /**
+   * @param NotificationSetting $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof NotificationSetting);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof NotificationSetting);
+    return $stmt;
   }
   
   /**
    * @param NotificationSetting $model
    * @return NotificationSetting
+   * @throws Exception
    */
   function save($model): NotificationSetting {
     return Util::cast(parent::save($model), NotificationSetting::class);

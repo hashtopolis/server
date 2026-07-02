@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class TaskDebugOutputFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return TaskDebugOutput|TaskDebugOutput[]
+   * @return TaskDebugOutput|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): TaskDebugOutput|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?TaskDebugOutput
+   * @throws Exception
    */
   function get($pk): ?TaskDebugOutput {
     return Util::cast(parent::get($pk), TaskDebugOutput::class);
+  }
+
+  /**
+   * @param TaskDebugOutput $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof TaskDebugOutput);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof TaskDebugOutput);
+    return $stmt;
+  }
+
+  /**
+   * @param TaskDebugOutput $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof TaskDebugOutput);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof TaskDebugOutput);
+    return $stmt;
   }
   
   /**
    * @param TaskDebugOutput $model
    * @return TaskDebugOutput
+   * @throws Exception
    */
   function save($model): TaskDebugOutput {
     return Util::cast(parent::save($model), TaskDebugOutput::class);

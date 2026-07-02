@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PResponseErrorMessage;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DServerLog;
@@ -13,21 +14,23 @@ use Hashtopolis\inc\agent\PQuery;
 use Hashtopolis\inc\Util;
 
 abstract class APIBasic {
-  /** @var Agent */
-  protected $agent = null;
+  protected ?Agent $agent = null;
   
   /**
    * @param array $QUERY input query sent to the API
    * @throws HTException
    */
-  public abstract function execute($QUERY = array());
+  public abstract function execute(array $QUERY = []);
   
-  protected function sendResponse($RESPONSE) {
+  protected function sendResponse($RESPONSE): void {
     header("Content-Type: application/json");
     echo json_encode($RESPONSE);
     die();
   }
   
+  /**
+   * @throws Exception
+   */
   protected function updateAgent($action): void {
     Factory::getAgentFactory()->mset($this->agent, [Agent::LAST_IP => Util::getIP(), Agent::LAST_ACT => $action, Agent::LAST_TIME => time()]);
   }

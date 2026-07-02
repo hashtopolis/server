@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class FileDownloadFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class FileDownloadFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return FileDownload|FileDownload[]
+   * @return FileDownload|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): FileDownload|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class FileDownloadFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?FileDownload
+   * @throws Exception
    */
   function get($pk): ?FileDownload {
     return Util::cast(parent::get($pk), FileDownload::class);
+  }
+
+  /**
+   * @param FileDownload $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof FileDownload);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof FileDownload);
+    return $stmt;
+  }
+
+  /**
+   * @param FileDownload $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof FileDownload);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof FileDownload);
+    return $stmt;
   }
   
   /**
    * @param FileDownload $model
    * @return FileDownload
+   * @throws Exception
    */
   function save($model): FileDownload {
     return Util::cast(parent::save($model), FileDownload::class);

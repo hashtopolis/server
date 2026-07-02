@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class AssignmentFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class AssignmentFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Assignment|Assignment[]
+   * @return Assignment|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Assignment|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class AssignmentFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Assignment
+   * @throws Exception
    */
   function get($pk): ?Assignment {
     return Util::cast(parent::get($pk), Assignment::class);
+  }
+
+  /**
+   * @param Assignment $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof Assignment);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof Assignment);
+    return $stmt;
+  }
+
+  /**
+   * @param Assignment $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof Assignment);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof Assignment);
+    return $stmt;
   }
   
   /**
    * @param Assignment $model
    * @return Assignment
+   * @throws Exception
    */
   function save($model): Assignment {
     return Util::cast(parent::save($model), Assignment::class);

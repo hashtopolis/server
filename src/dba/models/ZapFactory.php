@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class ZapFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class ZapFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Zap|Zap[]
+   * @return Zap|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Zap|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class ZapFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Zap
+   * @throws Exception
    */
   function get($pk): ?Zap {
     return Util::cast(parent::get($pk), Zap::class);
+  }
+
+  /**
+   * @param Zap $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof Zap);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof Zap);
+    return $stmt;
+  }
+
+  /**
+   * @param Zap $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof Zap);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof Zap);
+    return $stmt;
   }
   
   /**
    * @param Zap $model
    * @return Zap
+   * @throws Exception
    */
   function save($model): Zap {
     return Util::cast(parent::save($model), Zap::class);

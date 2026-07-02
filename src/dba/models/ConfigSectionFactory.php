@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class ConfigSectionFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class ConfigSectionFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return ConfigSection|ConfigSection[]
+   * @return ConfigSection|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): ConfigSection|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class ConfigSectionFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?ConfigSection
+   * @throws Exception
    */
   function get($pk): ?ConfigSection {
     return Util::cast(parent::get($pk), ConfigSection::class);
+  }
+
+  /**
+   * @param ConfigSection $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof ConfigSection);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof ConfigSection);
+    return $stmt;
+  }
+
+  /**
+   * @param ConfigSection $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof ConfigSection);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof ConfigSection);
+    return $stmt;
   }
   
   /**
    * @param ConfigSection $model
    * @return ConfigSection
+   * @throws Exception
    */
   function save($model): ConfigSection {
     return Util::cast(parent::save($model), ConfigSection::class);

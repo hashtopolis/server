@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class FilePretaskFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class FilePretaskFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return FilePretask|FilePretask[]
+   * @return FilePretask|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): FilePretask|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class FilePretaskFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?FilePretask
+   * @throws Exception
    */
   function get($pk): ?FilePretask {
     return Util::cast(parent::get($pk), FilePretask::class);
+  }
+
+  /**
+   * @param FilePretask $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof FilePretask);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof FilePretask);
+    return $stmt;
+  }
+
+  /**
+   * @param FilePretask $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof FilePretask);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof FilePretask);
+    return $stmt;
   }
   
   /**
    * @param FilePretask $model
    * @return FilePretask
+   * @throws Exception
    */
   function save($model): FilePretask {
     return Util::cast(parent::save($model), FilePretask::class);

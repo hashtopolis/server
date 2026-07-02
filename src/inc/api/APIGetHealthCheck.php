@@ -13,7 +13,7 @@ use Hashtopolis\inc\utils\HealthUtils;
 use Hashtopolis\inc\SConfig;
 
 class APIGetHealthCheck extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     if (!PQueryGetHealthCheck::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_HEALTH_CHECK, "Invalid get health check query!");
     }

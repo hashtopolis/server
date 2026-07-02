@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class SessionFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class SessionFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Session|Session[]
+   * @return Session|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Session|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class SessionFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Session
+   * @throws Exception
    */
   function get($pk): ?Session {
     return Util::cast(parent::get($pk), Session::class);
+  }
+
+  /**
+   * @param Session $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof Session);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof Session);
+    return $stmt;
+  }
+
+  /**
+   * @param Session $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof Session);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof Session);
+    return $stmt;
   }
   
   /**
    * @param Session $model
    * @return Session
+   * @throws Exception
    */
   function save($model): Session {
     return Util::cast(parent::save($model), Session::class);

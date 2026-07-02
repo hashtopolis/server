@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class CrackerBinaryFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class CrackerBinaryFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return CrackerBinary|CrackerBinary[]
+   * @return CrackerBinary|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): CrackerBinary|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class CrackerBinaryFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?CrackerBinary
+   * @throws Exception
    */
   function get($pk): ?CrackerBinary {
     return Util::cast(parent::get($pk), CrackerBinary::class);
+  }
+
+  /**
+   * @param CrackerBinary $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof CrackerBinary);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof CrackerBinary);
+    return $stmt;
+  }
+
+  /**
+   * @param CrackerBinary $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof CrackerBinary);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof CrackerBinary);
+    return $stmt;
   }
   
   /**
    * @param CrackerBinary $model
    * @return CrackerBinary
+   * @throws Exception
    */
   function save($model): CrackerBinary {
     return Util::cast(parent::save($model), CrackerBinary::class);

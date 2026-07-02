@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class FileFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class FileFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return File|File[]
+   * @return File|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): File|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class FileFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?File
+   * @throws Exception
    */
   function get($pk): ?File {
     return Util::cast(parent::get($pk), File::class);
+  }
+
+  /**
+   * @param File $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof File);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof File);
+    return $stmt;
+  }
+
+  /**
+   * @param File $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof File);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof File);
+    return $stmt;
   }
   
   /**
    * @param File $model
    * @return File
+   * @throws Exception
    */
   function save($model): File {
     return Util::cast(parent::save($model), File::class);

@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class JwtApiKeyFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class JwtApiKeyFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return JwtApiKey|JwtApiKey[]
+   * @return JwtApiKey|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): JwtApiKey|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class JwtApiKeyFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?JwtApiKey
+   * @throws Exception
    */
   function get($pk): ?JwtApiKey {
     return Util::cast(parent::get($pk), JwtApiKey::class);
+  }
+
+  /**
+   * @param JwtApiKey $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof JwtApiKey);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof JwtApiKey);
+    return $stmt;
+  }
+
+  /**
+   * @param JwtApiKey $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof JwtApiKey);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof JwtApiKey);
+    return $stmt;
   }
   
   /**
    * @param JwtApiKey $model
    * @return JwtApiKey
+   * @throws Exception
    */
   function save($model): JwtApiKey {
     return Util::cast(parent::save($model), JwtApiKey::class);

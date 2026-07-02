@@ -11,7 +11,7 @@ use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\Factory;
 
 class APIUpdateClientInformation extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     // check required values and token
     if (!PQueryUpdateInformation::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::UPDATE_CLIENT_INFORMATION, "Invalid update query!");

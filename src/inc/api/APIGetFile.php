@@ -14,7 +14,7 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
 
 class APIGetFile extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     //check required values
     if (!PQueryGetFile::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_FILE, "Invalid file query!");

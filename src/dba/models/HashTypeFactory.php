@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class HashTypeFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class HashTypeFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return HashType|HashType[]
+   * @return HashType|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): HashType|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class HashTypeFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?HashType
+   * @throws Exception
    */
   function get($pk): ?HashType {
     return Util::cast(parent::get($pk), HashType::class);
+  }
+
+  /**
+   * @param HashType $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof HashType);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof HashType);
+    return $stmt;
+  }
+
+  /**
+   * @param HashType $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof HashType);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof HashType);
+    return $stmt;
   }
   
   /**
    * @param HashType $model
    * @return HashType
+   * @throws Exception
    */
   function save($model): HashType {
     return Util::cast(parent::save($model), HashType::class);

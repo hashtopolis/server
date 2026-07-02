@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class HashBinaryFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class HashBinaryFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return HashBinary|HashBinary[]
+   * @return HashBinary|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): HashBinary|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class HashBinaryFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?HashBinary
+   * @throws Exception
    */
   function get($pk): ?HashBinary {
     return Util::cast(parent::get($pk), HashBinary::class);
+  }
+
+  /**
+   * @param HashBinary $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof HashBinary);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof HashBinary);
+    return $stmt;
+  }
+
+  /**
+   * @param HashBinary $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof HashBinary);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof HashBinary);
+    return $stmt;
   }
   
   /**
    * @param HashBinary $model
    * @return HashBinary
+   * @throws Exception
    */
   function save($model): HashBinary {
     return Util::cast(parent::save($model), HashBinary::class);

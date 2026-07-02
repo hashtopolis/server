@@ -5,6 +5,8 @@ namespace Hashtopolis\dba;
 abstract class Join {
   abstract function getOtherFactory(): AbstractModelFactory;
   
+  abstract function getOverrideOwnFactory(): ?AbstractModelFactory;
+  
   abstract function getMatch1(): string;
   
   abstract function getMatch2(): string;

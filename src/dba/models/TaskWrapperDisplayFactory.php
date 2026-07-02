@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class TaskWrapperDisplayFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return TaskWrapperDisplay|TaskWrapperDisplay[]
+   * @return TaskWrapperDisplay|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): TaskWrapperDisplay|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?TaskWrapperDisplay
+   * @throws Exception
    */
   function get($pk): ?TaskWrapperDisplay {
     return Util::cast(parent::get($pk), TaskWrapperDisplay::class);
+  }
+
+  /**
+   * @param TaskWrapperDisplay $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof TaskWrapperDisplay);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof TaskWrapperDisplay);
+    return $stmt;
+  }
+
+  /**
+   * @param TaskWrapperDisplay $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof TaskWrapperDisplay);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof TaskWrapperDisplay);
+    return $stmt;
   }
   
   /**
    * @param TaskWrapperDisplay $model
    * @return TaskWrapperDisplay
+   * @throws Exception
    */
   function save($model): TaskWrapperDisplay {
     return Util::cast(parent::save($model), TaskWrapperDisplay::class);

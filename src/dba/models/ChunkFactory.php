@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class ChunkFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class ChunkFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Chunk|Chunk[]
+   * @return Chunk|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Chunk|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class ChunkFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Chunk
+   * @throws Exception
    */
   function get($pk): ?Chunk {
     return Util::cast(parent::get($pk), Chunk::class);
+  }
+
+  /**
+   * @param Chunk $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof Chunk);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof Chunk);
+    return $stmt;
+  }
+
+  /**
+   * @param Chunk $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof Chunk);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof Chunk);
+    return $stmt;
   }
   
   /**
    * @param Chunk $model
    * @return Chunk
+   * @throws Exception
    */
   function save($model): Chunk {
     return Util::cast(parent::save($model), Chunk::class);

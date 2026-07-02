@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class UserFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class UserFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return User|User[]
+   * @return User|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): User|array|null {
     $join = false;
@@ -77,14 +81,43 @@ class UserFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?User
+   * @throws Exception
    */
   function get($pk): ?User {
     return Util::cast(parent::get($pk), User::class);
+  }
+
+  /**
+   * @param User $model
+   * @param array $arr
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
+    assert($model instanceof User);
+    $stmt = parent::mset($model, $arr);
+    assert($model instanceof User);
+    return $stmt;
+  }
+
+  /**
+   * @param User $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof User);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof User);
+    return $stmt;
   }
   
   /**
    * @param User $model
    * @return User
+   * @throws Exception
    */
   function save($model): User {
     return Util::cast(parent::save($model), User::class);
