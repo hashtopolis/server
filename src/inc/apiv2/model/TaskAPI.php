@@ -181,14 +181,7 @@ class TaskAPI extends AbstractModelAPI {
   
   protected function getAggregateStatus(object $object): int {
     /** @var Task $object */
-    $keyspace = $object->getKeyspace();
-    $keyspaceProgress = $object->getKeyspaceProgress();
-    
-    // the filter for progress is needed so we reduce the checked chunks numbers by a lot
-    $qF1 = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-    $qF2 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
-    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
-    return TaskUtils::getStatus($chunks, $keyspace, $keyspaceProgress);
+    return TaskUtils::getStatus($object);
   }
   
   /**
