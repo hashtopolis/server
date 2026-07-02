@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class AgentZapFactory extends AbstractModelFactory {
   /**
    * @param AgentZap $model
    * @param array $arr
-   * @return AgentZap
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): AgentZap {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof AgentZap);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof AgentZap);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param AgentZap $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof AgentZap);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof AgentZap);
+    return $stmt;
   }
   
   /**

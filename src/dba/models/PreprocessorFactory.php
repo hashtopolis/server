@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class PreprocessorFactory extends AbstractModelFactory {
   /**
    * @param Preprocessor $model
    * @param array $arr
-   * @return Preprocessor
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): Preprocessor {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof Preprocessor);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof Preprocessor);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param Preprocessor $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof Preprocessor);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof Preprocessor);
+    return $stmt;
   }
   
   /**

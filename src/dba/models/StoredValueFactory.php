@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class StoredValueFactory extends AbstractModelFactory {
   /**
    * @param StoredValue $model
    * @param array $arr
-   * @return StoredValue
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): StoredValue {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof StoredValue);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof StoredValue);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param StoredValue $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof StoredValue);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof StoredValue);
+    return $stmt;
   }
   
   /**

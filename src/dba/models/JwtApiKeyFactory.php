@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class JwtApiKeyFactory extends AbstractModelFactory {
   /**
    * @param JwtApiKey $model
    * @param array $arr
-   * @return JwtApiKey
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): JwtApiKey {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof JwtApiKey);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof JwtApiKey);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param JwtApiKey $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof JwtApiKey);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof JwtApiKey);
+    return $stmt;
   }
   
   /**

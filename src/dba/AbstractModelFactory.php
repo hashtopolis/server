@@ -293,10 +293,10 @@ abstract class AbstractModelFactory {
    * Returns the return of PDO::execute() or null if nothing was executed
    * @param AbstractModel $model AbstractModel primary key of model
    * @param $arr array key-value associations for update
-   * @return AbstractModel
+   * @return PDOStatement
    * @throws Exception
    */
-  public function mset(AbstractModel $model, array $arr): AbstractModel {
+  public function mset(AbstractModel &$model, array $arr): PDOStatement {
     $query = "UPDATE " . $this->getMappedModelTable() . " SET ";
     $elements = [];
     $values = [];
@@ -312,7 +312,8 @@ abstract class AbstractModelFactory {
     $stmt = $this->getDB()->prepare($query);
     $stmt->execute($values);
     
-    return $this->get($model->getPrimaryKeyValue());
+    $model = $this->get($model->getPrimaryKeyValue());
+    return $stmt;
   }
   
   /**

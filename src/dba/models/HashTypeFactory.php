@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class HashTypeFactory extends AbstractModelFactory {
   /**
    * @param HashType $model
    * @param array $arr
-   * @return HashType
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): HashType {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof HashType);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof HashType);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param HashType $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof HashType);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof HashType);
+    return $stmt;
   }
   
   /**

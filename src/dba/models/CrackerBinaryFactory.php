@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class CrackerBinaryFactory extends AbstractModelFactory {
   /**
    * @param CrackerBinary $model
    * @param array $arr
-   * @return CrackerBinary
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): CrackerBinary {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof CrackerBinary);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof CrackerBinary);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param CrackerBinary $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof CrackerBinary);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof CrackerBinary);
+    return $stmt;
   }
   
   /**

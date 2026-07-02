@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class FileDeleteFactory extends AbstractModelFactory {
   /**
    * @param FileDelete $model
    * @param array $arr
-   * @return FileDelete
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): FileDelete {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof FileDelete);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof FileDelete);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param FileDelete $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof FileDelete);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof FileDelete);
+    return $stmt;
   }
   
   /**

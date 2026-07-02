@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
   /**
    * @param AccessGroupAgent $model
    * @param array $arr
-   * @return AccessGroupAgent
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): AccessGroupAgent {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof AccessGroupAgent);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof AccessGroupAgent);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param AccessGroupAgent $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof AccessGroupAgent);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof AccessGroupAgent);
+    return $stmt;
   }
   
   /**

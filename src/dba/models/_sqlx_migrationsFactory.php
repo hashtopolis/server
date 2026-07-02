@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -94,14 +95,28 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
   /**
    * @param _sqlx_migrations $model
    * @param array $arr
-   * @return _sqlx_migrations
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): _sqlx_migrations {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof _sqlx_migrations);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof _sqlx_migrations);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param _sqlx_migrations $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof _sqlx_migrations);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof _sqlx_migrations);
+    return $stmt;
   }
   
   /**

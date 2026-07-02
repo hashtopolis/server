@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class TaskWrapperFactory extends AbstractModelFactory {
   /**
    * @param TaskWrapper $model
    * @param array $arr
-   * @return TaskWrapper
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): TaskWrapper {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof TaskWrapper);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof TaskWrapper);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param TaskWrapper $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof TaskWrapper);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof TaskWrapper);
+    return $stmt;
   }
   
   /**

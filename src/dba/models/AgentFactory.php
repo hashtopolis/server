@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -15,7 +16,7 @@ class AgentFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "Agent";
   }
-
+  
   function isMapping(): bool {
     return False;
   }
@@ -85,18 +86,32 @@ class AgentFactory extends AbstractModelFactory {
   function get($pk): ?Agent {
     return Util::cast(parent::get($pk), Agent::class);
   }
-
+  
   /**
    * @param Agent $model
    * @param array $arr
-   * @return Agent
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): Agent {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof Agent);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof Agent);
-    return $model;
+    return $stmt;
+  }
+  
+  /**
+   * @param Agent $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof Agent);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof Agent);
+    return $stmt;
   }
   
   /**

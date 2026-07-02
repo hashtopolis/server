@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   /**
    * @param TaskDebugOutput $model
    * @param array $arr
-   * @return TaskDebugOutput
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): TaskDebugOutput {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof TaskDebugOutput);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof TaskDebugOutput);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param TaskDebugOutput $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof TaskDebugOutput);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof TaskDebugOutput);
+    return $stmt;
   }
   
   /**

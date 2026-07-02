@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class PretaskFactory extends AbstractModelFactory {
   /**
    * @param Pretask $model
    * @param array $arr
-   * @return Pretask
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): Pretask {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof Pretask);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof Pretask);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param Pretask $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof Pretask);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof Pretask);
+    return $stmt;
   }
   
   /**

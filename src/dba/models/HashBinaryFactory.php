@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class HashBinaryFactory extends AbstractModelFactory {
   /**
    * @param HashBinary $model
    * @param array $arr
-   * @return HashBinary
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): HashBinary {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof HashBinary);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof HashBinary);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param HashBinary $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof HashBinary);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof HashBinary);
+    return $stmt;
   }
   
   /**

@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
@@ -89,14 +90,28 @@ class AgentErrorFactory extends AbstractModelFactory {
   /**
    * @param AgentError $model
    * @param array $arr
-   * @return AgentError
+   * @return PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel $model, array $arr): AgentError {
+  function mset(AbstractModel &$model, array $arr): PDOStatement {
     assert($model instanceof AgentError);
-    $model = parent::mset($model, $arr);
+    $stmt = parent::mset($model, $arr);
     assert($model instanceof AgentError);
-    return $model;
+    return $stmt;
+  }
+
+  /**
+   * @param AgentError $model
+   * @param $key string key of the column to update
+   * @param $value
+   * @return PDOStatement
+   * @throws Exception
+   */
+  function set(AbstractModel &$model, string $key, $value): PDOStatement {
+    assert($model instanceof AgentError);
+    $stmt = parent::set($model, $key, $value);
+    assert($model instanceof AgentError);
+    return $stmt;
   }
   
   /**
