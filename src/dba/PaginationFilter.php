@@ -9,9 +9,7 @@ class PaginationFilter extends Filter {
   private $tieBreakerKey;
   private $tieBreakerValue;
   private $filters;
-  /**
-   * @var
-   */
+  
   private ?AbstractModelFactory $overrideFactory;
   
   function __construct($key, $value, $operator, $tieBreakerKey, $tieBreakerValue, $filters = [], $overrideFactory = null) {

@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class LogEntryFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return LogEntry|LogEntry[]
+   * @return LogEntry|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): LogEntry|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class LogEntryFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?LogEntry
+   * @throws Exception
    */
   function get($pk): ?LogEntry {
     return Util::cast(parent::get($pk), LogEntry::class);
@@ -85,6 +88,7 @@ class LogEntryFactory extends AbstractModelFactory {
   /**
    * @param LogEntry $model
    * @return LogEntry
+   * @throws Exception
    */
   function save($model): LogEntry {
     return Util::cast(parent::save($model), LogEntry::class);

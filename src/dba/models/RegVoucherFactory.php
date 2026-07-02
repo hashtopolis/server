@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class RegVoucherFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return RegVoucher|RegVoucher[]
+   * @return RegVoucher|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): RegVoucher|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class RegVoucherFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?RegVoucher
+   * @throws Exception
    */
   function get($pk): ?RegVoucher {
     return Util::cast(parent::get($pk), RegVoucher::class);
@@ -85,6 +88,7 @@ class RegVoucherFactory extends AbstractModelFactory {
   /**
    * @param RegVoucher $model
    * @return RegVoucher
+   * @throws Exception
    */
   function save($model): RegVoucher {
     return Util::cast(parent::save($model), RegVoucher::class);

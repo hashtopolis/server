@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return TaskWrapperDisplay|TaskWrapperDisplay[]
+   * @return TaskWrapperDisplay|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): TaskWrapperDisplay|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?TaskWrapperDisplay
+   * @throws Exception
    */
   function get($pk): ?TaskWrapperDisplay {
     return Util::cast(parent::get($pk), TaskWrapperDisplay::class);
@@ -85,6 +88,7 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
   /**
    * @param TaskWrapperDisplay $model
    * @return TaskWrapperDisplay
+   * @throws Exception
    */
   function save($model): TaskWrapperDisplay {
     return Util::cast(parent::save($model), TaskWrapperDisplay::class);

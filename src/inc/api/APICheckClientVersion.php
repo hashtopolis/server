@@ -17,7 +17,7 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 
 class APICheckClientVersion extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     // check if provided hash is the same as script and send file contents if not
     if (!PQueryCheckClientVersion::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::CHECK_CLIENT_VERSION, 'Invalid version check query!');

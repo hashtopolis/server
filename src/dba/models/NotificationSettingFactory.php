@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class NotificationSettingFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return NotificationSetting|NotificationSetting[]
+   * @return NotificationSetting|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): NotificationSetting|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?NotificationSetting
+   * @throws Exception
    */
   function get($pk): ?NotificationSetting {
     return Util::cast(parent::get($pk), NotificationSetting::class);
@@ -85,6 +88,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
   /**
    * @param NotificationSetting $model
    * @return NotificationSetting
+   * @throws Exception
    */
   function save($model): NotificationSetting {
     return Util::cast(parent::save($model), NotificationSetting::class);

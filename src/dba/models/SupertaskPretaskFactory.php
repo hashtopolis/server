@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return SupertaskPretask|SupertaskPretask[]
+   * @return SupertaskPretask|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): SupertaskPretask|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?SupertaskPretask
+   * @throws Exception
    */
   function get($pk): ?SupertaskPretask {
     return Util::cast(parent::get($pk), SupertaskPretask::class);
@@ -85,6 +88,7 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
   /**
    * @param SupertaskPretask $model
    * @return SupertaskPretask
+   * @throws Exception
    */
   function save($model): SupertaskPretask {
     return Util::cast(parent::save($model), SupertaskPretask::class);

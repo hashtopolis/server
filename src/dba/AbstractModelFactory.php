@@ -102,7 +102,7 @@ abstract class AbstractModelFactory {
     $features = $model->getFeatures();
     return isset($features[$key]['type']) && $features[$key]['type'] === 'binary';
   }
-
+  
   /**
    * @param AbstractModel $model
    * @param string $key unmapped column name
@@ -115,7 +115,7 @@ abstract class AbstractModelFactory {
     $dbType = StartupConfig::getInstance()->getDatabaseType();
     return $dbType === 'mysql' ? "UNHEX(?)" : "decode(?, 'hex')";
   }
-
+  
   /**
    * Get all the attribute keys of a model prepared with the mapping prefix where needed. The returned keys are then named
    * exactly how they are present in the database.
@@ -290,13 +290,13 @@ abstract class AbstractModelFactory {
   /**
    * Atomically sets the given keys of this model to the given values without setting all other values (like ->update() does)
    *
-   * Returns the return of PDO::execute()
-   * @param $model AbstractModel primary key of model
+   * Returns the return of PDO::execute() or null if nothing was executed
+   * @param AbstractModel $model AbstractModel primary key of model
    * @param $arr array key-value associations for update
-   * @return PDOStatement
+   * @return AbstractModel
    * @throws Exception
    */
-  public function mset(AbstractModel &$model, array $arr): PDOStatement {
+  public function mset(AbstractModel $model, array $arr): AbstractModel {
     $query = "UPDATE " . $this->getMappedModelTable() . " SET ";
     $elements = [];
     $values = [];
@@ -312,8 +312,7 @@ abstract class AbstractModelFactory {
     $stmt = $this->getDB()->prepare($query);
     $stmt->execute($values);
     
-    $model = $this->get($model->getPrimaryKeyValue());
-    return $stmt;
+    return $this->get($model->getPrimaryKeyValue());
   }
   
   /**
@@ -654,7 +653,7 @@ abstract class AbstractModelFactory {
    * @return AbstractModel|null the with pk associated model or Null
    * @throws Exception
    */
-  public function get($pk) {
+  public function get($pk): ?AbstractModel {
     return $this->getFromDB($pk);
   }
   
@@ -700,10 +699,10 @@ abstract class AbstractModelFactory {
    * $options[Factory::JOIN] is an array of JoinFilter options
    *
    * @param $options array containing option settings
-   * @return AbstractModel[]|AbstractModel Returns a list of matching objects or Null
+   * @return AbstractModel[] Returns a list of matching objects
    * @throws Exception
    */
-  private function filterWithJoin(array $options): array|AbstractModel {
+  private function filterWithJoin(array $options): array {
     $vals = array();
     $joins = $this->getJoins($options);
     $factories = array($this);
@@ -734,7 +733,7 @@ abstract class AbstractModelFactory {
     if (array_key_exists(Factory::FILTER, $options)) {
       $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
-
+    
     // Apply order filter
     if (!array_key_exists(Factory::ORDER, $options)) {
       // Add a asc order on the primary keys as a standard
@@ -750,7 +749,7 @@ abstract class AbstractModelFactory {
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
-
+    
     $res = array();
     $values = array();
     foreach ($factories as $factory) {
@@ -867,19 +866,18 @@ abstract class AbstractModelFactory {
     }
     return " WHERE " . implode(" AND ", $parts);
   }
-
+  
   /**
    * @param $vals
    * @param $element
-   * @return array
    */
-  private function getAllArrayValues(&$vals, $element) {
+  private function getAllArrayValues(&$vals, $element): void {
     if (!is_array($element)) {
       $vals[] = $element;
       return;
     }
-
-    foreach($element as $v) {
+    
+    foreach ($element as $v) {
       $this->getAllArrayValues($vals, $v);
     }
   }

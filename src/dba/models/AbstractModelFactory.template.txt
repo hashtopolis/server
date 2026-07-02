@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return __MODEL_NAME__|__MODEL_NAME__[]
+   * @return __MODEL_NAME__|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): __MODEL_NAME__|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?__MODEL_NAME__
+   * @throws Exception
    */
   function get($pk): ?__MODEL_NAME__ {
     return Util::cast(parent::get($pk), __MODEL_NAME__::class);
@@ -85,6 +88,7 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
   /**
    * @param __MODEL_NAME__ $model
    * @return __MODEL_NAME__
+   * @throws Exception
    */
   function save($model): __MODEL_NAME__ {
     return Util::cast(parent::save($model), __MODEL_NAME__::class);

@@ -21,7 +21,7 @@ use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\SConfig;
 
 class APIClientError extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     //check required values
     if (!PQueryClientError::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::CLIENT_ERROR, "Invalid error query!");

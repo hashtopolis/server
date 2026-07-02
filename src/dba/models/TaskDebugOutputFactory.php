@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return TaskDebugOutput|TaskDebugOutput[]
+   * @return TaskDebugOutput|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): TaskDebugOutput|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?TaskDebugOutput
+   * @throws Exception
    */
   function get($pk): ?TaskDebugOutput {
     return Util::cast(parent::get($pk), TaskDebugOutput::class);
@@ -85,6 +88,7 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   /**
    * @param TaskDebugOutput $model
    * @return TaskDebugOutput
+   * @throws Exception
    */
   function save($model): TaskDebugOutput {
     return Util::cast(parent::save($model), TaskDebugOutput::class);

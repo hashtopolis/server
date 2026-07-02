@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class AgentStatFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return AgentStat|AgentStat[]
+   * @return AgentStat|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): AgentStat|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class AgentStatFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?AgentStat
+   * @throws Exception
    */
   function get($pk): ?AgentStat {
     return Util::cast(parent::get($pk), AgentStat::class);
@@ -85,6 +88,7 @@ class AgentStatFactory extends AbstractModelFactory {
   /**
    * @param AgentStat $model
    * @return AgentStat
+   * @throws Exception
    */
   function save($model): AgentStat {
     return Util::cast(parent::save($model), AgentStat::class);

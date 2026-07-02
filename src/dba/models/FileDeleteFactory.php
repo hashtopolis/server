@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class FileDeleteFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return FileDelete|FileDelete[]
+   * @return FileDelete|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): FileDelete|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class FileDeleteFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?FileDelete
+   * @throws Exception
    */
   function get($pk): ?FileDelete {
     return Util::cast(parent::get($pk), FileDelete::class);
@@ -85,6 +88,7 @@ class FileDeleteFactory extends AbstractModelFactory {
   /**
    * @param FileDelete $model
    * @return FileDelete
+   * @throws Exception
    */
   function save($model): FileDelete {
     return Util::cast(parent::save($model), FileDelete::class);

@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class HashlistHashlistFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return HashlistHashlist|HashlistHashlist[]
+   * @return HashlistHashlist|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): HashlistHashlist|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class HashlistHashlistFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?HashlistHashlist
+   * @throws Exception
    */
   function get($pk): ?HashlistHashlist {
     return Util::cast(parent::get($pk), HashlistHashlist::class);
@@ -85,6 +88,7 @@ class HashlistHashlistFactory extends AbstractModelFactory {
   /**
    * @param HashlistHashlist $model
    * @return HashlistHashlist
+   * @throws Exception
    */
   function save($model): HashlistHashlist {
     return Util::cast(parent::save($model), HashlistHashlist::class);

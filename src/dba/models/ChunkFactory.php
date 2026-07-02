@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class ChunkFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Chunk|Chunk[]
+   * @return Chunk|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Chunk|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class ChunkFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Chunk
+   * @throws Exception
    */
   function get($pk): ?Chunk {
     return Util::cast(parent::get($pk), Chunk::class);
@@ -85,6 +88,7 @@ class ChunkFactory extends AbstractModelFactory {
   /**
    * @param Chunk $model
    * @return Chunk
+   * @throws Exception
    */
   function save($model): Chunk {
     return Util::cast(parent::save($model), Chunk::class);

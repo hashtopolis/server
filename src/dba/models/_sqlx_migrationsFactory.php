@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -55,7 +56,8 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return _sqlx_migrations|_sqlx_migrations[]
+   * @return _sqlx_migrations|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): _sqlx_migrations|array|null {
     $join = false;
@@ -82,6 +84,7 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?_sqlx_migrations
+   * @throws Exception
    */
   function get($pk): ?_sqlx_migrations {
     return Util::cast(parent::get($pk), _sqlx_migrations::class);
@@ -90,6 +93,7 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
   /**
    * @param _sqlx_migrations $model
    * @return _sqlx_migrations
+   * @throws Exception
    */
   function save($model): _sqlx_migrations {
     return Util::cast(parent::save($model), _sqlx_migrations::class);

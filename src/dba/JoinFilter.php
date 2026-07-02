@@ -3,7 +3,7 @@
 namespace Hashtopolis\dba;
 
 class JoinFilter extends Join {
-  private ?AbstractModelFactory $otherFactory;
+  private AbstractModelFactory $otherFactory;
   
   private string $match1;
   private string $match2;

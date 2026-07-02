@@ -22,7 +22,7 @@ abstract class AbstractModel {
   /**
    * This function is used to set the id to the real database value
    * @param $id string
-   * @return
+   * @return void
    */
   abstract function setId(string $id): void;
   
@@ -30,4 +30,9 @@ abstract class AbstractModel {
    * this function returns the models id
    */
   abstract function getId();
+  
+  /**
+   * The function is used to retrieve information about the attributes of the model
+   */
+  abstract static function getFeatures();
 }

@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class AgentBinaryFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return AgentBinary|AgentBinary[]
+   * @return AgentBinary|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): AgentBinary|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class AgentBinaryFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?AgentBinary
+   * @throws Exception
    */
   function get($pk): ?AgentBinary {
     return Util::cast(parent::get($pk), AgentBinary::class);
@@ -85,6 +88,7 @@ class AgentBinaryFactory extends AbstractModelFactory {
   /**
    * @param AgentBinary $model
    * @return AgentBinary
+   * @throws Exception
    */
   function save($model): AgentBinary {
     return Util::cast(parent::save($model), AgentBinary::class);

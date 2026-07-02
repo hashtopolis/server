@@ -32,7 +32,7 @@ class APIGetChunk extends APIBasic {
    * @throws HTException
    * @throws Exception
    */
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     if (!PQueryGetChunk::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Invalid chunk query!");
     }

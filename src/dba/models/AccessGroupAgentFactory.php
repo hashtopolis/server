@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return AccessGroupAgent|AccessGroupAgent[]
+   * @return AccessGroupAgent|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): AccessGroupAgent|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?AccessGroupAgent
+   * @throws Exception
    */
   function get($pk): ?AccessGroupAgent {
     return Util::cast(parent::get($pk), AccessGroupAgent::class);
@@ -85,6 +88,7 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
   /**
    * @param AccessGroupAgent $model
    * @return AccessGroupAgent
+   * @throws Exception
    */
   function save($model): AccessGroupAgent {
     return Util::cast(parent::save($model), AccessGroupAgent::class);

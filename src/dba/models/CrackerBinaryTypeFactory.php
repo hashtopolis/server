@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return CrackerBinaryType|CrackerBinaryType[]
+   * @return CrackerBinaryType|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): CrackerBinaryType|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?CrackerBinaryType
+   * @throws Exception
    */
   function get($pk): ?CrackerBinaryType {
     return Util::cast(parent::get($pk), CrackerBinaryType::class);
@@ -85,6 +88,7 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
   /**
    * @param CrackerBinaryType $model
    * @return CrackerBinaryType
+   * @throws Exception
    */
   function save($model): CrackerBinaryType {
     return Util::cast(parent::save($model), CrackerBinaryType::class);

@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class ZapFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Zap|Zap[]
+   * @return Zap|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Zap|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class ZapFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Zap
+   * @throws Exception
    */
   function get($pk): ?Zap {
     return Util::cast(parent::get($pk), Zap::class);
@@ -85,6 +88,7 @@ class ZapFactory extends AbstractModelFactory {
   /**
    * @param Zap $model
    * @return Zap
+   * @throws Exception
    */
   function save($model): Zap {
     return Util::cast(parent::save($model), Zap::class);

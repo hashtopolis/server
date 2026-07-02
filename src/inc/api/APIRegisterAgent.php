@@ -22,7 +22,7 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 
 class APIRegisterAgent extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     //check required values
     if (!PQueryRegister::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::REGISTER, "Invalid registering query!");

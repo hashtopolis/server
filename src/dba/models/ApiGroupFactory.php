@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class ApiGroupFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return ApiGroup|ApiGroup[]
+   * @return ApiGroup|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): ApiGroup|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class ApiGroupFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?ApiGroup
+   * @throws Exception
    */
   function get($pk): ?ApiGroup {
     return Util::cast(parent::get($pk), ApiGroup::class);
@@ -85,6 +88,7 @@ class ApiGroupFactory extends AbstractModelFactory {
   /**
    * @param ApiGroup $model
    * @return ApiGroup
+   * @throws Exception
    */
   function save($model): ApiGroup {
     return Util::cast(parent::save($model), ApiGroup::class);

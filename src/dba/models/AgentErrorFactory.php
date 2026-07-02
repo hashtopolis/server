@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class AgentErrorFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return AgentError|AgentError[]
+   * @return AgentError|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): AgentError|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class AgentErrorFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?AgentError
+   * @throws Exception
    */
   function get($pk): ?AgentError {
     return Util::cast(parent::get($pk), AgentError::class);
@@ -85,6 +88,7 @@ class AgentErrorFactory extends AbstractModelFactory {
   /**
    * @param AgentError $model
    * @return AgentError
+   * @throws Exception
    */
   function save($model): AgentError {
     return Util::cast(parent::save($model), AgentError::class);

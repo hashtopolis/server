@@ -2,8 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
+use PDOStatement;
 
 class AgentFactory extends AbstractModelFactory {
   function getModelName(): string {
@@ -13,7 +16,7 @@ class AgentFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "Agent";
   }
-
+  
   function isMapping(): bool {
     return False;
   }
@@ -50,7 +53,8 @@ class AgentFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Agent|Agent[]
+   * @return Agent|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Agent|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class AgentFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Agent
+   * @throws Exception
    */
   function get($pk): ?Agent {
     return Util::cast(parent::get($pk), Agent::class);
@@ -85,6 +90,7 @@ class AgentFactory extends AbstractModelFactory {
   /**
    * @param Agent $model
    * @return Agent
+   * @throws Exception
    */
   function save($model): Agent {
     return Util::cast(parent::save($model), Agent::class);

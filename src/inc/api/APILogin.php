@@ -15,7 +15,7 @@ use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\Util;
 
 class APILogin extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     if (!PQueryLogin::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::LOGIN, "Invalid login query!");
     }

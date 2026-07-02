@@ -21,7 +21,7 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\utils\TaskUtils;
 
 class APIGetTask extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     if (!PQueryGetTask::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_TASK, "Invalid task query!");
     }

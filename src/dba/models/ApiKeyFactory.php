@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class ApiKeyFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return ApiKey|ApiKey[]
+   * @return ApiKey|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): ApiKey|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class ApiKeyFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?ApiKey
+   * @throws Exception
    */
   function get($pk): ?ApiKey {
     return Util::cast(parent::get($pk), ApiKey::class);
@@ -85,6 +88,7 @@ class ApiKeyFactory extends AbstractModelFactory {
   /**
    * @param ApiKey $model
    * @return ApiKey
+   * @throws Exception
    */
   function save($model): ApiKey {
     return Util::cast(parent::save($model), ApiKey::class);

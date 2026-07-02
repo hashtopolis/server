@@ -13,7 +13,7 @@ use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\inc\Util;
 
 class APIGetFound extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     //check required values
     if (!PQueryGetFound::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_FOUND, "Invalid found query!");

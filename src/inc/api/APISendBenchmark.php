@@ -16,7 +16,7 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\SConfig;
 
 class APISendBenchmark extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     if (!PQuerySendBenchmark::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark query!");
     }

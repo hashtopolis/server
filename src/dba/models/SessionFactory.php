@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class SessionFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Session|Session[]
+   * @return Session|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Session|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class SessionFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Session
+   * @throws Exception
    */
   function get($pk): ?Session {
     return Util::cast(parent::get($pk), Session::class);
@@ -85,6 +88,7 @@ class SessionFactory extends AbstractModelFactory {
   /**
    * @param Session $model
    * @return Session
+   * @throws Exception
    */
   function save($model): Session {
     return Util::cast(parent::save($model), Session::class);

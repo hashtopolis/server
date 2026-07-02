@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -51,7 +52,8 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return HealthCheckAgent|HealthCheckAgent[]
+   * @return HealthCheckAgent|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): HealthCheckAgent|array|null {
     $join = false;
@@ -78,6 +80,7 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?HealthCheckAgent
+   * @throws Exception
    */
   function get($pk): ?HealthCheckAgent {
     return Util::cast(parent::get($pk), HealthCheckAgent::class);
@@ -86,6 +89,7 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
   /**
    * @param HealthCheckAgent $model
    * @return HealthCheckAgent
+   * @throws Exception
    */
   function save($model): HealthCheckAgent {
     return Util::cast(parent::save($model), HealthCheckAgent::class);

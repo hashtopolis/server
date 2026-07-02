@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class ConfigFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Config|Config[]
+   * @return Config|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Config|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class ConfigFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Config
+   * @throws Exception
    */
   function get($pk): ?Config {
     return Util::cast(parent::get($pk), Config::class);
@@ -85,6 +88,7 @@ class ConfigFactory extends AbstractModelFactory {
   /**
    * @param Config $model
    * @return Config
+   * @throws Exception
    */
   function save($model): Config {
     return Util::cast(parent::save($model), Config::class);

@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class HashBinaryFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return HashBinary|HashBinary[]
+   * @return HashBinary|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): HashBinary|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class HashBinaryFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?HashBinary
+   * @throws Exception
    */
   function get($pk): ?HashBinary {
     return Util::cast(parent::get($pk), HashBinary::class);
@@ -85,6 +88,7 @@ class HashBinaryFactory extends AbstractModelFactory {
   /**
    * @param HashBinary $model
    * @return HashBinary
+   * @throws Exception
    */
   function save($model): HashBinary {
     return Util::cast(parent::save($model), HashBinary::class);

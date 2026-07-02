@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class StoredValueFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return StoredValue|StoredValue[]
+   * @return StoredValue|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): StoredValue|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class StoredValueFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?StoredValue
+   * @throws Exception
    */
   function get($pk): ?StoredValue {
     return Util::cast(parent::get($pk), StoredValue::class);
@@ -85,6 +88,7 @@ class StoredValueFactory extends AbstractModelFactory {
   /**
    * @param StoredValue $model
    * @return StoredValue
+   * @throws Exception
    */
   function save($model): StoredValue {
     return Util::cast(parent::save($model), StoredValue::class);

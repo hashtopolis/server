@@ -44,7 +44,7 @@ use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;
 
 class APISendProgress extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     if (!PQuerySendProgress::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Invalid progress query!");
     }

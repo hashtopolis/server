@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class PreprocessorFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Preprocessor|Preprocessor[]
+   * @return Preprocessor|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Preprocessor|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class PreprocessorFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Preprocessor
+   * @throws Exception
    */
   function get($pk): ?Preprocessor {
     return Util::cast(parent::get($pk), Preprocessor::class);
@@ -85,6 +88,7 @@ class PreprocessorFactory extends AbstractModelFactory {
   /**
    * @param Preprocessor $model
    * @return Preprocessor
+   * @throws Exception
    */
   function save($model): Preprocessor {
     return Util::cast(parent::save($model), Preprocessor::class);

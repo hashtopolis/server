@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class RightGroupFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return RightGroup|RightGroup[]
+   * @return RightGroup|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): RightGroup|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class RightGroupFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?RightGroup
+   * @throws Exception
    */
   function get($pk): ?RightGroup {
     return Util::cast(parent::get($pk), RightGroup::class);
@@ -85,6 +88,7 @@ class RightGroupFactory extends AbstractModelFactory {
   /**
    * @param RightGroup $model
    * @return RightGroup
+   * @throws Exception
    */
   function save($model): RightGroup {
     return Util::cast(parent::save($model), RightGroup::class);

@@ -17,7 +17,7 @@ use Hashtopolis\dba\models\Task;
 use Hashtopolis\inc\Util;
 
 class APISendKeyspace extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     if (!PQuerySendKeyspace::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_KEYSPACE, "Invalid keyspace query!");
     }

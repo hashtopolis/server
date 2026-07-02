@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Util;
 
@@ -50,7 +51,8 @@ class SpeedFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Speed|Speed[]
+   * @return Speed|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Speed|array|null {
     $join = false;
@@ -77,6 +79,7 @@ class SpeedFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Speed
+   * @throws Exception
    */
   function get($pk): ?Speed {
     return Util::cast(parent::get($pk), Speed::class);
@@ -85,6 +88,7 @@ class SpeedFactory extends AbstractModelFactory {
   /**
    * @param Speed $model
    * @return Speed
+   * @throws Exception
    */
   function save($model): Speed {
     return Util::cast(parent::save($model), Speed::class);
