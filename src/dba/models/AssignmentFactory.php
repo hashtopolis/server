@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class AssignmentFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class AssignmentFactory extends AbstractModelFactory {
    */
   function get($pk): ?Assignment {
     return Util::cast(parent::get($pk), Assignment::class);
+  }
+
+  /**
+   * @param Assignment $model
+   * @param array $arr
+   * @return Assignment
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): Assignment {
+    assert($model instanceof Assignment);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof Assignment);
+    return $model;
   }
   
   /**

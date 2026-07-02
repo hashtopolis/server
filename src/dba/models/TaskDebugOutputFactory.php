@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class TaskDebugOutputFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
    */
   function get($pk): ?TaskDebugOutput {
     return Util::cast(parent::get($pk), TaskDebugOutput::class);
+  }
+
+  /**
+   * @param TaskDebugOutput $model
+   * @param array $arr
+   * @return TaskDebugOutput
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): TaskDebugOutput {
+    assert($model instanceof TaskDebugOutput);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof TaskDebugOutput);
+    return $model;
   }
   
   /**

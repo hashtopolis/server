@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class HashBinaryFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class HashBinaryFactory extends AbstractModelFactory {
    */
   function get($pk): ?HashBinary {
     return Util::cast(parent::get($pk), HashBinary::class);
+  }
+
+  /**
+   * @param HashBinary $model
+   * @param array $arr
+   * @return HashBinary
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): HashBinary {
+    assert($model instanceof HashBinary);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof HashBinary);
+    return $model;
   }
   
   /**

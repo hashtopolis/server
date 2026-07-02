@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class FileTaskFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class FileTaskFactory extends AbstractModelFactory {
    */
   function get($pk): ?FileTask {
     return Util::cast(parent::get($pk), FileTask::class);
+  }
+
+  /**
+   * @param FileTask $model
+   * @param array $arr
+   * @return FileTask
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): FileTask {
+    assert($model instanceof FileTask);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof FileTask);
+    return $model;
   }
   
   /**

@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class JwtApiKeyFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class JwtApiKeyFactory extends AbstractModelFactory {
    */
   function get($pk): ?JwtApiKey {
     return Util::cast(parent::get($pk), JwtApiKey::class);
+  }
+
+  /**
+   * @param JwtApiKey $model
+   * @param array $arr
+   * @return JwtApiKey
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): JwtApiKey {
+    assert($model instanceof JwtApiKey);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof JwtApiKey);
+    return $model;
   }
   
   /**

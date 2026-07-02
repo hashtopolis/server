@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class AgentStatFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class AgentStatFactory extends AbstractModelFactory {
    */
   function get($pk): ?AgentStat {
     return Util::cast(parent::get($pk), AgentStat::class);
+  }
+
+  /**
+   * @param AgentStat $model
+   * @param array $arr
+   * @return AgentStat
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): AgentStat {
+    assert($model instanceof AgentStat);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof AgentStat);
+    return $model;
   }
   
   /**

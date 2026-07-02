@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class NotificationSettingFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class NotificationSettingFactory extends AbstractModelFactory {
    */
   function get($pk): ?NotificationSetting {
     return Util::cast(parent::get($pk), NotificationSetting::class);
+  }
+
+  /**
+   * @param NotificationSetting $model
+   * @param array $arr
+   * @return NotificationSetting
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): NotificationSetting {
+    assert($model instanceof NotificationSetting);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof NotificationSetting);
+    return $model;
   }
   
   /**

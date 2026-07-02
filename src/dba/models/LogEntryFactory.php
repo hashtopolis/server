@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class LogEntryFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class LogEntryFactory extends AbstractModelFactory {
    */
   function get($pk): ?LogEntry {
     return Util::cast(parent::get($pk), LogEntry::class);
+  }
+
+  /**
+   * @param LogEntry $model
+   * @param array $arr
+   * @return LogEntry
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): LogEntry {
+    assert($model instanceof LogEntry);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof LogEntry);
+    return $model;
   }
   
   /**

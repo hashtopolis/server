@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class RightGroupFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class RightGroupFactory extends AbstractModelFactory {
    */
   function get($pk): ?RightGroup {
     return Util::cast(parent::get($pk), RightGroup::class);
+  }
+
+  /**
+   * @param RightGroup $model
+   * @param array $arr
+   * @return RightGroup
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): RightGroup {
+    assert($model instanceof RightGroup);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof RightGroup);
+    return $model;
   }
   
   /**

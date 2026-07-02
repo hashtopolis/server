@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class ConfigSectionFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class ConfigSectionFactory extends AbstractModelFactory {
    */
   function get($pk): ?ConfigSection {
     return Util::cast(parent::get($pk), ConfigSection::class);
+  }
+
+  /**
+   * @param ConfigSection $model
+   * @param array $arr
+   * @return ConfigSection
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): ConfigSection {
+    assert($model instanceof ConfigSection);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof ConfigSection);
+    return $model;
   }
   
   /**

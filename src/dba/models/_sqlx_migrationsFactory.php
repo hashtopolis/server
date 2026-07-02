@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class _sqlx_migrationsFactory extends AbstractModelFactory {
@@ -88,6 +89,19 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
    */
   function get($pk): ?_sqlx_migrations {
     return Util::cast(parent::get($pk), _sqlx_migrations::class);
+  }
+
+  /**
+   * @param _sqlx_migrations $model
+   * @param array $arr
+   * @return _sqlx_migrations
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): _sqlx_migrations {
+    assert($model instanceof _sqlx_migrations);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof _sqlx_migrations);
+    return $model;
   }
   
   /**

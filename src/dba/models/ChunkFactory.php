@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class ChunkFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class ChunkFactory extends AbstractModelFactory {
    */
   function get($pk): ?Chunk {
     return Util::cast(parent::get($pk), Chunk::class);
+  }
+
+  /**
+   * @param Chunk $model
+   * @param array $arr
+   * @return Chunk
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): Chunk {
+    assert($model instanceof Chunk);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof Chunk);
+    return $model;
   }
   
   /**

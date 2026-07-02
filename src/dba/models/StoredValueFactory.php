@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class StoredValueFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class StoredValueFactory extends AbstractModelFactory {
    */
   function get($pk): ?StoredValue {
     return Util::cast(parent::get($pk), StoredValue::class);
+  }
+
+  /**
+   * @param StoredValue $model
+   * @param array $arr
+   * @return StoredValue
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): StoredValue {
+    assert($model instanceof StoredValue);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof StoredValue);
+    return $model;
   }
   
   /**

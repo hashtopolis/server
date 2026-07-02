@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class ApiKeyFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class ApiKeyFactory extends AbstractModelFactory {
    */
   function get($pk): ?ApiKey {
     return Util::cast(parent::get($pk), ApiKey::class);
+  }
+
+  /**
+   * @param ApiKey $model
+   * @param array $arr
+   * @return ApiKey
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): ApiKey {
+    assert($model instanceof ApiKey);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof ApiKey);
+    return $model;
   }
   
   /**

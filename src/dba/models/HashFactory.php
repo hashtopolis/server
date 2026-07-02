@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class HashFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class HashFactory extends AbstractModelFactory {
    */
   function get($pk): ?Hash {
     return Util::cast(parent::get($pk), Hash::class);
+  }
+
+  /**
+   * @param Hash $model
+   * @param array $arr
+   * @return Hash
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): Hash {
+    assert($model instanceof Hash);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof Hash);
+    return $model;
   }
   
   /**

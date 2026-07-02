@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class SupertaskFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class SupertaskFactory extends AbstractModelFactory {
    */
   function get($pk): ?Supertask {
     return Util::cast(parent::get($pk), Supertask::class);
+  }
+
+  /**
+   * @param Supertask $model
+   * @param array $arr
+   * @return Supertask
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): Supertask {
+    assert($model instanceof Supertask);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof Supertask);
+    return $model;
   }
   
   /**

@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class TaskWrapperDisplayFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
    */
   function get($pk): ?TaskWrapperDisplay {
     return Util::cast(parent::get($pk), TaskWrapperDisplay::class);
+  }
+
+  /**
+   * @param TaskWrapperDisplay $model
+   * @param array $arr
+   * @return TaskWrapperDisplay
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): TaskWrapperDisplay {
+    assert($model instanceof TaskWrapperDisplay);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof TaskWrapperDisplay);
+    return $model;
   }
   
   /**

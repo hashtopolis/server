@@ -3,10 +3,9 @@
 namespace Hashtopolis\dba\models;
 
 use Exception;
-use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
-use PDOStatement;
 
 class AgentFactory extends AbstractModelFactory {
   function getModelName(): string {
@@ -16,7 +15,7 @@ class AgentFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "Agent";
   }
-  
+
   function isMapping(): bool {
     return False;
   }
@@ -85,6 +84,19 @@ class AgentFactory extends AbstractModelFactory {
    */
   function get($pk): ?Agent {
     return Util::cast(parent::get($pk), Agent::class);
+  }
+
+  /**
+   * @param Agent $model
+   * @param array $arr
+   * @return Agent
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): Agent {
+    assert($model instanceof Agent);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof Agent);
+    return $model;
   }
   
   /**

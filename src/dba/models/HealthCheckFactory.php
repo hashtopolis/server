@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class HealthCheckFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class HealthCheckFactory extends AbstractModelFactory {
    */
   function get($pk): ?HealthCheck {
     return Util::cast(parent::get($pk), HealthCheck::class);
+  }
+
+  /**
+   * @param HealthCheck $model
+   * @param array $arr
+   * @return HealthCheck
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): HealthCheck {
+    assert($model instanceof HealthCheck);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof HealthCheck);
+    return $model;
   }
   
   /**

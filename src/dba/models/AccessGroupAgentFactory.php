@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class AccessGroupAgentFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
    */
   function get($pk): ?AccessGroupAgent {
     return Util::cast(parent::get($pk), AccessGroupAgent::class);
+  }
+
+  /**
+   * @param AccessGroupAgent $model
+   * @param array $arr
+   * @return AccessGroupAgent
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): AccessGroupAgent {
+    assert($model instanceof AccessGroupAgent);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof AccessGroupAgent);
+    return $model;
   }
   
   /**

@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class ApiGroupFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class ApiGroupFactory extends AbstractModelFactory {
    */
   function get($pk): ?ApiGroup {
     return Util::cast(parent::get($pk), ApiGroup::class);
+  }
+
+  /**
+   * @param ApiGroup $model
+   * @param array $arr
+   * @return ApiGroup
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): ApiGroup {
+    assert($model instanceof ApiGroup);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof ApiGroup);
+    return $model;
   }
   
   /**

@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class CrackerBinaryTypeFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
    */
   function get($pk): ?CrackerBinaryType {
     return Util::cast(parent::get($pk), CrackerBinaryType::class);
+  }
+
+  /**
+   * @param CrackerBinaryType $model
+   * @param array $arr
+   * @return CrackerBinaryType
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): CrackerBinaryType {
+    assert($model instanceof CrackerBinaryType);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof CrackerBinaryType);
+    return $model;
   }
   
   /**

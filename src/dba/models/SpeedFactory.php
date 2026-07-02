@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class SpeedFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class SpeedFactory extends AbstractModelFactory {
    */
   function get($pk): ?Speed {
     return Util::cast(parent::get($pk), Speed::class);
+  }
+
+  /**
+   * @param Speed $model
+   * @param array $arr
+   * @return Speed
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): Speed {
+    assert($model instanceof Speed);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof Speed);
+    return $model;
   }
   
   /**

@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class AgentErrorFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class AgentErrorFactory extends AbstractModelFactory {
    */
   function get($pk): ?AgentError {
     return Util::cast(parent::get($pk), AgentError::class);
+  }
+
+  /**
+   * @param AgentError $model
+   * @param array $arr
+   * @return AgentError
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): AgentError {
+    assert($model instanceof AgentError);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof AgentError);
+    return $model;
   }
   
   /**

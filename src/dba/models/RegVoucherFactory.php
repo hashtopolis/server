@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class RegVoucherFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class RegVoucherFactory extends AbstractModelFactory {
    */
   function get($pk): ?RegVoucher {
     return Util::cast(parent::get($pk), RegVoucher::class);
+  }
+
+  /**
+   * @param RegVoucher $model
+   * @param array $arr
+   * @return RegVoucher
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): RegVoucher {
+    assert($model instanceof RegVoucher);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof RegVoucher);
+    return $model;
   }
   
   /**

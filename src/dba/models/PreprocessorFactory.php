@@ -4,6 +4,7 @@ namespace Hashtopolis\dba\models;
 
 use Exception;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class PreprocessorFactory extends AbstractModelFactory {
@@ -83,6 +84,19 @@ class PreprocessorFactory extends AbstractModelFactory {
    */
   function get($pk): ?Preprocessor {
     return Util::cast(parent::get($pk), Preprocessor::class);
+  }
+
+  /**
+   * @param Preprocessor $model
+   * @param array $arr
+   * @return Preprocessor
+   * @throws Exception
+   */
+  function mset(AbstractModel $model, array $arr): Preprocessor {
+    assert($model instanceof Preprocessor);
+    $model = parent::mset($model, $arr);
+    assert($model instanceof Preprocessor);
+    return $model;
   }
   
   /**
