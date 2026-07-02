@@ -36,7 +36,7 @@
     "require-dev": {
         "phpspec/prophecy-phpunit": "^2.0",
         "phpstan/extension-installer": "^1.1.0",
-        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan": "^2.2",
         "phpunit/phpunit": "^12.5.7",
         "squizlabs/php_codesniffer": "^3.7"
     },
