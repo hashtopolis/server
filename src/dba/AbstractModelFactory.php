@@ -226,17 +226,6 @@ abstract class AbstractModelFactory {
   }
   
   /**
-   * @param Order|Order[] $arr array
-   * @return Order[]
-   */
-  private function getOrders(Order|array $arr): array {
-    if (!is_array($arr)) {
-      $arr = [$arr];
-    }
-    return $arr;
-  }
-  
-  /**
    * @param $arr array
    * @return Join[]
    */
@@ -891,7 +880,10 @@ abstract class AbstractModelFactory {
    * @return string
    */
   private function applyOrder(Order|array $orders): string {
-    $orderQueries = $this->getOrders($orders);
+    $orderQueries = array();
+    if (!is_array($orders)) {
+      $orders = array($orders);
+    }
     foreach ($orders as $order) {
       $orderQueries[] = $order->getQueryString($this, true);
     }
