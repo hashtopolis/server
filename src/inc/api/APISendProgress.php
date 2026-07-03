@@ -428,6 +428,7 @@ class APISendProgress extends APIBasic {
     
     DServerLog::log(DServerLog::TRACE, "Updated with received cracks", [$this->agent, $chunk]);
     
+    assert($chunk instanceof Chunk);
     if ($chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME) {
       // the chunk was manually interrupted
       $chunk = Factory::getChunkFactory()->set($chunk, Chunk::STATE, DHashcatStatus::ABORTED);
@@ -508,7 +509,6 @@ class APISendProgress extends APIBasic {
         // the chunk was aborted or quit
         $chunk = Factory::getChunkFactory()->set($chunk, Chunk::SPEED, 0);
         $this->sendErrorResponse(PActions::SEND_PROGRESS, "Chunk was aborted!");
-        break;
       case DHashcatStatus::RUNNING:
       default:
         // the chunk isn't finished yet, we will send zaps
