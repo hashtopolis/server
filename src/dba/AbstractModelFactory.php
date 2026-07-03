@@ -291,12 +291,16 @@ abstract class AbstractModelFactory {
    * Atomically sets the given keys of this model to the given values without setting all other values (like ->update() does)
    *
    * Returns the return of PDO::execute() or null if nothing was executed
-   * @param AbstractModel $model AbstractModel primary key of model
-   * @param $arr array key-value associations for update
-   * @return PDOStatement
+   * @param ?AbstractModel $model AbstractModel primary key of model
+   * @param array $arr key-value associations for update
+   * @return ?PDOStatement
    * @throws Exception
    */
-  public function mset(AbstractModel &$model, array $arr): PDOStatement {
+  protected function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
+    if ($model === null) {
+      return null;
+    }
+    
     $query = "UPDATE " . $this->getMappedModelTable() . " SET ";
     $elements = [];
     $values = [];
@@ -322,13 +326,17 @@ abstract class AbstractModelFactory {
    * Atomically sets the given key of this model to the given value without altering other values
    *
    * Returns the return of PDO::execute()
-   * @param $model AbstractModel primary key of model
-   * @param $key string key of the column to update
+   * @param ?AbstractModel $model primary key of model
+   * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  public function set(AbstractModel &$model, string $key, $value): PDOStatement {
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
+    if ($model === null) {
+      return null;
+    }
+    
     $query = "UPDATE " . $this->getMappedModelTable() . " SET " . self::getMappedModelKey($model, $key) . "=" . self::binaryPlaceholder($model, $key);
     
     $values = [];

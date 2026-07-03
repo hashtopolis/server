@@ -88,29 +88,27 @@ class PretaskFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param Pretask $model
-   * @param-out Pretask $model
+   * @param ?Pretask $model
+   * @param-out ?Pretask $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof Pretask);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof Pretask);
     return $stmt;
   }
 
   /**
-   * @param Pretask $model
-   * @param-out Pretask $model
+   * @param ?Pretask $model
+   * @param-out ?Pretask $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof Pretask);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof Pretask);
     return $stmt;

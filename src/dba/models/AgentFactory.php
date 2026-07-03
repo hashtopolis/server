@@ -88,29 +88,27 @@ class AgentFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param Agent $model
-   * @param-out Agent $model
+   * @param ?Agent $model
+   * @param-out ?Agent $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof Agent);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof Agent);
     return $stmt;
   }
 
   /**
-   * @param Agent $model
-   * @param-out Agent $model
+   * @param ?Agent $model
+   * @param-out ?Agent $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof Agent);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof Agent);
     return $stmt;

@@ -88,29 +88,27 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param SupertaskPretask $model
-   * @param-out SupertaskPretask $model
+   * @param ?SupertaskPretask $model
+   * @param-out ?SupertaskPretask $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof SupertaskPretask);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof SupertaskPretask);
     return $stmt;
   }
 
   /**
-   * @param SupertaskPretask $model
-   * @param-out SupertaskPretask $model
+   * @param ?SupertaskPretask $model
+   * @param-out ?SupertaskPretask $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof SupertaskPretask);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof SupertaskPretask);
     return $stmt;

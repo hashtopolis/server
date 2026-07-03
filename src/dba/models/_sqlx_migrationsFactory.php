@@ -93,29 +93,27 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param _sqlx_migrations $model
-   * @param-out _sqlx_migrations $model
+   * @param ?_sqlx_migrations $model
+   * @param-out ?_sqlx_migrations $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof _sqlx_migrations);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof _sqlx_migrations);
     return $stmt;
   }
 
   /**
-   * @param _sqlx_migrations $model
-   * @param-out _sqlx_migrations $model
+   * @param ?_sqlx_migrations $model
+   * @param-out ?_sqlx_migrations $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof _sqlx_migrations);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof _sqlx_migrations);
     return $stmt;

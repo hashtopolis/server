@@ -88,29 +88,27 @@ class AgentZapFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param AgentZap $model
-   * @param-out AgentZap $model
+   * @param ?AgentZap $model
+   * @param-out ?AgentZap $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof AgentZap);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof AgentZap);
     return $stmt;
   }
 
   /**
-   * @param AgentZap $model
-   * @param-out AgentZap $model
+   * @param ?AgentZap $model
+   * @param-out ?AgentZap $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof AgentZap);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof AgentZap);
     return $stmt;

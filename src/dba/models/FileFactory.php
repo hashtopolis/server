@@ -88,29 +88,27 @@ class FileFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param File $model
-   * @param-out File $model
+   * @param ?File $model
+   * @param-out ?File $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof File);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof File);
     return $stmt;
   }
 
   /**
-   * @param File $model
-   * @param-out File $model
+   * @param ?File $model
+   * @param-out ?File $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof File);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof File);
     return $stmt;

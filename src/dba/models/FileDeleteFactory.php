@@ -88,29 +88,27 @@ class FileDeleteFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param FileDelete $model
-   * @param-out FileDelete $model
+   * @param ?FileDelete $model
+   * @param-out ?FileDelete $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof FileDelete);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof FileDelete);
     return $stmt;
   }
 
   /**
-   * @param FileDelete $model
-   * @param-out FileDelete $model
+   * @param ?FileDelete $model
+   * @param-out ?FileDelete $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof FileDelete);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof FileDelete);
     return $stmt;

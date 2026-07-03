@@ -88,29 +88,27 @@ class ApiGroupFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param ApiGroup $model
-   * @param-out ApiGroup $model
+   * @param ?ApiGroup $model
+   * @param-out ?ApiGroup $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof ApiGroup);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof ApiGroup);
     return $stmt;
   }
 
   /**
-   * @param ApiGroup $model
-   * @param-out ApiGroup $model
+   * @param ?ApiGroup $model
+   * @param-out ?ApiGroup $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof ApiGroup);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof ApiGroup);
     return $stmt;

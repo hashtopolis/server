@@ -88,29 +88,27 @@ class ApiKeyFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param ApiKey $model
-   * @param-out ApiKey $model
+   * @param ?ApiKey $model
+   * @param-out ?ApiKey $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof ApiKey);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof ApiKey);
     return $stmt;
   }
 
   /**
-   * @param ApiKey $model
-   * @param-out ApiKey $model
+   * @param ?ApiKey $model
+   * @param-out ?ApiKey $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof ApiKey);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof ApiKey);
     return $stmt;

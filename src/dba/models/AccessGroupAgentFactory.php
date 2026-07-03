@@ -88,29 +88,27 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param AccessGroupAgent $model
-   * @param-out AccessGroupAgent $model
+   * @param ?AccessGroupAgent $model
+   * @param-out ?AccessGroupAgent $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof AccessGroupAgent);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof AccessGroupAgent);
     return $stmt;
   }
 
   /**
-   * @param AccessGroupAgent $model
-   * @param-out AccessGroupAgent $model
+   * @param ?AccessGroupAgent $model
+   * @param-out ?AccessGroupAgent $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof AccessGroupAgent);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof AccessGroupAgent);
     return $stmt;

@@ -88,29 +88,27 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param TaskDebugOutput $model
-   * @param-out TaskDebugOutput $model
+   * @param ?TaskDebugOutput $model
+   * @param-out ?TaskDebugOutput $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof TaskDebugOutput);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof TaskDebugOutput);
     return $stmt;
   }
 
   /**
-   * @param TaskDebugOutput $model
-   * @param-out TaskDebugOutput $model
+   * @param ?TaskDebugOutput $model
+   * @param-out ?TaskDebugOutput $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof TaskDebugOutput);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof TaskDebugOutput);
     return $stmt;

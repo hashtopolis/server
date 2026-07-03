@@ -88,29 +88,27 @@ class HashTypeFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param HashType $model
-   * @param-out HashType $model
+   * @param ?HashType $model
+   * @param-out ?HashType $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof HashType);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof HashType);
     return $stmt;
   }
 
   /**
-   * @param HashType $model
-   * @param-out HashType $model
+   * @param ?HashType $model
+   * @param-out ?HashType $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof HashType);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof HashType);
     return $stmt;

@@ -88,29 +88,27 @@ class StoredValueFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param StoredValue $model
-   * @param-out StoredValue $model
+   * @param ?StoredValue $model
+   * @param-out ?StoredValue $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof StoredValue);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof StoredValue);
     return $stmt;
   }
 
   /**
-   * @param StoredValue $model
-   * @param-out StoredValue $model
+   * @param ?StoredValue $model
+   * @param-out ?StoredValue $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof StoredValue);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof StoredValue);
     return $stmt;

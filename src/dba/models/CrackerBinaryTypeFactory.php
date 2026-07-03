@@ -88,29 +88,27 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param CrackerBinaryType $model
-   * @param-out CrackerBinaryType $model
+   * @param ?CrackerBinaryType $model
+   * @param-out ?CrackerBinaryType $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof CrackerBinaryType);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof CrackerBinaryType);
     return $stmt;
   }
 
   /**
-   * @param CrackerBinaryType $model
-   * @param-out CrackerBinaryType $model
+   * @param ?CrackerBinaryType $model
+   * @param-out ?CrackerBinaryType $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof CrackerBinaryType);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof CrackerBinaryType);
     return $stmt;

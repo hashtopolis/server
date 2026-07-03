@@ -88,29 +88,27 @@ class HashBinaryFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param HashBinary $model
-   * @param-out HashBinary $model
+   * @param ?HashBinary $model
+   * @param-out ?HashBinary $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof HashBinary);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof HashBinary);
     return $stmt;
   }
 
   /**
-   * @param HashBinary $model
-   * @param-out HashBinary $model
+   * @param ?HashBinary $model
+   * @param-out ?HashBinary $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof HashBinary);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof HashBinary);
     return $stmt;

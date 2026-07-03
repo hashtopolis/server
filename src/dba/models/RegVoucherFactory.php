@@ -88,29 +88,27 @@ class RegVoucherFactory extends AbstractModelFactory {
   }
 
   /**
-   * @param RegVoucher $model
-   * @param-out RegVoucher $model
+   * @param ?RegVoucher $model
+   * @param-out ?RegVoucher $model
    * @param array $arr
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function mset(AbstractModel &$model, array $arr): PDOStatement {
-    assert($model instanceof RegVoucher);
+  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
     $stmt = parent::mset($model, $arr);
     assert($model instanceof RegVoucher);
     return $stmt;
   }
 
   /**
-   * @param RegVoucher $model
-   * @param-out RegVoucher $model
+   * @param ?RegVoucher $model
+   * @param-out ?RegVoucher $model
    * @param string $key key of the column to update
    * @param $value
-   * @return PDOStatement
+   * @return ?PDOStatement
    * @throws Exception
    */
-  function set(AbstractModel &$model, string $key, $value): PDOStatement {
-    assert($model instanceof RegVoucher);
+  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
     $stmt = parent::set($model, $key, $value);
     assert($model instanceof RegVoucher);
     return $stmt;
