@@ -51,8 +51,14 @@ class TaskTest(BaseTest):
         obj = Task.objects.get(taskId=task.id)
         self.assertIsNone(obj.color)
 
-    def test_runtime(self):
+    def test_runtime_preprocessor(self):
         task = self.create_test_object(file_id='002')
+
+        obj = Task.objects.get(taskId=task.id)
+        self.assertEqual(obj.useNewBench, 1)
+
+    def test_runtime(self):
+        task = self.create_test_object(file_id='004')
 
         obj = Task.objects.get(taskId=task.id)
         self.assertEqual(obj.useNewBench, 0)
