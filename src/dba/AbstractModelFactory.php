@@ -226,10 +226,10 @@ abstract class AbstractModelFactory {
   }
   
   /**
-   * @param $arr array
+   * @param Order|Order[] $arr array
    * @return Order[]
    */
-  private function getOrders(array $arr): array {
+  private function getOrders(Order|array $arr): array {
     if (!is_array($arr[Factory::ORDER])) {
       $arr[Factory::ORDER] = array($arr[Factory::ORDER]);
     }
@@ -706,7 +706,7 @@ abstract class AbstractModelFactory {
    * $options[Factory::JOIN] is an array of JoinFilter options
    *
    * @param $options array containing option settings
-   * @return AbstractModel[]|array Returns a list of matching objects
+   * @return array Returns an array of matching objects
    * @throws Exception
    */
   private function filterWithJoin(array $options): array {
@@ -894,10 +894,7 @@ abstract class AbstractModelFactory {
    * @return string
    */
   private function applyOrder(Order|array $orders): string {
-    $orderQueries = array();
-    if (!is_array($orders)) {
-      $orders = array($orders);
-    }
+    $orderQueries = $this->getOrders($orders);
     foreach ($orders as $order) {
       $orderQueries[] = $order->getQueryString($this, true);
     }

@@ -242,6 +242,10 @@ class APISendProgress extends APIBasic {
               $split[3] = Util::strToHex($split[3]);
               $identifier = "WPA*%*" . implode("*", $split) . "%";
             }
+            else{
+              $skipped++;
+              break;
+            }
             $qF1 = new LikeFilterInsensitive(Hash::HASH, $identifier);
           }
           else { // we use the exact match for all other hashes to avoid performance loss
@@ -322,6 +326,7 @@ class APISendProgress extends APIBasic {
           else { // this format is used for -m 16801
             $mac_ap = $split[0];
             $mac_cli = $split[1];
+            $essid = "";
           }
           if (Util::startsWith($essid, '$HEX[') && Util::endsWith($essid, "]") && strlen($essid) % 2 == 0) {
             $essid = substr($essid, 5, strlen($essid) - 6);
