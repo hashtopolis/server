@@ -46,7 +46,7 @@ class LikeFilterInsensitive extends Filter {
     return true;
   }
   
-  function getKey() {
+  function getKey(): string {
     return $this->key;
   }
 }

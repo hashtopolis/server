@@ -643,11 +643,11 @@ abstract class AbstractModelFactory {
    * the getFromDB() function and return it's result. It's therefor recommended
    * to use this function
    *
-   * @param $pk string primary key
+   * @param string|int $pk primary key
    * @return ?TModel the with pk associated model or Null
    * @throws Exception
    */
-  public function get($pk): ?AbstractModel {
+  public function get(string|int $pk): ?AbstractModel {
     return $this->getFromDB($pk);
   }
   
@@ -658,11 +658,11 @@ abstract class AbstractModelFactory {
    * This function will go to the database directly neglecting the cache.
    * If the model is set to be cachable, the cache will also be updated
    *
-   * @param $pk string primary key
+   * @param string|int $pk primary key
    * @return ?TModel the with pk associated model or Null
    * @throws Exception
    */
-  public function getFromDB($pk): ?AbstractModel {
+  public function getFromDB(string|int $pk): ?AbstractModel {
     $keys = self::getMappedModelKeys($this->getNullObject());
     $query = "SELECT " . implode(", ", $keys);
     $query .= " FROM " . $this->getMappedModelTable();
@@ -921,11 +921,11 @@ abstract class AbstractModelFactory {
    *
    * This function deletes the given and also cleans the cache from it.
    * It returns the return of the execute query.
-   * @param TModel $model
+   * @param ?TModel $model
    * @return bool
    * @throws Exception
    */
-  public function delete($model): bool {
+  public function delete(?AbstractModel $model): bool {
     if ($model != null) {
       $query = "DELETE FROM " . $this->getMappedModelTable() . " WHERE " . $model->getPrimaryKey() . " = ?";
       $stmt = $this->getDB()->prepare($query);
@@ -1007,7 +1007,7 @@ abstract class AbstractModelFactory {
   public function massUpdate($options): bool {
     $query = "UPDATE " . $this->getMappedModelTable();
     
-    $vals = array();
+    $vals = [];
     
     if (array_key_exists(Factory::UPDATE, $options)) {
       $query = $query . " SET ";
@@ -1017,7 +1017,6 @@ abstract class AbstractModelFactory {
       if (!is_array($updateOptions)) {
         $updateOptions = array($updateOptions);
       }
-      $vals = array();
       
       for ($i = 0; $i < count($updateOptions); $i++) {
         $option = $updateOptions[$i];
