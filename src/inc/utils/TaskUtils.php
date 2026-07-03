@@ -1190,7 +1190,7 @@ class TaskUtils {
     }
     if ($completed >= $task->getKeyspace()) {
       // task is completed, set priority to 0
-      Factory::getTaskFactory()->set($task, Task::PRIORITY, 0);
+      $task = Factory::getTaskFactory()->set($task, Task::PRIORITY, 0);
       $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
       if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
         Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::PRIORITY, 0);

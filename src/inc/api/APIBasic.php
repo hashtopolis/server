@@ -32,7 +32,7 @@ abstract class APIBasic {
    * @throws Exception
    */
   protected function updateAgent($action): void {
-    Factory::getAgentFactory()->mset($this->agent, [Agent::LAST_IP => Util::getIP(), Agent::LAST_ACT => $action, Agent::LAST_TIME => time()]);
+    $this->agent = Factory::getAgentFactory()->mset($this->agent, [Agent::LAST_IP => Util::getIP(), Agent::LAST_ACT => $action, Agent::LAST_TIME => time()]);
   }
   
   public function sendErrorResponse($action, $msg): void {

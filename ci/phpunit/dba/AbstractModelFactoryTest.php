@@ -216,6 +216,7 @@ final class AbstractModelFactoryTest extends TestBase {
    */
   public function testMsetSuccess(): void {
     $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 0, 0));
+    $this->assertInstanceOf(HashType::class, $hashType);
     Factory::getHashTypeFactory()->mset($hashType, [HashType::IS_SALTED => 1, HashType::IS_SLOW_HASH => 1]);
     $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType->getId());
     $this->assertEquals(1, $hashTypeUpdated->getIsSalted());
@@ -259,6 +260,7 @@ final class AbstractModelFactoryTest extends TestBase {
    */
   public function testSetSuccess(): void {
     $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 0, 0));
+    $this->assertTrue($hashType instanceof HashType);
     Factory::getHashTypeFactory()->set($hashType, HashType::IS_SALTED, 1);
     $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType->getId());
     $this->assertEquals(1, $hashTypeUpdated->getIsSalted());
@@ -292,6 +294,38 @@ final class AbstractModelFactoryTest extends TestBase {
     $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType1->getId());
     $this->assertEquals(1, $hashTypeUpdated->getIsSalted());
     $this->assertEquals('something else', $hashTypeUpdated->getDescription());
+  }
+  
+  /**
+   * Tests that set() replaces the by-ref model with a new instance of the correct concrete type
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testSetRefreshesModel(): void {
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 0, 0));
+    $this->assertInstanceOf(HashType::class, $hashType);
+    $originalObject = $hashType;
+    Factory::getHashTypeFactory()->set($hashType, HashType::IS_SALTED, 1);
+    $this->assertNotSame($originalObject, $hashType);
+    $this->assertEquals(1, $hashType->getIsSalted());
+    $this->assertEquals(0, $hashType->getIsSlowHash());
+  }
+  
+  /**
+   * Tests that mset() replaces the by-ref model with a new instance of the correct concrete type
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testMsetRefreshesModel(): void {
+    $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 0, 0));
+    $this->assertInstanceOf(HashType::class, $hashType);
+    $originalObject = $hashType;
+    Factory::getHashTypeFactory()->mset($hashType, [HashType::IS_SALTED => 1, HashType::IS_SLOW_HASH => 1]);
+    $this->assertNotSame($originalObject, $hashType);
+    $this->assertEquals(1, $hashType->getIsSalted());
+    $this->assertEquals(1, $hashType->getIsSlowHash());
   }
   
   /**

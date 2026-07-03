@@ -431,10 +431,7 @@ class AgentUtils {
         Factory::getAssignmentFactory()->delete($assignments[$i]);
       }
       $assignment = $assignments[0];
-      Factory::getAssignmentFactory()->mset($assignment, [Assignment::TASK_ID => $task->getId(), Assignment::BENCHMARK => $benchmark]);
-      $assignment->setTaskId($task->getId());
-      $assignment->setAgentId($agent->getId());
-      $assignment->setBenchmark($benchmark);
+      $assignment = Factory::getAssignmentFactory()->mset($assignment, [Assignment::TASK_ID => $task->getId(), Assignment::BENCHMARK => $benchmark]);
     }
     else {
       $assignment = new Assignment(null, $task->getId(), $agent->getId(), $benchmark);
@@ -500,7 +497,7 @@ class AgentUtils {
     $agent = AgentUtils::getAgent($agentId, $user);
     if ($ownerId == 0) {
       $username = "NONE";
-      Factory::getAgentFactory()->set($agent, Agent::USER_ID, null);
+      $agent = Factory::getAgentFactory()->set($agent, Agent::USER_ID, null);
     }
     else {
       if (is_numeric($ownerId)) {
@@ -514,7 +511,7 @@ class AgentUtils {
         throw new HTException("Invalid user selected!");
       }
       $username = $user->getUsername();
-      Factory::getAgentFactory()->set($agent, Agent::USER_ID, $owner->getId());
+      $agent = Factory::getAgentFactory()->set($agent, Agent::USER_ID, $owner->getId());
     }
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Owner for agent " . $agent->getAgentName() . " was changed to " . $username);
   }

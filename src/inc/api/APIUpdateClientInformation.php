@@ -34,9 +34,9 @@ class APIUpdateClientInformation extends APIBasic {
     // save agent details
     if (strlen($this->agent->getUid()) == 0 && $this->agent->getCpuOnly() == 0) {
       // we only update this variable on the first time, otherwise we would overwrite manual changes
-      Factory::getAgentFactory()->set($this->agent, Agent::CPU_ONLY, $cpuOnly);
+      $this->agent = Factory::getAgentFactory()->set($this->agent, Agent::CPU_ONLY, $cpuOnly);
     }
-    Factory::getAgentFactory()->mset($this->agent, [
+    $this->agent = Factory::getAgentFactory()->mset($this->agent, [
         Agent::DEVICES => htmlentities(implode("\n", $devices), ENT_QUOTES, "UTF-8"),
         Agent::UID => $uid,
         Agent::OS => $os

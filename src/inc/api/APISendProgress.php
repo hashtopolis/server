@@ -67,7 +67,7 @@ class APISendProgress extends APIBasic {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "You are not assigned to this chunk");
     }
     else if ($this->agent->getIsActive() == 0) {
-      Factory::getChunkFactory()->set($chunk, Chunk::SPEED, 0);
+      $chunk = Factory::getChunkFactory()->set($chunk, Chunk::SPEED, 0);
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Agent is marked inactive!");
     }
     
@@ -183,7 +183,7 @@ class APISendProgress extends APIBasic {
       DServerLog::log(DServerLog::TRACE, "Chunk was aborted, we need to stop afterwards", [$this->agent]);
       $aborting = true;
     }
-    Factory::getChunkFactory()->mset($chunk, [
+    $chunk = Factory::getChunkFactory()->mset($chunk, [
         Chunk::PROGRESS => $relativeProgress,
         Chunk::CHECKPOINT => $keyspaceProgress,
         Chunk::SOLVE_TIME => time(),
@@ -425,7 +425,7 @@ class APISendProgress extends APIBasic {
     
     if ($chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME) {
       // the chunk was manually interrupted
-      Factory::getChunkFactory()->set($chunk, Chunk::STATE, DHashcatStatus::ABORTED);
+      $chunk = Factory::getChunkFactory()->set($chunk, Chunk::STATE, DHashcatStatus::ABORTED);
       DServerLog::log(DServerLog::TRACE, "Chunk was manually interrupted", [$this->agent]);
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Chunk was manually interrupted.");
     }
@@ -447,16 +447,16 @@ class APISendProgress extends APIBasic {
     
     if ($taskdone) {
       // task is fully dispatched and this last chunk is done, deprioritize it
-      Factory::getTaskFactory()->set($task, Task::PRIORITY, 0);
+      $task = Factory::getTaskFactory()->set($task, Task::PRIORITY, 0);
       
       if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {
         // check if the task wrapper is a supertask and is completed
         if (Util::checkTaskWrapperCompleted($taskWrapper)) {
-          Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::PRIORITY, 0);
+          $taskWrapper = Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::PRIORITY, 0);
         }
       }
       else {
-        Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::PRIORITY, 0);
+        $taskWrapper = Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::PRIORITY, 0);
       }
       DServerLog::log(DServerLog::TRACE, "As task is done, finished it and updated taskWrapper", [$this->agent, $task, $taskWrapper]);
       
@@ -474,7 +474,7 @@ class APISendProgress extends APIBasic {
     }
     
     if ($aborting) {
-      Factory::getChunkFactory()->mset($chunk, [Chunk::SPEED => 0, Chunk::STATE => DHashcatStatus::ABORTED]);
+      $chunk = Factory::getChunkFactory()->mset($chunk, [Chunk::SPEED => 0, Chunk::STATE => DHashcatStatus::ABORTED]);
       DServerLog::log(DServerLog::TRACE, "From earlier setting, chunk needed to be aborted.", [$this->agent, $chunk]);
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Chunk was aborted!");
     }
@@ -482,13 +482,13 @@ class APISendProgress extends APIBasic {
     switch ($state) {
       case DHashcatStatus::EXHAUSTED:
         // the chunk has finished (exhausted)
-        Factory::getChunkFactory()->mset($chunk, [Chunk::SPEED => 0, Chunk::PROGRESS => 10000, Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength()]);
+        $chunk = Factory::getChunkFactory()->mset($chunk, [Chunk::SPEED => 0, Chunk::PROGRESS => 10000, Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength()]);
         DServerLog::log(DServerLog::TRACE, "Chunk is exhausted (cracker status)", [$this->agent, $chunk]);
         break;
       case DHashcatStatus::CRACKED:
         // the chunk has finished (cracked whole hashList)
         // de-prioritize all tasks and un-assign all agents
-        Factory::getChunkFactory()->mset($chunk, [Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength(), Chunk::PROGRESS => 10000, Chunk::SPEED => 0]);
+        $chunk = Factory::getChunkFactory()->mset($chunk, [Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength(), Chunk::PROGRESS => 10000, Chunk::SPEED => 0]);
         DServerLog::log(DServerLog::TRACE, "Last hash was cracked (cracker status)", [$this->agent, $chunk]);
         
         TaskUtils::depriorizeAllTasks($hashlists);
@@ -501,7 +501,7 @@ class APISendProgress extends APIBasic {
       case DHashcatStatus::ABORTED:
       case DHashcatStatus::QUIT:
         // the chunk was aborted or quit
-        Factory::getChunkFactory()->set($chunk, Chunk::SPEED, 0);
+        $chunk = Factory::getChunkFactory()->set($chunk, Chunk::SPEED, 0);
         $this->sendErrorResponse(PActions::SEND_PROGRESS, "Chunk was aborted!");
         break;
       case DHashcatStatus::RUNNING:
@@ -515,13 +515,13 @@ class APISendProgress extends APIBasic {
           NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
           DServerLog::log(DServerLog::TRACE, "Agent still is running, but all hashes got cracked (all agents together), stop it", [$this->agent]);
           
-          Factory::getChunkFactory()->mset($chunk, [Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength(), Chunk::PROGRESS => 10000, Chunk::SPEED => 0]);
+          $chunk = Factory::getChunkFactory()->mset($chunk, [Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength(), Chunk::PROGRESS => 10000, Chunk::SPEED => 0]);
           TaskUtils::depriorizeAllTasks($hashlists);
           
           $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
           Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
           
-          Factory::getTaskFactory()->set($task, Task::PRIORITY, 0);
+          $task = Factory::getTaskFactory()->set($task, Task::PRIORITY, 0);
           DServerLog::log(DServerLog::TRACE, "Depriorized all tasks and updated", [$this->agent, $task, $chunk, $totalHashlist]);
           
           //stop agent
@@ -534,7 +534,7 @@ class APISendProgress extends APIBasic {
             )
           );
         }
-        Factory::getChunkFactory()->set($chunk, Chunk::SPEED, $speed);
+        $chunk = Factory::getChunkFactory()->set($chunk, Chunk::SPEED, $speed);
         
         // save speed in history
         if ($speed > 0) {
@@ -559,7 +559,7 @@ class APISendProgress extends APIBasic {
           }
           $toZap[] = $zap->getHash();
         }
-        Factory::getAgentFactory()->set($this->agent, Agent::LAST_TIME, time());
+        $this->agent = Factory::getAgentFactory()->set($this->agent, Agent::LAST_TIME, time());
         if ($agentZap->getLastZapId() > 0) {
           Factory::getAgentZapFactory()->update($agentZap);
         }

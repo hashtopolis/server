@@ -463,7 +463,7 @@ class HashlistUtils {
           $crackedIn[$hashEntry->getHashlistId()]++;
         }
 
-        $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1, Hash::TIME_CRACKED => time()]);
+        $hashEntry = $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1, Hash::TIME_CRACKED => time()]);
 
         if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
           $zaps[] = new Zap(null, $hashEntry->getHash(), time(), null, $hashlist->getId());
@@ -514,7 +514,7 @@ class HashlistUtils {
             $crackedIn[$hashEntry->getHashlistId()]++;
           }
 
-          $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1, Hash::TIME_CRACKED => time()]);
+          $hashEntry = $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1, Hash::TIME_CRACKED => time()]);
 
           if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
             $zaps[] = new Zap(null, $hashEntry->getHash(), time(), null, $hashlist->getId());
@@ -931,7 +931,7 @@ class HashlistUtils {
         }
         fclose($file);
         unlink($tmpfile);
-        Factory::getHashlistFactory()->mset($hashlist, [Hashlist::HASH_COUNT => $added, Hashlist::CRACKED => $preFound]);
+        $hashlist = Factory::getHashlistFactory()->mset($hashlist, [Hashlist::HASH_COUNT => $added, Hashlist::CRACKED => $preFound]);
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
         
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
@@ -1002,7 +1002,7 @@ class HashlistUtils {
         fclose($file);
         unlink($tmpfile);
         
-        Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, $added);
+        $hashlist = Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, $added);
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
         
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
@@ -1015,7 +1015,7 @@ class HashlistUtils {
         }
         fclose($file);
         unlink($tmpfile);
-        Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, 1);
+        $hashlist = Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, 1);
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
         
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));

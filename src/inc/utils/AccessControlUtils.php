@@ -68,17 +68,17 @@ class AccessControlUtils {
           $constant = $constant[0];
         }
         if ($split[0] == $constant) {
-          $newArr[$constant] = ($split[1] == "1") ? true : false;
+          $newArr[$constant] = $split[1] == "1";
         }
       }
     }
-    Factory::getRightGroupFactory()->set($group, RightGroup::PERMISSIONS, json_encode($newArr));
+    $group = Factory::getRightGroupFactory()->set($group, RightGroup::PERMISSIONS, json_encode($newArr));
     
     $acl = AccessControl::getInstance(null, $group->getId());
     $arr = $newArr;
     $changes = false;
     foreach ($newArr as $constant => $set) {
-      if ($set == true) {
+      if ($set) {
         continue;
       }
       else if ($acl->givenByDependency($constant)) {

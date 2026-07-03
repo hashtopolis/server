@@ -74,7 +74,7 @@ class APIClientError extends APIBasic {
     
     if ($this->agent->getIgnoreErrors() == DAgentIgnoreErrors::NO) {
       //deactivate agent
-      Factory::getAgentFactory()->set($this->agent, Agent::IS_ACTIVE, 0);
+      $this->agent = Factory::getAgentFactory()->set($this->agent, Agent::IS_ACTIVE, 0);
     }
     
     $this->updateAgent(PActions::CLIENT_ERROR);

@@ -125,7 +125,7 @@ class CrackerUtils {
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
       throw new HTException("Please provide all information!");
     }
-    Factory::getCrackerBinaryFactory()->mset($binary, [
+    $binary = Factory::getCrackerBinaryFactory()->mset($binary, [
         CrackerBinary::BINARY_NAME => htmlentities($name, ENT_QUOTES, "UTF-8"),
         CrackerBinary::DOWNLOAD_URL => $url,
         CrackerBinary::VERSION => $version

@@ -68,7 +68,7 @@ class Login {
         }
         $this->valid = true;
         $this->session = $session;
-        Factory::getSessionFactory()->set($session, Session::LAST_ACTION_DATE, time());
+        $session = Factory::getSessionFactory()->set($session, Session::LAST_ACTION_DATE, time());
         setcookie("session", $session->getSessionKey(), time() + $this->user->getSessionLifetime(), "", "", false, true);
       }
     }
@@ -194,7 +194,7 @@ class Login {
     }
     $sessionKey = Encryption::sessionHash($session->getId(), $startTime, $user->getEmail());
     Factory::getSessionFactory()->set($session, Session::SESSION_KEY, $sessionKey);
-    Factory::getUserFactory()->set($this->user, User::LAST_LOGIN_DATE, time());
+    $this->user = Factory::getUserFactory()->set($this->user, User::LAST_LOGIN_DATE, time());
     
     $this->valid = true;
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Successful login!");

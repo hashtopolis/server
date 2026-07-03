@@ -71,7 +71,7 @@ class ApiUtils {
       throw new HTException("Can't change key owner!");
     }
     
-    Factory::getApiKeyFactory()->mset($key, [
+    $key = Factory::getApiKeyFactory()->mset($key, [
         ApiKey::USER_ID => $user->getId(),
         ApiKey::API_GROUP_ID => $group->getId(),
         ApiKey::START_VALID => strtotime($startValid),

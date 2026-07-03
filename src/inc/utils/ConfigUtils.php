@@ -193,7 +193,7 @@ class ConfigUtils {
         $total_cracked += $count;
         if ($count != $chunk->getCracked()) {
           $correctedChunks++;
-          Factory::getChunkFactory()->set($chunk, Chunk::CRACKED, $count);
+          $chunk = Factory::getChunkFactory()->set($chunk, Chunk::CRACKED, $count);
         }
       }
       if ($total_cracked != $taskWrapper->getCracked()) {
@@ -218,7 +218,7 @@ class ConfigUtils {
       if ($count != $hashlist->getCracked()) {
         $correctedHashlists++;
         $counted = true;
-        Factory::getHashlistFactory()->set($hashlist, Hashlist::CRACKED, $count);
+        $hashlist = Factory::getHashlistFactory()->set($hashlist, Hashlist::CRACKED, $count);
       }
       $count = $hashFactory->countFilter([Factory::FILTER => $qF1]);
       if ($count != $hashlist->getHashCount()) {
