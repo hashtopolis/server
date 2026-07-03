@@ -132,7 +132,6 @@ class ChunkUtils {
       $length = $remaining;
     }
     Factory::getTaskFactory()->inc($task, Task::KEYSPACE_PROGRESS, $length);
-    assert($task instanceof Task);
     $initialProgress = ($task->getUsePreprocessor() || $task->getForcePipe()) ? null : 0;
     $chunk = new Chunk(null, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, $initialProgress, DHashcatStatus::INIT, 0, 0);
     $chunk = Factory::getChunkFactory()->save($chunk);

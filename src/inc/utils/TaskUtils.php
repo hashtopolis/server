@@ -1358,7 +1358,7 @@ class TaskUtils {
           return "Version: " . $binary->getVersion() . " — Binary Name: " . $binary->getBinaryName();
         }
         elseif ($modifier == "id") {
-          return $binary->getCrackerBinaryTypeId();
+          return "" . $binary->getCrackerBinaryTypeId();
         }
         else {
           return "Invalid modifier";

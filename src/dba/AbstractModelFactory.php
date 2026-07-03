@@ -166,7 +166,7 @@ abstract class AbstractModelFactory {
    * The Function returns null if the object could not be placed into the
    * database
    * @param TModel $model model to save
-   * @return TModel|null
+   * @return ?TModel
    * @throws Exception
    */
   public function save(AbstractModel $model): ?AbstractModel {
@@ -645,7 +645,7 @@ abstract class AbstractModelFactory {
    * to use this function
    *
    * @param $pk string primary key
-   * @return TModel|null the with pk associated model or Null
+   * @return ?TModel the with pk associated model or Null
    * @throws Exception
    */
   public function get($pk): ?AbstractModel {
@@ -660,7 +660,7 @@ abstract class AbstractModelFactory {
    * If the model is set to be cachable, the cache will also be updated
    *
    * @param $pk string primary key
-   * @return TModel|null the with pk associated model or Null
+   * @return ?TModel the with pk associated model or Null
    * @throws Exception
    */
   public function getFromDB($pk): ?AbstractModel {
@@ -694,7 +694,7 @@ abstract class AbstractModelFactory {
    * $options[Factory::JOIN] is an array of JoinFilter options
    *
    * @param $options array containing option settings
-   * @return array<TModel>|TModel|null Returns an array of matching objects
+   * @return array<string,array<TModel>> Returns an array of matching objects
    * @throws Exception
    */
   private function filterWithJoin(array $options): array {
@@ -775,7 +775,7 @@ abstract class AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return array<TModel>|TModel|null
+   * @return array|TModel|null
    * @throws Exception
    */
   public function filter(array $options, bool $single = false): array|AbstractModel|null {
