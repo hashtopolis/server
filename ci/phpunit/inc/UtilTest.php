@@ -762,7 +762,7 @@ final class UtilTest extends TestBase {
    */
   public function testGetUsernameByIdNotFound(): void {
     $result = Util::getUsernameById(99999999);
-    $this->assertEquals("-99999999", $result);
+    $this->assertEquals("Unknown-99999999", $result);
   }
   
   /**

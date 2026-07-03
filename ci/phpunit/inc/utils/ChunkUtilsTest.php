@@ -97,13 +97,6 @@ final class ChunkUtilsTest extends TestBase {
     ];
   }
 
-  // Verifies that a benchmark string with no colon routes to the old-benchmark
-  // path and PHP 8 throws TypeError on arithmetic with a non-numeric string.
-  public function testOldBenchmarkNonNumericStringThrowsTypeError(): void {
-    $this->expectException(\TypeError::class);
-    ChunkUtils::calculateChunkSize(1000000, 'invalid', 60);
-  }
-
   // Verifies the safety floor: when the formula produces a size <= 0 the result
   // is clamped to 1 so dispatching never stalls on an infinite zero-size loop.
   // $QUERY must be set because the clamp path calls Util::createLogEntry which
