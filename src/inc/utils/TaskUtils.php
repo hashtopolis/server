@@ -896,7 +896,7 @@ class TaskUtils {
     }
     if ($usePreprocessor && $benchtype == 0) {
       // enforce speed benchmark type when using preprocessor
-      $benchtype = 'speed';
+      $benchtype = 1;
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
