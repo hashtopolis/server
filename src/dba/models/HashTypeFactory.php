@@ -95,4 +95,14 @@ class HashTypeFactory extends AbstractModelFactory {
   function save($model): HashType {
     return Util::cast(parent::save($model), HashType::class);
   }
+
+  /**
+   * @param HashType $model
+   * @param array $arr key-value associations for update
+   * @return HashType
+   * @throws Exception
+   */
+  function mset($model, array $arr): HashType {
+    return Util::cast(parent::mset($model, $arr), HashType::class);
+  }
 }

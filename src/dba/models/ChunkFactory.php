@@ -95,4 +95,14 @@ class ChunkFactory extends AbstractModelFactory {
   function save($model): Chunk {
     return Util::cast(parent::save($model), Chunk::class);
   }
+
+  /**
+   * @param Chunk $model
+   * @param array $arr key-value associations for update
+   * @return Chunk
+   * @throws Exception
+   */
+  function mset($model, array $arr): Chunk {
+    return Util::cast(parent::mset($model, $arr), Chunk::class);
+  }
 }

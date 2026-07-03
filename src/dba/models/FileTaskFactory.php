@@ -95,4 +95,14 @@ class FileTaskFactory extends AbstractModelFactory {
   function save($model): FileTask {
     return Util::cast(parent::save($model), FileTask::class);
   }
+
+  /**
+   * @param FileTask $model
+   * @param array $arr key-value associations for update
+   * @return FileTask
+   * @throws Exception
+   */
+  function mset($model, array $arr): FileTask {
+    return Util::cast(parent::mset($model, $arr), FileTask::class);
+  }
 }

@@ -95,4 +95,14 @@ class FileFactory extends AbstractModelFactory {
   function save($model): File {
     return Util::cast(parent::save($model), File::class);
   }
+
+  /**
+   * @param File $model
+   * @param array $arr key-value associations for update
+   * @return File
+   * @throws Exception
+   */
+  function mset($model, array $arr): File {
+    return Util::cast(parent::mset($model, $arr), File::class);
+  }
 }

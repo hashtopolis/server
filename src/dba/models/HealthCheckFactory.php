@@ -95,4 +95,14 @@ class HealthCheckFactory extends AbstractModelFactory {
   function save($model): HealthCheck {
     return Util::cast(parent::save($model), HealthCheck::class);
   }
+
+  /**
+   * @param HealthCheck $model
+   * @param array $arr key-value associations for update
+   * @return HealthCheck
+   * @throws Exception
+   */
+  function mset($model, array $arr): HealthCheck {
+    return Util::cast(parent::mset($model, $arr), HealthCheck::class);
+  }
 }

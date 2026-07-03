@@ -95,4 +95,14 @@ class AgentStatFactory extends AbstractModelFactory {
   function save($model): AgentStat {
     return Util::cast(parent::save($model), AgentStat::class);
   }
+
+  /**
+   * @param AgentStat $model
+   * @param array $arr key-value associations for update
+   * @return AgentStat
+   * @throws Exception
+   */
+  function mset($model, array $arr): AgentStat {
+    return Util::cast(parent::mset($model, $arr), AgentStat::class);
+  }
 }

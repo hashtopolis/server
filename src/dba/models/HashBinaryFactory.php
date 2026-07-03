@@ -95,4 +95,14 @@ class HashBinaryFactory extends AbstractModelFactory {
   function save($model): HashBinary {
     return Util::cast(parent::save($model), HashBinary::class);
   }
+
+  /**
+   * @param HashBinary $model
+   * @param array $arr key-value associations for update
+   * @return HashBinary
+   * @throws Exception
+   */
+  function mset($model, array $arr): HashBinary {
+    return Util::cast(parent::mset($model, $arr), HashBinary::class);
+  }
 }

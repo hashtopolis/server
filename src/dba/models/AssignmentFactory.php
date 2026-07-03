@@ -95,4 +95,14 @@ class AssignmentFactory extends AbstractModelFactory {
   function save($model): Assignment {
     return Util::cast(parent::save($model), Assignment::class);
   }
+
+  /**
+   * @param Assignment $model
+   * @param array $arr key-value associations for update
+   * @return Assignment
+   * @throws Exception
+   */
+  function mset($model, array $arr): Assignment {
+    return Util::cast(parent::mset($model, $arr), Assignment::class);
+  }
 }

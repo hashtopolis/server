@@ -95,4 +95,14 @@ class LogEntryFactory extends AbstractModelFactory {
   function save($model): LogEntry {
     return Util::cast(parent::save($model), LogEntry::class);
   }
+
+  /**
+   * @param LogEntry $model
+   * @param array $arr key-value associations for update
+   * @return LogEntry
+   * @throws Exception
+   */
+  function mset($model, array $arr): LogEntry {
+    return Util::cast(parent::mset($model, $arr), LogEntry::class);
+  }
 }

@@ -95,4 +95,14 @@ class RightGroupFactory extends AbstractModelFactory {
   function save($model): RightGroup {
     return Util::cast(parent::save($model), RightGroup::class);
   }
+
+  /**
+   * @param RightGroup $model
+   * @param array $arr key-value associations for update
+   * @return RightGroup
+   * @throws Exception
+   */
+  function mset($model, array $arr): RightGroup {
+    return Util::cast(parent::mset($model, $arr), RightGroup::class);
+  }
 }

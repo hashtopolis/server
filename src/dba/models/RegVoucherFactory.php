@@ -95,4 +95,14 @@ class RegVoucherFactory extends AbstractModelFactory {
   function save($model): RegVoucher {
     return Util::cast(parent::save($model), RegVoucher::class);
   }
+
+  /**
+   * @param RegVoucher $model
+   * @param array $arr key-value associations for update
+   * @return RegVoucher
+   * @throws Exception
+   */
+  function mset($model, array $arr): RegVoucher {
+    return Util::cast(parent::mset($model, $arr), RegVoucher::class);
+  }
 }

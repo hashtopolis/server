@@ -291,16 +291,12 @@ abstract class AbstractModelFactory {
    * Atomically sets the given keys of this model to the given values without setting all other values (like ->update() does)
    *
    * Returns the return of PDO::execute() or null if nothing was executed
-   * @param ?AbstractModel $model AbstractModel primary key of model
+   * @param AbstractModel $model AbstractModel primary key of model
    * @param array $arr key-value associations for update
-   * @return ?PDOStatement
+   * @return AbstractModel updated model
    * @throws Exception
    */
-  protected function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    if ($model === null) {
-      return null;
-    }
-    
+  public function mset(AbstractModel $model, array $arr): AbstractModel {
     $query = "UPDATE " . $this->getMappedModelTable() . " SET ";
     $elements = [];
     $values = [];
@@ -316,10 +312,9 @@ abstract class AbstractModelFactory {
     $stmt = $this->getDB()->prepare($query);
     $stmt->execute($values);
     
-    $refreshed = $this->get($model->getPrimaryKeyValue());
-    assert($refreshed instanceof AbstractModel);
-    $model = $refreshed;
-    return $stmt;
+    $model = $this->get($model->getPrimaryKeyValue());
+    assert($model !== null); // assert as on this update we should not get null back (unless race-condition)
+    return $model;
   }
   
   /**

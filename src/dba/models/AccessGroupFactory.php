@@ -95,4 +95,14 @@ class AccessGroupFactory extends AbstractModelFactory {
   function save($model): AccessGroup {
     return Util::cast(parent::save($model), AccessGroup::class);
   }
+
+  /**
+   * @param AccessGroup $model
+   * @param array $arr key-value associations for update
+   * @return AccessGroup
+   * @throws Exception
+   */
+  function mset($model, array $arr): AccessGroup {
+    return Util::cast(parent::mset($model, $arr), AccessGroup::class);
+  }
 }

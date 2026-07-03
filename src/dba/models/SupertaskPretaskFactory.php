@@ -95,4 +95,14 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
   function save($model): SupertaskPretask {
     return Util::cast(parent::save($model), SupertaskPretask::class);
   }
+
+  /**
+   * @param SupertaskPretask $model
+   * @param array $arr key-value associations for update
+   * @return SupertaskPretask
+   * @throws Exception
+   */
+  function mset($model, array $arr): SupertaskPretask {
+    return Util::cast(parent::mset($model, $arr), SupertaskPretask::class);
+  }
 }

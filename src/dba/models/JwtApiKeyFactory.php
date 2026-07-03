@@ -95,4 +95,14 @@ class JwtApiKeyFactory extends AbstractModelFactory {
   function save($model): JwtApiKey {
     return Util::cast(parent::save($model), JwtApiKey::class);
   }
+
+  /**
+   * @param JwtApiKey $model
+   * @param array $arr key-value associations for update
+   * @return JwtApiKey
+   * @throws Exception
+   */
+  function mset($model, array $arr): JwtApiKey {
+    return Util::cast(parent::mset($model, $arr), JwtApiKey::class);
+  }
 }

@@ -96,4 +96,14 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
   function save($model): HealthCheckAgent {
     return Util::cast(parent::save($model), HealthCheckAgent::class);
   }
+
+  /**
+   * @param HealthCheckAgent $model
+   * @param array $arr key-value associations for update
+   * @return HealthCheckAgent
+   * @throws Exception
+   */
+  function mset($model, array $arr): HealthCheckAgent {
+    return Util::cast(parent::mset($model, $arr), HealthCheckAgent::class);
+  }
 }

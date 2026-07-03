@@ -95,4 +95,14 @@ class FileDeleteFactory extends AbstractModelFactory {
   function save($model): FileDelete {
     return Util::cast(parent::save($model), FileDelete::class);
   }
+
+  /**
+   * @param FileDelete $model
+   * @param array $arr key-value associations for update
+   * @return FileDelete
+   * @throws Exception
+   */
+  function mset($model, array $arr): FileDelete {
+    return Util::cast(parent::mset($model, $arr), FileDelete::class);
+  }
 }

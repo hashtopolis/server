@@ -95,4 +95,14 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
   function save($model): CrackerBinaryType {
     return Util::cast(parent::save($model), CrackerBinaryType::class);
   }
+
+  /**
+   * @param CrackerBinaryType $model
+   * @param array $arr key-value associations for update
+   * @return CrackerBinaryType
+   * @throws Exception
+   */
+  function mset($model, array $arr): CrackerBinaryType {
+    return Util::cast(parent::mset($model, $arr), CrackerBinaryType::class);
+  }
 }

@@ -95,4 +95,14 @@ class ApiKeyFactory extends AbstractModelFactory {
   function save($model): ApiKey {
     return Util::cast(parent::save($model), ApiKey::class);
   }
+
+  /**
+   * @param ApiKey $model
+   * @param array $arr key-value associations for update
+   * @return ApiKey
+   * @throws Exception
+   */
+  function mset($model, array $arr): ApiKey {
+    return Util::cast(parent::mset($model, $arr), ApiKey::class);
+  }
 }

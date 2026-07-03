@@ -95,4 +95,14 @@ class ApiGroupFactory extends AbstractModelFactory {
   function save($model): ApiGroup {
     return Util::cast(parent::save($model), ApiGroup::class);
   }
+
+  /**
+   * @param ApiGroup $model
+   * @param array $arr key-value associations for update
+   * @return ApiGroup
+   * @throws Exception
+   */
+  function mset($model, array $arr): ApiGroup {
+    return Util::cast(parent::mset($model, $arr), ApiGroup::class);
+  }
 }

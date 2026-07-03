@@ -95,4 +95,14 @@ class AgentZapFactory extends AbstractModelFactory {
   function save($model): AgentZap {
     return Util::cast(parent::save($model), AgentZap::class);
   }
+
+  /**
+   * @param AgentZap $model
+   * @param array $arr key-value associations for update
+   * @return AgentZap
+   * @throws Exception
+   */
+  function mset($model, array $arr): AgentZap {
+    return Util::cast(parent::mset($model, $arr), AgentZap::class);
+  }
 }

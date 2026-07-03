@@ -95,4 +95,14 @@ class PretaskFactory extends AbstractModelFactory {
   function save($model): Pretask {
     return Util::cast(parent::save($model), Pretask::class);
   }
+
+  /**
+   * @param Pretask $model
+   * @param array $arr key-value associations for update
+   * @return Pretask
+   * @throws Exception
+   */
+  function mset($model, array $arr): Pretask {
+    return Util::cast(parent::mset($model, $arr), Pretask::class);
+  }
 }

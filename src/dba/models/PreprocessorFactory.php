@@ -95,4 +95,14 @@ class PreprocessorFactory extends AbstractModelFactory {
   function save($model): Preprocessor {
     return Util::cast(parent::save($model), Preprocessor::class);
   }
+
+  /**
+   * @param Preprocessor $model
+   * @param array $arr key-value associations for update
+   * @return Preprocessor
+   * @throws Exception
+   */
+  function mset($model, array $arr): Preprocessor {
+    return Util::cast(parent::mset($model, $arr), Preprocessor::class);
+  }
 }

@@ -95,4 +95,14 @@ class TaskFactory extends AbstractModelFactory {
   function save($model): Task {
     return Util::cast(parent::save($model), Task::class);
   }
+
+  /**
+   * @param Task $model
+   * @param array $arr key-value associations for update
+   * @return Task
+   * @throws Exception
+   */
+  function mset($model, array $arr): Task {
+    return Util::cast(parent::mset($model, $arr), Task::class);
+  }
 }

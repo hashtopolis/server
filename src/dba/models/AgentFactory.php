@@ -95,4 +95,14 @@ class AgentFactory extends AbstractModelFactory {
   function save($model): Agent {
     return Util::cast(parent::save($model), Agent::class);
   }
+
+  /**
+   * @param Agent $model
+   * @param array $arr key-value associations for update
+   * @return Agent
+   * @throws Exception
+   */
+  function mset($model, array $arr): Agent {
+    return Util::cast(parent::mset($model, $arr), Agent::class);
+  }
 }

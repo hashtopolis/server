@@ -95,4 +95,14 @@ class SessionFactory extends AbstractModelFactory {
   function save($model): Session {
     return Util::cast(parent::save($model), Session::class);
   }
+
+  /**
+   * @param Session $model
+   * @param array $arr key-value associations for update
+   * @return Session
+   * @throws Exception
+   */
+  function mset($model, array $arr): Session {
+    return Util::cast(parent::mset($model, $arr), Session::class);
+  }
 }

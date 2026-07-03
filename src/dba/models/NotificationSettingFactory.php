@@ -95,4 +95,14 @@ class NotificationSettingFactory extends AbstractModelFactory {
   function save($model): NotificationSetting {
     return Util::cast(parent::save($model), NotificationSetting::class);
   }
+
+  /**
+   * @param NotificationSetting $model
+   * @param array $arr key-value associations for update
+   * @return NotificationSetting
+   * @throws Exception
+   */
+  function mset($model, array $arr): NotificationSetting {
+    return Util::cast(parent::mset($model, $arr), NotificationSetting::class);
+  }
 }

@@ -95,4 +95,14 @@ class ConfigSectionFactory extends AbstractModelFactory {
   function save($model): ConfigSection {
     return Util::cast(parent::save($model), ConfigSection::class);
   }
+
+  /**
+   * @param ConfigSection $model
+   * @param array $arr key-value associations for update
+   * @return ConfigSection
+   * @throws Exception
+   */
+  function mset($model, array $arr): ConfigSection {
+    return Util::cast(parent::mset($model, $arr), ConfigSection::class);
+  }
 }

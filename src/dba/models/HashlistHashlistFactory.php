@@ -95,4 +95,14 @@ class HashlistHashlistFactory extends AbstractModelFactory {
   function save($model): HashlistHashlist {
     return Util::cast(parent::save($model), HashlistHashlist::class);
   }
+
+  /**
+   * @param HashlistHashlist $model
+   * @param array $arr key-value associations for update
+   * @return HashlistHashlist
+   * @throws Exception
+   */
+  function mset($model, array $arr): HashlistHashlist {
+    return Util::cast(parent::mset($model, $arr), HashlistHashlist::class);
+  }
 }

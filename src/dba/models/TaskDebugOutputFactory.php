@@ -95,4 +95,14 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   function save($model): TaskDebugOutput {
     return Util::cast(parent::save($model), TaskDebugOutput::class);
   }
+
+  /**
+   * @param TaskDebugOutput $model
+   * @param array $arr key-value associations for update
+   * @return TaskDebugOutput
+   * @throws Exception
+   */
+  function mset($model, array $arr): TaskDebugOutput {
+    return Util::cast(parent::mset($model, $arr), TaskDebugOutput::class);
+  }
 }

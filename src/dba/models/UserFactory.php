@@ -95,4 +95,14 @@ class UserFactory extends AbstractModelFactory {
   function save($model): User {
     return Util::cast(parent::save($model), User::class);
   }
+
+  /**
+   * @param User $model
+   * @param array $arr key-value associations for update
+   * @return User
+   * @throws Exception
+   */
+  function mset($model, array $arr): User {
+    return Util::cast(parent::mset($model, $arr), User::class);
+  }
 }
