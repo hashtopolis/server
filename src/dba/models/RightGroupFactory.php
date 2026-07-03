@@ -86,33 +86,6 @@ class RightGroupFactory extends AbstractModelFactory {
   function get($pk): ?RightGroup {
     return Util::cast(parent::get($pk), RightGroup::class);
   }
-
-  /**
-   * @param ?RightGroup $model
-   * @param-out ?RightGroup $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof RightGroup);
-    return $stmt;
-  }
-
-  /**
-   * @param ?RightGroup $model
-   * @param-out ?RightGroup $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof RightGroup);
-    return $stmt;
-  }
   
   /**
    * @param RightGroup $model

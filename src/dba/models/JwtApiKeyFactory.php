@@ -86,33 +86,6 @@ class JwtApiKeyFactory extends AbstractModelFactory {
   function get($pk): ?JwtApiKey {
     return Util::cast(parent::get($pk), JwtApiKey::class);
   }
-
-  /**
-   * @param ?JwtApiKey $model
-   * @param-out ?JwtApiKey $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof JwtApiKey);
-    return $stmt;
-  }
-
-  /**
-   * @param ?JwtApiKey $model
-   * @param-out ?JwtApiKey $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof JwtApiKey);
-    return $stmt;
-  }
   
   /**
    * @param JwtApiKey $model

@@ -86,33 +86,6 @@ class FileDownloadFactory extends AbstractModelFactory {
   function get($pk): ?FileDownload {
     return Util::cast(parent::get($pk), FileDownload::class);
   }
-
-  /**
-   * @param ?FileDownload $model
-   * @param-out ?FileDownload $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof FileDownload);
-    return $stmt;
-  }
-
-  /**
-   * @param ?FileDownload $model
-   * @param-out ?FileDownload $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof FileDownload);
-    return $stmt;
-  }
   
   /**
    * @param FileDownload $model

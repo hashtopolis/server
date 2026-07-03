@@ -86,33 +86,6 @@ class SessionFactory extends AbstractModelFactory {
   function get($pk): ?Session {
     return Util::cast(parent::get($pk), Session::class);
   }
-
-  /**
-   * @param ?Session $model
-   * @param-out ?Session $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof Session);
-    return $stmt;
-  }
-
-  /**
-   * @param ?Session $model
-   * @param-out ?Session $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof Session);
-    return $stmt;
-  }
   
   /**
    * @param Session $model

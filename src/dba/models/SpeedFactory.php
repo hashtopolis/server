@@ -86,33 +86,6 @@ class SpeedFactory extends AbstractModelFactory {
   function get($pk): ?Speed {
     return Util::cast(parent::get($pk), Speed::class);
   }
-
-  /**
-   * @param ?Speed $model
-   * @param-out ?Speed $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof Speed);
-    return $stmt;
-  }
-
-  /**
-   * @param ?Speed $model
-   * @param-out ?Speed $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof Speed);
-    return $stmt;
-  }
   
   /**
    * @param Speed $model

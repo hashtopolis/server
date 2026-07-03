@@ -86,33 +86,6 @@ class AgentErrorFactory extends AbstractModelFactory {
   function get($pk): ?AgentError {
     return Util::cast(parent::get($pk), AgentError::class);
   }
-
-  /**
-   * @param ?AgentError $model
-   * @param-out ?AgentError $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof AgentError);
-    return $stmt;
-  }
-
-  /**
-   * @param ?AgentError $model
-   * @param-out ?AgentError $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof AgentError);
-    return $stmt;
-  }
   
   /**
    * @param AgentError $model

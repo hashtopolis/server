@@ -86,33 +86,6 @@ class UserFactory extends AbstractModelFactory {
   function get($pk): ?User {
     return Util::cast(parent::get($pk), User::class);
   }
-
-  /**
-   * @param ?User $model
-   * @param-out ?User $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof User);
-    return $stmt;
-  }
-
-  /**
-   * @param ?User $model
-   * @param-out ?User $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof User);
-    return $stmt;
-  }
   
   /**
    * @param User $model

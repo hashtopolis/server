@@ -86,33 +86,6 @@ class ConfigFactory extends AbstractModelFactory {
   function get($pk): ?Config {
     return Util::cast(parent::get($pk), Config::class);
   }
-
-  /**
-   * @param ?Config $model
-   * @param-out ?Config $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof Config);
-    return $stmt;
-  }
-
-  /**
-   * @param ?Config $model
-   * @param-out ?Config $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof Config);
-    return $stmt;
-  }
   
   /**
    * @param Config $model

@@ -86,33 +86,6 @@ class HashlistHashlistFactory extends AbstractModelFactory {
   function get($pk): ?HashlistHashlist {
     return Util::cast(parent::get($pk), HashlistHashlist::class);
   }
-
-  /**
-   * @param ?HashlistHashlist $model
-   * @param-out ?HashlistHashlist $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof HashlistHashlist);
-    return $stmt;
-  }
-
-  /**
-   * @param ?HashlistHashlist $model
-   * @param-out ?HashlistHashlist $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof HashlistHashlist);
-    return $stmt;
-  }
   
   /**
    * @param HashlistHashlist $model

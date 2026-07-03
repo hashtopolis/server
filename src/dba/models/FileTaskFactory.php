@@ -86,33 +86,6 @@ class FileTaskFactory extends AbstractModelFactory {
   function get($pk): ?FileTask {
     return Util::cast(parent::get($pk), FileTask::class);
   }
-
-  /**
-   * @param ?FileTask $model
-   * @param-out ?FileTask $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof FileTask);
-    return $stmt;
-  }
-
-  /**
-   * @param ?FileTask $model
-   * @param-out ?FileTask $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof FileTask);
-    return $stmt;
-  }
   
   /**
    * @param FileTask $model

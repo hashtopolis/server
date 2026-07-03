@@ -86,33 +86,6 @@ class TaskWrapperFactory extends AbstractModelFactory {
   function get($pk): ?TaskWrapper {
     return Util::cast(parent::get($pk), TaskWrapper::class);
   }
-
-  /**
-   * @param ?TaskWrapper $model
-   * @param-out ?TaskWrapper $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof TaskWrapper);
-    return $stmt;
-  }
-
-  /**
-   * @param ?TaskWrapper $model
-   * @param-out ?TaskWrapper $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof TaskWrapper);
-    return $stmt;
-  }
   
   /**
    * @param TaskWrapper $model

@@ -86,33 +86,6 @@ class AssignmentFactory extends AbstractModelFactory {
   function get($pk): ?Assignment {
     return Util::cast(parent::get($pk), Assignment::class);
   }
-
-  /**
-   * @param ?Assignment $model
-   * @param-out ?Assignment $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof Assignment);
-    return $stmt;
-  }
-
-  /**
-   * @param ?Assignment $model
-   * @param-out ?Assignment $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof Assignment);
-    return $stmt;
-  }
   
   /**
    * @param Assignment $model

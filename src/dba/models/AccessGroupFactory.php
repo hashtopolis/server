@@ -86,33 +86,6 @@ class AccessGroupFactory extends AbstractModelFactory {
   function get($pk): ?AccessGroup {
     return Util::cast(parent::get($pk), AccessGroup::class);
   }
-
-  /**
-   * @param ?AccessGroup $model
-   * @param-out ?AccessGroup $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof AccessGroup);
-    return $stmt;
-  }
-
-  /**
-   * @param ?AccessGroup $model
-   * @param-out ?AccessGroup $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof AccessGroup);
-    return $stmt;
-  }
   
   /**
    * @param AccessGroup $model

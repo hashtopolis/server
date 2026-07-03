@@ -86,33 +86,6 @@ class AgentBinaryFactory extends AbstractModelFactory {
   function get($pk): ?AgentBinary {
     return Util::cast(parent::get($pk), AgentBinary::class);
   }
-
-  /**
-   * @param ?AgentBinary $model
-   * @param-out ?AgentBinary $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof AgentBinary);
-    return $stmt;
-  }
-
-  /**
-   * @param ?AgentBinary $model
-   * @param-out ?AgentBinary $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof AgentBinary);
-    return $stmt;
-  }
   
   /**
    * @param AgentBinary $model

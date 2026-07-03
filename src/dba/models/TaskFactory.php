@@ -86,33 +86,6 @@ class TaskFactory extends AbstractModelFactory {
   function get($pk): ?Task {
     return Util::cast(parent::get($pk), Task::class);
   }
-
-  /**
-   * @param ?Task $model
-   * @param-out ?Task $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof Task);
-    return $stmt;
-  }
-
-  /**
-   * @param ?Task $model
-   * @param-out ?Task $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof Task);
-    return $stmt;
-  }
   
   /**
    * @param Task $model

@@ -86,33 +86,6 @@ class LogEntryFactory extends AbstractModelFactory {
   function get($pk): ?LogEntry {
     return Util::cast(parent::get($pk), LogEntry::class);
   }
-
-  /**
-   * @param ?LogEntry $model
-   * @param-out ?LogEntry $model
-   * @param array $arr
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function mset(?AbstractModel &$model, array $arr): ?PDOStatement {
-    $stmt = parent::mset($model, $arr);
-    assert($model instanceof LogEntry);
-    return $stmt;
-  }
-
-  /**
-   * @param ?LogEntry $model
-   * @param-out ?LogEntry $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ?PDOStatement
-   * @throws Exception
-   */
-  public function set(?AbstractModel &$model, string $key, $value): ?PDOStatement {
-    $stmt = parent::set($model, $key, $value);
-    assert($model instanceof LogEntry);
-    return $stmt;
-  }
   
   /**
    * @param LogEntry $model
