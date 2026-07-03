@@ -230,13 +230,10 @@ abstract class AbstractModelFactory {
    * @return Order[]
    */
   private function getOrders(Order|array $arr): array {
-    if (!is_array($arr[Factory::ORDER])) {
-      $arr[Factory::ORDER] = array($arr[Factory::ORDER]);
+    if (!is_array($arr)) {
+      $arr = [$arr];
     }
-    if (isset($arr[Factory::ORDER])) {
-      return $arr[Factory::ORDER];
-    }
-    return array();
+    return $arr;
   }
   
   /**
