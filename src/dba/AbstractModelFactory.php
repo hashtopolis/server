@@ -10,6 +10,8 @@ use Hashtopolis\inc\StartupConfig;
  * Abstraction of all ModelFactories.
  * A ModelFactory is used to get all
  * models from Database. It handles the DB calling and caching of objects.
+ *
+ * @template TModel of AbstractModel
  */
 abstract class AbstractModelFactory {
   private const MAPPING_PREFIX = "htp_";
@@ -65,7 +67,7 @@ abstract class AbstractModelFactory {
    * different queries such as the get queries, where no actual object
    * is given
    *
-   * @return AbstractModel
+   * @return TModel
    */
   abstract function getNullObject(): AbstractModel;
   
@@ -76,7 +78,7 @@ abstract class AbstractModelFactory {
    *
    * @param $pk string primary key
    * @param $dict array dict of values and keys
-   * @return AbstractModel An object of the factories type
+   * @return TModel An object of the factories type
    */
   abstract function createObjectFromDict(string $pk, array $dict): AbstractModel;
   
@@ -163,8 +165,8 @@ abstract class AbstractModelFactory {
    *
    * The Function returns null if the object could not be placed into the
    * database
-   * @param $model AbstractModel model to save
-   * @return AbstractModel|null
+   * @param TModel $model model to save
+   * @return TModel|null
    * @throws Exception
    */
   public function save(AbstractModel $model): ?AbstractModel {
@@ -245,7 +247,7 @@ abstract class AbstractModelFactory {
    * This function updates the database entry for the given model
    * based on it's primary key.
    * Returns the return of PDO::execute()
-   * @param $model AbstractModel model to update
+   * @param TModel $model model to update
    * @return PDOStatement
    * @throws Exception
    */
@@ -277,9 +279,9 @@ abstract class AbstractModelFactory {
    * Atomically sets the given keys of this model to the given values without setting all other values (like ->update() does)
    *
    * Returns the return of PDO::execute() or null if nothing was executed
-   * @param AbstractModel $model AbstractModel primary key of model
+   * @param TModel $model primary key of model
    * @param array $arr key-value associations for update
-   * @return AbstractModel updated model
+   * @return TModel updated model
    * @throws Exception
    */
   public function mset(AbstractModel $model, array $arr): AbstractModel {
@@ -307,10 +309,10 @@ abstract class AbstractModelFactory {
    * Atomically sets the given key of this model to the given value without altering other values
    *
    * Returns the return of PDO::execute()
-   * @param AbstractModel $model primary key of model
+   * @param TModel $model primary key of model
    * @param string $key key of the column to update
    * @param $value
-   * @return AbstractModel
+   * @return TModel
    * @throws Exception
    */
   public function set(AbstractModel $model, string $key, $value): AbstractModel {
@@ -333,7 +335,7 @@ abstract class AbstractModelFactory {
    * Increments the given key of this model by the given value atomically
    *
    * Returns the return of PDO::execute()
-   * @param $model AbstractModel primary key of model
+   * @param TModel &$model primary key of model
    * @param $key string key of the column to update
    * @param $value int amount of increment
    * @return PDOStatement
@@ -356,7 +358,7 @@ abstract class AbstractModelFactory {
     $stmt->execute($values);
     
     $refreshed = $this->get($model->getPrimaryKeyValue());
-    assert($refreshed instanceof AbstractModel);
+    assert($refreshed !== null);
     $model = $refreshed;
     return $stmt;
   }
@@ -365,7 +367,7 @@ abstract class AbstractModelFactory {
    * Decrements the given key of this model by the given value
    *
    * Returns the return of PDO::execute()
-   * @param $model AbstractModel primary key of model
+   * @param TModel &$model primary key of model
    * @param $key string key of the column to update
    * @param $value int amount of increment
    * @return PDOStatement
@@ -388,13 +390,13 @@ abstract class AbstractModelFactory {
     $stmt->execute($values);
     
     $refreshed = $this->get($model->getPrimaryKeyValue());
-    assert($refreshed instanceof AbstractModel);
+    assert($refreshed !== null);
     $model = $refreshed;
     return $stmt;
   }
   
   /**
-   * @param $models AbstractModel[]
+   * @param TModel[] $models
    * @return bool|PDOStatement
    * @throws Exception
    */
@@ -643,7 +645,7 @@ abstract class AbstractModelFactory {
    * to use this function
    *
    * @param $pk string primary key
-   * @return AbstractModel|null the with pk associated model or Null
+   * @return TModel|null the with pk associated model or Null
    * @throws Exception
    */
   public function get($pk): ?AbstractModel {
@@ -658,7 +660,7 @@ abstract class AbstractModelFactory {
    * If the model is set to be cachable, the cache will also be updated
    *
    * @param $pk string primary key
-   * @return AbstractModel|null the with pk associated model or Null
+   * @return TModel|null the with pk associated model or Null
    * @throws Exception
    */
   public function getFromDB($pk): ?AbstractModel {
@@ -692,7 +694,7 @@ abstract class AbstractModelFactory {
    * $options[Factory::JOIN] is an array of JoinFilter options
    *
    * @param $options array containing option settings
-   * @return array Returns an array of matching objects
+   * @return array<TModel>|TModel|null Returns an array of matching objects
    * @throws Exception
    */
   private function filterWithJoin(array $options): array {
@@ -773,7 +775,7 @@ abstract class AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return array|AbstractModel|null
+   * @return array<TModel>|TModel|null
    * @throws Exception
    */
   public function filter(array $options, bool $single = false): array|AbstractModel|null {
@@ -929,7 +931,7 @@ abstract class AbstractModelFactory {
    *
    * This function deletes the given and also cleans the cache from it.
    * It returns the return of the execute query.
-   * @param $model AbstractModel
+   * @param TModel $model
    * @return bool
    * @throws Exception
    */
