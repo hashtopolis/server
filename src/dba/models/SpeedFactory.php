@@ -36,11 +36,10 @@ class SpeedFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Speed
    */
-  function createObjectFromDict($pk, $dict): Speed {
+  function createObjectFromDict(array $dict): Speed {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

@@ -36,11 +36,10 @@ class HealthCheckFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return HealthCheck
    */
-  function createObjectFromDict($pk, $dict): HealthCheck {
+  function createObjectFromDict(array $dict): HealthCheck {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

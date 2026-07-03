@@ -76,11 +76,10 @@ abstract class AbstractModelFactory {
    *
    * This function is used to get objects from a certain type from db resourcebundle_get_error_message
    *
-   * @param $pk string primary key
    * @param $dict array dict of values and keys
    * @return TModel An object of the factories type
    */
-  abstract function createObjectFromDict(string $pk, array $dict): AbstractModel;
+  abstract function createObjectFromDict(array $dict): AbstractModel;
   
   /**
    * Return the model name in the table, which is the same normally, unless mapping is required. In a mapping case,
@@ -673,7 +672,7 @@ abstract class AbstractModelFactory {
     $stmt->execute(array($pk));
     if ($stmt->rowCount() != 0) {
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
-      return $this->createObjectFromDict($pk, $row);
+      return $this->createObjectFromDict($row);
     }
     else {
       return null;
@@ -764,7 +763,7 @@ abstract class AbstractModelFactory {
       }
       
       foreach ($factories as $factory) {
-        $model = $factory->createObjectFromDict($values[$factory->getModelTable()][strtolower($factory->getNullObject()->getPrimaryKey())], $values[$factory->getModelTable()]);
+        $model = $factory->createObjectFromDict($values[$factory->getModelTable()]);
         $res[$factory->getModelTable()][] = $model;
       }
     }
@@ -812,16 +811,7 @@ abstract class AbstractModelFactory {
     
     // Loop over all entries and create an object from dict for each
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-      $pkName = $this->getNullObject()->getPrimaryKey();
-      
-      if (isset($row[strtolower($pkName)])) {
-        $pk = $row[strtolower($pkName)];
-      }
-      else {
-        $pk = $row[$pkName];
-      }
-      $model = $this->createObjectFromDict($pk, $row);
-      $objects[] = $model;
+      $objects[] = $this->createObjectFromDict($row);
     }
     
     if ($single) {

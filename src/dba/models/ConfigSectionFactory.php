@@ -36,11 +36,10 @@ class ConfigSectionFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return ConfigSection
    */
-  function createObjectFromDict($pk, $dict): ConfigSection {
+  function createObjectFromDict(array $dict): ConfigSection {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

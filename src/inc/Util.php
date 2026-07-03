@@ -227,10 +227,8 @@ class Util {
     
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($row != null) {
-      $pkName = $agentBinaryFactory->getNullObject()->getPrimaryKey();
-      $pk = $row[$pkName];
       $row["binaryType"] = $row["type"];
-      $binary = $agentBinaryFactory->createObjectFromDict($pk, $row);
+      $binary = $agentBinaryFactory->createObjectFromDict($row);
       
       if (Comparator::lessThan($binary->getVersion(), $version)) {
         if (!$silent) {
@@ -1586,7 +1584,7 @@ class Util {
    * @throws Exception
    */
   public static function checkOrCreateInitialObject(AbstractModelFactory $factory, array $data): void {
-    $object = $factory->createObjectFromDict('0', $data);
+    $object = $factory->createObjectFromDict($data);
     $check = $factory->get($object->getId());
     if ($check !== null) {
       return;

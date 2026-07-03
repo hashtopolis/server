@@ -36,11 +36,10 @@ class HashBinaryFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return HashBinary
    */
-  function createObjectFromDict($pk, $dict): HashBinary {
+  function createObjectFromDict(array $dict): HashBinary {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

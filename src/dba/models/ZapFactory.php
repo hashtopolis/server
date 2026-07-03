@@ -36,11 +36,10 @@ class ZapFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Zap
    */
-  function createObjectFromDict($pk, $dict): Zap {
+  function createObjectFromDict(array $dict): Zap {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

@@ -36,11 +36,10 @@ class StoredValueFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return StoredValue
    */
-  function createObjectFromDict($pk, $dict): StoredValue {
+  function createObjectFromDict(array $dict): StoredValue {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

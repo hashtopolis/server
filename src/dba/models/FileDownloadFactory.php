@@ -36,11 +36,10 @@ class FileDownloadFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return FileDownload
    */
-  function createObjectFromDict($pk, $dict): FileDownload {
+  function createObjectFromDict(array $dict): FileDownload {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

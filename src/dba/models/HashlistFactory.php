@@ -36,11 +36,10 @@ class HashlistFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Hashlist
    */
-  function createObjectFromDict($pk, $dict): Hashlist {
+  function createObjectFromDict(array $dict): Hashlist {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

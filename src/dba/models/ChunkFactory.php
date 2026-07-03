@@ -36,11 +36,10 @@ class ChunkFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Chunk
    */
-  function createObjectFromDict($pk, $dict): Chunk {
+  function createObjectFromDict(array $dict): Chunk {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

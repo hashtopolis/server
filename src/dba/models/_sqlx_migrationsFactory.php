@@ -36,11 +36,10 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return _sqlx_migrations
    */
-  function createObjectFromDict($pk, $dict): _sqlx_migrations {
+  function createObjectFromDict(array $dict): _sqlx_migrations {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

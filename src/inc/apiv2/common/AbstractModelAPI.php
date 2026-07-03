@@ -1665,7 +1665,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $relation["junctionTableFilterField"] => $baseItem->getId(),
           $relation["junctionTableJoinField"] => $relationItem->getId(),
         ];
-        $table_entry = $factory->createObjectFromDict(-1, $table_entry_dict);
+        $table_entry = $factory->createObjectFromDict($table_entry_dict);
         $factory->save($table_entry);
       }
       $factory->getDB()->commit();

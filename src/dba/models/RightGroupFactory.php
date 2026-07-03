@@ -36,11 +36,10 @@ class RightGroupFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return RightGroup
    */
-  function createObjectFromDict($pk, $dict): RightGroup {
+  function createObjectFromDict(array $dict): RightGroup {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

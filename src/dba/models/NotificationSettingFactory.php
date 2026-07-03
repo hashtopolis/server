@@ -36,11 +36,10 @@ class NotificationSettingFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return NotificationSetting
    */
-  function createObjectFromDict($pk, $dict): NotificationSetting {
+  function createObjectFromDict(array $dict): NotificationSetting {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

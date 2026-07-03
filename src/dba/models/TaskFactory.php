@@ -36,11 +36,10 @@ class TaskFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Task
    */
-  function createObjectFromDict($pk, $dict): Task {
+  function createObjectFromDict(array $dict): Task {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

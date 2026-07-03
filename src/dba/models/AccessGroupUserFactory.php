@@ -36,11 +36,10 @@ class AccessGroupUserFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return AccessGroupUser
    */
-  function createObjectFromDict($pk, $dict): AccessGroupUser {
+  function createObjectFromDict(array $dict): AccessGroupUser {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

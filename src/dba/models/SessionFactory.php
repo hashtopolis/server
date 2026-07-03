@@ -36,11 +36,10 @@ class SessionFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Session
    */
-  function createObjectFromDict($pk, $dict): Session {
+  function createObjectFromDict(array $dict): Session {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

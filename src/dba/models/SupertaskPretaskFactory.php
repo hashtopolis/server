@@ -36,11 +36,10 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return SupertaskPretask
    */
-  function createObjectFromDict($pk, $dict): SupertaskPretask {
+  function createObjectFromDict(array $dict): SupertaskPretask {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

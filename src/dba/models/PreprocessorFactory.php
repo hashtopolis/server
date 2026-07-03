@@ -36,11 +36,10 @@ class PreprocessorFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Preprocessor
    */
-  function createObjectFromDict($pk, $dict): Preprocessor {
+  function createObjectFromDict(array $dict): Preprocessor {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

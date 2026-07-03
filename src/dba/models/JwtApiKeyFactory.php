@@ -36,11 +36,10 @@ class JwtApiKeyFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return JwtApiKey
    */
-  function createObjectFromDict($pk, $dict): JwtApiKey {
+  function createObjectFromDict(array $dict): JwtApiKey {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

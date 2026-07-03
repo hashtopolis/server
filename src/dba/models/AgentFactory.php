@@ -36,11 +36,10 @@ class AgentFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Agent
    */
-  function createObjectFromDict($pk, $dict): Agent {
+  function createObjectFromDict(array $dict): Agent {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

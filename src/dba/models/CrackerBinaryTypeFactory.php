@@ -36,11 +36,10 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return CrackerBinaryType
    */
-  function createObjectFromDict($pk, $dict): CrackerBinaryType {
+  function createObjectFromDict(array $dict): CrackerBinaryType {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

@@ -36,11 +36,10 @@ class AgentErrorFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return AgentError
    */
-  function createObjectFromDict($pk, $dict): AgentError {
+  function createObjectFromDict(array $dict): AgentError {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

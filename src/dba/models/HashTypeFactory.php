@@ -36,11 +36,10 @@ class HashTypeFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return HashType
    */
-  function createObjectFromDict($pk, $dict): HashType {
+  function createObjectFromDict(array $dict): HashType {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

@@ -36,11 +36,10 @@ class UserFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return User
    */
-  function createObjectFromDict($pk, $dict): User {
+  function createObjectFromDict(array $dict): User {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

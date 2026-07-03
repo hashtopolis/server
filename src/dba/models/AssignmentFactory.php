@@ -36,11 +36,10 @@ class AssignmentFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Assignment
    */
-  function createObjectFromDict($pk, $dict): Assignment {
+  function createObjectFromDict(array $dict): Assignment {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

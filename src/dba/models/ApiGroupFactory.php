@@ -36,11 +36,10 @@ class ApiGroupFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return ApiGroup
    */
-  function createObjectFromDict($pk, $dict): ApiGroup {
+  function createObjectFromDict(array $dict): ApiGroup {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

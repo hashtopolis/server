@@ -36,11 +36,10 @@ class AgentBinaryFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return AgentBinary
    */
-  function createObjectFromDict($pk, $dict): AgentBinary {
+  function createObjectFromDict(array $dict): AgentBinary {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

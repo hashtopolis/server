@@ -36,11 +36,10 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return TaskWrapperDisplay
    */
-  function createObjectFromDict($pk, $dict): TaskWrapperDisplay {
+  function createObjectFromDict(array $dict): TaskWrapperDisplay {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;

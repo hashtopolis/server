@@ -36,11 +36,10 @@ class LogEntryFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return LogEntry
    */
-  function createObjectFromDict($pk, $dict): LogEntry {
+  function createObjectFromDict(array $dict): LogEntry {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;
