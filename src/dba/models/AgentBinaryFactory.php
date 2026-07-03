@@ -89,6 +89,7 @@ class AgentBinaryFactory extends AbstractModelFactory {
 
   /**
    * @param AgentBinary $model
+   * @param-out AgentBinary $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class AgentBinaryFactory extends AbstractModelFactory {
 
   /**
    * @param AgentBinary $model
-   * @param $key string key of the column to update
+   * @param-out AgentBinary $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

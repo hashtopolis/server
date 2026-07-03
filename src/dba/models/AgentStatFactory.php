@@ -89,6 +89,7 @@ class AgentStatFactory extends AbstractModelFactory {
 
   /**
    * @param AgentStat $model
+   * @param-out AgentStat $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class AgentStatFactory extends AbstractModelFactory {
 
   /**
    * @param AgentStat $model
-   * @param $key string key of the column to update
+   * @param-out AgentStat $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

@@ -89,6 +89,7 @@ class FileDownloadFactory extends AbstractModelFactory {
 
   /**
    * @param FileDownload $model
+   * @param-out FileDownload $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class FileDownloadFactory extends AbstractModelFactory {
 
   /**
    * @param FileDownload $model
-   * @param $key string key of the column to update
+   * @param-out FileDownload $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

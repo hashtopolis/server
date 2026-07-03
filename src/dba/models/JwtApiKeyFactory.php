@@ -89,6 +89,7 @@ class JwtApiKeyFactory extends AbstractModelFactory {
 
   /**
    * @param JwtApiKey $model
+   * @param-out JwtApiKey $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class JwtApiKeyFactory extends AbstractModelFactory {
 
   /**
    * @param JwtApiKey $model
-   * @param $key string key of the column to update
+   * @param-out JwtApiKey $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

@@ -89,6 +89,7 @@ class HealthCheckFactory extends AbstractModelFactory {
 
   /**
    * @param HealthCheck $model
+   * @param-out HealthCheck $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class HealthCheckFactory extends AbstractModelFactory {
 
   /**
    * @param HealthCheck $model
-   * @param $key string key of the column to update
+   * @param-out HealthCheck $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

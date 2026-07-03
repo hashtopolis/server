@@ -89,6 +89,7 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
 
   /**
    * @param TaskWrapperDisplay $model
+   * @param-out TaskWrapperDisplay $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
 
   /**
    * @param TaskWrapperDisplay $model
-   * @param $key string key of the column to update
+   * @param-out TaskWrapperDisplay $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

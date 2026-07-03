@@ -89,6 +89,7 @@ class FilePretaskFactory extends AbstractModelFactory {
 
   /**
    * @param FilePretask $model
+   * @param-out FilePretask $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class FilePretaskFactory extends AbstractModelFactory {
 
   /**
    * @param FilePretask $model
-   * @param $key string key of the column to update
+   * @param-out FilePretask $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

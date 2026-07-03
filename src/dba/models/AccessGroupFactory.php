@@ -89,6 +89,7 @@ class AccessGroupFactory extends AbstractModelFactory {
 
   /**
    * @param AccessGroup $model
+   * @param-out AccessGroup $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class AccessGroupFactory extends AbstractModelFactory {
 
   /**
    * @param AccessGroup $model
-   * @param $key string key of the column to update
+   * @param-out AccessGroup $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

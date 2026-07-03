@@ -89,6 +89,7 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
 
   /**
    * @param AccessGroupAgent $model
+   * @param-out AccessGroupAgent $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
 
   /**
    * @param AccessGroupAgent $model
-   * @param $key string key of the column to update
+   * @param-out AccessGroupAgent $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

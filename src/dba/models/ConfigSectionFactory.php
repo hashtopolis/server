@@ -89,6 +89,7 @@ class ConfigSectionFactory extends AbstractModelFactory {
 
   /**
    * @param ConfigSection $model
+   * @param-out ConfigSection $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class ConfigSectionFactory extends AbstractModelFactory {
 
   /**
    * @param ConfigSection $model
-   * @param $key string key of the column to update
+   * @param-out ConfigSection $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

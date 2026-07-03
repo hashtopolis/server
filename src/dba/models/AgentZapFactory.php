@@ -89,6 +89,7 @@ class AgentZapFactory extends AbstractModelFactory {
 
   /**
    * @param AgentZap $model
+   * @param-out AgentZap $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class AgentZapFactory extends AbstractModelFactory {
 
   /**
    * @param AgentZap $model
-   * @param $key string key of the column to update
+   * @param-out AgentZap $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

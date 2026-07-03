@@ -89,6 +89,7 @@ class HashlistHashlistFactory extends AbstractModelFactory {
 
   /**
    * @param HashlistHashlist $model
+   * @param-out HashlistHashlist $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class HashlistHashlistFactory extends AbstractModelFactory {
 
   /**
    * @param HashlistHashlist $model
-   * @param $key string key of the column to update
+   * @param-out HashlistHashlist $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

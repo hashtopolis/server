@@ -89,6 +89,7 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
 
   /**
    * @param __MODEL_NAME__ $model
+   * @param-out __MODEL_NAME__ $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
 
   /**
    * @param __MODEL_NAME__ $model
-   * @param $key string key of the column to update
+   * @param-out __MODEL_NAME__ $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

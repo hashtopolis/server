@@ -89,6 +89,7 @@ class SpeedFactory extends AbstractModelFactory {
 
   /**
    * @param Speed $model
+   * @param-out Speed $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class SpeedFactory extends AbstractModelFactory {
 
   /**
    * @param Speed $model
-   * @param $key string key of the column to update
+   * @param-out Speed $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

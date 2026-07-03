@@ -89,6 +89,7 @@ class RegVoucherFactory extends AbstractModelFactory {
 
   /**
    * @param RegVoucher $model
+   * @param-out RegVoucher $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class RegVoucherFactory extends AbstractModelFactory {
 
   /**
    * @param RegVoucher $model
-   * @param $key string key of the column to update
+   * @param-out RegVoucher $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

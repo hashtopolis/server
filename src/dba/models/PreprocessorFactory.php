@@ -89,6 +89,7 @@ class PreprocessorFactory extends AbstractModelFactory {
 
   /**
    * @param Preprocessor $model
+   * @param-out Preprocessor $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class PreprocessorFactory extends AbstractModelFactory {
 
   /**
    * @param Preprocessor $model
-   * @param $key string key of the column to update
+   * @param-out Preprocessor $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

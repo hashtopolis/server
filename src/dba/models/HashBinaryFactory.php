@@ -89,6 +89,7 @@ class HashBinaryFactory extends AbstractModelFactory {
 
   /**
    * @param HashBinary $model
+   * @param-out HashBinary $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class HashBinaryFactory extends AbstractModelFactory {
 
   /**
    * @param HashBinary $model
-   * @param $key string key of the column to update
+   * @param-out HashBinary $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

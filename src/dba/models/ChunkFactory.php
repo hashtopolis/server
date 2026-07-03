@@ -89,6 +89,7 @@ class ChunkFactory extends AbstractModelFactory {
 
   /**
    * @param Chunk $model
+   * @param-out Chunk $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class ChunkFactory extends AbstractModelFactory {
 
   /**
    * @param Chunk $model
-   * @param $key string key of the column to update
+   * @param-out Chunk $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

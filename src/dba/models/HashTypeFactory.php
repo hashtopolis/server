@@ -89,6 +89,7 @@ class HashTypeFactory extends AbstractModelFactory {
 
   /**
    * @param HashType $model
+   * @param-out HashType $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class HashTypeFactory extends AbstractModelFactory {
 
   /**
    * @param HashType $model
-   * @param $key string key of the column to update
+   * @param-out HashType $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

@@ -89,6 +89,7 @@ class SessionFactory extends AbstractModelFactory {
 
   /**
    * @param Session $model
+   * @param-out Session $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class SessionFactory extends AbstractModelFactory {
 
   /**
    * @param Session $model
-   * @param $key string key of the column to update
+   * @param-out Session $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

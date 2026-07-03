@@ -16,7 +16,7 @@ class AgentFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "Agent";
   }
-  
+
   function isMapping(): bool {
     return False;
   }
@@ -86,9 +86,10 @@ class AgentFactory extends AbstractModelFactory {
   function get($pk): ?Agent {
     return Util::cast(parent::get($pk), Agent::class);
   }
-  
+
   /**
    * @param Agent $model
+   * @param-out Agent $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -99,10 +100,11 @@ class AgentFactory extends AbstractModelFactory {
     assert($model instanceof Agent);
     return $stmt;
   }
-  
+
   /**
    * @param Agent $model
-   * @param $key string key of the column to update
+   * @param-out Agent $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

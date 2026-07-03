@@ -89,6 +89,7 @@ class ApiGroupFactory extends AbstractModelFactory {
 
   /**
    * @param ApiGroup $model
+   * @param-out ApiGroup $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class ApiGroupFactory extends AbstractModelFactory {
 
   /**
    * @param ApiGroup $model
-   * @param $key string key of the column to update
+   * @param-out ApiGroup $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

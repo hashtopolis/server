@@ -89,6 +89,7 @@ class LogEntryFactory extends AbstractModelFactory {
 
   /**
    * @param LogEntry $model
+   * @param-out LogEntry $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class LogEntryFactory extends AbstractModelFactory {
 
   /**
    * @param LogEntry $model
-   * @param $key string key of the column to update
+   * @param-out LogEntry $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

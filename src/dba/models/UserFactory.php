@@ -89,6 +89,7 @@ class UserFactory extends AbstractModelFactory {
 
   /**
    * @param User $model
+   * @param-out User $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class UserFactory extends AbstractModelFactory {
 
   /**
    * @param User $model
-   * @param $key string key of the column to update
+   * @param-out User $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

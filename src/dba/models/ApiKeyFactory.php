@@ -89,6 +89,7 @@ class ApiKeyFactory extends AbstractModelFactory {
 
   /**
    * @param ApiKey $model
+   * @param-out ApiKey $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class ApiKeyFactory extends AbstractModelFactory {
 
   /**
    * @param ApiKey $model
-   * @param $key string key of the column to update
+   * @param-out ApiKey $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

@@ -89,6 +89,7 @@ class SupertaskFactory extends AbstractModelFactory {
 
   /**
    * @param Supertask $model
+   * @param-out Supertask $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class SupertaskFactory extends AbstractModelFactory {
 
   /**
    * @param Supertask $model
-   * @param $key string key of the column to update
+   * @param-out Supertask $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

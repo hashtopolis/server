@@ -89,6 +89,7 @@ class CrackerBinaryFactory extends AbstractModelFactory {
 
   /**
    * @param CrackerBinary $model
+   * @param-out CrackerBinary $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class CrackerBinaryFactory extends AbstractModelFactory {
 
   /**
    * @param CrackerBinary $model
-   * @param $key string key of the column to update
+   * @param-out CrackerBinary $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

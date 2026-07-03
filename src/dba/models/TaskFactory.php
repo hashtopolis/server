@@ -89,6 +89,7 @@ class TaskFactory extends AbstractModelFactory {
 
   /**
    * @param Task $model
+   * @param-out Task $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class TaskFactory extends AbstractModelFactory {
 
   /**
    * @param Task $model
-   * @param $key string key of the column to update
+   * @param-out Task $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

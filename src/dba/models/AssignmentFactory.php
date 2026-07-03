@@ -89,6 +89,7 @@ class AssignmentFactory extends AbstractModelFactory {
 
   /**
    * @param Assignment $model
+   * @param-out Assignment $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class AssignmentFactory extends AbstractModelFactory {
 
   /**
    * @param Assignment $model
-   * @param $key string key of the column to update
+   * @param-out Assignment $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

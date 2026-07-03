@@ -89,6 +89,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
 
   /**
    * @param NotificationSetting $model
+   * @param-out NotificationSetting $model
    * @param array $arr
    * @return PDOStatement
    * @throws Exception
@@ -102,7 +103,8 @@ class NotificationSettingFactory extends AbstractModelFactory {
 
   /**
    * @param NotificationSetting $model
-   * @param $key string key of the column to update
+   * @param-out NotificationSetting $model
+   * @param string $key key of the column to update
    * @param $value
    * @return PDOStatement
    * @throws Exception

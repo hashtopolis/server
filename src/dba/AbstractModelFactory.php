@@ -312,7 +312,9 @@ abstract class AbstractModelFactory {
     $stmt = $this->getDB()->prepare($query);
     $stmt->execute($values);
     
-    $model = $this->get($model->getPrimaryKeyValue());
+    $refreshed = $this->get($model->getPrimaryKeyValue());
+    assert($refreshed instanceof AbstractModel);
+    $model = $refreshed;
     return $stmt;
   }
   
@@ -337,7 +339,9 @@ abstract class AbstractModelFactory {
     $stmt = $this->getDB()->prepare($query);
     $stmt->execute($values);
     
-    $model = $this->get($model->getPrimaryKeyValue());
+    $refreshed = $this->get($model->getPrimaryKeyValue());
+    assert($refreshed instanceof AbstractModel);
+    $model = $refreshed;
     return $stmt;
   }
   
@@ -367,7 +371,9 @@ abstract class AbstractModelFactory {
     $stmt = $this->getDB()->prepare($query);
     $stmt->execute($values);
     
-    $model = $this->get($model->getPrimaryKeyValue());
+    $refreshed = $this->get($model->getPrimaryKeyValue());
+    assert($refreshed instanceof AbstractModel);
+    $model = $refreshed;
     return $stmt;
   }
   
@@ -397,7 +403,9 @@ abstract class AbstractModelFactory {
     $stmt = $this->getDB()->prepare($query);
     $stmt->execute($values);
     
-    $model = $this->get($model->getPrimaryKeyValue());
+    $refreshed = $this->get($model->getPrimaryKeyValue());
+    assert($refreshed instanceof AbstractModel);
+    $model = $refreshed;
     return $stmt;
   }
   
@@ -700,7 +708,7 @@ abstract class AbstractModelFactory {
    * $options[Factory::JOIN] is an array of JoinFilter options
    *
    * @param $options array containing option settings
-   * @return AbstractModel[] Returns a list of matching objects
+   * @return AbstractModel[]|array Returns a list of matching objects
    * @throws Exception
    */
   private function filterWithJoin(array $options): array {
@@ -930,21 +938,6 @@ abstract class AbstractModelFactory {
    */
   private function applyLimit($limit): string {
     return " LIMIT " . $limit->getQueryString($this);
-  }
-  
-  /**
-   * @param $groups
-   * @return string
-   */
-  private function applyGroups($groups): string {
-    $groupsQueries = array();
-    if (!is_array($groups)) {
-      $groups = array($groups);
-    }
-    foreach ($groups as $group) {
-      $groupsQueries[] = $group->getQueryString($this, true);
-    }
-    return " GROUP BY " . implode(", ", $groupsQueries);
   }
   
   /**
