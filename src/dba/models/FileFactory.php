@@ -105,4 +105,15 @@ class FileFactory extends AbstractModelFactory {
   function mset($model, array $arr): File {
     return Util::cast(parent::mset($model, $arr), File::class);
   }
+
+  /**
+   * @param File $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return File
+   * @throws Exception
+   */
+  function set($model, string $key, $value): File {
+    return Util::cast(parent::set($model, $key, $value), File::class);
+  }
 }

@@ -105,4 +105,15 @@ class AccessGroupFactory extends AbstractModelFactory {
   function mset($model, array $arr): AccessGroup {
     return Util::cast(parent::mset($model, $arr), AccessGroup::class);
   }
+
+  /**
+   * @param AccessGroup $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return AccessGroup
+   * @throws Exception
+   */
+  function set($model, string $key, $value): AccessGroup {
+    return Util::cast(parent::set($model, $key, $value), AccessGroup::class);
+  }
 }

@@ -105,4 +105,15 @@ class HashBinaryFactory extends AbstractModelFactory {
   function mset($model, array $arr): HashBinary {
     return Util::cast(parent::mset($model, $arr), HashBinary::class);
   }
+
+  /**
+   * @param HashBinary $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return HashBinary
+   * @throws Exception
+   */
+  function set($model, string $key, $value): HashBinary {
+    return Util::cast(parent::set($model, $key, $value), HashBinary::class);
+  }
 }

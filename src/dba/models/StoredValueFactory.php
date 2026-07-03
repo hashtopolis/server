@@ -105,4 +105,15 @@ class StoredValueFactory extends AbstractModelFactory {
   function mset($model, array $arr): StoredValue {
     return Util::cast(parent::mset($model, $arr), StoredValue::class);
   }
+
+  /**
+   * @param StoredValue $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return StoredValue
+   * @throws Exception
+   */
+  function set($model, string $key, $value): StoredValue {
+    return Util::cast(parent::set($model, $key, $value), StoredValue::class);
+  }
 }

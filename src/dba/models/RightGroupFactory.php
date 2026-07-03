@@ -105,4 +105,15 @@ class RightGroupFactory extends AbstractModelFactory {
   function mset($model, array $arr): RightGroup {
     return Util::cast(parent::mset($model, $arr), RightGroup::class);
   }
+
+  /**
+   * @param RightGroup $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return RightGroup
+   * @throws Exception
+   */
+  function set($model, string $key, $value): RightGroup {
+    return Util::cast(parent::set($model, $key, $value), RightGroup::class);
+  }
 }

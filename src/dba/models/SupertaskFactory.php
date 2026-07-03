@@ -105,4 +105,15 @@ class SupertaskFactory extends AbstractModelFactory {
   function mset($model, array $arr): Supertask {
     return Util::cast(parent::mset($model, $arr), Supertask::class);
   }
+
+  /**
+   * @param Supertask $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Supertask
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Supertask {
+    return Util::cast(parent::set($model, $key, $value), Supertask::class);
+  }
 }

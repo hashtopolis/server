@@ -106,4 +106,15 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
   function mset($model, array $arr): HealthCheckAgent {
     return Util::cast(parent::mset($model, $arr), HealthCheckAgent::class);
   }
+
+  /**
+   * @param HealthCheckAgent $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return HealthCheckAgent
+   * @throws Exception
+   */
+  function set($model, string $key, $value): HealthCheckAgent {
+    return Util::cast(parent::set($model, $key, $value), HealthCheckAgent::class);
+  }
 }

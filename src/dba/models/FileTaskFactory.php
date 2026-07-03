@@ -105,4 +105,15 @@ class FileTaskFactory extends AbstractModelFactory {
   function mset($model, array $arr): FileTask {
     return Util::cast(parent::mset($model, $arr), FileTask::class);
   }
+
+  /**
+   * @param FileTask $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return FileTask
+   * @throws Exception
+   */
+  function set($model, string $key, $value): FileTask {
+    return Util::cast(parent::set($model, $key, $value), FileTask::class);
+  }
 }

@@ -105,4 +105,15 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
   function mset($model, array $arr): __MODEL_NAME__ {
     return Util::cast(parent::mset($model, $arr), __MODEL_NAME__::class);
   }
+
+  /**
+   * @param __MODEL_NAME__ $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return __MODEL_NAME__
+   * @throws Exception
+   */
+  function set($model, string $key, $value): __MODEL_NAME__ {
+    return Util::cast(parent::set($model, $key, $value), __MODEL_NAME__::class);
+  }
 }

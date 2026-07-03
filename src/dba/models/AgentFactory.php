@@ -105,4 +105,15 @@ class AgentFactory extends AbstractModelFactory {
   function mset($model, array $arr): Agent {
     return Util::cast(parent::mset($model, $arr), Agent::class);
   }
+
+  /**
+   * @param Agent $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Agent
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Agent {
+    return Util::cast(parent::set($model, $key, $value), Agent::class);
+  }
 }

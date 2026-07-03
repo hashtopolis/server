@@ -105,4 +105,15 @@ class AgentZapFactory extends AbstractModelFactory {
   function mset($model, array $arr): AgentZap {
     return Util::cast(parent::mset($model, $arr), AgentZap::class);
   }
+
+  /**
+   * @param AgentZap $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return AgentZap
+   * @throws Exception
+   */
+  function set($model, string $key, $value): AgentZap {
+    return Util::cast(parent::set($model, $key, $value), AgentZap::class);
+  }
 }

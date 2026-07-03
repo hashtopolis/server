@@ -105,4 +105,15 @@ class PreprocessorFactory extends AbstractModelFactory {
   function mset($model, array $arr): Preprocessor {
     return Util::cast(parent::mset($model, $arr), Preprocessor::class);
   }
+
+  /**
+   * @param Preprocessor $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Preprocessor
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Preprocessor {
+    return Util::cast(parent::set($model, $key, $value), Preprocessor::class);
+  }
 }

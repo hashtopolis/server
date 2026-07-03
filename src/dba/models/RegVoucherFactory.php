@@ -105,4 +105,15 @@ class RegVoucherFactory extends AbstractModelFactory {
   function mset($model, array $arr): RegVoucher {
     return Util::cast(parent::mset($model, $arr), RegVoucher::class);
   }
+
+  /**
+   * @param RegVoucher $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return RegVoucher
+   * @throws Exception
+   */
+  function set($model, string $key, $value): RegVoucher {
+    return Util::cast(parent::set($model, $key, $value), RegVoucher::class);
+  }
 }

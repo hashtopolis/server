@@ -105,4 +105,15 @@ class HashlistFactory extends AbstractModelFactory {
   function mset($model, array $arr): Hashlist {
     return Util::cast(parent::mset($model, $arr), Hashlist::class);
   }
+
+  /**
+   * @param Hashlist $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Hashlist
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Hashlist {
+    return Util::cast(parent::set($model, $key, $value), Hashlist::class);
+  }
 }

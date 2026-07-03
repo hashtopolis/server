@@ -110,4 +110,15 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
   function mset($model, array $arr): _sqlx_migrations {
     return Util::cast(parent::mset($model, $arr), _sqlx_migrations::class);
   }
+
+  /**
+   * @param _sqlx_migrations $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return _sqlx_migrations
+   * @throws Exception
+   */
+  function set($model, string $key, $value): _sqlx_migrations {
+    return Util::cast(parent::set($model, $key, $value), _sqlx_migrations::class);
+  }
 }

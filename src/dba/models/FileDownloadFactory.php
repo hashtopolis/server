@@ -105,4 +105,15 @@ class FileDownloadFactory extends AbstractModelFactory {
   function mset($model, array $arr): FileDownload {
     return Util::cast(parent::mset($model, $arr), FileDownload::class);
   }
+
+  /**
+   * @param FileDownload $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return FileDownload
+   * @throws Exception
+   */
+  function set($model, string $key, $value): FileDownload {
+    return Util::cast(parent::set($model, $key, $value), FileDownload::class);
+  }
 }

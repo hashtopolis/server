@@ -105,4 +105,15 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   function mset($model, array $arr): TaskDebugOutput {
     return Util::cast(parent::mset($model, $arr), TaskDebugOutput::class);
   }
+
+  /**
+   * @param TaskDebugOutput $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return TaskDebugOutput
+   * @throws Exception
+   */
+  function set($model, string $key, $value): TaskDebugOutput {
+    return Util::cast(parent::set($model, $key, $value), TaskDebugOutput::class);
+  }
 }

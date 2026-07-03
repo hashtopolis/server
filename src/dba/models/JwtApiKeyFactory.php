@@ -105,4 +105,15 @@ class JwtApiKeyFactory extends AbstractModelFactory {
   function mset($model, array $arr): JwtApiKey {
     return Util::cast(parent::mset($model, $arr), JwtApiKey::class);
   }
+
+  /**
+   * @param JwtApiKey $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return JwtApiKey
+   * @throws Exception
+   */
+  function set($model, string $key, $value): JwtApiKey {
+    return Util::cast(parent::set($model, $key, $value), JwtApiKey::class);
+  }
 }

@@ -105,4 +105,15 @@ class FileDeleteFactory extends AbstractModelFactory {
   function mset($model, array $arr): FileDelete {
     return Util::cast(parent::mset($model, $arr), FileDelete::class);
   }
+
+  /**
+   * @param FileDelete $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return FileDelete
+   * @throws Exception
+   */
+  function set($model, string $key, $value): FileDelete {
+    return Util::cast(parent::set($model, $key, $value), FileDelete::class);
+  }
 }

@@ -105,4 +105,15 @@ class ChunkFactory extends AbstractModelFactory {
   function mset($model, array $arr): Chunk {
     return Util::cast(parent::mset($model, $arr), Chunk::class);
   }
+
+  /**
+   * @param Chunk $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Chunk
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Chunk {
+    return Util::cast(parent::set($model, $key, $value), Chunk::class);
+  }
 }

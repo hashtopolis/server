@@ -105,4 +105,15 @@ class SpeedFactory extends AbstractModelFactory {
   function mset($model, array $arr): Speed {
     return Util::cast(parent::mset($model, $arr), Speed::class);
   }
+
+  /**
+   * @param Speed $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Speed
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Speed {
+    return Util::cast(parent::set($model, $key, $value), Speed::class);
+  }
 }

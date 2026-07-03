@@ -105,4 +105,15 @@ class TaskWrapperFactory extends AbstractModelFactory {
   function mset($model, array $arr): TaskWrapper {
     return Util::cast(parent::mset($model, $arr), TaskWrapper::class);
   }
+
+  /**
+   * @param TaskWrapper $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return TaskWrapper
+   * @throws Exception
+   */
+  function set($model, string $key, $value): TaskWrapper {
+    return Util::cast(parent::set($model, $key, $value), TaskWrapper::class);
+  }
 }

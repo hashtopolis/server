@@ -105,4 +105,15 @@ class LogEntryFactory extends AbstractModelFactory {
   function mset($model, array $arr): LogEntry {
     return Util::cast(parent::mset($model, $arr), LogEntry::class);
   }
+
+  /**
+   * @param LogEntry $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return LogEntry
+   * @throws Exception
+   */
+  function set($model, string $key, $value): LogEntry {
+    return Util::cast(parent::set($model, $key, $value), LogEntry::class);
+  }
 }

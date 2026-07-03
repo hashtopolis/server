@@ -105,4 +105,15 @@ class SessionFactory extends AbstractModelFactory {
   function mset($model, array $arr): Session {
     return Util::cast(parent::mset($model, $arr), Session::class);
   }
+
+  /**
+   * @param Session $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Session
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Session {
+    return Util::cast(parent::set($model, $key, $value), Session::class);
+  }
 }

@@ -105,4 +105,15 @@ class ApiGroupFactory extends AbstractModelFactory {
   function mset($model, array $arr): ApiGroup {
     return Util::cast(parent::mset($model, $arr), ApiGroup::class);
   }
+
+  /**
+   * @param ApiGroup $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return ApiGroup
+   * @throws Exception
+   */
+  function set($model, string $key, $value): ApiGroup {
+    return Util::cast(parent::set($model, $key, $value), ApiGroup::class);
+  }
 }

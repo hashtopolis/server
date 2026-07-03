@@ -105,4 +105,15 @@ class AgentBinaryFactory extends AbstractModelFactory {
   function mset($model, array $arr): AgentBinary {
     return Util::cast(parent::mset($model, $arr), AgentBinary::class);
   }
+
+  /**
+   * @param AgentBinary $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return AgentBinary
+   * @throws Exception
+   */
+  function set($model, string $key, $value): AgentBinary {
+    return Util::cast(parent::set($model, $key, $value), AgentBinary::class);
+  }
 }

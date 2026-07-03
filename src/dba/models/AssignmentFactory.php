@@ -105,4 +105,15 @@ class AssignmentFactory extends AbstractModelFactory {
   function mset($model, array $arr): Assignment {
     return Util::cast(parent::mset($model, $arr), Assignment::class);
   }
+
+  /**
+   * @param Assignment $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Assignment
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Assignment {
+    return Util::cast(parent::set($model, $key, $value), Assignment::class);
+  }
 }

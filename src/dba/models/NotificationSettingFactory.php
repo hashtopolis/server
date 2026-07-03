@@ -105,4 +105,15 @@ class NotificationSettingFactory extends AbstractModelFactory {
   function mset($model, array $arr): NotificationSetting {
     return Util::cast(parent::mset($model, $arr), NotificationSetting::class);
   }
+
+  /**
+   * @param NotificationSetting $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return NotificationSetting
+   * @throws Exception
+   */
+  function set($model, string $key, $value): NotificationSetting {
+    return Util::cast(parent::set($model, $key, $value), NotificationSetting::class);
+  }
 }

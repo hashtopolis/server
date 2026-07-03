@@ -105,4 +105,15 @@ class ZapFactory extends AbstractModelFactory {
   function mset($model, array $arr): Zap {
     return Util::cast(parent::mset($model, $arr), Zap::class);
   }
+
+  /**
+   * @param Zap $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Zap
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Zap {
+    return Util::cast(parent::set($model, $key, $value), Zap::class);
+  }
 }

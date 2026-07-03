@@ -105,4 +105,15 @@ class AgentErrorFactory extends AbstractModelFactory {
   function mset($model, array $arr): AgentError {
     return Util::cast(parent::mset($model, $arr), AgentError::class);
   }
+
+  /**
+   * @param AgentError $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return AgentError
+   * @throws Exception
+   */
+  function set($model, string $key, $value): AgentError {
+    return Util::cast(parent::set($model, $key, $value), AgentError::class);
+  }
 }

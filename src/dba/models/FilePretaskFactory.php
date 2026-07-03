@@ -105,4 +105,15 @@ class FilePretaskFactory extends AbstractModelFactory {
   function mset($model, array $arr): FilePretask {
     return Util::cast(parent::mset($model, $arr), FilePretask::class);
   }
+
+  /**
+   * @param FilePretask $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return FilePretask
+   * @throws Exception
+   */
+  function set($model, string $key, $value): FilePretask {
+    return Util::cast(parent::set($model, $key, $value), FilePretask::class);
+  }
 }

@@ -105,4 +105,15 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
   function mset($model, array $arr): TaskWrapperDisplay {
     return Util::cast(parent::mset($model, $arr), TaskWrapperDisplay::class);
   }
+
+  /**
+   * @param TaskWrapperDisplay $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return TaskWrapperDisplay
+   * @throws Exception
+   */
+  function set($model, string $key, $value): TaskWrapperDisplay {
+    return Util::cast(parent::set($model, $key, $value), TaskWrapperDisplay::class);
+  }
 }

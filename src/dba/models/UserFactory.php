@@ -105,4 +105,15 @@ class UserFactory extends AbstractModelFactory {
   function mset($model, array $arr): User {
     return Util::cast(parent::mset($model, $arr), User::class);
   }
+
+  /**
+   * @param User $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return User
+   * @throws Exception
+   */
+  function set($model, string $key, $value): User {
+    return Util::cast(parent::set($model, $key, $value), User::class);
+  }
 }

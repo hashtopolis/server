@@ -16,7 +16,7 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "AccessGroupAgent";
   }
-  
+
   function isMapping(): bool {
     return False;
   }
@@ -95,7 +95,7 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
   function save($model): AccessGroupAgent {
     return Util::cast(parent::save($model), AccessGroupAgent::class);
   }
-  
+
   /**
    * @param AccessGroupAgent $model
    * @param array $arr key-value associations for update
@@ -104,5 +104,16 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
    */
   function mset($model, array $arr): AccessGroupAgent {
     return Util::cast(parent::mset($model, $arr), AccessGroupAgent::class);
+  }
+
+  /**
+   * @param AccessGroupAgent $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return AccessGroupAgent
+   * @throws Exception
+   */
+  function set($model, string $key, $value): AccessGroupAgent {
+    return Util::cast(parent::set($model, $key, $value), AccessGroupAgent::class);
   }
 }

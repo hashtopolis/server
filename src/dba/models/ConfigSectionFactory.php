@@ -105,4 +105,15 @@ class ConfigSectionFactory extends AbstractModelFactory {
   function mset($model, array $arr): ConfigSection {
     return Util::cast(parent::mset($model, $arr), ConfigSection::class);
   }
+
+  /**
+   * @param ConfigSection $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return ConfigSection
+   * @throws Exception
+   */
+  function set($model, string $key, $value): ConfigSection {
+    return Util::cast(parent::set($model, $key, $value), ConfigSection::class);
+  }
 }

@@ -105,4 +105,15 @@ class TaskFactory extends AbstractModelFactory {
   function mset($model, array $arr): Task {
     return Util::cast(parent::mset($model, $arr), Task::class);
   }
+
+  /**
+   * @param Task $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Task
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Task {
+    return Util::cast(parent::set($model, $key, $value), Task::class);
+  }
 }

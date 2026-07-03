@@ -105,4 +105,15 @@ class HashFactory extends AbstractModelFactory {
   function mset($model, array $arr): Hash {
     return Util::cast(parent::mset($model, $arr), Hash::class);
   }
+
+  /**
+   * @param Hash $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Hash
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Hash {
+    return Util::cast(parent::set($model, $key, $value), Hash::class);
+  }
 }
