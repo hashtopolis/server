@@ -89,10 +89,10 @@ class HashBinaryFactory extends AbstractModelFactory {
   
   /**
    * @param HashBinary $model
-   * @return HashBinary
+   * @return ?HashBinary
    * @throws Exception
    */
-  function save($model): HashBinary {
+  function save($model): ?HashBinary {
     return Util::cast(parent::save($model), HashBinary::class);
   }
 

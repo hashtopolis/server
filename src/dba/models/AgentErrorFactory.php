@@ -89,10 +89,10 @@ class AgentErrorFactory extends AbstractModelFactory {
   
   /**
    * @param AgentError $model
-   * @return AgentError
+   * @return ?AgentError
    * @throws Exception
    */
-  function save($model): AgentError {
+  function save($model): ?AgentError {
     return Util::cast(parent::save($model), AgentError::class);
   }
 

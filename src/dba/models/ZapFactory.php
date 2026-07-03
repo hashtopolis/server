@@ -89,10 +89,10 @@ class ZapFactory extends AbstractModelFactory {
   
   /**
    * @param Zap $model
-   * @return Zap
+   * @return ?Zap
    * @throws Exception
    */
-  function save($model): Zap {
+  function save($model): ?Zap {
     return Util::cast(parent::save($model), Zap::class);
   }
 

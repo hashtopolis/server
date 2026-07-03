@@ -89,10 +89,10 @@ class FileDownloadFactory extends AbstractModelFactory {
   
   /**
    * @param FileDownload $model
-   * @return FileDownload
+   * @return ?FileDownload
    * @throws Exception
    */
-  function save($model): FileDownload {
+  function save($model): ?FileDownload {
     return Util::cast(parent::save($model), FileDownload::class);
   }
 

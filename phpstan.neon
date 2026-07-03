@@ -1,14 +1,12 @@
 parameters:
     paths:
         - src/inc/apiv2
-        - ci/phpunit
-        - src/dba
-        - src/inc/api
-    level: 4
-    treatPhpDocTypesAsCertain: false 
-    scanDirectories:
         - src/dba
         - src/inc
+        - ci/phpunit
+    level: 4
+    treatPhpDocTypesAsCertain: false
     excludePaths:
-        # Exclude the DBA tests due PHPStan doing weird complaints
-        - ci/phpunit/dba/AbstractModelFactoryTest.php
+        # this is deprecated/legacy and will not be touched until remove
+        - src/inc/Auth_Yubico.php
+        - src/inc/Login.php

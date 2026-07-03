@@ -89,10 +89,10 @@ class LogEntryFactory extends AbstractModelFactory {
   
   /**
    * @param LogEntry $model
-   * @return LogEntry
+   * @return ?LogEntry
    * @throws Exception
    */
-  function save($model): LogEntry {
+  function save($model): ?LogEntry {
     return Util::cast(parent::save($model), LogEntry::class);
   }
 

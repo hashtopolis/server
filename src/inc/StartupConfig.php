@@ -149,6 +149,7 @@ class StartupConfig {
     
     // this is either an existing setup, or a new setup without docker
     include(dirname(__FILE__) . "/conf.php");
+    /** @var array{user: string, pass: string, db: string, server: string, port: string} $CONN */
     
     // check if directories is set, otherwise set the defaults for it
     if (!isset($DIRECTORIES)) {

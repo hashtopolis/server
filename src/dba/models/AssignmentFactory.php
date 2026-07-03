@@ -89,10 +89,10 @@ class AssignmentFactory extends AbstractModelFactory {
   
   /**
    * @param Assignment $model
-   * @return Assignment
+   * @return ?Assignment
    * @throws Exception
    */
-  function save($model): Assignment {
+  function save($model): ?Assignment {
     return Util::cast(parent::save($model), Assignment::class);
   }
 

@@ -143,7 +143,7 @@ class Util {
     
     $first = $entries[0]->getTime();
     foreach ($entries as $entry) {
-      $pos = $limit - 1 - floor(($first - $entry->getTime()) / $delta);
+      $pos = intval($limit - 1 - floor(($first - $entry->getTime()) / $delta));
       if ($pos < 0) {
         continue; // too old entry
       }
@@ -155,7 +155,7 @@ class Util {
     }
     
     // prepare with timestamps
-    $first = round($first, -log10($delta));
+    $first = intval(round($first, -log10($delta)));
     $timestampData = [];
     foreach ($data as $key => $val) {
       $timestampData[$first - ($limit - 1 - $key) * $delta] = $val;
@@ -484,7 +484,7 @@ class Util {
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", Factory::getFileTaskFactory());
     $jF = new JoinFilter(Factory::getFileTaskFactory(), FileTask::FILE_ID, File::FILE_ID);
     $joinedFiles = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $files File[] */
+    /** @var File[] $files */
     $files = $joinedFiles[Factory::getFileFactory()->getModelName()];
     $sizeFiles = 0;
     $fileSecret = false;
@@ -528,7 +528,7 @@ class Util {
     $qF = new QueryFilter(AccessGroupUser::USER_ID, $userId, "=", Factory::getAccessGroupUserFactory());
     $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $accessGroups AccessGroup[] */
+    /** @var AccessGroup[] $accessGroups */
     $accessGroups = $joined[Factory::getAccessGroupFactory()->getModelName()];
     return Util::arrayOfIds($accessGroups);
   }
@@ -929,7 +929,7 @@ class Util {
   public static function getUsernameById($id) {
     $user = Factory::getUserFactory()->get($id);
     if ($user === null) {
-      return "Unknown" . (strlen($id) > 0) ? "-$id" : "";
+      return "Unknown" . ((strlen("" . $id) > 0) ? "-$id" : "");
     }
     return $user->getUsername();
   }

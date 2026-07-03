@@ -89,10 +89,10 @@ class ApiKeyFactory extends AbstractModelFactory {
   
   /**
    * @param ApiKey $model
-   * @return ApiKey
+   * @return ?ApiKey
    * @throws Exception
    */
-  function save($model): ApiKey {
+  function save($model): ?ApiKey {
     return Util::cast(parent::save($model), ApiKey::class);
   }
 

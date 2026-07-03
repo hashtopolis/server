@@ -89,10 +89,10 @@ class ConfigFactory extends AbstractModelFactory {
   
   /**
    * @param Config $model
-   * @return Config
+   * @return ?Config
    * @throws Exception
    */
-  function save($model): Config {
+  function save($model): ?Config {
     return Util::cast(parent::save($model), Config::class);
   }
 

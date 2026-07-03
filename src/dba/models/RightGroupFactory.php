@@ -89,10 +89,10 @@ class RightGroupFactory extends AbstractModelFactory {
   
   /**
    * @param RightGroup $model
-   * @return RightGroup
+   * @return ?RightGroup
    * @throws Exception
    */
-  function save($model): RightGroup {
+  function save($model): ?RightGroup {
     return Util::cast(parent::save($model), RightGroup::class);
   }
 

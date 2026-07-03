@@ -89,10 +89,10 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
   
   /**
    * @param TaskWrapperDisplay $model
-   * @return TaskWrapperDisplay
+   * @return ?TaskWrapperDisplay
    * @throws Exception
    */
-  function save($model): TaskWrapperDisplay {
+  function save($model): ?TaskWrapperDisplay {
     return Util::cast(parent::save($model), TaskWrapperDisplay::class);
   }
 

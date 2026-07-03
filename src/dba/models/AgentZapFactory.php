@@ -89,10 +89,10 @@ class AgentZapFactory extends AbstractModelFactory {
   
   /**
    * @param AgentZap $model
-   * @return AgentZap
+   * @return ?AgentZap
    * @throws Exception
    */
-  function save($model): AgentZap {
+  function save($model): ?AgentZap {
     return Util::cast(parent::save($model), AgentZap::class);
   }
 

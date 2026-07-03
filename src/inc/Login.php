@@ -15,6 +15,7 @@ use Hashtopolis\inc\defines\DPayloadKeys;
 use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
+use function PHPUnit\Framework\assertNotNull;
 
 /**
  * Handles the login sessions
@@ -24,8 +25,7 @@ use Hashtopolis\inc\Util;
 class Login {
   private $user  = null;
   private $valid = false;
-  /** @var Session $session */
-  private $session = null;
+  private ?Session $session = null;
   
   private static $instance = null;
   
@@ -85,6 +85,7 @@ class Login {
    * Logs the current user out and closes his session
    */
   public function logout() {
+    assertNotNull($this->session);
     Factory::getSessionFactory()->set($this->session, Session::IS_OPEN, 0);
     $this->session = null;
     $this->user = null;

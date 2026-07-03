@@ -89,10 +89,10 @@ class AccessGroupUserFactory extends AbstractModelFactory {
   
   /**
    * @param AccessGroupUser $model
-   * @return AccessGroupUser
+   * @return ?AccessGroupUser
    * @throws Exception
    */
-  function save($model): AccessGroupUser {
+  function save($model): ?AccessGroupUser {
     return Util::cast(parent::save($model), AccessGroupUser::class);
   }
 

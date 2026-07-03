@@ -89,10 +89,10 @@ class ConfigSectionFactory extends AbstractModelFactory {
   
   /**
    * @param ConfigSection $model
-   * @return ConfigSection
+   * @return ?ConfigSection
    * @throws Exception
    */
-  function save($model): ConfigSection {
+  function save($model): ?ConfigSection {
     return Util::cast(parent::save($model), ConfigSection::class);
   }
 

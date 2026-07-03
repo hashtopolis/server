@@ -89,10 +89,10 @@ class RegVoucherFactory extends AbstractModelFactory {
   
   /**
    * @param RegVoucher $model
-   * @return RegVoucher
+   * @return ?RegVoucher
    * @throws Exception
    */
-  function save($model): RegVoucher {
+  function save($model): ?RegVoucher {
     return Util::cast(parent::save($model), RegVoucher::class);
   }
 

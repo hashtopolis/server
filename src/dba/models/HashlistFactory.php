@@ -89,10 +89,10 @@ class HashlistFactory extends AbstractModelFactory {
   
   /**
    * @param Hashlist $model
-   * @return Hashlist
+   * @return ?Hashlist
    * @throws Exception
    */
-  function save($model): Hashlist {
+  function save($model): ?Hashlist {
     return Util::cast(parent::save($model), Hashlist::class);
   }
 

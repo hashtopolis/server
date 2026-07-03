@@ -90,10 +90,10 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
   
   /**
    * @param HealthCheckAgent $model
-   * @return HealthCheckAgent
+   * @return ?HealthCheckAgent
    * @throws Exception
    */
-  function save($model): HealthCheckAgent {
+  function save($model): ?HealthCheckAgent {
     return Util::cast(parent::save($model), HealthCheckAgent::class);
   }
 

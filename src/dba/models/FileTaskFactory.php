@@ -89,10 +89,10 @@ class FileTaskFactory extends AbstractModelFactory {
   
   /**
    * @param FileTask $model
-   * @return FileTask
+   * @return ?FileTask
    * @throws Exception
    */
-  function save($model): FileTask {
+  function save($model): ?FileTask {
     return Util::cast(parent::save($model), FileTask::class);
   }
 

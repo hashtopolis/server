@@ -89,10 +89,10 @@ class JwtApiKeyFactory extends AbstractModelFactory {
   
   /**
    * @param JwtApiKey $model
-   * @return JwtApiKey
+   * @return ?JwtApiKey
    * @throws Exception
    */
-  function save($model): JwtApiKey {
+  function save($model): ?JwtApiKey {
     return Util::cast(parent::save($model), JwtApiKey::class);
   }
 

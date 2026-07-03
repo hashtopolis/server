@@ -89,10 +89,10 @@ class ChunkFactory extends AbstractModelFactory {
   
   /**
    * @param Chunk $model
-   * @return Chunk
+   * @return ?Chunk
    * @throws Exception
    */
-  function save($model): Chunk {
+  function save($model): ?Chunk {
     return Util::cast(parent::save($model), Chunk::class);
   }
 

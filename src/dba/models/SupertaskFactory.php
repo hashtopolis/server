@@ -89,10 +89,10 @@ class SupertaskFactory extends AbstractModelFactory {
   
   /**
    * @param Supertask $model
-   * @return Supertask
+   * @return ?Supertask
    * @throws Exception
    */
-  function save($model): Supertask {
+  function save($model): ?Supertask {
     return Util::cast(parent::save($model), Supertask::class);
   }
 

@@ -89,10 +89,10 @@ class HashTypeFactory extends AbstractModelFactory {
   
   /**
    * @param HashType $model
-   * @return HashType
+   * @return ?HashType
    * @throws Exception
    */
-  function save($model): HashType {
+  function save($model): ?HashType {
     return Util::cast(parent::save($model), HashType::class);
   }
 

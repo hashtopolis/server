@@ -89,10 +89,10 @@ class FileDeleteFactory extends AbstractModelFactory {
   
   /**
    * @param FileDelete $model
-   * @return FileDelete
+   * @return ?FileDelete
    * @throws Exception
    */
-  function save($model): FileDelete {
+  function save($model): ?FileDelete {
     return Util::cast(parent::save($model), FileDelete::class);
   }
 

@@ -89,10 +89,10 @@ class SpeedFactory extends AbstractModelFactory {
   
   /**
    * @param Speed $model
-   * @return Speed
+   * @return ?Speed
    * @throws Exception
    */
-  function save($model): Speed {
+  function save($model): ?Speed {
     return Util::cast(parent::save($model), Speed::class);
   }
 

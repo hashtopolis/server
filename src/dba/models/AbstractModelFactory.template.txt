@@ -89,10 +89,10 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
   
   /**
    * @param __MODEL_NAME__ $model
-   * @return __MODEL_NAME__
+   * @return ?__MODEL_NAME__
    * @throws Exception
    */
-  function save($model): __MODEL_NAME__ {
+  function save($model): ?__MODEL_NAME__ {
     return Util::cast(parent::save($model), __MODEL_NAME__::class);
   }
 

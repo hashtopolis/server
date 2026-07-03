@@ -94,10 +94,10 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
   
   /**
    * @param _sqlx_migrations $model
-   * @return _sqlx_migrations
+   * @return ?_sqlx_migrations
    * @throws Exception
    */
-  function save($model): _sqlx_migrations {
+  function save($model): ?_sqlx_migrations {
     return Util::cast(parent::save($model), _sqlx_migrations::class);
   }
 

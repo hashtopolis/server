@@ -5,7 +5,7 @@ namespace Hashtopolis\inc\utils;
 use Exception;
 
 class LockUtils {
-  /** @var $locks Lock[] */
+  /** @var Lock[] $locks */
   private static $locks = array();
   
   /**

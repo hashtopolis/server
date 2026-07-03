@@ -89,10 +89,10 @@ class AgentBinaryFactory extends AbstractModelFactory {
   
   /**
    * @param AgentBinary $model
-   * @return AgentBinary
+   * @return ?AgentBinary
    * @throws Exception
    */
-  function save($model): AgentBinary {
+  function save($model): ?AgentBinary {
     return Util::cast(parent::save($model), AgentBinary::class);
   }
 

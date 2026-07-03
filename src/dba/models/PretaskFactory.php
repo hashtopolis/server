@@ -89,10 +89,10 @@ class PretaskFactory extends AbstractModelFactory {
   
   /**
    * @param Pretask $model
-   * @return Pretask
+   * @return ?Pretask
    * @throws Exception
    */
-  function save($model): Pretask {
+  function save($model): ?Pretask {
     return Util::cast(parent::save($model), Pretask::class);
   }
 

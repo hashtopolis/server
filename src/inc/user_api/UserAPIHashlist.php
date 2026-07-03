@@ -149,7 +149,7 @@ class UserAPIHashlist extends UserAPIBasic {
       throw new HTException("Invalid query!");
     }
     $arr = HashlistUtils::createWordlists($QUERY[UQueryHashlist::HASHLIST_ID], $this->user);
-    /** @var $file File */
+    /** @var File $file */
     $file = $arr[2];
     $response = [
       UResponseHashlist::SECTION => $QUERY[UQueryHashlist::SECTION],

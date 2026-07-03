@@ -89,10 +89,10 @@ class UserFactory extends AbstractModelFactory {
   
   /**
    * @param User $model
-   * @return User
+   * @return ?User
    * @throws Exception
    */
-  function save($model): User {
+  function save($model): ?User {
     return Util::cast(parent::save($model), User::class);
   }
 

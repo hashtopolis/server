@@ -32,7 +32,7 @@ class Template {
           if (ini_get("display_errors") == 1) {
             echo "ERROR: Template $template not found!\n";
           }
-          return false;
+          return;
         }
       }
       $this->content = file_get_contents($path);
@@ -42,7 +42,6 @@ class Template {
     $this->resolveDependencies();
     $parsed = $this->parse($this->content);
     $this->statements = $parsed[0];
-    return true;
   }
   
   public function getContent() {
@@ -324,9 +323,6 @@ class Template {
       switch ($command[0]) {
         case "TEMPLATE":
           $tmp = new Template($command[1]);
-          if ($tmp === false) {
-            return false;
-          }
           $tmp->resolveDependencies();
           $render = $tmp->getContent();
           if ($render === false) {

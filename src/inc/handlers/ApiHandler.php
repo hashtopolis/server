@@ -8,8 +8,6 @@ use Hashtopolis\inc\defines\DApiAction;
 use Hashtopolis\inc\UI;
 
 class ApiHandler implements Handler {
-  private $user;
-  
   public function __construct($id = null) {
     // nothing
   }

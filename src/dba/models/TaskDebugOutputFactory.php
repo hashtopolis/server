@@ -89,10 +89,10 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   
   /**
    * @param TaskDebugOutput $model
-   * @return TaskDebugOutput
+   * @return ?TaskDebugOutput
    * @throws Exception
    */
-  function save($model): TaskDebugOutput {
+  function save($model): ?TaskDebugOutput {
     return Util::cast(parent::save($model), TaskDebugOutput::class);
   }
 

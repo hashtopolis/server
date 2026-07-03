@@ -4,8 +4,8 @@ namespace Hashtopolis\inc\user_api;
 
 use Hashtopolis\inc\utils\AccessControlUtils;
 use Throwable;
-use Hashtopolis\inc\apiv2\common\error\HttpConflict;
-use Hashtopolis\inc\apiv2\common\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\UQuery;
 use Hashtopolis\inc\defines\UQueryAccess;
 use Hashtopolis\inc\defines\UQueryTask;

@@ -89,10 +89,10 @@ class SessionFactory extends AbstractModelFactory {
   
   /**
    * @param Session $model
-   * @return Session
+   * @return ?Session
    * @throws Exception
    */
-  function save($model): Session {
+  function save($model): ?Session {
     return Util::cast(parent::save($model), Session::class);
   }
 

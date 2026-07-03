@@ -89,10 +89,10 @@ class AgentStatFactory extends AbstractModelFactory {
   
   /**
    * @param AgentStat $model
-   * @return AgentStat
+   * @return ?AgentStat
    * @throws Exception
    */
-  function save($model): AgentStat {
+  function save($model): ?AgentStat {
     return Util::cast(parent::save($model), AgentStat::class);
   }
 

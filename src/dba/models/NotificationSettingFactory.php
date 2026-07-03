@@ -89,10 +89,10 @@ class NotificationSettingFactory extends AbstractModelFactory {
   
   /**
    * @param NotificationSetting $model
-   * @return NotificationSetting
+   * @return ?NotificationSetting
    * @throws Exception
    */
-  function save($model): NotificationSetting {
+  function save($model): ?NotificationSetting {
     return Util::cast(parent::save($model), NotificationSetting::class);
   }
 

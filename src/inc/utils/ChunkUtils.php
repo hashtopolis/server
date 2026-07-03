@@ -132,6 +132,7 @@ class ChunkUtils {
       $length = $remaining;
     }
     Factory::getTaskFactory()->inc($task, Task::KEYSPACE_PROGRESS, $length);
+    assert($task instanceof Task);
     $initialProgress = ($task->getUsePreprocessor() || $task->getForcePipe()) ? null : 0;
     $chunk = new Chunk(null, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, $initialProgress, DHashcatStatus::INIT, 0, 0);
     $chunk = Factory::getChunkFactory()->save($chunk);
@@ -169,7 +170,7 @@ class ChunkUtils {
           else if ($chunkSize > 10000) { // just protection to avoid millions or whatever chunk number
             throw new HTException("Too large number of static chunks, most likely because of misconfiguration!");
           }
-          return ceil($keyspace / $chunkSize);
+          return intval(ceil($keyspace / $chunkSize));
         default:
           throw new HTException("Unknown static chunking method!");
       }
@@ -182,7 +183,7 @@ class ChunkUtils {
         return $keyspace;
       }
       
-      $size = floor($keyspace * $benchmark * $chunkTime / 100);
+      $size = floor($keyspace * floatval($benchmark) * $chunkTime / 100);
     }
     else {
       // new benchmarking method
@@ -193,8 +194,8 @@ class ChunkUtils {
       }
       
       // NEW VARIANT
-      $factor = $chunkTime / $benchmark[1] * 1000;
-      $size = floor($factor * $benchmark[0]);
+      $factor = $chunkTime / floatval($benchmark[1]) * 1000;
+      $size = floor($factor * floatval($benchmark[0]));
     }
     
     $chunkSize = $size * $tolerance;
@@ -207,6 +208,6 @@ class ChunkUtils {
       Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Calculated chunk size was 0 on benchmark $benchmark!");
     }
     
-    return $chunkSize;
+    return intval($chunkSize);
   }
 }

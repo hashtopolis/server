@@ -93,6 +93,7 @@ class UserAPISupertask extends UserAPIBasic {
       $QUERY[UQueryTask::SUPERTASK_NAME],
       $QUERY[UQueryTask::TASK_ATTACKCMD],
       $QUERY[UQueryTask::TASK_CPU_ONLY],
+      0,
       $QUERY[UQueryTask::TASK_SMALL],
       $QUERY[UQueryTask::TASK_CRACKER_TYPE],
       $QUERY[UQueryTask::TASK_BENCHTYPE],
@@ -125,6 +126,7 @@ class UserAPISupertask extends UserAPIBasic {
     SupertaskUtils::importSupertask(
       $QUERY[UQueryTask::SUPERTASK_NAME],
       $QUERY[UQueryTask::TASK_CPU_ONLY],
+      0,
       $QUERY[UQueryTask::TASK_SMALL],
       $QUERY[UQueryTask::TASK_OPTIMIZED],
       $QUERY[UQueryTask::TASK_CRACKER_TYPE],

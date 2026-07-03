@@ -9,12 +9,7 @@ abstract class UApi {
   abstract function describe($constant);
   
   static function getConstants() {
-    try {
-      $oClass = new ReflectionClass(static::class);
-    }
-    catch (ReflectionException $e) {
-      die("Exception: " . $e->getMessage());
-    }
+    $oClass = new ReflectionClass(static::class);
     return $oClass->getConstants();
   }
   

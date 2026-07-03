@@ -89,10 +89,10 @@ class TaskFactory extends AbstractModelFactory {
   
   /**
    * @param Task $model
-   * @return Task
+   * @return ?Task
    * @throws Exception
    */
-  function save($model): Task {
+  function save($model): ?Task {
     return Util::cast(parent::save($model), Task::class);
   }
 

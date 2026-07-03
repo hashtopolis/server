@@ -89,10 +89,10 @@ class CrackerBinaryFactory extends AbstractModelFactory {
   
   /**
    * @param CrackerBinary $model
-   * @return CrackerBinary
+   * @return ?CrackerBinary
    * @throws Exception
    */
-  function save($model): CrackerBinary {
+  function save($model): ?CrackerBinary {
     return Util::cast(parent::save($model), CrackerBinary::class);
   }
 

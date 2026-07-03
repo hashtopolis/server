@@ -89,10 +89,10 @@ class FileFactory extends AbstractModelFactory {
   
   /**
    * @param File $model
-   * @return File
+   * @return ?File
    * @throws Exception
    */
-  function save($model): File {
+  function save($model): ?File {
     return Util::cast(parent::save($model), File::class);
   }
 

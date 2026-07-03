@@ -89,10 +89,10 @@ class ApiGroupFactory extends AbstractModelFactory {
   
   /**
    * @param ApiGroup $model
-   * @return ApiGroup
+   * @return ?ApiGroup
    * @throws Exception
    */
-  function save($model): ApiGroup {
+  function save($model): ?ApiGroup {
     return Util::cast(parent::save($model), ApiGroup::class);
   }
 

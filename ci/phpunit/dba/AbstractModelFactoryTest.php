@@ -306,7 +306,7 @@ final class AbstractModelFactoryTest extends TestBase {
     $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 0, 0));
     $this->assertInstanceOf(HashType::class, $hashType);
     $originalObject = $hashType;
-    Factory::getHashTypeFactory()->set($hashType, HashType::IS_SALTED, 1);
+    $hashType = Factory::getHashTypeFactory()->set($hashType, HashType::IS_SALTED, 1);
     $this->assertNotSame($originalObject, $hashType);
     $this->assertEquals(1, $hashType->getIsSalted());
     $this->assertEquals(0, $hashType->getIsSlowHash());
@@ -322,7 +322,7 @@ final class AbstractModelFactoryTest extends TestBase {
     $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'placeholder', 0, 0));
     $this->assertInstanceOf(HashType::class, $hashType);
     $originalObject = $hashType;
-    Factory::getHashTypeFactory()->mset($hashType, [HashType::IS_SALTED => 1, HashType::IS_SLOW_HASH => 1]);
+    $hashType = Factory::getHashTypeFactory()->mset($hashType, [HashType::IS_SALTED => 1, HashType::IS_SLOW_HASH => 1]);
     $this->assertNotSame($originalObject, $hashType);
     $this->assertEquals(1, $hashType->getIsSalted());
     $this->assertEquals(1, $hashType->getIsSlowHash());
@@ -367,11 +367,13 @@ final class AbstractModelFactoryTest extends TestBase {
     
     Factory::getHashTypeFactory()->inc($hashType1, HashType::IS_SALTED, 2);
     
+    $this->assertTrue($hashType1 instanceof HashType);
     $this->assertEquals(3, $hashType1->getIsSalted());
     $this->assertEquals(1, $hashType2->getIsSalted());
     
     Factory::getHashTypeFactory()->inc($hashType2, HashType::IS_SALTED, 20);
     
+    $this->assertTrue($hashType2 instanceof HashType);
     $this->assertEquals(23, $hashType2->getIsSalted());
     
     $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType1->getId());
@@ -441,11 +443,13 @@ final class AbstractModelFactoryTest extends TestBase {
     
     Factory::getHashTypeFactory()->dec($hashType1, HashType::IS_SALTED, 2);
     
+    $this->assertTrue($hashType1 instanceof HashType);
     $this->assertEquals(48, $hashType1->getIsSalted());
     $this->assertEquals(50, $hashType2->getIsSalted());
     
     Factory::getHashTypeFactory()->dec($hashType2, HashType::IS_SALTED, 20);
     
+    $this->assertTrue($hashType2 instanceof HashType);
     $this->assertEquals(28, $hashType2->getIsSalted());
     
     $hashTypeUpdated = Factory::getHashTypeFactory()->get($hashType1->getId());
@@ -1349,6 +1353,7 @@ final class AbstractModelFactoryTest extends TestBase {
     
     $accessGroup = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag_' . $testId));
     $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file_' . $testId, 1, 0, 0, $accessGroup->getId(), 1));
+    $this->assertTrue($accessGroup instanceof AccessGroup);
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup->getGroupName(), '=', Factory::getAccessGroupFactory());
     $jF = new JoinFilter(
@@ -1375,6 +1380,7 @@ final class AbstractModelFactoryTest extends TestBase {
     $accessGroup = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag_' . $testId));
     $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1_' . $testId, 1, 0, 0, $accessGroup->getId(), 1));
     $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2_' . $testId, 2, 0, 0, $accessGroup->getId(), 1));
+    $this->assertTrue($accessGroup instanceof AccessGroup);
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup->getGroupName(), '=', Factory::getAccessGroupFactory());
     $jF = new JoinFilter(

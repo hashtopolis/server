@@ -89,10 +89,10 @@ class PreprocessorFactory extends AbstractModelFactory {
   
   /**
    * @param Preprocessor $model
-   * @return Preprocessor
+   * @return ?Preprocessor
    * @throws Exception
    */
-  function save($model): Preprocessor {
+  function save($model): ?Preprocessor {
     return Util::cast(parent::save($model), Preprocessor::class);
   }
 

@@ -47,7 +47,7 @@ class TaskWrapperUtils {
         TaskUtils::setSupertaskPriority($taskWrapperId, $priority, $user);
         break;
       default:
-        assert(False, "Internal Error: taskType not recognized");
+        throw new HttpError("Internal Error: taskType not recognized");
     }
   }
 }

@@ -89,10 +89,10 @@ class HashFactory extends AbstractModelFactory {
   
   /**
    * @param Hash $model
-   * @return Hash
+   * @return ?Hash
    * @throws Exception
    */
-  function save($model): Hash {
+  function save($model): ?Hash {
     return Util::cast(parent::save($model), Hash::class);
   }
 

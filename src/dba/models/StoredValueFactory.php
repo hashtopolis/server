@@ -89,10 +89,10 @@ class StoredValueFactory extends AbstractModelFactory {
   
   /**
    * @param StoredValue $model
-   * @return StoredValue
+   * @return ?StoredValue
    * @throws Exception
    */
-  function save($model): StoredValue {
+  function save($model): ?StoredValue {
     return Util::cast(parent::save($model), StoredValue::class);
   }
 

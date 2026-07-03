@@ -181,7 +181,7 @@ class ConfigUtils {
       $jF = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, Factory::getChunkFactory());
       $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=", Factory::getTaskFactory());
       $joined = Factory::getChunkFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => $qF]);
-      /** @var $chunks Chunk[] */
+      /** @var Chunk[] $chunks */
       $chunks = $joined[Factory::getChunkFactory()->getModelName()];
       
       $total_cracked = 0;

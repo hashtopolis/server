@@ -138,7 +138,7 @@ class PreprocessorUtils {
   public static function editKeyspaceCommand($preprocessorId, $keyspaceCommand) {
     
     if (strlen($keyspaceCommand) == 0) {
-      $keyspaceCommand == null;
+      $keyspaceCommand = null;
     }
     else if (Util::containsBlacklistedChars($keyspaceCommand)) {
       throw new HTException("The keyspace command must contain no blacklisted characters!");
@@ -156,7 +156,7 @@ class PreprocessorUtils {
   public static function editSkipCommand($preprocessorId, $skipCommand) {
     
     if (strlen($skipCommand) == 0) {
-      $skipCommand == null;
+      $skipCommand = null;
     }
     else if (Util::containsBlacklistedChars($skipCommand)) {
       throw new HTException("The skip command must contain no blacklisted characters!");
@@ -174,7 +174,7 @@ class PreprocessorUtils {
   public static function editLimitCommand($preprocessorId, $limitCommand) {
     
     if (strlen($limitCommand) == 0) {
-      $limitCommand == null;
+      $limitCommand = null;
     }
     else if (Util::containsBlacklistedChars($limitCommand)) {
       throw new HTException("The limit command must contain no blacklisted characters!");

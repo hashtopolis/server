@@ -18,7 +18,7 @@ class CrackerBinaryUtils {
   public static function getNewestVersion($crackerBinaryTypeId) {
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $crackerBinaryTypeId, "=");
     $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
-    /** @var $newest CrackerBinary */
+    /** @var ?CrackerBinary $newest */
     $newest = null;
     foreach ($binaries as $binary) {
       if ($newest == null || Comparator::greaterThan($binary->getVersion(), $newest->getVersion())) {

@@ -89,10 +89,10 @@ class TaskWrapperFactory extends AbstractModelFactory {
   
   /**
    * @param TaskWrapper $model
-   * @return TaskWrapper
+   * @return ?TaskWrapper
    * @throws Exception
    */
-  function save($model): TaskWrapper {
+  function save($model): ?TaskWrapper {
     return Util::cast(parent::save($model), TaskWrapper::class);
   }
 

@@ -89,10 +89,10 @@ class HealthCheckFactory extends AbstractModelFactory {
   
   /**
    * @param HealthCheck $model
-   * @return HealthCheck
+   * @return ?HealthCheck
    * @throws Exception
    */
-  function save($model): HealthCheck {
+  function save($model): ?HealthCheck {
     return Util::cast(parent::save($model), HealthCheck::class);
   }
 
