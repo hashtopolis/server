@@ -3,7 +3,6 @@
 namespace Hashtopolis\dba\models;
 
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
 
 /**
  * @extends AbstractModelFactory<Hashlist>

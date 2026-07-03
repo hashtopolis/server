@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<AgentStat>
+ */
 class AgentStatFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "AgentStat";
@@ -48,72 +47,5 @@ class AgentStatFactory extends AbstractModelFactory {
     }
     $dict = $conv;
     return new AgentStat($dict['agentstatid'], $dict['agentid'], $dict['stattype'], $dict['time'], $dict['value']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return AgentStat|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): AgentStat|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), AgentStat::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, AgentStat::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?AgentStat
-   * @throws Exception
-   */
-  function get($pk): ?AgentStat {
-    return Util::cast(parent::get($pk), AgentStat::class);
-  }
-  
-  /**
-   * @param AgentStat $model
-   * @return ?AgentStat
-   * @throws Exception
-   */
-  function save($model): ?AgentStat {
-    return Util::cast(parent::save($model), AgentStat::class);
-  }
-
-  /**
-   * @param AgentStat $model
-   * @param array $arr key-value associations for update
-   * @return AgentStat
-   * @throws Exception
-   */
-  function mset($model, array $arr): AgentStat {
-    return Util::cast(parent::mset($model, $arr), AgentStat::class);
-  }
-
-  /**
-   * @param AgentStat $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return AgentStat
-   * @throws Exception
-   */
-  function set($model, string $key, $value): AgentStat {
-    return Util::cast(parent::set($model, $key, $value), AgentStat::class);
   }
 }

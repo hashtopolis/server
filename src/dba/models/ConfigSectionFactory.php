@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<ConfigSection>
+ */
 class ConfigSectionFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "ConfigSection";
@@ -48,72 +47,5 @@ class ConfigSectionFactory extends AbstractModelFactory {
     }
     $dict = $conv;
     return new ConfigSection($dict['configsectionid'], $dict['sectionname']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return ConfigSection|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): ConfigSection|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), ConfigSection::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, ConfigSection::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?ConfigSection
-   * @throws Exception
-   */
-  function get($pk): ?ConfigSection {
-    return Util::cast(parent::get($pk), ConfigSection::class);
-  }
-  
-  /**
-   * @param ConfigSection $model
-   * @return ?ConfigSection
-   * @throws Exception
-   */
-  function save($model): ?ConfigSection {
-    return Util::cast(parent::save($model), ConfigSection::class);
-  }
-
-  /**
-   * @param ConfigSection $model
-   * @param array $arr key-value associations for update
-   * @return ConfigSection
-   * @throws Exception
-   */
-  function mset($model, array $arr): ConfigSection {
-    return Util::cast(parent::mset($model, $arr), ConfigSection::class);
-  }
-
-  /**
-   * @param ConfigSection $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return ConfigSection
-   * @throws Exception
-   */
-  function set($model, string $key, $value): ConfigSection {
-    return Util::cast(parent::set($model, $key, $value), ConfigSection::class);
   }
 }

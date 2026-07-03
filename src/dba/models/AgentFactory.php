@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<Agent>
+ */
 class AgentFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "Agent";
@@ -48,72 +47,5 @@ class AgentFactory extends AbstractModelFactory {
     }
     $dict = $conv;
     return new Agent($dict['agentid'], $dict['agentname'], $dict['uid'], $dict['os'], $dict['devices'], $dict['cmdpars'], $dict['ignoreerrors'], $dict['isactive'], $dict['istrusted'], $dict['token'], $dict['lastact'], $dict['lasttime'], $dict['lastip'], $dict['userid'], $dict['cpuonly'], $dict['clientsignature']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return Agent|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): Agent|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), Agent::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, Agent::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?Agent
-   * @throws Exception
-   */
-  function get($pk): ?Agent {
-    return Util::cast(parent::get($pk), Agent::class);
-  }
-  
-  /**
-   * @param Agent $model
-   * @return ?Agent
-   * @throws Exception
-   */
-  function save($model): ?Agent {
-    return Util::cast(parent::save($model), Agent::class);
-  }
-
-  /**
-   * @param Agent $model
-   * @param array $arr key-value associations for update
-   * @return Agent
-   * @throws Exception
-   */
-  function mset($model, array $arr): Agent {
-    return Util::cast(parent::mset($model, $arr), Agent::class);
-  }
-
-  /**
-   * @param Agent $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return Agent
-   * @throws Exception
-   */
-  function set($model, string $key, $value): Agent {
-    return Util::cast(parent::set($model, $key, $value), Agent::class);
   }
 }

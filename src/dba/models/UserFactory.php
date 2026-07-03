@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<User>
+ */
 class UserFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "User";
@@ -48,72 +47,5 @@ class UserFactory extends AbstractModelFactory {
     }
     $dict = $conv;
     return new User($dict['userid'], $dict['username'], $dict['email'], $dict['passwordhash'], $dict['passwordsalt'], $dict['isvalid'], $dict['iscomputedpassword'], $dict['lastlogindate'], $dict['registeredsince'], $dict['sessionlifetime'], $dict['rightgroupid'], $dict['yubikey'], $dict['otp1'], $dict['otp2'], $dict['otp3'], $dict['otp4']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return User|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): User|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), User::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, User::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?User
-   * @throws Exception
-   */
-  function get($pk): ?User {
-    return Util::cast(parent::get($pk), User::class);
-  }
-  
-  /**
-   * @param User $model
-   * @return ?User
-   * @throws Exception
-   */
-  function save($model): ?User {
-    return Util::cast(parent::save($model), User::class);
-  }
-
-  /**
-   * @param User $model
-   * @param array $arr key-value associations for update
-   * @return User
-   * @throws Exception
-   */
-  function mset($model, array $arr): User {
-    return Util::cast(parent::mset($model, $arr), User::class);
-  }
-
-  /**
-   * @param User $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return User
-   * @throws Exception
-   */
-  function set($model, string $key, $value): User {
-    return Util::cast(parent::set($model, $key, $value), User::class);
   }
 }

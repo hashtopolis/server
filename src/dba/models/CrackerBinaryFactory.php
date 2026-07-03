@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<CrackerBinary>
+ */
 class CrackerBinaryFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "CrackerBinary";
@@ -48,72 +47,5 @@ class CrackerBinaryFactory extends AbstractModelFactory {
     }
     $dict = $conv;
     return new CrackerBinary($dict['crackerbinaryid'], $dict['crackerbinarytypeid'], $dict['version'], $dict['downloadurl'], $dict['binaryname']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return CrackerBinary|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): CrackerBinary|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), CrackerBinary::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, CrackerBinary::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?CrackerBinary
-   * @throws Exception
-   */
-  function get($pk): ?CrackerBinary {
-    return Util::cast(parent::get($pk), CrackerBinary::class);
-  }
-  
-  /**
-   * @param CrackerBinary $model
-   * @return ?CrackerBinary
-   * @throws Exception
-   */
-  function save($model): ?CrackerBinary {
-    return Util::cast(parent::save($model), CrackerBinary::class);
-  }
-
-  /**
-   * @param CrackerBinary $model
-   * @param array $arr key-value associations for update
-   * @return CrackerBinary
-   * @throws Exception
-   */
-  function mset($model, array $arr): CrackerBinary {
-    return Util::cast(parent::mset($model, $arr), CrackerBinary::class);
-  }
-
-  /**
-   * @param CrackerBinary $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return CrackerBinary
-   * @throws Exception
-   */
-  function set($model, string $key, $value): CrackerBinary {
-    return Util::cast(parent::set($model, $key, $value), CrackerBinary::class);
   }
 }

@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<RightGroup>
+ */
 class RightGroupFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "RightGroup";
@@ -48,72 +47,5 @@ class RightGroupFactory extends AbstractModelFactory {
     }
     $dict = $conv;
     return new RightGroup($dict['rightgroupid'], $dict['groupname'], $dict['permissions']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return RightGroup|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): RightGroup|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), RightGroup::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, RightGroup::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?RightGroup
-   * @throws Exception
-   */
-  function get($pk): ?RightGroup {
-    return Util::cast(parent::get($pk), RightGroup::class);
-  }
-  
-  /**
-   * @param RightGroup $model
-   * @return ?RightGroup
-   * @throws Exception
-   */
-  function save($model): ?RightGroup {
-    return Util::cast(parent::save($model), RightGroup::class);
-  }
-
-  /**
-   * @param RightGroup $model
-   * @param array $arr key-value associations for update
-   * @return RightGroup
-   * @throws Exception
-   */
-  function mset($model, array $arr): RightGroup {
-    return Util::cast(parent::mset($model, $arr), RightGroup::class);
-  }
-
-  /**
-   * @param RightGroup $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return RightGroup
-   * @throws Exception
-   */
-  function set($model, string $key, $value): RightGroup {
-    return Util::cast(parent::set($model, $key, $value), RightGroup::class);
   }
 }

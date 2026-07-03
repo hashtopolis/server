@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<Config>
+ */
 class ConfigFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "Config";
@@ -48,72 +47,5 @@ class ConfigFactory extends AbstractModelFactory {
     }
     $dict = $conv;
     return new Config($dict['configid'], $dict['configsectionid'], $dict['item'], $dict['value']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return Config|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): Config|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), Config::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, Config::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?Config
-   * @throws Exception
-   */
-  function get($pk): ?Config {
-    return Util::cast(parent::get($pk), Config::class);
-  }
-  
-  /**
-   * @param Config $model
-   * @return ?Config
-   * @throws Exception
-   */
-  function save($model): ?Config {
-    return Util::cast(parent::save($model), Config::class);
-  }
-
-  /**
-   * @param Config $model
-   * @param array $arr key-value associations for update
-   * @return Config
-   * @throws Exception
-   */
-  function mset($model, array $arr): Config {
-    return Util::cast(parent::mset($model, $arr), Config::class);
-  }
-
-  /**
-   * @param Config $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return Config
-   * @throws Exception
-   */
-  function set($model, string $key, $value): Config {
-    return Util::cast(parent::set($model, $key, $value), Config::class);
   }
 }

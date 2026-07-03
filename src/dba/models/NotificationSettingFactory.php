@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<NotificationSetting>
+ */
 class NotificationSettingFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "NotificationSetting";
@@ -48,72 +47,5 @@ class NotificationSettingFactory extends AbstractModelFactory {
     }
     $dict = $conv;
     return new NotificationSetting($dict['notificationsettingid'], $dict['action'], $dict['objectid'], $dict['notification'], $dict['userid'], $dict['receiver'], $dict['isactive']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return NotificationSetting|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): NotificationSetting|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), NotificationSetting::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, NotificationSetting::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?NotificationSetting
-   * @throws Exception
-   */
-  function get($pk): ?NotificationSetting {
-    return Util::cast(parent::get($pk), NotificationSetting::class);
-  }
-  
-  /**
-   * @param NotificationSetting $model
-   * @return ?NotificationSetting
-   * @throws Exception
-   */
-  function save($model): ?NotificationSetting {
-    return Util::cast(parent::save($model), NotificationSetting::class);
-  }
-
-  /**
-   * @param NotificationSetting $model
-   * @param array $arr key-value associations for update
-   * @return NotificationSetting
-   * @throws Exception
-   */
-  function mset($model, array $arr): NotificationSetting {
-    return Util::cast(parent::mset($model, $arr), NotificationSetting::class);
-  }
-
-  /**
-   * @param NotificationSetting $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return NotificationSetting
-   * @throws Exception
-   */
-  function set($model, string $key, $value): NotificationSetting {
-    return Util::cast(parent::set($model, $key, $value), NotificationSetting::class);
   }
 }

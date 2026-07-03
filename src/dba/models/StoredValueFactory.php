@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<StoredValue>
+ */
 class StoredValueFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "StoredValue";
@@ -48,72 +47,5 @@ class StoredValueFactory extends AbstractModelFactory {
     }
     $dict = $conv;
     return new StoredValue($dict['storedvalueid'], $dict['val']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return StoredValue|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): StoredValue|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), StoredValue::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, StoredValue::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?StoredValue
-   * @throws Exception
-   */
-  function get($pk): ?StoredValue {
-    return Util::cast(parent::get($pk), StoredValue::class);
-  }
-  
-  /**
-   * @param StoredValue $model
-   * @return ?StoredValue
-   * @throws Exception
-   */
-  function save($model): ?StoredValue {
-    return Util::cast(parent::save($model), StoredValue::class);
-  }
-
-  /**
-   * @param StoredValue $model
-   * @param array $arr key-value associations for update
-   * @return StoredValue
-   * @throws Exception
-   */
-  function mset($model, array $arr): StoredValue {
-    return Util::cast(parent::mset($model, $arr), StoredValue::class);
-  }
-
-  /**
-   * @param StoredValue $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return StoredValue
-   * @throws Exception
-   */
-  function set($model, string $key, $value): StoredValue {
-    return Util::cast(parent::set($model, $key, $value), StoredValue::class);
   }
 }
