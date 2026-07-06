@@ -24,12 +24,21 @@ docker load --input hashtopolis-frontend.tar
 docker load --input mysql.tar
 ```
 
-Download docker-compose.yml and env.example and transfer them to your Hashtopolis server as well:
+Hashtopolis supports MySQL and PostgreSQL since v.1.0.0-rainbow5. You can choose between both databases. Depending of your choice, download the corresponding files:.
 
+Download docker-compose.mysql.yml and env.mysql.example for MySQL   
 ```
-wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.yml
-wget https://raw.githubusercontent.com/hashtopolis/server/master/env.example -O .env
-```
+wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.mysql.yml -O docker-compose.yml
+wget https://raw.githubusercontent.com/hashtopolis/server/master/env.mysql.example -O .env
+```   
+
+**or**
+
+Download docker-compose.postgres.yml and env.postgres.example for PostgreSQL   
+ ```
+wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.postgres.yml -O docker-compose.yml
+wget https://raw.githubusercontent.com/hashtopolis/server/master/env.postgres.example -O .env
+ ```
 
 Continue with the normal docker installation described in the [basic installation section](basic_install.md#setup-hashtopolis-server).
 
@@ -157,7 +166,11 @@ By default (when you use the default docker-compose) the Hashtopolis folder (imp
 
 You can list this volume via docker volume ls. You can also access the volume directly in the backend, because it is mounted at: ```/usr/local/share/hashtopolis``` inside the container.
 
-However, if you prefer not to use Docker volumes and instead use folders on the host OS, you can update the mount points in the *docker-compose.yml* file:
+However, if you prefer not to use Docker volumes and instead use folders on the host OS, you can update the mount points in the *docker-compose.yml* file. 
+
+> [!NOTE]
+> The example shown below is for MySQL, updating the PostgreSQL docker-compose file is identical.
+
 ```
 version: '3.7'
 services:
@@ -239,7 +252,7 @@ When there is the need for a complete reset/clean setup (e.g. for testing), you 
 > [!CAUTION]
 > The following steps will delete all data in your hashtopolis instance (including the database, users, tasks, agents, etc.)!
 
-These steps assume that you have set up your hashtopolis instance using a `docker-compose.yml` file.
+These steps assume that you have set up your hashtopolis instance using a `docker-compose.yml` file (either MySQL or PostgreSQL).
 
 First stop all running all containers and clean them up:
 
