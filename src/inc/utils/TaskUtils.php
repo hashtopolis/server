@@ -497,7 +497,7 @@ class TaskUtils {
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", Factory::getTaskFactory());
     $jF = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID);
     $join = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $assignments Assignment[] */
+    /** @var Assignment[] $assignments */
     $assignments = $join[Factory::getAssignmentFactory()->getModelName()];
     foreach ($assignments as $assignment) {
       if ($task->getUseNewBench() == 0) {
@@ -743,7 +743,7 @@ class TaskUtils {
     }
     $statusTimer = intval($statusTimer);
     
-    if ($statusTimer <= 0 || !is_numeric($statusTimer)) {
+    if ($statusTimer <= 0) {
       throw new HTException("Invalid status interval!");
     }
     if ($statusTimer > $task->getChunkTime()) {
@@ -757,7 +757,7 @@ class TaskUtils {
    * @param int $taskId
    * @param int $priority
    * @param User $user
-   * @param bool $top
+   * @param bool $topPriority
    * @throws HTException
    */
   public static function updatePriority($taskId, $priority, $user, $topPriority = false) {
@@ -894,9 +894,9 @@ class TaskUtils {
     if ($priority < 0) {
       $priority = 0;
     }
-    if ($usePreprocessor && $benchtype == 'runtime') {
-      // enforce speed benchmark type when using PRINCE
-      $benchtype = 'speed';
+    if ($usePreprocessor && $benchtype == 0) {
+      // enforce speed benchmark type when using preprocessor
+      $benchtype = 1;
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
@@ -948,7 +948,7 @@ class TaskUtils {
   /**
    * @param $agent Agent
    * @param bool $all set true to get all matching tasks for this agent
-   * @return Task|Task[]
+   * @return Task|Task[]|null
    */
   public static function getBestTask($agent, $all = false) {
     $allTasks = array();
@@ -957,7 +957,7 @@ class TaskUtils {
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
     $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $accessGroupAgent AccessGroup[] */
+    /** @var AccessGroup[] $accessGroupAgent */
     $accessGroupAgent = $joined[Factory::getAccessGroupFactory()->getModelName()];
     $accessGroups = Util::arrayOfIds($accessGroupAgent);
     
@@ -1095,7 +1095,7 @@ class TaskUtils {
     $files = $joined[Factory::getFileFactory()->getModelName()];
     $toDelete = [];
     foreach ($files as $file) {
-      /** @var $file File */
+      /** @var File $file */
       if ($file->getFileType() == DFileType::TEMPORARY) {
         unlink(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename());
         $toDelete[] = $file;
@@ -1147,7 +1147,7 @@ class TaskUtils {
    *
    * @param $task Task
    * @param $agent Agent
-   * @return Task null if the task is completed or fully dispatched
+   * @return Task|null null if the task is completed or fully dispatched
    */
   public static function checkTask($task, $agent = null) {
     if ($task->getIsArchived() == 1) {
@@ -1190,7 +1190,7 @@ class TaskUtils {
     }
     if ($completed >= $task->getKeyspace()) {
       // task is completed, set priority to 0
-      Factory::getTaskFactory()->set($task, Task::PRIORITY, 0);
+      $task = Factory::getTaskFactory()->set($task, Task::PRIORITY, 0);
       $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
       if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
         Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::PRIORITY, 0);
@@ -1267,7 +1267,6 @@ class TaskUtils {
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", Factory::getFileTaskFactory());
     $jF = new JoinFilter(Factory::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
     $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $files File[] */
     return $joined[Factory::getFileFactory()->getModelName()];
   }
   
@@ -1279,7 +1278,6 @@ class TaskUtils {
     $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", Factory::getFilePretaskFactory());
     $jF = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
     $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $files File[] */
     return $joined[Factory::getFileFactory()->getModelName()];
   }
   

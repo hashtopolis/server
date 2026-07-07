@@ -16,8 +16,7 @@ abstract class HashtopolisNotification {
   public static $name;
   protected     $receiver;
   
-  /** @var  $notification NotificationSetting */
-  protected $notification;
+  protected NotificationSetting $notification;
   
   private static $instances = [];
   

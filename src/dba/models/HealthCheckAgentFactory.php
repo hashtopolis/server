@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class HealthCheckAgentFactory extends AbstractModelFactory {
@@ -51,7 +54,8 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return HealthCheckAgent|HealthCheckAgent[]
+   * @return HealthCheckAgent|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): HealthCheckAgent|array|null {
     $join = false;
@@ -78,6 +82,7 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?HealthCheckAgent
+   * @throws Exception
    */
   function get($pk): ?HealthCheckAgent {
     return Util::cast(parent::get($pk), HealthCheckAgent::class);
@@ -85,9 +90,31 @@ class HealthCheckAgentFactory extends AbstractModelFactory {
   
   /**
    * @param HealthCheckAgent $model
-   * @return HealthCheckAgent
+   * @return ?HealthCheckAgent
+   * @throws Exception
    */
-  function save($model): HealthCheckAgent {
+  function save($model): ?HealthCheckAgent {
     return Util::cast(parent::save($model), HealthCheckAgent::class);
+  }
+
+  /**
+   * @param HealthCheckAgent $model
+   * @param array $arr key-value associations for update
+   * @return HealthCheckAgent
+   * @throws Exception
+   */
+  function mset($model, array $arr): HealthCheckAgent {
+    return Util::cast(parent::mset($model, $arr), HealthCheckAgent::class);
+  }
+
+  /**
+   * @param HealthCheckAgent $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return HealthCheckAgent
+   * @throws Exception
+   */
+  function set($model, string $key, $value): HealthCheckAgent {
+    return Util::cast(parent::set($model, $key, $value), HealthCheckAgent::class);
   }
 }

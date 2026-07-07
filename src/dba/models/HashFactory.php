@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class HashFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class HashFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Hash|Hash[]
+   * @return Hash|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Hash|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class HashFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Hash
+   * @throws Exception
    */
   function get($pk): ?Hash {
     return Util::cast(parent::get($pk), Hash::class);
@@ -84,9 +89,31 @@ class HashFactory extends AbstractModelFactory {
   
   /**
    * @param Hash $model
-   * @return Hash
+   * @return ?Hash
+   * @throws Exception
    */
-  function save($model): Hash {
+  function save($model): ?Hash {
     return Util::cast(parent::save($model), Hash::class);
+  }
+
+  /**
+   * @param Hash $model
+   * @param array $arr key-value associations for update
+   * @return Hash
+   * @throws Exception
+   */
+  function mset($model, array $arr): Hash {
+    return Util::cast(parent::mset($model, $arr), Hash::class);
+  }
+
+  /**
+   * @param Hash $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Hash
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Hash {
+    return Util::cast(parent::set($model, $key, $value), Hash::class);
   }
 }

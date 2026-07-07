@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class FileDeleteFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class FileDeleteFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return FileDelete|FileDelete[]
+   * @return FileDelete|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): FileDelete|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class FileDeleteFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?FileDelete
+   * @throws Exception
    */
   function get($pk): ?FileDelete {
     return Util::cast(parent::get($pk), FileDelete::class);
@@ -84,9 +89,31 @@ class FileDeleteFactory extends AbstractModelFactory {
   
   /**
    * @param FileDelete $model
-   * @return FileDelete
+   * @return ?FileDelete
+   * @throws Exception
    */
-  function save($model): FileDelete {
+  function save($model): ?FileDelete {
     return Util::cast(parent::save($model), FileDelete::class);
+  }
+
+  /**
+   * @param FileDelete $model
+   * @param array $arr key-value associations for update
+   * @return FileDelete
+   * @throws Exception
+   */
+  function mset($model, array $arr): FileDelete {
+    return Util::cast(parent::mset($model, $arr), FileDelete::class);
+  }
+
+  /**
+   * @param FileDelete $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return FileDelete
+   * @throws Exception
+   */
+  function set($model, string $key, $value): FileDelete {
+    return Util::cast(parent::set($model, $key, $value), FileDelete::class);
   }
 }

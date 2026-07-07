@@ -126,7 +126,7 @@ class Lang {
    * Get the written name of a given language name.
    *
    * @param string $name name identifier of language
-   * @return string containing the name, false if language is not found
+   * @return string|bool containing the name, false if language is not found
    */
   public function getLanguageName($name) {
     if (isset($this->langArr[$name]['name'])) {

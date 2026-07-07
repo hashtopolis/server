@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class ConfigFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class ConfigFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Config|Config[]
+   * @return Config|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Config|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class ConfigFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Config
+   * @throws Exception
    */
   function get($pk): ?Config {
     return Util::cast(parent::get($pk), Config::class);
@@ -84,9 +89,31 @@ class ConfigFactory extends AbstractModelFactory {
   
   /**
    * @param Config $model
-   * @return Config
+   * @return ?Config
+   * @throws Exception
    */
-  function save($model): Config {
+  function save($model): ?Config {
     return Util::cast(parent::save($model), Config::class);
+  }
+
+  /**
+   * @param Config $model
+   * @param array $arr key-value associations for update
+   * @return Config
+   * @throws Exception
+   */
+  function mset($model, array $arr): Config {
+    return Util::cast(parent::mset($model, $arr), Config::class);
+  }
+
+  /**
+   * @param Config $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Config
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Config {
+    return Util::cast(parent::set($model, $key, $value), Config::class);
   }
 }

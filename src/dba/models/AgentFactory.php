@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class AgentFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class AgentFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Agent|Agent[]
+   * @return Agent|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Agent|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class AgentFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Agent
+   * @throws Exception
    */
   function get($pk): ?Agent {
     return Util::cast(parent::get($pk), Agent::class);
@@ -84,9 +89,31 @@ class AgentFactory extends AbstractModelFactory {
   
   /**
    * @param Agent $model
-   * @return Agent
+   * @return ?Agent
+   * @throws Exception
    */
-  function save($model): Agent {
+  function save($model): ?Agent {
     return Util::cast(parent::save($model), Agent::class);
+  }
+
+  /**
+   * @param Agent $model
+   * @param array $arr key-value associations for update
+   * @return Agent
+   * @throws Exception
+   */
+  function mset($model, array $arr): Agent {
+    return Util::cast(parent::mset($model, $arr), Agent::class);
+  }
+
+  /**
+   * @param Agent $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Agent
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Agent {
+    return Util::cast(parent::set($model, $key, $value), Agent::class);
   }
 }

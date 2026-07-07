@@ -16,10 +16,7 @@ use Hashtopolis\inc\UI;
 use Hashtopolis\inc\Util;
 
 class HashlistHandler implements Handler {
-  /**
-   * @var Hashlist $hashlist
-   */
-  private $hashlist;
+  private ?Hashlist $hashlist;
   
   public function __construct($hashlistId = null) {
     if ($hashlistId == null) {

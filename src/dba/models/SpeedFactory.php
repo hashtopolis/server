@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class SpeedFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class SpeedFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Speed|Speed[]
+   * @return Speed|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Speed|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class SpeedFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Speed
+   * @throws Exception
    */
   function get($pk): ?Speed {
     return Util::cast(parent::get($pk), Speed::class);
@@ -84,9 +89,31 @@ class SpeedFactory extends AbstractModelFactory {
   
   /**
    * @param Speed $model
-   * @return Speed
+   * @return ?Speed
+   * @throws Exception
    */
-  function save($model): Speed {
+  function save($model): ?Speed {
     return Util::cast(parent::save($model), Speed::class);
+  }
+
+  /**
+   * @param Speed $model
+   * @param array $arr key-value associations for update
+   * @return Speed
+   * @throws Exception
+   */
+  function mset($model, array $arr): Speed {
+    return Util::cast(parent::mset($model, $arr), Speed::class);
+  }
+
+  /**
+   * @param Speed $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Speed
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Speed {
+    return Util::cast(parent::set($model, $key, $value), Speed::class);
   }
 }

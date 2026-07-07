@@ -109,7 +109,7 @@ class AccountUtils {
       throw new HTException("Invalid email address!");
     }
     
-    Factory::getUserFactory()->set($user, User::EMAIL, $email);
+    $user = Factory::getUserFactory()->set($user, User::EMAIL, $email);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "User changed email!");
   }
   
@@ -151,7 +151,7 @@ class AccountUtils {
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPassword, $newSalt);
     
-    Factory::getUserFactory()->mset($user, [User::PASSWORD_HASH => $newHash, User::PASSWORD_SALT => $newSalt, USer::IS_COMPUTED_PASSWORD => 0]);
+    $user = Factory::getUserFactory()->mset($user, [User::PASSWORD_HASH => $newHash, User::PASSWORD_SALT => $newSalt, USer::IS_COMPUTED_PASSWORD => 0]);
     
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "User changed password!");
   }

@@ -15,7 +15,7 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\utils\HealthUtils;
 
 class APISendHealthCheck extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     if (!PQuerySendHealthCheck::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_HEALTH_CHECK, "Invalid send health check query!");
     }

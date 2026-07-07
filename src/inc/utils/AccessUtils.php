@@ -78,13 +78,13 @@ class AccessUtils {
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
     $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $accessGroupsAgent AccessGroup[] */
+    /** @var AccessGroup[] $accessGroupsAgent */
     $accessGroupsAgent = $joined[Factory::getAccessGroupFactory()->getModelName()];
     
     $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", Factory::getAccessGroupUserFactory());
     $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $accessGroupsUser AccessGroup[] */
+    /** @var AccessGroup[] $accessGroupsUser */
     $accessGroupsUser = $joined[Factory::getAccessGroupFactory()->getModelName()];
     
     return sizeof(AccessUtils::intersection($accessGroupsAgent, $accessGroupsUser)) > 0;
@@ -145,7 +145,6 @@ class AccessUtils {
     $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", Factory::getAccessGroupUserFactory());
     $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $accessGroupsUser AccessGroup[] */
     return $joined[Factory::getAccessGroupFactory()->getModelName()];
   }
   
@@ -157,7 +156,6 @@ class AccessUtils {
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
     $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $accessGroupsUser AccessGroup[] */
     return $joined[Factory::getAccessGroupFactory()->getModelName()];
   }
   

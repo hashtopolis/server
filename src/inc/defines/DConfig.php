@@ -83,12 +83,7 @@ class DConfig {
   const NOTIFICATIONS_PROXY_TYPE   = "notificationsProxyType";
   
   static function getConstants() {
-    try {
-      $oClass = new ReflectionClass(__CLASS__);
-    }
-    catch (ReflectionException $e) {
-      die("Exception: " . $e->getMessage());
-    }
+    $oClass = new ReflectionClass(__CLASS__);
     return $oClass->getConstants();
   }
   

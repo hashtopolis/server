@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class CrackerBinaryTypeFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return CrackerBinaryType|CrackerBinaryType[]
+   * @return CrackerBinaryType|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): CrackerBinaryType|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?CrackerBinaryType
+   * @throws Exception
    */
   function get($pk): ?CrackerBinaryType {
     return Util::cast(parent::get($pk), CrackerBinaryType::class);
@@ -84,9 +89,31 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
   
   /**
    * @param CrackerBinaryType $model
-   * @return CrackerBinaryType
+   * @return ?CrackerBinaryType
+   * @throws Exception
    */
-  function save($model): CrackerBinaryType {
+  function save($model): ?CrackerBinaryType {
     return Util::cast(parent::save($model), CrackerBinaryType::class);
+  }
+
+  /**
+   * @param CrackerBinaryType $model
+   * @param array $arr key-value associations for update
+   * @return CrackerBinaryType
+   * @throws Exception
+   */
+  function mset($model, array $arr): CrackerBinaryType {
+    return Util::cast(parent::mset($model, $arr), CrackerBinaryType::class);
+  }
+
+  /**
+   * @param CrackerBinaryType $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return CrackerBinaryType
+   * @throws Exception
+   */
+  function set($model, string $key, $value): CrackerBinaryType {
+    return Util::cast(parent::set($model, $key, $value), CrackerBinaryType::class);
   }
 }

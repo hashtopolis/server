@@ -14,7 +14,7 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 
 class APIDownloadBinary extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     if (!PQueryDownloadBinary::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Invalid download query!");
     }

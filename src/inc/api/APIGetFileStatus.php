@@ -8,7 +8,7 @@ use Hashtopolis\inc\agent\PResponseGetFileStatus;
 use Hashtopolis\inc\agent\PValues;
 
 class APIGetFileStatus extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     $deleteRequests = Factory::getFileDeleteFactory()->filter([]);
     $files = [];
     foreach ($deleteRequests as $deleteRequest) {

@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class TaskWrapperDisplayFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return TaskWrapperDisplay|TaskWrapperDisplay[]
+   * @return TaskWrapperDisplay|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): TaskWrapperDisplay|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?TaskWrapperDisplay
+   * @throws Exception
    */
   function get($pk): ?TaskWrapperDisplay {
     return Util::cast(parent::get($pk), TaskWrapperDisplay::class);
@@ -84,9 +89,31 @@ class TaskWrapperDisplayFactory extends AbstractModelFactory {
   
   /**
    * @param TaskWrapperDisplay $model
-   * @return TaskWrapperDisplay
+   * @return ?TaskWrapperDisplay
+   * @throws Exception
    */
-  function save($model): TaskWrapperDisplay {
+  function save($model): ?TaskWrapperDisplay {
     return Util::cast(parent::save($model), TaskWrapperDisplay::class);
+  }
+
+  /**
+   * @param TaskWrapperDisplay $model
+   * @param array $arr key-value associations for update
+   * @return TaskWrapperDisplay
+   * @throws Exception
+   */
+  function mset($model, array $arr): TaskWrapperDisplay {
+    return Util::cast(parent::mset($model, $arr), TaskWrapperDisplay::class);
+  }
+
+  /**
+   * @param TaskWrapperDisplay $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return TaskWrapperDisplay
+   * @throws Exception
+   */
+  function set($model, string $key, $value): TaskWrapperDisplay {
+    return Util::cast(parent::set($model, $key, $value), TaskWrapperDisplay::class);
   }
 }

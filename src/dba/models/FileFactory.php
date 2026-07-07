@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class FileFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class FileFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return File|File[]
+   * @return File|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): File|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class FileFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?File
+   * @throws Exception
    */
   function get($pk): ?File {
     return Util::cast(parent::get($pk), File::class);
@@ -84,9 +89,31 @@ class FileFactory extends AbstractModelFactory {
   
   /**
    * @param File $model
-   * @return File
+   * @return ?File
+   * @throws Exception
    */
-  function save($model): File {
+  function save($model): ?File {
     return Util::cast(parent::save($model), File::class);
+  }
+
+  /**
+   * @param File $model
+   * @param array $arr key-value associations for update
+   * @return File
+   * @throws Exception
+   */
+  function mset($model, array $arr): File {
+    return Util::cast(parent::mset($model, $arr), File::class);
+  }
+
+  /**
+   * @param File $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return File
+   * @throws Exception
+   */
+  function set($model, string $key, $value): File {
+    return Util::cast(parent::set($model, $key, $value), File::class);
   }
 }

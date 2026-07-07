@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class ApiGroupFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class ApiGroupFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return ApiGroup|ApiGroup[]
+   * @return ApiGroup|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): ApiGroup|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class ApiGroupFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?ApiGroup
+   * @throws Exception
    */
   function get($pk): ?ApiGroup {
     return Util::cast(parent::get($pk), ApiGroup::class);
@@ -84,9 +89,31 @@ class ApiGroupFactory extends AbstractModelFactory {
   
   /**
    * @param ApiGroup $model
-   * @return ApiGroup
+   * @return ?ApiGroup
+   * @throws Exception
    */
-  function save($model): ApiGroup {
+  function save($model): ?ApiGroup {
     return Util::cast(parent::save($model), ApiGroup::class);
+  }
+
+  /**
+   * @param ApiGroup $model
+   * @param array $arr key-value associations for update
+   * @return ApiGroup
+   * @throws Exception
+   */
+  function mset($model, array $arr): ApiGroup {
+    return Util::cast(parent::mset($model, $arr), ApiGroup::class);
+  }
+
+  /**
+   * @param ApiGroup $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return ApiGroup
+   * @throws Exception
+   */
+  function set($model, string $key, $value): ApiGroup {
+    return Util::cast(parent::set($model, $key, $value), ApiGroup::class);
   }
 }

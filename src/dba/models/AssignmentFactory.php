@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class AssignmentFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class AssignmentFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Assignment|Assignment[]
+   * @return Assignment|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Assignment|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class AssignmentFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Assignment
+   * @throws Exception
    */
   function get($pk): ?Assignment {
     return Util::cast(parent::get($pk), Assignment::class);
@@ -84,9 +89,31 @@ class AssignmentFactory extends AbstractModelFactory {
   
   /**
    * @param Assignment $model
-   * @return Assignment
+   * @return ?Assignment
+   * @throws Exception
    */
-  function save($model): Assignment {
+  function save($model): ?Assignment {
     return Util::cast(parent::save($model), Assignment::class);
+  }
+
+  /**
+   * @param Assignment $model
+   * @param array $arr key-value associations for update
+   * @return Assignment
+   * @throws Exception
+   */
+  function mset($model, array $arr): Assignment {
+    return Util::cast(parent::mset($model, $arr), Assignment::class);
+  }
+
+  /**
+   * @param Assignment $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Assignment
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Assignment {
+    return Util::cast(parent::set($model, $key, $value), Assignment::class);
   }
 }

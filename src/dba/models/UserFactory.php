@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class UserFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class UserFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return User|User[]
+   * @return User|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): User|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class UserFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?User
+   * @throws Exception
    */
   function get($pk): ?User {
     return Util::cast(parent::get($pk), User::class);
@@ -84,9 +89,31 @@ class UserFactory extends AbstractModelFactory {
   
   /**
    * @param User $model
-   * @return User
+   * @return ?User
+   * @throws Exception
    */
-  function save($model): User {
+  function save($model): ?User {
     return Util::cast(parent::save($model), User::class);
+  }
+
+  /**
+   * @param User $model
+   * @param array $arr key-value associations for update
+   * @return User
+   * @throws Exception
+   */
+  function mset($model, array $arr): User {
+    return Util::cast(parent::mset($model, $arr), User::class);
+  }
+
+  /**
+   * @param User $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return User
+   * @throws Exception
+   */
+  function set($model, string $key, $value): User {
+    return Util::cast(parent::set($model, $key, $value), User::class);
   }
 }

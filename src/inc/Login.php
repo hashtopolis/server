@@ -15,6 +15,7 @@ use Hashtopolis\inc\defines\DPayloadKeys;
 use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
+use function PHPUnit\Framework\assertNotNull;
 
 /**
  * Handles the login sessions
@@ -24,8 +25,7 @@ use Hashtopolis\inc\Util;
 class Login {
   private $user  = null;
   private $valid = false;
-  /** @var Session $session */
-  private $session = null;
+  private ?Session $session = null;
   
   private static $instance = null;
   
@@ -68,7 +68,7 @@ class Login {
         }
         $this->valid = true;
         $this->session = $session;
-        Factory::getSessionFactory()->set($session, Session::LAST_ACTION_DATE, time());
+        $session = Factory::getSessionFactory()->set($session, Session::LAST_ACTION_DATE, time());
         setcookie("session", $session->getSessionKey(), time() + $this->user->getSessionLifetime(), "", "", false, true);
       }
     }
@@ -85,6 +85,7 @@ class Login {
    * Logs the current user out and closes his session
    */
   public function logout() {
+    assertNotNull($this->session);
     Factory::getSessionFactory()->set($this->session, Session::IS_OPEN, 0);
     $this->session = null;
     $this->user = null;
@@ -194,7 +195,7 @@ class Login {
     }
     $sessionKey = Encryption::sessionHash($session->getId(), $startTime, $user->getEmail());
     Factory::getSessionFactory()->set($session, Session::SESSION_KEY, $sessionKey);
-    Factory::getUserFactory()->set($this->user, User::LAST_LOGIN_DATE, time());
+    $this->user = Factory::getUserFactory()->set($this->user, User::LAST_LOGIN_DATE, time());
     
     $this->valid = true;
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Successful login!");

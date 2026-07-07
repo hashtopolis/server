@@ -70,9 +70,9 @@ class AgentBinaryUtils {
     }
     
     if ($updateTrack != $agentBinary->getUpdateTrack()) {
-      Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::UPDATE_AVAILABLE, '');
+      $agentBinary = Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::UPDATE_AVAILABLE, '');
     }
-    Factory::getAgentBinaryFactory()->mset($agentBinary, [
+    $agentBinary = Factory::getAgentBinaryFactory()->mset($agentBinary, [
         AgentBinary::BINARY_TYPE => $type,
         AgentBinary::OPERATING_SYSTEMS => $os,
         AgentBinary::FILENAME => $filename,
@@ -87,14 +87,14 @@ class AgentBinaryUtils {
   public static function editUpdateTracker($binaryId, $updateTracker, $user) {
     $binary = AgentBinaryUtils::getBinary($binaryId);
     if ($updateTracker != $binary->getUpdateTrack()) {
-      Factory::getAgentBinaryFactory()->mset($binary, [
+      $binary = Factory::getAgentBinaryFactory()->mset($binary, [
           AgentBinary::UPDATE_AVAILABLE => '',
           AgentBinary::UPDATE_TRACK => $updateTracker
         ]
       );
     }
     else {
-      Factory::getAgentBinaryFactory()->set($binary, AgentBinary::UPDATE_TRACK, $updateTracker);
+      $binary = Factory::getAgentBinaryFactory()->set($binary, AgentBinary::UPDATE_TRACK, $updateTracker);
     }
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $binary->getFilename() . " was updated!");
   }
@@ -104,7 +104,7 @@ class AgentBinaryUtils {
       throw new HTException("Provided filename does not exist!");
     }
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
-    Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::FILENAME, $filename);
+    $agentBinary = Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::FILENAME, $filename);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
   }
   
@@ -117,7 +117,7 @@ class AgentBinaryUtils {
     if ($result != null) {
       throw new HTException("You cannot have two binaries with the same type!");
     }
-    Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::BINARY_TYPE, $type);
+    $agentBinary = Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::BINARY_TYPE, $type);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
   }
   
@@ -179,7 +179,7 @@ class AgentBinaryUtils {
     }
     
     // update version number of agent and reset flag
-    Factory::getAgentBinaryFactory()->mset($agentBinary, [AgentBinary::VERSION => $agentBinary->getUpdateAvailable(), AgentBinary::UPDATE_AVAILABLE => '']);
+    $agentBinary = Factory::getAgentBinaryFactory()->mset($agentBinary, [AgentBinary::VERSION => $agentBinary->getUpdateAvailable(), AgentBinary::UPDATE_AVAILABLE => '']);
   }
   
   /**

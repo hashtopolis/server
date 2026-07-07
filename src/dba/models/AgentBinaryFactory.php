@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class AgentBinaryFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class AgentBinaryFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return AgentBinary|AgentBinary[]
+   * @return AgentBinary|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): AgentBinary|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class AgentBinaryFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?AgentBinary
+   * @throws Exception
    */
   function get($pk): ?AgentBinary {
     return Util::cast(parent::get($pk), AgentBinary::class);
@@ -84,9 +89,31 @@ class AgentBinaryFactory extends AbstractModelFactory {
   
   /**
    * @param AgentBinary $model
-   * @return AgentBinary
+   * @return ?AgentBinary
+   * @throws Exception
    */
-  function save($model): AgentBinary {
+  function save($model): ?AgentBinary {
     return Util::cast(parent::save($model), AgentBinary::class);
+  }
+
+  /**
+   * @param AgentBinary $model
+   * @param array $arr key-value associations for update
+   * @return AgentBinary
+   * @throws Exception
+   */
+  function mset($model, array $arr): AgentBinary {
+    return Util::cast(parent::mset($model, $arr), AgentBinary::class);
+  }
+
+  /**
+   * @param AgentBinary $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return AgentBinary
+   * @throws Exception
+   */
+  function set($model, string $key, $value): AgentBinary {
+    return Util::cast(parent::set($model, $key, $value), AgentBinary::class);
   }
 }

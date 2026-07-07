@@ -37,12 +37,7 @@ class DAccessControl {
   const LOGIN_ACCESS  = "loginAccess";
   
   static function getConstants() {
-    try {
-      $oClass = new ReflectionClass(__CLASS__);
-    }
-    catch (ReflectionException $e) {
-      die("Exception: " . $e->getMessage());
-    }
+    $oClass = new ReflectionClass(__CLASS__);
     return $oClass->getConstants();
   }
   

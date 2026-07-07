@@ -13,7 +13,7 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\Util;
 
 class APIGetHashlist extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     //check required values
     if (!PQueryGetHashlist::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_HASHLIST, "Invalid hashlist query!");

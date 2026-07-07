@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class AgentZapFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class AgentZapFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return AgentZap|AgentZap[]
+   * @return AgentZap|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): AgentZap|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class AgentZapFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?AgentZap
+   * @throws Exception
    */
   function get($pk): ?AgentZap {
     return Util::cast(parent::get($pk), AgentZap::class);
@@ -84,9 +89,31 @@ class AgentZapFactory extends AbstractModelFactory {
   
   /**
    * @param AgentZap $model
-   * @return AgentZap
+   * @return ?AgentZap
+   * @throws Exception
    */
-  function save($model): AgentZap {
+  function save($model): ?AgentZap {
     return Util::cast(parent::save($model), AgentZap::class);
+  }
+
+  /**
+   * @param AgentZap $model
+   * @param array $arr key-value associations for update
+   * @return AgentZap
+   * @throws Exception
+   */
+  function mset($model, array $arr): AgentZap {
+    return Util::cast(parent::mset($model, $arr), AgentZap::class);
+  }
+
+  /**
+   * @param AgentZap $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return AgentZap
+   * @throws Exception
+   */
+  function set($model, string $key, $value): AgentZap {
+    return Util::cast(parent::set($model, $key, $value), AgentZap::class);
   }
 }

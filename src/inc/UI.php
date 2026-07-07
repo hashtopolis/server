@@ -50,7 +50,7 @@ class UI {
   public static function getNumMessages($type = "ALL"): int {
     $count = 0;
     foreach (self::$objects['messages'] as $message) {
-      /** @var $message DataSet */
+      /** @var DataSet $message */
       if ($message->getVal('type') == $type || $type == "ALL") {
         $count++;
       }

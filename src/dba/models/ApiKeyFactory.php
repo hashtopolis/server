@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class ApiKeyFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class ApiKeyFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return ApiKey|ApiKey[]
+   * @return ApiKey|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): ApiKey|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class ApiKeyFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?ApiKey
+   * @throws Exception
    */
   function get($pk): ?ApiKey {
     return Util::cast(parent::get($pk), ApiKey::class);
@@ -84,9 +89,31 @@ class ApiKeyFactory extends AbstractModelFactory {
   
   /**
    * @param ApiKey $model
-   * @return ApiKey
+   * @return ?ApiKey
+   * @throws Exception
    */
-  function save($model): ApiKey {
+  function save($model): ?ApiKey {
     return Util::cast(parent::save($model), ApiKey::class);
+  }
+
+  /**
+   * @param ApiKey $model
+   * @param array $arr key-value associations for update
+   * @return ApiKey
+   * @throws Exception
+   */
+  function mset($model, array $arr): ApiKey {
+    return Util::cast(parent::mset($model, $arr), ApiKey::class);
+  }
+
+  /**
+   * @param ApiKey $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return ApiKey
+   * @throws Exception
+   */
+  function set($model, string $key, $value): ApiKey {
+    return Util::cast(parent::set($model, $key, $value), ApiKey::class);
   }
 }

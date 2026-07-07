@@ -60,7 +60,7 @@ class HashlistUtils {
   /**
    * @param string $hash
    * @param User $user
-   * @return Hash
+   * @return ?Hash
    * @throws HTException
    */
   public static function getHash($hash, $user) {
@@ -258,10 +258,10 @@ class HashlistUtils {
       $jF2 = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskWrapperFactory());
       $jF3 = new JoinFilter(Factory::getHashlistFactory(), Hashlist::HASHLIST_ID, TaskWrapper::HASHLIST_ID, Factory::getTaskWrapperFactory());
       $joined = Factory::getAssignmentFactory()->filter([Factory::JOIN => [$jF1, $jF2, $jF3]]);
-      /** @var $assignments Assignment[] */
+      /** @var Assignment[] $assignments */
       $assignments = $joined[Factory::getAssignmentFactory()->getModelName()];
       for ($x = 0; $x < sizeof($assignments); $x++) {
-        /** @var $hashlist Hashlist */
+        /** @var Hashlist $hashlist */
         $hashlist = $joined[Factory::getHashlistFactory()->getModelName()][$x];
         if ($hashlist->getId() == $hashlist->getId()) {
           Factory::getAssignmentFactory()->delete($joined[Factory::getAssignmentFactory()->getModelName()][$x]);
@@ -272,7 +272,7 @@ class HashlistUtils {
   
   /**
    * @param int $hashlistId
-   * @param int $isSecret
+   * @param $isArchived
    * @param User $user
    * @throws HTException
    */
@@ -463,7 +463,7 @@ class HashlistUtils {
           $crackedIn[$hashEntry->getHashlistId()]++;
         }
 
-        $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1, Hash::TIME_CRACKED => time()]);
+        $hashEntry = $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1, Hash::TIME_CRACKED => time()]);
 
         if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
           $zaps[] = new Zap(null, $hashEntry->getHash(), time(), null, $hashlist->getId());
@@ -514,7 +514,7 @@ class HashlistUtils {
             $crackedIn[$hashEntry->getHashlistId()]++;
           }
 
-          $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1, Hash::TIME_CRACKED => time()]);
+          $hashEntry = $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1, Hash::TIME_CRACKED => time()]);
 
           if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
             $zaps[] = new Zap(null, $hashEntry->getHash(), time(), null, $hashlist->getId());
@@ -588,13 +588,13 @@ class HashlistUtils {
     $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, $hashlist->getId(), "=", Factory::getHashlistHashlistFactory());
     $jF = new JoinFilter(Factory::getHashlistFactory(), HashlistHashlist::PARENT_HASHLIST_ID, Hashlist::HASHLIST_ID, Factory::getHashlistHashlistFactory());
     $joined = Factory::getHashlistHashlistFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $superHashlists Hashlist[] */
     $superHashlists = $joined[Factory::getHashlistFactory()->getModelName()];
     $toDelete = [];
     foreach ($superHashlists as $superHashlist) {
       Factory::getHashlistFactory()->dec($superHashlist, Hashlist::HASH_COUNT, $hashlist->getHashCount());
       Factory::getHashlistFactory()->dec($superHashlist, Hashlist::CRACKED, $hashlist->getCracked());
       
+      /** @var Hashlist $superHashlist */
       if ($superHashlist->getHashCount() <= 0) {
         // this superhashlist has no hashlist which belongs to it anymore -> delete it
         $toDelete[] = $superHashlist;
@@ -931,7 +931,7 @@ class HashlistUtils {
         }
         fclose($file);
         unlink($tmpfile);
-        Factory::getHashlistFactory()->mset($hashlist, [Hashlist::HASH_COUNT => $added, Hashlist::CRACKED => $preFound]);
+        $hashlist = Factory::getHashlistFactory()->mset($hashlist, [Hashlist::HASH_COUNT => $added, Hashlist::CRACKED => $preFound]);
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
         
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
@@ -1002,7 +1002,7 @@ class HashlistUtils {
         fclose($file);
         unlink($tmpfile);
         
-        Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, $added);
+        $hashlist = Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, $added);
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
         
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
@@ -1015,7 +1015,7 @@ class HashlistUtils {
         }
         fclose($file);
         unlink($tmpfile);
-        Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, 1);
+        $hashlist = Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, 1);
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
         
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
@@ -1197,7 +1197,7 @@ class HashlistUtils {
     }
     
     $qF = new QueryFilter(Hashlist::HASHLIST_ID, $hashlist->getId(), "=");
-    $uS = new UpdateSet(Hashlist::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
+    $uS = new UpdateSet(Hashlist::ACCESS_GROUP_ID, $accessGroup->getId());
     Factory::getHashlistFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
     
     $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");

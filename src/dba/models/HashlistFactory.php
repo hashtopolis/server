@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class HashlistFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class HashlistFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Hashlist|Hashlist[]
+   * @return Hashlist|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Hashlist|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class HashlistFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Hashlist
+   * @throws Exception
    */
   function get($pk): ?Hashlist {
     return Util::cast(parent::get($pk), Hashlist::class);
@@ -84,9 +89,31 @@ class HashlistFactory extends AbstractModelFactory {
   
   /**
    * @param Hashlist $model
-   * @return Hashlist
+   * @return ?Hashlist
+   * @throws Exception
    */
-  function save($model): Hashlist {
+  function save($model): ?Hashlist {
     return Util::cast(parent::save($model), Hashlist::class);
+  }
+
+  /**
+   * @param Hashlist $model
+   * @param array $arr key-value associations for update
+   * @return Hashlist
+   * @throws Exception
+   */
+  function mset($model, array $arr): Hashlist {
+    return Util::cast(parent::mset($model, $arr), Hashlist::class);
+  }
+
+  /**
+   * @param Hashlist $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Hashlist
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Hashlist {
+    return Util::cast(parent::set($model, $key, $value), Hashlist::class);
   }
 }

@@ -15,12 +15,12 @@ use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\Util;
 
 class APILogin extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     if (!PQueryLogin::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::LOGIN, "Invalid login query!");
     }
     $this->checkToken(PActions::LOGIN, $QUERY);
-    Factory::getAgentFactory()->set($this->agent, Agent::CLIENT_SIGNATURE, htmlentities($QUERY[PQueryLogin::CLIENT_SIGNATURE], ENT_QUOTES, "UTF-8"));
+    $this->agent = Factory::getAgentFactory()->set($this->agent, Agent::CLIENT_SIGNATURE, htmlentities($QUERY[PQueryLogin::CLIENT_SIGNATURE], ENT_QUOTES, "UTF-8"));
     $this->updateAgent(PActions::LOGIN);
     
     DServerLog::log(DServerLog::DEBUG, "Agent logged in", [$this->agent]);

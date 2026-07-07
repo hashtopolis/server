@@ -170,7 +170,7 @@ class SupertaskUtils {
     $joinedTasks = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     
     Factory::getSupertaskPretaskFactory()->massDeletion([Factory::FILTER => $qF]);
-    /** @var $pretasks Pretask[] */
+    /** @var Pretask[] $pretasks */
     $pretasks = $joinedTasks[Factory::getPretaskFactory()->getModelName()];
     
     foreach ($pretasks as $pretask) {
@@ -268,7 +268,7 @@ class SupertaskUtils {
     $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertask->getId(), "=", Factory::getSupertaskPretaskFactory());
     $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
     $joined = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $pretasks Pretask[] */
+    /** @var Pretask[] $pretasks */
     $pretasks = $joined[Factory::getPretaskFactory()->getModelName()];
     
     Factory::getAgentFactory()->getDB()->beginTransaction();

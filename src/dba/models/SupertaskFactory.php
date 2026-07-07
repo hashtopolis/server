@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class SupertaskFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class SupertaskFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Supertask|Supertask[]
+   * @return Supertask|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Supertask|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class SupertaskFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Supertask
+   * @throws Exception
    */
   function get($pk): ?Supertask {
     return Util::cast(parent::get($pk), Supertask::class);
@@ -84,9 +89,31 @@ class SupertaskFactory extends AbstractModelFactory {
   
   /**
    * @param Supertask $model
-   * @return Supertask
+   * @return ?Supertask
+   * @throws Exception
    */
-  function save($model): Supertask {
+  function save($model): ?Supertask {
     return Util::cast(parent::save($model), Supertask::class);
+  }
+
+  /**
+   * @param Supertask $model
+   * @param array $arr key-value associations for update
+   * @return Supertask
+   * @throws Exception
+   */
+  function mset($model, array $arr): Supertask {
+    return Util::cast(parent::mset($model, $arr), Supertask::class);
+  }
+
+  /**
+   * @param Supertask $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Supertask
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Supertask {
+    return Util::cast(parent::set($model, $key, $value), Supertask::class);
   }
 }

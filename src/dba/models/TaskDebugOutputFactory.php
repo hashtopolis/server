@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class TaskDebugOutputFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return TaskDebugOutput|TaskDebugOutput[]
+   * @return TaskDebugOutput|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): TaskDebugOutput|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?TaskDebugOutput
+   * @throws Exception
    */
   function get($pk): ?TaskDebugOutput {
     return Util::cast(parent::get($pk), TaskDebugOutput::class);
@@ -84,9 +89,31 @@ class TaskDebugOutputFactory extends AbstractModelFactory {
   
   /**
    * @param TaskDebugOutput $model
-   * @return TaskDebugOutput
+   * @return ?TaskDebugOutput
+   * @throws Exception
    */
-  function save($model): TaskDebugOutput {
+  function save($model): ?TaskDebugOutput {
     return Util::cast(parent::save($model), TaskDebugOutput::class);
+  }
+
+  /**
+   * @param TaskDebugOutput $model
+   * @param array $arr key-value associations for update
+   * @return TaskDebugOutput
+   * @throws Exception
+   */
+  function mset($model, array $arr): TaskDebugOutput {
+    return Util::cast(parent::mset($model, $arr), TaskDebugOutput::class);
+  }
+
+  /**
+   * @param TaskDebugOutput $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return TaskDebugOutput
+   * @throws Exception
+   */
+  function set($model, string $key, $value): TaskDebugOutput {
+    return Util::cast(parent::set($model, $key, $value), TaskDebugOutput::class);
   }
 }

@@ -12,7 +12,7 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
 
 class APIDeRegisterAgent extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     //check required values
     if (!PQueryDeRegister::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::DEREGISTER, "Invalid de-registering query!");

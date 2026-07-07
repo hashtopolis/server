@@ -17,7 +17,7 @@ use Hashtopolis\dba\models\Task;
 use Hashtopolis\inc\Util;
 
 class APISendKeyspace extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     if (!PQuerySendKeyspace::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_KEYSPACE, "Invalid keyspace query!");
     }
@@ -53,7 +53,7 @@ class APISendKeyspace extends APIBasic {
         $this->sendErrorResponse(PActions::SEND_KEYSPACE, "Server parsed a negative keyspace, it's very likely that the number was too big to be handled by the server system!");
       }
       
-      Factory::getTaskFactory()->set($task, Task::KEYSPACE, $keyspace);
+      $task = Factory::getTaskFactory()->set($task, Task::KEYSPACE, $keyspace);
       DServerLog::log(DServerLog::TRACE, "Keyspace saved", [$this->agent, $task]);
     }
     
@@ -61,7 +61,7 @@ class APISendKeyspace extends APIBasic {
     if ($task->getSkipKeyspace() > $task->getKeyspace() && $task->getKeyspace() != DPrince::PRINCE_KEYSPACE) {
       // skip is too high
       DServerLog::log(DServerLog::ERROR, "Task skip value is too high, putting task inactive!", [$this->agent, $task]);
-      Factory::getTaskFactory()->set($task, Task::PRIORITY, 0);
+      $task = Factory::getTaskFactory()->set($task, Task::PRIORITY, 0);
       $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
       Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
       Util::createLogEntry(DLogEntryIssuer::API, $this->agent->getToken(), DLogEntry::ERROR, "Task with ID " . $task->getId() . " has set a skip value which is too high for its keyspace!");

@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class PreprocessorFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class PreprocessorFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Preprocessor|Preprocessor[]
+   * @return Preprocessor|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Preprocessor|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class PreprocessorFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Preprocessor
+   * @throws Exception
    */
   function get($pk): ?Preprocessor {
     return Util::cast(parent::get($pk), Preprocessor::class);
@@ -84,9 +89,31 @@ class PreprocessorFactory extends AbstractModelFactory {
   
   /**
    * @param Preprocessor $model
-   * @return Preprocessor
+   * @return ?Preprocessor
+   * @throws Exception
    */
-  function save($model): Preprocessor {
+  function save($model): ?Preprocessor {
     return Util::cast(parent::save($model), Preprocessor::class);
+  }
+
+  /**
+   * @param Preprocessor $model
+   * @param array $arr key-value associations for update
+   * @return Preprocessor
+   * @throws Exception
+   */
+  function mset($model, array $arr): Preprocessor {
+    return Util::cast(parent::mset($model, $arr), Preprocessor::class);
+  }
+
+  /**
+   * @param Preprocessor $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Preprocessor
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Preprocessor {
+    return Util::cast(parent::set($model, $key, $value), Preprocessor::class);
   }
 }

@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class RightGroupFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class RightGroupFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return RightGroup|RightGroup[]
+   * @return RightGroup|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): RightGroup|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class RightGroupFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?RightGroup
+   * @throws Exception
    */
   function get($pk): ?RightGroup {
     return Util::cast(parent::get($pk), RightGroup::class);
@@ -84,9 +89,31 @@ class RightGroupFactory extends AbstractModelFactory {
   
   /**
    * @param RightGroup $model
-   * @return RightGroup
+   * @return ?RightGroup
+   * @throws Exception
    */
-  function save($model): RightGroup {
+  function save($model): ?RightGroup {
     return Util::cast(parent::save($model), RightGroup::class);
+  }
+
+  /**
+   * @param RightGroup $model
+   * @param array $arr key-value associations for update
+   * @return RightGroup
+   * @throws Exception
+   */
+  function mset($model, array $arr): RightGroup {
+    return Util::cast(parent::mset($model, $arr), RightGroup::class);
+  }
+
+  /**
+   * @param RightGroup $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return RightGroup
+   * @throws Exception
+   */
+  function set($model, string $key, $value): RightGroup {
+    return Util::cast(parent::set($model, $key, $value), RightGroup::class);
   }
 }

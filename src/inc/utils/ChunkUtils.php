@@ -37,7 +37,7 @@ class ChunkUtils {
     if (($chunk->getCheckpoint() == $chunk->getSkip() || SConfig::getInstance()->getVal(DConfig::DISABLE_TRIMMING)) && $agentChunkSizeMax >= $chunk->getLength()) {
       //chunk has not started yet
       DServerLog::log(DServerLog::TRACE, "Chunk did not start yet and is small enough to give it to agent", [$task, $chunk, $assignment]);
-      Factory::getChunkFactory()->mset($chunk, [
+      return Factory::getChunkFactory()->mset($chunk, [
           Chunk::PROGRESS => $initialProgress,
           Chunk::DISPATCH_TIME => time(),
           Chunk::SOLVE_TIME => 0,
@@ -46,14 +46,13 @@ class ChunkUtils {
           Chunk::SPEED => 0
         ]
       );
-      return $chunk;
     }
     else if ($chunk->getCheckpoint() == $chunk->getSkip() || SConfig::getInstance()->getVal(DConfig::DISABLE_TRIMMING)) {
       //split chunk into two parts
       DServerLog::log(DServerLog::TRACE, "Chunk has not started, but needs to be split", [$task, $chunk, $assignment]);
       $originalLength = $chunk->getLength();
       $firstPart = $chunk;
-      Factory::getChunkFactory()->mset($firstPart, [
+      $firstPart = Factory::getChunkFactory()->mset($firstPart, [
           Chunk::LENGTH => $agentChunkSize,
           Chunk::AGENT_ID => $assignment->getAgentId(),
           Chunk::DISPATCH_TIME => time(),
@@ -72,7 +71,7 @@ class ChunkUtils {
       DServerLog::log(DServerLog::TRACE, "Chunk was started and reached a checkpoint", [$task, $chunk, $assignment]);
       if ($chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint() == 0) {
         // special case when remaining chunk length gets 0
-        Factory::getChunkFactory()->mset($chunk, [
+        $chunk = Factory::getChunkFactory()->mset($chunk, [
             Chunk::PROGRESS => 10000,
             Chunk::STATE => DHashcatStatus::ABORTED_CHECKPOINT,
             Chunk::SPEED => 0
@@ -96,7 +95,7 @@ class ChunkUtils {
         0
       );
       $newChunk = Factory::getChunkFactory()->save($newChunk);
-      Factory::getChunkFactory()->mset($chunk, [
+      $chunk = Factory::getChunkFactory()->mset($chunk, [
           Chunk::LENGTH => $chunk->getCheckpoint() - $chunk->getSkip(),
           Chunk::PROGRESS => 10000,
           Chunk::STATE => DHashcatStatus::ABORTED_CHECKPOINT,
@@ -119,7 +118,7 @@ class ChunkUtils {
     
     // if we have set a skip keyspace we set the the current progress to the skip which was set initially
     if ($task->getSkipKeyspace() > $task->getKeyspaceProgress()) {
-      Factory::getTaskFactory()->set($task, Task::KEYSPACE_PROGRESS, $task->getSkipKeyspace());
+      $task = Factory::getTaskFactory()->set($task, Task::KEYSPACE_PROGRESS, $task->getSkipKeyspace());
     }
     
     $remaining = $task->getKeyspace() - $task->getKeyspaceProgress();
@@ -133,6 +132,7 @@ class ChunkUtils {
       $length = $remaining;
     }
     Factory::getTaskFactory()->inc($task, Task::KEYSPACE_PROGRESS, $length);
+    assert($task instanceof Task);
     $initialProgress = ($task->getUsePreprocessor() || $task->getForcePipe()) ? null : 0;
     $chunk = new Chunk(null, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, $initialProgress, DHashcatStatus::INIT, 0, 0);
     $chunk = Factory::getChunkFactory()->save($chunk);
@@ -170,7 +170,7 @@ class ChunkUtils {
           else if ($chunkSize > 10000) { // just protection to avoid millions or whatever chunk number
             throw new HTException("Too large number of static chunks, most likely because of misconfiguration!");
           }
-          return ceil($keyspace / $chunkSize);
+          return intval(ceil($keyspace / $chunkSize));
         default:
           throw new HTException("Unknown static chunking method!");
       }
@@ -183,7 +183,7 @@ class ChunkUtils {
         return $keyspace;
       }
       
-      $size = floor($keyspace * $benchmark * $chunkTime / 100);
+      $size = floor($keyspace * floatval($benchmark) * $chunkTime / 100);
     }
     else {
       // new benchmarking method
@@ -194,8 +194,8 @@ class ChunkUtils {
       }
       
       // NEW VARIANT
-      $factor = $chunkTime / $benchmark[1] * 1000;
-      $size = floor($factor * $benchmark[0]);
+      $factor = $chunkTime / floatval($benchmark[1]) * 1000;
+      $size = floor($factor * floatval($benchmark[0]));
     }
     
     $chunkSize = $size * $tolerance;
@@ -208,6 +208,6 @@ class ChunkUtils {
       Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Calculated chunk size was 0 on benchmark $benchmark!");
     }
     
-    return $chunkSize;
+    return intval($chunkSize);
   }
 }

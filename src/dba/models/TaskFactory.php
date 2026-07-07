@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class TaskFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class TaskFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return Task|Task[]
+   * @return Task|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): Task|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class TaskFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?Task
+   * @throws Exception
    */
   function get($pk): ?Task {
     return Util::cast(parent::get($pk), Task::class);
@@ -84,9 +89,31 @@ class TaskFactory extends AbstractModelFactory {
   
   /**
    * @param Task $model
-   * @return Task
+   * @return ?Task
+   * @throws Exception
    */
-  function save($model): Task {
+  function save($model): ?Task {
     return Util::cast(parent::save($model), Task::class);
+  }
+
+  /**
+   * @param Task $model
+   * @param array $arr key-value associations for update
+   * @return Task
+   * @throws Exception
+   */
+  function mset($model, array $arr): Task {
+    return Util::cast(parent::mset($model, $arr), Task::class);
+  }
+
+  /**
+   * @param Task $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return Task
+   * @throws Exception
+   */
+  function set($model, string $key, $value): Task {
+    return Util::cast(parent::set($model, $key, $value), Task::class);
   }
 }

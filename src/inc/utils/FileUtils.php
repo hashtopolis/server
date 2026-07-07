@@ -285,7 +285,7 @@ class FileUtils {
       if ($accessGroup == null) {
         throw new HTException("Invalid access group Id!");
       }
-      Factory::getFileFactory()->set($file, File::ACCESS_GROUP_ID, $accessGroup->getId());
+      $file = Factory::getFileFactory()->set($file, File::ACCESS_GROUP_ID, $accessGroup->getId());
     }
     
     if ($file->getFilename() == $newName) {

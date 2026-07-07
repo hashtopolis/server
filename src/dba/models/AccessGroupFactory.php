@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class AccessGroupFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class AccessGroupFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return AccessGroup|AccessGroup[]
+   * @return AccessGroup|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): AccessGroup|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class AccessGroupFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?AccessGroup
+   * @throws Exception
    */
   function get($pk): ?AccessGroup {
     return Util::cast(parent::get($pk), AccessGroup::class);
@@ -84,9 +89,31 @@ class AccessGroupFactory extends AbstractModelFactory {
   
   /**
    * @param AccessGroup $model
-   * @return AccessGroup
+   * @return ?AccessGroup
+   * @throws Exception
    */
-  function save($model): AccessGroup {
+  function save($model): ?AccessGroup {
     return Util::cast(parent::save($model), AccessGroup::class);
+  }
+
+  /**
+   * @param AccessGroup $model
+   * @param array $arr key-value associations for update
+   * @return AccessGroup
+   * @throws Exception
+   */
+  function mset($model, array $arr): AccessGroup {
+    return Util::cast(parent::mset($model, $arr), AccessGroup::class);
+  }
+
+  /**
+   * @param AccessGroup $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return AccessGroup
+   * @throws Exception
+   */
+  function set($model, string $key, $value): AccessGroup {
+    return Util::cast(parent::set($model, $key, $value), AccessGroup::class);
   }
 }

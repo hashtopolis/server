@@ -150,7 +150,7 @@ class UserAPIPretask extends UserAPIBasic {
     if (!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_MAX_AGENTS])) {
       throw new HTException("Invalid query!");
     }
-    PretaskUtils::setMaxAgents($QUERY[UQueryTask::PRETASK_ID], $QUERY[UQueryTask::PRETASK_MAX_AGENTS], $this->user);
+    PretaskUtils::setMaxAgents($QUERY[UQueryTask::PRETASK_ID], $QUERY[UQueryTask::PRETASK_MAX_AGENTS]);
     $this->sendSuccessResponse($QUERY);
   }
   

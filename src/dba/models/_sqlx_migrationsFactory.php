@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class _sqlx_migrationsFactory extends AbstractModelFactory {
@@ -55,7 +58,8 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return _sqlx_migrations|_sqlx_migrations[]
+   * @return _sqlx_migrations|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): _sqlx_migrations|array|null {
     $join = false;
@@ -82,6 +86,7 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?_sqlx_migrations
+   * @throws Exception
    */
   function get($pk): ?_sqlx_migrations {
     return Util::cast(parent::get($pk), _sqlx_migrations::class);
@@ -89,9 +94,31 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
   
   /**
    * @param _sqlx_migrations $model
-   * @return _sqlx_migrations
+   * @return ?_sqlx_migrations
+   * @throws Exception
    */
-  function save($model): _sqlx_migrations {
+  function save($model): ?_sqlx_migrations {
     return Util::cast(parent::save($model), _sqlx_migrations::class);
+  }
+
+  /**
+   * @param _sqlx_migrations $model
+   * @param array $arr key-value associations for update
+   * @return _sqlx_migrations
+   * @throws Exception
+   */
+  function mset($model, array $arr): _sqlx_migrations {
+    return Util::cast(parent::mset($model, $arr), _sqlx_migrations::class);
+  }
+
+  /**
+   * @param _sqlx_migrations $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return _sqlx_migrations
+   * @throws Exception
+   */
+  function set($model, string $key, $value): _sqlx_migrations {
+    return Util::cast(parent::set($model, $key, $value), _sqlx_migrations::class);
   }
 }

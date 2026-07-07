@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class TaskWrapperFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class TaskWrapperFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return TaskWrapper|TaskWrapper[]
+   * @return TaskWrapper|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): TaskWrapper|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class TaskWrapperFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?TaskWrapper
+   * @throws Exception
    */
   function get($pk): ?TaskWrapper {
     return Util::cast(parent::get($pk), TaskWrapper::class);
@@ -84,9 +89,31 @@ class TaskWrapperFactory extends AbstractModelFactory {
   
   /**
    * @param TaskWrapper $model
-   * @return TaskWrapper
+   * @return ?TaskWrapper
+   * @throws Exception
    */
-  function save($model): TaskWrapper {
+  function save($model): ?TaskWrapper {
     return Util::cast(parent::save($model), TaskWrapper::class);
+  }
+
+  /**
+   * @param TaskWrapper $model
+   * @param array $arr key-value associations for update
+   * @return TaskWrapper
+   * @throws Exception
+   */
+  function mset($model, array $arr): TaskWrapper {
+    return Util::cast(parent::mset($model, $arr), TaskWrapper::class);
+  }
+
+  /**
+   * @param TaskWrapper $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return TaskWrapper
+   * @throws Exception
+   */
+  function set($model, string $key, $value): TaskWrapper {
+    return Util::cast(parent::set($model, $key, $value), TaskWrapper::class);
   }
 }

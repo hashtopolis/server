@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class StoredValueFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class StoredValueFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return StoredValue|StoredValue[]
+   * @return StoredValue|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): StoredValue|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class StoredValueFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?StoredValue
+   * @throws Exception
    */
   function get($pk): ?StoredValue {
     return Util::cast(parent::get($pk), StoredValue::class);
@@ -84,9 +89,31 @@ class StoredValueFactory extends AbstractModelFactory {
   
   /**
    * @param StoredValue $model
-   * @return StoredValue
+   * @return ?StoredValue
+   * @throws Exception
    */
-  function save($model): StoredValue {
+  function save($model): ?StoredValue {
     return Util::cast(parent::save($model), StoredValue::class);
+  }
+
+  /**
+   * @param StoredValue $model
+   * @param array $arr key-value associations for update
+   * @return StoredValue
+   * @throws Exception
+   */
+  function mset($model, array $arr): StoredValue {
+    return Util::cast(parent::mset($model, $arr), StoredValue::class);
+  }
+
+  /**
+   * @param StoredValue $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return StoredValue
+   * @throws Exception
+   */
+  function set($model, string $key, $value): StoredValue {
+    return Util::cast(parent::set($model, $key, $value), StoredValue::class);
   }
 }

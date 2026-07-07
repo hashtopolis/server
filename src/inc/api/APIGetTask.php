@@ -21,7 +21,7 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\utils\TaskUtils;
 
 class APIGetTask extends APIBasic {
-  public function execute($QUERY = array()) {
+  public function execute(array $QUERY = array()) {
     if (!PQueryGetTask::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_TASK, "Invalid task query!");
     }
@@ -158,7 +158,7 @@ class APIGetTask extends APIBasic {
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", Factory::getFileTaskFactory());
     $jF = new JoinFilter(Factory::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
     $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var $files File[] */
+    /** @var File[] $files */
     $files = $joined[Factory::getFileFactory()->getModelName()];
     foreach ($files as $file) {
       $taskFiles[] = $file->getFilename();

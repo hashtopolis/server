@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\dba\models;
 
+use Exception;
+use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Util;
 
 class RegVoucherFactory extends AbstractModelFactory {
@@ -50,7 +53,8 @@ class RegVoucherFactory extends AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return RegVoucher|RegVoucher[]
+   * @return RegVoucher|array|null
+   * @throws Exception
    */
   function filter(array $options, bool $single = false): RegVoucher|array|null {
     $join = false;
@@ -77,6 +81,7 @@ class RegVoucherFactory extends AbstractModelFactory {
   /**
    * @param string $pk
    * @return ?RegVoucher
+   * @throws Exception
    */
   function get($pk): ?RegVoucher {
     return Util::cast(parent::get($pk), RegVoucher::class);
@@ -84,9 +89,31 @@ class RegVoucherFactory extends AbstractModelFactory {
   
   /**
    * @param RegVoucher $model
-   * @return RegVoucher
+   * @return ?RegVoucher
+   * @throws Exception
    */
-  function save($model): RegVoucher {
+  function save($model): ?RegVoucher {
     return Util::cast(parent::save($model), RegVoucher::class);
+  }
+
+  /**
+   * @param RegVoucher $model
+   * @param array $arr key-value associations for update
+   * @return RegVoucher
+   * @throws Exception
+   */
+  function mset($model, array $arr): RegVoucher {
+    return Util::cast(parent::mset($model, $arr), RegVoucher::class);
+  }
+
+  /**
+   * @param RegVoucher $model
+   * @param string $key key of the column to update
+   * @param $value
+   * @return RegVoucher
+   * @throws Exception
+   */
+  function set($model, string $key, $value): RegVoucher {
+    return Util::cast(parent::set($model, $key, $value), RegVoucher::class);
   }
 }
