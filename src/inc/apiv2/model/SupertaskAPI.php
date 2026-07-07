@@ -7,6 +7,7 @@ use Hashtopolis\dba\models\Supertask;
 use Hashtopolis\dba\models\SupertaskPretask;
 
 
+use Exception;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
