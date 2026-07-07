@@ -8,7 +8,7 @@ class USectionConfig extends UApi {
   const GET_CONFIG    = "getConfig";
   const SET_CONFIG    = "setConfig";
   
-  public function describe($constant) {
+  public function describe($constant): string {
     return match ($constant) {
       USectionConfig::LIST_SECTIONS => "List available sections in config",
       USectionConfig::LIST_CONFIG => "List config options of a given section",

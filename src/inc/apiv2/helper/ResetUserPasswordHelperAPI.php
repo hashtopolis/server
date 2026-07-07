@@ -5,7 +5,7 @@ namespace Hashtopolis\inc\apiv2\helper;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\HTException;
-use \Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Hashtopolis\inc\utils\UserUtils;
 
 class ResetUserPasswordHelperAPI extends AbstractHelperAPI {

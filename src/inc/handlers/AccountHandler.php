@@ -25,7 +25,7 @@ class AccountHandler implements Handler {
     }
   }
   
-  public function handle($action) {
+  public function handle(string $action): void {
     try {
       switch ($action) {
         case DAccountAction::SET_EMAIL:

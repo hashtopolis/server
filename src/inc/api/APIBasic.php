@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\api;
 
 use Exception;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseErrorMessage;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DServerLog;
@@ -37,14 +38,17 @@ abstract class APIBasic {
   
   public function sendErrorResponse($action, $msg): void {
     $ANS = array();
-    $ANS[PResponseErrorMessage::ACTION] = $action;
-    $ANS[PResponseErrorMessage::RESPONSE] = PValues::ERROR;
+    $ANS[PResponse::ACTION] = $action;
+    $ANS[PResponse::RESPONSE] = PValues::ERROR;
     $ANS[PResponseErrorMessage::MESSAGE] = $msg;
     header("Content-Type: application/json");
     echo json_encode($ANS);
     die();
   }
   
+  /**
+   * @throws Exception
+   */
   public function checkToken($action, $QUERY): void {
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQuery::TOKEN], "=");
     $agent = Factory::getAgentFactory()->filter([Factory::FILTER => array($qF)], true);

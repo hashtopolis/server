@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -30,10 +31,15 @@ class GetAccessGroupsHelperAPI extends AbstractHelperAPI {
   }
   
   /**
-   * @throws NotFoundExceptionInterface
+   * @param Request $request
+   * @param Response $response
+   * @return Response
    * @throws ContainerExceptionInterface
    * @throws HTException
+   * @throws HttpError
    * @throws JsonException
+   * @throws NotFoundExceptionInterface
+   * @throws HttpForbidden
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);

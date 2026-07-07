@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryRegister;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseRegister;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DConfig;
@@ -22,7 +24,10 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 
 class APIRegisterAgent extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     //check required values
     if (!PQueryRegister::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::REGISTER, "Invalid registering query!");
@@ -37,7 +42,7 @@ class APIRegisterAgent extends APIBasic {
     $name = htmlentities($QUERY[PQueryRegister::AGENT_NAME], ENT_QUOTES, "UTF-8");
     
     $cpuOnly = 0;
-    if (isset($QUERY[PQueryRegister::CPU_ONLY]) && $QUERY[PQueryRegister::CPU_ONLY] == true) {
+    if (isset($QUERY[PQueryRegister::CPU_ONLY]) && $QUERY[PQueryRegister::CPU_ONLY]) {
       $cpuOnly = 1;
     }
     
@@ -61,8 +66,8 @@ class APIRegisterAgent extends APIBasic {
       DServerLog::log(DServerLog::INFO, "Assigned agent to access group", [$agent, $accessGroup]);
       
       $this->sendResponse(array(
-          PQueryRegister::ACTION => PActions::REGISTER,
-          PResponseRegister::RESPONSE => PValues::SUCCESS,
+          PResponse::ACTION => PActions::REGISTER,
+          PResponse::RESPONSE => PValues::SUCCESS,
           PResponseRegister::TOKEN => $token
         )
       );

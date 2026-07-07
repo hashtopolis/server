@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\ContainFilter;
@@ -30,6 +31,9 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
     return HealthCheckAgent::class;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getSingleACL(User $user, object $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     $agent = Factory::getAgentFactory()->get($object->getAgentId());
@@ -71,7 +75,7 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
   /**
    * @throws HttpError
    */
-  protected function createObject(array $object): int {
+  protected function createObject(array $data): int {
     throw new HttpError("HealthCheckAgents cannot be created via API");
   }
   

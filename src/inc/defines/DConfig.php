@@ -4,7 +4,6 @@ namespace Hashtopolis\inc\defines;
 
 use Hashtopolis\inc\DataSet;
 use ReflectionClass;
-use ReflectionException;
 
 class DConfig {
   // Section: Cracking/Tasks
@@ -82,7 +81,7 @@ class DConfig {
   const NOTIFICATIONS_PROXY_PORT   = "notificationsProxyPort";
   const NOTIFICATIONS_PROXY_TYPE   = "notificationsProxyType";
   
-  static function getConstants() {
+  static function getConstants(): array {
     $oClass = new ReflectionClass(__CLASS__);
     return $oClass->getConstants();
   }
@@ -92,7 +91,7 @@ class DConfig {
    * @param string $config
    * @return DataSet
    */
-  public static function getSelection($config) {
+  public static function getSelection(string $config): DataSet {
     return match ($config) {
       DConfig::NOTIFICATIONS_PROXY_TYPE => new DataSet([
           DProxyTypes::HTTP => DProxyTypes::HTTP,
@@ -119,7 +118,7 @@ class DConfig {
    * @param $config string
    * @return string
    */
-  public static function getConfigType($config) {
+  public static function getConfigType(string $config): string {
     return match ($config) {
       DConfig::BENCHMARK_TIME => DConfigType::NUMBER_INPUT,
       DConfig::CHUNK_DURATION => DConfigType::NUMBER_INPUT,
@@ -187,7 +186,7 @@ class DConfig {
    * @param $config string
    * @return string
    */
-  public static function getConfigDescription($config) {
+  public static function getConfigDescription(string $config): string {
     return match ($config) {
       DConfig::BENCHMARK_TIME => "Time in seconds an agent should benchmark a task.",
       DConfig::CHUNK_DURATION => "Time in seconds a client should be working on a single chunk.",

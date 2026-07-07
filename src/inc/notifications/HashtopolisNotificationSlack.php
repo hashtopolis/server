@@ -7,18 +7,18 @@ use Hashtopolis\inc\defines\DProxyTypes;
 use Hashtopolis\inc\SConfig;
 
 class HashtopolisNotificationSlack extends HashtopolisNotification {
-  protected     $receiver;
-  public static $name = "Slack";
+  protected string     $receiver;
+  public static string $name = "Slack";
   
-  function getTemplateName() {
+  function getTemplateName(): string {
     return "notifications/slack";
   }
   
-  function getObjects() {
+  function getObjects(): array {
     return array();
   }
   
-  function sendMessage($message, $subject = "") {
+  function sendMessage($message, $subject = ""): bool|string {
     $data = json_encode(array("text" => $message));
     
     $ch = curl_init($this->receiver);

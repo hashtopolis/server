@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\RightGroup;
@@ -10,15 +11,16 @@ use Hashtopolis\inc\Login;
 use Hashtopolis\inc\UI;
 
 class AccessControl {
-  private ?User $user = null;
+  private ?User $user;
   private ?RightGroup $rightGroup = null;
   
   private static ?self $instance = null;
   
   /**
-   * @param User $user
+   * @param ?User $user
    * @param int $groupId
    * @return AccessControl
+   * @throws Exception
    */
   public static function getInstance(?User $user = null, int $groupId = 0): self {
     if ($user != null || $groupId != 0) {
@@ -31,7 +33,7 @@ class AccessControl {
   }
   
   /**
-   * @return User
+   * @return ?User
    */
   public function getUser(): ?User {
     return $this->user;
@@ -39,8 +41,9 @@ class AccessControl {
   
   /**
    * AccessControl constructor.
-   * @param $user User
+   * @param $user ?User
    * @param $groupId int
+   * @throws Exception
    */
   private function __construct(?User $user = null, int $groupId = 0) {
     $this->user = $user;
@@ -54,6 +57,7 @@ class AccessControl {
   
   /**
    * Force a reload of the permissions from the database
+   * @throws Exception
    */
   public function reload(): void {
     if ($this->user != null) {
@@ -110,7 +114,7 @@ class AccessControl {
     }
     $json = json_decode($this->rightGroup->getPermissions(), true);
     foreach ($perm as $p) {
-      if (isset($json[$p]) && $json[$p] == true) {
+      if (isset($json[$p]) && $json[$p]) {
         return true;
       }
     }

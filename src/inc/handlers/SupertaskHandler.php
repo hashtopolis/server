@@ -14,7 +14,7 @@ class SupertaskHandler implements Handler {
     //nothing
   }
   
-  public function handle($action) {
+  public function handle($action): void {
     try {
       switch ($action) {
         case DSupertaskAction::DELETE_SUPERTASK:

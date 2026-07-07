@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
-
-use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\AgentStat;
 use Hashtopolis\dba\ExistsFilter;
 use Hashtopolis\dba\models\User;
@@ -29,6 +28,9 @@ class AgentStatAPI extends AbstractModelAPI {
     return AgentStat::class;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getSingleACL(User $user, object $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     $agent = Factory::getAgentFactory()->get($object->getAgentId());
@@ -61,6 +63,9 @@ class AgentStatAPI extends AbstractModelAPI {
     throw new HttpError("AgentStats cannot be updated via API");
   }
   
+  /**
+   * @throws Exception
+   */
   protected function deleteObject(object $object): void {
     Factory::getAgentStatFactory()->delete($object);
   }

@@ -2,9 +2,11 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\HTException;
 use JsonException;
 use Psr\Container\ContainerExceptionInterface;
@@ -30,10 +32,16 @@ class GetUserPermissionHelperAPI extends AbstractHelperAPI {
   }
   
   /**
-   * @throws NotFoundExceptionInterface
+   * @param Request $request
+   * @param Response $response
+   * @return Response
    * @throws ContainerExceptionInterface
    * @throws HTException
+   * @throws HttpError
    * @throws JsonException
+   * @throws NotFoundExceptionInterface
+   * @throws HttpForbidden
+   * @throws Exception
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);

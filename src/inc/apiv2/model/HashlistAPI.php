@@ -134,7 +134,7 @@ class HashlistAPI extends AbstractModelAPI {
       if (strlen($data["sourceData"]) == 0) {
         throw new HttpError("sourceType=paste, requires sourceData to be non-empty");
       }
-      else if ($dummyPost["hashfield"] == false) {
+      else if (!$dummyPost["hashfield"]) {
         throw new HttpError("sourceData not valid base64 encoding");
       }
     }
@@ -160,7 +160,7 @@ class HashlistAPI extends AbstractModelAPI {
     // Modify fields not set on hashlist creation
     if (array_key_exists("notes", $data)) {
       HashlistUtils::editNotes($hashlist->getId(), $data["notes"], $this->getCurrentUser());
-    };
+    }
     HashlistUtils::setArchived($hashlist->getId(), $data[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->getCurrentUser());
     
     return $hashlist->getId();

@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\RightGroup;
@@ -16,6 +17,7 @@ class AccessControlUtils {
   /**
    * @param int $groupId
    * @return User[]
+   * @throws Exception
    */
   public static function getMembers(int $groupId): array {
     $qF = new QueryFilter(User::RIGHT_GROUP_ID, $groupId, "=");
@@ -24,6 +26,7 @@ class AccessControlUtils {
   
   /**
    * @return RightGroup[]
+   * @throws Exception
    */
   public static function getGroups(): array {
     return Factory::getRightGroupFactory()->filter([]);
@@ -31,6 +34,7 @@ class AccessControlUtils {
   
   /**
    * @throws HTException
+   * @throws Exception
    */
   public static function addToPermissions(int $groupId, array $perm): void {
     $group = AccessControlUtils::getGroup($groupId);
@@ -49,6 +53,7 @@ class AccessControlUtils {
    * @param array $perm - Array of strings, permission-1|0
    * @return boolean
    * @throws HTException
+   * @throws Exception
    */
   public static function updateGroupPermissions(int $groupId, array $perm): bool {
     $group = AccessControlUtils::getGroup($groupId);
@@ -96,6 +101,7 @@ class AccessControlUtils {
    * @return RightGroup
    * @throws HttpError
    * @throws HttpConflict
+   * @throws Exception
    */
   public static function createGroup(string $groupName): RightGroup {
     if (strlen($groupName) == 0 || strlen($groupName) > DLimits::ACCESS_GROUP_MAX_LENGTH) {
@@ -115,6 +121,7 @@ class AccessControlUtils {
    * @param int $groupId
    * @throws HttpError
    * @throws HTException
+   * @throws Exception
    */
   public static function deleteGroup(int $groupId): void {
     $group = AccessControlUtils::getGroup($groupId);
@@ -132,6 +139,7 @@ class AccessControlUtils {
    * @param int $groupId
    * @return RightGroup
    * @throws HTException
+   * @throws Exception
    */
   public static function getGroup(int $groupId): RightGroup {
     $group = Factory::getRightGroupFactory()->get($groupId);

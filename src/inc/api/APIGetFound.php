@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryGetFound;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseGetFound;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DServerLog;
@@ -13,7 +15,10 @@ use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\inc\Util;
 
 class APIGetFound extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     //check required values
     if (!PQueryGetFound::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_FOUND, "Invalid found query!");
@@ -66,8 +71,8 @@ class APIGetFound extends APIBasic {
       $this->sendErrorResponse(PActions::GET_FOUND, "No hashlists selected/available!");
     }
     $this->sendResponse(array(
-        PResponseGetFound::ACTION => PActions::GET_FOUND,
-        PResponseGetFound::RESPONSE => PValues::SUCCESS,
+        PResponse::ACTION => PActions::GET_FOUND,
+        PResponse::RESPONSE => PValues::SUCCESS,
         PResponseGetFound::URL => "getFound.php?hashlists=" . implode(",", Util::arrayOfIds($hashlists)) . "&token=" . $this->agent->getToken()
       )
     );

@@ -19,7 +19,7 @@ class USectionAgent extends UApi {
   const SET_TRUSTED      = "setTrusted";
   const DELETE_AGENT     = "deleteAgent";
   
-  public function describe($constant) {
+  public function describe($constant): string {
     return match ($constant) {
       USectionAgent::CREATE_VOUCHER => "Creating new vouchers",
       USectionAgent::GET_BINARIES => "Get a list of available agent binaries",

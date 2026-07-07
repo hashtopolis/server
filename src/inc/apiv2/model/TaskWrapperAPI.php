@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroup;
@@ -36,6 +37,9 @@ class TaskWrapperAPI extends AbstractModelAPI {
     return TaskWrapper::class;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getSingleACL(User $user, object $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
@@ -127,6 +131,7 @@ class TaskWrapperAPI extends AbstractModelAPI {
   /**
    * @throws HTException
    * @throws HttpError
+   * @throws Exception
    */
   protected function deleteObject(object $object): void {
     switch ($object->getTaskType()) {

@@ -41,6 +41,9 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
     return TaskWrapperDisplay::class;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getSingleACL(User $user, object $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     

@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryDownloadBinary;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseBinaryDownload;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\agent\PValuesDownloadBinaryType;
@@ -14,7 +16,10 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 
 class APIDownloadBinary extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     if (!PQueryDownloadBinary::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Invalid download query!");
     }
@@ -29,8 +34,8 @@ class APIDownloadBinary extends APIBasic {
         $filename = "7zr" . Util::getFileExtension($this->agent->getOs());
         $path = Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/static/" . $filename;
         $this->sendResponse(array(
-            PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
-            PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
+            PResponse::ACTION => PActions::DOWNLOAD_BINARY,
+            PResponse::RESPONSE => PValues::SUCCESS,
             PResponseBinaryDownload::EXECUTABLE => $path
           )
         );
@@ -40,8 +45,8 @@ class APIDownloadBinary extends APIBasic {
         $filename = "uftpd" . Util::getFileExtension($this->agent->getOs());
         $path = Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/static/" . $filename;
         $this->sendResponse(array(
-            PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
-            PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
+            PResponse::ACTION => PActions::DOWNLOAD_BINARY,
+            PResponse::RESPONSE => PValues::SUCCESS,
             PResponseBinaryDownload::EXECUTABLE => $path
           )
         );

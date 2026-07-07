@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\helper;
 
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\models\Hashlist;
@@ -52,8 +53,12 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to import cracked hashes into a hashlist.
+   * @param $data
+   * @return object|array|null
    * @throws HTException
    * @throws HttpError
+   * @throws HttpErrorException
+   * @throws ResourceNotFoundError
    */
   public function actionPost($data): object|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
@@ -79,12 +84,12 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
       if (strlen($data["sourceData"]) == 0) {
         throw new HttpError("sourceType=paste, requires sourceData to be non-empty");
       }
-      else if ($dummyPost["hashfield"] == false) {
+      else if (!$dummyPost["hashfield"]) {
         throw new HttpError("sourceData not valid base64 encoding");
       }
     }
     
-    $result = HashlistUtils::processZap($hashlist->getId(), $data["separator"], $data["sourceType"], $dummyPost, [], $this->getCurrentUser(), (isset($data["overwrite"]) && intval($data["overwrite"]) == 1) ? true : false);
+    $result = HashlistUtils::processZap($hashlist->getId(), $data["separator"], $data["sourceType"], $dummyPost, [], $this->getCurrentUser(), isset($data["overwrite"]) && intval($data["overwrite"]) == 1);
     
     return [
       "totalLines" => $result[0],

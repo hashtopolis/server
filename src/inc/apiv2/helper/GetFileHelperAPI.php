@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\HTException;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -34,12 +36,16 @@ class GetFileHelperAPI extends AbstractHelperAPI {
   }
   
   
+  /**
+   * @throws HttpErrorException
+   */
   public function actionPost(array $data): object|array|null {
     throw new HttpErrorException("GetFile has no POST");
   }
   
   /**
    * @throws HTException
+   * @throws Exception
    */
   public function validateFile($request, $file_id): string {
     if (!is_numeric($file_id)) {
@@ -87,6 +93,7 @@ class GetFileHelperAPI extends AbstractHelperAPI {
    * @return Response
    * @throws HTException
    * @throws HttpErrorException
+   * @throws HttpForbidden
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);

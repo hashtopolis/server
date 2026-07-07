@@ -4,6 +4,8 @@ namespace Hashtopolis\inc\apiv2\helper;
 
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\TaskUtils;
 
@@ -35,7 +37,11 @@ class ResetChunkHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to reset a chunk.
+   * @param array $data
+   * @return object|array|null
    * @throws HTException
+   * @throws HttpError
+   * @throws ResourceNotFoundError
    */
   public function actionPost(array $data): object|array|null {
     $chunk = self::getChunk($data[Chunk::CHUNK_ID]);

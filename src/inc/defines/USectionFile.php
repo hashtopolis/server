@@ -12,7 +12,7 @@ class USectionFile extends UApi {
   const DELETE_FILE   = "deleteFile";
   const SET_FILE_TYPE = "setFileType";
   
-  public function describe($constant) {
+  public function describe($constant): string {
     return match ($constant) {
       USectionFile::LIST_FILES => "List all files",
       USectionFile::GET_FILE => "Get details of a file",

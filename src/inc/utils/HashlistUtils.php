@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\inc\DataSet;
 use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\QueryFilter;
@@ -48,8 +49,9 @@ class HashlistUtils {
    * @param string $notes
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function editNotes($hashlistId, $notes, $user) {
+  public static function editNotes(int $hashlistId, string $notes, User $user): void {
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to hashlist!");
@@ -62,8 +64,9 @@ class HashlistUtils {
    * @param User $user
    * @return ?Hash
    * @throws HTException
+   * @throws Exception
    */
-  public static function getHash($hash, $user) {
+  public static function getHash(string $hash, User $user): ?Hash {
     $qF = new QueryFilter(Hash::HASH, $hash, "=");
     $hashes = Factory::getHashFactory()->filter([Factory::FILTER => $qF]);
     foreach ($hashes as $hash) {
@@ -81,9 +84,11 @@ class HashlistUtils {
   
   /**
    * @param User $user
+   * @param bool $archived
    * @return Hashlist[]
+   * @throws Exception
    */
-  public static function getHashlists($user, $archived = false) {
+  public static function getHashlists(User $user, bool $archived = false): array {
     $qF1 = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
     $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user)));
     $qF3 = new QueryFilter(Hashlist::IS_ARCHIVED, $archived ? 1 : 0, "=");
@@ -93,8 +98,9 @@ class HashlistUtils {
   /**
    * @param User $user
    * @return Hashlist[]
+   * @throws Exception
    */
-  public static function getSuperhashlists($user) {
+  public static function getSuperhashlists(User $user): array {
     $qF1 = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
     $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user)));
     return Factory::getHashlistFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
@@ -106,8 +112,9 @@ class HashlistUtils {
    * @param User $user
    * @return int
    * @throws HTException
+   * @throws Exception
    */
-  public static function applyPreconfTasks($hashlistId, $pretasks, $user) {
+  public static function applyPreconfTasks(int $hashlistId, array $pretasks, User $user): int {
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to hashlist!");
@@ -124,7 +131,7 @@ class HashlistUtils {
     foreach ($pretasks as $pretask) {
       $task = Factory::getPretaskFactory()->get($pretask);
       if ($task != null) {
-        if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
+        if ($hashlist->getHexSalt() == 1 && !str_contains($task->getAttackCmd(), "--hex-salt")) {
           $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
         }
         $taskPriority = 0;
@@ -182,8 +189,9 @@ class HashlistUtils {
    * @param User $user
    * @return array
    * @throws HTException
+   * @throws Exception
    */
-  public static function createWordlists($hashlistId, $user) {
+  public static function createWordlists(int $hashlistId, User $user): array {
     // create wordlist from hashlist cracked hashes
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     $lists = Util::checkSuperHashlist($hashlist);
@@ -221,7 +229,7 @@ class HashlistUtils {
         $hashes = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF, Factory::LIMIT => $lF]);
         foreach ($hashes as $hash) {
           $plain = $hash->getPlaintext();
-          if (strlen($plain) >= 8 && substr($plain, 0, 5) == "\$HEX[" && substr($plain, strlen($plain) - 1, 1) == "]") {
+          if (strlen($plain) >= 8 && str_starts_with($plain, "\$HEX[") && str_ends_with($plain, "]")) {
             $plain = Util::hextobin(substr($plain, 5, strlen($plain) - 6));
           }
           $buffer .= $plain . "\n";
@@ -244,15 +252,16 @@ class HashlistUtils {
    * @param int $isSecret
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function setSecret($hashlistId, $isSecret, $user) {
+  public static function setSecret(int $hashlistId, int $isSecret, User $user): void {
     // switch hashlist secret state
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to hashlist!");
     }
-    Factory::getHashlistFactory()->set($hashlist, Hashlist::IS_SECRET, intval($isSecret));
-    if (intval($isSecret) == 1) {
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::IS_SECRET, $isSecret);
+    if ($isSecret == 1) {
       //handle agents which are assigned to hashlists which are secret now
       $jF1 = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID, Factory::getAssignmentFactory());
       $jF2 = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskWrapperFactory());
@@ -261,9 +270,9 @@ class HashlistUtils {
       /** @var Assignment[] $assignments */
       $assignments = $joined[Factory::getAssignmentFactory()->getModelName()];
       for ($x = 0; $x < sizeof($assignments); $x++) {
-        /** @var Hashlist $hashlist */
-        $hashlist = $joined[Factory::getHashlistFactory()->getModelName()][$x];
-        if ($hashlist->getId() == $hashlist->getId()) {
+        /** @var Hashlist $check */
+        $check = $joined[Factory::getHashlistFactory()->getModelName()][$x];
+        if ($hashlist->getId() == $check->getId()) {
           Factory::getAssignmentFactory()->delete($joined[Factory::getAssignmentFactory()->getModelName()][$x]);
         }
       }
@@ -272,11 +281,12 @@ class HashlistUtils {
   
   /**
    * @param int $hashlistId
-   * @param $isArchived
+   * @param int $isArchived
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function setArchived($hashlistId, $isArchived, $user) {
+  public static function setArchived(int $hashlistId, int $isArchived, User $user): void {
     // switch hashlist archived state
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
@@ -298,7 +308,7 @@ class HashlistUtils {
       throw new HTException("Hashlist cannot be archived as it is part of an existing superhashlist!");
     }
     
-    Factory::getHashlistFactory()->set($hashlist, Hashlist::IS_ARCHIVED, intval($isArchived));
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::IS_ARCHIVED, $isArchived);
   }
   
   /**
@@ -306,8 +316,9 @@ class HashlistUtils {
    * @param string $name
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function rename($hashlistId, $name, $user) {
+  public static function rename(int $hashlistId, string $name, User $user): void {
     // change hashlist name
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
@@ -326,8 +337,9 @@ class HashlistUtils {
    * @param boolean $overwritePlaintext
    * @return int[]
    * @throws HTException
+   * @throws Exception
    */
-  public static function processZap($hashlistId, $separator, $source, $post, $files, $user, $overwritePlaintext) {
+  public static function processZap(int $hashlistId, string $separator, string $source, array $post, array $files, User $user, bool $overwritePlaintext): array {
     // pre-crack hashes processor
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
@@ -375,7 +387,7 @@ class HashlistUtils {
     while (!feof($file)) {
       $buffer = fread($file, 1024);
       foreach ($lineSeparators as $ls) {
-        if (strpos($buffer, $ls) !== false) {
+        if (str_contains($buffer, $ls)) {
           $lineSeparator = $ls;
           break;
         }
@@ -388,8 +400,8 @@ class HashlistUtils {
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $hashlists = Util::checkSuperHashlist($hashlist);
     $inSuperHashlists = array();
-    $hashlist = $hashlists[0];
-    if (sizeof($hashlists) == 1 && $hashlist->getId() == $hashlist->getId()) {
+    $check = $hashlists[0];
+    if (sizeof($hashlists) == 1 && $hashlist->getId() == $check->getId()) {
       $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, $hashlist->getId(), "=");
       $inSuperHashlists = Factory::getHashlistHashlistFactory()->filter([Factory::FILTER => $qF]);
     }
@@ -576,8 +588,9 @@ class HashlistUtils {
    * @param User $user
    * @return int
    * @throws HTException
+   * @throws Exception
    */
-  public static function delete($hashlistId, $user) {
+  public static function delete(int $hashlistId, User $user): int {
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to this hashlist!");
@@ -635,7 +648,6 @@ class HashlistUtils {
     
     switch ($hashlist->getFormat()) {
       case 0:
-        $count = Factory::getHashlistFactory()->countFilter([]);
         $qF = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
         Factory::getHashFactory()->massDeletion([Factory::FILTER => $qF]);
         break;
@@ -685,8 +697,9 @@ class HashlistUtils {
    * @param int $hashlistId
    * @return Hashlist
    * @throws HTException
+   * @throws Exception
    */
-  public static function getHashlist($hashlistId) {
+  public static function getHashlist(int $hashlistId): Hashlist {
     $hashlist = Factory::getHashlistFactory()->get($hashlistId);
     if ($hashlist == null) {
       throw new HTException("Invalid hashlist!");
@@ -699,8 +712,9 @@ class HashlistUtils {
    * @param User $user
    * @return File
    * @throws HTException
+   * @throws Exception
    */
-  public static function export($hashlistId, $user) {
+  public static function export(int $hashlistId, User $user): File {
     // export cracked hashes to a file
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     $hashlists = Util::checkSuperHashlist($hashlist);
@@ -724,8 +738,8 @@ class HashlistUtils {
     }
     
     $hashlistIds = array();
-    foreach ($hashlists as $hashlist) {
-      $hashlistIds[] = $hashlist->getId();
+    foreach ($hashlists as $hl) {
+      $hashlistIds[] = $hl->getId();
     }
     $qF1 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
     $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
@@ -766,8 +780,7 @@ class HashlistUtils {
     usleep(1000000);
     
     $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), DFileType::OTHER, $hashlist->getAccessGroupId(), $numEntries);
-    $file = Factory::getFileFactory()->save($file);
-    return $file;
+    return Factory::getFileFactory()->save($file);
   }
   
   /**
@@ -788,16 +801,15 @@ class HashlistUtils {
    * @param int $brainFeatures
    * @return Hashlist
    * @throws HTException
+   * @throws HttpError
+   * @throws Exception
    */
-  public static function createHashlist($name, $isSalted, $isSecret, $isHexSalted, $separator, $format, $hashtype, $saltSeparator, $accessGroupId, $source, $post, $files, $user, $brainId, $brainFeatures) {
+  public static function createHashlist(string $name, bool $isSalted, bool $isSecret, bool $isHexSalted, string $separator, int $format, int $hashtype, string $saltSeparator, int $accessGroupId, string $source, array $post, array $files, User $user, int $brainId, int $brainFeatures): Hashlist {
     $salted = ($isSalted) ? "1" : "0";
     $secret = ($isSecret) ? "1" : "0";
     $hexsalted = ($isHexSalted) ? "1" : "0";
     $brainId = ($brainId) ? "1" : "0";
-    $format = intval($format);
-    $hashtype = intval($hashtype);
     $accessGroup = Factory::getAccessGroupFactory()->get($accessGroupId);
-    $brainFeatures = intval($brainFeatures);
     
     if ($format < DHashlistFormat::PLAIN || $format > DHashlistFormat::BINARY) {
       throw new HttpError("Invalid hashlist format!");
@@ -869,7 +881,7 @@ class HashlistUtils {
           // find out if the first line contains field separator
           rewind($file);
           $bufline = stream_get_line($file, 1024);
-          if (strpos($bufline, $saltSeparator) === false) {
+          if (!str_contains($bufline, $saltSeparator)) {
             throw new HttpError("Salted hashes separator not found in file!");
           }
         }
@@ -937,8 +949,6 @@ class HashlistUtils {
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
         break;
       case DHashlistFormat::WPA:
-        $added = 0;
-        $values = [];
         while (!feof($file)) {
           if ($hashlist->getHashTypeId() == 2500) { // HCCAPX hashes
             $data = fread($file, 393);
@@ -980,7 +990,7 @@ class HashlistUtils {
             if (strlen($line) == 0) {
               continue;
             }
-            if (strpos($line, "*") !== false) {
+            if (str_contains($line, "*")) {
               // in case the other format with * as separator was used, we convert it to : to be consistent with the newest format
               $line = str_replace("*", ":", $line);
             }
@@ -1030,10 +1040,11 @@ class HashlistUtils {
    * @param string $name
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function createSuperhashlist($hashlists, $name, $user) {
+  public static function createSuperhashlist(array $hashlists, string $name, User $user): void {
     for ($i = 0; $i < sizeof($hashlists); $i++) {
-      if (intval($hashlists[$i]) <= 0) {
+      if ($hashlists[$i] <= 0) {
         unset($hashlists[$i]);
       }
     }
@@ -1061,7 +1072,6 @@ class HashlistUtils {
     foreach ($lists as $list) {
       if ($accessGroupId == null) {
         $accessGroupId = $list->getAccessGroupId();
-        continue;
       }
       else if ($list->getFormat() == DHashlistFormat::SUPERHASHLIST) {
         throw new HTException("You cannot create a new superhashlist containing a superhashlist!");
@@ -1089,8 +1099,9 @@ class HashlistUtils {
    * @param User $user
    * @return File
    * @throws HTException
+   * @throws Exception
    */
-  public static function leftlist($hashlistId, $user) {
+  public static function leftlist(int $hashlistId, User $user): File {
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if ($hashlist->getFormat() == DHashlistFormat::WPA || $hashlist->getFormat() == DHashlistFormat::BINARY) {
       throw new HTException("You cannot create left lists for binary hashes!");
@@ -1151,8 +1162,9 @@ class HashlistUtils {
    * @param $user User
    * @return array
    * @throws HTException
+   * @throws Exception
    */
-  public static function getCrackedHashes($hashlistId, $user) {
+  public static function getCrackedHashes(int $hashlistId, User $user): array {
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     $lists = Util::checkSuperHashlist($hashlist);
     if (!AccessUtils::userCanAccessHashlists($lists, $user)) {
@@ -1186,8 +1198,9 @@ class HashlistUtils {
    * @param $accessGroupId int
    * @param $user User
    * @throws HTException
+   * @throws Exception
    */
-  public static function changeAccessGroup($hashlistId, $accessGroupId, $user) {
+  public static function changeAccessGroup(int $hashlistId, int $accessGroupId, User $user): void {
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     $accessGroup = AccessGroupUtils::getGroup($accessGroupId);
     

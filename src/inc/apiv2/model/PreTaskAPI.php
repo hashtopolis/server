@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
 
@@ -57,6 +58,7 @@ class PreTaskAPI extends AbstractModelAPI {
   /**
    * @param object $object
    * @return int
+   * @throws Exception
    */
   protected function getAggregateAuxiliaryKeyspace(object $object): int {
     $qF1 = new QueryFilter(FilePretask::PRETASK_ID, $object->getId(), "=", Factory::getFilePretaskFactory());

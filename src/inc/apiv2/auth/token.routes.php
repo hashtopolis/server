@@ -7,6 +7,8 @@ use Hashtopolis\inc\StartupConfig;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+use Random\RandomException;
+use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 
 use Hashtopolis\dba\QueryFilter;
@@ -20,7 +22,14 @@ use Hashtopolis\inc\apiv2\error\HttpForbidden;
 require_once(dirname(__FILE__) . "/../../startup/include.php");
 
 const USER_AUD = "user_hashtopolis";
-function generateTokenForUser(Request $request, string $userName, int $expires) {
+
+/**
+ * @throws HttpError
+ * @throws RandomException
+ * @throws HttpForbidden
+ * @throws Exception
+ */
+function generateTokenForUser(Request $request, string $userName, int $expires): string {
   $jti = bin2hex(random_bytes(16));
   
   $filter = new QueryFilter(User::USERNAME, $userName, "=");
@@ -71,10 +80,8 @@ function generateTokenForUser(Request $request, string $userName, int $expires) 
     "kid" =>  hash("sha256", $secret),
     "aud" => USER_AUD
   ];
-
-  $token = JWT::encode($payload, $secret, "HS256");
-
-  return $token;
+  
+  return JWT::encode($payload, $secret, "HS256");
 }
 
 function extractBearerToken(Request $request): ?string {
@@ -92,7 +99,7 @@ function extractBearerToken(Request $request): ?string {
 }
 
 // Exchanges an oauth token for a application JWT token
-/** @var \Slim\App $app */
+/** @var App $app */
 $app->group("/api/v2/auth/oauth-token", function (RouteCollectorProxy $group) {
 
   $group->post('', function (Request $request, Response $response, array $args): Response {

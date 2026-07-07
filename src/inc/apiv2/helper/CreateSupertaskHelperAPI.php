@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
@@ -12,6 +13,8 @@ use Hashtopolis\dba\models\Supertask;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\SupertaskUtils;
@@ -48,7 +51,12 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to create a supertask from a supertask template
+   * @param $data
+   * @return object|array|null
    * @throws HTException
+   * @throws HttpError
+   * @throws ResourceNotFoundError
+   * @throws Exception
    */
   public function actionPost($data): object|array|null {
     $supertaskTemplate = self::getSupertask($data["supertaskTemplateId"]);

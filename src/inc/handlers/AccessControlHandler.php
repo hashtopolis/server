@@ -13,7 +13,7 @@ class AccessControlHandler implements Handler {
     //we need nothing to load
   }
   
-  public function handle($action) {
+  public function handle(string $action): void {
     try {
       switch ($action) {
         case DAccessControlAction::CREATE_GROUP:
@@ -23,11 +23,11 @@ class AccessControlHandler implements Handler {
           die();
         case DAccessControlAction::DELETE_GROUP:
           AccessControl::getInstance()->checkPermission(DAccessControlAction::DELETE_GROUP_PERM);
-          AccessControlUtils::deleteGroup($_POST['groupId']);
+          AccessControlUtils::deleteGroup(intval($_POST['groupId']));
           break;
         case DAccessControlAction::EDIT:
           AccessControl::getInstance()->checkPermission(DAccessControlAction::EDIT_PERM);
-          $changes = AccessControlUtils::updateGroupPermissions($_POST['groupId'], $_POST['perm']);
+          $changes = AccessControlUtils::updateGroupPermissions(intval($_POST['groupId']), $_POST['perm']);
           if ($changes) {
             UI::addMessage(UI::WARN, "NOTE: Some permissions were additionally allowed because of dependencies!");
           }

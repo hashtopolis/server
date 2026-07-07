@@ -27,7 +27,7 @@ class NotificationHandler implements Handler {
     // nothing required here
   }
   
-  public function handle($action) {
+  public function handle($action): void {
     try {
       switch ($action) {
         case DNotificationAction::CREATE_NOTIFICATION:

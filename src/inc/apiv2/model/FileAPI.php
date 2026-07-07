@@ -65,10 +65,16 @@ class FileAPI extends AbstractModelAPI {
     ];
   }
   
+  /**
+   * @throws Exception
+   */
   static protected function getImportPath(): string {
     return Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . '/';
   }
   
+  /**
+   * @throws Exception
+   */
   static protected function getFilesPath(): string {
     return Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . '/';
   }
@@ -79,6 +85,7 @@ class FileAPI extends AbstractModelAPI {
   /**
    * @throws HTException
    * @throws HttpError
+   * @throws Exception
    */
   protected function createObject(array $data): int {
     /* Validate target filename */
@@ -146,7 +153,7 @@ class FileAPI extends AbstractModelAPI {
         $this->getImportPath() . $data["sourceData"],
         $this->getImportPath() . $data[File::FILENAME]
       );
-    };
+    }
     
     try {
       /* Create the file, calculating (e.g. lines) and checking validity (e.g. file exists) */
@@ -159,7 +166,7 @@ class FileAPI extends AbstractModelAPI {
           $this->getImportPath() . $data[File::FILENAME],
           $this->getImportPath() . $data["sourceData"]
         );
-      };
+      }
       throw $e;
     }
     

@@ -11,7 +11,7 @@ class USectionUser extends UApi {
   const SET_USER_PASSWORD    = "setUserPassword";
   const SET_USER_RIGHT_GROUP = "setUserRightGroup";
   
-  public function describe($constant) {
+  public function describe($constant): string {
     return match ($constant) {
       USectionUser::LIST_USERS => "List all users",
       USectionUser::GET_USER => "Get details of a user",

@@ -49,6 +49,8 @@ use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\utils\AccessUtils;
 use PDO;
+use Random\RandomException;
+use SplFileObject;
 
 /**
  *
@@ -64,7 +66,7 @@ class Util {
    * @param string $filename
    * @return string
    */
-  public static function extractFileExtension($filename) {
+  public static function extractFileExtension(string $filename): string {
     $split = explode(".", $filename);
     if (sizeof($split) == 1) {
       return "";
@@ -80,7 +82,7 @@ class Util {
    * @param string $dest
    * @throws HTException
    */
-  public static function downloadFromUrl($url, $dest) {
+  public static function downloadFromUrl(string $url, string $dest): void {
     $furl = fopen($url, "rb");
     if (!$furl) {
       throw new HTException("Failed to open URL!");
@@ -109,10 +111,11 @@ class Util {
    * @param int $agentId corresponding agent to show data from, 0 to sum up from all agents on this task
    * @param int $delta time distance between the data points
    * @return int[]
+   * @throws Exception
    */
-  public static function getSpeedDataSet($taskId, $limit = 50, $agentId = 0, $delta = 10) {
+  public static function getSpeedDataSet(int $taskId, int $limit = 50, int $agentId = 0, int $delta = 10): array {
     // if agentId is 0 we need to find out how many agents there are to find how many entries we would need max
-    $requestLimit = intval($limit) * $delta / 5;
+    $requestLimit = $limit * $delta / 5;
     if ($agentId == 0) { // This might be to rewritten, it's just an estimation how to calculate an ideal number of entries to be requested
       // we cannot request all entries here as this number might grow quite quickly over time
       $qF = new QueryFilter(Assignment::TASK_ID, $taskId, "=");
@@ -168,8 +171,9 @@ class Util {
    *
    * @param int $hashtypeId
    * @return string
+   * @throws Exception
    */
-  public static function getHashtypeById($hashtypeId) {
+  public static function getHashtypeById(int $hashtypeId): string {
     $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
     if ($hashtype == null) {
       return "N/A";
@@ -183,7 +187,7 @@ class Util {
    * @param bool $hashOnly
    * @return string
    */
-  public static function getGitCommit($hashOnly = false) {
+  public static function getGitCommit(bool $hashOnly = false): string {
     $gitcommit = "";
     $gitfolder = dirname(__FILE__) . "/../../.git";
     if (file_exists($gitfolder) && is_dir($gitfolder)) {
@@ -210,8 +214,9 @@ class Util {
   /**
    * function to check agent version for older update scripts, that still has
    * the 'type' field in AgentBinary instead of 'binaryType'
+   * @throws Exception
    */
-  public static function checkAgentVersionLegacy($type, $version, $silent = false) {
+  public static function checkAgentVersionLegacy($type, $version, $silent = false): void {
     $agentBinaryFactory = Factory::getAgentBinaryFactory();
     $dict = $agentBinaryFactory->getNullObject()->getKeyValueDict();
     unset($dict["binaryType"]);
@@ -255,8 +260,9 @@ class Util {
    * @param string $type
    * @param string $version
    * @param bool $silent
+   * @throws Exception
    */
-  public static function checkAgentVersion($type, $version, $silent = false) {
+  public static function checkAgentVersion(string $type, string $version, bool $silent = false): void {
     $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");
     $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($binary != null) {
@@ -274,8 +280,10 @@ class Util {
   
   /**
    * @return boolean
+   * @throws Exception
+   * @deprecated
    */
-  public static function isYubikeyEnabled() {
+  public static function isYubikeyEnabled(): bool {
     $clientId = SConfig::getInstance()->getVal(DConfig::YUBIKEY_ID);
     if (!is_numeric($clientId) || $clientId <= 0) {
       return false;
@@ -296,8 +304,9 @@ class Util {
    * @param $issuerId string either the ID of the user or the token of the client
    * @param $level string
    * @param $message string
+   * @throws Exception
    */
-  public static function createLogEntry($issuer, $issuerId, $level, $message) {
+  public static function createLogEntry(string $issuer, string $issuerId, string $level, string $message): void {
     $count = Factory::getLogEntryFactory()->countFilter(array());
     if ($count > SConfig::getInstance()->getVal(DConfig::NUMBER_LOGENTRIES) * 1.2) {
       // if we have exceeded the log entry limit by 20%, delete the oldest ones
@@ -329,14 +338,14 @@ class Util {
    * @param bool $pretty
    * @return string[] found report template file names
    */
-  public static function scanReportDirectory($type = "", $pretty = false) {
+  public static function scanReportDirectory(string $type = "", bool $pretty = false): array {
     $directory = dirname(__FILE__) . "/../templates/report/";
     if (file_exists($directory) && is_dir($directory)) {
       $reportDir = opendir($directory);
       $reports = array();
       while ($file = readdir($reportDir)) {
-        if ($file[0] != '.' && $file != "." && $file != ".." && !is_dir($file) && strpos($file, ".tex") !== false) {
-          if (strlen($type) > 0 && strpos($file, $type . "-") !== 0) {
+        if ($file[0] != '.' && $file != "." && $file != ".." && !is_dir($file) && str_contains($file, ".tex")) {
+          if (strlen($type) > 0 && !str_starts_with($file, $type . "-")) {
             continue;
           }
           if ($pretty) {
@@ -355,10 +364,11 @@ class Util {
   /**
    * Escapes special chars before they can be entered into the report template to avoid mess-up with latex
    *
+   * @deprecated
    * @param string $string
    * @return string
    */
-  public static function texEscape($string) {
+  public static function texEscape(string $string): string {
     $output = "";
     for ($i = 0; $i < strlen($string); $i++) {
       if ($string[$i] == '#') {
@@ -380,8 +390,9 @@ class Util {
   /**
    * Scans the import-directory for files. Directories are ignored.
    * @return array of all files in the top-level directory /../import
+   * @throws Exception
    */
-  public static function scanImportDirectory() {
+  public static function scanImportDirectory(): array {
     $directory = Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/";
     if (file_exists($directory) && is_dir($directory)) {
       $importDirectory = opendir($directory);
@@ -402,7 +413,7 @@ class Util {
    * @param $in mixed calculation to be done
    * @return mixed
    */
-  public static function calculate($in) {
+  public static function calculate(mixed $in): mixed {
     return $in;
   }
   
@@ -413,8 +424,9 @@ class Util {
    * @param $type string
    * @param $accessGroupId int
    * @return bool true if the save of the file model succeeded
+   * @throws Exception
    */
-  public static function insertFile($path, $name, $type, $accessGroupId) {
+  public static function insertFile(string $path, string $name, string $type, int $accessGroupId): bool {
     $fileType = DFileType::OTHER;
     if ($type == 'rule') {
       $fileType = DFileType::RULE;
@@ -442,8 +454,9 @@ class Util {
   /**
    * @param $task Task
    * @return array
+   * @throws Exception
    */
-  public static function getTaskInfo($task) {
+  public static function getTaskInfo(Task $task): array {
     $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     
     $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
@@ -477,8 +490,9 @@ class Util {
    * @param $task Task
    * @param $accessGroups AccessGroup[]
    * @return array
+   * @throws Exception
    */
-  public static function getFileInfo($task, $accessGroups) {
+  public static function getFileInfo(Task $task, array $accessGroups): array {
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", Factory::getFileTaskFactory());
     $jF = new JoinFilter(Factory::getFileTaskFactory(), FileTask::FILE_ID, File::FILE_ID);
     $joinedFiles = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
@@ -502,8 +516,9 @@ class Util {
   /**
    * @param $task Task
    * @return array
+   * @throws Exception
    */
-  public static function getChunkInfo($task) {
+  public static function getChunkInfo(Task $task): array {
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $agg1 = new Aggregation(Chunk::CRACKED, "SUM");
     $agg2 = new Aggregation(Chunk::CHUNK_ID, "COUNT");
@@ -521,8 +536,9 @@ class Util {
   /**
    * @param $userId int
    * @return array
+   * @throws Exception
    */
-  public static function getAccessGroupIds($userId) {
+  public static function getAccessGroupIds(int $userId): array {
     $qF = new QueryFilter(AccessGroupUser::USER_ID, $userId, "=", Factory::getAccessGroupUserFactory());
     $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
@@ -531,7 +547,12 @@ class Util {
     return Util::arrayOfIds($accessGroups);
   }
   
-  public static function loadTasks($archived = false) {
+  /**
+   * @param bool $archived
+   * @return void
+   * @throws Exception
+   */
+  public static function loadTasks(bool $archived = false): void {
     $accessGroupIds = Util::getAccessGroupIds(Login::getInstance()->getUserID());
     $accessGroups = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
     
@@ -617,8 +638,9 @@ class Util {
   /**
    * @param $taskWrapper TaskWrapper
    * @return bool
+   * @throws Exception
    */
-  public static function checkTaskWrapperCompleted($taskWrapper) {
+  public static function checkTaskWrapperCompleted(TaskWrapper $taskWrapper): bool {
     $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
     $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF]);
     foreach ($tasks as $task) {
@@ -640,7 +662,10 @@ class Util {
     return true;
   }
   
-  public static function cleaning() {
+  /**
+   * @throws Exception
+   */
+  public static function cleaning(): void {
     $entry = Factory::getStoredValueFactory()->get(DCleaning::LAST_CLEANING);
     if ($entry == null) {
       $entry = new StoredValue(DCleaning::LAST_CLEANING, 0);
@@ -659,8 +684,9 @@ class Util {
    * Checks if it is longer than 10 mins since the last time it was checked if there are
    * any old agent statistic entries which can be deleted. If necessary, check is executed
    * and old entries are deleted.
+   * @throws Exception
    */
-  public static function agentStatCleaning() {
+  public static function agentStatCleaning(): void {
     $lifetime = intval(SConfig::getInstance()->getVal(DConfig::AGENT_DATA_LIFETIME));
     if ($lifetime <= 0) {
       $lifetime = 3600;
@@ -675,8 +701,9 @@ class Util {
   
   /**
    * Used by the solver. Cleans the zap-queue
+   * @throws Exception
    */
-  public static function zapCleaning() {
+  public static function zapCleaning(): void {
     $zapFilter = new QueryFilter(Zap::SOLVE_TIME, time() - 600, "<=");
     
     // delete dependencies on AgentZap
@@ -696,8 +723,9 @@ class Util {
    * metadata to determine upload expiration, and removes expired metadata files
    * together with their corresponding upload (.part) files. It performs file
    * system operations and may delete files on disk.
+   * @throws Exception
    */
-  public static function tusFileCleaning() {
+  public static function tusFileCleaning(): void {
     $tusDirectory = Factory::getStoredValueFactory()->get(DDirectories::TUS);
     
     if ($tusDirectory !== null) {
@@ -737,7 +765,7 @@ class Util {
    * @param $file string Filepath you want to get the size from
    * @return int -1 if the file doesn't exist, else filesize
    */
-  public static function filesize($file) {
+  public static function filesize(string $file): int {
     if (!file_exists($file)) {
       return -1;
     }
@@ -747,7 +775,7 @@ class Util {
     }
     $pos = 0;
     $size = 1073741824;
-    fseek($fp, 0, SEEK_SET);
+    fseek($fp, 0);
     while ($size > 1) {
       fseek($fp, $size, SEEK_CUR);
       
@@ -773,13 +801,13 @@ class Util {
    * @param $file string Filepath you want to get the size from
    * @return int -1 if the file doesn't exist, else filesize
    */
-  public static function fileLineCount($file) {
+  public static function fileLineCount(string $file): int {
     if (!file_exists($file)) {
       return -1;
     }
     // find out what a prettier solution for this would be, as opposed to setting the max execution time to an arbitrary two hours
     ini_set('max_execution_time', '7200');
-    $file = new \SplFileObject($file, 'r');
+    $file = new SplFileObject($file, 'r');
     $file->seek(PHP_INT_MAX);
     
     return $file->key();
@@ -790,7 +818,7 @@ class Util {
    * @param $file string Filepath you want to get the size from
    * @return int -1 if the file doesn't exist, else filesize
    */
-  public static function rulefileLineCount($file) {
+  public static function rulefileLineCount(string $file): int {
     if (!file_exists($file)) {
       return -1;
     }
@@ -800,7 +828,7 @@ class Util {
     $handle = fopen($file, "r");
     while (!feof($handle)) {
       $line = fgets($handle);
-      if (!(Util::startsWith($line, '#') or trim($line) == "")) {
+      if (!(str_starts_with($line, '#') or trim($line) == "")) {
         $lineCount = $lineCount + 1;
       }
     }
@@ -812,7 +840,7 @@ class Util {
   /**
    * Refreshes the page with the current url, also includes the query string.
    */
-  public static function refresh() {
+  public static function refresh(): void {
     global $_SERVER;
     
     $url = $_SERVER['PHP_SELF'];
@@ -829,8 +857,9 @@ class Util {
    *
    * @param $hashlist Hashlist
    * @return Hashlist[] of all superhashlists belonging to the $list
+   * @throws Exception
    */
-  public static function checkSuperHashlist($hashlist) {
+  public static function checkSuperHashlist(Hashlist $hashlist): array {
     if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
       $jF = new JoinFilter(Factory::getHashlistFactory(), HashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
       $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $hashlist->getId(), "=");
@@ -843,8 +872,9 @@ class Util {
   /**
    * @param $hashlist Hashlist
    * @return Hashlist[] all superhashlists which the hashlist is part of
+   * @throws Exception
    */
-  public static function getParentSuperHashlists($hashlist) {
+  public static function getParentSuperHashlists(Hashlist $hashlist): array {
     if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
       return [];
     }
@@ -858,7 +888,7 @@ class Util {
    * Tries to determine the IP of the client.
    * @return string 0.0.0.0 or the client IP
    */
-  public static function getIP() {
+  public static function getIP(): string {
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
       $ip = $_SERVER['HTTP_CLIENT_IP'];
     }
@@ -879,7 +909,7 @@ class Util {
    * @param $arr array of files to check
    * @return bool
    */
-  public static function checkWriteFiles($arr) {
+  public static function checkWriteFiles(array $arr): bool {
     foreach ($arr as $path) {
       if (!is_writable($path)) {
         return false;
@@ -893,7 +923,7 @@ class Util {
    * @param $binString String you want to convert
    * @return string Hex-String
    */
-  public static function bintohex($binString) {
+  public static function bintohex(string $binString): string {
     $return = "";
     for ($i = 0; $i < strlen($binString); $i++) {
       $hex = dechex(ord($binString[$i]));
@@ -911,7 +941,7 @@ class Util {
    * @param $total int total to be done
    * @return string either the check.png with Finished or an empty string
    */
-  public static function tickdone($prog, $total) {
+  public static function tickdone(int $prog, int $total): string {
     // show tick of progress is done
     if ($total > 0 && $prog >= $total) {
       return ' <span class="fas fa-check" aria-hidden="true"></span>';
@@ -923,8 +953,9 @@ class Util {
    * Returns the username from the given userId
    * @param $id int ID for the user
    * @return string username or unknown-id
+   * @throws Exception
    */
-  public static function getUsernameById($id) {
+  public static function getUsernameById(int $id): string {
     $user = Factory::getUserFactory()->get($id);
     if ($user === null) {
       return "Unknown" . ((strlen("" . $id) > 0) ? "-$id" : "");
@@ -934,10 +965,10 @@ class Util {
   
   /**
    * Used in Template. Converts seconds to human readable format
-   * @param $seconds
+   * @param int $seconds
    * @return string
    */
-  public static function sectotime($seconds) {
+  public static function sectotime(int $seconds): string {
     $return = "";
     if ($seconds > 86400) {
       $days = floor($seconds / 86400);
@@ -954,18 +985,18 @@ class Util {
    * @param $string string to check
    * @return string escaped string
    */
-  public static function escapeSpecial($string) {
+  public static function escapeSpecial(string $string): string {
     $string = htmlentities($string, ENT_QUOTES, "UTF-8");
     $string = str_replace('"', '&#34;', $string);
     $string = str_replace("'", "&#39;", $string);
-    $string = str_replace('`', '&#96;', $string);
-    return $string;
+    return str_replace('`', '&#96;', $string);
   }
   
   /**
    * Checks if the given string contains characters which are blacklisted
    * @param $string string
    * @return bool true if at least one character is in the blacklist
+   * @throws Exception
    */
   public static function containsBlacklistedChars(string $string): bool {
     $blacklisted = SConfig::getInstance()->getVal(DConfig::BLACKLIST_CHARS);
@@ -980,11 +1011,11 @@ class Util {
   /**
    * Used in Template
    * TODO: this should be made a bit better
-   * @param $val string of the array
-   * @param $id int index of the array
+   * @param int $val index of the array
+   * @param string $id identifier of the array to request
    * @return string the element or empty string
    */
-  public static function getStaticArray($val, $id) {
+  public static function getStaticArray(int $val, string $id): string {
     $platforms = array(
       "unknown",
       "NVidia",
@@ -1022,7 +1053,7 @@ class Util {
     );
     switch ($id) {
       case 'os':
-        if ($val == '-1') {
+        if ($val == -1) {
           return $platforms[0];
         }
         return $oses[$val];
@@ -1033,7 +1064,7 @@ class Util {
       case 'formattables':
         return $formattables[$val];
       case 'platforms':
-        if ($val == '-1') {
+        if ($val == -1) {
           return $platforms[0];
         }
         return $platforms[$val];
@@ -1046,7 +1077,7 @@ class Util {
    * @param $binary2 CrackerBinary
    * @return int
    */
-  public static function versionComparisonBinary($binary1, $binary2) {
+  public static function versionComparisonBinary(CrackerBinary $binary1, CrackerBinary $binary2): int {
     if (Comparator::greaterThan($binary1->getVersion(), $binary2->getVersion())) {
       return 1;
     }
@@ -1057,13 +1088,14 @@ class Util {
   }
   
   /**
+   * @deprecated semver should be used for version comparison
    * @param string $versionString1
    * @param string $versionString2
    * @return int 1 if version2 is newer, 0 if equal and -1 if version1 is newer
    */
-  public static function updateVersionComparison($versionString1, $versionString2) {
-    if (!Util::startsWith($versionString1, "update_v") || !Util::startsWith($versionString2, "update_v")) {
-      return Util::startsWith($versionString1, "update_v") ? -1 : 1;
+  public static function updateVersionComparison(string $versionString1, string $versionString2): int {
+    if (!str_starts_with($versionString1, "update_v") || !str_starts_with($versionString2, "update_v")) {
+      return str_starts_with($versionString1, "update_v") ? -1 : 1;
     }
     $version1 = substr($versionString1, 8, strpos($versionString1, "_", 7) - 8);
     $version2 = substr($versionString2, 8, strpos($versionString2, "_", 7) - 8);
@@ -1084,7 +1116,7 @@ class Util {
    * @param int $divider default 1024
    * @return string Formatted Integer
    */
-  public static function nicenum($num, $threshold = 1024, $divider = 1024) {
+  public static function nicenum(int $num, int $threshold = 1024, int $divider = 1024): string {
     $r = 0;
     while ($num > $threshold) {
       $num /= $divider;
@@ -1106,7 +1138,7 @@ class Util {
    * @param int $decs decimals you want rounded
    * @return string formatted percentage
    */
-  public static function showperc($part, $total, $decs = 2) {
+  public static function showperc(int $part, int $total, int $decs = 2): string {
     if ($total > 0) {
       $percentage = round(($part / $total) * 100, $decs);
       if ($percentage == 100 && $part < $total) {
@@ -1127,10 +1159,11 @@ class Util {
    * TODO: this function can be improved, some else blocks can be removed when handling a bit differently
    * @param $target string File you want to write to
    * @param $type string paste, upload, import or url
-   * @param $sourcedata string|array
+   * @param $sourcedata array|string
    * @return array (boolean, string) success, msg detailing what happened
+   * @throws Exception
    */
-  public static function uploadFile($target, $type, $sourcedata) {
+  public static function uploadFile(string $target, string $type, array|string $sourcedata): array {
     $success = false;
     $msg = "ALL_OK";
     if (!file_exists($target)) {
@@ -1190,7 +1223,6 @@ class Util {
               $msg = "Could not open target file!";
             }
             else {
-              $downed = 0;
               $buffersize = 131072;
               $last_logged = time();
               while (!feof($furl)) {
@@ -1199,7 +1231,6 @@ class Util {
                   break;
                 }
                 fwrite($fileLocation, $data);
-                $downed += strlen($data);
                 if ($last_logged < time() - 10) {
                   $last_logged = time();
                 }
@@ -1222,28 +1253,21 @@ class Util {
     return array($success, $msg);
   }
   
-  public static function getFileExtension($os) {
-    switch ($os) {
-      case DOperatingSystem::LINUX:
-        $ext = ".bin";
-        break;
-      case DOperatingSystem::WINDOWS:
-        $ext = ".exe";
-        break;
-      case DOperatingSystem::OSX:
-        $ext = ".osx";
-        break;
-      default:
-        $ext = "";
-    }
-    return $ext;
+  public static function getFileExtension(int $os): string {
+    return match ($os) {
+      DOperatingSystem::LINUX => ".bin",
+      DOperatingSystem::WINDOWS => ".exe",
+      DOperatingSystem::OSX => ".osx",
+      default => "",
+    };
   }
   
   /**
    * This function determines the protocol, domain and port of the webserver and puts it together as baseurl.
    * @return string basic server url
+   * @throws Exception
    */
-  public static function buildServerUrl() {
+  public static function buildServerUrl(): string {
     // when the server hostname is set on the config, use this
     if (strlen(SConfig::getInstance()->getVal(DConfig::BASE_HOST)) > 0) {
       return SConfig::getInstance()->getVal(DConfig::BASE_HOST);
@@ -1269,15 +1293,13 @@ class Util {
    * @param $dec Number of decimals
    * @return string Rounded value
    */
-  public static function niceround($num, $dec) {
+  public static function niceround($num, $dec): string {
     $return = strval(round($num, $dec));
     if ($dec > 0) {
       $pointPosition = strpos($return, ".");
       if ($pointPosition === false) {
         $return .= ".";
-        for ($i = 0; $i < $dec; $i++) {
-          $return .= "0";
-        }
+        $return .= str_repeat("0", $dec);
       }
       else {
         while (strlen($return) - $pointPosition <= $dec) {
@@ -1290,11 +1312,11 @@ class Util {
   
   /**
    * Cut a string to a certain number of letters. If the string is too long, instead replaces the last three letters with ...
-   * @param $string String you want to short
-   * @param $length Number of Elements you want the string to have
+   * @param string $string String you want to short
+   * @param int $length Number of Elements you want the string to have
    * @return string Formatted string
    */
-  public static function shortenstring($string, $length) {
+  public static function shortenstring(string $string, int $length): string {
     // shorten string that would be too long
     $return = "<span title='$string'>";
     if (strlen($string) > $length) {
@@ -1309,11 +1331,11 @@ class Util {
   
   /**
    * Adds 0s to the beginning of a number until it reaches size.
-   * @param $number
-   * @param $size
+   * @param int $number
+   * @param int $size
    * @return string
    */
-  public static function prefixNum($number, $size) {
+  public static function prefixNum(int $number, int $size): string {
     $formatted = "" . $number;
     while (strlen($formatted) < $size) {
       $formatted = "0" . $formatted;
@@ -1328,7 +1350,7 @@ class Util {
    *          string to convert
    * @return string converted string into hex
    */
-  public static function strToHex($string) {
+  public static function strToHex(string $string): string {
     return implode(unpack("H*", $string));
   }
   
@@ -1337,7 +1359,7 @@ class Util {
    * @param $b Chunk
    * @return int
    */
-  public static function compareChunksTime($a, $b) {
+  public static function compareChunksTime(Chunk $a, Chunk $b): int {
     if ($a->getDispatchTime() == $b->getDispatchTime()) {
       return 0;
     }
@@ -1364,8 +1386,9 @@ class Util {
    *          html content of the email
    * @param string $plaintext plaintext version of the email content
    * @return bool true on success, false on failure
+   * @throws Exception
    */
-  public static function sendMail($address, $subject, $text, $plaintext) {
+  public static function sendMail(string $address, string $subject, string $text, string $plaintext): bool {
     if (!self::isMailConfigured()) {
       error_log(("Mail notification is not configured. No message sent."));
       return false;
@@ -1399,8 +1422,9 @@ class Util {
    *          length of random string to generate
    * @param string $charset
    * @return string random string
+   * @throws RandomException
    */
-  public static function randomString($length, $charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") {
+  public static function randomString(int $length, string $charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"): string {
     $result = "";
     for ($x = 0; $x < $length; $x++) {
       $result .= $charset[random_int(0, strlen($charset) - 1)];
@@ -1409,35 +1433,38 @@ class Util {
   }
   
   /**
+   * @deprecated php standard library now offers this
+   *
    * Checks if $search starts with $pattern. Shortcut for strpos==0
    * @param $search
    * @param $pattern
    * @return bool
    */
-  public static function startsWith($search, $pattern) {
-    if (strpos($search, $pattern) === 0) {
+  public static function startsWith($search, $pattern): bool {
+    if (str_starts_with($search, $pattern)) {
       return true;
     }
     return false;
   }
   
   /**
+   * @deprecated php standard library now offers this
+   *
    * if pattern is empty or if pattern is at the end of search
    * @param $search
    * @param $pattern
    * @return bool
    */
-  public static function endsWith($search, $pattern) {
-    // search forward starting from end minus needle length characters
-    return $pattern === "" || (($temp = strlen($search) - strlen($pattern)) >= 0 && strpos($search, $pattern, $temp) !== FALSE);
+  public static function endsWith($search, $pattern): bool {
+    return str_ends_with($search, $pattern);
   }
   
   /**
    * Converts a hex to binary
-   * @param $data
+   * @param string $data
    * @return string
    */
-  public static function hextobin($data) {
+  public static function hextobin(string $data): string {
     $res = "";
     for ($i = 0; $i < strlen($data) - 1; $i += 2) {
       $res .= chr(hexdec(substr($data, $i, 2)));
@@ -1446,12 +1473,15 @@ class Util {
   }
   
   /**
-   * @note dev
-   * Sets the max length of hashes in the database
    * @param $limit int limit for hash length
    * @return bool true on success
+   * @throws Exception
+   *
+   * @deprecated this should NOT be used anymore, hash is a text field!
+   *
+   * Sets the max length of hashes in the database
    */
-  public static function setMaxHashLength($limit) {
+  public static function setMaxHashLength(int $limit): bool {
     if ($limit < 1) {
       return false;
     }
@@ -1475,12 +1505,14 @@ class Util {
   }
   
   /**
-   * @note dev
    * Sets the max length of plaintexts in the database
    * @param $limit int limit for hash length
    * @return bool true on success
+   *
+   * @throws Exception
+   * @deprecated this should NOT be used anymore, plain is a text field!
    */
-  public static function setPlaintextMaxLength($limit) {
+  public static function setPlaintextMaxLength(int $limit): bool {
     if ($limit < 1) {
       return false;
     }
@@ -1504,7 +1536,7 @@ class Util {
    * @param $array AbstractModel[]
    * @return array
    */
-  public static function arrayOfIds($array) {
+  public static function arrayOfIds(array $array): array {
     $arr = array();
     foreach ($array as $entry) {
       $arr[] = $entry->getId();
@@ -1512,9 +1544,13 @@ class Util {
     return $arr;
   }
   
-  // new function added: fileLineCount(). This function is independent of OS.
-  // check whether we can remove one of these functions
-  public static function countLines($tmpfile) {
+  /**
+   * @param string $tmpfile
+   * @return int
+   *@deprecated fileLineCount() should be used
+   *
+   */
+  public static function countLines(string $tmpfile): int {
     if (stripos(PHP_OS, "WIN") === 0) {
       // windows line count
       $ret = exec('find /c /v "" "' . $tmpfile . '"');
@@ -1530,11 +1566,11 @@ class Util {
    * @param $deviceArray string[]
    * @return string[]
    */
-  public static function compressDevices($deviceArray) {
+  public static function compressDevices(array $deviceArray): array {
     $compressed = array();
     foreach ($deviceArray as $device) {
       foreach (DDeviceCompress::COMPRESSION as $pattern => $replacement) {
-        if (strpos($device, $pattern) !== false) {
+        if (str_contains($device, $pattern)) {
           $device = str_replace($pattern, $replacement, $device);
         }
       }
@@ -1543,27 +1579,51 @@ class Util {
     return $compressed;
   }
   
-  public static function getMinorVersion($version) {
+  /**
+   * @deprecated use semver functions
+   *
+   * @param string $version
+   * @return string
+   */
+  public static function getMinorVersion(string $version): string {
     $split = explode(".", $version);
     return $split[0] . "." . $split[1];
   }
   
-  public static function databaseColumnExists($table, $column) {
+  /**
+   * Does not use prepared statements, make sure input is sanitized!
+   *
+   * @throws Exception
+   */
+  public static function databaseColumnExists(string $table, string $column): bool {
     $result = Factory::getAgentFactory()->getDB()->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
     return $result->rowCount() > 0;
   }
   
-  public static function databaseTableExists($table) {
+  /**
+   * Does not use prepared statements, make sure input is sanitized!
+   *
+   * @throws Exception
+   */
+  public static function databaseTableExists(string $table): bool {
     $result = Factory::getAgentFactory()->getDB()->query("SHOW TABLES LIKE '$table';");
     return $result->rowCount() > 0;
   }
   
-  public static function databaseIndexExists($table, $column) {
+  /**
+   * Does not use prepared statements, make sure input is sanitized!
+   *
+   * @throws Exception
+   */
+  public static function databaseIndexExists(string $table, string $column): bool {
     $result = Factory::getAgentFactory()->getDB()->query("SHOW INDEX FROM `$table` WHERE Column_name='$column'");
     return $result->rowCount() > 0;
   }
   
-  public static function checkDataDirectory($key, $dir) {
+  /**
+   * @throws Exception
+   */
+  public static function checkDataDirectory($key, $dir): void {
     $entry = Factory::getStoredValueFactory()->get($key);
     if ($entry == null) {
       $entry = new StoredValue($key, $dir);

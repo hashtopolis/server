@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\HealthCheckAgent;
@@ -22,8 +23,9 @@ class HealthUtils {
   /**
    * @param int $checkAgentId
    * @throws HTException
+   * @throws Exception
    */
-  public static function resetAgentCheck($checkAgentId) {
+  public static function resetAgentCheck(int $checkAgentId): void {
     $checkAgent = Factory::getHealthCheckAgentFactory()->get($checkAgentId);
     if ($checkAgent == null) {
       throw new HTException("Invalid health check agent ID!");
@@ -54,8 +56,9 @@ class HealthUtils {
    * Checks if there is a running health check which the agent has not completed yet.
    * @param Agent $agent
    * @return HealthCheckAgent|bool
+   * @throws Exception
    */
-  public static function checkNeeded($agent) {
+  public static function checkNeeded(Agent $agent): bool|HealthCheckAgent {
     $qF1 = new QueryFilter(HealthCheckAgent::AGENT_ID, $agent->getId(), "=");
     $qF2 = new QueryFilter(HealthCheckAgent::STATUS, DHealthCheckAgentStatus::PENDING, "=");
     $check = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
@@ -75,8 +78,9 @@ class HealthUtils {
   /**
    * Check if the health check is completed (all agents sent a response)
    * @param HealthCheck $healthCheck
+   * @throws Exception
    */
-  public static function checkCompletion($healthCheck) {
+  public static function checkCompletion(HealthCheck $healthCheck): void {
     $qF = new QueryFilter(HealthCheckAgent::HEALTH_CHECK_ID, $healthCheck->getId(), "=");
     $checks = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => $qF]);
     foreach ($checks as $check) {
@@ -92,10 +96,9 @@ class HealthUtils {
    * @return string
    * @throws HTException
    */
-  private static function getAttackMode($type) {
-    switch ($type) {
-      case DHealthCheckType::BRUTE_FORCE:
-        return " -a 3";
+  private static function getAttackMode(int $type): string {
+    if ($type == DHealthCheckType::BRUTE_FORCE) {
+      return " -a 3";
     }
     throw new HTException("Not able to get attack mode for this type!");
   }
@@ -106,7 +109,7 @@ class HealthUtils {
    * @return string
    * @throws HTException
    */
-  private static function getAttackInput($hashtypeId, $type) {
+  private static function getAttackInput(int $hashtypeId, int $type): string {
     if ($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::MD5) {
       return " -1 ?l?u?d ?1?1?1?1?1";
     }
@@ -123,7 +126,7 @@ class HealthUtils {
    * @return string
    * @throws HTException
    */
-  private static function getAttackPlain($hashtypeId, $type, $crackable) {
+  private static function getAttackPlain(int $hashtypeId, int $type, bool $crackable): string {
     if ($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::MD5) {
       return Util::randomString(($crackable) ? 5 : 8);
     }
@@ -137,14 +140,12 @@ class HealthUtils {
    * @param int $hashtypeId
    * @return integer
    */
-  private static function getAttackNumHashes($hashtypeId) {
-    switch ($hashtypeId) {
-      case DHealthCheckMode::MD5:
-        return 100;
-      case DHealthCheckMode::BCRYPT:
-        return 10;
-    }
-    return DHealthCheck::NUM_HASHES;
+  private static function getAttackNumHashes(int $hashtypeId): int {
+    return match ($hashtypeId) {
+      DHealthCheckMode::MD5 => 100,
+      DHealthCheckMode::BCRYPT => 10,
+      default => DHealthCheck::NUM_HASHES,
+    };
   }
   
   /**
@@ -153,8 +154,10 @@ class HealthUtils {
    * @param int $crackerBinaryId
    * @return HealthCheck
    * @throws HttpError
+   * @throws HTException
+   * @throws Exception
    */
-  public static function createHealthCheck($hashtypeId, $type, $crackerBinaryId) {
+  public static function createHealthCheck(int $hashtypeId, int $type, int $crackerBinaryId): HealthCheck {
     $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryId);
     if ($crackerBinary == null) {
       throw new HttpError("Invalid cracker binary selected!");
@@ -211,22 +214,20 @@ class HealthUtils {
    * @return string
    * @throws HTException
    */
-  public static function generateHash($hashtypeId, $plain) {
-    switch ($hashtypeId) {
-      case DHealthCheckMode::MD5:
-        return md5($plain);
-      case DHealthCheckMode::BCRYPT:
-        return password_hash($plain, PASSWORD_BCRYPT, ["cost" => 5]);
-      default:
-        throw new HTException("No implementation for this hash type available to generate hashes!");
-    }
+  public static function generateHash(int $hashtypeId, string $plain): string {
+    return match ($hashtypeId) {
+      DHealthCheckMode::MD5 => md5($plain),
+      DHealthCheckMode::BCRYPT => password_hash($plain, PASSWORD_BCRYPT, ["cost" => 5]),
+      default => throw new HTException("No implementation for this hash type available to generate hashes!"),
+    };
   }
   
   /**
    * @param int $healthCheckId
    * @throws HTException
+   * @throws Exception
    */
-  public static function deleteHealthCheck($healthCheckId) {
+  public static function deleteHealthCheck(int $healthCheckId): void {
     $healthCheck = Factory::getHealthCheckFactory()->get($healthCheckId);
     if ($healthCheck === null) {
       throw new HTException("Invalid health check!");

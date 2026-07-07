@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
 use Hashtopolis\dba\models\Pretask;
 use Hashtopolis\dba\models\Supertask;
 use Hashtopolis\dba\models\SupertaskPretask;
@@ -9,6 +10,7 @@ use Hashtopolis\dba\models\SupertaskPretask;
 
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Hashtopolis\inc\utils\SupertaskUtils;
@@ -44,6 +46,9 @@ class SupertaskAPI extends AbstractModelAPI {
     ];
   }
   
+  /**
+   * @throws HttpError
+   */
   protected function createObject(array $data): int {
     /* Use quirk on 'pretasks' since this is casted to DB representation  */
     $supertask = SupertaskUtils::createSupertask(
@@ -54,8 +59,13 @@ class SupertaskAPI extends AbstractModelAPI {
   }
   
   /**
-   * @throws HttpError
+   * @param Request $request
+   * @param array $data
+   * @param array $args
    * @throws HTException
+   * @throws HttpError
+   * @throws ResourceNotFoundError
+   * @throws Exception
    */
   public function updateToManyRelationship(Request $request, array $data, array $args): void {
     $id = $args['id'];

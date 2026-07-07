@@ -2,10 +2,12 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\HTException;
 use JsonException;
@@ -75,6 +77,8 @@ class GetCracksOfTaskHelper extends AbstractHelperAPI {
    * @throws JsonException
    * @throws ContainerExceptionInterface
    * @throws NotFoundExceptionInterface
+   * @throws HttpForbidden
+   * @throws Exception
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);

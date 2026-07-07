@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryCheckClientVersion;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseClientUpdate;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\agent\PValuesUpdateVersion;
@@ -17,7 +19,10 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 
 class APICheckClientVersion extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     // check if provided hash is the same as script and send file contents if not
     if (!PQueryCheckClientVersion::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::CHECK_CLIENT_VERSION, 'Invalid version check query!');
@@ -38,8 +43,8 @@ class APICheckClientVersion extends APIBasic {
     if (Comparator::greaterThan($result->getVersion(), $version)) {
       DServerLog::log(DServerLog::DEBUG, "Agent " . $this->agent->getId() . " got notified about client update");
       $this->sendResponse(array(
-          PResponseClientUpdate::ACTION => PActions::CHECK_CLIENT_VERSION,
-          PResponseClientUpdate::RESPONSE => PValues::SUCCESS,
+          PResponse::ACTION => PActions::CHECK_CLIENT_VERSION,
+          PResponse::RESPONSE => PValues::SUCCESS,
           PResponseClientUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
           PResponseClientUpdate::URL => Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/agents.php?download=" . $result->getId()
         )
@@ -47,8 +52,8 @@ class APICheckClientVersion extends APIBasic {
     }
     else {
       $this->sendResponse(array(
-          PResponseClientUpdate::ACTION => PActions::CHECK_CLIENT_VERSION,
-          PResponseClientUpdate::RESPONSE => PValues::SUCCESS,
+          PResponse::ACTION => PActions::CHECK_CLIENT_VERSION,
+          PResponse::RESPONSE => PValues::SUCCESS,
           PResponseClientUpdate::VERSION => PValuesUpdateVersion::UP_TO_DATE
         )
       );

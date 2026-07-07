@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Preprocessor;
 use Hashtopolis\dba\QueryFilter;
@@ -23,6 +24,7 @@ class PreprocessorUtils {
    * @return Preprocessor
    * @throws HttpConflict
    * @throws HttpError
+   * @throws Exception
    */
   public static function addPreprocessor(string $name, string $binaryName, string $url, string $keyspaceCommand, string $skipCommand, string $limitCommand): Preprocessor {
     $qF = new QueryFilter(Preprocessor::NAME, $name, "=");
@@ -67,10 +69,12 @@ class PreprocessorUtils {
   }
   
   /**
-   * @param $preprocessorId
+   * @param int $preprocessorId
+   * @throws HTException
    * @throws HttpError
+   * @throws Exception
    */
-  public static function delete($preprocessorId) {
+  public static function delete(int $preprocessorId): void {
     $preprocessor = PreprocessorUtils::getPreprocessor($preprocessorId);
     $qF = new QueryFilter(Task::USE_PREPROCESSOR, $preprocessor->getId(), "=");
     $check = Factory::getTaskFactory()->filter([Factory::FILTER => [$qF]]);
@@ -81,11 +85,12 @@ class PreprocessorUtils {
   }
   
   /**
-   * @param $preprocessorId
+   * @param int $preprocessorId
    * @return Preprocessor
    * @throws HTException
+   * @throws Exception
    */
-  public static function getPreprocessor($preprocessorId) {
+  public static function getPreprocessor(int $preprocessorId): Preprocessor {
     $preprocessor = Factory::getPreprocessorFactory()->get($preprocessorId);
     if ($preprocessor === null) {
       throw new HTException("Invalid preprocessor!");
@@ -94,12 +99,13 @@ class PreprocessorUtils {
   }
   
   /**
-   * @param $preprocessorId
-   * @param $name
+   * @param int $preprocessorId
+   * @param string $name
    * Edits the name of the preprocessor
    * @throws HTException when name already exists
+   * @throws Exception
    */
-  public static function editName($preprocessorId, $name) {
+  public static function editName(int $preprocessorId, string $name): void {
     $qF1 = new QueryFilter(Preprocessor::NAME, $name, "=");
     $qF2 = new QueryFilter(Preprocessor::PREPROCESSOR_ID, $preprocessorId, "<>");
     $check = Factory::getPreprocessorFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
@@ -112,12 +118,13 @@ class PreprocessorUtils {
   }
   
   /**
-   * @param $preprocessorId
-   * @param $binaryName
+   * @param int $preprocessorId
+   * @param string $binaryName
    * Edits the binaryName of the preprocessor
    * @throws HTException when BinaryName is empty or contains blacklisted characters
+   * @throws Exception
    */
-  public static function editBinaryName($preprocessorId, $binaryName) {
+  public static function editBinaryName(int $preprocessorId, string $binaryName): void {
     
     if (strlen($binaryName) == 0) {
       throw new HTException("Binary basename cannot be empty!");
@@ -130,12 +137,13 @@ class PreprocessorUtils {
   }
   
   /**
-   * @param $preprocessorId
-   * @param $keyspaceCommand
+   * @param int $preprocessorId
+   * @param string $keyspaceCommand
    * Edits the keyspaceCommand of the preprocessor
    * @throws HTException when keyspaceCommand is empty or contains blacklisted characters
+   * @throws Exception
    */
-  public static function editKeyspaceCommand($preprocessorId, $keyspaceCommand) {
+  public static function editKeyspaceCommand(int $preprocessorId, string $keyspaceCommand): void {
     
     if (strlen($keyspaceCommand) == 0) {
       $keyspaceCommand = null;
@@ -148,12 +156,13 @@ class PreprocessorUtils {
   }
   
   /**
-   * @param $preprocessorId
-   * @param $skipCommand
+   * @param int $preprocessorId
+   * @param string $skipCommand
    * Edits the skipCommand of the preprocessor
    * @throws HTException when skipCommand is empty or contains blacklisted characters
+   * @throws Exception
    */
-  public static function editSkipCommand($preprocessorId, $skipCommand) {
+  public static function editSkipCommand(int $preprocessorId, string $skipCommand): void {
     
     if (strlen($skipCommand) == 0) {
       $skipCommand = null;
@@ -166,12 +175,13 @@ class PreprocessorUtils {
   }
   
   /**
-   * @param $preprocessorId
-   * @param $limitCommand
+   * @param int $preprocessorId
+   * @param string $limitCommand
    * Edits the limitCommand of the preprocessor
    * @throws HTException when limitCommand is empty or contains blacklisted characters
+   * @throws Exception
    */
-  public static function editLimitCommand($preprocessorId, $limitCommand) {
+  public static function editLimitCommand(int $preprocessorId, string $limitCommand): void {
     
     if (strlen($limitCommand) == 0) {
       $limitCommand = null;
@@ -184,16 +194,17 @@ class PreprocessorUtils {
   }
   
   /**
-   * @param $preprocessorId
-   * @param $name
-   * @param $binaryName
-   * @param $url
-   * @param $keyspaceCommand
-   * @param $skipCommand
-   * @param $limitCommand
+   * @param int $preprocessorId
+   * @param string $name
+   * @param string $binaryName
+   * @param string $url
+   * @param string $keyspaceCommand
+   * @param string $skipCommand
+   * @param string $limitCommand
    * @throws HTException
+   * @throws Exception
    */
-  public static function editPreprocessor($preprocessorId, $name, $binaryName, $url, $keyspaceCommand, $skipCommand, $limitCommand) {
+  public static function editPreprocessor(int $preprocessorId, string $name, string $binaryName, string $url, string $keyspaceCommand, string $skipCommand, string $limitCommand): void {
     $preprocessor = PreprocessorUtils::getPreprocessor($preprocessorId);
     
     $qF1 = new QueryFilter(Preprocessor::NAME, $name, "=");

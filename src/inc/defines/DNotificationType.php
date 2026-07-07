@@ -21,7 +21,7 @@ class DNotificationType {
   const DELETE_HASHLIST       = "deleteHashlist";
   const DELETE_AGENT          = "deleteAgent";
   
-  public static function getAll() {
+  public static function getAll(): array {
     return array(
       DNotificationType::TASK_COMPLETE,
       DNotificationType::AGENT_ERROR,
@@ -47,7 +47,7 @@ class DNotificationType {
    * @param $notificationType string
    * @return string|array permission required
    */
-  public static function getRequiredPermission($notificationType) {
+  public static function getRequiredPermission(string $notificationType): array|string {
     return match ($notificationType) {
       DNotificationType::TASK_COMPLETE, DNotificationType::NEW_TASK, DNotificationType::DELETE_TASK => DAccessControl::VIEW_TASK_ACCESS,
       DNotificationType::AGENT_ERROR, DNotificationType::OWN_AGENT_ERROR, DNotificationType::DELETE_AGENT => DAccessControl::VIEW_AGENT_ACCESS,
@@ -58,7 +58,7 @@ class DNotificationType {
     };
   }
   
-  public static function getObjectType($notificationType) {
+  public static function getObjectType(string $notificationType): string {
     return match ($notificationType) {
       DNotificationType::TASK_COMPLETE, DNotificationType::DELETE_TASK => DNotificationObjectType::TASK,
       DNotificationType::AGENT_ERROR, DNotificationType::OWN_AGENT_ERROR, DNotificationType::DELETE_AGENT => DNotificationObjectType::AGENT,

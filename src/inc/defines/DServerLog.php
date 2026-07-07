@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\defines;
 
+use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\utils\Lock;
 use Hashtopolis\inc\utils\LockUtils;
@@ -15,7 +16,10 @@ class DServerLog {
   const ERROR   = 40;
   const FATAL   = 50;
   
-  public static function log($level, $message, $data = []) {
+  /**
+   * @throws Exception
+   */
+  public static function log($level, $message, $data = []): void {
     if ($level >= SConfig::getInstance()->getVal(DConfig::SERVER_LOG_LEVEL)) {
       // log it
       LockUtils::get(Lock::LOG);
@@ -48,7 +52,7 @@ class DServerLog {
     }
   }
   
-  public static function getLevelName($level) {
+  public static function getLevelName(int $level): string {
     return match ($level) {
       DServerLog::TRACE => "TRACE",
       DServerLog::DEBUG => "DEBUG",

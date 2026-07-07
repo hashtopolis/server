@@ -3,9 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
-use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\inc\defines\DConfig;
-use Hashtopolis\inc\defines\DPrince;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
@@ -40,6 +38,9 @@ class TaskAPI extends AbstractModelAPI {
     return Task::class;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getSingleACL(User $user, object $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     

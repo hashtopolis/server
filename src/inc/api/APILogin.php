@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryLogin;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseLogin;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DConfig;
@@ -15,7 +17,10 @@ use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\Util;
 
 class APILogin extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     if (!PQueryLogin::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::LOGIN, "Invalid login query!");
     }
@@ -26,9 +31,9 @@ class APILogin extends APIBasic {
     DServerLog::log(DServerLog::DEBUG, "Agent logged in", [$this->agent]);
     
     $this->sendResponse(array(
-        PResponseLogin::ACTION => PActions::LOGIN,
-        PResponseLogin::RESPONSE => PValues::SUCCESS,
-        PResponseLogin::MULTICAST => (SConfig::getInstance()->getVal(DConfig::MULTICAST_ENABLE)) ? true : false,
+        PResponse::ACTION => PActions::LOGIN,
+        PResponse::RESPONSE => PValues::SUCCESS,
+        PResponseLogin::MULTICAST => (bool)SConfig::getInstance()->getVal(DConfig::MULTICAST_ENABLE),
         PResponseLogin::TIMEOUT => (int)SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT),
         PResponseLogin::VERSION => StartupConfig::getInstance()->getVersion() . " (" . Util::getGitCommit() . ")"
       )

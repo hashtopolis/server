@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\inc\apiv2\error\HttpConflict;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\utils\AccessGroupUtils;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupAgent;
@@ -53,7 +55,10 @@ class AccessGroupAPI extends AbstractModelAPI {
   }
   
   /**
-   * @throws HTException
+   * @param array $data
+   * @return int
+   * @throws HttpConflict
+   * @throws HttpError
    */
   protected function createObject(array $data): int {
     $object = AccessGroupUtils::createGroup($data[AccessGroup::GROUP_NAME]);

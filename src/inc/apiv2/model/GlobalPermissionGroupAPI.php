@@ -68,6 +68,8 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param object $object
+   * @throws HTException
    * @throws HttpError
    */
   protected function deleteObject(object $object): void {

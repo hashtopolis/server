@@ -13,7 +13,7 @@ class PretaskHandler implements Handler {
     //we need nothing to load
   }
   
-  public function handle($action) {
+  public function handle($action): void {
     try {
       switch ($action) {
         case DPretaskAction::DELETE_PRETASK:

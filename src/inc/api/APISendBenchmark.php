@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQuerySendBenchmark;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseSendBenchmark;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\agent\PValuesBenchmarkType;
@@ -16,7 +18,10 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\SConfig;
 
 class APISendBenchmark extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     if (!PQuerySendBenchmark::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark query!");
     }
@@ -68,8 +73,8 @@ class APISendBenchmark extends APIBasic {
     Factory::getAssignmentFactory()->update($assignment);
     DServerLog::log(DServerLog::DEBUG, "Saved agent benchmark", [$this->agent, $task, $assignment]);
     $this->sendResponse(array(
-        PResponseSendBenchmark::ACTION => PActions::SEND_BENCHMARK,
-        PResponseSendBenchmark::RESPONSE => PValues::SUCCESS,
+        PResponse::ACTION => PActions::SEND_BENCHMARK,
+        PResponse::RESPONSE => PValues::SUCCESS,
         PResponseSendBenchmark::BENCHMARK => PValues::OK
       )
     );

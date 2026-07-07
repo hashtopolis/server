@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\common;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
@@ -69,6 +71,8 @@ use Hashtopolis\inc\utils\UserUtils;
 
 /**
  * This class acts as the BaseAPI implementation of API model endpoints
+ *
+ * @template TModel of AbstractModel
  */
 abstract class AbstractBaseAPI {
   abstract public static function getBaseUri(): string;
@@ -351,8 +355,9 @@ abstract class AbstractBaseAPI {
   /**
    * @param string $model
    * @param int $pk
-   * @return object
+   * @return TModel
    * @throws ResourceNotFoundError|HttpError
+   * @throws Exception
    */
   final protected static function fetchOne(string $model, int $pk): object {
     $factory = self::getModelFactory($model);
@@ -444,9 +449,6 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    */
   final protected function getObjectTypeName(mixed $obj): string {
-    
-    $container = $this->container->get('classMapper');
-    
     if (is_string($obj)) {
       $apiClass = $this->container->get('classMapper')->get($obj);
     }
@@ -1089,8 +1091,8 @@ abstract class AbstractBaseAPI {
   //TODO: nice to have would be to be able to include objects that are further away in the relationship
   //ex. from Hash include=hashlist.task to include all tasks from a hash (section 8.3 JSON API) 
   protected function makeExpandables(Request $request, array $validExpandables): array {
-    $data = $request->getParsedBody();
-    $queryExpands = (array_key_exists('include', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['include']) : [];
+    $request->getParsedBody();
+    $queryExpands = (array_key_exists('include', $request->getQueryParams())) ? preg_split("/[, ]+/", $request->getQueryParams()['include']) : [];
     
     foreach ($queryExpands as $expand) {
       if (!in_array($expand, $validExpandables)) {
@@ -1113,19 +1115,14 @@ abstract class AbstractBaseAPI {
       }
       array_push($required_perms, ...$expandedPerms);
     }
-    $permissionResponse = $this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $request->getAttribute("aud"), $permsExpandMatching);
+    $this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $request->getAttribute("aud"), $permsExpandMatching);
     $expands_to_remove = [];
     
     // remove expands with missing permissions
     foreach ($this->missing_permissions as $missing_permission) {
       $expands_to_remove = array_merge($expands_to_remove, $permsExpandMatching[$missing_permission]);
     }
-    $queryExpands = array_diff($queryExpands, $expands_to_remove);
-    
-    // if ($permissionResponse === FALSE) {
-    //   throw new HttpError('Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
-    // }
-    return $queryExpands;
+    return array_diff($queryExpands, $expands_to_remove);
   }
   
   /**
@@ -1147,7 +1144,7 @@ abstract class AbstractBaseAPI {
     return $this->getQueryParameterFamily($request, 'filter');
   }
   
-  protected static function checkJoinExists(array $joins, string $modelName) {
+  protected static function checkJoinExists(array $joins, string $modelName): bool {
     foreach ($joins as $join) {
       if ($join->getOtherFactory()->getModelName() === $modelName) {
         return true;
@@ -1187,7 +1184,7 @@ abstract class AbstractBaseAPI {
       
       if (!array_key_exists($cast_key, $features)) {
         throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid (key not valid field)");
-      };
+      }
       
       // Only __in and __nin support comma-separated multiple values;
       // all other operators treat the value as a literal string.
@@ -1196,25 +1193,24 @@ abstract class AbstractBaseAPI {
       $valueList = $isListOperator ? explode(",", $value) : [$value];
       
       // TODO Merge/Combine with validate parameters 
-      foreach ($valueList as &$value) {
+      foreach ($valueList as &$element_value) {
         switch ($features[$cast_key]['type']) {
           case 'bool':
-            $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-            if (is_null($value)) {
+            $element_value = filter_var($element_value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            if (is_null($element_value)) {
               throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid boolean value");
             }
-            $value = (int)$value;
+            $element_value = (int)$element_value;
             break;
           case 'int':
-            $value = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-            if (is_null($value)) {
+            $element_value = filter_var($element_value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+            if (is_null($element_value)) {
               throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid integer value");
             }
-            $value = (int)$value;
+            $element_value = (int)$element_value;
             break;
         }
       }
-      unset($value);
       
       // We need to remap any aliased key to the key as it appears in the database.
       $remappedKey = $features[$cast_key]['dbname'];
@@ -1285,6 +1281,8 @@ abstract class AbstractBaseAPI {
   /**
    * Retrieves the relation from a sort/filter value. ex task.taskName when task is a relation for the current
    * Model endpoint. This works only for relations of 1 deep
+   * @throws HttpError
+   * @throws HttpForbidden
    */
   protected function retrieveRelationKey(string $value): object {
     $parts = explode(".", $value);
@@ -1330,7 +1328,7 @@ abstract class AbstractBaseAPI {
     $contains_primary_key = false;
     foreach ($orderings as $order) {
       $features_sort = $features;
-      if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z.]+)$/', $order, $matches)) {
+      if (preg_match('/^(?P<operator>-)?(?P<key>[_a-zA-Z.]+)$/', $order, $matches)) {
         // Special filtering of id to use for uniform access to model primary key
         $cast_key = $matches['key'] == 'id' ? $this->getPrimaryKey() : $matches['key'];
         if ($cast_key == $this->getPrimaryKey()) {
@@ -1451,7 +1449,7 @@ abstract class AbstractBaseAPI {
         if ($permission_set) {
           $user_available_perms = array_unique(array_merge($user_available_perms, self::$acl_mapping[$rightgroup_perm]));
         }
-      };
+      }
     }
     else {
       $user_available_perms = array_keys($rightgroup_perms, true, true);
@@ -1469,7 +1467,7 @@ abstract class AbstractBaseAPI {
       // attributes are stripped away.
       if ($method === "GET" && $this instanceof AbstractModelAPI) {
         $features = $this->getFeatures();
-        foreach ($features as $key => $arr) {
+        foreach ($features as $arr) {
           if ($arr['public']) {
             $this->addPublicAttributeClass($this->getDBAClass());
           }
@@ -1599,7 +1597,7 @@ abstract class AbstractBaseAPI {
   protected function getQueryParameterAsList(Request $request, string $name): array {
     $queryParams = $request->getQueryParams();
     if (array_key_exists($name, $queryParams)) {
-      return preg_split("/[,\ ]+/", $queryParams[$name]);
+      return preg_split("/[, ]+/", $queryParams[$name]);
     }
     else {
       return [];

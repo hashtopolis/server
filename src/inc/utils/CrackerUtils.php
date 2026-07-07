@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\QueryFilter;
@@ -18,16 +19,18 @@ class CrackerUtils {
   /**
    * @param CrackerBinaryType $cracker
    * @return CrackerBinary[]
+   * @throws Exception
    */
-  public static function getBinaries($cracker) {
+  public static function getBinaries(CrackerBinaryType $cracker): array {
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $cracker->getId(), "=");
     return Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
   }
   
   /**
    * @return CrackerBinaryType[]
+   * @throws Exception
    */
-  public static function getBinaryTypes() {
+  public static function getBinaryTypes(): array {
     return Factory::getCrackerBinaryTypeFactory()->filter([]);
   }
   
@@ -36,6 +39,7 @@ class CrackerUtils {
    * @return CrackerBinaryType
    * @throws HttpConflict
    * @throws HttpError
+   * @throws Exception
    */
   public static function createBinaryType(string $typeName): CrackerBinaryType {
     $qF = new QueryFilter(CrackerBinaryType::TYPE_NAME, $typeName, "=");
@@ -58,6 +62,7 @@ class CrackerUtils {
    * @return CrackerBinary
    * @throws HttpError
    * @throws HTException
+   * @throws Exception
    */
   public static function createBinary(string $version, string $name, string $url, int $binaryTypeId): CrackerBinary {
     $binaryType = CrackerUtils::getBinaryType($binaryTypeId);
@@ -71,8 +76,9 @@ class CrackerUtils {
   /**
    * @param int $binaryId
    * @throws HTException
+   * @throws Exception
    */
-  public static function deleteBinary($binaryId) {
+  public static function deleteBinary(int $binaryId): void {
     $binary = CrackerUtils::getBinary($binaryId);
     $qF = new QueryFilter(Task::CRACKER_BINARY_ID, $binary->getId(), "=");
     $check = Factory::getTaskFactory()->filter([Factory::FILTER => $qF]);
@@ -85,8 +91,9 @@ class CrackerUtils {
   /**
    * @param int $binaryTypeId
    * @throws HTException
+   * @throws Exception
    */
-  public static function deleteBinaryType($binaryTypeId) {
+  public static function deleteBinaryType(int $binaryTypeId): void {
     $binaryType = CrackerUtils::getBinaryType($binaryTypeId);
     
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
@@ -119,8 +126,9 @@ class CrackerUtils {
    * @param int $binaryId
    * @return CrackerBinaryType
    * @throws HTException
+   * @throws Exception
    */
-  public static function updateBinary($version, $name, $url, $binaryId) {
+  public static function updateBinary(string $version, string $name, string $url, int $binaryId): CrackerBinaryType {
     $binary = CrackerUtils::getBinary($binaryId);
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
       throw new HTException("Please provide all information!");
@@ -138,8 +146,9 @@ class CrackerUtils {
    * @param int $binaryTypeId
    * @return CrackerBinaryType
    * @throws HTException
+   * @throws Exception
    */
-  public static function getBinaryType($binaryTypeId) {
+  public static function getBinaryType(int $binaryTypeId): CrackerBinaryType {
     $binaryType = Factory::getCrackerBinaryTypeFactory()->get($binaryTypeId);
     if ($binaryType === null) {
       throw new HTException("Invalid binary type!");
@@ -151,8 +160,9 @@ class CrackerUtils {
    * @param int $binaryId
    * @return CrackerBinary
    * @throws HTException
+   * @throws Exception
    */
-  public static function getBinary($binaryId) {
+  public static function getBinary(int $binaryId): CrackerBinary {
     $binary = Factory::getCrackerBinaryFactory()->get($binaryId);
     if ($binary === null) {
       throw new HTException("Invalid cracker binary!");

@@ -13,7 +13,7 @@ class CrackerHandler implements Handler {
     //nothing
   }
   
-  public function handle($action) {
+  public function handle($action): void {
     try {
       switch ($action) {
         case DCrackerBinaryAction::DELETE_BINARY_TYPE:

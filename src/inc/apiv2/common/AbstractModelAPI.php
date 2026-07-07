@@ -46,7 +46,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws InternalError
    * @throws HttpError
    */
-  protected static function fetchExpandObjects(array $objects, string $expand): mixed {
+  protected static function fetchExpandObjects(array $objects, string $expand): array {
     //disabled the check because with intermediate objects its possible to fetch a different model
     /* Ensure we receive the proper type */
     // $baseModel = static::getDBAClass();

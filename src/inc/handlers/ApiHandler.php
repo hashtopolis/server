@@ -12,7 +12,7 @@ class ApiHandler implements Handler {
     // nothing
   }
   
-  public function handle($action) {
+  public function handle($action): void {
     try {
       switch ($action) {
         case DApiAction::DELETE_GROUP:

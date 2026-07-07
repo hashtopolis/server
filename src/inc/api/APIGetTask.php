@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryGetTask;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseGetTask;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\agent\PValuesTask;
@@ -21,7 +23,10 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\utils\TaskUtils;
 
 class APIGetTask extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     if (!PQueryGetTask::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_TASK, "Invalid task query!");
     }
@@ -33,8 +38,8 @@ class APIGetTask extends APIBasic {
     if (HealthUtils::checkNeeded($this->agent)) {
       DServerLog::log(DServerLog::INFO, "Notified about pending health check", [$this->agent]);
       $this->sendResponse(array(
-          PResponseGetTask::ACTION => PActions::GET_TASK,
-          PResponseGetTask::RESPONSE => PValues::SUCCESS,
+          PResponse::ACTION => PActions::GET_TASK,
+          PResponse::RESPONSE => PValues::SUCCESS,
           PResponseGetTask::TASK_ID => PValuesTask::HEALTH_CHECK
         )
       );
@@ -43,8 +48,8 @@ class APIGetTask extends APIBasic {
     if ($this->agent->getIsActive() == 0) {
       DServerLog::log(DServerLog::TRACE, "Agent is inactive and cannot get a task", [$this->agent]);
       $this->sendResponse(array(
-          PResponseGetTask::ACTION => PActions::GET_TASK,
-          PResponseGetTask::RESPONSE => PValues::SUCCESS,
+          PResponse::ACTION => PActions::GET_TASK,
+          PResponse::RESPONSE => PValues::SUCCESS,
           PResponseGetTask::TASK_ID => PValues::NONE,
           PResponseGetTask::REASON => "Agent is inactive!"
         )
@@ -111,10 +116,10 @@ class APIGetTask extends APIBasic {
     }
   }
   
-  private function noTask() {
+  private function noTask(): void {
     $this->sendResponse(array(
-        PResponseGetTask::ACTION => PActions::GET_TASK,
-        PResponseGetTask::RESPONSE => PValues::SUCCESS,
+        PResponse::ACTION => PActions::GET_TASK,
+        PResponse::RESPONSE => PValues::SUCCESS,
         PResponseGetTask::TASK_ID => PValues::NONE,
         PResponseGetTask::REASON => "No suitable task available!"
       )
@@ -123,9 +128,10 @@ class APIGetTask extends APIBasic {
   
   /**
    * @param $task Task
-   * @param $assignment Assignment
+   * @param $assignment ?Assignment
+   * @throws Exception
    */
-  private function sendTask($task, $assignment) {
+  private function sendTask(Task $task, ?Assignment $assignment): void {
     // check if the assignment is up-to-date and correct if needed
     if ($assignment == null) {
       $assignment = new Assignment(null, $task->getId(), $this->agent->getId(), 0);
@@ -168,11 +174,11 @@ class APIGetTask extends APIBasic {
     
     DServerLog::log(DServerLog::TRACE, "Sending task to agent", [$this->agent, $task, $taskFiles]);
     
-    $brain = ($hashlist->getBrainId() && !$task->getForcePipe() && !$task->getUsePreprocessor()) ? true : false;
+    $brain = $hashlist->getBrainId() && !$task->getForcePipe() && !$task->getUsePreprocessor();
     
     $response = array(
-      PResponseGetTask::ACTION => PActions::GET_TASK,
-      PResponseGetTask::RESPONSE => PValues::SUCCESS,
+      PResponse::ACTION => PActions::GET_TASK,
+      PResponse::RESPONSE => PValues::SUCCESS,
       PResponseGetTask::TASK_ID => (int)$task->getId(),
       PResponseGetTask::ATTACK_COMMAND => $task->getAttackCmd(),
       PResponseGetTask::CMD_PARAMETERS => " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
@@ -184,11 +190,11 @@ class APIGetTask extends APIBasic {
       PResponseGetTask::BENCHTYPE => ($task->getUseNewBench() == 1) ? "speed" : "run",
       PResponseGetTask::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS),
       PResponseGetTask::KEYSPACE => $task->getKeyspace(),
-      PResponseGetTask::USE_PREPROCESSOR => ($task->getUsePreprocessor()) ? true : false,
+      PResponseGetTask::USE_PREPROCESSOR => (bool)$task->getUsePreprocessor(),
       PResponseGetTask::PREPROCESSOR => $task->getUsePreprocessor(),
       PResponseGetTask::PREPROCESSOR_COMMAND => $task->getPreprocessorCommand(),
-      PResponseGetTask::ENFORCE_PIPE => ($task->getForcePipe()) ? true : false,
-      PResponseGetTask::SLOW_HASH => ($hashtype->getIsSlowHash()) ? true : false,
+      PResponseGetTask::ENFORCE_PIPE => (bool)$task->getForcePipe(),
+      PResponseGetTask::SLOW_HASH => (bool)$hashtype->getIsSlowHash(),
       PResponseGetTask::USE_BRAIN => $brain,
     );
     

@@ -16,7 +16,7 @@ class USectionPretask extends UApi {
   const SET_PRETASK_SMALL      = "setPretaskSmall";
   const DELETE_PRETASK         = "deletePretask";
   
-  public function describe($constant) {
+  public function describe($constant): string {
     return match ($constant) {
       USectionPretask::LIST_PRETASKS => "List all preconfigured tasks",
       USectionPretask::GET_PRETASK => "Get details about a preconfigured task",

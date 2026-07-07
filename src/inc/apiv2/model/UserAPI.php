@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\inc\apiv2\error\InternalError;
 use Hashtopolis\inc\utils\AccountUtils;
 use BadFunctionCallException;
 use Hashtopolis\dba\Factory;
@@ -52,7 +53,7 @@ class UserAPI extends AbstractModelAPI {
     ];
   }
   
-  protected static function fetchExpandObjects(array $objects, string $expand): mixed {
+  protected static function fetchExpandObjects(array $objects, string $expand): array {
     array_walk($objects, function ($obj) {
       assert($obj instanceof User);
     });
@@ -83,6 +84,7 @@ class UserAPI extends AbstractModelAPI {
    * @throws HTException
    * @throws HttpConflict
    * @throws HttpError
+   * @throws InternalError
    */
   protected function createObject($data): int {
     $user = UserUtils::createUser(

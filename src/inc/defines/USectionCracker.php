@@ -12,7 +12,7 @@ class USectionCracker extends UApi {
   const ADD_VERSION    = "addVersion";
   const UPDATE_VERSION = "updateVersion";
   
-  public function describe($constant) {
+  public function describe($constant): string {
     return match ($constant) {
       USectionCracker::LIST_CRACKERS => "List all crackers",
       USectionCracker::GET_CRACKER => "Get details of a cracker",

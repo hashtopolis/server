@@ -11,7 +11,7 @@ class USectionSupertask extends UApi {
   const DELETE_SUPERTASK   = "deleteSupertask";
   const BULK_SUPERTASK     = "bulkSupertask";
   
-  public function describe($constant) {
+  public function describe($constant): string {
     return match ($constant) {
       USectionSupertask::LIST_SUPERTASKS => "List all supertasks",
       USectionSupertask::GET_SUPERTASK => "Get details of a supertask",

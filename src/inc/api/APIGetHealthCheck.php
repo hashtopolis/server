@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryGetHealthCheck;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseGetHealthCheck;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DConfig;
@@ -13,7 +15,10 @@ use Hashtopolis\inc\utils\HealthUtils;
 use Hashtopolis\inc\SConfig;
 
 class APIGetHealthCheck extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     if (!PQueryGetHealthCheck::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_HEALTH_CHECK, "Invalid get health check query!");
     }
@@ -33,8 +38,8 @@ class APIGetHealthCheck extends APIBasic {
     $hashes = explode("\n", $hashes);
     
     $this->sendResponse([
-        PResponseGetHealthCheck::ACTION => PActions::GET_HEALTH_CHECK,
-        PResponseGetHealthCheck::RESPONSE => PValues::SUCCESS,
+        PResponse::ACTION => PActions::GET_HEALTH_CHECK,
+        PResponse::RESPONSE => PValues::SUCCESS,
         PResponseGetHealthCheck::ATTACK => " --hash-type=" . $healthCheck->getHashtypeId() . " " . $healthCheck->getAttackCmd() . " " . $this->agent->getCmdPars(),
         PResponseGetHealthCheck::CRACKER_BINARY_ID => (int)$healthCheck->getCrackerBinaryId(),
         PResponseGetHealthCheck::HASHES => $hashes,

@@ -13,7 +13,7 @@ class TokenAsParameterMiddleware implements MiddlewareInterface {
     $data = $request->getQueryParams();
     if (array_key_exists('token', $data)) {
       $request = $request->withHeader('Authorization', 'Bearer ' . $data['token']);
-    };
+    }
     
     return $handler->handle($request);
   }

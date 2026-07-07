@@ -7,25 +7,25 @@ use Hashtopolis\inc\defines\DProxyTypes;
 use Hashtopolis\inc\SConfig;
 
 class HashtopolisNotificationTelegram extends HashtopolisNotification {
-  protected     $receiver;
-  public static $name = "Telegram";
+  protected string     $receiver;
+  public static string $name = "Telegram";
   
-  function getTemplateName() {
+  function getTemplateName(): string {
     return "notifications/telegram";
   }
   
-  function getObjects() {
+  function getObjects(): array {
     return array();
   }
   
-  function sendMessage($message, $subject = "") {
+  function sendMessage($message, $subject = ""): bool|string {
     $botToken = SConfig::getInstance()->getVal(DConfig::TELEGRAM_BOT_TOKEN);
     $data = array(
       "chat_id" => $this->receiver,
       "text" => $message
     );
     
-    $ch = curl_init("https://api.telegram.org/bot{$botToken}/sendMessage");
+    $ch = curl_init("https://api.telegram.org/bot$botToken/sendMessage");
     
     if (SConfig::getInstance()->getVal(DConfig::NOTIFICATIONS_PROXY_ENABLE) == 1) {
       curl_setopt($ch, CURLOPT_PROXY, SConfig::getInstance()->getVal(DConfig::NOTIFICATIONS_PROXY_SERVER));

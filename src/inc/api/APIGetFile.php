@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryGetFile;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseGetFile;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DServerLog;
@@ -14,7 +16,10 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
 
 class APIGetFile extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     //check required values
     if (!PQueryGetFile::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_FILE, "Invalid file query!");
@@ -60,10 +65,10 @@ class APIGetFile extends APIBasic {
     $this->updateAgent(PActions::GET_FILE);
     
     $this->sendResponse(array(
-        PQueryGetFile::ACTION => PActions::GET_FILE,
+        PResponse::ACTION => PActions::GET_FILE,
         PResponseGetFile::FILENAME => $filename,
         PResponseGetFile::EXTENSION => $extension,
-        PResponseGetFile::RESPONSE => PValues::SUCCESS,
+        PResponse::RESPONSE => PValues::SUCCESS,
         PResponseGetFile::URL => "getFile.php?file=" . $file->getId() . "&token=" . $this->agent->getToken(),
         PResponseGetFile::FILESIZE => (int)$file->getSize()
       )

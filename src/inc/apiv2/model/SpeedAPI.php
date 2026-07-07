@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\defines\DAccessControl;
 use Hashtopolis\dba\models\AccessGroupAgent;
@@ -38,6 +39,9 @@ class SpeedAPI extends AbstractModelAPI {
     return Speed::class;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getSingleACL(User $user, object $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     

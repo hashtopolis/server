@@ -2,9 +2,9 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
-use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\JoinFilter;
@@ -45,6 +45,9 @@ class AgentErrorAPI extends AbstractModelAPI {
     return AgentError::class;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getSingleACL(User $user, object $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     $agent = Factory::getAgentFactory()->get($object->getAgentId());
@@ -83,6 +86,9 @@ class AgentErrorAPI extends AbstractModelAPI {
     throw new HttpError("AgentErrors cannot be updated via API");
   }
   
+  /**
+   * @throws Exception
+   */
   protected function deleteObject(object $object): void {
     Factory::getAgentErrorFactory()->delete($object);
   }

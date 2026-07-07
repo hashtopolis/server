@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\inc\Encryption;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
@@ -16,6 +17,7 @@ use Hashtopolis\inc\Util;
 class AccountUtils {
   /**
    * @param User $user
+   * @throws Exception
    */
   public static function checkOTP(User $user): void {
     $isValid = false;
@@ -39,11 +41,12 @@ class AccountUtils {
   }
   
   /**
-   * @param $num
-   * @param $action
-   * @param $user User
-   * @param $otpArr
+   * @param int $num
+   * @param string $action
+   * @param User $user
+   * @param array $otpArr
    * @throws HTException
+   * @throws Exception
    */
   public static function setOTP(int $num, string $action, User $user, array $otpArr): void {
     if ($action == DAccountAction::YUBIKEY_ENABLE) {
@@ -103,6 +106,7 @@ class AccountUtils {
    * @param string $email
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
   public static function setEmail(string $email, User $user): void {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -117,9 +121,9 @@ class AccountUtils {
    * @param int $lifetime
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
   public static function updateSessionLifetime(int $lifetime, User $user): void {
-    $lifetime = intval($lifetime);
     if ($lifetime < 60 || $lifetime > SConfig::getInstance()->getVal(DConfig::MAX_SESSION_LENGTH) * 3600) {
       throw new HTException("Lifetime must be larger than 1 minute and smaller than " . SConfig::getInstance()->getVal(DConfig::MAX_SESSION_LENGTH) . " hours!");
     }
@@ -133,6 +137,7 @@ class AccountUtils {
    * @param string $repeatedPassword
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
   public static function changePassword(string $oldPassword, string $newPassword, string $repeatedPassword, User $user): void {
     if (!Encryption::passwordVerify($oldPassword, $user->getPasswordSalt(), $user->getPasswordHash())) {

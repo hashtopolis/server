@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -83,6 +84,7 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws Exception
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
@@ -161,7 +163,6 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
       }
     }
     else if (isset($task)) {
-      $progress = $task->getKeyspaceProgress();
       $keyspace = max($task->getKeyspace(), 1);
       
       //load chunks

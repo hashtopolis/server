@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\inc\DataSet;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\QueryFilter;
@@ -37,12 +38,12 @@ use Hashtopolis\inc\Util;
 
 class AgentUtils {
   /**
-   * @param AgentStat $deviceUtil
+   * @param ?AgentStat $deviceUtil
    * @param Agent $agent
    * @return string
    */
-  public static function getDeviceUtilStatusColor($deviceUtil, $agent) {
-    if ($deviceUtil === false) {
+  public static function getDeviceUtilStatusColor(?AgentStat $deviceUtil, Agent $agent): string {
+    if ($deviceUtil === null) {
       if (($agent->getIsActive() == 1) && (time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT))) {
         return "#42d4f4";
       }
@@ -52,7 +53,7 @@ class AgentUtils {
     $deviceUtil = explode(",", $deviceUtil);
     $sum = 0;
     foreach ($deviceUtil as $u) {
-      $sum += $u;
+      $sum += intval($u);
     }
     if ($sum == 0) {
       return "#FF0000"; // either util 0 for all or an error occurred
@@ -70,12 +71,12 @@ class AgentUtils {
   }
   
   /**
-   * @param AgentStat $deviceTemp
+   * @param ?AgentStat $deviceTemp
    * @param Agent $agent
    * @return string
    */
-  public static function getDeviceTempStatusColor($deviceTemp, $agent) {
-    if ($deviceTemp === false) {
+  public static function getDeviceTempStatusColor(?AgentStat $deviceTemp, Agent $agent): string {
+    if ($deviceTemp === null) {
       if (($agent->getIsActive() == 1) && (time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT))) {
         return "#42d4f4";
       }
@@ -102,12 +103,12 @@ class AgentUtils {
   }
   
   /**
-   * @param AgentStat $cpuUtil
+   * @param ?AgentStat $cpuUtil
    * @param Agent $agent
    * @return string
    */
-  public static function getCpuUtilStatusColor($cpuUtil, $agent) {
-    if ($cpuUtil === false) {
+  public static function getCpuUtilStatusColor(?AgentStat $cpuUtil, Agent $agent): string {
+    if ($cpuUtil === null) {
       if (($agent->getIsActive() == 1) && (time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT))) {
         return "#42d4f4";
       }
@@ -117,7 +118,7 @@ class AgentUtils {
     $cpuUtil = explode(",", $cpuUtil);
     $sum = 0;
     foreach ($cpuUtil as $u) {
-      $sum += $u;
+      $sum += intval($u);
     }
     if ($sum == 0) {
       return "#FF0000"; // either util 0 for all or an error occurred
@@ -135,11 +136,11 @@ class AgentUtils {
   }
   
   /**
-   * @param AgentStat $deviceUtil
+   * @param ?AgentStat $deviceUtil
    * @return string
    */
-  public static function getDeviceUtilStatusValue($deviceUtil) {
-    if ($deviceUtil === false) {
+  public static function getDeviceUtilStatusValue(?AgentStat $deviceUtil): string {
+    if ($deviceUtil === null) {
       return "No data";
     }
     $deviceUtil = $deviceUtil->getValue();
@@ -149,18 +150,18 @@ class AgentUtils {
     $deviceUtil = explode(",", $deviceUtil);
     $sum = 0;
     foreach ($deviceUtil as $u) {
-      $sum += $u;
+      $sum += intval($u);
     }
     $avg = $sum / sizeof($deviceUtil);
     return round($avg, 1) . "%";
   }
   
   /**
-   * @param AgentStat $deviceTemp
+   * @param ?AgentStat $deviceTemp
    * @return string
    */
-  public static function getDeviceTempStatusValue($deviceTemp) {
-    if ($deviceTemp === false) {
+  public static function getDeviceTempStatusValue(?AgentStat $deviceTemp): string {
+    if ($deviceTemp === null) {
       return 'No data';
     }
     $deviceTemp = $deviceTemp->getValue();
@@ -176,11 +177,11 @@ class AgentUtils {
   }
   
   /**
-   * @param AgentStat $cpuUtil
+   * @param ?AgentStat $cpuUtil
    * @return string
    */
-  public static function getCpuUtilStatusValue($cpuUtil) {
-    if ($cpuUtil === false) {
+  public static function getCpuUtilStatusValue(?AgentStat $cpuUtil): string {
+    if ($cpuUtil === null) {
       return "No data";
     }
     $cpuUtil = $cpuUtil->getValue();
@@ -190,7 +191,7 @@ class AgentUtils {
     $cpuUtil = explode(",", $cpuUtil);
     $sum = 0;
     foreach ($cpuUtil as $u) {
-      $sum += $u;
+      $sum += intval($u);
     }
     $avg = $sum / sizeof($cpuUtil);
     return round($avg, 1) . "%";
@@ -200,8 +201,9 @@ class AgentUtils {
    * @param Agent $agent
    * @param mixed $types
    * @return array
+   * @throws Exception
    */
-  public static function getGraphData($agent, $types) {
+  public static function getGraphData(Agent $agent, mixed $types): array {
     $limit = intval(SConfig::getInstance()->getVal(DConfig::AGENT_STAT_LIMIT));
     if ($limit <= 0) {
       $limit = 100;
@@ -274,8 +276,9 @@ class AgentUtils {
    * @param boolean $isCpuOnly
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function setAgentCpu($agentId, $isCpuOnly, $user) {
+  public static function setAgentCpu(int $agentId, bool $isCpuOnly, User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
     Factory::getAgentFactory()->set($agent, Agent::CPU_ONLY, ($isCpuOnly) ? 1 : 0);
   }
@@ -284,8 +287,9 @@ class AgentUtils {
    * @param int $agentId
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function clearErrors($agentId, $user) {
+  public static function clearErrors(int $agentId, User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
     
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
@@ -298,7 +302,7 @@ class AgentUtils {
    * @param User $user
    * @throws HTException
    */
-  public static function rename($agentId, $newname, $user) {
+  public static function rename(int $agentId, string $newname, User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
     $name = htmlentities($newname, ENT_QUOTES, "UTF-8");
     if (strlen($name) == 0) {
@@ -309,10 +313,11 @@ class AgentUtils {
   
   /**
    * @param int $agentId
-   * @param User $user
+   * @param ?User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function delete($agentId, $user) {
+  public static function delete(int $agentId, ?User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
@@ -334,8 +339,9 @@ class AgentUtils {
   /**
    * @param Agent $agent
    * @return boolean
+   * @throws Exception
    */
-  public static function deleteDependencies($agent) {
+  public static function deleteDependencies(Agent $agent): bool {
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $agent->getId(), "=");
@@ -367,15 +373,10 @@ class AgentUtils {
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=");
     Factory::getAccessGroupAgentFactory()->massDeletion([Factory::FILTER => $qF]);
     
-    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-    $chunkIds = array();
-    foreach ($chunks as $chunk) {
-      $chunkIds[] = $chunk->getId();
-    }
-    if (sizeof($chunks) > 0) {
-      $uS = new UpdateSet(Chunk::AGENT_ID, null);
-      Factory::getChunkFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
-    }
+    $qF = new QueryFilter(Chunk::AGENT_ID, $agent->getId(), "=");
+    $uS = new UpdateSet(Chunk::AGENT_ID, null);
+    Factory::getChunkFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+    
     Factory::getAgentFactory()->delete($agent);
     return true;
   }
@@ -384,8 +385,10 @@ class AgentUtils {
    * @param int $agentId
    * @param int $taskId
    * @param User $user
+   * @return ?Assignment
    * @throws HTException
    * @throws HttpError
+   * @throws Exception
    */
   public static function assign(int $agentId, int $taskId, User $user): ?Assignment {
     $agent = AgentUtils::getAgent($agentId, $user);
@@ -400,7 +403,7 @@ class AgentUtils {
       return null;
     }
     
-    $task = Factory::getTaskFactory()->get(intval($taskId));
+    $task = Factory::getTaskFactory()->get($taskId);
     if ($task == null) {
       throw new HttpError("Invalid task!");
     }
@@ -449,8 +452,9 @@ class AgentUtils {
    * @param int $ignoreErrors
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function changeIgnoreErrors($agentId, $ignoreErrors, $user) {
+  public static function changeIgnoreErrors(int $agentId, int $ignoreErrors, User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
     $ignore = intval($ignoreErrors);
     if ($ignore != 0 && $ignore != 1 && $ignore != 2) {
@@ -461,11 +465,12 @@ class AgentUtils {
   
   /**
    * @param int $agentId
-   * @param User $user
+   * @param ?User $user
    * @return Agent
    * @throws HTException
+   * @throws Exception
    */
-  public static function getAgent($agentId, $user = null) {
+  public static function getAgent(int $agentId, ?User $user = null): Agent {
     $agent = Factory::getAgentFactory()->get($agentId);
     if ($agent == null) {
       throw new HTException("Invalid agent!");
@@ -481,8 +486,9 @@ class AgentUtils {
    * @param boolean $trusted
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function setTrusted($agentId, $trusted, $user) {
+  public static function setTrusted(int $agentId, bool $trusted, User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
     Factory::getAgentFactory()->set($agent, Agent::IS_TRUSTED, ($trusted) ? 1 : 0);
   }
@@ -492,8 +498,9 @@ class AgentUtils {
    * @param int|string $ownerId
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function changeOwner($agentId, $ownerId, $user) {
+  public static function changeOwner(int $agentId, int|string $ownerId, User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
     if ($ownerId == 0) {
       $username = "NONE";
@@ -521,8 +528,9 @@ class AgentUtils {
    * @param string $cmdParameters
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function changeCmdParameters($agentId, $cmdParameters, $user) {
+  public static function changeCmdParameters(int $agentId, string $cmdParameters, User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
     if (Util::containsBlacklistedChars($cmdParameters)) {
       throw new HTException("Parameters must contain no blacklisted characters!");
@@ -536,8 +544,9 @@ class AgentUtils {
    * @param User $user
    * @param boolean $toggle
    * @throws HTException
+   * @throws Exception
    */
-  public static function setActive($agentId, $active, $user, $toggle = false) {
+  public static function setActive(int $agentId, bool $active, User $user, bool $toggle = false): void {
     $agent = Factory::getAgentFactory()->get($agentId);
     if ($agent == null) {
       throw new HTException("Invalid agent!");
@@ -559,6 +568,7 @@ class AgentUtils {
    * @param string $newVoucher
    * @return RegVoucher
    * @throws HttpConflict
+   * @throws Exception
    */
   public static function createVoucher(string $newVoucher): RegVoucher {
     $qF = new QueryFilter(RegVoucher::VOUCHER, $newVoucher, "=");
@@ -575,8 +585,9 @@ class AgentUtils {
   /**
    * @param int|string $voucher
    * @throws HTException
+   * @throws Exception
    */
-  public static function deleteVoucher($voucher) {
+  public static function deleteVoucher(int|string $voucher): void {
     if (is_numeric($voucher)) {
       $voucher = Factory::getRegVoucherFactory()->get($voucher);
     }

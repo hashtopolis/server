@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\ApiKey;
 use Hashtopolis\dba\models\ApiGroup;
@@ -16,8 +17,9 @@ class ApiUtils {
    * @param array $perm
    * @param string $sectionName
    * @throws HTException
+   * @throws Exception
    */
-  public static function update($groupId, $perm, $sectionName) {
+  public static function update(int $groupId, array $perm, string $sectionName): void {
     $group = Factory::getApiGroupFactory()->get($groupId);
     if ($group == null) {
       throw new HTException("Invalid API group!");
@@ -39,7 +41,7 @@ class ApiUtils {
           $constant = $constant[0];
         }
         if ($split[0] == $constant) {
-          $newArr[$sectionName][$constant] = ($split[1] == "1") ? true : false;
+          $newArr[$sectionName][$constant] = $split[1] == "1";
         }
       }
     }
@@ -53,8 +55,9 @@ class ApiUtils {
    * @param string $startValid
    * @param string $endValid
    * @throws HTException
+   * @throws Exception
    */
-  public static function editKey($keyId, $userId, $groupId, $startValid, $endValid) {
+  public static function editKey(int $keyId, int $userId, int $groupId, string $startValid, string $endValid): void {
     $key = Factory::getApiKeyFactory()->get($keyId);
     $user = Factory::getUserFactory()->get($userId);
     $group = Factory::getApiGroupFactory()->get($groupId);
@@ -71,7 +74,7 @@ class ApiUtils {
       throw new HTException("Can't change key owner!");
     }
     
-    $key = Factory::getApiKeyFactory()->mset($key, [
+    Factory::getApiKeyFactory()->mset($key, [
         ApiKey::USER_ID => $user->getId(),
         ApiKey::API_GROUP_ID => $group->getId(),
         ApiKey::START_VALID => strtotime($startValid),
@@ -84,8 +87,9 @@ class ApiUtils {
    * @param int $userId
    * @param int $groupId
    * @throws HTException
+   * @throws Exception
    */
-  public static function createKey($userId, $groupId) {
+  public static function createKey(int $userId, int $groupId): void {
     $user = Factory::getUserFactory()->get($userId);
     $group = Factory::getApiGroupFactory()->get($groupId);
     if ($user == null) {
@@ -109,8 +113,9 @@ class ApiUtils {
   /**
    * @param int $keyId
    * @throws HTException
+   * @throws Exception
    */
-  public static function deleteKey($keyId) {
+  public static function deleteKey(int $keyId): void {
     $key = Factory::getApiKeyFactory()->get($keyId);
     if ($key == null) {
       throw new HTException("Invalid API key ID!");
@@ -120,8 +125,9 @@ class ApiUtils {
   
   /**
    * @param string $name
+   * @throws Exception
    */
-  public static function createGroup($name) {
+  public static function createGroup(string $name): void {
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $group = new ApiGroup(null, '{}', $name);
     Factory::getApiGroupFactory()->save($group);
@@ -130,8 +136,9 @@ class ApiUtils {
   /**
    * @param int $groupId
    * @throws HTException
+   * @throws Exception
    */
-  public static function deleteGroup($groupId) {
+  public static function deleteGroup(int $groupId): void {
     $group = Factory::getApiGroupFactory()->get($groupId);
     if ($group == null) {
       throw new HTException("Invalid group ID!");

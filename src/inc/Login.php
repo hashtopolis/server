@@ -2,7 +2,7 @@
 
 namespace Hashtopolis\inc;
 
-use Hashtopolis\inc\Auth_Yubico;
+use Exception;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Session;
 use Hashtopolis\dba\models\User;
@@ -13,8 +13,6 @@ use Hashtopolis\inc\defines\DLogEntryIssuer;
 use Hashtopolis\inc\defines\DNotificationType;
 use Hashtopolis\inc\defines\DPayloadKeys;
 use Hashtopolis\inc\handlers\NotificationHandler;
-use Hashtopolis\inc\SConfig;
-use Hashtopolis\inc\Util;
 use function PHPUnit\Framework\assertNotNull;
 
 /**
@@ -23,21 +21,21 @@ use function PHPUnit\Framework\assertNotNull;
  * @author Sein
  */
 class Login {
-  private $user  = null;
-  private $valid = false;
+  private ?User    $user    = null;
+  private bool     $valid   = false;
   private ?Session $session = null;
   
-  private static $instance = null;
+  private static ?Login $instance = null;
   
-  public function setUser($user) {
+  public function setUser(User $user): void {
     $this->user = $user;
   }
   
   /**
    * Get an instance of the Login class
-   * @return Login
+   * @return ?Login
    */
-  public static function getInstance() {
+  public static function getInstance(): ?Login {
     if (self::$instance == null) {
       self::$instance = new Login();
     }
@@ -47,6 +45,7 @@ class Login {
   /**
    * Creates a Login-Instance and checks automatically if there is a session
    * running. It updates the session lifetime again up to the session limit.
+   * @throws Exception
    */
   private function __construct() {
     if (isset($_COOKIE['session'])) {
@@ -77,14 +76,15 @@ class Login {
   /**
    * Returns true if the user currently is loggedin with a valid session
    */
-  public function isLoggedin() {
+  public function isLoggedin(): bool {
     return $this->valid;
   }
   
   /**
    * Logs the current user out and closes his session
+   * @throws Exception
    */
-  public function logout() {
+  public function logout(): void {
     assertNotNull($this->session);
     Factory::getSessionFactory()->set($this->session, Session::IS_OPEN, 0);
     $this->session = null;
@@ -97,14 +97,14 @@ class Login {
    * Returns the uID of the currently logged in user, if the user is not logged
    * in, the uID will be -1
    */
-  public function getUserID() {
+  public function getUserID(): ?int {
     if (!$this->valid) {
       return -1;
     }
     return $this->user->getId();
   }
   
-  public function getUser() {
+  public function getUser(): ?User {
     if (!$this->valid) {
       return null;
     }
@@ -116,10 +116,11 @@ class Login {
    *
    * @param string $username username of the user to be logged in
    * @param string $password password which was entered on login form
-   * @param string $otp OTP login field
+   * @param ?string $otp OTP login field
    * @return bool true on success and false on failure
+   * @throws Exception
    */
-  public function login(string $username, string $password, $otp = NULL): bool {
+  public function login(string $username, string $password, ?string $otp = NULL): bool {
     /****** Check password ******/
     if ($this->valid) {
       return false;
@@ -146,7 +147,7 @@ class Login {
     /****** End check password ******/
     
     /***** Check Yubikey *****/
-    if ($user->getYubikey() == true && Util::isYubikeyEnabled() && sizeof(SConfig::getInstance()->getVal(DConfig::YUBIKEY_ID)) != 0 && sizeof(SConfig::getInstance()->getVal(DConfig::YUBIKEY_KEY) != 0)) {
+    if ($user->getYubikey() && Util::isYubikeyEnabled() && sizeof(SConfig::getInstance()->getVal(DConfig::YUBIKEY_ID)) != 0 && sizeof(SConfig::getInstance()->getVal(DConfig::YUBIKEY_KEY) != 0)) {
       $keyId = substr($otp, 0, 12);
       
       if (strtoupper($user->getOtp1()) != strtoupper($keyId) && strtoupper($user->getOtp2()) != strtoupper($keyId) && strtoupper($user->getOtp3()) != strtoupper($keyId) && strtoupper($user->getOtp4()) != strtoupper($keyId)) {
@@ -179,7 +180,7 @@ class Login {
         return false;
       }
     }
-    else if ($user->getYubikey() == true && Util::isYubikeyEnabled()) {
+    else if ($user->getYubikey() && Util::isYubikeyEnabled()) {
       return false;
     }
     /****** End check Yubikey ******/

@@ -42,7 +42,7 @@ class TaskHandler implements Handler {
     }
   }
   
-  public function handle($action) {
+  public function handle($action): void {
     try {
       switch ($action) {
         case DTaskAction::SET_BENCHMARK:
