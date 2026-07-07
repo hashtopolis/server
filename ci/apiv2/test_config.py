@@ -1,6 +1,5 @@
 from hashtopolis import Config
 from utils import BaseTest
-from hashtopolis.hashtopolis import HashtopolisResponseError
 
 class ConfigTest(BaseTest):
     model_class = Config
