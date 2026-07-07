@@ -3,7 +3,7 @@
 Before using Hashtopolis, it's important to understand key terms commonly used in the manual and the application:
 
 - **Agent**: A Hashtopolis client instance that performs password cracking using its available/associated hardware resources (e.g., GPUs and CPUs).
-- **Hashlist**: A collection of hashes stored in the database. Hashlists are most commonly in TEXT, yet other formats like HCCAPX, or BINARY are also supported.
+- **Hashlist**: A collection of hashes stored in the database. Hashlists are most commonly in TEXT, yet other formats like HCCAPX or BINARY are also supported.
 - **Task**: A specific password cracking job, defined by a command line specifying all the parameters, files to use, hashlist to target and binary to use.
 - **Supertask**: A container grouping multiple subtasks together for easier management and monitoring. It is not a standalone cracking task.
 - **Subtask**: A smaller task within a supertask, which behaves like a normal task but whose priority matters only inside the supertask.
@@ -105,10 +105,10 @@ Once the task is active, you can track its status and results:
 
 ## Do’s and Don’ts
 
-- **Do** test your command line locally with Hashcat if your task is failing for unknown reason.
+- **Do** test your command line locally with Hashcat if your task is failing for an unknown reason.
 - **Don’t** use multiple wordlists with attack mode 0, Hashtopolis currently supports only a single wordlist per task.
 - **Don’t** use the `--increment` flag in your command line, as it is not supported.
 - **Be cautious** with the `--slow-candidates` option, it may cause performance issues or unexpected behavior.
-- **Don’t** create extremely large tasks as **small task**. This goes against Hashtopolis’s parallel processing design..
+- **Don’t** create extremely large tasks as **small tasks**. This goes against Hashtopolis’s parallel processing design.
 - **Do** monitor your agents’ performance to adjust chunk sizes or task priorities as needed.
 

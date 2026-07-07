@@ -281,17 +281,17 @@ When encountering 500 Internal Server Errors, check Apache error logs at `/var/l
 <span style="font-size:1.2em; font-weight:bold;">❓ How to fix a failed first login in Docker?</span>
 
 Check if the backend logs show `initialization successful`. 
-Docker environment variables must be set correctly (e.g. by using the example given in `env.example`.
+Docker environment variables must be set correctly (e.g. by using the example given in `env.mysql.example` or `env.postgres.example`).
 
 ---
 
 <span style="font-size:1.2em; font-weight:bold;">❓ How to upgrade Hashtopolis without data loss?</span>
 
 If you run Hashtopolis in a dockerized setup with docker-compose, all the data which should be persistent is stored in volumes or mounted into the containers.
-In this case you simply can pull the newest images with `docker compose pull` and then recreate them with `docker compose up -d`.
+Back up your database, then pull the newest images with `docker compose pull` and recreate the containers with `docker compose up -d` — pending database migrations are applied automatically on startup.
+Follow the [update guide](../installation_guidelines/update.md) for the detailed procedure, including refreshing the docker-compose file when it changed between releases.
 
-In case you run a setup directly on a server, back up the database, pull the latest version from Git. 
-When accessing Hashtopolis the first time afterwards, the required updates are executed automatically.
+Setups installed directly on a server (pre-0.14.0, without Docker) should be migrated to Docker as described in the [migration section](../installation_guidelines/update.md#migrating-a-non-docker-installation-to-docker-pre-0140) of the update guide.
 
 ---
 
