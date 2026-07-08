@@ -91,8 +91,8 @@ class PretaskUtils {
    */
   public static function setCpuOnlyTask(int $pretaskId, int $isCpuOnly): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    if (!is_numeric($isCpuOnly) || $isCpuOnly < 0 || $isCpuOnly > 1) {
-      throw new HTException("Invalid boolean value!");
+    if ($isCpuOnly < 0 || $isCpuOnly > 1) {
+      throw new HTException("Invalid cpuOnly value!");
     }
     Factory::getPretaskFactory()->set($pretask, Pretask::IS_CPU_TASK, $isCpuOnly);
   }
@@ -105,8 +105,8 @@ class PretaskUtils {
    */
   public static function setSmallTask(int $pretaskId, int $isSmall): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    if (!is_numeric($isSmall) || $isSmall < 0 || $isSmall > 1) {
-      throw new HTException("Invalid boolean value!");
+    if ($isSmall < 0 || $isSmall > 1) {
+      throw new HTException("Invalid cpuOnly value!");
     }
     Factory::getPretaskFactory()->set($pretask, Pretask::IS_SMALL, $isSmall);
   }
@@ -119,10 +119,7 @@ class PretaskUtils {
    */
   public static function setPriority(int $pretaskId, int $priority): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    if (!is_numeric($priority)) {
-      throw new HTException("Priority needs to be a number!");
-    }
-    Factory::getPretaskFactory()->set($pretask, Pretask::PRIORITY, intval($priority));
+    Factory::getPretaskFactory()->set($pretask, Pretask::PRIORITY, $priority);
   }
   
   /**
@@ -133,10 +130,6 @@ class PretaskUtils {
    */
   public static function setMaxAgents(int $pretaskId, int $maxAgents): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    if (!is_numeric($maxAgents)) {
-      throw new HTException("Max agents needs to be a number!");
-    }
-    $maxAgents = intval($maxAgents);
     if ($maxAgents < 0) {
       throw new HTException("Max agents cannot be negative!");
     }

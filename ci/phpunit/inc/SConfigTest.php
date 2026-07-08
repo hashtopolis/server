@@ -20,7 +20,7 @@ final class SConfigTest extends TestBase {
     $p->setValue(null, null);
     parent::tearDown();
   }
-
+  
   /**
    * getInstance returns a DataSet object when called for the first time.
    */
@@ -33,7 +33,7 @@ final class SConfigTest extends TestBase {
       $this->markTestSkipped('DB not available: ' . $e->getMessage());
     }
   }
-
+  
   /**
    * Consecutive calls to getInstance return the same DataSet object (singleton).
    */
@@ -47,7 +47,7 @@ final class SConfigTest extends TestBase {
       $this->markTestSkipped('DB not available: ' . $e->getMessage());
     }
   }
-
+  
   /**
    * getInstance(true) discards the cached singleton and loads fresh data from the database.
    */
@@ -55,7 +55,7 @@ final class SConfigTest extends TestBase {
     try {
       $p = (new ReflectionClass(SConfig::class))->getProperty('instance');
       $p->setValue(null, new DataSet(['test' => 'value']));
-
+      
       $fresh = SConfig::getInstance(true);
       $this->assertInstanceOf(DataSet::class, $fresh);
     }
@@ -63,7 +63,7 @@ final class SConfigTest extends TestBase {
       $this->markTestSkipped('DB not available: ' . $e->getMessage());
     }
   }
-
+  
   /**
    * reload() forces a fresh load from the database, replacing the current singleton.
    */
@@ -78,7 +78,7 @@ final class SConfigTest extends TestBase {
       $this->markTestSkipped('DB not available: ' . $e->getMessage());
     }
   }
-
+  
   /**
    * A Config row saved to the database is accessible via SConfig after a reload.
    */
@@ -86,9 +86,9 @@ final class SConfigTest extends TestBase {
     try {
       $key = 'test_config_' . uniqid();
       $value = 'test_value_' . uniqid();
-
+      
       Factory::getConfigFactory()->save(new Config(null, 1, $key, $value));
-
+      
       SConfig::reload();
       $result = SConfig::getInstance()->getVal($key);
       $this->assertSame($value, $result);
@@ -97,7 +97,7 @@ final class SConfigTest extends TestBase {
       $this->markTestSkipped('DB not available: ' . $e->getMessage());
     }
   }
-
+  
   /**
    * Multiple Config rows saved to the database are all loaded into the DataSet.
    */
@@ -105,10 +105,10 @@ final class SConfigTest extends TestBase {
     try {
       $key1 = 'multi_test_1_' . uniqid();
       $key2 = 'multi_test_2_' . uniqid();
-
+      
       Factory::getConfigFactory()->save(new Config(null, 1, $key1, 'val1'));
       Factory::getConfigFactory()->save(new Config(null, 1, $key2, 'val2'));
-
+      
       SConfig::reload();
       $ds = SConfig::getInstance();
       $this->assertSame('val1', $ds->getVal($key1));
@@ -118,7 +118,7 @@ final class SConfigTest extends TestBase {
       $this->markTestSkipped('DB not available: ' . $e->getMessage());
     }
   }
-
+  
   /**
    * getVal returns false for a key that does not exist in the loaded config.
    */
@@ -131,7 +131,7 @@ final class SConfigTest extends TestBase {
       $this->markTestSkipped('DB not available: ' . $e->getMessage());
     }
   }
-
+  
   /**
    * getKeys returns an array of all config keys loaded from the database.
    */
@@ -139,7 +139,7 @@ final class SConfigTest extends TestBase {
     try {
       $ds = SConfig::getInstance();
       $keys = $ds->getKeys();
-      $this->assertIsArray($keys);
+      $this->assertTrue(sizeof($keys) > 0);
     }
     catch (Exception $e) {
       $this->markTestSkipped('DB not available: ' . $e->getMessage());

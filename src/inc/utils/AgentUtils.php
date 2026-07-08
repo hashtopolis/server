@@ -144,7 +144,7 @@ class AgentUtils {
       return "No data";
     }
     $deviceUtil = $deviceUtil->getValue();
-    if ($deviceUtil === false) {
+    if ($deviceUtil === null) {
       return "No valid data";
     }
     $deviceUtil = explode(",", $deviceUtil);
@@ -165,7 +165,7 @@ class AgentUtils {
       return 'No data';
     }
     $deviceTemp = $deviceTemp->getValue();
-    if ($deviceTemp === false) {
+    if ($deviceTemp === null) {
       return 'No valid data';
     }
     $deviceTemp = explode(",", $deviceTemp);
@@ -185,7 +185,7 @@ class AgentUtils {
       return "No data";
     }
     $cpuUtil = $cpuUtil->getValue();
-    if ($cpuUtil === false) {
+    if ($cpuUtil === null) {
       return "No valid data";
     }
     $cpuUtil = explode(",", $cpuUtil);

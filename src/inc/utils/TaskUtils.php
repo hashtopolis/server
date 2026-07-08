@@ -883,10 +883,10 @@ class TaskUtils {
     else if (Util::containsBlacklistedChars($preprocessorCommand)) {
       throw new HttpError("Preprocessor command contains blacklisted characters!");
     }
-    else if (!is_numeric($chunkTime) || $chunkTime < 1) {
+    else if ($chunkTime < 1) {
       throw new HttpError("Invalid chunk size!");
     }
-    else if (!is_numeric($status) || $status < 1) {
+    else if ($status < 1) {
       throw new HttpError("Invalid status timer!");
     }
     else if ($benchtype != 'speed' && $benchtype != 'runtime') {
