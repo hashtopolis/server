@@ -14,6 +14,9 @@ use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\HTException;
 
 
+/**
+ * @extends AbstractModelAPI<AccessGroup>
+ */
 class AccessGroupAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/accessgroups";

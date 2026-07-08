@@ -7,6 +7,9 @@ use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 
 
+/**
+ * @extends AbstractModelAPI<ConfigSection>
+ */
 class ConfigSectionAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/configsections";

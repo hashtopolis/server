@@ -18,6 +18,9 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\UserUtils;
 
 
+/**
+ * @extends AbstractModelAPI<User>
+ */
 class UserAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/users";

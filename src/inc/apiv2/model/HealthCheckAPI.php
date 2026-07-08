@@ -12,6 +12,9 @@ use Hashtopolis\inc\utils\HealthUtils;
 use Hashtopolis\inc\HTException;
 
 
+/**
+ * @extends AbstractModelAPI<HealthCheck>
+ */
 class HealthCheckAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/healthchecks";
@@ -52,6 +55,7 @@ class HealthCheckAPI extends AbstractModelAPI {
   
   /**
    * @throws HttpError
+   * @throws HTException
    */
   protected function createObject(array $data): int {
     $healthCheck = HealthUtils::createHealthCheck(

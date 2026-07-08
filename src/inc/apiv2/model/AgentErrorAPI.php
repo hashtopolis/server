@@ -19,6 +19,9 @@ use Hashtopolis\inc\Util;
 use Hashtopolis\dba\ExistsFilter;
 
 
+/**
+ * @extends AbstractModelAPI<AgentError>
+ */
 class AgentErrorAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/agenterrors";
@@ -56,6 +59,9 @@ class AgentErrorAPI extends AbstractModelAPI {
     return count(array_intersect($accessGroupsAgent, $accessGroupsUser)) > 0;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     

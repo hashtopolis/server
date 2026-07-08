@@ -11,6 +11,9 @@ use Hashtopolis\inc\defines\DNotificationType;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\NotificationUtils;
 
+/**
+ * @extends AbstractModelAPI<NotificationSetting>
+ */
 class NotificationSettingAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/notifications";

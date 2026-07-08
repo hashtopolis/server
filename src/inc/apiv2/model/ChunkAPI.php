@@ -22,6 +22,9 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<Chunk>
+ */
 class ChunkAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/chunks";
@@ -51,6 +54,9 @@ class ChunkAPI extends AbstractModelAPI {
     return count($chunks) > 0;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     $baseFilter = new QueryFilter(Chunk::AGENT_ID, null, "=");

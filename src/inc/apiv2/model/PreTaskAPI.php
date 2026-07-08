@@ -16,6 +16,9 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\PretaskUtils;
 
 
+/**
+ * @extends AbstractModelAPI<Pretask>
+ */
 class PreTaskAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/pretasks";

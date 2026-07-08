@@ -17,6 +17,9 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<Hash>
+ */
 class HashAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/hashes";
@@ -40,6 +43,9 @@ class HashAPI extends AbstractModelAPI {
     return in_array($hashlist->getAccessGroupId(), $accessGroupsUser);
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     

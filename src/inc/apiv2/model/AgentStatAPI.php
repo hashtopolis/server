@@ -15,6 +15,9 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<AgentStat>
+ */
 class AgentStatAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/agentstats";
@@ -39,6 +42,9 @@ class AgentStatAPI extends AbstractModelAPI {
     return count(array_intersect($accessGroupsAgent, $accessGroupsUser)) > 0;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     
@@ -67,6 +73,5 @@ class AgentStatAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function deleteObject(object $object): void {
-    Factory::getAgentStatFactory()->delete($object);
   }
 }

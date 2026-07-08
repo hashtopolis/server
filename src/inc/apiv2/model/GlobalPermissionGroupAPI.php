@@ -14,6 +14,9 @@ use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
 
 
+/**
+ * @extends AbstractModelAPI<RightGroup>
+ */
 class GlobalPermissionGroupAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/globalpermissiongroups";
@@ -68,7 +71,6 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
   }
   
   /**
-   * @param object $object
    * @throws HTException
    * @throws HttpError
    */

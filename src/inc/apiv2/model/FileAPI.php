@@ -21,6 +21,9 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<File>
+ */
 class FileAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/files";

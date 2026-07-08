@@ -9,6 +9,9 @@ use Hashtopolis\inc\utils\HashtypeUtils;
 use Hashtopolis\inc\HTException;
 
 
+/**
+ * @extends AbstractModelAPI<HashType>
+ */
 class HashTypeAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/hashtypes";

@@ -16,6 +16,9 @@ use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\JwtTokenUtils;
 
+/**
+ * @extends AbstractModelAPI<JwtApiKey>
+ */
 class ApiTokenAPI extends AbstractModelAPI {
   const API_AUD = "api_hashtopolis";
   private ?string $jwtToken = null;
@@ -124,7 +127,6 @@ class ApiTokenAPI extends AbstractModelAPI {
   }
   
   /**
-   * @param object $object
    * @throws HttpForbidden
    */
   protected function deleteObject(object $object): void {

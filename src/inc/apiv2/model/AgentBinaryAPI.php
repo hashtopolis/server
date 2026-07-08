@@ -10,6 +10,9 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 
 
+/**
+ * @extends AbstractModelAPI<AgentBinary>
+ */
 class AgentBinaryAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/agentbinaries";

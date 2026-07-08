@@ -10,6 +10,9 @@ use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\HTException;
 
 
+/**
+ * @extends AbstractModelAPI<RegVoucher>
+ */
 class VoucherAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/vouchers";

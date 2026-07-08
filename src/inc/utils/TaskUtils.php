@@ -85,6 +85,7 @@ class TaskUtils {
   
   /**
    * @return Task
+   * @throws Exception
    */
   public static function getDefault(): Task {
     return new Task(
@@ -1377,6 +1378,7 @@ class TaskUtils {
   /**
    * @param Task $task
    * @return bool
+   * @throws Exception
    */
   public static function isFinished(Task $task): bool {
     return ($task->getKeyspace() > 0 && Util::getTaskInfo($task)[0] >= $task->getKeyspace());

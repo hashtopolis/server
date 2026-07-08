@@ -21,6 +21,9 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<Speed>
+ */
 class SpeedAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/speeds";
@@ -61,6 +64,9 @@ class SpeedAPI extends AbstractModelAPI {
     return count($hashlist) > 0;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     

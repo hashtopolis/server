@@ -24,6 +24,9 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 use Hashtopolis\inc\utils\TaskUtils;
 
+/**
+ * @extends AbstractModelAPI<TaskWrapperDisplay>
+ */
 class TaskWrapperDisplayAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/taskwrapperdisplays";
@@ -54,6 +57,9 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
     return count($wrappers) > 0;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
@@ -120,6 +126,9 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
     return Util::showperc(TaskUtils::getTaskProgress($task), $keyspace);
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getAggregateStatus(object $object): int {
     // TODO: this could be optimized by only requesting taskId, keyspace and keyspaceProgress of all tasks of that wrapper (columnFilter)
     $tasks = TaskUtils::getTasksOfWrapper($object->getId());

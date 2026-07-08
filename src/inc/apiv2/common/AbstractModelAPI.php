@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\common;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\MassUpdateSet;
 use Hashtopolis\inc\apiv2\error\ErrorHandler;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
@@ -27,12 +28,21 @@ use Hashtopolis\dba\PaginationFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\Util;
 
+/**
+ * @template TModel of AbstractModel
+ */
 abstract class AbstractModelAPI extends AbstractBaseAPI {
-  abstract static public function getDBAClass();
+  /**
+   * @return class-string<TModel>
+   */
+  abstract static public function getDBAClass(): string;
   
   abstract protected function createObject(array $data): int;
   
-  abstract protected function deleteObject(object $object): void;
+  /**
+   * @param TModel $object
+   */
+  abstract protected function deleteObject(AbstractModel $object): void;
   
   /**
    * Available 'expand' parameters on $object
@@ -108,6 +118,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   
   
   /**
+   * @return AbstractModelFactory<TModel>
    * @throws HttpError
    */
   final protected static function getFactory(): object {
@@ -391,9 +402,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   
   /**
    * Request single object from database & validate permissions
+   * @return TModel
    * @throws ResourceNotFoundError
    * @throws HttpForbidden
    * @throws HttpError
+   * @throws \Exception
    */
   protected function doFetch(string $pk, ?AbstractModelFactory $otherFactory = null): mixed {
     if ($otherFactory != null) {

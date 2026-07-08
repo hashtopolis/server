@@ -24,6 +24,9 @@ use Middlewares\Utils\HttpErrorException;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<Hashlist>
+ */
 class HashlistAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/hashlists";
@@ -84,12 +87,18 @@ class HashlistAPI extends AbstractModelAPI {
     ];
   }
   
+  /**
+   * @throws \Exception
+   */
   protected function getSingleACL(User $user, object $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
     return in_array($object->getAccessGroupId(), $accessGroupsUser);
   }
   
+  /**
+   * @throws \Exception
+   */
   protected function getFilterACL(): array {
     return [
       Factory::FILTER => [

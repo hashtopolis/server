@@ -24,6 +24,9 @@ use Hashtopolis\inc\Util;
 use Hashtopolis\inc\utils\TaskWrapperUtils;
 
 
+/**
+ * @extends AbstractModelAPI<TaskWrapper>
+ */
 class TaskWrapperAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/taskwrappers";
@@ -51,6 +54,9 @@ class TaskWrapperAPI extends AbstractModelAPI {
     return count($wrappers) > 0;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     

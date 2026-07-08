@@ -31,6 +31,9 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;
 
+/**
+ * @extends AbstractModelAPI<Task>
+ */
 class TaskAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/tasks";
@@ -55,6 +58,9 @@ class TaskAPI extends AbstractModelAPI {
     return count($tasks) > 0;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     
@@ -182,6 +188,9 @@ class TaskAPI extends AbstractModelAPI {
     return Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getAggregateStatus(object $object): int {
     /** @var Task $object */
     return TaskUtils::getStatus($object);

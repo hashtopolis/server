@@ -24,6 +24,9 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<Assignment>
+ */
 class AgentAssignmentAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/agentassignments";
@@ -48,6 +51,9 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     return count(array_intersect($accessGroupsAgent, $accessGroupsUser)) > 0;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     

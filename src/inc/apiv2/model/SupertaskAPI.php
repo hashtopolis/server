@@ -16,6 +16,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Hashtopolis\inc\utils\SupertaskUtils;
 
 
+/**
+ * @extends AbstractModelAPI<Supertask>
+ */
 class SupertaskAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/supertasks";
