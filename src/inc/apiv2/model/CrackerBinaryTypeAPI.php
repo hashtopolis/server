@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\CrackerUtils;
 
 use Hashtopolis\dba\models\CrackerBinary;
@@ -65,9 +66,10 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
   
   
   /**
+   * @param CrackerBinaryType $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     CrackerUtils::deleteBinaryType($object->getId());
   }
 }

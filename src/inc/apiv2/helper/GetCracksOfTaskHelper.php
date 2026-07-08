@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\helper;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
@@ -42,9 +43,11 @@ class GetCracksOfTaskHelper extends AbstractHelperAPI {
   
   
   /**
+   * @param array $data
+   * @return AbstractModel|array|null
    * @throws HttpErrorException
    */
-  public function actionPost(array $data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     throw new HttpErrorException("getCracksOfTask has no POST");
   }
   

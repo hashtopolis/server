@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Pretask;
 use Hashtopolis\dba\models\Supertask;
@@ -115,17 +116,19 @@ class SupertaskAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Supertask $object
    * @throws Exception
    */
-  protected function getAggregateAmountPretasks(object $object): int {
+  protected function getAggregateAmountPretasks(AbstractModel $object): int {
     $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $object->getId(), "=", Factory::getSupertaskPretaskFactory());
     return Factory::getSupertaskPretaskFactory()->countFilter([Factory::FILTER => $qF]);
   }
 
   /**
+   * @param Supertask $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     SupertaskUtils::deleteSupertask($object->getId());
   }
 }

@@ -2,9 +2,11 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\Pretask;
 use Hashtopolis\dba\models\Supertask;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\SupertaskUtils;
 
@@ -41,9 +43,12 @@ class BulkSupertaskBuilderHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to import cracked hashes into a hashlist.
+   *
+   * @param $data
+   * @return AbstractModel|array|null
    * @throws HTException
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost($data): AbstractModel|array|null {
     return SupertaskUtils::bulkSupertask($data['name'], $data['command'], $data['isCpu'], $data['maxAgents'], $data['isSmall'], $data['crackerBinaryTypeId'], $data['benchtype'], $data['basefiles'], $data['iterfiles'], $this->getCurrentUser());
   }
 }

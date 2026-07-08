@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\UQueryHashlist;
 use Hashtopolis\inc\utils\AccessUtils;
@@ -88,16 +90,17 @@ class HashlistAPI extends AbstractModelAPI {
   }
   
   /**
-   * @throws \Exception
+   * @param Hashlist $object
+   * @throws Exception
    */
-  protected function getSingleACL(User $user, object $object): bool {
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
     return in_array($object->getAccessGroupId(), $accessGroupsUser);
   }
   
   /**
-   * @throws \Exception
+   * @throws Exception
    */
   protected function getFilterACL(): array {
     return [
@@ -176,9 +179,10 @@ class HashlistAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Hashlist $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     HashlistUtils::delete($object->getId(), $this->getCurrentUser());
   }
   

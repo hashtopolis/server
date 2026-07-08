@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 use ReflectionMethod;
+use ReflectionObject;
 use Slim\Routing\RouteCollectorProxy;
 
 use Middlewares\Utils\HttpErrorException;
@@ -100,7 +101,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
     $routes = $app->getRouteCollector()->getRoutes();
     foreach ($routes as $route) {
       /* Quirk to receive className, since it is hidden in a protected variable */
-      $reflectionOfRoute = new \ReflectionObject($route);
+      $reflectionOfRoute = new ReflectionObject($route);
       $protectedCallable = $reflectionOfRoute->getProperty('callable');
       $reflectionCallable = ($protectedCallable->getValue($route));
       
@@ -122,7 +123,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       $class = new $apiClassName($app->getContainer());
 
       
-      $path = preg_replace('/\{([^:}]+):(.+)\}/', '{$1}', $path);
+      $path = preg_replace('/\{([^:}]+):(.+)}/', '{$1}', $path);
       if (!($class instanceof AbstractModelAPI)) {
         $name_parts = explode('\\', $class::class);
         $name = end($name_parts);
@@ -193,7 +194,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           ]
         ];
         continue;
-      };
+      }
       
       /* Quick to find out if single parameter object is used */
       $singleObject = ((strstr($path, '/{id}')) !== false);
@@ -631,7 +632,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ],
             "description" => "Items to include. Comma seperated"
           ];
-        };
+        }
       }
       else {
         if ($method == 'get') {
@@ -727,7 +728,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         }
       }
       $paths[$path][$method]["parameters"] = $parameters;
-    };
+    }
     
     /**
      * Build static entries

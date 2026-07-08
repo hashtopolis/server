@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\defines\DAccessControl;
 use Hashtopolis\dba\models\AccessGroupAgent;
@@ -43,9 +44,10 @@ class SpeedAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Speed $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, object $object): bool {
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
     $agent = Factory::getAgentFactory()->get($object->getAgentId());
@@ -117,9 +119,10 @@ class SpeedAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Speed $object
    * @throws HttpError
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     throw new HttpError("Speeds cannot be deleted via API");
   }
 }

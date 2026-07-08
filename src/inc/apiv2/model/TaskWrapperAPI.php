@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroup;
@@ -41,9 +42,10 @@ class TaskWrapperAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param TaskWrapper $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, object $object): bool {
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
     $qF1 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupsUser, Factory::getHashlistFactory());
@@ -135,11 +137,12 @@ class TaskWrapperAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param TaskWrapper $object
    * @throws HTException
    * @throws HttpError
    * @throws Exception
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     switch ($object->getTaskType()) {
       case DTaskTypes::NORMAL:
         $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $object->getId(), "=", Factory::getTaskWrapperFactory());

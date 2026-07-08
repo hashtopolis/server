@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
@@ -11,10 +12,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Hashtopolis\inc\apiv2\model\UserAPI;
 use Hashtopolis\inc\utils\AccountUtils;
-use Hashtopolis\inc\utils\UserUtils;
-use Slim\Routing\RouteContext;
 
 class CurrentUserHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
@@ -60,10 +58,10 @@ class CurrentUserHelperAPI extends AbstractHelperAPI {
   
   /**
    * @param $data
-   * @return object|array|null
+   * @return AbstractModel|array|null
    * @throws HttpError
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost($data): AbstractModel|array|null {
     throw new HttpError("GetCurrentUser has no actionPOST");
   }
   

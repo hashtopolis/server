@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\HTException;
@@ -34,14 +36,17 @@ class GetAgentBinaryHelperAPI extends AbstractHelperAPI {
   
   
   /**
+   * @param array $data
+   * @return AbstractModel|array|null
    * @throws HttpErrorException
    */
-  public function actionPost(array $data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     throw new HttpErrorException("getAgentBinary has no POST");
   }
   
   /**
    * @throws HTException
+   * @throws Exception
    */
   public function validateAgent($request, int $agentBinaryId): string {
     $agentBinary = Factory::getAgentBinaryFactory()->get($agentBinaryId);

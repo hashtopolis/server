@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Task;
@@ -37,10 +38,12 @@ class UnassignAgentHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to unassign an agent.
+   * @param array $data
+   * @return AbstractModel|array|null
    * @throws HTException
    * @throws HttpError
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     AgentUtils::assign($data[Agent::AGENT_ID], 0, $this->getCurrentUser());
     
     return $this->getResponse();

@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\HTException;
@@ -44,9 +45,10 @@ class TaskAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Task $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, object $object): bool {
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
     $qF1 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupsUser, Factory::getHashlistFactory());
@@ -165,14 +167,19 @@ class TaskAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Task $object
    * @throws Exception
    */
-  protected function getAggregateTotalAssignedAgents(object $object): int {
+  protected function getAggregateTotalAssignedAgents(AbstractModel $object): int {
     $qF = new QueryFilter(Assignment::TASK_ID, $object->getId(), "=");
     return Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
   }
   
-  protected function getAggregateDispatched(object $object): string {
+  /**
+   * @param Task $object
+   * @return string
+   */
+  protected function getAggregateDispatched(AbstractModel $object): string {
     /** @var Task $object */
     $keyspace = $object->getKeyspace();
     $keyspaceProgress = $object->getKeyspaceProgress();
@@ -180,34 +187,36 @@ class TaskAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Task $object
    * @throws Exception
    */
-  protected function getAggregateSearched(object $object): string {
-    /** @var Task $object */
+  protected function getAggregateSearched(AbstractModel $object): string {
     $keyspace = $object->getKeyspace();
     return Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
   }
   
   /**
+   * @param Task $object
    * @throws Exception
    */
-  protected function getAggregateStatus(object $object): int {
-    /** @var Task $object */
+  protected function getAggregateStatus(AbstractModel $object): int {
     return TaskUtils::getStatus($object);
   }
   
   /**
+   * @param Task $object
    * @throws Exception
    */
-  protected function getAggregateTotalChunks(object $object): int {
+  protected function getAggregateTotalChunks(AbstractModel $object): int {
     $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
     return Factory::getChunkFactory()->countFilter([Factory::FILTER => $qF]);
   }
   
   /**
+   * @param Task $object
    * @throws Exception
    */
-  protected function getAggregateCurrentSpeed(object $object): int {
+  protected function getAggregateCurrentSpeed(AbstractModel $object): int {
     $qF1 = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
     $qF2 = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
     $qF3 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
@@ -220,10 +229,10 @@ class TaskAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Task $object
    * @throws Exception
    */
-  protected function getAggregateEstimatedTime(object $object): int {
-    /** @var Task $object */
+  protected function getAggregateEstimatedTime(AbstractModel $object): int {
     $keyspace = $object->getKeyspace();
     
     // not a 100% efficient, but we would have to break up the nice generic handling of the aggregations to deal with this
@@ -234,18 +243,18 @@ class TaskAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Task $object
    * @throws Exception
    */
-  protected function getAggregateCProgress(object $object): int {
-    /** @var Task $object */
+  protected function getAggregateCProgress(AbstractModel $object): int {
     return TaskUtils::getTaskProgress($object);
   }
   
   /**
+   * @param Task $object
    * @throws Exception
    */
-  protected function getAggregateTimeSpent(object $object): int {
-    /** @var Task $object */
+  protected function getAggregateTimeSpent(AbstractModel $object): int {
     return TaskUtils::getTimeSpentOnTask($object);
   }
   
@@ -287,10 +296,10 @@ class TaskAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Task $object
    * @throws Exception
    */
-  protected function deleteObject(object $object): void {
-    /** @var Task $object */
+  protected function deleteObject(AbstractModel $object): void {
     TaskUtils::deleteTask($object);
   }
   

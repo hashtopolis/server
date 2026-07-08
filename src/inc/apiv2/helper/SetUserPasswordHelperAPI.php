@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -39,13 +40,13 @@ class SetUserPasswordHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to set a password of an user.
-   * @param $data
-   * @return object|array|null
+   * @param $data array
+   * @return AbstractModel|array|null
    * @throws HTException
    * @throws HttpError
    * @throws ResourceNotFoundError
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     $user = self::getUser($data[User::USER_ID]);
     
     /* Set user password if provided */

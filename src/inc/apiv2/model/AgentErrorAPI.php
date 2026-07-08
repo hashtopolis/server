@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\ContainFilter;
@@ -49,9 +50,10 @@ class AgentErrorAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param AgentError $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, object $object): bool {
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     $agent = Factory::getAgentFactory()->get($object->getAgentId());
     $accessGroupsAgent = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent));
@@ -93,9 +95,10 @@ class AgentErrorAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param AgentError $object
    * @throws Exception
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     Factory::getAgentErrorFactory()->delete($object);
   }
 }

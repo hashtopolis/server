@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\inc\utils\AssignmentUtils;
@@ -41,9 +42,10 @@ class AgentAssignmentAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Assignment $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, object $object): bool {
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     $agent = Factory::getAgentFactory()->get($object->getAgentId());
     $accessGroupsAgent = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent));
@@ -106,10 +108,11 @@ class AgentAssignmentAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Assignment $object
    * @throws HTException
    * @throws HttpError
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     AgentUtils::assign($object->getAgentId(), 0, $this->getCurrentUser());
   }
 }

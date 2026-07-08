@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
 
@@ -59,11 +60,11 @@ class PreTaskAPI extends AbstractModelAPI {
   }
   
   /**
-   * @param object $object
+   * @param Pretask $object
    * @return int
    * @throws Exception
    */
-  protected function getAggregateAuxiliaryKeyspace(object $object): int {
+  protected function getAggregateAuxiliaryKeyspace(AbstractModel $object): int {
     $qF1 = new QueryFilter(FilePretask::PRETASK_ID, $object->getId(), "=", Factory::getFilePretaskFactory());
     $jF1 = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
     $files = Factory::getFileFactory()->filter([Factory::FILTER => $qF1, Factory::JOIN => $jF1]);
@@ -111,9 +112,10 @@ class PreTaskAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Pretask $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     PretaskUtils::deletePretask($object->getId());
   }
 }

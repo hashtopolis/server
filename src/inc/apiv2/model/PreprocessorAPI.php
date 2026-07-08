@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\Preprocessor;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
@@ -49,10 +50,11 @@ class PreprocessorAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Preprocessor $object
    * @throws HttpError
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     PreprocessorUtils::delete($object->getId());
   }
 }

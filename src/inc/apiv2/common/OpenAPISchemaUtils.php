@@ -166,6 +166,10 @@ class OpenAPISchemaUtils {
   }
   
   //TODO expandables array is unnecessarily indexed in the swagger UI
+  
+  /**
+   * @throws HttpErrorException
+   */
   static function makeExpandables($expandables, $container): array {
     $properties = [];
     foreach ($expandables as $expand => $expandVal) {
@@ -186,7 +190,7 @@ class OpenAPISchemaUtils {
           ]
         ]
       ];
-    };
+    }
     return $properties;
   }
   
@@ -220,10 +224,9 @@ class OpenAPISchemaUtils {
         }
         return ["type" => "array", "items" => $itemSchema];
       } else {
-        $properties = [];
-        foreach ($value as $key => $val) {
-          $properties[$key] = self::mapToProperties($val);
-        }
+        $properties = array_map(function ($val) {
+          return self::mapToProperties($val);
+        }, $value);
         return ["type" => "object", "properties" => $properties];
       }
     }
@@ -279,7 +282,7 @@ class OpenAPISchemaUtils {
   }
   
   /**
-   * This function builds the post/patch attributes for a relationship. When $istomany is false,
+   * This function builds the post/patch attributes for a relationship. When $isToMany is false,
    * it would build the attributes for a to one relationship. If it is true it will build it for a too many relationship.
    * */
   static function buildPostPatchRelation($name, $isToMany): array {
@@ -355,6 +358,7 @@ class OpenAPISchemaUtils {
         else {
           $description = "PATCH request to update attributes of a single object.";
         }
+        break;
       case "delete":
         if ($isRelation) {
           if ($singleObject) {

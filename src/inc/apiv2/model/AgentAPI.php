@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Aggregation;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
@@ -190,9 +191,10 @@ class AgentAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Agent $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     AgentUtils::delete($object->getId(), $this->getCurrentUser());
   }
 }

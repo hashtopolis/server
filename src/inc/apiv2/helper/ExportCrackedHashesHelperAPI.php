@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\utils\HashlistUtils;
@@ -40,12 +41,12 @@ class ExportCrackedHashesHelperAPI extends AbstractHelperAPI {
   /**
    * Endpoint to export cracked hashes.
    * @param $data
-   * @return object|array|null
+   * @return AbstractModel|array|null
    * @throws HTException
    * @throws HttpError
    * @throws ResourceNotFoundError
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost($data): AbstractModel|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     
     return HashlistUtils::export($hashlist->getId(), $this->getCurrentUser());

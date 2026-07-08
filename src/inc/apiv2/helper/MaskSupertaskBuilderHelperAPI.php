@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\Pretask;
 use Hashtopolis\dba\models\Supertask;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
@@ -40,9 +41,11 @@ class MaskSupertaskBuilderHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to import cracked hashes into a hashlist.
+   * @param array $data
+   * @return AbstractModel|array|null
    * @throws HTException
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     return SupertaskUtils::importSupertask($data['name'], $data['isCpu'], $data['maxAgents'], $data['isSmall'], $data['optimized'], $data['crackerBinaryTypeId'], explode("\n", str_replace("\r\n", "\n", $data['masks'])), $data['benchtype']);
   }
 }

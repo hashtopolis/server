@@ -112,16 +112,6 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * Checks if a user has access to the given single element retrieved
-   * @param User $user
-   * @param object $object
-   * @return bool true if the access is allowed
-   */
-  protected function getSingleACL(User $user, object $object): bool {
-    return true;
-  }
-  
-  /**
    * Returns an array containing all filters and joins to be added to the query to ensure
    * that only the elements are retrieved matching the access groups the user is in
    * @return array
@@ -176,16 +166,17 @@ abstract class AbstractBaseAPI {
   /**
    * Overridable function to aggregate data in the object. Used for Tasks and Agents.
    *
-   * @param object $object The object to aggregate data from.
+   * @param AbstractModel $object $object The object to aggregate data from.
    * @param array &$includedData Array passed by reference; implementations can add related resources
    *   for inclusion in the response by appending to this array.
+   * @param array|null $aggregateFieldsets
    * @return array Aggregated data as key-value pairs.
    *
    * Implementations should use $includedData to collect related resources that should be included
    * in the API response, such as related entities or additional data.
    * @throws HttpError
    */
-  public function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
+  public function aggregateData(AbstractModel $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     $aggregatedData = [];
     
     if (is_array($aggregateFieldsets)) {
@@ -358,7 +349,7 @@ abstract class AbstractBaseAPI {
    * @throws ResourceNotFoundError|HttpError
    * @throws Exception
    */
-  final protected static function fetchOne(string $model, int $pk): object {
+  final protected static function fetchOne(string $model, int $pk): AbstractModel {
     $factory = self::getModelFactory($model);
     $object = $factory->get($pk);
     if ($object === null) {
@@ -652,7 +643,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function obj2Array(object $obj): array {
+  protected function obj2Array(AbstractModel $obj): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -680,7 +671,7 @@ abstract class AbstractBaseAPI {
    * @throws ContainerExceptionInterface
    * @throws HttpError
    */
-  protected function obj2Resource(object $obj, array &$expandResult = [], ?array $sparseFieldsets = null, ?array $aggregateFieldsets = null): array {
+  protected function obj2Resource(AbstractModel $obj, array &$expandResult = [], ?array $sparseFieldsets = null, ?array $aggregateFieldsets = null): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -811,8 +802,9 @@ abstract class AbstractBaseAPI {
    * Quick to resolve objects via ManyToMany relation table
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
+   * @throws Exception
    */
-  protected function joinQuery(mixed $objFactory, QueryFilter $qF, JoinFilter $jF): array {
+  protected function joinQuery(AbstractModelFactory $objFactory, QueryFilter $qF, JoinFilter $jF): array {
     $joined = $objFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     $objects = $joined[$objFactory->getModelName()];
     
@@ -827,8 +819,9 @@ abstract class AbstractBaseAPI {
    * Quick to resolve objects via ForeignKey relation table
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
+   * @throws Exception
    */
-  protected function filterQuery(mixed $objFactory, QueryFilter $qF): array {
+  protected function filterQuery(AbstractModelFactory $objFactory, QueryFilter $qF): array {
     $objects = $objFactory->filter([Factory::FILTER => $qF]);
     
     $ret = [];
@@ -839,14 +832,14 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * @param object $object
+   * @param AbstractModel $object
    * @param array $expands
    * @param array $expandResult
    * @return array
    * @throws ContainerExceptionInterface
    * @throws NotFoundExceptionInterface
    */
-  protected function applyExpansions(object $object, array $expands, array $expandResult): array {
+  protected function applyExpansions(AbstractModel $object, array $expands, array $expandResult): array {
     $newObject = $this->obj2Array($object);
     foreach ($expands as $expand) {
       if (!array_key_exists($object->getId(), $expandResult[$expand])) {
@@ -876,7 +869,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function object2Array(object $object, array $expands = []): array {
+  protected function object2Array(AbstractModel $object, array $expands = []): array {
     $expandResult = [];
     foreach ($expands as $expand) {
       $apiClass = $this->container->get('classMapper')->get(get_class($object));
@@ -896,13 +889,13 @@ abstract class AbstractBaseAPI {
   
   /**
    * Helper conversion of single object to JSON string
-   * @param object $object
+   * @param AbstractModel $object
    * @return string
    * @throws ContainerExceptionInterface
    * @throws JsonException
    * @throws NotFoundExceptionInterface
    */
-  protected function object2JSON(object $object): string {
+  protected function object2JSON(AbstractModel $object): string {
     $item = $this->object2Array($object, []);
     return $this->ret2json($item);
   }
@@ -1158,7 +1151,7 @@ abstract class AbstractBaseAPI {
    * @throws InternalError
    * @throws HttpError
    */
-  protected function makeFilter(array $filters, object $apiClass, array &$joinFilters = []): array {
+  protected function makeFilter(array $filters, AbstractModelAPI $apiClass, array &$joinFilters = []): array {
     $qFs = [];
     $features = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
@@ -1383,10 +1376,15 @@ abstract class AbstractBaseAPI {
     return $relatedResources;
   }
   
+  /**
+   * @throws NotFoundExceptionInterface
+   * @throws HttpError
+   * @throws ContainerExceptionInterface
+   */
   protected function processExpands(
-    object $apiClass,
+    AbstractModelAPI $apiClass,
     array $expands,
-    object $object,
+    AbstractModel $object,
     array $expandResult,
     array $includedResources,
     ?array $sparseFieldsets = null,
@@ -1537,6 +1535,7 @@ abstract class AbstractBaseAPI {
    * Common features for all requests, like setting user and checking basic permissions
    * @throws HTException
    * @throws HttpForbidden
+   * @throws Exception
    */
   protected function preCommon(Request $request): void {
     $userId = $request->getAttribute(('userId'));
@@ -1661,8 +1660,22 @@ abstract class AbstractBaseAPI {
   
   /**
    * Get single Resource
+   *
+   * @param AbstractModelAPI $apiClass
+   * @param AbstractModel $object
+   * @param Request $request
+   * @param Response $response
+   * @param int $statusCode
+   * @return Response
+   * @throws ContainerExceptionInterface
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
+   * @throws NotFoundExceptionInterface
    */
-  protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode = 200): Response {
+  protected static function getOneResource(AbstractModelAPI $apiClass, AbstractModel $object, Request $request, Response $response, int $statusCode = 200): Response {
     $apiClass->preCommon($request);
     $validExpandables = $apiClass->getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);

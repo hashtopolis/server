@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\ConfigUtils;
 use Hashtopolis\dba\models\Config;
 use Hashtopolis\dba\models\ConfigSection;
@@ -45,9 +46,10 @@ class ConfigAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Config $object
    * @throws HttpError
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     throw new HttpError("Configs cannot be deleted via API");
   }
   

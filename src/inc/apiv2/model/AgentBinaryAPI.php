@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AgentBinaryUtils;
 
 use Hashtopolis\dba\models\AgentBinary;
@@ -38,9 +39,10 @@ class AgentBinaryAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param AgentBinary $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     AgentBinaryUtils::deleteBinary($object->getId());
   }
   

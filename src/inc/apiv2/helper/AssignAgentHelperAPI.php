@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Task;
@@ -40,10 +41,13 @@ class AssignAgentHelperAPI extends AbstractHelperAPI {
   
   /**
    * This endpoint is responsible for assigning a task to a specific agent.
+   *
+   * @param $data
+   * @return AbstractModel|array|null
    * @throws HTException
    * @throws HttpError
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost($data): AbstractModel|array|null {
     AgentUtils::assign($data[Agent::AGENT_ID], $data[Task::TASK_ID], $this->getCurrentUser());
     
     return self::getResponse();

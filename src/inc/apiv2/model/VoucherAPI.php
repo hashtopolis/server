@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AgentUtils;
 
 use Hashtopolis\dba\models\RegVoucher;
@@ -31,9 +32,10 @@ class VoucherAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param RegVoucher $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     AgentUtils::deleteVoucher($object->getId());
   }
 }

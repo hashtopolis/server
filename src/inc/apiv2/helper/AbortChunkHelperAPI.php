@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -38,12 +39,12 @@ class AbortChunkHelperAPI extends AbstractHelperAPI {
   /**
    * Endpoint to stop a running chunk.
    * @param array $data
-   * @return object|array|null
+   * @return AbstractModel|array|null
    * @throws HTException
    * @throws HttpError
    * @throws ResourceNotFoundError
    */
-  public function actionPost(array $data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     $chunk = self::getChunk($data[Chunk::CHUNK_ID]);
     
     TaskUtils::abortChunk($chunk->getId(), $this->getCurrentUser());

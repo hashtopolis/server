@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\apiv2\common;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
+use Hashtopolis\inc\apiv2\error\InternalError;
 use Hashtopolis\inc\HTException;
 use InvalidArgumentException;
 use JsonException;
@@ -16,7 +18,7 @@ use Slim\Exception\HttpForbiddenException;
 use Hashtopolis\inc\Util;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
-  abstract public function actionPost(array $data): object|array|null;
+  abstract public function actionPost(array $data): AbstractModel|array|null;
   
   /**
    * Function in order to create swagger documentation. Should return either a map of strings that
@@ -41,6 +43,7 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
    * @throws JsonException
    * @throws ContainerExceptionInterface
    * @throws NotFoundExceptionInterface
+   * @throws InternalError
    */
   public function processPost(Request $request, Response $response, array $args): Response {
     /* Required calls for all custom requests */

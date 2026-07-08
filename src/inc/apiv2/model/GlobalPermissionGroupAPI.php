@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessControlUtils;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\User;
@@ -71,10 +72,11 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param RightGroup $object
    * @throws HTException
    * @throws HttpError
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     AccessControlUtils::deleteGroup($object->getId());
   }
   

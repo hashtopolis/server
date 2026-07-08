@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\ContainFilter;
@@ -39,9 +40,10 @@ class ChunkAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Chunk $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, object $object): bool {
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
     $qF1 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupsUser, Factory::getHashlistFactory());
@@ -107,9 +109,10 @@ class ChunkAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Chunk $object
    * @throws HttpError
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     throw new HttpError("Chunks cannot be deleted via API");
   }
 }

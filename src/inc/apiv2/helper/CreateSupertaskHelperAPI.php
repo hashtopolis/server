@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\helper;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
@@ -52,13 +53,13 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
   /**
    * Endpoint to create a supertask from a supertask template
    * @param $data
-   * @return object|array|null
+   * @return AbstractModel|array|null
    * @throws HTException
    * @throws HttpError
    * @throws ResourceNotFoundError
    * @throws Exception
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost($data): AbstractModel|array|null {
     $supertaskTemplate = self::getSupertask($data["supertaskTemplateId"]);
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     $crackerBinary = self::getCrackerBinary($data["crackerVersionId"]);

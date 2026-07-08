@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\defines\DFileType;
@@ -34,9 +35,10 @@ class FileAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param File $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, object $object): bool {
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
     return in_array($object->getAccessGroupId(), $accessGroupsUser);
@@ -203,9 +205,10 @@ class FileAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param File $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     FileUtils::delete($object->getId(), $this->getCurrentUser());
   }
 }

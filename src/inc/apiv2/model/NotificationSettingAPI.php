@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\NotificationSetting;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
@@ -76,9 +77,10 @@ class NotificationSettingAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param NotificationSetting $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     NotificationUtils::delete($object->getId(), $this->getCurrentUser());
   }
   

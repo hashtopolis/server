@@ -6,6 +6,7 @@ use Firebase\JWT\JWT;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\JwtApiKey;
 use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -16,9 +17,6 @@ use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\JwtTokenUtils;
 
-/**
- * @extends AbstractModelAPI<JwtApiKey>
- */
 class ApiTokenAPI extends AbstractModelAPI {
   const API_AUD = "api_hashtopolis";
   private ?string $jwtToken = null;
@@ -61,7 +59,10 @@ class ApiTokenAPI extends AbstractModelAPI {
     ];
   }
   
-  protected function getSingleACL(User $user, object $object): bool {
+  /**
+   * @param JwtApiKey $object
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     return ($object->getUserId() === $user->getId());
   }
   
@@ -115,7 +116,7 @@ class ApiTokenAPI extends AbstractModelAPI {
     return $token->getId();
   }
   
-  function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
+  function aggregateData(AbstractModel $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     // $token is only set in POST, this way the actual token is only returned after creation.
     $aggregatedData = [];
     $token = $this->getJwtToken();
@@ -127,9 +128,10 @@ class ApiTokenAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param JwtApiKey $object
    * @throws HttpForbidden
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     JwtTokenUtils::deleteKey($object);
   }
 }

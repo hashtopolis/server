@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\FileUtils;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
@@ -38,12 +39,12 @@ class RecountFileLinesHelperAPI extends AbstractHelperAPI {
   /**
    * Endpoint to recount files for when there is size mismatch
    * @param $data
-   * @return object|array|null
+   * @return AbstractModel|array|null
    * @throws HTException
    * @throws ContainerExceptionInterface
    * @throws NotFoundExceptionInterface
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost($data): AbstractModel|array|null {
     // first retrieve the file, as fileCountLines does not check any permissions, therefore to be sure call getFile() first, even if it is not required technically
     FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser());
     

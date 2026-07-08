@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\helper;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\Util;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\ContainFilter;
@@ -114,14 +115,14 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to search for hashes in accessible hashlists.
-   * @param $data
-   * @return object|array|null
+   * @param $data array
+   * @return AbstractModel|array|null
    * @throws ContainerExceptionInterface
    * @throws NotFoundExceptionInterface
    * @throws HttpError
    * @throws Exception
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     $search = base64_decode($data['searchData'], true);
     $isSalted = $data['isSalted'];
     $separator = $data['separator'];

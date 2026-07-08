@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\apiv2\common;
 
+use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\MassUpdateSet;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\error\ErrorHandler;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -55,6 +57,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * Fetch objects for  $expand on $objects
    * @throws InternalError
    * @throws HttpError
+   * @throws Exception
    */
   protected static function fetchExpandObjects(array $objects, string $expand): array {
     //disabled the check because with intermediate objects its possible to fetch a different model
@@ -78,7 +81,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $toOneRelationships[$expand]['relationKey'],
           $toOneRelationships[$expand]['parentKey']
         );
-      };
+      }
       
       return self::getForeignKeyRelation(
         $objects,
@@ -86,7 +89,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $relationFactory,
         $toOneRelationships[$expand]['relationKey'],
       );
-    };
+    }
     
     $toManyRelationships = static::getToManyRelationships();
     if (array_key_exists($expand, $toManyRelationships)) {
@@ -103,7 +106,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $relationFactory,
           $toManyRelationships[$expand]['relationKey'],
         );
-      };
+      }
       
       return self::getManyToOneRelation(
         $objects,
@@ -111,7 +114,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $relationFactory,
         $toManyRelationships[$expand]['relationKey'],
       );
-    };
+    }
     
     throw new InternalError("Internal error: Expansion '$expand' not implemented!");
   }
@@ -167,6 +170,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * of $intermediateFactory joining on $joinField (between 'intermediate' and 'target'). Filtered by
    * $filterField at $intermediateFactory.
    *
+   * A bit hacky solution to get a to one through an intermediate table, currently only used by tasks to include a hashlist through the taskwrapper
+   * another solution can be to overwrite fetchExpandObjects() in tasks.routes
+   *
    * @param array $objects Objects Fetch relation for selected Objects
    * @param string $objectField Field to use as base for $objects
    * @param object $intermediateFactory Factory used as intermediate between parentObject and targetObject
@@ -175,9 +181,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param string $parentKey
    * @return array $many2One which is a map where the key is the id of the parent object and the value is an array of the included
    *                objects that are included for this parent object
+   * @throws HttpError
+   * @throws Exception
    */
-  //A bit hacky solution to get a to one through an intermediate table, currently only used by tasks to include a hashlist through the taskwrapper
-  //another solution can be to overwrite fetchExpandObjects() in tasks.routes
   final protected static function getManyToOneRelationViaIntermediate(
     array $objects,
     string $objectField,
@@ -226,18 +232,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    *
    * @param array $objects Objects Fetch relation for selected Objects
    * @param string $objectField Field to use as base for $objects
-   * @param object $factory Factory used to retrieve objects
+   * @param AbstractModelFactory $factory Factory used to retrieve objects
    * @param string $filterField Filter field of $field to filter against $objects field
    *
    * @return array
+   * @throws Exception
    */
   final protected static function getForeignKeyRelation(
     array $objects,
     string $objectField,
-    object $factory,
+    AbstractModelFactory $factory,
     string $filterField
   ): array {
-    assert($factory instanceof AbstractModelFactory);
     $retval = array();
     
     /* Fetch required objects */
@@ -253,7 +259,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $f2o = [];
     foreach ($hO as $relationObject) {
       $f2o[$relationObject->getKeyValueDict()[$filterField]] = $relationObject;
-    };
+    }
     
     /* Map objects */
     foreach ($objects as $object) {
@@ -275,6 +281,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param string $filterField Filter field of $field to filter against $objects field
    *
    * @return array
+   * @throws Exception
    */
   final protected static function getManyToOneRelation(
     array $objects,
@@ -317,6 +324,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param string $joinField Field to connect 'intermediate' to 'target'
    * @return array $many2many which is a map where the key is the id of the parent object and the value is an array of the included
    *                objects that are included for this parent object
+   * @throws Exception
    */
   final protected static function getManyToManyRelationViaIntermediate(
     array $objects,
@@ -382,6 +390,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HTException
    * @throws HttpForbidden
    * @throws ResourceNotFoundError
+   * @throws HttpError
    */
   public function deleteOne(Request $request, Response $response, array $args): Response
     // TODO how to handle cascading deletes?
@@ -401,12 +410,22 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   }
   
   /**
+   * Checks if a user has access to the given single element retrieved
+   * @param User $user
+   * @param AbstractModel $object
+   * @return bool true if the access is allowed
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
+    return true;
+  }
+  
+  /**
    * Request single object from database & validate permissions
    * @return TModel
    * @throws ResourceNotFoundError
    * @throws HttpForbidden
    * @throws HttpError
-   * @throws \Exception
+   * @throws Exception
    */
   protected function doFetch(string $pk, ?AbstractModelFactory $otherFactory = null): mixed {
     if ($otherFactory != null) {
@@ -459,6 +478,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     return $updates;
   }
   
+  /**
+   * @throws HttpError
+   */
   protected static function calculate_next_cursor(string|int $cursor, bool $ascending = true): int|string {
     if (is_int($cursor)) {
       if ($ascending) {
@@ -538,7 +560,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    */
   protected static function decode_cursor(string $encoded_cursor): array {
     $json = base64_decode($encoded_cursor);
-    if ($json == false) {
+    if (!$json) {
       throw new HttpError("Invallid pagination cursor, cursor has to be base64 encoded");
     }
     $cursor = json_decode($json, true);
@@ -601,6 +623,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * API entry point for requesting multiple objects
    * @throws HttpError
+   * @throws Exception
    */
   public static function getManyResources(object $apiClass, Request $request, Response $response, array $relationFs = []): Response {
     $apiClass->preCommon($request);
@@ -939,7 +962,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $cast_key = $matches['key'] == '_id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
         if (!array_key_exists($cast_key, $features)) {
           continue; //not a valid filter for current model
-        };
+        }
         $modelFilterMap[$model::class][$filter] = $value;
         break; //filter has been found for current model, so break to go to next filter
       }
@@ -960,6 +983,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws JsonException
    * @throws ContainerExceptionInterface
    * @throws NotFoundExceptionInterface
+   * @throws Exception
    */
   public function count(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1018,10 +1042,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @return Response
    * @throws ContainerExceptionInterface
    * @throws HTException
+   * @throws HttpError
    * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
    * @throws NotFoundExceptionInterface
    * @throws ResourceNotFoundError
-   * @throws HttpError
    */
   public function getOne(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1039,10 +1065,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param mixed $object
    * @param mixed $data
    * @return Response
+   * @throws ContainerExceptionInterface
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
+   * @throws NotFoundExceptionInterface
    * @throws ResourceNotFoundError
+   * @throws Exception
    */
   public function patchSingleObject(Request $request, Response $response, mixed $object, mixed $data): Response {
     if (!$this->validateResourceRecord($data)) {
@@ -1075,9 +1106,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param Response $response
    * @param array $args
    * @return Response
+   * @throws ContainerExceptionInterface
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
+   * @throws NotFoundExceptionInterface
    * @throws ResourceNotFoundError
    */
   public function patchOne(Request $request, Response $response, array $args): Response {
@@ -1173,6 +1208,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * Overridable function to update multiple objects
    * @objects ia an array where id is the key and the values are the attributes that need to be patched
+   * @param array $objects
+   *
+   * @return void
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws ResourceNotFoundError
    */
   protected function updateObjects(array $objects): void {
     foreach ($objects as $objectId => $attributes) {
@@ -1186,9 +1227,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param Response $response
    * @param array $args
    * @return Response
+   * @throws ContainerExceptionInterface
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
+   * @throws NotFoundExceptionInterface
+   * @throws Exception
    */
   public function post(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1234,6 +1280,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ResourceNotFoundError
    * @throws HttpError
+   * @throws Exception
    */
   public function getToOneRelatedResource(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1294,6 +1341,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ResourceNotFoundError
    * @throws HttpError
+   * @throws Exception
    */
   public function getToOneRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1331,7 +1379,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     else {
       $object = $this->doFetch($args['id']);
-    };
+    }
     
     $id = $object->getKeyValueDict()[$relation['key']];
     
@@ -1377,6 +1425,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HttpError
    * @throws HttpForbidden
    * @throws ResourceNotFoundError
+   * @throws Exception
    */
   public function patchToOneRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1397,7 +1446,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $features = $this->getFeatures();
     $this->isAllowedToMutate($features, $relationKey, $data == null);
     
-    $factory = $this->getFactory();
     $object = $this->doFetch(intval($args['id']));
     if ($data == null) {
       $this->DatabaseSet($object, $relationKey, null);
@@ -1561,6 +1609,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HttpError
    * @throws HttpForbidden
    * @throws InternalError
+   * @throws Exception
    */
   protected function updateToManyRelationship(Request $request, array $data, array $args): void {
     $relation = $this->getToManyRelationships()[$args['relation']];
@@ -1626,6 +1675,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws InternalError
    * @throws ResourceNotFoundError
    * @throws HttpConflict
+   * @throws Exception
    */
   public function postToManyRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1724,6 +1774,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws Exception
    */
   public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1790,6 +1841,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * Function to update fields in the database
    * @throws HttpError
+   * @throws Exception
    */
   protected function DatabaseSet($object, $key, $value): void {
     try {
@@ -1847,7 +1899,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
       
       $validFeatures[$name] = $feature;
-    };
+    }
     
     // Ensure debugging response lists are in sorted order
     ksort($validFeatures);
@@ -1857,6 +1909,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   
   /**
    * Override-able registering of options
+   *
+   * @param App $app
+   * @return void
+   * @throws ContainerExceptionInterface
+   * @throws NotFoundExceptionInterface
    */
   static public function register(App $app): void {
     $me = get_called_class();

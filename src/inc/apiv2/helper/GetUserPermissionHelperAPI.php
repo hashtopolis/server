@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\helper;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -59,9 +60,11 @@ class GetUserPermissionHelperAPI extends AbstractHelperAPI {
   }
   
   /**
+   * @param array $data
+   * @return AbstractModel|array|null
    * @throws HttpError
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     throw new HttpError("GetAccessGroups has no POST");
   }
   
