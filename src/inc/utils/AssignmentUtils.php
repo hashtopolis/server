@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\User;
@@ -14,7 +15,7 @@ class AssignmentUtils {
    * @param string $benchmark
    * @param User $user
    * @throws HTException
-   * @throws \Exception
+   * @throws Exception
    */
   public static function setBenchmark(int $assignmentId, string $benchmark, User $user): void {
     // adjust agent benchmark

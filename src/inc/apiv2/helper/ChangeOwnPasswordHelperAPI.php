@@ -5,7 +5,6 @@ namespace Hashtopolis\inc\apiv2\helper;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
-use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\UserUtils;
 
 class ChangeOwnPasswordHelperAPI extends AbstractHelperAPI {

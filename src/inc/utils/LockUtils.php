@@ -13,7 +13,6 @@ class LockUtils {
    * @throws Exception
    */
   public static function get(string $lockFile): void {
-    $lock = null;
     if (isset(self::$locks[$lockFile])) {
       $lock = self::$locks[$lockFile];
     }

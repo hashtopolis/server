@@ -18,6 +18,7 @@ use Hashtopolis\inc\defines\DHealthCheckType;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
+use Random\RandomException;
 
 class HealthUtils {
   /**
@@ -125,6 +126,7 @@ class HealthUtils {
    * @param bool $crackable
    * @return string
    * @throws HTException
+   * @throws RandomException
    */
   private static function getAttackPlain(int $hashtypeId, int $type, bool $crackable): string {
     if ($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::MD5) {

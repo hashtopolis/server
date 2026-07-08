@@ -13,6 +13,9 @@ use Hashtopolis\inc\apiv2\error\HttpForbidden;
 
 /* This middleware will append the response header Access-Control-Allow-Methods with all allowed methods */
 class CorsHackMiddleware implements MiddlewareInterface {
+  /**
+   * @throws HttpForbidden
+   */
   public function process(Request $request, RequestHandler $handler): Response {
     $response = $handler->handle($request);
     

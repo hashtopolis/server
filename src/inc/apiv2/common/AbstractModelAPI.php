@@ -1152,6 +1152,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws ResourceNotFoundError
    */
   public function patchMultiple(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);

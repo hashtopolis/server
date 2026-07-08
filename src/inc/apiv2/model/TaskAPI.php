@@ -180,7 +180,6 @@ class TaskAPI extends AbstractModelAPI {
    * @return string
    */
   protected function getAggregateDispatched(AbstractModel $object): string {
-    /** @var Task $object */
     $keyspace = $object->getKeyspace();
     $keyspaceProgress = $object->getKeyspaceProgress();
     return Util::showperc($keyspaceProgress, $keyspace);

@@ -23,6 +23,7 @@ class AccessUtils {
    * @param Hashlist[]|Hashlist $hashlists
    * @param User $user
    * @return boolean
+   * @throws Exception
    */
   public static function userCanAccessHashlists(Hashlist|array $hashlists, User $user): bool {
     if (!is_array($hashlists)) {
@@ -95,6 +96,7 @@ class AccessUtils {
    * @param TaskWrapper $taskWrapper
    * @param User $user
    * @return boolean
+   * @throws Exception
    */
   public static function userCanAccessTask(TaskWrapper $taskWrapper, User $user): bool {
     $accessGroupIds = Util::getAccessGroupIds($user->getId());
@@ -108,6 +110,7 @@ class AccessUtils {
    * @param File $file
    * @param User $user
    * @return boolean
+   * @throws Exception
    */
   public static function userCanAccessFile(File $file, User $user): bool {
     $accessGroupIds = Util::getAccessGroupIds($user->getId());

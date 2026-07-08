@@ -121,6 +121,7 @@ class ConfigUtils {
   /**
    * @param array $arr id => [attributes]
    * @throws HTException
+   * @throws Exception
    *
    *  This is a new updateConfigs function that unlike the updateConfig is compliant
    *  for the APIv2

@@ -167,8 +167,6 @@ $app->group("/api/v2/auth/refresh", function (RouteCollectorProxy $group) {
   });
   
   $group->post('', function (Request $request, Response $response, array $args): Response {
-    include(dirname(__FILE__) . '/../conf.php');
-    
     $now = new DateTime();
     $future = new DateTime("now +2 hours");
     

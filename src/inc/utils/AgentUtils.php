@@ -41,6 +41,7 @@ class AgentUtils {
    * @param ?AgentStat $deviceUtil
    * @param Agent $agent
    * @return string
+   * @throws Exception
    */
   public static function getDeviceUtilStatusColor(?AgentStat $deviceUtil, Agent $agent): string {
     if ($deviceUtil === null) {
@@ -74,6 +75,7 @@ class AgentUtils {
    * @param ?AgentStat $deviceTemp
    * @param Agent $agent
    * @return string
+   * @throws Exception
    */
   public static function getDeviceTempStatusColor(?AgentStat $deviceTemp, Agent $agent): string {
     if ($deviceTemp === null) {
@@ -106,6 +108,7 @@ class AgentUtils {
    * @param ?AgentStat $cpuUtil
    * @param Agent $agent
    * @return string
+   * @throws Exception
    */
   public static function getCpuUtilStatusColor(?AgentStat $cpuUtil, Agent $agent): string {
     if ($cpuUtil === null) {
@@ -173,7 +176,7 @@ class AgentUtils {
     foreach ($deviceTemp as $t) {
       $max = ($t > $max) ? $t : $max;
     }
-    return strval($max) . "°";
+    return $max . "°";
   }
   
   /**
@@ -301,6 +304,7 @@ class AgentUtils {
    * @param string $newname
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
   public static function rename(int $agentId, string $newname, User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
@@ -456,11 +460,10 @@ class AgentUtils {
    */
   public static function changeIgnoreErrors(int $agentId, int $ignoreErrors, User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
-    $ignore = intval($ignoreErrors);
-    if ($ignore != 0 && $ignore != 1 && $ignore != 2) {
+    if ($ignoreErrors != 0 && $ignoreErrors != 1 && $ignoreErrors != 2) {
       throw new HTException("Invalid Ignore state!");
     }
-    Factory::getAgentFactory()->set($agent, Agent::IGNORE_ERRORS, $ignore);
+    Factory::getAgentFactory()->set($agent, Agent::IGNORE_ERRORS, $ignoreErrors);
   }
   
   /**

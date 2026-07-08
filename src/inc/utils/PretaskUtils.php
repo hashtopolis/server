@@ -64,6 +64,7 @@ class PretaskUtils {
   
   /**
    * @return Pretask
+   * @throws Exception
    */
   public static function getDefault(): Pretask {
     return new Pretask(
