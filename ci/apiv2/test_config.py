@@ -1,7 +1,6 @@
 from hashtopolis import Config
 from utils import BaseTest
 
-
 class ConfigTest(BaseTest):
     model_class = Config
 
@@ -32,3 +31,18 @@ class ConfigTest(BaseTest):
         model_obj = Config.objects.get(pk=1)
         expandables = ['configSection']
         self._test_expandables(model_obj, expandables)
+
+    def test_blacklist_chars(self):
+        config = Config.objects.get(item='blacklistChars')
+        tmp_value = config.value
+        config.value = config.value + "<\\öäüß🙂"
+        config.save()
+
+        obj = Config.objects.get(item='blacklistChars')
+        self.assertEqual(obj.value, tmp_value + "<\\öäüß🙂")
+
+        config.value = tmp_value
+        config.save()
+
+        obj = Config.objects.get(item='blacklistChars')
+        self.assertEqual(obj.value, tmp_value)
