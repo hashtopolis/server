@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   hashtopolis-server-dev:
     container_name: hashtopolis-server-dev

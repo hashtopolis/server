@@ -3,9 +3,11 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Pretask;
 use Hashtopolis\dba\models\Supertask;
 use Hashtopolis\dba\models\SupertaskPretask;
+use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
@@ -100,7 +102,23 @@ class SupertaskAPI extends AbstractModelAPI {
       throw new HttpError("Was not able to update to many relationship");
     }
   }
+
+  public function getAggregateFieldsets(): array {
+    return [
+      'supertask' => [
+        'amountPretasks' => [$this, 'getAggregateAmountPretasks'],
+      ]
+    ];
+  }
   
+  /**
+   * @throws Exception
+   */
+  protected function getAggregateAmountPretasks(object $object): int {
+    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $object->getId(), "=", Factory::getSupertaskPretaskFactory());
+    return Factory::getSupertaskPretaskFactory()->countFilter([Factory::FILTER => $qF]);
+  }
+
   /**
    * @throws HTException
    */
