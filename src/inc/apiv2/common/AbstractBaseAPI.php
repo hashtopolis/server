@@ -71,8 +71,6 @@ use Hashtopolis\inc\utils\UserUtils;
 
 /**
  * This class acts as the BaseAPI implementation of API model endpoints
- *
- * @template TModel of AbstractModel
  */
 abstract class AbstractBaseAPI {
   abstract public static function getBaseUri(): string;
@@ -353,7 +351,8 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * @param string $model
+   * @template TModel of AbstractModel
+   * @param class-string<TModel> $model
    * @param int $pk
    * @return TModel
    * @throws ResourceNotFoundError|HttpError
