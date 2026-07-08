@@ -30,12 +30,18 @@ class FileAPI extends AbstractModelAPI {
     return File::class;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getSingleACL(User $user, object $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
     return in_array($object->getAccessGroupId(), $accessGroupsUser);
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     

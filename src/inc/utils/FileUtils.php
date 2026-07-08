@@ -116,14 +116,14 @@ class FileUtils {
   
   /**
    * @param string $source
-   * @param array $file
+   * @param array|string $file
    * @param array $post
    * @param string $view
    * @return integer
    * @throws HttpError
    * @throws Exception
    */
-  public static function add(string $source, array $file, array $post, string $view): int {
+  public static function add(string $source, array|string $file, array $post, string $view): int {
     $fileCount = 0;
     
     $accessGroup = Factory::getAccessGroupFactory()->get($post['accessGroupId']);
