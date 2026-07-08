@@ -3,7 +3,9 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
@@ -239,7 +241,11 @@ class TaskAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param array $data
+   * @return int
    * @throws HttpError
+   * @throws HTException
+   * @throws HttpForbidden
    */
   protected function createObject(array $data): int {
     /* Parameter is used as primary key in database */
@@ -271,6 +277,9 @@ class TaskAPI extends AbstractModelAPI {
     return $task->getId();
   }
   
+  /**
+   * @throws Exception
+   */
   protected function deleteObject(object $object): void {
     /** @var Task $object */
     TaskUtils::deleteTask($object);

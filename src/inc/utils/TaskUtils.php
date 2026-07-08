@@ -244,6 +244,7 @@ class TaskUtils {
    * @throws Exception
    */
   public static function toggleArchiveTask(int $taskId, bool $taskState, User $user): void {
+    $taskState = $taskState ? 1 : 0;
     $task = TaskUtils::getTask($taskId, $user);
     $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $user);
     switch ($taskWrapper->getTaskType()) {
