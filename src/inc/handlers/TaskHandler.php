@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\handlers;
 
+use Exception;
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\DataSet;
 use Throwable;
@@ -157,6 +158,7 @@ class TaskHandler implements Handler {
   
   /**
    * @throws HTException
+   * @throws Exception
    */
   private function create() {
     // new task creator
@@ -199,7 +201,7 @@ class TaskHandler implements Handler {
       PreprocessorUtils::getPreprocessor($usePreprocessor);
     }
     
-    if (strpos($cmdline, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+    if (!str_contains($cmdline, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) ?? "")) {
       UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . ")!");
       return;
     }

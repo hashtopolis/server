@@ -21,7 +21,7 @@ class DataSet {
     if (isset($this->values[$key])) {
       return $this->values[$key];
     }
-    return false;
+    return null;
   }
   
   public function getKeys(): array {

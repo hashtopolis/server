@@ -210,7 +210,7 @@ class HashlistUtils {
     }
     $wordCount = 0;
     $pagingSize = 5000;
-    if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
+    if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== null) {
       $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
     foreach ($lists as $list) {
@@ -745,7 +745,7 @@ class HashlistUtils {
     $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
     $count = $factory->countFilter([Factory::FILTER => [$qF1, $qF2]]);
     $pagingSize = 5000;
-    if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
+    if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== null) {
       $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
     $separator = SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR);
@@ -1131,7 +1131,7 @@ class HashlistUtils {
     $qF2 = new QueryFilter(Hash::IS_CRACKED, "0", "=");
     $count = Factory::getHashFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]);
     $pagingSize = 5000;
-    if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
+    if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== null) {
       $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
     $numEntries = 0;

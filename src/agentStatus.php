@@ -63,7 +63,7 @@ $qF3 = new QueryFilter(AgentStat::TIME, time() - SConfig::getInstance()->getVal(
 $stats = Factory::getAgentStatFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::ORDER => [$oF1, $oF2]]);
 $agentStats = new DataSet();
 foreach ($stats as $stat) {
-  if ($agentStats->getVal($stat->getAgentId()) === false) {
+  if ($agentStats->getVal($stat->getAgentId()) === null) {
     $agentStats->addValue($stat->getAgentId(), $stat);
   }
 }
@@ -77,7 +77,7 @@ $qF3 = new QueryFilter(AgentStat::TIME, time() - SConfig::getInstance()->getVal(
 $stats = Factory::getAgentStatFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::ORDER => [$oF1, $oF2]]);
 $agentStats = new DataSet();
 foreach ($stats as $stat) {
-  if ($agentStats->getVal($stat->getAgentId()) === false) {
+  if ($agentStats->getVal($stat->getAgentId()) === null) {
     $agentStats->addValue($stat->getAgentId(), $stat);
   }
 }
@@ -91,7 +91,7 @@ $qF3 = new QueryFilter(AgentStat::TIME, time() - SConfig::getInstance()->getVal(
 $stats = Factory::getAgentStatFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::ORDER => [$oF1, $oF2]]);
 $agentStats = new DataSet();
 foreach ($stats as $stat) {
-  if ($agentStats->getVal($stat->getAgentId()) === false) {
+  if ($agentStats->getVal($stat->getAgentId()) === null) {
     $agentStats->addValue($stat->getAgentId(), $stat);
   }
 }

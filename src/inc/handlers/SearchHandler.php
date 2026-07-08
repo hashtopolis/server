@@ -108,7 +108,7 @@ class SearchHandler implements Handler {
           /** @var Hash $hash */
           $hash = $joined[Factory::getHashFactory()->getModelName()][$i];
           $matches[] = $hash;
-          if ($hashlists->getVal($hash->getHashlistId()) == false) {
+          if ($hashlists->getVal($hash->getHashlistId()) == null) {
             $hashlists->addValue($hash->getHashlistId(), $joined[Factory::getHashlistFactory()->getModelName()][$i]);
           }
         }

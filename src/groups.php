@@ -94,10 +94,10 @@ else {
   UI::add('groups', Factory::getAccessGroupFactory()->filter([]));
   foreach (UI::get('groups') as $group) {
     /** @var AccessGroup $group */
-    if ($users->getVal($group->getId()) === false) {
+    if ($users->getVal($group->getId()) === null) {
       $users->addValue($group->getId(), 0);
     }
-    if ($agents->getVal($group->getId()) === false) {
+    if ($agents->getVal($group->getId()) === null) {
       $agents->addValue($group->getId(), 0);
     }
   }

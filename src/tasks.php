@@ -383,7 +383,7 @@ else if (isset($_GET['new'])) {
   if ($copy === null) {
     $copy = TaskUtils::getDefault();
   }
-  if (strpos($copy->getAttackCmd(), SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+  if (strpos($copy->getAttackCmd(), SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) ?? "") === false) {
     $copy->setAttackCmd(SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
   }
   
