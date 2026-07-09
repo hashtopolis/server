@@ -344,7 +344,7 @@ class SupertaskUtils {
    * @throws Exception
    */
   public static function createSupertask(string $name, array|null $pretasks): Supertask {
-    if (sizeof($pretasks) == 0) {
+    if ($pretasks == null || sizeof($pretasks) == 0) {
       throw new HttpError("Cannot create empty supertask!");
     }
     $tasks = [];

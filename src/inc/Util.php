@@ -364,9 +364,9 @@ class Util {
   /**
    * Escapes special chars before they can be entered into the report template to avoid mess-up with latex
    *
-   * @deprecated
    * @param string $string
    * @return string
+   * @deprecated
    */
   public static function texEscape(string $string): string {
     $output = "";
@@ -936,11 +936,14 @@ class Util {
   
   /**
    * Checks if the task is completed and returns the html tick image if this is the case.
-   * @param $prog int progress so far
-   * @param $total int total to be done
+   * @param int|null $prog int progress so far
+   * @param int|null $total int total to be done
    * @return string either the check.png with Finished or an empty string
    */
-  public static function tickdone(int $prog, int $total): string {
+  public static function tickdone(int|null $prog, int|null $total): string {
+    if ($prog === null || $total === null) {
+      return "";
+    }
     // show tick of progress is done
     if ($total > 0 && $prog >= $total) {
       return ' <span class="fas fa-check" aria-hidden="true"></span>';
@@ -1087,10 +1090,10 @@ class Util {
   }
   
   /**
-   * @deprecated semver should be used for version comparison
    * @param string $versionString1
    * @param string $versionString2
    * @return int 1 if version2 is newer, 0 if equal and -1 if version1 is newer
+   * @deprecated semver should be used for version comparison
    */
   public static function updateVersionComparison(string $versionString1, string $versionString2): int {
     if (!str_starts_with($versionString1, "update_v") || !str_starts_with($versionString2, "update_v")) {
@@ -1432,12 +1435,12 @@ class Util {
   }
   
   /**
-   * @deprecated php standard library now offers this
-   *
-   * Checks if $search starts with $pattern. Shortcut for strpos==0
    * @param $search
    * @param $pattern
    * @return bool
+   * @deprecated php standard library now offers this
+   *
+   * Checks if $search starts with $pattern. Shortcut for strpos==0
    */
   public static function startsWith($search, $pattern): bool {
     if (str_starts_with($search, $pattern)) {
@@ -1447,12 +1450,12 @@ class Util {
   }
   
   /**
-   * @deprecated php standard library now offers this
-   *
-   * if pattern is empty or if pattern is at the end of search
    * @param $search
    * @param $pattern
    * @return bool
+   * @deprecated php standard library now offers this
+   *
+   * if pattern is empty or if pattern is at the end of search
    */
   public static function endsWith($search, $pattern): bool {
     return str_ends_with($search, $pattern);
@@ -1546,7 +1549,7 @@ class Util {
   /**
    * @param string $tmpfile
    * @return int
-   *@deprecated fileLineCount() should be used
+   * @deprecated fileLineCount() should be used
    *
    */
   public static function countLines(string $tmpfile): int {
@@ -1579,10 +1582,10 @@ class Util {
   }
   
   /**
-   * @deprecated use semver functions
-   *
    * @param string $version
    * @return string
+   * @deprecated use semver functions
+   *
    */
   public static function getMinorVersion(string $version): string {
     $split = explode(".", $version);
