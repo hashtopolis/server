@@ -367,6 +367,7 @@ class PretaskUtils {
     $pretask = Factory::getPretaskFactory()->save($pretask);
     
     // handle files
+    $files = $files ?? [];
     foreach ($files as $fileId) {
       $file = Factory::getFileFactory()->get($fileId);
       if ($file !== null) {

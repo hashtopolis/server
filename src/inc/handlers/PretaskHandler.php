@@ -59,7 +59,7 @@ class PretaskHandler implements Handler {
           break;
         case DPretaskAction::CREATE_TASK:
           AccessControl::getInstance()->checkPermission(DPretaskAction::CREATE_TASK_PERM);
-          PretaskUtils::createPretask($_POST['name'], $_POST['cmdline'], $_POST['chunk'], $_POST['status'], $_POST['color'], $_POST['cpuOnly'], $_POST['isSmall'], $_POST['benchType'], $_POST['adfile'], $_POST['crackerBinaryTypeId'], $_POST['maxAgents']);
+          PretaskUtils::createPretask($_POST['name'], $_POST['cmdline'], $_POST['chunk'], $_POST['status'], $_POST['color'], $_POST['cpuOnly'], $_POST['isSmall'], $_POST['benchType'], @$_POST['adfile'], $_POST['crackerBinaryTypeId'], 0);
           header("Location: pretasks.php");
           die();
         case DPretaskAction::CHANGE_ATTACK:
