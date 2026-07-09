@@ -230,6 +230,6 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\GetTaskProgressImageHelperAPI:handleGet");
+    $app->get($baseUri, [self::class, 'handleGet']);
   }
 }

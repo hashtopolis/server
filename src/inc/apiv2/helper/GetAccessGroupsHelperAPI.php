@@ -79,7 +79,7 @@ class GetAccessGroupsHelperAPI extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\GetAccessGroupsHelperAPI:handleGet");
+    $app->get($baseUri, [self::class, 'handleGet']);
   }
   
   /**

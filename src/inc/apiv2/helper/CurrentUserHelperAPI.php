@@ -87,8 +87,8 @@ class CurrentUserHelperAPI extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\CurrentUserHelperAPI:handleGet");
-    $app->patch($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\CurrentUserHelperAPI:actionPatch");
+    $app->get($baseUri, [self::class, 'handleGet']);
+    $app->patch($baseUri, [self::class, 'actionPatch']);
   }
   
   public static function getResponse(): array|string|null {

@@ -465,8 +465,8 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
         //TODO: Option for Tus-Max-Size: 1073741824
       });
       
-      $group->post('', $me . ":processPost")->setName($me . ":processPost");
-      $group->get('', $me . ":processGet")->setName($me . ":processGet");
+      $group->post('', [$me, 'processPost'])->setName($me . ":processPost");
+      $group->get('', [$me, 'processGet'])->setName($me . ":processGet");
     });
     
     $app->group($baseUri . "/{id:[0-9]{14}-[0-9a-f]{32}}", function (RouteCollectorProxy $group) use ($me) {
@@ -475,9 +475,9 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
         return $response;
       });
       
-      $group->map(['HEAD'], '', $me . ":processHead")->setName($me . ":processHead");
-      $group->patch('', $me . ":processPatch")->setName($me . ":processPatch");
-      $group->delete('', $me . ":processDelete")->setName($me . ":processDelete");
+      $group->map(['HEAD'], '', [$me, 'processHead'])->setName($me . ":processHead");
+      $group->patch('', [$me, 'processPatch'])->setName($me . ":processPatch");
+      $group->delete('', [$me, 'processDelete'])->setName($me . ":processDelete");
     });
   }
 }

@@ -1935,15 +1935,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $available_methods = $me::getAvailableMethods();
     
     if (in_array("GET", $available_methods)) {
-      $app->get($baseUri, $me . ':get')->setname($me . ':get');
-      $app->get($baseUriCount, $me . ':count')->setname($me . ':count');
+      $app->get($baseUri, [$me, 'get'])->setname($me . ':get');
+      $app->get($baseUriCount, [$me, 'count'])->setname($me . ':count');
     }
-    
+
     foreach ($me::getToOneRelationships() as $name => $relationship) {
       $relationUri = '{relation:' . $name . '}';
-      $app->get($baseUriOne . '/' . $relationUri, $me . ':getToOneRelatedResource')->setname($me . ':getToOneRelatedResource');
-      $app->get($baseUriRelationships . '/' . $relationUri, $me . ':getToOneRelationshipLink')->setname($me . ':getToOneRelationshipLink');
-      $app->patch($baseUriRelationships . '/' . $relationUri, $me . ':patchToOneRelationshipLink')->setname($me . ':patchToOneRelationshipLink');
+      $app->get($baseUriOne . '/' . $relationUri, [$me, 'getToOneRelatedResource'])->setname($me . ':getToOneRelatedResource');
+      $app->get($baseUriRelationships . '/' . $relationUri, [$me, 'getToOneRelationshipLink'])->setname($me . ':getToOneRelationshipLink');
+      $app->patch($baseUriRelationships . '/' . $relationUri, [$me, 'patchToOneRelationshipLink'])->setname($me . ':patchToOneRelationshipLink');
       $app->options($baseUriOne . '/' . $relationUri, function (Request $request, Response $response): Response {
         return $response;
       });
@@ -1951,14 +1951,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         return $response;
       });
     }
-    
+
     foreach ($me::getToManyRelationships() as $name => $relationship) {
       $relationUri = '{relation:' . $name . '}';
-      $app->get($baseUriOne . '/' . $relationUri, $me . ':getToManyRelatedResource')->setname($me . ':getToManyRelatedResource');
-      $app->get($baseUriRelationships . '/' . $relationUri, $me . ':getToManyRelationshipLink')->setname($me . ':getToManyRelationshipLink');
-      $app->patch($baseUriRelationships . '/' . $relationUri, $me . ':patchToManyRelationshipLink')->setname($me . ':patchToManyRelationshipLink');
-      $app->post($baseUriRelationships . '/' . $relationUri, $me . ':postToManyRelationshipLink')->setname($me . ':postToManyRelationshipLink');
-      $app->delete($baseUriRelationships . '/' . $relationUri, $me . ':deleteToManyRelationshipLink')->setname($me . ':deleteToManyRelationshipLink');
+      $app->get($baseUriOne . '/' . $relationUri, [$me, 'getToManyRelatedResource'])->setname($me . ':getToManyRelatedResource');
+      $app->get($baseUriRelationships . '/' . $relationUri, [$me, 'getToManyRelationshipLink'])->setname($me . ':getToManyRelationshipLink');
+      $app->patch($baseUriRelationships . '/' . $relationUri, [$me, 'patchToManyRelationshipLink'])->setname($me . ':patchToManyRelationshipLink');
+      $app->post($baseUriRelationships . '/' . $relationUri, [$me, 'postToManyRelationshipLink'])->setname($me . ':postToManyRelationshipLink');
+      $app->delete($baseUriRelationships . '/' . $relationUri, [$me, 'deleteToManyRelationshipLink'])->setname($me . ':deleteToManyRelationshipLink');
       $app->options($baseUriOne . '/' . $relationUri, function (Request $request, Response $response): Response {
         return $response;
       });
@@ -1966,23 +1966,23 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         return $response;
       });
     }
-    
+
     if (in_array("POST", $available_methods)) {
-      $app->post($baseUri, $me . ':post')->setname($me . ':post');
+      $app->post($baseUri, [$me, 'post'])->setname($me . ':post');
     }
-    
+
     if (in_array("GET", $available_methods)) {
-      $app->get($baseUriOne, $me . ':getOne')->setName($me . ':getOne');
+      $app->get($baseUriOne, [$me, 'getOne'])->setName($me . ':getOne');
     }
-    
+
     if (in_array("PATCH", $available_methods)) {
-      $app->patch($baseUriOne, $me . ':patchOne')->setName($me . ':patchOne');
-      $app->patch($baseUri, $me . ':patchMultiple')->setName($me . ':patchMultiple');
+      $app->patch($baseUriOne, [$me, 'patchOne'])->setName($me . ':patchOne');
+      $app->patch($baseUri, [$me, 'patchMultiple'])->setName($me . ':patchMultiple');
     }
-    
+
     if (in_array("DELETE", $available_methods)) {
-      $app->delete($baseUriOne, $me . ':deleteOne')->setName($me . ':deleteOne');
-      $app->delete($baseUri, $me . ':deleteMultiple')->setName($me . 'deleteMultiple');
+      $app->delete($baseUriOne, [$me, 'deleteOne'])->setName($me . ':deleteOne');
+      $app->delete($baseUri, [$me, 'deleteMultiple'])->setName($me . 'deleteMultiple');
     }
   }
 }
