@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\notifications;
 
+use Exception;
 use Hashtopolis\inc\DataSet;
 use Hashtopolis\dba\models\NotificationSetting;
 use Hashtopolis\inc\defines\DConfig;
@@ -55,6 +56,7 @@ abstract class HashtopolisNotification {
    * @param $notificationType string
    * @param $payload DataSet
    * @param $notification NotificationSetting
+   * @throws Exception
    */
   public function execute(string $notificationType, DataSet $payload, NotificationSetting $notification): void {
     $this->receiver = $notification->getReceiver();

@@ -684,8 +684,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
      */
     $sortList = $apiClass->getQueryParameterAsList($request, 'sort');
     $isNegativeSort = $sortList != null && $sortList[0][0] == '-';
-    //this is used to reverse the array to show the data correctly for the user 
-    $reverseArray = false;
+    //this is used to reverse the array to show the data correctly for the user
 
     if ($isNegativeSort) {
       $firstCursorSort = "DESC";
@@ -730,9 +729,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     else if ($isNegativeSort) {
       //the default negative case to retrieve the first elements in a descending way
       $defaultSort = "DESC";
+      $reverseArray = false;
     }
     else {
       $defaultSort = "ASC";
+      $reverseArray = false;
     }
     $primaryKey = $apiClass->getPrimaryKey();
     
@@ -825,7 +826,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     // $lastParams['page']['before'] = $apiClass::encode_cursor(self::calculate_next_cursor($max));
     if ($primaryKeyIsNotPrimaryFilter && isset($lastCursorObject)) {
       $new_secondary_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
-      $last_cursor = $apiClass::build_cursor($primaryFilter, $lastCursorObject->expose()[$primaryFilter], $primaryKeyIsNotPrimaryFilter, $primaryKey, $new_secondary_cursor);
+      $last_cursor = $apiClass::build_cursor($primaryFilter, $lastCursorObject->expose()[$primaryFilter], true, $primaryKey, $new_secondary_cursor);
     }
     else if (isset($lastCursorObject)) {
       $new_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
@@ -1097,7 +1098,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     // Return updated object
     $newObject = $this->getFactory()->get($object->getId());
-    return $this->getOneResource($this, $newObject, $request, $response, 200);
+    return $this->getOneResource($this, $newObject, $request, $response);
   }
   
   /**
@@ -1732,7 +1733,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $table_entry = $factory->createObjectFromDict($table_entry_dict);
         $factory->save($table_entry);
       }
-      $factory->getDB()->commit();
     }
     else {
       $relationType = $relation['relationType'];
@@ -1758,8 +1758,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
       
       $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
-      $factory->getDB()->commit();
     }
+    $factory->getDB()->commit();
     
     return $response->withStatus(201)
       ->withHeader("Content-Type", "application/vnd.api+json");
@@ -1815,9 +1815,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $object = $factory->filter([Factory::FILTER => [$qF, $qF2]])[0];
         $factory->delete($object);
       }
-      if (!$factory->getDB()->commit()) {
-        throw new HttpError("Some resources failed updating");
-      }
     }
     else {
       $updates = [];
@@ -1830,9 +1827,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
       $factory->getDB()->beginTransaction(); //start transaction to be able roll back
       $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
-      if (!$factory->getDB()->commit()) {
-        throw new HttpError("Some resources failed updating");
-      }
+    }
+    if (!$factory->getDB()->commit()) {
+      throw new HttpError("Some resources failed updating");
     }
     
     return $response->withStatus(201)
@@ -1917,7 +1914,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    */
   static public function register(App $app): void {
-    $me = get_called_class();
+    $me = static::class;
     $baseUri = $me::getBaseUri();
     $baseUriOne = $baseUri . '/{id:[0-9]+}';
     $baseUriCount = $baseUri . "/count";

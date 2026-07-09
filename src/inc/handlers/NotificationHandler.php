@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\handlers;
 
+use Exception;
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\DataSet;
@@ -55,8 +56,9 @@ class NotificationHandler implements Handler {
   /**
    * @param $action
    * @param $payload DataSet
+   * @throws Exception
    */
-  public static function checkNotifications($action, $payload) {
+  public static function checkNotifications($action, DataSet $payload): void {
     $qF1 = new QueryFilter(NotificationSetting::ACTION, $action, "=");
     $qF2 = new QueryFilter(NotificationSetting::IS_ACTIVE, "1", "=");
     $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);

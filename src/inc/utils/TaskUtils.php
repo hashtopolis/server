@@ -903,6 +903,7 @@ class TaskUtils {
     }
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
+    $preprocessor = null;
     if ($usePreprocessor < 0) {
       $usePreprocessor = 0;
     }

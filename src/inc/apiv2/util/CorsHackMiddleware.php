@@ -34,12 +34,11 @@ class CorsHackMiddleware implements MiddlewareInterface {
 
     $response = CorsHackMiddleware::CheckCORS($request, $response);
     
-    $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
-    $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
-    
     // Optional: Allow Ajax CORS requests with Authorization header
     // $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-    return $response;
+    
+    $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
+    return $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
   }
   
   /**

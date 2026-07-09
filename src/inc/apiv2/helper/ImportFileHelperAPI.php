@@ -178,7 +178,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     $update = [];
     if ($request->hasHeader('Upload-Metadata')) {
       $update["upload_metadata_raw"] = $request->getHeader('Upload-Metadata')[0];
-      if (preg_match('/^[a-zA-Z0-9=, ]+$/', $update["upload_metadata_raw"], $match) === false) {
+      if (preg_match('/^[a-zA-Z0-9=, ]+$/', $update["upload_metadata_raw"]) === false) {
         $response->getBody()->write('Error Upload-Metadata contains non-ASCII characters');
         return $response->withStatus(400);
       }
@@ -450,7 +450,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   }
   
   static public function register(App $app): void {
-    $me = get_called_class();
+    $me = static::class;
     $baseUri = $me::getBaseUri();
     
     $app->group($baseUri, function (RouteCollectorProxy $group) use ($me) {

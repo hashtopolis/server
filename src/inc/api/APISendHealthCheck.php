@@ -6,7 +6,6 @@ use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQuerySendHealthCheck;
 use Hashtopolis\inc\agent\PResponse;
-use Hashtopolis\inc\agent\PResponseSendHealthCheck;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DAgentIgnoreErrors;
 use Hashtopolis\inc\defines\DHealthCheckAgentStatus;

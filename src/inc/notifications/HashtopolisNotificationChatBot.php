@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\notifications;
 
+use Exception;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DProxyTypes;
 use Hashtopolis\inc\SConfig;
@@ -18,6 +19,9 @@ class HashtopolisNotificationChatBot extends HashtopolisNotification {
     return array();
   }
   
+  /**
+   * @throws Exception
+   */
   function sendMessage($message, $subject = ""): bool|string {
     $username = APP_NAME;
     $data = "payload=" . json_encode(array(

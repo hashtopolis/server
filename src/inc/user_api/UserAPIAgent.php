@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\user_api;
 
+use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
+use Random\RandomException;
 use Throwable;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\ContainFilter;

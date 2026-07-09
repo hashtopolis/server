@@ -982,8 +982,6 @@ class HashlistUtils {
             }
             $mac_cli = Util::bintohex($mac_cli);
             $hash = new HashBinary(null, $hashlist->getId(), $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . Util::bintohex($network), Util::bintohex($data), null, 0, null, 0, 0);
-            Factory::getHashBinaryFactory()->save($hash);
-            $added++;
           }
           else { // PMKID hashes
             $line = trim(fgets($file));
@@ -1005,9 +1003,9 @@ class HashlistUtils {
               $identification = $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli;
             }
             $hash = new HashBinary(null, $hashlist->getId(), $identification, Util::bintohex($line . "\n"), null, 0, null, 0, 0);
-            Factory::getHashBinaryFactory()->save($hash);
-            $added++;
           }
+          Factory::getHashBinaryFactory()->save($hash);
+          $added++;
         }
         fclose($file);
         unlink($tmpfile);

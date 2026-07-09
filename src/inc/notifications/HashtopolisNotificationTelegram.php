@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\notifications;
 
+use Exception;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DProxyTypes;
 use Hashtopolis\inc\SConfig;
@@ -18,6 +19,9 @@ class HashtopolisNotificationTelegram extends HashtopolisNotification {
     return array();
   }
   
+  /**
+   * @throws Exception
+   */
   function sendMessage($message, $subject = ""): bool|string {
     $botToken = SConfig::getInstance()->getVal(DConfig::TELEGRAM_BOT_TOKEN);
     $data = array(

@@ -584,7 +584,6 @@ class Util {
         $set->addValue('maxAgents', $taskWrapper->getMaxAgents());
         $set->addValue('cracked', $taskWrapper->getCracked());
         
-        $taskList[] = $set;
       }
       else {
         // normal task
@@ -629,8 +628,8 @@ class Util {
         $set->addValue('numChunks', $chunkInfo[0]);
         $set->addValue('performance', $taskInfo[4]);
         $set->addValue('speed', $taskInfo[5]);
-        $taskList[] = $set;
       }
+      $taskList[] = $set;
     }
     UI::add('taskList', $taskList);
   }

@@ -896,7 +896,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    */
   protected function object2JSON(AbstractModel $object): string {
-    $item = $this->object2Array($object, []);
+    $item = $this->object2Array($object);
     return $this->ret2json($item);
   }
   
@@ -1556,15 +1556,7 @@ abstract class AbstractBaseAPI {
     $routeContext = RouteContext::fromRequest($request);
     $this->routeParser = $routeContext->getRouteParser();
     
-    try {
-      $required_perms = $this->getRequiredPermissions($request->getMethod());
-    }
-    catch (HTException $e) {
-      # Annotate error message, with suitable candidates
-      throw new HttpForbidden($e->getMessage() .
-        "(valid methods are for model are: " . join(",", $this->getAvailableMethods()) . ")"
-      );
-    }
+    $required_perms = $this->getRequiredPermissions($request->getMethod());
     
     if ($this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $request->getAttribute("aud")) === FALSE) {
       throw new HttpForbidden(join('||', $this->permissionErrors));

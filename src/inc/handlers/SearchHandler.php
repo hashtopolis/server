@@ -53,7 +53,7 @@ class SearchHandler implements Handler {
     $query = explode("\n", $query);
     $resultEntries = array();
     $hashlists = new DataSet();
-    $userHashlists = HashlistUtils::getHashlists(Login::getInstance()->getUser(), false);
+    $userHashlists = HashlistUtils::getHashlists(Login::getInstance()->getUser());
     $userHashlists += HashlistUtils::getHashlists(Login::getInstance()->getUser(), true);
     foreach ($query as $queryEntry) {
       if (strlen($queryEntry) == 0) {

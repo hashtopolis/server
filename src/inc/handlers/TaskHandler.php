@@ -237,10 +237,6 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "Non-matching cracker binary selection!");
       return;
     }
-    else if ($hashlist == null) {
-      UI::addMessage(UI::ERROR, "Invalid hashlist selected!");
-      return;
-    }
     else if ($chunk < 0 || $status < 0 || $chunk < $status) {
       UI::addMessage(UI::ERROR, "Chunk time must be higher than status timer!");
       return;
@@ -275,7 +271,7 @@ class TaskHandler implements Handler {
       $name = "HL" . $hashlistId . "_" . date("Ymd_Hi");
     }
     $forward = "tasks.php";
-    if ($hashlistId != null && $hashlist->getHexSalt() == 1 && strpos($cmdline, "--hex-salt") === false) {
+    if ($hashlistId != null && $hashlist->getHexSalt() == 1 && !str_contains($cmdline, "--hex-salt")) {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
     
