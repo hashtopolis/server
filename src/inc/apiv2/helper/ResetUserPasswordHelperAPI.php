@@ -2,10 +2,11 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\HTException;
-use \Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Hashtopolis\inc\utils\UserUtils;
 
 class ResetUserPasswordHelperAPI extends AbstractHelperAPI {
@@ -37,9 +38,11 @@ class ResetUserPasswordHelperAPI extends AbstractHelperAPI {
   }
   
   /**
+   * @param array $data
+   * @return AbstractModel|array|null
    * @throws HTException
    */
-  public function actionPost($data): array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     UserUtils::userForgotPassword($data[User::USERNAME], $data[User::EMAIL]);
     
     return $this->getResponse();

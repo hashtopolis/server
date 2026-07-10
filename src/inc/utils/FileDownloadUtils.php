@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\FileDownload;
 use Hashtopolis\dba\ContainFilter;
@@ -13,8 +14,9 @@ class FileDownloadUtils {
    * Adds a file to the download list if it's not already pending
    * @param int $fileId
    * @return void
+   * @throws Exception
    */
-  public static function addDownload($fileId) {
+  public static function addDownload(int $fileId): void {
     $qF1 = new QueryFilter(FileDownload::FILE_ID, $fileId, "=");
     $qF2 = new ContainFilter(FileDownload::STATUS, [DFileDownloadStatus::FAILED, DFileDownloadStatus::PENDING]);
     $check = Factory::getFileDownloadFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
@@ -28,8 +30,9 @@ class FileDownloadUtils {
   /**
    * Removes a file from the download list
    * @param int $fileId
+   * @throws Exception
    */
-  public static function removeFile($fileId) {
+  public static function removeFile(int $fileId): void {
     $qF = new QueryFilter(FileDownload::FILE_ID, $fileId, "=");
     Factory::getFileDownloadFactory()->massDeletion([Factory::FILTER => $qF]);
   }

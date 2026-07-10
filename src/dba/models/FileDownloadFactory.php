@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<FileDownload>
+ */
 class FileDownloadFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "FileDownload";
@@ -37,83 +36,15 @@ class FileDownloadFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return FileDownload
    */
-  function createObjectFromDict($pk, $dict): FileDownload {
+  function createObjectFromDict(array $dict): FileDownload {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
     return new FileDownload($dict['filedownloadid'], $dict['time'], $dict['fileid'], $dict['status']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return FileDownload|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): FileDownload|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), FileDownload::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, FileDownload::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?FileDownload
-   * @throws Exception
-   */
-  function get($pk): ?FileDownload {
-    return Util::cast(parent::get($pk), FileDownload::class);
-  }
-  
-  /**
-   * @param FileDownload $model
-   * @return ?FileDownload
-   * @throws Exception
-   */
-  function save($model): ?FileDownload {
-    return Util::cast(parent::save($model), FileDownload::class);
-  }
-
-  /**
-   * @param FileDownload $model
-   * @param array $arr key-value associations for update
-   * @return FileDownload
-   * @throws Exception
-   */
-  function mset($model, array $arr): FileDownload {
-    return Util::cast(parent::mset($model, $arr), FileDownload::class);
-  }
-
-  /**
-   * @param FileDownload $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return FileDownload
-   * @throws Exception
-   */
-  function set($model, string $key, $value): FileDownload {
-    return Util::cast(parent::set($model, $key, $value), FileDownload::class);
   }
 }

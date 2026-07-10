@@ -14,7 +14,7 @@ class HealthHandler implements Handler {
     //nothing to do
   }
   
-  public function handle($action) {
+  public function handle($action): void {
     try {
       switch ($action) {
         case DHealthCheckAction::CREATE:

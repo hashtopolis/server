@@ -3,17 +3,17 @@
 namespace Hashtopolis\inc;
 
 class DataSet {
-  private $values;
+  private mixed $values;
   
   public function __construct($arr = array()) {
     $this->values = $arr;
   }
   
-  public function setValues($arr) {
+  public function setValues($arr): void {
     $this->values = $arr;
   }
   
-  public function addValue($key, $val) {
+  public function addValue(string $key, $val): void {
     $this->values[$key] = $val;
   }
   
@@ -21,10 +21,10 @@ class DataSet {
     if (isset($this->values[$key])) {
       return $this->values[$key];
     }
-    return false;
+    return null;
   }
   
-  public function getKeys() {
+  public function getKeys(): array {
     $keys = [];
     foreach ($this->values as $key => $val) {
       $keys[] = $key;

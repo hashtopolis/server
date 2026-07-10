@@ -24,7 +24,7 @@ class SearchHandler implements Handler {
     // nothing
   }
   
-  public function handle($action) {
+  public function handle($action): void {
     try {
       switch ($action) {
         case DSearchAction::SEARCH:
@@ -53,7 +53,7 @@ class SearchHandler implements Handler {
     $query = explode("\n", $query);
     $resultEntries = array();
     $hashlists = new DataSet();
-    $userHashlists = HashlistUtils::getHashlists(Login::getInstance()->getUser(), false);
+    $userHashlists = HashlistUtils::getHashlists(Login::getInstance()->getUser());
     $userHashlists += HashlistUtils::getHashlists(Login::getInstance()->getUser(), true);
     foreach ($query as $queryEntry) {
       if (strlen($queryEntry) == 0) {
@@ -108,7 +108,7 @@ class SearchHandler implements Handler {
           /** @var Hash $hash */
           $hash = $joined[Factory::getHashFactory()->getModelName()][$i];
           $matches[] = $hash;
-          if ($hashlists->getVal($hash->getHashlistId()) == false) {
+          if ($hashlists->getVal($hash->getHashlistId()) == null) {
             $hashlists->addValue($hash->getHashlistId(), $joined[Factory::getHashlistFactory()->getModelName()][$i]);
           }
         }

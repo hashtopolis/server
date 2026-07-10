@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\inc\DataSet;
 use Hashtopolis\inc\Encryption;
 use Hashtopolis\dba\UpdateSet;
@@ -30,8 +31,9 @@ use Hashtopolis\inc\Util;
 class UserUtils {
   /**
    * @return User[]
+   * @throws Exception
    */
-  public static function getUsers() {
+  public static function getUsers(): array {
     return Factory::getUserFactory()->filter([]);
   }
   
@@ -39,6 +41,7 @@ class UserUtils {
    * @param int $userId
    * @param User $adminUser
    * @throws HTException
+   * @throws Exception
    */
   public static function deleteUser(int $userId, User $adminUser): void {
     $user = UserUtils::getUser($userId);
@@ -67,13 +70,20 @@ class UserUtils {
     $qF = new QueryFilter(JwtApiKey::USER_ID, $user->getId(), "=");
     $uS1 = new UpdateSet(JwtApiKey::IS_REVOKED, 1);
     $uS2 = new UpdateSet(JwtApiKey::USER_ID, null);
-
+    
     // Revoke all of the API keys of the user
     Factory::getJwtApiKeyFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => [$uS1, $uS2]]);
     Factory::getUserFactory()->delete($user);
   }
   
-  public static function userForgotPassword($username, $email) {
+  /**
+   * @param string $username
+   * @param string $email
+   * @return void
+   * @throws HTException
+   * @throws Exception
+   */
+  public static function userForgotPassword(string $username, string $email): void {
     $username = htmlentities($username, ENT_QUOTES, "UTF-8");
     $qF = new QueryFilter(User::USERNAME, $username, "=");
     $res = Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
@@ -102,6 +112,7 @@ class UserUtils {
   /**
    * @param int $userId
    * @throws HTException
+   * @throws Exception
    */
   public static function enableUser(int $userId): void {
     $user = UserUtils::getUser($userId);
@@ -112,8 +123,9 @@ class UserUtils {
    * @param int $userId
    * @param User $adminUser
    * @throws HTException
+   * @throws Exception
    */
-  public static function disableUser($userId, $adminUser) {
+  public static function disableUser(int $userId, User $adminUser): void {
     $user = UserUtils::getUser($userId);
     if ($user->getId() == $adminUser->getId()) {
       throw new HTException("You cannot disable yourself!");
@@ -130,6 +142,7 @@ class UserUtils {
    * @param int $groupId
    * @param User $adminUser
    * @throws HTException
+   * @throws Exception
    */
   public static function setRights(int $userId, int $groupId, User $adminUser): void {
     $group = AccessControlUtils::getGroup($groupId);
@@ -147,9 +160,9 @@ class UserUtils {
    * @param string $oldPassword The user's current password (plain text).
    * @param string $newPassword The new password to set (plain text).
    * @param string $confirmPassword Confirmation of the new password (plain text).
+   * @throws HttpError If the old password is incorrect, the new password is too short, the new passwords do not match, or the new password is the same as the old one.
+   * @throws Exception
    *
-   * @throws HTException If the old password is incorrect, the new password is too short,
-   *                     the new passwords do not match, or the new password is the same as the old one.
    *
    * This method performs the following steps:
    * 1. Verifies the old password using the user's stored salt and hash.
@@ -183,6 +196,7 @@ class UserUtils {
    * @param string $password
    * @param User $adminUser
    * @throws HTException
+   * @throws Exception
    */
   public static function setPassword(int $userId, string $password, User $adminUser): void {
     $user = UserUtils::getUser($userId);
@@ -211,6 +225,7 @@ class UserUtils {
    * @throws HttpConflict
    * @throws HttpError
    * @throws InternalError
+   * @throws Exception
    */
   public static function createUser(string $username, string $email, int $rightGroupId, User $adminUser, bool $isValid = true, int $session_lifetime = 3600): User {
     $username = htmlentities($username, ENT_QUOTES, "UTF-8");
@@ -220,9 +235,6 @@ class UserUtils {
     }
     else if (strlen($username) < 2) {
       throw new HttpError("Username is too short!");
-    }
-    else if ($group == null) {
-      throw new HttpError("Invalid group!");
     }
     $qF = new QueryFilter("username", $username, "=");
     $res = Factory::getUserFactory()->filter([Factory::FILTER => $qF], true);
@@ -262,6 +274,7 @@ class UserUtils {
    * @param int $userId
    * @return User
    * @throws HTException
+   * @throws Exception
    */
   public static function getUser(int $userId): User {
     $user = Factory::getUserFactory()->get($userId);

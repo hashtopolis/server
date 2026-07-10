@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<_sqlx_migrations>
+ */
 class _sqlx_migrationsFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "_sqlx_migrations";
@@ -37,11 +36,10 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return _sqlx_migrations
    */
-  function createObjectFromDict($pk, $dict): _sqlx_migrations {
+  function createObjectFromDict(array $dict): _sqlx_migrations {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;
@@ -53,72 +51,5 @@ class _sqlx_migrationsFactory extends AbstractModelFactory {
       $dict['checksum'] = bin2hex($t);
     }
     return new _sqlx_migrations($dict['version'], $dict['description'], $dict['installed_on'], $dict['success'], $dict['checksum'], $dict['execution_time']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return _sqlx_migrations|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): _sqlx_migrations|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), _sqlx_migrations::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, _sqlx_migrations::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?_sqlx_migrations
-   * @throws Exception
-   */
-  function get($pk): ?_sqlx_migrations {
-    return Util::cast(parent::get($pk), _sqlx_migrations::class);
-  }
-  
-  /**
-   * @param _sqlx_migrations $model
-   * @return ?_sqlx_migrations
-   * @throws Exception
-   */
-  function save($model): ?_sqlx_migrations {
-    return Util::cast(parent::save($model), _sqlx_migrations::class);
-  }
-
-  /**
-   * @param _sqlx_migrations $model
-   * @param array $arr key-value associations for update
-   * @return _sqlx_migrations
-   * @throws Exception
-   */
-  function mset($model, array $arr): _sqlx_migrations {
-    return Util::cast(parent::mset($model, $arr), _sqlx_migrations::class);
-  }
-
-  /**
-   * @param _sqlx_migrations $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return _sqlx_migrations
-   * @throws Exception
-   */
-  function set($model, string $key, $value): _sqlx_migrations {
-    return Util::cast(parent::set($model, $key, $value), _sqlx_migrations::class);
   }
 }

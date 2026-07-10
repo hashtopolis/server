@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\auth;
 
+use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
@@ -12,6 +13,9 @@ use Psr\Http\Message\ServerRequestInterface;
 class JWTBeforeHandler implements BeforeHandlerInterface {
   /**
    * @param array{decoded: array<string, mixed>, token: string} $arguments
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws Exception
    */
   public function __invoke(ServerRequestInterface $request, array $arguments): ServerRequestInterface {
     if (isset ($arguments["decoded"]["aud"]) && $arguments["decoded"]["aud"] == ApiTokenAPI::API_AUD) {

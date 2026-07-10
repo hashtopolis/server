@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\agent;
 
 class PQueryUpdateInformation extends PQuery {
-  public static function isValid($QUERY) {
+  public static function isValid(array $QUERY): bool {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::DEVICES]) || !isset($QUERY[self::UID]) || !isset($QUERY[self::OPERATING_SYSTEM])) {
       return false;
     }

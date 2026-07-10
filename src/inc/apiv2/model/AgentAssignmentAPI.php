@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\inc\utils\AssignmentUtils;
@@ -23,6 +25,9 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<Assignment>
+ */
 class AgentAssignmentAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/agentassignments";
@@ -36,7 +41,11 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     return Assignment::class;
   }
   
-  protected function getSingleACL(User $user, object $object): bool {
+  /**
+   * @param Assignment $object
+   * @throws Exception
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     $agent = Factory::getAgentFactory()->get($object->getAgentId());
     $accessGroupsAgent = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent));
@@ -44,6 +53,9 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     return count(array_intersect($accessGroupsAgent, $accessGroupsUser)) > 0;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     
@@ -96,10 +108,11 @@ class AgentAssignmentAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Assignment $object
    * @throws HTException
    * @throws HttpError
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     AgentUtils::assign($object->getAgentId(), 0, $this->getCurrentUser());
   }
 }

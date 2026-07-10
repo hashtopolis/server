@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\notifications;
 
+use Exception;
 use Hashtopolis\inc\DataSet;
 use Hashtopolis\dba\models\NotificationSetting;
 use Hashtopolis\inc\defines\DConfig;
@@ -13,12 +14,12 @@ use Hashtopolis\inc\UI;
 use Hashtopolis\inc\Util;
 
 abstract class HashtopolisNotification {
-  public static $name;
-  protected     $receiver;
+  public static string $name;
+  protected     string $receiver;
   
   protected NotificationSetting $notification;
   
-  private static $instances = [];
+  private static array $instances = [];
   
   private static function loadInstances(): void {
     // TODO: find a better way to load these automatically, failed to do it with the classloader and scanning
@@ -55,8 +56,9 @@ abstract class HashtopolisNotification {
    * @param $notificationType string
    * @param $payload DataSet
    * @param $notification NotificationSetting
+   * @throws Exception
    */
-  public function execute($notificationType, $payload, $notification) {
+  public function execute(string $notificationType, DataSet $payload, NotificationSetting $notification): void {
     $this->receiver = $notification->getReceiver();
     $this->notification = $notification;
     $template = new Template($this->getTemplateName());
@@ -139,7 +141,7 @@ abstract class HashtopolisNotification {
       case DNotificationType::USER_LOGIN_FAILED:
         $user = $payload->getVal(DPayloadKeys::USER);
         $obj['message'] = "User '" . $user->getUsername() . "' (" . $user->getId() . ") failed to login due to wrong password";
-        $obj['html'] = "User <a href='" . Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "'>" . $user->getUsername() . "</a> failed to login due to wrong password";
+        $obj['html'] = "User <a href='" . Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "'>" . $user->getUsername() . "</a> failed to log in due to wrong password";
         $obj['simplified'] = "User <" . Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "|" . $user->getUsername() . "> failed to login due to wrong password";
         $subject .= "user failed to log in";
         break;

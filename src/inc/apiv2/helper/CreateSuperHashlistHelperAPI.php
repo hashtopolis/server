@@ -2,6 +2,10 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\Factory;
@@ -42,9 +46,14 @@ class CreateSuperHashlistHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to create a super hashlist from multiple hashlists
+   * @param $data
+   * @return AbstractModel|array|null
    * @throws HTException
+   * @throws HttpError
+   * @throws ResourceNotFoundError
+   * @throws Exception
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost($data): AbstractModel|array|null {
     /* Validate incoming hashlists */
     $hashlistIds = [];
     foreach ($data["hashlistIds"] as $hashlistId) {

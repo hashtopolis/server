@@ -34,7 +34,7 @@ class USectionTask extends UApi {
   const ARCHIVE_TASK      = "archiveTask";
   const ARCHIVE_SUPERTASK = "archiveSupertask";
   
-  public function describe($constant) {
+  public function describe($constant): string {
     return match ($constant) {
       USectionTask::LIST_TASKS => "List all tasks",
       USectionTask::GET_TASK => "Get details of a task",

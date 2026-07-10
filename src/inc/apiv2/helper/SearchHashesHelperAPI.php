@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\Util;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\ContainFilter;
@@ -15,7 +17,6 @@ use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Slim\App;
 
 class SearchHashesHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
@@ -114,13 +115,14 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to search for hashes in accessible hashlists.
-   * @param $data
-   * @return object|array|null
+   * @param $data array
+   * @return AbstractModel|array|null
    * @throws ContainerExceptionInterface
    * @throws NotFoundExceptionInterface
    * @throws HttpError
+   * @throws Exception
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     $search = base64_decode($data['searchData'], true);
     $isSalted = $data['isSalted'];
     $separator = $data['separator'];
@@ -128,7 +130,7 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
     if (strlen($search) == 0) {
       throw new HttpError("Search query cannot be empty!");
     }
-    else if ($search === false || mb_check_encoding($search, "UTF-8") == false) {
+    else if ($search === false || !mb_check_encoding($search, "UTF-8")) {
       throw new HttpError("Search query is not valid base64!");
     }
     else if ($isSalted && strlen($separator) == 0) {
@@ -138,7 +140,7 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
     $search = str_replace("\r\n", "\n", $search);
     $search = explode("\n", $search);
     $resultEntries = array();
-    $userHashlists = HashlistUtils::getHashlists(self::getCurrentUser(), false);
+    $userHashlists = HashlistUtils::getHashlists(self::getCurrentUser());
     $userHashlists += HashlistUtils::getHashlists(self::getCurrentUser(), true);
     foreach ($search as $searchEntry) {
       if (strlen($searchEntry) == 0) {

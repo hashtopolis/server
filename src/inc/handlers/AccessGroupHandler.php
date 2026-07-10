@@ -13,7 +13,7 @@ class AccessGroupHandler implements Handler {
     //we need nothing to load
   }
   
-  public function handle($action) {
+  public function handle(string $action): void {
     try {
       switch ($action) {
         case DAccessGroupAction::CREATE_GROUP:
@@ -23,23 +23,23 @@ class AccessGroupHandler implements Handler {
           die();
         case DAccessGroupAction::DELETE_GROUP:
           AccessControl::getInstance()->checkPermission(DAccessGroupAction::DELETE_GROUP_PERM);
-          AccessGroupUtils::deleteGroup($_POST['groupId']);
+          AccessGroupUtils::deleteGroup(intval($_POST['groupId']));
           break;
         case DAccessGroupAction::REMOVE_USER:
           AccessControl::getInstance()->checkPermission(DAccessGroupAction::REMOVE_USER_PERM);
-          AccessGroupUtils::removeUser($_POST['userId'], $_POST['groupId']);
+          AccessGroupUtils::removeUser(intval($_POST['userId']), intval($_POST['groupId']));
           break;
         case DAccessGroupAction::REMOVE_AGENT:
           AccessControl::getInstance()->checkPermission(DAccessGroupAction::REMOVE_AGENT_PERM);
-          AccessGroupUtils::removeAgent($_POST['agentId'], $_POST['groupId']);
+          AccessGroupUtils::removeAgent(intval($_POST['agentId']), intval($_POST['groupId']));
           break;
         case DAccessGroupAction::ADD_USER:
           AccessControl::getInstance()->checkPermission(DAccessGroupAction::ADD_USER_PERM);
-          AccessGroupUtils::addUser($_POST['userId'], $_POST['groupId']);
+          AccessGroupUtils::addUser(intval($_POST['userId']), intval($_POST['groupId']));
           break;
         case DAccessGroupAction::ADD_AGENT:
           AccessControl::getInstance()->checkPermission(DAccessGroupAction::ADD_AGENT_PERM);
-          AccessGroupUtils::addAgent($_POST['agentId'], $_POST['groupId']);
+          AccessGroupUtils::addAgent(intval($_POST['agentId']), intval($_POST['groupId']));
           break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");

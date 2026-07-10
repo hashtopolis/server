@@ -3,11 +3,8 @@
 namespace Hashtopolis\dba;
 
 class ConcatColumn {
-  private $value;
-  /**
-   * @var AbstractModelFactory
-   */
-  private $factory;
+  private string $value;
+  private AbstractModelFactory $factory;
 
   function __construct($value, $factory)
   {
@@ -15,11 +12,11 @@ class ConcatColumn {
     $this->factory = $factory;
   }
 
-  function getValue() {
+  function getValue(): string {
     return $this->value;
   }
 
-  function getFactory() {
+  function getFactory(): AbstractModelFactory {
     return $this->factory;
   }
 }

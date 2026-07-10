@@ -22,12 +22,6 @@ final class ConcatColumnTest extends TestBase {
     $this->assertSame($factory, $col->getFactory());
   }
 
-  /** Verify getValue returns null when null is passed as the column key. */
-  public function testNullValue(): void {
-    $col = new ConcatColumn(null, Factory::getHashlistFactory());
-    $this->assertNull($col->getValue());
-  }
-
   /** Verify getValue returns the correct column key for a mapped-table factory (User). */
   public function testUserColumn(): void {
     $col = new ConcatColumn(User::USERNAME, Factory::getUserFactory());

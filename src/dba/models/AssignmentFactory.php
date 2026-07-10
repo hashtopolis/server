@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<Assignment>
+ */
 class AssignmentFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "Assignment";
@@ -37,83 +36,15 @@ class AssignmentFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Assignment
    */
-  function createObjectFromDict($pk, $dict): Assignment {
+  function createObjectFromDict(array $dict): Assignment {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
     return new Assignment($dict['assignmentid'], $dict['taskid'], $dict['agentid'], $dict['benchmark']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return Assignment|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): Assignment|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), Assignment::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, Assignment::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?Assignment
-   * @throws Exception
-   */
-  function get($pk): ?Assignment {
-    return Util::cast(parent::get($pk), Assignment::class);
-  }
-  
-  /**
-   * @param Assignment $model
-   * @return ?Assignment
-   * @throws Exception
-   */
-  function save($model): ?Assignment {
-    return Util::cast(parent::save($model), Assignment::class);
-  }
-
-  /**
-   * @param Assignment $model
-   * @param array $arr key-value associations for update
-   * @return Assignment
-   * @throws Exception
-   */
-  function mset($model, array $arr): Assignment {
-    return Util::cast(parent::mset($model, $arr), Assignment::class);
-  }
-
-  /**
-   * @param Assignment $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return Assignment
-   * @throws Exception
-   */
-  function set($model, string $key, $value): Assignment {
-    return Util::cast(parent::set($model, $key, $value), Assignment::class);
   }
 }

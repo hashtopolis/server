@@ -2,6 +2,9 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\Hash;
@@ -37,9 +40,13 @@ class ExportWordlistHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to export a wordlist of the cracked hashes inside a hashlist.
+   * @param $data
+   * @return AbstractModel|array|null
    * @throws HTException
+   * @throws HttpError
+   * @throws ResourceNotFoundError
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost($data): AbstractModel|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     
     $arr = HashlistUtils::createWordlists($hashlist->getId(), $this->getCurrentUser());

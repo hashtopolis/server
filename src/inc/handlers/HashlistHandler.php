@@ -30,7 +30,7 @@ class HashlistHandler implements Handler {
     }
   }
   
-  public function handle($action) {
+  public function handle($action): void {
     try {
       switch ($action) {
         case DHashlistAction::APPLY_PRECONFIGURED_TASKS:

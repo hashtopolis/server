@@ -2,23 +2,27 @@
 
 namespace Hashtopolis\inc\notifications;
 
+use Exception;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DProxyTypes;
 use Hashtopolis\inc\SConfig;
 
 class HashtopolisNotificationDiscordWebhook extends HashtopolisNotification {
-  protected     $receiver;
-  public static $name = "Discord Webhook";
+  protected string     $receiver;
+  public static string $name = "Discord Webhook";
   
-  function getTemplateName() {
+  function getTemplateName(): string {
     return "notifications/discord";
   }
   
-  function getObjects() {
+  function getObjects(): array {
     return array();
   }
   
-  function sendMessage($message, $subject = "") {
+  /**
+   * @throws Exception
+   */
+  function sendMessage($message, $subject = ""): bool|string {
     $json_data = array(
       "content" => $message
     );

@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<__MODEL_NAME__>
+ */
 class __MODEL_NAME__Factory extends AbstractModelFactory {
   function getModelName(): string {
     return "__MODEL_NAME__";
@@ -37,83 +36,15 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return __MODEL_NAME__
    */
-  function createObjectFromDict($pk, $dict): __MODEL_NAME__ {
+  function createObjectFromDict(array $dict): __MODEL_NAME__ {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;__MODEL_MAPPING_DICT____MODEL_STREAMING_DICT__
     return new __MODEL_NAME__(__MODEL__DICT2__);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return __MODEL_NAME__|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): __MODEL_NAME__|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), __MODEL_NAME__::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, __MODEL_NAME__::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?__MODEL_NAME__
-   * @throws Exception
-   */
-  function get($pk): ?__MODEL_NAME__ {
-    return Util::cast(parent::get($pk), __MODEL_NAME__::class);
-  }
-  
-  /**
-   * @param __MODEL_NAME__ $model
-   * @return ?__MODEL_NAME__
-   * @throws Exception
-   */
-  function save($model): ?__MODEL_NAME__ {
-    return Util::cast(parent::save($model), __MODEL_NAME__::class);
-  }
-
-  /**
-   * @param __MODEL_NAME__ $model
-   * @param array $arr key-value associations for update
-   * @return __MODEL_NAME__
-   * @throws Exception
-   */
-  function mset($model, array $arr): __MODEL_NAME__ {
-    return Util::cast(parent::mset($model, $arr), __MODEL_NAME__::class);
-  }
-
-  /**
-   * @param __MODEL_NAME__ $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return __MODEL_NAME__
-   * @throws Exception
-   */
-  function set($model, string $key, $value): __MODEL_NAME__ {
-    return Util::cast(parent::set($model, $key, $value), __MODEL_NAME__::class);
   }
 }

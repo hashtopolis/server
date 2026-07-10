@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\HealthCheck;
@@ -12,6 +13,9 @@ use Hashtopolis\inc\utils\HealthUtils;
 use Hashtopolis\inc\HTException;
 
 
+/**
+ * @extends AbstractModelAPI<HealthCheck>
+ */
 class HealthCheckAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/healthchecks";
@@ -52,6 +56,7 @@ class HealthCheckAPI extends AbstractModelAPI {
   
   /**
    * @throws HttpError
+   * @throws HTException
    */
   protected function createObject(array $data): int {
     $healthCheck = HealthUtils::createHealthCheck(
@@ -64,9 +69,10 @@ class HealthCheckAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param HealthCheck $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     HealthUtils::deleteHealthCheck($object->getId());
   }
 }

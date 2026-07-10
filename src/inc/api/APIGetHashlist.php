@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryGetHashlist;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseGetHashlist;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DServerLog;
@@ -13,7 +15,10 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\Util;
 
 class APIGetHashlist extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     //check required values
     if (!PQueryGetHashlist::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_HASHLIST, "Invalid hashlist query!");
@@ -66,8 +71,8 @@ class APIGetHashlist extends APIBasic {
       $this->sendErrorResponse(PActions::GET_HASHLIST, "No hashlists selected/available!");
     }
     $this->sendResponse(array(
-        PResponseGetHashlist::ACTION => PActions::GET_HASHLIST,
-        PResponseGetHashlist::RESPONSE => PValues::SUCCESS,
+        PResponse::ACTION => PActions::GET_HASHLIST,
+        PResponse::RESPONSE => PValues::SUCCESS,
         PResponseGetHashlist::URL => "getHashlist.php?hashlists=" . implode(",", Util::arrayOfIds($hashlists)) . "&token=" . $this->agent->getToken()
       )
     );

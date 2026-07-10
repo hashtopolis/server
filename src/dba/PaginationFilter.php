@@ -3,12 +3,13 @@
 namespace Hashtopolis\dba;
 
 class PaginationFilter extends Filter {
-  private $key;
-  private $value;
-  private $operator;
-  private $tieBreakerKey;
-  private $tieBreakerValue;
-  private $filters;
+  private string $key;
+  private mixed $value;
+  private string $operator;
+  private string $tieBreakerKey;
+  private mixed $tieBreakerValue;
+  /** @var Filter[] $filters */
+  private array $filters;
   
   private ?AbstractModelFactory $overrideFactory;
   
@@ -47,7 +48,7 @@ class PaginationFilter extends Filter {
     return $queryString;
   }
   
-  function getValue() {
+  function getValue(): array {
     $values = [$this->value, $this->value, $this->tieBreakerValue];
     return array_merge($values, array_map(fn($filter) => $filter->getValue(), $this->filters));
   }

@@ -97,7 +97,7 @@ if (isset($_GET['id'])) {
   if (!AccessUtils::userCanAccessHashlists($hashlist, Login::getInstance()->getUser())) {
     UI::printError("ERROR", "No access to this task!");
   }
-
+  
   UI::add('hashlist', $hashlist);
   $hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashtypeId());
   UI::add('hashtype', $hashtype);
@@ -145,15 +145,17 @@ if (isset($_GET['id'])) {
       $chunkIntervals[] = ["start" => $chunk->getDispatchTime(), "stop" => $chunk->getSolveTime()];
     }
     $cProgress += $chunk->getCheckpoint() - $chunk->getSkip();
-    if (!$agentsProgress->getVal($chunk->getAgentId())) {
-      $agentsProgress->addValue($chunk->getAgentId(), $chunk->getCheckpoint() - $chunk->getSkip());
-      $agentsCracked->addValue($chunk->getAgentId(), $chunk->getCracked());
-      $agentsSpent->addValue($chunk->getAgentId(), max($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
-    }
-    else {
-      $agentsProgress->addValue($chunk->getAgentId(), $agentsProgress->getVal($chunk->getAgentId()) + $chunk->getCheckpoint() - $chunk->getSkip());
-      $agentsCracked->addValue($chunk->getAgentId(), $agentsCracked->getVal($chunk->getAgentId()) + $chunk->getCracked());
-      $agentsSpent->addValue($chunk->getAgentId(), $agentsSpent->getVal($chunk->getAgentId()) + max($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
+    if ($chunk->getAgentId() != null) {
+      if (!$agentsProgress->getVal($chunk->getAgentId())) {
+        $agentsProgress->addValue($chunk->getAgentId(), $chunk->getCheckpoint() - $chunk->getSkip());
+        $agentsCracked->addValue($chunk->getAgentId(), $chunk->getCracked());
+        $agentsSpent->addValue($chunk->getAgentId(), max($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
+      }
+      else {
+        $agentsProgress->addValue($chunk->getAgentId(), $agentsProgress->getVal($chunk->getAgentId()) + $chunk->getCheckpoint() - $chunk->getSkip());
+        $agentsCracked->addValue($chunk->getAgentId(), $agentsCracked->getVal($chunk->getAgentId()) + $chunk->getCracked());
+        $agentsSpent->addValue($chunk->getAgentId(), $agentsSpent->getVal($chunk->getAgentId()) + max($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
+      }
     }
   }
   UI::add('agentsProgress', $agentsProgress);
@@ -383,7 +385,7 @@ else if (isset($_GET['new'])) {
   if ($copy === null) {
     $copy = TaskUtils::getDefault();
   }
-  if (strpos($copy->getAttackCmd(), SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+  if (strpos($copy->getAttackCmd(), SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) ?? "") === false) {
     $copy->setAttackCmd(SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
   }
   

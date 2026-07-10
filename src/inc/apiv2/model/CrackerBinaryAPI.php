@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\CrackerUtils;
 
 use Hashtopolis\dba\models\CrackerBinary;
@@ -12,6 +13,9 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 
 
+/**
+ * @extends AbstractModelAPI<CrackerBinary>
+ */
 class CrackerBinaryAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/crackers";
@@ -58,9 +62,10 @@ class CrackerBinaryAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param CrackerBinary $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     CrackerUtils::deleteBinary($object->getId());
   }
 }

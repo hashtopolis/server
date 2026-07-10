@@ -5,6 +5,7 @@
 
 namespace Hashtopolis\inc\apiv2\auth;
 
+use Exception;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DLogEntryIssuer;
 use Hashtopolis\inc\Encryption;
@@ -16,6 +17,10 @@ use Tuupola\Middleware\HttpBasicAuthentication\AuthenticatorInterface;
 use Hashtopolis\inc\Util;
 
 class HashtopolisAuthenticator implements AuthenticatorInterface {
+  /**
+   * @throws HttpForbidden
+   * @throws Exception
+   */
   public function __invoke(array $arguments): bool {
     $username = $arguments["user"];
     $password = $arguments["password"];

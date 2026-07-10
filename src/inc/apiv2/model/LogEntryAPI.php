@@ -2,11 +2,15 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\LogEntry;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 
 
+/**
+ * @extends AbstractModelAPI<LogEntry>
+ */
 class LogEntryAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/logentries";
@@ -24,9 +28,10 @@ class LogEntryAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param LogEntry $object
    * @throws HttpError
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     throw new HttpError("Logentries cannot be deleted via API");
   }
 

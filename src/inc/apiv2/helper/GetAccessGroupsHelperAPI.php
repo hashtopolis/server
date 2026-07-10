@@ -2,6 +2,9 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -30,10 +33,16 @@ class GetAccessGroupsHelperAPI extends AbstractHelperAPI {
   }
   
   /**
-   * @throws NotFoundExceptionInterface
+   * @param Request $request
+   * @param Response $response
+   * @return Response
    * @throws ContainerExceptionInterface
    * @throws HTException
+   * @throws HttpError
    * @throws JsonException
+   * @throws NotFoundExceptionInterface
+   * @throws HttpForbidden
+   * @throws Exception
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
@@ -56,10 +65,10 @@ class GetAccessGroupsHelperAPI extends AbstractHelperAPI {
   
   /**
    * @param $data
-   * @return object|array|null
+   * @return AbstractModel|array|null
    * @throws HttpError
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost($data): AbstractModel|array|null {
     throw new HttpError("GetAccessGroups has no POST");
   }
   
@@ -70,7 +79,7 @@ class GetAccessGroupsHelperAPI extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\GetAccessGroupsHelperAPI:handleGet");
+    $app->get($baseUri, [self::class, 'handleGet']);
   }
   
   /**

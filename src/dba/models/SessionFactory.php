@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<Session>
+ */
 class SessionFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "Session";
@@ -37,83 +36,15 @@ class SessionFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Session
    */
-  function createObjectFromDict($pk, $dict): Session {
+  function createObjectFromDict(array $dict): Session {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
     return new Session($dict['sessionid'], $dict['userid'], $dict['sessionstartdate'], $dict['lastactiondate'], $dict['isopen'], $dict['sessionlifetime'], $dict['sessionkey']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return Session|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): Session|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), Session::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, Session::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?Session
-   * @throws Exception
-   */
-  function get($pk): ?Session {
-    return Util::cast(parent::get($pk), Session::class);
-  }
-  
-  /**
-   * @param Session $model
-   * @return ?Session
-   * @throws Exception
-   */
-  function save($model): ?Session {
-    return Util::cast(parent::save($model), Session::class);
-  }
-
-  /**
-   * @param Session $model
-   * @param array $arr key-value associations for update
-   * @return Session
-   * @throws Exception
-   */
-  function mset($model, array $arr): Session {
-    return Util::cast(parent::mset($model, $arr), Session::class);
-  }
-
-  /**
-   * @param Session $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return Session
-   * @throws Exception
-   */
-  function set($model, string $key, $value): Session {
-    return Util::cast(parent::set($model, $key, $value), Session::class);
   }
 }

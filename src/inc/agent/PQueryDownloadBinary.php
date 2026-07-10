@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\agent;
 
 class PQueryDownloadBinary extends PQuery {
-  static function isValid($QUERY) {
+  static function isValid(array $QUERY): bool {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::BINARY_TYPE])) {
       return false;
     }

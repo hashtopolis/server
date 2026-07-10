@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\agent;
 
 class PQuerySendProgress extends PQuery {
-  static function isValid($QUERY) {
+  static function isValid(array $QUERY): bool {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::CHUNK_ID]) || !isset($QUERY[self::KEYSPACE_PROGRESS]) || !isset($QUERY[self::KEYSPACE_PROGRESS]) || !isset($QUERY[self::RELATIVE_PROGRESS]) || !isset($QUERY[self::SPEED]) || !isset($QUERY[self::HASHCAT_STATE]) || !isset($QUERY[self::CRACKED_HASHES])) {
       return false;
     }

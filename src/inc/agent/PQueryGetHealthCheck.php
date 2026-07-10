@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\agent;
 
 class PQueryGetHealthCheck extends PQuery {
-  static function isValid($QUERY) {
+  static function isValid(array $QUERY): bool {
     if (!isset($QUERY[self::TOKEN])) {
       return false;
     }

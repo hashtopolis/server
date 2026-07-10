@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\inc\DataSet;
 use Hashtopolis\dba\models\Pretask;
 use Hashtopolis\dba\models\FilePretask;
@@ -26,10 +27,11 @@ class PretaskUtils {
    * @param int $pretaskId
    * @param string $attackCmd
    * @throws HTException
+   * @throws Exception
    */
-  public static function changeAttack($pretaskId, $attackCmd) {
+  public static function changeAttack(int $pretaskId, string $attackCmd): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    if (strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+    if (!str_contains($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS))) {
       throw new HTException("The attack command does not contain the hashlist alias!");
     }
     else if (Util::containsBlacklistedChars($attackCmd)) {
@@ -42,7 +44,7 @@ class PretaskUtils {
    * @param Task $copy
    * @return Pretask
    */
-  public static function getFromTask($copy) {
+  public static function getFromTask(Task $copy): Pretask {
     return new Pretask(
       null,
       $copy->getTaskName(),
@@ -62,8 +64,9 @@ class PretaskUtils {
   
   /**
    * @return Pretask
+   * @throws Exception
    */
-  public static function getDefault() {
+  public static function getDefault(): Pretask {
     return new Pretask(
       null,
       '',
@@ -85,14 +88,12 @@ class PretaskUtils {
    * @param int $pretaskId
    * @param int $isCpuOnly
    * @throws HTException
+   * @throws Exception
    */
-  public static function setCpuOnlyTask($pretaskId, $isCpuOnly) {
+  public static function setCpuOnlyTask(int $pretaskId, int $isCpuOnly): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    if (is_bool($isCpuOnly)) {
-      $isCpuOnly = ($isCpuOnly) ? 1 : 0;
-    }
-    if (!is_numeric($isCpuOnly) || $isCpuOnly < 0 || $isCpuOnly > 1) {
-      throw new HTException("Invalid boolean value!");
+    if ($isCpuOnly < 0 || $isCpuOnly > 1) {
+      throw new HTException("Invalid cpuOnly value!");
     }
     Factory::getPretaskFactory()->set($pretask, Pretask::IS_CPU_TASK, $isCpuOnly);
   }
@@ -101,14 +102,12 @@ class PretaskUtils {
    * @param int $pretaskId
    * @param int $isSmall
    * @throws HTException
+   * @throws Exception
    */
-  public static function setSmallTask($pretaskId, $isSmall) {
+  public static function setSmallTask(int $pretaskId, int $isSmall): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    if (is_bool($isSmall)) {
-      $isSmall = ($isSmall) ? 1 : 0;
-    }
-    if (!is_numeric($isSmall) || $isSmall < 0 || $isSmall > 1) {
-      throw new HTException("Invalid boolean value!");
+    if ($isSmall < 0 || $isSmall > 1) {
+      throw new HTException("Invalid cpuOnly value!");
     }
     Factory::getPretaskFactory()->set($pretask, Pretask::IS_SMALL, $isSmall);
   }
@@ -117,26 +116,21 @@ class PretaskUtils {
    * @param int $pretaskId
    * @param int $priority
    * @throws HTException
+   * @throws Exception
    */
-  public static function setPriority($pretaskId, $priority) {
+  public static function setPriority(int $pretaskId, int $priority): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    if (!is_numeric($priority)) {
-      throw new HTException("Priority needs to be a number!");
-    }
-    Factory::getPretaskFactory()->set($pretask, Pretask::PRIORITY, intval($priority));
+    Factory::getPretaskFactory()->set($pretask, Pretask::PRIORITY, $priority);
   }
   
   /**
    * @param int $pretaskId
    * @param int $maxAgents
    * @throws HTException
+   * @throws Exception
    */
-  public static function setMaxAgents($pretaskId, $maxAgents) {
+  public static function setMaxAgents(int $pretaskId, int $maxAgents): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    if (!is_numeric($maxAgents)) {
-      throw new HTException("Max agents needs to be a number!");
-    }
-    $maxAgents = intval($maxAgents);
     if ($maxAgents < 0) {
       throw new HTException("Max agents cannot be negative!");
     }
@@ -147,8 +141,9 @@ class PretaskUtils {
    * @param int $pretaskId
    * @param string $color
    * @throws HTException
+   * @throws Exception
    */
-  public static function setColor($pretaskId, $color) {
+  public static function setColor(int $pretaskId, string $color): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
     if (strlen($color) > 0 && preg_match("/[0-9A-Fa-f]{6}/", $color) == 0) {
       throw new HTException("Invalid color!");
@@ -160,10 +155,10 @@ class PretaskUtils {
    * @param int $pretaskId
    * @param int $chunkTime
    * @throws HTException
+   * @throws Exception
    */
-  public static function setChunkTime($pretaskId, $chunkTime) {
+  public static function setChunkTime(int $pretaskId, int $chunkTime): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    $chunkTime = intval($chunkTime);
     if ($chunkTime <= 0) {
       throw new HTException("Invalid chunk time!");
     }
@@ -174,8 +169,9 @@ class PretaskUtils {
    * @param int $pretaskId
    * @param string $newName
    * @throws HTException
+   * @throws Exception
    */
-  public static function renamePretask($pretaskId, $newName) {
+  public static function renamePretask(int $pretaskId, string $newName): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
     if (strlen($newName) == 0) {
       throw new HTException("Name cannot be empty!");
@@ -186,8 +182,9 @@ class PretaskUtils {
   /**
    * @param int $pretaskId
    * @throws HTException
+   * @throws Exception
    */
-  public static function deletePretask($pretaskId) {
+  public static function deletePretask(int $pretaskId): void {
     $pretask = PretaskUtils::getPretask($pretaskId);
     
     // delete connections to supertasks
@@ -204,8 +201,9 @@ class PretaskUtils {
   /**
    * @param boolean $includeMaskImports
    * @return Pretask[]
+   * @throws Exception
    */
-  public static function getPretasks($includeMaskImports = false) {
+  public static function getPretasks(bool $includeMaskImports = false): array {
     $oF = new OrderFilter(Pretask::PRIORITY, "DESC");
     if ($includeMaskImports) {
       $pretasks = Factory::getPretaskFactory()->filter([Factory::ORDER => $oF]);
@@ -221,8 +219,9 @@ class PretaskUtils {
    * @param int $pretaskId
    * @return Pretask
    * @throws HTException
+   * @throws Exception
    */
-  public static function getPretask($pretaskId) {
+  public static function getPretask(int $pretaskId): Pretask {
     $pretask = Factory::getPretaskFactory()->get($pretaskId);
     if ($pretask == null) {
       throw new HTException("Invalid preconfigured task!");
@@ -236,8 +235,9 @@ class PretaskUtils {
    * @param string $name
    * @param int $crackerBinaryId
    * @throws HTException
+   * @throws Exception
    */
-  public static function runPretask($pretaskId, $hashlistId, $name, $crackerBinaryId) {
+  public static function runPretask(int $pretaskId, int $hashlistId, string $name, int $crackerBinaryId): void {
     $pretask = Factory::getPretaskFactory()->get($pretaskId);
     if ($pretask == null) {
       throw new HTException("Invalid preconfigured task ID!");
@@ -311,6 +311,7 @@ class PretaskUtils {
    * @param int $priority
    * @return Pretask
    * @throws HttpError
+   * @throws Exception
    */
   public static function createPretask(string $name, string $cmdLine, int $chunkTime, int $statusTimer, string $color, int $cpuOnly, int $isSmall, int $benchmarkType, array|null $files, int $crackerBinaryTypeId, int|null $maxAgents, int $priority = 0): Pretask {
     $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
@@ -330,8 +331,6 @@ class PretaskUtils {
     else if ($crackerBinaryType == null) {
       throw new HttpError("Invalid cracker binary type!");
     }
-    $chunkTime = intval($chunkTime);
-    $statusTimer = intval($statusTimer);
     $maxAgents = intval($maxAgents);
     if (strlen($color) > 0 && preg_match("/[0-9A-Fa-f]{6}/", $color) == 0) {
       $color = "";
@@ -368,6 +367,7 @@ class PretaskUtils {
     $pretask = Factory::getPretaskFactory()->save($pretask);
     
     // handle files
+    $files = $files ?? [];
     foreach ($files as $fileId) {
       $file = Factory::getFileFactory()->get($fileId);
       if ($file !== null) {

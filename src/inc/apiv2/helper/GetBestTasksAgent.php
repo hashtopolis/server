@@ -2,13 +2,20 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
+use Hashtopolis\inc\HTException;
+use JsonException;
 use Middlewares\Utils\HttpErrorException;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\utils\TaskUtils;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -30,7 +37,12 @@ class GetBestTasksAgent extends AbstractHelperAPI {
   }
   
   
-  public function actionPost(array $data): object|array|null {
+  /**
+   * @param array $data
+   * @return AbstractModel|array|null
+   * @throws HttpErrorException
+   */
+  public function actionPost(array $data): AbstractModel|array|null {
     throw new HttpErrorException("getBestTasksAgent has no POST");
   }
   
@@ -58,13 +70,19 @@ class GetBestTasksAgent extends AbstractHelperAPI {
    * @param Request $request
    * @param Response $response
    * @return Response
-   * @throws HttpErrorException
+   * @throws HttpError
+   * @throws HTException
+   * @throws HttpForbidden
+   * @throws JsonException
+   * @throws ContainerExceptionInterface
+   * @throws NotFoundExceptionInterface
+   * @throws Exception
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
     $queryParams = $request->getQueryParams();
     $agentParam = $queryParams['agent'] ?? null;
-    if ($agentParam === null || !is_numeric($agentParam)) {
+    if (!is_numeric($agentParam)) {
       throw new HttpError("Invalid or missing 'agent' query parameter");
     }
     $agentId = (int) $agentParam;
@@ -94,6 +112,6 @@ class GetBestTasksAgent extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\GetBestTasksAgent:handleGet");
+    $app->get($baseUri, [self::class, 'handleGet']);
   }
 }

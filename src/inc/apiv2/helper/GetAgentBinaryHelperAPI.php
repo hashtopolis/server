@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\HTException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -32,12 +35,18 @@ class GetAgentBinaryHelperAPI extends AbstractHelperAPI {
   }
   
   
-  public function actionPost(array $data): object|array|null {
+  /**
+   * @param array $data
+   * @return AbstractModel|array|null
+   * @throws HttpErrorException
+   */
+  public function actionPost(array $data): AbstractModel|array|null {
     throw new HttpErrorException("getAgentBinary has no POST");
   }
   
   /**
    * @throws HTException
+   * @throws Exception
    */
   public function validateAgent($request, int $agentBinaryId): string {
     $agentBinary = Factory::getAgentBinaryFactory()->get($agentBinaryId);
@@ -81,6 +90,7 @@ class GetAgentBinaryHelperAPI extends AbstractHelperAPI {
    * @return Response
    * @throws HTException
    * @throws HttpErrorException
+   * @throws HttpForbidden
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
@@ -101,6 +111,6 @@ class GetAgentBinaryHelperAPI extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\GetAgentBinaryHelperAPI:handleGet");
+    $app->get($baseUri, [self::class, 'handleGet']);
   }
 }

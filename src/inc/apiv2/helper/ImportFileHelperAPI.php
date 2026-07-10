@@ -5,6 +5,8 @@ namespace Hashtopolis\inc\apiv2\helper;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DDirectories;
@@ -45,16 +47,25 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     return [];
   }
   
+  /**
+   * @throws Exception
+   */
   static function getUploadPath(string $id): string {
     return Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . DIRECTORY_SEPARATOR . 'uploads' .
       DIRECTORY_SEPARATOR . basename($id) . ".part";
   }
   
+  /**
+   * @throws Exception
+   */
   static function getMetaPath(string $id): string {
     return Factory::getStoredValueFactory()->get(DDirectories::TUS)->getVal() . DIRECTORY_SEPARATOR . 'meta'
       . DIRECTORY_SEPARATOR . basename($id) . ".meta";
   }
   
+  /**
+   * @throws Exception
+   */
   static function getImportPath(string $id): string {
     return Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . DIRECTORY_SEPARATOR . basename($id);
   }
@@ -70,13 +81,19 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     return ['md5', 'sha1', 'crc32'];
   }
   
-  
-  /* Database quick for temporary storage during upload */
+  /**
+   * Database quick for temporary storage during upload
+   *
+   * @throws Exception
+   */
   static function getMetaStorage(string $id): array {
     $metaPath = self::getMetaPath($id);
     return file_exists($metaPath) ? (array)json_decode(file_get_contents($metaPath), true) : array();
   }
   
+  /**
+   * @throws Exception
+   */
   static function updateStorage(string $id, array $update): void {
     $ds = self::getMetaStorage($id);
     
@@ -85,14 +102,20 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     file_put_contents($metaPath, json_encode($newDs));
   }
   
-  //register is overridden so no actionPost needed
-  function actionPost(array $data): object|array|null {
+  /**
+   * register is overridden so no actionPost needed
+   *
+   * @param array $data
+   * @return AbstractModel|array|null
+   */
+  function actionPost(array $data): AbstractModel|array|null {
     return null;
   }
   
   /**
    * A HEAD request is used in the TUS protocol to determine the offset at which the upload should be continued.
    * And to retrieve the upload status.
+   * @throws Exception
    */
   function processHead(Request $request, Response $response, array $args): Response {
     $filename = self::getUploadPath($args['id']);
@@ -149,12 +172,13 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
    *     - Checked if not present yet (import/<filename>)
    *     - Marks file and stores as import/<filename>
    * @throws RandomException
+   * @throws Exception
    */
   function processPost(Request $request, Response $response, array $args): Response {
     $update = [];
     if ($request->hasHeader('Upload-Metadata')) {
       $update["upload_metadata_raw"] = $request->getHeader('Upload-Metadata')[0];
-      if (preg_match('/^[a-zA-Z0-9=, ]+$/', $update["upload_metadata_raw"], $match) === false) {
+      if (preg_match('/^[a-zA-Z0-9=, ]+$/', $update["upload_metadata_raw"]) === false) {
         $response->getBody()->write('Error Upload-Metadata contains non-ASCII characters');
         return $response->withStatus(400);
       }
@@ -229,6 +253,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   /**
    * Given the offset in the 'Upload Offset' header, the user can use this PATCH endpoint in order to resume the upload.
    * @throws HttpError
+   * @throws Exception
    */
   function processPatch(Request $request, Response $response, array $args): Response {
     // Check for Content-Type: application/offset+octet-stream or return 415
@@ -289,7 +314,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
       $uploadChecksum = $request->getHeader('Upload-Checksum')[0];
       /* algo base64_checksum */
       $regex = "/^(" . join("|", self::getChecksumAlgorithm()) . ")" .
-        "[ ]+((?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=))?$/";
+        " +((?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=))?$/";
       
       if (preg_match($regex, $uploadChecksum, $matches) === false) {
         $response->getBody()->write('Syntax of Upload-Checksum header incorrect');
@@ -298,20 +323,12 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
       else {
         $algo = $matches[1];
         $incomingHash = $matches[2];
-        switch ($algo) {
-          case "md5":
-            $chunkHash = base64_encode(md5($chunk, true));
-            break;
-          case "sha1":
-            $chunkHash = base64_encode(sha1($chunk, true));
-            break;
-          case "crc32":
-            $chunkHash = base64_encode(crc32($chunk));
-            break;
-          default:
-            /* Since algorithms are checked in regex, this should never happen */
-            throw new HttpError("Hash algorithm not supported");
-        }
+        $chunkHash = match ($algo) {
+          "md5" => base64_encode(md5($chunk, true)),
+          "sha1" => base64_encode(sha1($chunk, true)),
+          "crc32" => base64_encode(crc32($chunk)),
+          default => throw new HttpError("Hash algorithm not supported"),
+        };
         
         if ($chunkHash != $incomingHash) {
           $response->getBody()->write('Checksum Mismatch');
@@ -352,7 +369,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
       if (file_exists($importPath)) {
         $response->getBody()->write("Error filename '$targetFile' already exists!");
         return $response->withStatus(400);
-      };
+      }
       
       /* Migrate completed file to import folder */
       rename($filename, $importPath);
@@ -374,6 +391,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   
   /**
    * Deletes the upload and meta file, if they exist. This can be used by the client to cancel an upload.
+   * @throws Exception
    */
   function processDelete(Request $request, Response $response, array $args): Response {
     /* Return 404 if entry is not found */
@@ -404,6 +422,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   /**
    * Scans the import-directory for files. Directories are ignored.
    * @return array of all files in the top-level directory /../import
+   * @throws Exception
    */
   function scanImportDirectory(): array {
     $directory = Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/";
@@ -423,6 +442,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   
   /**
    * Retrieves the file and its size
+   * @throws Exception
    */
   function processGet(Request $request, Response $response, array $args): Response {
     $importFiles = $this->scanImportDirectory();
@@ -430,7 +450,7 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
   }
   
   static public function register(App $app): void {
-    $me = get_called_class();
+    $me = static::class;
     $baseUri = $me::getBaseUri();
     
     $app->group($baseUri, function (RouteCollectorProxy $group) use ($me) {
@@ -445,8 +465,8 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
         //TODO: Option for Tus-Max-Size: 1073741824
       });
       
-      $group->post('', $me . ":processPost")->setName($me . ":processPost");
-      $group->get('', $me . ":processGet")->setName($me . ":processGet");
+      $group->post('', [$me, 'processPost'])->setName($me . ":processPost");
+      $group->get('', [$me, 'processGet'])->setName($me . ":processGet");
     });
     
     $app->group($baseUri . "/{id:[0-9]{14}-[0-9a-f]{32}}", function (RouteCollectorProxy $group) use ($me) {
@@ -455,9 +475,9 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
         return $response;
       });
       
-      $group->map(['HEAD'], '', $me . ":processHead")->setName($me . ":processHead");
-      $group->patch('', $me . ":processPatch")->setName($me . ":processPatch");
-      $group->delete('', $me . ":processDelete")->setName($me . ":processDelete");
+      $group->map(['HEAD'], '', [$me, 'processHead'])->setName($me . ":processHead");
+      $group->patch('', [$me, 'processPatch'])->setName($me . ":processPatch");
+      $group->delete('', [$me, 'processDelete'])->setName($me . ":processDelete");
     });
   }
 }

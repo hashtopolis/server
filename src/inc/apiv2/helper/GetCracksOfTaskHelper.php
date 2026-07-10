@@ -2,10 +2,13 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\HTException;
 use JsonException;
@@ -40,9 +43,11 @@ class GetCracksOfTaskHelper extends AbstractHelperAPI {
   
   
   /**
+   * @param array $data
+   * @return AbstractModel|array|null
    * @throws HttpErrorException
    */
-  public function actionPost(array $data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     throw new HttpErrorException("getCracksOfTask has no POST");
   }
   
@@ -75,6 +80,8 @@ class GetCracksOfTaskHelper extends AbstractHelperAPI {
    * @throws JsonException
    * @throws ContainerExceptionInterface
    * @throws NotFoundExceptionInterface
+   * @throws HttpForbidden
+   * @throws Exception
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
@@ -113,6 +120,6 @@ class GetCracksOfTaskHelper extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\GetCracksOfTaskHelper:handleGet");
+    $app->get($baseUri, [self::class, 'handleGet']);
   }
 }

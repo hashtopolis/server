@@ -2,23 +2,27 @@
 
 namespace Hashtopolis\inc\notifications;
 
+use Exception;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DProxyTypes;
 use Hashtopolis\inc\SConfig;
 
 class HashtopolisNotificationChatBot extends HashtopolisNotification {
-  protected     $receiver;
-  public static $name = "ChatBot";
+  protected string     $receiver;
+  public static string $name = "ChatBot";
   
-  function getTemplateName() {
+  function getTemplateName(): string {
     return "notifications/chatbot";
   }
   
-  function getObjects() {
+  function getObjects(): array {
     return array();
   }
   
-  function sendMessage($message, $subject = "") {
+  /**
+   * @throws Exception
+   */
+  function sendMessage($message, $subject = ""): bool|string {
     $username = APP_NAME;
     $data = "payload=" . json_encode(array(
           "username" => $username,

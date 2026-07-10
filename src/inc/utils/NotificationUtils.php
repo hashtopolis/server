@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\models\NotificationSetting;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
@@ -23,12 +24,13 @@ class NotificationUtils {
    * @return NotificationSetting
    * @throws HTException
    * @throws HttpError
+   * @throws Exception
    */
   
   public static function createNotification(string $actionType, string $notification, string $receiver, array $post, ?User $user = null): NotificationSetting {
     if ($user == null) {
       $user = Login::getInstance()->getUser();
-    };
+    }
     
     $receiver = trim($receiver);
     if (!isset(HashtopolisNotification::getInstances()[$notification])) {
@@ -88,8 +90,9 @@ class NotificationUtils {
    * @param boolean $doToggle
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function setActive($notification, $isActive, $doToggle, $user) {
+  public static function setActive(int $notification, bool $isActive, bool $doToggle, User $user): void {
     $notification = NotificationUtils::getNotification($notification);
     if ($notification->getUserId() != $user->getId()) {
       throw new HTException("You have no access to this notification!");
@@ -112,8 +115,9 @@ class NotificationUtils {
    * @param int $notification
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function delete($notification, $user) {
+  public static function delete(int $notification, User $user): void {
     $notification = NotificationUtils::getNotification($notification);
     if ($notification->getUserId() != $user->getId()) {
       throw new HTException("You are not allowed to delete this notification!");
@@ -125,8 +129,9 @@ class NotificationUtils {
    * @param int $notification
    * @return NotificationSetting
    * @throws HTException
+   * @throws Exception
    */
-  public static function getNotification($notification) {
+  public static function getNotification(int $notification): NotificationSetting {
     $notification = Factory::getNotificationSettingFactory()->get($notification);
     if ($notification == null) {
       throw new HTException("Notification not found!");

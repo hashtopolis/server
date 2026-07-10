@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\handlers;
 
+use Exception;
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\DataSet;
 use Throwable;
@@ -42,7 +43,7 @@ class TaskHandler implements Handler {
     }
   }
   
-  public function handle($action) {
+  public function handle($action): void {
     try {
       switch ($action) {
         case DTaskAction::SET_BENCHMARK:
@@ -157,6 +158,7 @@ class TaskHandler implements Handler {
   
   /**
    * @throws HTException
+   * @throws Exception
    */
   private function create() {
     // new task creator
@@ -199,7 +201,7 @@ class TaskHandler implements Handler {
       PreprocessorUtils::getPreprocessor($usePreprocessor);
     }
     
-    if (strpos($cmdline, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+    if (!str_contains($cmdline, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) ?? "")) {
       UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . ")!");
       return;
     }
@@ -233,10 +235,6 @@ class TaskHandler implements Handler {
     }
     else if ($crackerBinary->getCrackerBinaryTypeId() != $crackerBinaryType->getId()) {
       UI::addMessage(UI::ERROR, "Non-matching cracker binary selection!");
-      return;
-    }
-    else if ($hashlist == null) {
-      UI::addMessage(UI::ERROR, "Invalid hashlist selected!");
       return;
     }
     else if ($chunk < 0 || $status < 0 || $chunk < $status) {
@@ -273,7 +271,7 @@ class TaskHandler implements Handler {
       $name = "HL" . $hashlistId . "_" . date("Ymd_Hi");
     }
     $forward = "tasks.php";
-    if ($hashlistId != null && $hashlist->getHexSalt() == 1 && strpos($cmdline, "--hex-salt") === false) {
+    if ($hashlistId != null && $hashlist->getHexSalt() == 1 && !str_contains($cmdline, "--hex-salt")) {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
     

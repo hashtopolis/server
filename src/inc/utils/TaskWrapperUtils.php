@@ -2,9 +2,11 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\Task;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -14,26 +16,36 @@ use Hashtopolis\inc\HTException;
 class TaskWrapperUtils {
   
   /**
-   * @param int $taskwrapperId
+   * @param int $taskWrapperId
    * @return Taskwrapper
    * @throws HTException
+   * @throws Exception
    */
-  public static function getTaskwrapper($taskwrapperId) {
-    $taskwrapper = Factory::getTaskWrapperFactory()->get($taskwrapperId);
-    if ($taskwrapper == null) {
+  public static function getTaskWrapper(int $taskWrapperId): TaskWrapper {
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($taskWrapperId);
+    if ($taskWrapper == null) {
       throw new HTException("Invalid taskwrapper!");
     }
-    return $taskwrapper;
+    return $taskWrapper;
   }
   
-  public static function updatePriority($taskWrapperId, $priority, $user) {
-    $taskwrapper = TaskWrapperUtils::getTaskwrapper($taskWrapperId);
+  /**
+   * @param int $taskWrapperId
+   * @param int $priority
+   * @param User $user
+   * @return void
+   * @throws HTException
+   * @throws HttpError
+   * @throws Exception
+   */
+  public static function updatePriority(int $taskWrapperId, int $priority, User $user): void {
+    $taskWrapper = TaskWrapperUtils::getTaskWrapper($taskWrapperId);
     
     // Priority is a bit special, when called on a 'NORMAL' running task 
     // the underlying Task object priority also gets updated
-    switch ($taskwrapper->getTaskType()) {
+    switch ($taskWrapper->getTaskType()) {
       case DTaskTypes::NORMAL:
-        $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $taskwrapper->getId(), "=", Factory::getTaskWrapperFactory());
+        $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $taskWrapper->getId(), "=", Factory::getTaskWrapperFactory());
         $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
         $joined = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
         $task = $joined[Factory::getTaskFactory()->getModelName()][0];

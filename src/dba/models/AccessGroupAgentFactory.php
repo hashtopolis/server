@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<AccessGroupAgent>
+ */
 class AccessGroupAgentFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "AccessGroupAgent";
@@ -37,83 +36,15 @@ class AccessGroupAgentFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return AccessGroupAgent
    */
-  function createObjectFromDict($pk, $dict): AccessGroupAgent {
+  function createObjectFromDict(array $dict): AccessGroupAgent {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
     return new AccessGroupAgent($dict['accessgroupagentid'], $dict['accessgroupid'], $dict['agentid']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return AccessGroupAgent|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): AccessGroupAgent|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), AccessGroupAgent::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, AccessGroupAgent::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?AccessGroupAgent
-   * @throws Exception
-   */
-  function get($pk): ?AccessGroupAgent {
-    return Util::cast(parent::get($pk), AccessGroupAgent::class);
-  }
-  
-  /**
-   * @param AccessGroupAgent $model
-   * @return ?AccessGroupAgent
-   * @throws Exception
-   */
-  function save($model): ?AccessGroupAgent {
-    return Util::cast(parent::save($model), AccessGroupAgent::class);
-  }
-
-  /**
-   * @param AccessGroupAgent $model
-   * @param array $arr key-value associations for update
-   * @return AccessGroupAgent
-   * @throws Exception
-   */
-  function mset($model, array $arr): AccessGroupAgent {
-    return Util::cast(parent::mset($model, $arr), AccessGroupAgent::class);
-  }
-
-  /**
-   * @param AccessGroupAgent $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return AccessGroupAgent
-   * @throws Exception
-   */
-  function set($model, string $key, $value): AccessGroupAgent {
-    return Util::cast(parent::set($model, $key, $value), AccessGroupAgent::class);
   }
 }

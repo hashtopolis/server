@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\ContainFilter;
@@ -17,6 +19,9 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<HealthCheckAgent>
+ */
 class HealthCheckAgentAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/healthcheckagents";
@@ -30,7 +35,11 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
     return HealthCheckAgent::class;
   }
   
-  protected function getSingleACL(User $user, object $object): bool {
+  /**
+   * @param HealthCheckAgent $object
+   * @throws Exception
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     $agent = Factory::getAgentFactory()->get($object->getAgentId());
     $accessGroupsAgent = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent));
@@ -38,6 +47,9 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
     return count(array_intersect($accessGroupsAgent, $accessGroupsUser)) > 0;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     
@@ -71,7 +83,7 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
   /**
    * @throws HttpError
    */
-  protected function createObject(array $object): int {
+  protected function createObject(array $data): int {
     throw new HttpError("HealthCheckAgents cannot be created via API");
   }
   
@@ -83,9 +95,10 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param HealthCheckAgent $object
    * @throws HttpError
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     /* Dummy code to implement abstract functions */
     throw new HttpError("HealthCheckAgents cannot be deleted via API");
   }

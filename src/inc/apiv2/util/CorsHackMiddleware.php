@@ -13,12 +13,18 @@ use Hashtopolis\inc\apiv2\error\HttpForbidden;
 
 /* This middleware will append the response header Access-Control-Allow-Methods with all allowed methods */
 class CorsHackMiddleware implements MiddlewareInterface {
+  /**
+   * @throws HttpForbidden
+   */
   public function process(Request $request, RequestHandler $handler): Response {
     $response = $handler->handle($request);
     
     return CorsHackMiddleware::addCORSHeaders($request, $response);
   }
   
+  /**
+   * @throws HttpForbidden
+   */
   public static function addCORSHeaders(Request $request, $response) {
     $routeContext = RouteContext::fromRequest($request);
     $routingResults = $routeContext->getRoutingResults();
@@ -28,14 +34,16 @@ class CorsHackMiddleware implements MiddlewareInterface {
 
     $response = CorsHackMiddleware::CheckCORS($request, $response);
     
-    $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
-    $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
-    
     // Optional: Allow Ajax CORS requests with Authorization header
     // $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-    return $response;
+    
+    $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
+    return $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
   }
-
+  
+  /**
+   * @throws HttpForbidden
+   */
   public static function CheckCORS($request, $response): Response {
     $requestHttpOrigin = $request->getHeaderLine('HTTP_ORIGIN');
     
@@ -55,7 +63,7 @@ class CorsHackMiddleware implements MiddlewareInterface {
       
       if ($requestHttpOriginUrl === $envBackendUrl || (in_array($requestHttpOriginUrl, $localhostSynonyms) && in_array($envBackendUrl, $localhostSynonyms))) {
         //Origin URL matches, now check the port too
-        if (substr($requestHttpOrigin, -1) !== "]" && str_contains($requestHttpOrigin, ":")) {
+        if (!str_ends_with($requestHttpOrigin, "]") && str_contains($requestHttpOrigin, ":")) {
           $requestHttpOriginPort = substr($requestHttpOrigin, strrpos($requestHttpOrigin, ":") + 1); //Needs to use strrpos in case of ipv6 because of multiple ':' characters
           $envBackendPort = substr($envBackend, strrpos($envBackend, ":") + 1);
           
@@ -63,7 +71,7 @@ class CorsHackMiddleware implements MiddlewareInterface {
             $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'));
           }
           else {
-            throw new HttpForbidden("CORS error: Allow-Origin port doesn't match: the value from the request is {$requestHttpOriginPort} but expected {$envFrontendPort} or {$envBackendPort}. Try switching the frontend port back to the default value (4200) in the docker-compose.");
+            throw new HttpForbidden("CORS error: Allow-Origin port doesn't match: the value from the request is $requestHttpOriginPort but expected $envFrontendPort or $envBackendPort. Try switching the frontend port back to the default value (4200) in the docker-compose.");
           }
         }
         else {
@@ -72,7 +80,7 @@ class CorsHackMiddleware implements MiddlewareInterface {
         }
       }
       else {
-        throw new HttpForbidden("CORS error: Allow-Origin URL doesn't match: the value from the request is {$requestHttpOriginUrl} but expected {$envBackendUrl}. Is the HASHTOPOLIS_BACKEND_URL in the .env file the correct one?");
+        throw new HttpForbidden("CORS error: Allow-Origin URL doesn't match: the value from the request is $requestHttpOriginUrl but expected $envBackendUrl. Is the HASHTOPOLIS_BACKEND_URL in the .env file the correct one?");
       }
     }
     else {

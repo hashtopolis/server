@@ -2,9 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryDeRegister;
-use Hashtopolis\inc\agent\PResponseDeRegister;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\utils\AgentUtils;
@@ -12,7 +13,10 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
 
 class APIDeRegisterAgent extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     //check required values
     if (!PQueryDeRegister::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::DEREGISTER, "Invalid de-registering query!");
@@ -29,8 +33,8 @@ class APIDeRegisterAgent extends APIBasic {
       $this->sendErrorResponse(PActions::DEREGISTER, "Error occured during de-registration: " . $e->getMessage());
     }
     $this->sendResponse(array(
-        PQueryDeRegister::ACTION => PActions::DEREGISTER,
-        PResponseDeRegister::RESPONSE => PValues::SUCCESS
+        PResponse::ACTION => PActions::DEREGISTER,
+        PResponse::RESPONSE => PValues::SUCCESS
       )
     );
   }

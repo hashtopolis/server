@@ -14,7 +14,7 @@ class USectionGroup extends UApi {
   const REMOVE_AGENT = "removeAgent";
   const REMOVE_USER  = "removeUser";
   
-  public function describe($constant) {
+  public function describe($constant): string {
     return match ($constant) {
       USectionGroup::LIST_GROUPS => "List all groups",
       USectionGroup::GET_GROUP => "Get details of a group",

@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\defines\DFileType;
@@ -21,6 +22,9 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<File>
+ */
 class FileAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/files";
@@ -30,12 +34,19 @@ class FileAPI extends AbstractModelAPI {
     return File::class;
   }
   
-  protected function getSingleACL(User $user, object $object): bool {
+  /**
+   * @param File $object
+   * @throws Exception
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
     return in_array($object->getAccessGroupId(), $accessGroupsUser);
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     
@@ -65,10 +76,16 @@ class FileAPI extends AbstractModelAPI {
     ];
   }
   
+  /**
+   * @throws Exception
+   */
   static protected function getImportPath(): string {
     return Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . '/';
   }
   
+  /**
+   * @throws Exception
+   */
   static protected function getFilesPath(): string {
     return Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . '/';
   }
@@ -79,6 +96,7 @@ class FileAPI extends AbstractModelAPI {
   /**
    * @throws HTException
    * @throws HttpError
+   * @throws Exception
    */
   protected function createObject(array $data): int {
     /* Validate target filename */
@@ -146,7 +164,7 @@ class FileAPI extends AbstractModelAPI {
         $this->getImportPath() . $data["sourceData"],
         $this->getImportPath() . $data[File::FILENAME]
       );
-    };
+    }
     
     try {
       /* Create the file, calculating (e.g. lines) and checking validity (e.g. file exists) */
@@ -159,7 +177,7 @@ class FileAPI extends AbstractModelAPI {
           $this->getImportPath() . $data[File::FILENAME],
           $this->getImportPath() . $data["sourceData"]
         );
-      };
+      }
       throw $e;
     }
     
@@ -187,9 +205,10 @@ class FileAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param File $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     FileUtils::delete($object->getId(), $this->getCurrentUser());
   }
 }

@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQuerySendProgress;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseSendProgress;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\DataSet;
@@ -44,7 +46,10 @@ use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;
 
 class APISendProgress extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     if (!PQuerySendProgress::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Invalid progress query!");
     }
@@ -100,9 +105,9 @@ class APISendProgress extends APIBasic {
       $isSuperhashlist = true;
     }
     $hashlists = Util::checkSuperHashlist($hashlist);
-    foreach ($hashlists as $hashlist) {
-      if ($hashlist->getIsSecret() > $this->agent->getIsTrusted()) {
-        DServerLog::log(DServerLog::TRACE, "For some reason agent was working on a hashlist he is not allowed to (probabily permission change)", [$this->agent, $task, $hashlist]);
+    foreach ($hashlists as $hl) {
+      if ($hl->getIsSecret() > $this->agent->getIsTrusted()) {
+        DServerLog::log(DServerLog::TRACE, "For some reason agent was working on a hashlist he is not allowed to (probabily permission change)", [$this->agent, $task, $hl]);
         $this->sendErrorResponse(PActions::SEND_PROGRESS, "Unknown Error. The API does not trust you with more information");
       }
     }
@@ -197,8 +202,8 @@ class APISendProgress extends APIBasic {
     // reset values
     $skipped = 0;
     $cracked = array();
-    foreach ($hashlists as $hashlist) {
-      $cracked[$hashlist->getId()] = 0;
+    foreach ($hashlists as $hl) {
+      $cracked[$hl->getId()] = 0;
     }
     
     // process solved hashes, should there be any
@@ -212,8 +217,8 @@ class APISendProgress extends APIBasic {
     $zaps = [];
     
     $isNewWPA = false;
-    foreach ($hashlists as $hashlist) {
-      if ($hashlist->getHashTypeId() == 22000) {
+    foreach ($hashlists as $hl) {
+      if ($hl->getHashTypeId() == 22000) {
         $isNewWPA = true;
         break;
       }
@@ -531,8 +536,8 @@ class APISendProgress extends APIBasic {
           
           //stop agent
           $this->sendResponse(array(
-              PResponseSendProgress::ACTION => PActions::SEND_PROGRESS,
-              PResponseSendProgress::RESPONSE => PValues::SUCCESS,
+              PResponse::ACTION => PActions::SEND_PROGRESS,
+              PResponse::RESPONSE => PValues::SUCCESS,
               PResponseSendProgress::NUM_CRACKED => $sumCracked,
               PResponseSendProgress::NUM_SKIPPED => $skipped,
               PResponseSendProgress::AGENT_COMMAND => "stop"
@@ -574,8 +579,8 @@ class APISendProgress extends APIBasic {
     }
     Util::cleaning();
     $this->sendResponse(array(
-        PResponseSendProgress::ACTION => PActions::SEND_PROGRESS,
-        PResponseSendProgress::RESPONSE => PValues::SUCCESS,
+        PResponse::ACTION => PActions::SEND_PROGRESS,
+        PResponse::RESPONSE => PValues::SUCCESS,
         PResponseSendProgress::NUM_CRACKED => $sumCracked,
         PResponseSendProgress::NUM_SKIPPED => $skipped,
         PResponseSendProgress::HASH_ZAPS => $toZap

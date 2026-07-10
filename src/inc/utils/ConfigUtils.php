@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\User;
@@ -29,8 +30,9 @@ class ConfigUtils {
    * @param Config $config
    * @param boolean $new
    * @throws HTException
+   * @throws Exception
    */
-  public static function set($config, $new) {
+  public static function set(Config $config, bool $new): void {
     if ($config->getItem() == DConfig::MULTICAST_ENABLE && $config->getValue()) {
       // multicast was ticked to enable -> start runner
       RunnerUtils::startService();
@@ -52,8 +54,9 @@ class ConfigUtils {
    * @param string $item
    * @return Config
    * @throws HTException
+   * @throws Exception
    */
-  public static function get($item) {
+  public static function get(string $item): Config {
     $qF = new QueryFilter(Config::ITEM, $item, "=");
     $config = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
     if ($config == null) {
@@ -64,21 +67,27 @@ class ConfigUtils {
   
   /**
    * @return ConfigSection[]
+   * @throws Exception
    */
-  public static function getSections() {
+  public static function getSections(): array {
     return Factory::getConfigSectionFactory()->filter([]);
   }
   
   /**
    * @return Config[]
+   * @throws Exception
    */
-  public static function getAll() {
+  public static function getAll(): array {
     return Factory::getConfigFactory()->filter([]);
   }
   
   const DEFAULT_CONFIG_SECTION = 5;
   
-  public static function updateSingleConfig($id, $attributes) {
+  /**
+   * @throws HTException
+   * @throws Exception
+   */
+  public static function updateSingleConfig($id, $attributes): void {
     $currentConfig = Factory::getConfigFactory()->get($id);
     if (is_null($currentConfig)) {
       throw new HTException("No config with this ID!");
@@ -100,7 +109,7 @@ class ConfigUtils {
     if (isset($lengthLimits[$name])) {
       $limit = intval($newValue);
       if (!Util::{$lengthLimits[$name]}($limit)) {
-        throw new HTException("Failed to update {$name}!");
+        throw new HTException("Failed to update $name!");
       }
     }
     
@@ -112,11 +121,12 @@ class ConfigUtils {
   /**
    * @param array $arr id => [attributes]
    * @throws HTException
+   * @throws Exception
    *
    *  This is a new updateConfigs function that unlike the updateConfig is compliant
    *  for the APIv2
    */
-  public static function updateConfigs($arr) {
+  public static function updateConfigs(array $arr): void {
     foreach ($arr as $id => $attributes) {
       self::updateSingleConfig($id, $attributes);
     }
@@ -127,10 +137,11 @@ class ConfigUtils {
   /**
    * @param array $arr
    * @throws HTException
+   * @throws Exception
    */
-  public static function updateConfig($arr) {
+  public static function updateConfig(array $arr): void {
     foreach ($arr as $item => $val) {
-      if (substr($item, 0, 7) == "config_") {
+      if (str_starts_with($item, "config_")) {
         $name = substr($item, 7);
         if (SConfig::getInstance()->getVal($name) == $val) {
           continue; // the value was not changed, so we don't need to update it
@@ -167,6 +178,7 @@ class ConfigUtils {
   
   /**
    * @return int[]
+   * @throws Exception
    */
   public static function rebuildCache(): array {
     $correctedChunks = 0;
@@ -193,7 +205,7 @@ class ConfigUtils {
         $total_cracked += $count;
         if ($count != $chunk->getCracked()) {
           $correctedChunks++;
-          $chunk = Factory::getChunkFactory()->set($chunk, Chunk::CRACKED, $count);
+          Factory::getChunkFactory()->set($chunk, Chunk::CRACKED, $count);
         }
       }
       if ($total_cracked != $taskWrapper->getCracked()) {
@@ -252,8 +264,9 @@ class ConfigUtils {
   
   /**
    * @throws HTMessages
+   * @throws Exception
    */
-  public static function scanFiles() {
+  public static function scanFiles(): void {
     $allOk = true;
     $messages = [];
     $files = Factory::getFileFactory()->filter([]);
@@ -282,8 +295,9 @@ class ConfigUtils {
   
   /**
    * @param User $user
+   * @throws Exception
    */
-  public static function clearAll($user) {
+  public static function clearAll(User $user): void {
     Factory::getAgentFactory()->getDB()->beginTransaction();
     Factory::getHashFactory()->massDeletion([]);
     Factory::getHashBinaryFactory()->massDeletion([]);

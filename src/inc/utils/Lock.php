@@ -8,8 +8,8 @@ class Lock {
   const CHUNKING = "chunking.lock";
   const LOG      = "log.lock";
   
-  private $lockFile;
-  private $lock;
+  private string $lockFile;
+  private        $lock;
   
   /**
    * Lock constructor.
@@ -29,7 +29,7 @@ class Lock {
   /**
    * @throws Exception
    */
-  public function getLock() {
+  public function getLock(): void {
     // Get exclusive lock (blocking)
     $ret = flock($this->lock, LOCK_EX);
     if ($ret === false) {
@@ -40,7 +40,7 @@ class Lock {
   /**
    * @throws Exception
    */
-  public function release() {
+  public function release(): void {
     /* Release the lock */
     $ret = flock($this->lock, LOCK_UN);
     if ($ret === false) {

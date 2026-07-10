@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryDownloadBinary;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseBinaryDownload;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\agent\PValuesDownloadBinaryType;
@@ -14,7 +16,10 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 
 class APIDownloadBinary extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     if (!PQueryDownloadBinary::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Invalid download query!");
     }
@@ -29,23 +34,21 @@ class APIDownloadBinary extends APIBasic {
         $filename = "7zr" . Util::getFileExtension($this->agent->getOs());
         $path = Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/static/" . $filename;
         $this->sendResponse(array(
-            PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
-            PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
+            PResponse::ACTION => PActions::DOWNLOAD_BINARY,
+            PResponse::RESPONSE => PValues::SUCCESS,
             PResponseBinaryDownload::EXECUTABLE => $path
           )
         );
-        break;
       case PValuesDownloadBinaryType::UFTPD:
         DServerLog::log(DServerLog::TRACE, "Agent " . $this->agent->getId() . " downloaded uftpd binary");
         $filename = "uftpd" . Util::getFileExtension($this->agent->getOs());
         $path = Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/static/" . $filename;
         $this->sendResponse(array(
-            PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
-            PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
+            PResponse::ACTION => PActions::DOWNLOAD_BINARY,
+            PResponse::RESPONSE => PValues::SUCCESS,
             PResponseBinaryDownload::EXECUTABLE => $path
           )
         );
-        break;
       case PValuesDownloadBinaryType::CRACKER:
         $crackerBinary = Factory::getCrackerBinaryFactory()->get($QUERY[PQueryDownloadBinary::BINARY_VERSION_ID]);
         if ($crackerBinary == null) {
@@ -56,14 +59,13 @@ class APIDownloadBinary extends APIBasic {
         
         $ext = Util::getFileExtension($this->agent->getOs());
         $this->sendResponse(array(
-            PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
-            PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
+            PResponse::ACTION => PActions::DOWNLOAD_BINARY,
+            PResponse::RESPONSE => PValues::SUCCESS,
             PResponseBinaryDownload::URL => $crackerBinary->getDownloadUrl(),
             PResponseBinaryDownload::NAME => $crackerBinaryType->getTypeName(),
             PResponseBinaryDownload::EXECUTABLE => $crackerBinary->getBinaryName() . $ext
           )
         );
-        break;
       case PValuesDownloadBinaryType::PRINCE:
       case PValuesDownloadBinaryType::PREPROCESSOR:
         $preprocessor = Factory::getPreprocessorFactory()->get($QUERY[PQueryDownloadBinary::PREPROCESSOR_ID]);
@@ -74,8 +76,8 @@ class APIDownloadBinary extends APIBasic {
         
         $ext = Util::getFileExtension($this->agent->getOs());
         $this->sendResponse(array(
-            PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
-            PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
+            PResponse::ACTION => PActions::DOWNLOAD_BINARY,
+            PResponse::RESPONSE => PValues::SUCCESS,
             PResponseBinaryDownload::URL => $preprocessor->getUrl(),
             PResponseBinaryDownload::NAME => $preprocessor->getName(),
             PResponseBinaryDownload::EXECUTABLE => $preprocessor->getBinaryName() . $ext,
@@ -84,7 +86,6 @@ class APIDownloadBinary extends APIBasic {
             PResponseBinaryDownload::LIMIT_CMD => $preprocessor->getLimitCommand()
           )
         );
-        break;
       default:
         DServerLog::log(DServerLog::WARNING, "Agent " . $this->agent->getId() . " requested invalid binary download: " . $QUERY[PQueryDownloadBinary::BINARY_TYPE]);
         $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Unknown download type!");

@@ -13,5 +13,5 @@ abstract class PQuery { // include only generalized query values
    * @param $QUERY array the given query
    * @return bool true on valid, false if not
    */
-  abstract static function isValid($QUERY);
+  abstract static function isValid(array $QUERY): bool;
 }

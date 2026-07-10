@@ -8,7 +8,7 @@ use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PValues;
 
 class APITestConnection extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  public function execute(array $QUERY = array()): void {
     $this->sendResponse(array(
         PResponse::ACTION => PActions::TEST_CONNECTION,
         PResponse::RESPONSE => PValues::SUCCESS

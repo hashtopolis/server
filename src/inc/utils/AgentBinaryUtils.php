@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\models\AgentBinary;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\User;
@@ -23,6 +24,7 @@ class AgentBinaryUtils {
    * @param User $user
    * @return AgentBinary
    * @throws HttpError
+   * @throws Exception
    */
   public static function newBinary(string $type, string $os, string $filename, string $version, string $updateTrack, User $user): AgentBinary {
     if (strlen($version) == 0) {
@@ -52,8 +54,9 @@ class AgentBinaryUtils {
    * @param string $updateTrack
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function editBinary($binaryId, $type, $os, $filename, $version, $updateTrack, $user) {
+  public static function editBinary(int $binaryId, string $type, string $os, string $filename, string $version, string $updateTrack, User $user): void {
     if (strlen($version) == 0) {
       throw new HTException("Version cannot be empty!");
     }
@@ -84,7 +87,11 @@ class AgentBinaryUtils {
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
   }
   
-  public static function editUpdateTracker($binaryId, $updateTracker, $user) {
+  /**
+   * @throws HTException
+   * @throws Exception
+   */
+  public static function editUpdateTracker($binaryId, $updateTracker, $user): void {
     $binary = AgentBinaryUtils::getBinary($binaryId);
     if ($updateTracker != $binary->getUpdateTrack()) {
       $binary = Factory::getAgentBinaryFactory()->mset($binary, [
@@ -99,7 +106,11 @@ class AgentBinaryUtils {
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $binary->getFilename() . " was updated!");
   }
   
-  public static function editName($binaryId, $filename, $user) {
+  /**
+   * @throws HTException
+   * @throws Exception
+   */
+  public static function editName($binaryId, $filename, $user): void {
     if (!file_exists(dirname(__FILE__) . "/../../bin/" . basename($filename))) {
       throw new HTException("Provided filename does not exist!");
     }
@@ -108,7 +119,11 @@ class AgentBinaryUtils {
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
   }
   
-  public static function editType($binaryId, $type, $user) {
+  /**
+   * @throws HTException
+   * @throws Exception
+   */
+  public static function editType($binaryId, $type, $user): void {
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     
     $qF1 = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");
@@ -124,8 +139,9 @@ class AgentBinaryUtils {
   /**
    * @param int $binaryId
    * @throws HTException
+   * @throws Exception
    */
-  public static function deleteBinary($binaryId) {
+  public static function deleteBinary(int $binaryId): void {
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     Factory::getAgentBinaryFactory()->delete($agentBinary);
     unlink(dirname(__FILE__) . "/../../bin/" . $agentBinary->getFilename());
@@ -135,8 +151,9 @@ class AgentBinaryUtils {
    * @param int $binaryId
    * @return AgentBinary
    * @throws HTException
+   * @throws Exception
    */
-  public static function getBinary($binaryId) {
+  public static function getBinary(int $binaryId): AgentBinary {
     $agentBinary = Factory::getAgentBinaryFactory()->get($binaryId);
     if ($agentBinary == null) {
       throw new HTException("Binary does not exist!");
@@ -147,8 +164,9 @@ class AgentBinaryUtils {
   /**
    * @param int $binaryId
    * @throws HTException
+   * @throws Exception
    */
-  public static function executeUpgrade($binaryId) {
+  public static function executeUpgrade(int $binaryId): void {
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     // check if there is really an update available
     if (!AgentBinaryUtils::checkUpdate($binaryId)) {
@@ -179,18 +197,19 @@ class AgentBinaryUtils {
     }
     
     // update version number of agent and reset flag
-    $agentBinary = Factory::getAgentBinaryFactory()->mset($agentBinary, [AgentBinary::VERSION => $agentBinary->getUpdateAvailable(), AgentBinary::UPDATE_AVAILABLE => '']);
+    Factory::getAgentBinaryFactory()->mset($agentBinary, [AgentBinary::VERSION => $agentBinary->getUpdateAvailable(), AgentBinary::UPDATE_AVAILABLE => '']);
   }
   
   /**
    * @param int $binaryId
    * @return boolean|string
    * @throws HTException
+   * @throws Exception
    */
-  public static function checkUpdate($binaryId) {
+  public static function checkUpdate(int $binaryId): bool|string {
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     $update = AgentBinaryUtils::getAgentUpdate($agentBinary->getBinaryType(), $agentBinary->getUpdateTrack());
-    Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::UPDATE_AVAILABLE, ($update) ? $update : '');
+    Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::UPDATE_AVAILABLE, ($update) ?: '');
     return $update;
   }
   
@@ -202,7 +221,7 @@ class AgentBinaryUtils {
    * @return string
    * @throws HTException
    */
-  public static function getLatestVersion($agent, $track) {
+  public static function getLatestVersion(string $agent, string $track): string {
     $curl = curl_init();
     curl_setopt_array($curl, array(
         CURLOPT_RETURNTRANSFER => 1,
@@ -223,8 +242,9 @@ class AgentBinaryUtils {
    * @param string $track
    * @return boolean|string
    * @throws HTException
+   * @throws Exception
    */
-  public static function getAgentUpdate($agent, $track) {
+  public static function getAgentUpdate(string $agent, string $track): bool|string {
     $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $agent, "=");
     $agent = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($agent == null) {

@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\models\Hashlist;
@@ -16,8 +17,9 @@ class HashtypeUtils {
   /**
    * @param int $hashtypeId
    * @throws HTException
+   * @throws Exception
    */
-  public static function deleteHashtype($hashtypeId) {
+  public static function deleteHashtype(int $hashtypeId): void {
     $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
     if ($hashtype == null) {
       throw new HTException("Invalid hashtype!");
@@ -40,6 +42,7 @@ class HashtypeUtils {
    * @param User $user
    * @return HashType
    * @throws HttpError
+   * @throws Exception
    */
   public static function addHashtype(int $hashtypeId, string $description, int $isSalted, bool $isSlowHash, User $user): HashType {
     $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);

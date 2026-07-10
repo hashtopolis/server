@@ -2,11 +2,15 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\ConfigSection;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 
 
+/**
+ * @extends AbstractModelAPI<ConfigSection>
+ */
 class ConfigSectionAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/configsections";
@@ -35,9 +39,10 @@ class ConfigSectionAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param ConfigSection $object
    * @throws HttpError
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     throw new HttpError("ConfigSections cannot be deleted via API");
   }
 }

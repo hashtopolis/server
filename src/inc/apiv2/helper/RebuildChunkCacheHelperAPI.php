@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\ConfigUtils;
 use Hashtopolis\dba\models\Config;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
@@ -29,10 +31,11 @@ class RebuildChunkCacheHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to recount files for when there is size mismatch
-   * @param $data
-   * @return object|array|null
+   * @param $data array
+   * @return AbstractModel|array|null
+   * @throws Exception
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     $result = ConfigUtils::rebuildCache();
     $response = $this->getResponse();
     $response["correctedChunks"] = $result[0];

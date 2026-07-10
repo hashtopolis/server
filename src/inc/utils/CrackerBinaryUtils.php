@@ -2,7 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
-use Hashtopolis;
+use Exception;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
@@ -14,8 +14,9 @@ class CrackerBinaryUtils {
    * @param int $crackerBinaryTypeId
    * @return CrackerBinary|null
    * @throws HTException
+   * @throws Exception
    */
-  public static function getNewestVersion($crackerBinaryTypeId) {
+  public static function getNewestVersion(int $crackerBinaryTypeId): ?CrackerBinary {
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $crackerBinaryTypeId, "=");
     $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
     /** @var ?CrackerBinary $newest */

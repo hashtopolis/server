@@ -3,27 +3,19 @@
 namespace Hashtopolis\dba;
 
 class ConcatLikeFilterInsensitive extends Filter {
-  private $value;
-  /**
-   * @var AbstractModelFactory
-   */
-  private $overrideFactory;
+  private string $value;
 
   /**
    * @var ConcatColumn[] $columns
    */
   private array $columns;
   
-  function __construct($columns, $value, $overrideFactory = null) {
+  function __construct($columns, $value) {
     $this->columns = $columns;
     $this->value = $value;
-    $this->overrideFactory = $overrideFactory;
   }
   
   function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
-    if ($this->overrideFactory != null) {
-      $factory = $this->overrideFactory;
-    }
     $mapped_columns = [];
     foreach($this->columns as $column) {
       $columnFactory = $column->getFactory();
@@ -32,7 +24,7 @@ class ConcatLikeFilterInsensitive extends Filter {
     return "LOWER(" . "CONCAT(" . implode(", ", $mapped_columns) . ")" . ") LIKE LOWER(?)";
   }
   
-  function getValue() {
+  function getValue(): string {
     return $this->value;
   }
   

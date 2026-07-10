@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
@@ -16,6 +18,9 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<Hash>
+ */
 class HashAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/hashes";
@@ -29,13 +34,20 @@ class HashAPI extends AbstractModelAPI {
     return Hash::class;
   }
   
-  protected function getSingleACL(User $user, object $object): bool {
+  /**
+   * @param Hash $object
+   * @throws Exception
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     $hashlist = Factory::getHashlistFactory()->get($object->getHashlistId());
     
     return in_array($hashlist->getAccessGroupId(), $accessGroupsUser);
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     
@@ -81,9 +93,10 @@ class HashAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Hash $object
    * @throws HttpError
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     throw new HttpError("Hashes cannot be deleted via API");
   }
 }

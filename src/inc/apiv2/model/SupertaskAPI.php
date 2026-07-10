@@ -2,21 +2,24 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Pretask;
 use Hashtopolis\dba\models\Supertask;
 use Hashtopolis\dba\models\SupertaskPretask;
-
-
-use Exception;
 use Hashtopolis\dba\QueryFilter;
-use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Hashtopolis\inc\utils\SupertaskUtils;
 
 
+/**
+ * @extends AbstractModelAPI<Supertask>
+ */
 class SupertaskAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/supertasks";
@@ -47,6 +50,9 @@ class SupertaskAPI extends AbstractModelAPI {
     ];
   }
   
+  /**
+   * @throws HttpError
+   */
   protected function createObject(array $data): int {
     /* Use quirk on 'pretasks' since this is casted to DB representation  */
     $supertask = SupertaskUtils::createSupertask(
@@ -57,8 +63,13 @@ class SupertaskAPI extends AbstractModelAPI {
   }
   
   /**
-   * @throws HttpError
+   * @param Request $request
+   * @param array $data
+   * @param array $args
    * @throws HTException
+   * @throws HttpError
+   * @throws ResourceNotFoundError
+   * @throws Exception
    */
   public function updateToManyRelationship(Request $request, array $data, array $args): void {
     $id = $args['id'];
@@ -105,17 +116,19 @@ class SupertaskAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Supertask $object
    * @throws Exception
    */
-  protected function getAggregateAmountPretasks(object $object): int {
+  protected function getAggregateAmountPretasks(AbstractModel $object): int {
     $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $object->getId(), "=", Factory::getSupertaskPretaskFactory());
     return Factory::getSupertaskPretaskFactory()->countFilter([Factory::FILTER => $qF]);
   }
 
   /**
+   * @param Supertask $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     SupertaskUtils::deleteSupertask($object->getId());
   }
 }

@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 use ReflectionMethod;
+use ReflectionObject;
 use Slim\Routing\RouteCollectorProxy;
 
 use Middlewares\Utils\HttpErrorException;
@@ -100,7 +101,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
     $routes = $app->getRouteCollector()->getRoutes();
     foreach ($routes as $route) {
       /* Quirk to receive className, since it is hidden in a protected variable */
-      $reflectionOfRoute = new \ReflectionObject($route);
+      $reflectionOfRoute = new ReflectionObject($route);
       $protectedCallable = $reflectionOfRoute->getProperty('callable');
       $reflectionCallable = ($protectedCallable->getValue($route));
       
@@ -110,19 +111,24 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       $path = $route->getPattern();
       $method = strtolower($route->getMethods()[0]);
       
-      if (!is_string($reflectionCallable)) {
+      if (is_string($reflectionCallable)) {
+        $explodedCallable = explode(':', $reflectionCallable);
+        if (count($explodedCallable) !== 2) {
+          continue;
+        }
+        [$apiClassName, $apiMethod] = $explodedCallable;
+      } elseif (is_array($reflectionCallable)
+        && isset($reflectionCallable[0], $reflectionCallable[1])
+        && is_string($reflectionCallable[0]) && is_string($reflectionCallable[1])) {
+        [$apiClassName, $apiMethod] = $reflectionCallable;
+      } else {
         /* OPTIONS (CORS) have an function callable, ignore for now */
         continue;
       }
-      
-      /* Retrieve parameters */
-      $explodedCallable = explode(':', $reflectionCallable);
-      $apiClassName = $explodedCallable[0];
-      $apiMethod = $explodedCallable[1];
       $class = new $apiClassName($app->getContainer());
 
       
-      $path = preg_replace('/\{([^:}]+):(.+)\}/', '{$1}', $path);
+      $path = preg_replace('/\{([^:}]+):(.+)}/', '{$1}', $path);
       if (!($class instanceof AbstractModelAPI)) {
         $name_parts = explode('\\', $class::class);
         $name = end($name_parts);
@@ -193,7 +199,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           ]
         ];
         continue;
-      };
+      }
       
       /* Quick to find out if single parameter object is used */
       $singleObject = ((strstr($path, '/{id}')) !== false);
@@ -631,7 +637,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
             ],
             "description" => "Items to include. Comma seperated"
           ];
-        };
+        }
       }
       else {
         if ($method == 'get') {
@@ -727,7 +733,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
         }
       }
       $paths[$path][$method]["parameters"] = $parameters;
-    };
+    }
     
     /**
      * Build static entries

@@ -2,6 +2,9 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\utils\AccessGroupUtils;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupAgent;
@@ -12,6 +15,9 @@ use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\HTException;
 
 
+/**
+ * @extends AbstractModelAPI<AccessGroup>
+ */
 class AccessGroupAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/accessgroups";
@@ -53,7 +59,10 @@ class AccessGroupAPI extends AbstractModelAPI {
   }
   
   /**
-   * @throws HTException
+   * @param array $data
+   * @return int
+   * @throws HttpConflict
+   * @throws HttpError
    */
   protected function createObject(array $data): int {
     $object = AccessGroupUtils::createGroup($data[AccessGroup::GROUP_NAME]);
@@ -61,9 +70,10 @@ class AccessGroupAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param AccessGroup $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     AccessGroupUtils::deleteGroup($object->getId());
   }
 }

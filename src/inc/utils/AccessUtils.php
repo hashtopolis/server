@@ -2,7 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
-use Hashtopolis\dba\AbstractModel;
+use Exception;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\AccessGroupUser;
@@ -23,6 +23,7 @@ class AccessUtils {
    * @param Hashlist[]|Hashlist $hashlists
    * @param User $user
    * @return boolean
+   * @throws Exception
    */
   public static function userCanAccessHashlists(Hashlist|array $hashlists, User $user): bool {
     if (!is_array($hashlists)) {
@@ -73,6 +74,7 @@ class AccessUtils {
    * @param $agent Agent
    * @param $user User
    * @return bool true if user has access to agent
+   * @throws Exception
    */
   public static function userCanAccessAgent(Agent $agent, User $user): bool {
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
@@ -94,6 +96,7 @@ class AccessUtils {
    * @param TaskWrapper $taskWrapper
    * @param User $user
    * @return boolean
+   * @throws Exception
    */
   public static function userCanAccessTask(TaskWrapper $taskWrapper, User $user): bool {
     $accessGroupIds = Util::getAccessGroupIds($user->getId());
@@ -107,6 +110,7 @@ class AccessUtils {
    * @param File $file
    * @param User $user
    * @return boolean
+   * @throws Exception
    */
   public static function userCanAccessFile(File $file, User $user): bool {
     $accessGroupIds = Util::getAccessGroupIds($user->getId());
@@ -140,6 +144,7 @@ class AccessUtils {
   /**
    * @param $user User
    * @return AccessGroup[]
+   * @throws Exception
    */
   public static function getAccessGroupsOfUser(User $user): array {
     $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", Factory::getAccessGroupUserFactory());
@@ -151,6 +156,7 @@ class AccessUtils {
   /**
    * @param Agent $agent
    * @return AccessGroup[]
+   * @throws Exception
    */
   public static function getAccessGroupsOfAgent(Agent $agent): array {
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
@@ -163,6 +169,7 @@ class AccessUtils {
    * Gets the first access group (which is the default access group. If it does not exist, it created the default access group.
    *
    * @return AccessGroup
+   * @throws Exception
    */
   public static function getOrCreateDefaultAccessGroup(): AccessGroup {
     $accessGroup = Factory::getAccessGroupFactory()->get(1);
@@ -178,6 +185,7 @@ class AccessUtils {
    * @param $agent Agent
    * @param $task Task
    * @return bool true if agent is allowed to access task
+   * @throws Exception
    */
   public static function agentCanAccessTask(Agent $agent, Task $task): bool {
     // load access groups of agent

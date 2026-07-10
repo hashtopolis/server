@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\inc\DataSet;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\QueryFilter;
@@ -26,8 +27,9 @@ class FileUtils {
    * @param User $user
    * @param int[] $checkedFilesIds
    * @return array
+   * @throws Exception
    */
-  public static function loadFilesByCategory($user, $checkedFilesIds) {
+  public static function loadFilesByCategory(User $user, array $checkedFilesIds): array {
     $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     $oF = new OrderFilter(File::FILENAME, "ASC");
     $qF = new ContainFilter(File::ACCESS_GROUP_ID, $accessGroupIds);
@@ -61,8 +63,9 @@ class FileUtils {
    * @param int $fileType
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function setFileType($fileId, $fileType, $user) {
+  public static function setFileType(int $fileId, int $fileType, User $user): void {
     $file = FileUtils::getFile($fileId, $user);
     if ($fileType < DFileType::WORDLIST || $fileType > DFileType::OTHER) {
       throw new HTException("Invalid file type!");
@@ -73,8 +76,9 @@ class FileUtils {
   /**
    * @param User $user
    * @return File[]
+   * @throws Exception
    */
-  public static function getFiles($user) {
+  public static function getFiles(User $user): array {
     $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
     $oF = new OrderFilter(File::FILE_ID, "ASC");
@@ -87,8 +91,9 @@ class FileUtils {
    * @param int $fileId
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function delete($fileId, $user) {
+  public static function delete(int $fileId, User $user): void {
     $file = FileUtils::getFile($fileId, $user);
     
     $qF = new QueryFilter(FileTask::FILE_ID, $file->getId(), "=");
@@ -111,13 +116,14 @@ class FileUtils {
   
   /**
    * @param string $source
-   * @param array $file
+   * @param array|string $file
    * @param array $post
    * @param string $view
    * @return integer
-   * @throws HTException
+   * @throws HttpError
+   * @throws Exception
    */
-  public static function add($source, $file, $post, $view) {
+  public static function add(string $source, array|string $file, array $post, string $view): int {
     $fileCount = 0;
     
     $accessGroup = Factory::getAccessGroupFactory()->get($post['accessGroupId']);
@@ -157,10 +163,9 @@ class FileUtils {
             continue;
           }
           
-          $toMove = array();
-          foreach ($uploaded as $key => $upload) {
-            $toMove[$key] = $upload[$i];
-          }
+          $toMove = array_map(function ($upload) use ($i) {
+            return $upload[$i];
+          }, $uploaded);
           if ($realname[0] == '.') {
             $realname[0] = "_";
           }
@@ -249,11 +254,12 @@ class FileUtils {
    * @param int $isSecret
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function switchSecret($fileId, $isSecret, $user) {
+  public static function switchSecret(int $fileId, int $isSecret, User $user): void {
     // switch global file secret state
     $file = FileUtils::getFile($fileId, $user);
-    Factory::getFileFactory()->set($file, File::IS_SECRET, intval($isSecret));
+    Factory::getFileFactory()->set($file, File::IS_SECRET, $isSecret);
   }
   
   /**
@@ -262,8 +268,9 @@ class FileUtils {
    * @param int $accessGroupId
    * @param User $user
    * @throws HTException
+   * @throws Exception
    */
-  public static function saveChanges($fileId, $filename, $accessGroupId, $user) {
+  public static function saveChanges(int $fileId, string $filename, int $accessGroupId, User $user): void {
     $file = FileUtils::getFile($fileId, $user);
     $newName = str_replace(" ", "_", htmlentities($filename, ENT_QUOTES, "UTF-8"));
     $newName = str_replace("/", "_", str_replace("\\", "_", $newName));
@@ -282,9 +289,6 @@ class FileUtils {
     
     if ($accessGroupId > 0) {
       $accessGroup = AccessGroupUtils::getGroup($accessGroupId);
-      if ($accessGroup == null) {
-        throw new HTException("Invalid access group Id!");
-      }
       $file = Factory::getFileFactory()->set($file, File::ACCESS_GROUP_ID, $accessGroup->getId());
     }
     
@@ -331,8 +335,9 @@ class FileUtils {
    * @param User $user
    * @return File
    * @throws HTException
+   * @throws Exception
    */
-  public static function getFile($fileId, $user) {
+  public static function getFile(int $fileId, User $user): File {
     $accessGroups = AccessUtils::getAccessGroupsOfUser($user);
     $accessGroupIds = Util::arrayOfIds($accessGroups);
     
@@ -349,8 +354,9 @@ class FileUtils {
   /**
    * @param $fileId
    * @throws HTException
+   * @throws Exception
    */
-  public static function fileCountLines($fileId) {
+  public static function fileCountLines($fileId): void {
     $file = Factory::getFileFactory()->get($fileId);
     $fileName = $file->getFilename();
     $filePath = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $fileName;

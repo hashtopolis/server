@@ -3,7 +3,6 @@
 namespace Hashtopolis\inc\defines;
 
 use ReflectionClass;
-use ReflectionException;
 
 class DAccessControl {
   const VIEW_HASHLIST_ACCESS        = array("viewHashlistAccess", DAccessControl::CREATE_HASHLIST_ACCESS, DAccessControl::MANAGE_HASHLIST_ACCESS);
@@ -36,16 +35,16 @@ class DAccessControl {
   const PUBLIC_ACCESS = "publicAccess";
   const LOGIN_ACCESS  = "loginAccess";
   
-  static function getConstants() {
+  static function getConstants(): array {
     $oClass = new ReflectionClass(__CLASS__);
     return $oClass->getConstants();
   }
   
   /**
-   * @param $access string
+   * @param mixed $access
    * @return string description
    */
-  public static function getDescription($access) {
+  public static function getDescription(mixed $access): string {
     if (is_array($access)) {
       $access = $access[0];
     }

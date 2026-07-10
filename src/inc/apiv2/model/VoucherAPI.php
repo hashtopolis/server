@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AgentUtils;
 
 use Hashtopolis\dba\models\RegVoucher;
@@ -10,6 +11,9 @@ use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\HTException;
 
 
+/**
+ * @extends AbstractModelAPI<RegVoucher>
+ */
 class VoucherAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/vouchers";
@@ -28,9 +32,10 @@ class VoucherAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param RegVoucher $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     AgentUtils::deleteVoucher($object->getId());
   }
 }

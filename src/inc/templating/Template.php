@@ -309,9 +309,9 @@ class Template {
     return array($statements, strlen($content));
   }
   
-  private function resolveDependencies() {
+  private function resolveDependencies(): bool {
     //include all templates
-    preg_match_all('/\{\%(.*?)\%\}/mis', $this->content, $matches, PREG_PATTERN_ORDER);
+    preg_match_all('/\{%(.*?)%}/mis', $this->content, $matches, PREG_PATTERN_ORDER);
     
     for ($x = 0; $x < sizeof($matches[0]); $x++) {
       $command = explode("->", $matches[1][$x]); //just the command

@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -39,9 +41,11 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
   
   
   /**
+   * @param array $data
+   * @return AbstractModel|array|null
    * @throws HttpErrorException
    */
-  public function actionPost(array $data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     throw new HttpErrorException("GetTaskProgressImage has no POST");
   }
   
@@ -83,6 +87,7 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws Exception
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
@@ -161,7 +166,6 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
       }
     }
     else if (isset($task)) {
-      $progress = $task->getKeyspaceProgress();
       $keyspace = max($task->getKeyspace(), 1);
       
       //load chunks
@@ -226,6 +230,6 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, "Hashtopolis\\inc\\apiv2\\helper\\GetTaskProgressImageHelperAPI:handleGet");
+    $app->get($baseUri, [self::class, 'handleGet']);
   }
 }

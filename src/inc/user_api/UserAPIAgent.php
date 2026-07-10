@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\user_api;
 
+use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
+use Random\RandomException;
 use Throwable;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\ContainFilter;
@@ -278,7 +280,7 @@ class UserAPIAgent extends UserAPIBasic {
     $binaries = Factory::getAgentBinaryFactory()->filter([]);
     foreach ($binaries as $binary) {
       $arr[] = array(
-        UResponseAgent::BINARIES_NAME => $binary->getBinayType(),
+        UResponseAgent::BINARIES_NAME => $binary->getBinaryType(),
         UResponseAgent::BINARIES_OS => $binary->getOperatingSystems(),
         UResponseAgent::BINARIES_URL => $baseUrl . $binary->getId(),
         UResponseAgent::BINARIES_VERSION => $binary->getVersion(),

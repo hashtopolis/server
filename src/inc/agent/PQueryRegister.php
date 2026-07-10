@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\agent;
 
 class PQueryRegister extends PQuery {
-  public static function isValid($QUERY) {
+  public static function isValid(array $QUERY): bool {
     if (!isset($QUERY[self::VOUCHER]) || !isset($QUERY[self::AGENT_NAME])) {
       return false;
     }

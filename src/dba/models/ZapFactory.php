@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<Zap>
+ */
 class ZapFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "Zap";
@@ -37,83 +36,15 @@ class ZapFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Zap
    */
-  function createObjectFromDict($pk, $dict): Zap {
+  function createObjectFromDict(array $dict): Zap {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
     return new Zap($dict['zapid'], $dict['hash'], $dict['solvetime'], $dict['agentid'], $dict['hashlistid']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return Zap|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): Zap|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), Zap::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, Zap::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?Zap
-   * @throws Exception
-   */
-  function get($pk): ?Zap {
-    return Util::cast(parent::get($pk), Zap::class);
-  }
-  
-  /**
-   * @param Zap $model
-   * @return ?Zap
-   * @throws Exception
-   */
-  function save($model): ?Zap {
-    return Util::cast(parent::save($model), Zap::class);
-  }
-
-  /**
-   * @param Zap $model
-   * @param array $arr key-value associations for update
-   * @return Zap
-   * @throws Exception
-   */
-  function mset($model, array $arr): Zap {
-    return Util::cast(parent::mset($model, $arr), Zap::class);
-  }
-
-  /**
-   * @param Zap $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return Zap
-   * @throws Exception
-   */
-  function set($model, string $key, $value): Zap {
-    return Util::cast(parent::set($model, $key, $value), Zap::class);
   }
 }

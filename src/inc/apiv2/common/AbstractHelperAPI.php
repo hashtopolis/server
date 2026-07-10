@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\apiv2\common;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
+use Hashtopolis\inc\apiv2\error\InternalError;
 use Hashtopolis\inc\HTException;
 use InvalidArgumentException;
 use JsonException;
@@ -16,7 +18,7 @@ use Slim\Exception\HttpForbiddenException;
 use Hashtopolis\inc\Util;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
-  abstract public function actionPost(array $data): object|array|null;
+  abstract public function actionPost(array $data): AbstractModel|array|null;
   
   /**
    * Function in order to create swagger documentation. Should return either a map of strings that
@@ -41,6 +43,7 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
    * @throws JsonException
    * @throws ContainerExceptionInterface
    * @throws NotFoundExceptionInterface
+   * @throws InternalError
    */
   public function processPost(Request $request, Response $response, array $args): Response {
     /* Required calls for all custom requests */
@@ -87,7 +90,7 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
    * Override-able registering of options
    */
   static public function register(App $app): void {
-    $me = get_called_class();
+    $me = static::class;
     $baseUri = $me::getBaseUri();
     
     /* Allow CORS preflight requests */
@@ -123,16 +126,15 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
    *
    * @param int &$start A reference to the starting byte of the range. This value will be updated.
    * @param int &$end A reference to the ending byte of the range. This value will be updated.
-   * @param int &$size The total size of the content in bytes.
-   * @param resource &$fp A file pointer resource to seek to the correct position for the range.
+   * @param int $size The total size of the content in bytes.
+   * @param resource $fp A file pointer resource to seek to the correct position for the range.
    * @return bool Returns `true` if the range request is valid and successfully processed, or `false` otherwise.
    *
    * @throws InvalidArgumentException If the `Range` header is malformed.
    *
    * @note This function assumes the presence of the `HTTP_RANGE` header in the `$_SERVER` superglobal.
    */
-  protected function handleRangeRequest(int &$start, int &$end, int &$size, &$fp): bool {
-    $c_start = $start;
+  protected function handleRangeRequest(int &$start, int &$end, int $size, $fp): bool {
     $c_end = $end;
     
     list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);

@@ -6,14 +6,13 @@ use Exception;
 
 class LockUtils {
   /** @var Lock[] $locks */
-  private static $locks = array();
+  private static array $locks = [];
   
   /**
    * @param string $lockFile
    * @throws Exception
    */
-  public static function get($lockFile) {
-    $lock = null;
+  public static function get(string $lockFile): void {
     if (isset(self::$locks[$lockFile])) {
       $lock = self::$locks[$lockFile];
     }
@@ -34,7 +33,7 @@ class LockUtils {
   /**
    * @param string $lockFile
    */
-  public static function release($lockFile) {
+  public static function release(string $lockFile): void {
     if (isset(self::$locks[$lockFile])) {
       $lock = self::$locks[$lockFile];
       try {
@@ -53,7 +52,7 @@ class LockUtils {
    *
    * @return void
    */
-  public static function deleteLockFile($taskId) {
+  public static function deleteLockFile(int $taskId): void {
     $lockFile = dirname(__FILE__) . "/locks/" . Lock::CHUNKING . $taskId;
     if (file_exists($lockFile)) {
       unlink($lockFile);

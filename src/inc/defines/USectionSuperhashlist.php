@@ -8,7 +8,7 @@ class USectionSuperhashlist extends UApi {
   const CREATE_SUPERHASHLIST = "createSuperhashlist";
   const DELETE_SUPERHASHLIST = "deleteSuperhashlist";
   
-  public function describe($constant) {
+  public function describe($constant): string {
     return match ($constant) {
       USectionSuperhashlist::LIST_SUPERHASHLISTS => "List all superhashlists",
       USectionSuperhashlist::GET_SUPERHASHLIST => "Get details about a superhashlist",

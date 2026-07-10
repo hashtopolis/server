@@ -3,18 +3,16 @@
 namespace Hashtopolis\inc\apiv2\helper;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Hash;
-use Hashtopolis\dba\models\HashBinary;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\QueryFilter;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use stdClass;
-
-use function PHPUnit\Framework\isEmpty;
 
 class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
@@ -32,8 +30,13 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
   public static function getResponse(): null {
     return null;
   }
-
-  public function actionPost(array $data): object|array|null {
+  
+  /**
+   * @param array $data
+   * @return AbstractModel|array|null
+   * @throws HttpError
+   */
+  public function actionPost(array $data): AbstractModel|array|null {
     throw new HttpError("getCracksPerDay has no POST");
   }
 
@@ -77,6 +80,6 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
     $app->options($baseUri, function (Request $request, Response $response): Response {
       return $response;
     });
-    $app->get($baseUri, self::class . ":handleGet");
+    $app->get($baseUri, [self::class, 'handleGet']);
   }
 }

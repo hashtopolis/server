@@ -2,9 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQuerySendHealthCheck;
-use Hashtopolis\inc\agent\PResponseSendHealthCheck;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DAgentIgnoreErrors;
 use Hashtopolis\inc\defines\DHealthCheckAgentStatus;
@@ -15,7 +16,10 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\utils\HealthUtils;
 
 class APISendHealthCheck extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     if (!PQuerySendHealthCheck::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_HEALTH_CHECK, "Invalid send health check query!");
     }
@@ -65,8 +69,8 @@ class APISendHealthCheck extends APIBasic {
     
     HealthUtils::checkCompletion($healthCheck);
     $this->sendResponse([
-        PResponseSendHealthCheck::ACTION => PActions::SEND_HEALTH_CHECK,
-        PResponseSendHealthCheck::RESPONSE => PValues::OK
+        PResponse::ACTION => PActions::SEND_HEALTH_CHECK,
+        PResponse::RESPONSE => PValues::OK
       ]
     );
   }

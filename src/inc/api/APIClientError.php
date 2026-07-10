@@ -2,9 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryClientError;
-use Hashtopolis\inc\agent\PResponseError;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\DataSet;
 use Hashtopolis\inc\defines\DAgentIgnoreErrors;
@@ -21,7 +22,10 @@ use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\SConfig;
 
 class APIClientError extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     //check required values
     if (!PQueryClientError::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::CLIENT_ERROR, "Invalid error query!");
@@ -48,11 +52,11 @@ class APIClientError extends APIBasic {
     $whitelist = explode(",", SConfig::getInstance()->getVal(DConfig::HC_ERROR_IGNORE));
     foreach ($whitelist as $w) {
       $w = trim($w);
-      if (strpos($QUERY[PQueryClientError::MESSAGE], $w) !== false) {
+      if (str_contains($QUERY[PQueryClientError::MESSAGE], $w)) {
         // error can be ignored, we just acknowledge that we received it
         $this->sendResponse(array(
-            PQueryClientError::ACTION => PActions::CLIENT_ERROR,
-            PResponseError::RESPONSE => PValues::SUCCESS
+            PResponse::ACTION => PActions::CLIENT_ERROR,
+            PResponse::RESPONSE => PValues::SUCCESS
           )
         );
       }
@@ -79,8 +83,8 @@ class APIClientError extends APIBasic {
     
     $this->updateAgent(PActions::CLIENT_ERROR);
     $this->sendResponse(array(
-        PQueryClientError::ACTION => PActions::CLIENT_ERROR,
-        PResponseError::RESPONSE => PValues::SUCCESS
+        PResponse::ACTION => PActions::CLIENT_ERROR,
+        PResponse::RESPONSE => PValues::SUCCESS
       )
     );
   }

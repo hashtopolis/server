@@ -19,7 +19,7 @@ class USectionHashlist extends UApi {
   const GET_HASH        = "getHash";
   const GET_CRACKED     = "getCracked";
   
-  public function describe($constant) {
+  public function describe($constant): string {
     return match ($constant) {
       USectionHashlist::LIST_HASLISTS => "List all hashlists",
       USectionHashlist::GET_HASHLIST => "Get details of a hashlist",

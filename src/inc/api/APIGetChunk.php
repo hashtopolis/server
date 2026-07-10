@@ -4,6 +4,7 @@ namespace Hashtopolis\inc\api;
 
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryGetChunk;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseGetChunk;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\agent\PValuesChunkType;
@@ -32,7 +33,7 @@ class APIGetChunk extends APIBasic {
    * @throws HTException
    * @throws Exception
    */
-  public function execute(array $QUERY = array()) {
+  public function execute(array $QUERY = array()): void {
     if (!PQueryGetChunk::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Invalid chunk query!");
     }
@@ -44,8 +45,8 @@ class APIGetChunk extends APIBasic {
     if (HealthUtils::checkNeeded($this->agent)) {
       DServerLog::log(DServerLog::DEBUG, "Notifying agent about health check", [$this->agent]);
       $this->sendResponse(array(
-          PResponseGetChunk::ACTION => PActions::GET_CHUNK,
-          PResponseGetChunk::RESPONSE => PValues::SUCCESS,
+          PResponse::ACTION => PActions::GET_CHUNK,
+          PResponse::RESPONSE => PValues::SUCCESS,
           PResponseGetChunk::CHUNK_STATUS => PValuesChunkType::HEALTH_CHECK
         )
       );
@@ -67,8 +68,8 @@ class APIGetChunk extends APIBasic {
     else if ($task->getKeyspace() == 0) {
       DServerLog::log(DServerLog::TRACE, "Need to measure keyspace!", [$this->agent, $task]);
       $this->sendResponse(array(
-          PResponseGetChunk::ACTION => PActions::GET_CHUNK,
-          PResponseGetChunk::RESPONSE => PValues::SUCCESS,
+          PResponse::ACTION => PActions::GET_CHUNK,
+          PResponse::RESPONSE => PValues::SUCCESS,
           PResponseGetChunk::CHUNK_STATUS => PValuesChunkType::KEYSPACE_REQUIRED
         )
       );
@@ -76,8 +77,8 @@ class APIGetChunk extends APIBasic {
     else if ($assignment->getBenchmark() == 0 && $task->getIsSmall() == 0 && $task->getStaticChunks() == DTaskStaticChunking::NORMAL) { // benchmark only required on non-small tasks and on non-special chunk tasks
       DServerLog::log(DServerLog::TRACE, "Need to run a benchmark!", [$this->agent, $task]);
       $this->sendResponse(array(
-          PResponseGetChunk::ACTION => PActions::GET_CHUNK,
-          PResponseGetChunk::RESPONSE => PValues::SUCCESS,
+          PResponse::ACTION => PActions::GET_CHUNK,
+          PResponse::RESPONSE => PValues::SUCCESS,
           PResponseGetChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED
         )
       );
@@ -101,8 +102,8 @@ class APIGetChunk extends APIBasic {
       LockUtils::release($LOCKFILE);
       DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
       $this->sendResponse(array(
-          PResponseGetChunk::ACTION => PActions::GET_CHUNK,
-          PResponseGetChunk::RESPONSE => PValues::SUCCESS,
+          PResponse::ACTION => PActions::GET_CHUNK,
+          PResponse::RESPONSE => PValues::SUCCESS,
           PResponseGetChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
         )
       );
@@ -175,8 +176,8 @@ class APIGetChunk extends APIBasic {
       LockUtils::release($LOCKFILE);
       DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
       $this->sendResponse(array(
-          PResponseGetChunk::ACTION => PActions::GET_CHUNK,
-          PResponseGetChunk::RESPONSE => PValues::SUCCESS,
+          PResponse::ACTION => PActions::GET_CHUNK,
+          PResponse::RESPONSE => PValues::SUCCESS,
           PResponseGetChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
         )
       );
@@ -186,9 +187,10 @@ class APIGetChunk extends APIBasic {
   }
   
   /**
-   * @param $chunk Chunk
+   * @param ?Chunk $chunk
+   * @throws Exception
    */
-  protected function sendChunk($chunk) {
+  protected function sendChunk(?Chunk $chunk): void {
     if ($chunk == null) {
       return; // this can be safely done before the commit/release, because the only sendChunk which comes really at the end check for null before, so a lock which is not released cannot happen
     }
@@ -196,8 +198,8 @@ class APIGetChunk extends APIBasic {
     LockUtils::release(Lock::CHUNKING . $chunk->getTaskId());
     DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
     $this->sendResponse(array(
-        PResponseGetChunk::ACTION => PActions::GET_CHUNK,
-        PResponseGetChunk::RESPONSE => PValues::SUCCESS,
+        PResponse::ACTION => PActions::GET_CHUNK,
+        PResponse::RESPONSE => PValues::SUCCESS,
         PResponseGetChunk::CHUNK_STATUS => PValuesChunkType::OK,
         PResponseGetChunk::CHUNK_ID => (int)($chunk->getId()),
         PResponseGetChunk::KEYSPACE_SKIP => (int)($chunk->getSkip()),

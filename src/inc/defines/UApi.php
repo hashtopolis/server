@@ -8,12 +8,12 @@ use ReflectionException;
 abstract class UApi {
   abstract function describe($constant);
   
-  static function getConstants() {
+  static function getConstants(): array {
     $oClass = new ReflectionClass(static::class);
     return $oClass->getConstants();
   }
   
-  static function getSection($section) {
+  static function getSection($section): object {
     return match ($section) {
       USection::TEST => new USectionTest(),
       USection::AGENT => new USectionAgent(),
@@ -33,7 +33,7 @@ abstract class UApi {
     };
   }
   
-  static function getDescription($section, $constant) {
+  static function getDescription($section, $constant): string {
     $sectionObject = UApi::getSection($section);
     if ($sectionObject == null) {
       return "__" . $section . "_" . $constant . "__";

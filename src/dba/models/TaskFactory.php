@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<Task>
+ */
 class TaskFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "Task";
@@ -37,83 +36,15 @@ class TaskFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return Task
    */
-  function createObjectFromDict($pk, $dict): Task {
+  function createObjectFromDict(array $dict): Task {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
     return new Task($dict['taskid'], $dict['taskname'], $dict['attackcmd'], $dict['chunktime'], $dict['statustimer'], $dict['keyspace'], $dict['keyspaceprogress'], $dict['priority'], $dict['maxagents'], $dict['color'], $dict['issmall'], $dict['iscputask'], $dict['usenewbench'], $dict['skipkeyspace'], $dict['crackerbinaryid'], $dict['crackerbinarytypeid'], $dict['taskwrapperid'], $dict['isarchived'], $dict['notes'], $dict['staticchunks'], $dict['chunksize'], $dict['forcepipe'], $dict['usepreprocessor'], $dict['preprocessorcommand']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return Task|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): Task|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), Task::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, Task::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?Task
-   * @throws Exception
-   */
-  function get($pk): ?Task {
-    return Util::cast(parent::get($pk), Task::class);
-  }
-  
-  /**
-   * @param Task $model
-   * @return ?Task
-   * @throws Exception
-   */
-  function save($model): ?Task {
-    return Util::cast(parent::save($model), Task::class);
-  }
-
-  /**
-   * @param Task $model
-   * @param array $arr key-value associations for update
-   * @return Task
-   * @throws Exception
-   */
-  function mset($model, array $arr): Task {
-    return Util::cast(parent::mset($model, $arr), Task::class);
-  }
-
-  /**
-   * @param Task $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return Task
-   * @throws Exception
-   */
-  function set($model, string $key, $value): Task {
-    return Util::cast(parent::set($model, $key, $value), Task::class);
   }
 }

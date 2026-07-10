@@ -7,7 +7,7 @@ class DPlatforms {
   const WINDOWS = "win";
   const MAC_OSX = "osx";
   
-  public static function getName($type) {
+  public static function getName(string $type): string {
     return match ($type) {
       DPlatforms::LINUX => "Linux",
       DPlatforms::MAC_OSX => "Max OSX",

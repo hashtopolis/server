@@ -2,8 +2,10 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQuerySendKeyspace;
+use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseSendKeyspace;
 use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\defines\DLogEntry;
@@ -17,7 +19,10 @@ use Hashtopolis\dba\models\Task;
 use Hashtopolis\inc\Util;
 
 class APISendKeyspace extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     if (!PQuerySendKeyspace::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_KEYSPACE, "Invalid keyspace query!");
     }
@@ -68,8 +73,8 @@ class APISendKeyspace extends APIBasic {
     }
     
     $this->sendResponse(array(
-        PResponseSendKeyspace::ACTION => PActions::SEND_KEYSPACE,
-        PResponseSendKeyspace::RESPONSE => PValues::SUCCESS,
+        PResponse::ACTION => PActions::SEND_KEYSPACE,
+        PResponse::RESPONSE => PValues::SUCCESS,
         PResponseSendKeyspace::KEYSPACE => PValues::OK
       )
     );

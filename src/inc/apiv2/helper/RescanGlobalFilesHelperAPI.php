@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\ConfigUtils;
 use Hashtopolis\dba\models\Config;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
@@ -30,11 +31,11 @@ class RescanGlobalFilesHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to recount files for when there is size mismatch
-   * @param $data
-   * @return object|array|null
+   * @param $data array
+   * @return AbstractModel|array|null
    * @throws HTMessages
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost(array $data): AbstractModel|array|null {
     ConfigUtils::scanFiles();
     return $this->getResponse();
   }

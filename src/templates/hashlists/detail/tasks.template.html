@@ -16,7 +16,7 @@
             <td>
               <a href="tasks.php?id=[[task.getVal('task')->getId()]]">[[task.getVal('task')->getId()]]</a>
             </td>
-            <td{{IF [[strlen([[task.getVal('task').getColor()]])]] > 0}} style="background-color: #[[task.getVal('task').getColor()]]""{{ENDIF}}>
+            <td{{IF [[task.getVal('task').getColor()]] != null && [[strlen([[task.getVal('task').getColor()]])]] > 0}} style="background-color: #[[task.getVal('task').getColor()]]""{{ENDIF}}>
               &nbsp;
             </td>
             <td>

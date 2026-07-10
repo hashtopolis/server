@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Aggregation;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
@@ -27,6 +28,9 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<Agent>
+ */
 class AgentAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/agents";
@@ -56,11 +60,11 @@ class AgentAPI extends AbstractModelAPI {
   }
   
   /**
-   * @param object $object
+   * @param Agent $object
    * @return int
    * @throws Exception
    */
-  protected function getAggregateCrackingTime(object $object): int {
+  protected function getAggregateCrackingTime(AbstractModel $object): int {
     // in order to make sense of the diff, we need to make sure that both values solve time and dispatch time are set (i.e. >0).
     $qF1 = new QueryFilter(Chunk::AGENT_ID, $object->getId(), "=");
     $qF2 = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
@@ -75,13 +79,13 @@ class AgentAPI extends AbstractModelAPI {
    * Overridable function to aggregate data in the object. active chunk of agent is appended to
    * $included_data.
    *
-   * @param object $object the agent object were data is aggregated from
+   * @param AbstractModel $object the agent object were data is aggregated from
    * @param array &$includedData
    * @param array|null $aggregateFieldsets
    * @return array not used here
    * @throws Exception
    */
-  function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
+  function aggregateData(AbstractModel $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     $agentId = $object->getId();
     $qFs = [];
     $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
@@ -95,7 +99,11 @@ class AgentAPI extends AbstractModelAPI {
     return parent::aggregateData($object, $includedData, $aggregateFieldsets);
   }
   
-  protected function getSingleACL(User $user, object $object): bool {
+  /**
+   * @param Agent $object
+   * @throws Exception
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     /** @var Agent $object */
     $accessGroupsAgent = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($object));
@@ -103,6 +111,9 @@ class AgentAPI extends AbstractModelAPI {
     return count(array_intersect($accessGroupsAgent, $accessGroupsUser)) > 0;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
     
@@ -181,9 +192,10 @@ class AgentAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param Agent $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     AgentUtils::delete($object->getId(), $this->getCurrentUser());
   }
 }

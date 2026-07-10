@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Aggregation;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\ContainFilter;
@@ -24,6 +25,9 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 use Hashtopolis\inc\utils\TaskUtils;
 
+/**
+ * @extends AbstractModelAPI<TaskWrapperDisplay>
+ */
 class TaskWrapperDisplayAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/taskwrapperdisplays";
@@ -41,7 +45,11 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
     return TaskWrapperDisplay::class;
   }
   
-  protected function getSingleACL(User $user, object $object): bool {
+  /**
+   * @param TaskWrapperDisplay $object
+   * @throws Exception
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
     $qF1 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupsUser, Factory::getHashlistFactory());
@@ -51,6 +59,9 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
     return count($wrappers) > 0;
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
@@ -81,9 +92,10 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param TaskWrapperDisplay $object
    * @throws Exception
    */
-  protected function getAggregateTotalAssignedAgents(object $object): int {
+  protected function getAggregateTotalAssignedAgents(AbstractModel $object): int {
     $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $object->getId(), "=", Factory::getTaskFactory());
     $jF = new JoinFilter(Factory::getTaskFactory(), Assignment::TASK_ID, Task::TASK_ID);
     
@@ -91,9 +103,10 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
   }
   
   /**
-   * @throws HttpError
+   * @param TaskWrapperDisplay $object
+   * @return ?string
    */
-  protected function getAggregateDispatched(object $object): ?string {
+  protected function getAggregateDispatched(AbstractModel $object): ?string {
     if ($object->getTaskType() !== DTaskTypes::NORMAL) {
       return null;
     }
@@ -104,10 +117,11 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param TaskWrapperDisplay $object
    * @throws HttpError
    * @throws Exception
    */
-  protected function getAggregateSearched(object $object): ?string {
+  protected function getAggregateSearched(AbstractModel $object): ?string {
     if ($object->getTaskType() !== DTaskTypes::NORMAL) {
       return null;
     }
@@ -117,7 +131,11 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
     return Util::showperc(TaskUtils::getTaskProgress($task), $keyspace);
   }
   
-  protected function getAggregateStatus(object $object): int {
+  /**
+   * @param TaskWrapperDisplay $object
+   * @throws Exception
+   */
+  protected function getAggregateStatus(AbstractModel $object): int {
     // TODO: this could be optimized by only requesting taskId, keyspace and keyspaceProgress of all tasks of that wrapper (columnFilter)
     $tasks = TaskUtils::getTasksOfWrapper($object->getId());
     $completed = 0;
@@ -147,10 +165,11 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param TaskWrapperDisplay $object
    * @throws HttpError
    * @throws Exception
    */
-  protected function getAggregateCurrentSpeed(object $object): ?int {
+  protected function getAggregateCurrentSpeed(AbstractModel $object): ?int {
     if ($object->getTaskType() !== DTaskTypes::NORMAL) {
       return null;
     }
@@ -169,10 +188,11 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param TaskWrapperDisplay $object
    * @throws HttpError
    * @throws Exception
    */
-  protected function getAggregateEstimatedTime(object $object): ?int {
+  protected function getAggregateEstimatedTime(AbstractModel $object): ?int {
     if ($object->getTaskType() !== DTaskTypes::NORMAL) {
       return null;
     }
@@ -184,10 +204,11 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param TaskWrapperDisplay $object
    * @throws HttpError
    * @throws Exception
    */
-  protected function getAggregateCProgress(object $object): ?int {
+  protected function getAggregateCProgress(AbstractModel $object): ?int {
     if ($object->getTaskType() !== DTaskTypes::NORMAL) {
       return null;
     }
@@ -197,10 +218,11 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param TaskWrapperDisplay $object
    * @throws HttpError
    * @throws Exception
    */
-  protected function getAggregateTimeSpent(object $object): ?int {
+  protected function getAggregateTimeSpent(AbstractModel $object): ?int {
     if ($object->getTaskType() !== DTaskTypes::NORMAL) {
       return null;
     }
@@ -224,9 +246,10 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param TaskWrapperDisplay $object
    * @throws HttpError
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     throw new HttpError("TaskWrapperDisplays cannot be deleted via API");
   }
   

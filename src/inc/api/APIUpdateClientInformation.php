@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\api;
 
+use Exception;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryUpdateInformation;
 use Hashtopolis\inc\agent\PResponse;
@@ -11,7 +12,10 @@ use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\Factory;
 
 class APIUpdateClientInformation extends APIBasic {
-  public function execute(array $QUERY = array()) {
+  /**
+   * @throws Exception
+   */
+  public function execute(array $QUERY = array()): void {
     // check required values and token
     if (!PQueryUpdateInformation::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::UPDATE_CLIENT_INFORMATION, "Invalid update query!");
@@ -47,7 +51,7 @@ class APIUpdateClientInformation extends APIBasic {
     DServerLog::log(DServerLog::DEBUG, "Agent sent updated client information", [$this->agent]);
     
     $this->sendResponse(array(
-        PQueryUpdateInformation::ACTION => PActions::UPDATE_CLIENT_INFORMATION,
+        PResponse::ACTION => PActions::UPDATE_CLIENT_INFORMATION,
         PResponse::RESPONSE => PValues::SUCCESS
       )
     );

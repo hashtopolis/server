@@ -2,9 +2,12 @@
 
 namespace Hashtopolis\inc\apiv2\helper;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
+use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\TaskUtils;
 
@@ -36,9 +39,13 @@ class PurgeTaskHelperAPI extends AbstractHelperAPI {
   
   /**
    * Endpoint to purge a task. Meaning all chunks of a task will be deleted and keyspace and progress will be set to 0.
+   * @param $data
+   * @return AbstractModel|array|null
    * @throws HTException
+   * @throws HttpError
+   * @throws ResourceNotFoundError
    */
-  public function actionPost($data): object|array|null {
+  public function actionPost($data): AbstractModel|array|null {
     $task = self::getTask($data[Task::TASK_ID]);
     
     TaskUtils::purgeTask($task->getId(), $this->getCurrentUser());

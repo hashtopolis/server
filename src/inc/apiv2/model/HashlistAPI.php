@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\UQueryHashlist;
 use Hashtopolis\inc\utils\AccessUtils;
@@ -24,6 +26,9 @@ use Middlewares\Utils\HttpErrorException;
 use Hashtopolis\inc\Util;
 
 
+/**
+ * @extends AbstractModelAPI<Hashlist>
+ */
 class HashlistAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/hashlists";
@@ -84,12 +89,19 @@ class HashlistAPI extends AbstractModelAPI {
     ];
   }
   
-  protected function getSingleACL(User $user, object $object): bool {
+  /**
+   * @param Hashlist $object
+   * @throws Exception
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
     $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
     
     return in_array($object->getAccessGroupId(), $accessGroupsUser);
   }
   
+  /**
+   * @throws Exception
+   */
   protected function getFilterACL(): array {
     return [
       Factory::FILTER => [
@@ -134,7 +146,7 @@ class HashlistAPI extends AbstractModelAPI {
       if (strlen($data["sourceData"]) == 0) {
         throw new HttpError("sourceType=paste, requires sourceData to be non-empty");
       }
-      else if ($dummyPost["hashfield"] == false) {
+      else if (!$dummyPost["hashfield"]) {
         throw new HttpError("sourceData not valid base64 encoding");
       }
     }
@@ -160,16 +172,17 @@ class HashlistAPI extends AbstractModelAPI {
     // Modify fields not set on hashlist creation
     if (array_key_exists("notes", $data)) {
       HashlistUtils::editNotes($hashlist->getId(), $data["notes"], $this->getCurrentUser());
-    };
+    }
     HashlistUtils::setArchived($hashlist->getId(), $data[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->getCurrentUser());
     
     return $hashlist->getId();
   }
   
   /**
+   * @param Hashlist $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     HashlistUtils::delete($object->getId(), $this->getCurrentUser());
   }
   

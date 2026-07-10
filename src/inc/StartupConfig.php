@@ -5,9 +5,9 @@ namespace Hashtopolis\inc;
 class StartupConfig {
   private static ?StartupConfig $instance = null;
   
-  private array $directories   = [];
-  private array $db_properties = [];
-  private array $peppers       = [];
+  private array $directories;
+  private array $db_properties;
+  private array $peppers;
   
   /**
    * The choice here is to define the possible keys for config settings only private and only allow to

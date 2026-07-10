@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\models\Supertask;
 use Hashtopolis\dba\models\SupertaskPretask;
@@ -27,15 +28,18 @@ class SupertaskUtils {
    * @param string $name
    * @param string $command
    * @param bool $isCpuOnly
+   * @param int $maxAgents
    * @param bool $isSmall
    * @param int $crackerBinaryTypeId
    * @param string $benchtype
    * @param string[] $basefiles
    * @param string[] $iterfiles
    * @param User $user
+   * @return Supertask
    * @throws HTException
+   * @throws Exception
    */
-  public static function bulkSupertask($name, $command, $isCpuOnly, $maxAgents, $isSmall, $crackerBinaryTypeId, $benchtype, $basefiles, $iterfiles, $user): Supertask {
+  public static function bulkSupertask(string $name, string $command, bool $isCpuOnly, int $maxAgents, bool $isSmall, int $crackerBinaryTypeId, string $benchtype, array $basefiles, array $iterfiles, User $user): Supertask {
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
     $benchtype = ($benchtype == 'speed') ? 1 : 0;
@@ -43,21 +47,17 @@ class SupertaskUtils {
     if ($crackerBinaryType == null) {
       throw new HTException("Invalid cracker type ID!");
     }
-    else if (strpos($command, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+    else if (!str_contains($command, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS))) {
       throw new HTException("Command line must contain hashlist alias (" . SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . ")!");
     }
     else if (Util::containsBlacklistedChars($command)) {
       throw new HTException("The command must contain no blacklisted characters!");
     }
-    else if (!is_array($iterfiles) || sizeof($iterfiles) == 0) {
+    else if (sizeof($iterfiles) == 0) {
       throw new HTException("At least one file needs to be selected to iterate over!");
     }
-    else if (strpos($command, "FILE") === false) {
+    else if (!str_contains($command, "FILE")) {
       throw new HTException("No placeholder (FILE) for the iteration!");
-    }
-    
-    if (!is_array($basefiles)) {
-      $basefiles = [];
     }
     
     $basefilesChecked = [];
@@ -103,12 +103,14 @@ class SupertaskUtils {
    * @param File[] $basefiles
    * @param File[] $iterfiles
    * @param int $isSmall
+   * @param int $maxAgents
    * @param int $isCpuOnly
    * @param CrackerBinaryType $crackerBinaryType
    * @param int $benchtype
    * @return Pretask[]
+   * @throws Exception
    */
-  public static function createIterationPretasks($command, $name, $basefiles, $iterfiles, $isSmall, $maxAgents, $isCpuOnly, $crackerBinaryType, $benchtype) {
+  public static function createIterationPretasks(string $command, string $name, array $basefiles, array $iterfiles, int $isSmall, int $maxAgents, int $isCpuOnly, CrackerBinaryType $crackerBinaryType, int $benchtype): array {
     // create the preconf tasks
     $preTasks = array();
     $priority = sizeof($iterfiles) + 1;
@@ -151,8 +153,9 @@ class SupertaskUtils {
    * @param int $supertaskId
    * @param string $newName
    * @throws HTException
+   * @throws Exception
    */
-  public static function renameSupertask($supertaskId, $newName) {
+  public static function renameSupertask(int $supertaskId, string $newName): void {
     $supertask = SupertaskUtils::getSupertask($supertaskId);
     Factory::getSupertaskFactory()->set($supertask, Supertask::SUPERTASK_NAME, $newName);
   }
@@ -160,8 +163,9 @@ class SupertaskUtils {
   /**
    * @param int $supertaskId
    * @throws HTException
+   * @throws Exception
    */
-  public static function deleteSupertask($supertaskId) {
+  public static function deleteSupertask(int $supertaskId): void {
     $supertask = SupertaskUtils::getSupertask($supertaskId);
     Factory::getAgentFactory()->getDB()->beginTransaction();
     
@@ -186,8 +190,9 @@ class SupertaskUtils {
   /**
    * @param int $taskWrapperId
    * @return Task[]
+   * @throws Exception
    */
-  public static function getRunningSubtasks($taskWrapperId) {
+  public static function getRunningSubtasks(int $taskWrapperId): array {
     $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapperId, "=");
     $oF = new OrderFilter(Task::PRIORITY, "DESC");
     return Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
@@ -198,8 +203,9 @@ class SupertaskUtils {
    * @param User $user
    * @return TaskWrapper
    * @throws HTException
+   * @throws Exception
    */
-  public static function getRunningSupertask($taskWrapperId, $user) {
+  public static function getRunningSupertask(int $taskWrapperId, User $user): TaskWrapper {
     $supertask = Factory::getTaskWrapperFactory()->get($taskWrapperId);
     if ($supertask == null) {
       throw new HTException("Invalid taskwrapper ID!");
@@ -212,8 +218,9 @@ class SupertaskUtils {
   
   /**
    * @return Supertask[]
+   * @throws Exception
    */
-  public static function getAllSupertasks() {
+  public static function getAllSupertasks(): array {
     $oF = new OrderFilter(Supertask::SUPERTASK_ID, "ASC");
     return Factory::getSupertaskFactory()->filter([Factory::ORDER => $oF]);
   }
@@ -221,8 +228,9 @@ class SupertaskUtils {
   /**
    * @param int $supertaskId
    * @return Pretask[]
+   * @throws Exception
    */
-  public static function getPretasksOfSupertask($supertaskId) {
+  public static function getPretasksOfSupertask(int $supertaskId): array {
     $oF = new OrderFilter(Pretask::PRIORITY, "DESC", Factory::getPretaskFactory());
     $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertaskId, "=", Factory::getSupertaskPretaskFactory());
     $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
@@ -234,8 +242,9 @@ class SupertaskUtils {
    * @param int $supertaskId
    * @return Supertask
    * @throws HTException
+   * @throws Exception
    */
-  public static function getSupertask($supertaskId) {
+  public static function getSupertask(int $supertaskId): Supertask {
     $supertask = Factory::getSupertaskFactory()->get($supertaskId);
     if ($supertask == null) {
       throw new HTException("Invalid supertask ID!");
@@ -248,8 +257,9 @@ class SupertaskUtils {
    * @param int $hashlistId
    * @param int $crackerId
    * @throws HTException
+   * @throws Exception
    */
-  public static function runSupertask($supertaskId, $hashlistId, $crackerId) {
+  public static function runSupertask(int $supertaskId, int $hashlistId, int $crackerId): void {
     $supertask = Factory::getSupertaskFactory()->get($supertaskId);
     if ($supertask == null) {
       throw new HTException("Invalid supertask ID!");
@@ -316,7 +326,7 @@ class SupertaskUtils {
         0,
         ''
       );
-      if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
+      if ($hashlist->getHexSalt() == 1 && !str_contains($task->getAttackCmd(), "--hex-salt")) {
         $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
       }
       $task = Factory::getTaskFactory()->save($task);
@@ -331,9 +341,10 @@ class SupertaskUtils {
    * @param int[] $pretasks
    * @return Supertask
    * @throws HttpError
+   * @throws Exception
    */
   public static function createSupertask(string $name, array|null $pretasks): Supertask {
-    if (sizeof($pretasks) == 0) {
+    if ($pretasks == null || sizeof($pretasks) == 0) {
       throw new HttpError("Cannot create empty supertask!");
     }
     $tasks = [];
@@ -361,24 +372,23 @@ class SupertaskUtils {
   /**
    * @param string $name
    * @param boolean $isCpuOnly
+   * @param int $maxAgents
    * @param boolean $isSmall
    * @param boolean $useOptimized
    * @param int $crackerBinaryTypeId
    * @param array $masks
    * @param string $benchtype
+   * @return Supertask
    * @throws HTException
+   * @throws Exception
    */
-  public static function importSupertask($name, $isCpuOnly, $maxAgents, $isSmall, $useOptimized, $crackerBinaryTypeId, $masks, $benchtype): Supertask {
+  public static function importSupertask(string $name, bool $isCpuOnly, int $maxAgents, bool $isSmall, bool $useOptimized, int $crackerBinaryTypeId, array $masks, string $benchtype): Supertask {
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
-    $useOptimized = ($useOptimized) ? true : false;
     $benchtype = ($benchtype == 'speed') ? 1 : 0;
     $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     if ($crackerBinaryType == null) {
       throw new HTException("Invalid cracker type ID!");
-    }
-    else if (!is_array($masks)) {
-      throw new HTException("Masks need to be provided as array!");
     }
     SupertaskUtils::prepareImportMasks($masks);
     if (sizeof($masks) == 0) {
@@ -399,15 +409,17 @@ class SupertaskUtils {
   }
   
   /**
-   * @param $masks
-   * @param $isSmall
-   * @param $isCpu
-   * @param $crackerBinaryType CrackerBinaryType
+   * @param array $masks
+   * @param bool $isSmall
+   * @param int $maxAgents
+   * @param bool $isCpu
+   * @param CrackerBinaryType $crackerBinaryType
    * @param bool $useOptimized
    * @param int $newBench
    * @return array
+   * @throws Exception
    */
-  private static function createImportPretasks($masks, $isSmall, $maxAgents, $isCpu, $crackerBinaryType, $useOptimized = false, $newBench = 1) {
+  private static function createImportPretasks(array $masks, bool $isSmall, int $maxAgents, bool $isCpu, CrackerBinaryType $crackerBinaryType, bool $useOptimized = false, int $newBench = 1): array {
     // create the preconf tasks
     $preTasks = array();
     $priority = sizeof($masks) + 1;
@@ -460,7 +472,7 @@ class SupertaskUtils {
   /**
    * @param array $masks
    */
-  private static function prepareImportMasks(&$masks) {
+  private static function prepareImportMasks(array &$masks): void {
     for ($i = 0; $i < sizeof($masks); $i++) {
       if (strlen($masks[$i]) == 0) {
         unset($masks[$i]);
@@ -468,7 +480,7 @@ class SupertaskUtils {
       }
       $mask = str_replace("\\,", "COMMA_PLACEHOLDER", $masks[$i]);
       $mask = str_replace("\\#", "HASH_PLACEHOLDER", $mask);
-      if (strpos($mask, "#") !== false) {
+      if (str_contains($mask, "#")) {
         $mask = substr($mask, 0, strpos($mask, "#"));
       }
       $mask = explode(",", $mask);
@@ -481,11 +493,12 @@ class SupertaskUtils {
   }
   
   /**
-   * @param $supertaskId
-   * @param $pretaskId
+   * @param int $supertaskId
+   * @param int $pretaskId
    * @throws HTException
+   * @throws Exception
    */
-  public static function removePretaskFromSupertask($supertaskId, $pretaskId) {
+  public static function removePretaskFromSupertask(int $supertaskId, int $pretaskId): void {
     if ($supertaskId == null) {
       throw new HTException("Invalid supertask ID!");
     }
@@ -505,11 +518,12 @@ class SupertaskUtils {
   }
   
   /**
-   * @param $supertaskId
-   * @param $pretaskId
+   * @param int $supertaskId
+   * @param int $pretaskId
    * @throws HTException
+   * @throws Exception
    */
-  public static function addPretaskToSupertask($supertaskId, $pretaskId) {
+  public static function addPretaskToSupertask(int $supertaskId, int $pretaskId): void {
     if ($supertaskId == null) {
       throw new HTException("Invalid supertask ID!");
     }

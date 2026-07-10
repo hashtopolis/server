@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\models\HashType;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -9,6 +10,9 @@ use Hashtopolis\inc\utils\HashtypeUtils;
 use Hashtopolis\inc\HTException;
 
 
+/**
+ * @extends AbstractModelAPI<HashType>
+ */
 class HashTypeAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/hashtypes";
@@ -34,9 +38,10 @@ class HashTypeAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param HashType $object
    * @throws HTException
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     HashtypeUtils::deleteHashtype($object->getId());
   }
 }

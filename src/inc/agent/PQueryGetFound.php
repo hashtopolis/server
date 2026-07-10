@@ -3,7 +3,7 @@
 namespace Hashtopolis\inc\agent;
 
 class PQueryGetFound extends PQuery {
-  static function isValid($QUERY) {
+  static function isValid(array $QUERY): bool {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::HASHLIST_ID])) {
       return false;
     }

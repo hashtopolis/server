@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\common;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
@@ -110,16 +112,6 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * Checks if a user has access to the given single element retrieved
-   * @param User $user
-   * @param object $object
-   * @return bool true if the access is allowed
-   */
-  protected function getSingleACL(User $user, object $object): bool {
-    return true;
-  }
-  
-  /**
    * Returns an array containing all filters and joins to be added to the query to ensure
    * that only the elements are retrieved matching the access groups the user is in
    * @return array
@@ -174,16 +166,17 @@ abstract class AbstractBaseAPI {
   /**
    * Overridable function to aggregate data in the object. Used for Tasks and Agents.
    *
-   * @param object $object The object to aggregate data from.
+   * @param AbstractModel $object $object The object to aggregate data from.
    * @param array &$includedData Array passed by reference; implementations can add related resources
    *   for inclusion in the response by appending to this array.
+   * @param array|null $aggregateFieldsets
    * @return array Aggregated data as key-value pairs.
    *
    * Implementations should use $includedData to collect related resources that should be included
    * in the API response, such as related entities or additional data.
    * @throws HttpError
    */
-  public function aggregateData(object $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
+  public function aggregateData(AbstractModel $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     $aggregatedData = [];
     
     if (is_array($aggregateFieldsets)) {
@@ -349,12 +342,14 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * @param string $model
+   * @template TModel of AbstractModel
+   * @param class-string<TModel> $model
    * @param int $pk
-   * @return object
+   * @return TModel
    * @throws ResourceNotFoundError|HttpError
+   * @throws Exception
    */
-  final protected static function fetchOne(string $model, int $pk): object {
+  final protected static function fetchOne(string $model, int $pk): AbstractModel {
     $factory = self::getModelFactory($model);
     $object = $factory->get($pk);
     if ($object === null) {
@@ -444,9 +439,6 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    */
   final protected function getObjectTypeName(mixed $obj): string {
-    
-    $container = $this->container->get('classMapper');
-    
     if (is_string($obj)) {
       $apiClass = $this->container->get('classMapper')->get($obj);
     }
@@ -651,7 +643,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function obj2Array(object $obj): array {
+  protected function obj2Array(AbstractModel $obj): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -679,7 +671,7 @@ abstract class AbstractBaseAPI {
    * @throws ContainerExceptionInterface
    * @throws HttpError
    */
-  protected function obj2Resource(object $obj, array &$expandResult = [], ?array $sparseFieldsets = null, ?array $aggregateFieldsets = null): array {
+  protected function obj2Resource(AbstractModel $obj, array &$expandResult = [], ?array $sparseFieldsets = null, ?array $aggregateFieldsets = null): array {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -810,8 +802,9 @@ abstract class AbstractBaseAPI {
    * Quick to resolve objects via ManyToMany relation table
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
+   * @throws Exception
    */
-  protected function joinQuery(mixed $objFactory, QueryFilter $qF, JoinFilter $jF): array {
+  protected function joinQuery(AbstractModelFactory $objFactory, QueryFilter $qF, JoinFilter $jF): array {
     $joined = $objFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     $objects = $joined[$objFactory->getModelName()];
     
@@ -826,8 +819,9 @@ abstract class AbstractBaseAPI {
    * Quick to resolve objects via ForeignKey relation table
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
+   * @throws Exception
    */
-  protected function filterQuery(mixed $objFactory, QueryFilter $qF): array {
+  protected function filterQuery(AbstractModelFactory $objFactory, QueryFilter $qF): array {
     $objects = $objFactory->filter([Factory::FILTER => $qF]);
     
     $ret = [];
@@ -838,14 +832,14 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * @param object $object
+   * @param AbstractModel $object
    * @param array $expands
    * @param array $expandResult
    * @return array
    * @throws ContainerExceptionInterface
    * @throws NotFoundExceptionInterface
    */
-  protected function applyExpansions(object $object, array $expands, array $expandResult): array {
+  protected function applyExpansions(AbstractModel $object, array $expands, array $expandResult): array {
     $newObject = $this->obj2Array($object);
     foreach ($expands as $expand) {
       if (!array_key_exists($object->getId(), $expandResult[$expand])) {
@@ -875,7 +869,7 @@ abstract class AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ContainerExceptionInterface
    */
-  protected function object2Array(object $object, array $expands = []): array {
+  protected function object2Array(AbstractModel $object, array $expands = []): array {
     $expandResult = [];
     foreach ($expands as $expand) {
       $apiClass = $this->container->get('classMapper')->get(get_class($object));
@@ -895,14 +889,14 @@ abstract class AbstractBaseAPI {
   
   /**
    * Helper conversion of single object to JSON string
-   * @param object $object
+   * @param AbstractModel $object
    * @return string
    * @throws ContainerExceptionInterface
    * @throws JsonException
    * @throws NotFoundExceptionInterface
    */
-  protected function object2JSON(object $object): string {
-    $item = $this->object2Array($object, []);
+  protected function object2JSON(AbstractModel $object): string {
+    $item = $this->object2Array($object);
     return $this->ret2json($item);
   }
   
@@ -1089,8 +1083,8 @@ abstract class AbstractBaseAPI {
   //TODO: nice to have would be to be able to include objects that are further away in the relationship
   //ex. from Hash include=hashlist.task to include all tasks from a hash (section 8.3 JSON API) 
   protected function makeExpandables(Request $request, array $validExpandables): array {
-    $data = $request->getParsedBody();
-    $queryExpands = (array_key_exists('include', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['include']) : [];
+    $request->getParsedBody();
+    $queryExpands = (array_key_exists('include', $request->getQueryParams())) ? preg_split("/[, ]+/", $request->getQueryParams()['include']) : [];
     
     foreach ($queryExpands as $expand) {
       if (!in_array($expand, $validExpandables)) {
@@ -1113,19 +1107,14 @@ abstract class AbstractBaseAPI {
       }
       array_push($required_perms, ...$expandedPerms);
     }
-    $permissionResponse = $this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $request->getAttribute("aud"), $permsExpandMatching);
+    $this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $request->getAttribute("aud"), $permsExpandMatching);
     $expands_to_remove = [];
     
     // remove expands with missing permissions
     foreach ($this->missing_permissions as $missing_permission) {
       $expands_to_remove = array_merge($expands_to_remove, $permsExpandMatching[$missing_permission]);
     }
-    $queryExpands = array_diff($queryExpands, $expands_to_remove);
-    
-    // if ($permissionResponse === FALSE) {
-    //   throw new HttpError('Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
-    // }
-    return $queryExpands;
+    return array_diff($queryExpands, $expands_to_remove);
   }
   
   /**
@@ -1147,7 +1136,7 @@ abstract class AbstractBaseAPI {
     return $this->getQueryParameterFamily($request, 'filter');
   }
   
-  protected static function checkJoinExists(array $joins, string $modelName) {
+  protected static function checkJoinExists(array $joins, string $modelName): bool {
     foreach ($joins as $join) {
       if ($join->getOtherFactory()->getModelName() === $modelName) {
         return true;
@@ -1162,7 +1151,7 @@ abstract class AbstractBaseAPI {
    * @throws InternalError
    * @throws HttpError
    */
-  protected function makeFilter(array $filters, object $apiClass, array &$joinFilters = []): array {
+  protected function makeFilter(array $filters, AbstractModelAPI $apiClass, array &$joinFilters = []): array {
     $qFs = [];
     $features = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
@@ -1187,7 +1176,7 @@ abstract class AbstractBaseAPI {
       
       if (!array_key_exists($cast_key, $features)) {
         throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid (key not valid field)");
-      };
+      }
       
       // Only __in and __nin support comma-separated multiple values;
       // all other operators treat the value as a literal string.
@@ -1196,25 +1185,24 @@ abstract class AbstractBaseAPI {
       $valueList = $isListOperator ? explode(",", $value) : [$value];
       
       // TODO Merge/Combine with validate parameters 
-      foreach ($valueList as &$value) {
+      foreach ($valueList as &$element_value) {
         switch ($features[$cast_key]['type']) {
           case 'bool':
-            $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-            if (is_null($value)) {
+            $element_value = filter_var($element_value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            if (is_null($element_value)) {
               throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid boolean value");
             }
-            $value = (int)$value;
+            $element_value = (int)$element_value;
             break;
           case 'int':
-            $value = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-            if (is_null($value)) {
+            $element_value = filter_var($element_value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+            if (is_null($element_value)) {
               throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid integer value");
             }
-            $value = (int)$value;
+            $element_value = (int)$element_value;
             break;
         }
       }
-      unset($value);
       
       // We need to remap any aliased key to the key as it appears in the database.
       $remappedKey = $features[$cast_key]['dbname'];
@@ -1285,6 +1273,8 @@ abstract class AbstractBaseAPI {
   /**
    * Retrieves the relation from a sort/filter value. ex task.taskName when task is a relation for the current
    * Model endpoint. This works only for relations of 1 deep
+   * @throws HttpError
+   * @throws HttpForbidden
    */
   protected function retrieveRelationKey(string $value): object {
     $parts = explode(".", $value);
@@ -1330,7 +1320,7 @@ abstract class AbstractBaseAPI {
     $contains_primary_key = false;
     foreach ($orderings as $order) {
       $features_sort = $features;
-      if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z.]+)$/', $order, $matches)) {
+      if (preg_match('/^(?P<operator>-)?(?P<key>[_a-zA-Z.]+)$/', $order, $matches)) {
         // Special filtering of id to use for uniform access to model primary key
         $cast_key = $matches['key'] == 'id' ? $this->getPrimaryKey() : $matches['key'];
         if ($cast_key == $this->getPrimaryKey()) {
@@ -1386,10 +1376,15 @@ abstract class AbstractBaseAPI {
     return $relatedResources;
   }
   
+  /**
+   * @throws NotFoundExceptionInterface
+   * @throws HttpError
+   * @throws ContainerExceptionInterface
+   */
   protected function processExpands(
-    object $apiClass,
+    AbstractModelAPI $apiClass,
     array $expands,
-    object $object,
+    AbstractModel $object,
     array $expandResult,
     array $includedResources,
     ?array $sparseFieldsets = null,
@@ -1451,7 +1446,7 @@ abstract class AbstractBaseAPI {
         if ($permission_set) {
           $user_available_perms = array_unique(array_merge($user_available_perms, self::$acl_mapping[$rightgroup_perm]));
         }
-      };
+      }
     }
     else {
       $user_available_perms = array_keys($rightgroup_perms, true, true);
@@ -1469,7 +1464,7 @@ abstract class AbstractBaseAPI {
       // attributes are stripped away.
       if ($method === "GET" && $this instanceof AbstractModelAPI) {
         $features = $this->getFeatures();
-        foreach ($features as $key => $arr) {
+        foreach ($features as $arr) {
           if ($arr['public']) {
             $this->addPublicAttributeClass($this->getDBAClass());
           }
@@ -1540,6 +1535,7 @@ abstract class AbstractBaseAPI {
    * Common features for all requests, like setting user and checking basic permissions
    * @throws HTException
    * @throws HttpForbidden
+   * @throws Exception
    */
   protected function preCommon(Request $request): void {
     $userId = $request->getAttribute(('userId'));
@@ -1560,15 +1556,7 @@ abstract class AbstractBaseAPI {
     $routeContext = RouteContext::fromRequest($request);
     $this->routeParser = $routeContext->getRouteParser();
     
-    try {
-      $required_perms = $this->getRequiredPermissions($request->getMethod());
-    }
-    catch (HTException $e) {
-      # Annotate error message, with suitable candidates
-      throw new HttpForbidden($e->getMessage() .
-        "(valid methods are for model are: " . join(",", $this->getAvailableMethods()) . ")"
-      );
-    }
+    $required_perms = $this->getRequiredPermissions($request->getMethod());
     
     if ($this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $request->getAttribute("aud")) === FALSE) {
       throw new HttpForbidden(join('||', $this->permissionErrors));
@@ -1599,7 +1587,7 @@ abstract class AbstractBaseAPI {
   protected function getQueryParameterAsList(Request $request, string $name): array {
     $queryParams = $request->getQueryParams();
     if (array_key_exists($name, $queryParams)) {
-      return preg_split("/[,\ ]+/", $queryParams[$name]);
+      return preg_split("/[, ]+/", $queryParams[$name]);
     }
     else {
       return [];
@@ -1664,8 +1652,22 @@ abstract class AbstractBaseAPI {
   
   /**
    * Get single Resource
+   *
+   * @param AbstractModelAPI $apiClass
+   * @param AbstractModel $object
+   * @param Request $request
+   * @param Response $response
+   * @param int $statusCode
+   * @return Response
+   * @throws ContainerExceptionInterface
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
+   * @throws NotFoundExceptionInterface
    */
-  protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode = 200): Response {
+  protected static function getOneResource(AbstractModelAPI $apiClass, AbstractModel $object, Request $request, Response $response, int $statusCode = 200): Response {
     $apiClass->preCommon($request);
     $validExpandables = $apiClass->getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);

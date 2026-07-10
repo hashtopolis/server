@@ -13,7 +13,7 @@ class HashtypeHandler implements Handler {
     //we need nothing to load
   }
   
-  public function handle($action) {
+  public function handle($action): void {
     try {
       switch ($action) {
         case DHashtypeAction::DELETE_HASHTYPE:

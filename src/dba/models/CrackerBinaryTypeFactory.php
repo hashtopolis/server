@@ -2,12 +2,11 @@
 
 namespace Hashtopolis\dba\models;
 
-use Exception;
-use PDOStatement;
 use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Util;
 
+/**
+ * @extends AbstractModelFactory<CrackerBinaryType>
+ */
 class CrackerBinaryTypeFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "CrackerBinaryType";
@@ -37,83 +36,15 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
   }
   
   /**
-   * @param string $pk
    * @param array $dict
    * @return CrackerBinaryType
    */
-  function createObjectFromDict($pk, $dict): CrackerBinaryType {
+  function createObjectFromDict(array $dict): CrackerBinaryType {
     $conv = [];
     foreach ($dict as $key => $val) {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
     return new CrackerBinaryType($dict['crackerbinarytypeid'], $dict['typename'], $dict['ischunkingavailable']);
-  }
-  
-  /**
-   * @param array $options
-   * @param bool $single
-   * @return CrackerBinaryType|array|null
-   * @throws Exception
-   */
-  function filter(array $options, bool $single = false): CrackerBinaryType|array|null {
-    $join = false;
-    if (array_key_exists('join', $options)) {
-      $join = true;
-    }
-    if ($single) {
-      if ($join) {
-        return parent::filter($options, $single);
-      }
-      return Util::cast(parent::filter($options, $single), CrackerBinaryType::class);
-    }
-    $objects = parent::filter($options, $single);
-    if ($join) {
-      return $objects;
-    }
-    $models = array();
-    foreach ($objects as $object) {
-      $models[] = Util::cast($object, CrackerBinaryType::class);
-    }
-    return $models;
-  }
-  
-  /**
-   * @param string $pk
-   * @return ?CrackerBinaryType
-   * @throws Exception
-   */
-  function get($pk): ?CrackerBinaryType {
-    return Util::cast(parent::get($pk), CrackerBinaryType::class);
-  }
-  
-  /**
-   * @param CrackerBinaryType $model
-   * @return ?CrackerBinaryType
-   * @throws Exception
-   */
-  function save($model): ?CrackerBinaryType {
-    return Util::cast(parent::save($model), CrackerBinaryType::class);
-  }
-
-  /**
-   * @param CrackerBinaryType $model
-   * @param array $arr key-value associations for update
-   * @return CrackerBinaryType
-   * @throws Exception
-   */
-  function mset($model, array $arr): CrackerBinaryType {
-    return Util::cast(parent::mset($model, $arr), CrackerBinaryType::class);
-  }
-
-  /**
-   * @param CrackerBinaryType $model
-   * @param string $key key of the column to update
-   * @param $value
-   * @return CrackerBinaryType
-   * @throws Exception
-   */
-  function set($model, string $key, $value): CrackerBinaryType {
-    return Util::cast(parent::set($model, $key, $value), CrackerBinaryType::class);
   }
 }

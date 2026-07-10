@@ -319,9 +319,10 @@ class TestBase extends TestCase {
   /**
    * used to create an object in the database and then register it directly for deletion to be cleaned up after the test
    *
+   * @template TModel of AbstractModel
    * @param AbstractModelFactory $factory
-   * @param AbstractModel $obj
-   * @return AbstractModel
+   * @param TModel $obj
+   * @return TModel
    * @throws Exception
    */
   public function createDatabaseObject(AbstractModelFactory $factory, AbstractModel $obj): AbstractModel {

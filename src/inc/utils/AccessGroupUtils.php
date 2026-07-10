@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\ContainFilter;
@@ -25,6 +26,7 @@ class AccessGroupUtils {
   /**
    * @param int $groupId
    * @return AccessGroupUser[]
+   * @throws Exception
    */
   public static function getUsers(int $groupId): array {
     $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $groupId, "=");
@@ -34,6 +36,7 @@ class AccessGroupUtils {
   /**
    * @param int $groupId
    * @return AccessGroupAgent[]
+   * @throws Exception
    */
   public static function getAgents(int $groupId): array {
     $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $groupId, "=");
@@ -42,6 +45,7 @@ class AccessGroupUtils {
   
   /**
    * @return AccessGroup[]
+   * @throws Exception
    */
   public static function getGroups(): array {
     return Factory::getAccessGroupFactory()->filter([]);
@@ -52,6 +56,7 @@ class AccessGroupUtils {
    * @return AccessGroup
    * @throws HttpError
    * @throws HttpConflict
+   * @throws Exception
    */
   public static function createGroup(string $groupName): AccessGroup {
     if (strlen($groupName) == 0 || strlen($groupName) > DLimits::ACCESS_GROUP_MAX_LENGTH) {
@@ -64,12 +69,12 @@ class AccessGroupUtils {
       throw new HttpConflict("There is already an access group with the same name!");
     }
     $group = new AccessGroup(null, $groupName);
-    $group = Factory::getAccessGroupFactory()->save($group);
-    return $group;
+    return Factory::getAccessGroupFactory()->save($group);
   }
   
   /**
    * @throws HTException
+   * @throws Exception
    */
   public static function rename(int $accessGroupId, string $newname): void {
     $accessGroup = AccessGroupUtils::getGroup($accessGroupId);
@@ -82,8 +87,9 @@ class AccessGroupUtils {
   
   /**
    * @param int $groupId
-   * @param $user
+   * @param User $user
    * @throws HTException
+   * @throws Exception
    */
   public static function abortChunksGroup(int $groupId, User $user): void {
     $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
@@ -107,6 +113,7 @@ class AccessGroupUtils {
    * @param int $agentId
    * @param int $groupId
    * @throws HTException
+   * @throws Exception
    */
   public static function addAgent(int $agentId, int $groupId): void {
     $group = AccessGroupUtils::getGroup($groupId);
@@ -127,6 +134,7 @@ class AccessGroupUtils {
    * @param int $userId
    * @param int $groupId
    * @throws HTException
+   * @throws Exception
    */
   public static function addUser(int $userId, int $groupId): void {
     $group = AccessGroupUtils::getGroup($groupId);
@@ -147,6 +155,7 @@ class AccessGroupUtils {
    * @param int $agentId
    * @param int $groupId
    * @throws HTException
+   * @throws Exception
    */
   public static function removeAgent(int $agentId, int $groupId): void {
     $group = AccessGroupUtils::getGroup($groupId);
@@ -165,6 +174,7 @@ class AccessGroupUtils {
    * @param int $userId
    * @param int $groupId
    * @throws HTException
+   * @throws Exception
    */
   public static function removeUser(int $userId, int $groupId): void {
     $group = AccessGroupUtils::getGroup($groupId);
@@ -182,6 +192,7 @@ class AccessGroupUtils {
   /**
    * @param int $groupId
    * @throws HTException
+   * @throws Exception
    */
   public static function deleteGroup(int $groupId): void {
     $group = AccessGroupUtils::getGroup($groupId);
@@ -221,6 +232,7 @@ class AccessGroupUtils {
    * @param int $groupId
    * @return AccessGroup
    * @throws HTException
+   * @throws Exception
    */
   public static function getGroup(int $groupId): AccessGroup {
     $group = Factory::getAccessGroupFactory()->get($groupId);

@@ -2,7 +2,7 @@
 
 namespace Hashtopolis\inc\utils;
 
-use Hashtopolis;
+use Exception;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\Assignment;
@@ -25,8 +25,9 @@ class ChunkUtils {
    * @param $assignment Assignment
    * @return Chunk|null
    * @throws HTException
+   * @throws Exception
    */
-  public static function handleExistingChunk($chunk, $task, $assignment) {
+  public static function handleExistingChunk(Chunk $chunk, Task $task, Assignment $assignment): ?Chunk {
     $disptolerance = 1 + SConfig::getInstance()->getVal(DConfig::DISP_TOLERANCE) / 100;
     
     DServerLog::log(DServerLog::TRACE, "Handling existing chunk...", [$task, $chunk, $assignment]);
@@ -112,8 +113,9 @@ class ChunkUtils {
    * @param Assignment $assignment
    * @return Chunk|null
    * @throws HTException
+   * @throws Exception
    */
-  public static function createNewChunk($task, $assignment) {
+  public static function createNewChunk(Task $task, Assignment $assignment): ?Chunk {
     $disptolerance = 1 + SConfig::getInstance()->getVal(DConfig::DISP_TOLERANCE) / 100;
     
     // if we have set a skip keyspace we set the the current progress to the skip which was set initially
@@ -132,7 +134,6 @@ class ChunkUtils {
       $length = $remaining;
     }
     Factory::getTaskFactory()->inc($task, Task::KEYSPACE_PROGRESS, $length);
-    assert($task instanceof Task);
     $initialProgress = ($task->getUsePreprocessor() || $task->getForcePipe()) ? null : 0;
     $chunk = new Chunk(null, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, $initialProgress, DHashcatStatus::INIT, 0, 0);
     $chunk = Factory::getChunkFactory()->save($chunk);
@@ -149,8 +150,9 @@ class ChunkUtils {
    * @param int $chunkSize
    * @return int
    * @throws HTException
+   * @throws Exception
    */
-  public static function calculateChunkSize($keyspace, $benchmark, $chunkTime, $tolerance = 1.0, $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
+  public static function calculateChunkSize(int $keyspace, string $benchmark, int $chunkTime, float $tolerance = 1.0, int $staticChunking = DTaskStaticChunking::NORMAL, int $chunkSize = 0): int {
     global $QUERY;
     
     if ($chunkTime <= 0) {
@@ -176,7 +178,7 @@ class ChunkUtils {
       }
     }
     
-    if (strpos($benchmark, ":") === false) {
+    if (!str_contains($benchmark, ":")) {
       // old benchmarking method
       if ($benchmark == 0) {
         // special case on small tasks, so we just create a chunk with the size of the keyspace

@@ -10,6 +10,8 @@ use Hashtopolis\inc\StartupConfig;
  * Abstraction of all ModelFactories.
  * A ModelFactory is used to get all
  * models from Database. It handles the DB calling and caching of objects.
+ *
+ * @template TModel of AbstractModel
  */
 abstract class AbstractModelFactory {
   private const MAPPING_PREFIX = "htp_";
@@ -65,7 +67,7 @@ abstract class AbstractModelFactory {
    * different queries such as the get queries, where no actual object
    * is given
    *
-   * @return AbstractModel
+   * @return TModel
    */
   abstract function getNullObject(): AbstractModel;
   
@@ -74,11 +76,10 @@ abstract class AbstractModelFactory {
    *
    * This function is used to get objects from a certain type from db resourcebundle_get_error_message
    *
-   * @param $pk string primary key
    * @param $dict array dict of values and keys
-   * @return AbstractModel An object of the factories type
+   * @return TModel An object of the factories type
    */
-  abstract function createObjectFromDict(string $pk, array $dict): AbstractModel;
+  abstract function createObjectFromDict(array $dict): AbstractModel;
   
   /**
    * Return the model name in the table, which is the same normally, unless mapping is required. In a mapping case,
@@ -163,8 +164,8 @@ abstract class AbstractModelFactory {
    *
    * The Function returns null if the object could not be placed into the
    * database
-   * @param $model AbstractModel model to save
-   * @return AbstractModel|null
+   * @param TModel $model model to save
+   * @return ?TModel
    * @throws Exception
    */
   public function save(AbstractModel $model): ?AbstractModel {
@@ -245,7 +246,7 @@ abstract class AbstractModelFactory {
    * This function updates the database entry for the given model
    * based on it's primary key.
    * Returns the return of PDO::execute()
-   * @param $model AbstractModel model to update
+   * @param TModel $model model to update
    * @return PDOStatement
    * @throws Exception
    */
@@ -277,9 +278,9 @@ abstract class AbstractModelFactory {
    * Atomically sets the given keys of this model to the given values without setting all other values (like ->update() does)
    *
    * Returns the return of PDO::execute() or null if nothing was executed
-   * @param AbstractModel $model AbstractModel primary key of model
+   * @param TModel $model primary key of model
    * @param array $arr key-value associations for update
-   * @return AbstractModel updated model
+   * @return TModel updated model
    * @throws Exception
    */
   public function mset(AbstractModel $model, array $arr): AbstractModel {
@@ -307,10 +308,10 @@ abstract class AbstractModelFactory {
    * Atomically sets the given key of this model to the given value without altering other values
    *
    * Returns the return of PDO::execute()
-   * @param AbstractModel $model primary key of model
+   * @param TModel $model primary key of model
    * @param string $key key of the column to update
    * @param $value
-   * @return AbstractModel
+   * @return TModel
    * @throws Exception
    */
   public function set(AbstractModel $model, string $key, $value): AbstractModel {
@@ -333,7 +334,7 @@ abstract class AbstractModelFactory {
    * Increments the given key of this model by the given value atomically
    *
    * Returns the return of PDO::execute()
-   * @param $model AbstractModel primary key of model
+   * @param TModel &$model primary key of model
    * @param $key string key of the column to update
    * @param $value int amount of increment
    * @return PDOStatement
@@ -356,7 +357,7 @@ abstract class AbstractModelFactory {
     $stmt->execute($values);
     
     $refreshed = $this->get($model->getPrimaryKeyValue());
-    assert($refreshed instanceof AbstractModel);
+    assert($refreshed !== null);
     $model = $refreshed;
     return $stmt;
   }
@@ -365,7 +366,7 @@ abstract class AbstractModelFactory {
    * Decrements the given key of this model by the given value
    *
    * Returns the return of PDO::execute()
-   * @param $model AbstractModel primary key of model
+   * @param TModel &$model primary key of model
    * @param $key string key of the column to update
    * @param $value int amount of increment
    * @return PDOStatement
@@ -388,13 +389,13 @@ abstract class AbstractModelFactory {
     $stmt->execute($values);
     
     $refreshed = $this->get($model->getPrimaryKeyValue());
-    assert($refreshed instanceof AbstractModel);
+    assert($refreshed !== null);
     $model = $refreshed;
     return $stmt;
   }
   
   /**
-   * @param $models AbstractModel[]
+   * @param TModel[] $models
    * @return bool|PDOStatement
    * @throws Exception
    */
@@ -642,11 +643,11 @@ abstract class AbstractModelFactory {
    * the getFromDB() function and return it's result. It's therefor recommended
    * to use this function
    *
-   * @param $pk string primary key
-   * @return AbstractModel|null the with pk associated model or Null
+   * @param string|int $pk primary key
+   * @return ?TModel the with pk associated model or Null
    * @throws Exception
    */
-  public function get($pk): ?AbstractModel {
+  public function get(string|int $pk): ?AbstractModel {
     return $this->getFromDB($pk);
   }
   
@@ -657,11 +658,11 @@ abstract class AbstractModelFactory {
    * This function will go to the database directly neglecting the cache.
    * If the model is set to be cachable, the cache will also be updated
    *
-   * @param $pk string primary key
-   * @return AbstractModel|null the with pk associated model or Null
+   * @param string|int $pk primary key
+   * @return ?TModel the with pk associated model or Null
    * @throws Exception
    */
-  public function getFromDB($pk): ?AbstractModel {
+  public function getFromDB(string|int $pk): ?AbstractModel {
     $keys = self::getMappedModelKeys($this->getNullObject());
     $query = "SELECT " . implode(", ", $keys);
     $query .= " FROM " . $this->getMappedModelTable();
@@ -671,7 +672,7 @@ abstract class AbstractModelFactory {
     $stmt->execute(array($pk));
     if ($stmt->rowCount() != 0) {
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
-      return $this->createObjectFromDict($pk, $row);
+      return $this->createObjectFromDict($row);
     }
     else {
       return null;
@@ -692,7 +693,7 @@ abstract class AbstractModelFactory {
    * $options[Factory::JOIN] is an array of JoinFilter options
    *
    * @param $options array containing option settings
-   * @return array Returns an array of matching objects
+   * @return array<string,array<TModel>> Returns an array of matching objects
    * @throws Exception
    */
   private function filterWithJoin(array $options): array {
@@ -762,7 +763,7 @@ abstract class AbstractModelFactory {
       }
       
       foreach ($factories as $factory) {
-        $model = $factory->createObjectFromDict($values[$factory->getModelTable()][strtolower($factory->getNullObject()->getPrimaryKey())], $values[$factory->getModelTable()]);
+        $model = $factory->createObjectFromDict($values[$factory->getModelTable()]);
         $res[$factory->getModelTable()][] = $model;
       }
     }
@@ -773,7 +774,7 @@ abstract class AbstractModelFactory {
   /**
    * @param array $options
    * @param bool $single
-   * @return array|AbstractModel|null
+   * @return array|TModel|null
    * @throws Exception
    */
   public function filter(array $options, bool $single = false): array|AbstractModel|null {
@@ -810,16 +811,7 @@ abstract class AbstractModelFactory {
     
     // Loop over all entries and create an object from dict for each
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-      $pkName = $this->getNullObject()->getPrimaryKey();
-      
-      if (isset($row[strtolower($pkName)])) {
-        $pk = $row[strtolower($pkName)];
-      }
-      else {
-        $pk = $row[$pkName];
-      }
-      $model = $this->createObjectFromDict($pk, $row);
-      $objects[] = $model;
+      $objects[] = $this->createObjectFromDict($row);
     }
     
     if ($single) {
@@ -929,11 +921,11 @@ abstract class AbstractModelFactory {
    *
    * This function deletes the given and also cleans the cache from it.
    * It returns the return of the execute query.
-   * @param $model AbstractModel
+   * @param ?TModel $model
    * @return bool
    * @throws Exception
    */
-  public function delete($model): bool {
+  public function delete(?AbstractModel $model): bool {
     if ($model != null) {
       $query = "DELETE FROM " . $this->getMappedModelTable() . " WHERE " . $model->getPrimaryKey() . " = ?";
       $stmt = $this->getDB()->prepare($query);
@@ -1015,7 +1007,7 @@ abstract class AbstractModelFactory {
   public function massUpdate($options): bool {
     $query = "UPDATE " . $this->getMappedModelTable();
     
-    $vals = array();
+    $vals = [];
     
     if (array_key_exists(Factory::UPDATE, $options)) {
       $query = $query . " SET ";
@@ -1025,7 +1017,6 @@ abstract class AbstractModelFactory {
       if (!is_array($updateOptions)) {
         $updateOptions = array($updateOptions);
       }
-      $vals = array();
       
       for ($i = 0; $i < count($updateOptions); $i++) {
         $option = $updateOptions[$i];

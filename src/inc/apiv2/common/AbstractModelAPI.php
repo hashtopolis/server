@@ -2,7 +2,10 @@
 
 namespace Hashtopolis\inc\apiv2\common;
 
+use Exception;
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\MassUpdateSet;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\error\ErrorHandler;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -27,12 +30,21 @@ use Hashtopolis\dba\PaginationFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\Util;
 
+/**
+ * @template TModel of AbstractModel
+ */
 abstract class AbstractModelAPI extends AbstractBaseAPI {
-  abstract static public function getDBAClass();
+  /**
+   * @return class-string<TModel>
+   */
+  abstract static public function getDBAClass(): string;
   
   abstract protected function createObject(array $data): int;
   
-  abstract protected function deleteObject(object $object): void;
+  /**
+   * @param TModel $object
+   */
+  abstract protected function deleteObject(AbstractModel $object): void;
   
   /**
    * Available 'expand' parameters on $object
@@ -45,8 +57,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * Fetch objects for  $expand on $objects
    * @throws InternalError
    * @throws HttpError
+   * @throws Exception
    */
-  protected static function fetchExpandObjects(array $objects, string $expand): mixed {
+  protected static function fetchExpandObjects(array $objects, string $expand): array {
     //disabled the check because with intermediate objects its possible to fetch a different model
     /* Ensure we receive the proper type */
     // $baseModel = static::getDBAClass();
@@ -68,7 +81,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $toOneRelationships[$expand]['relationKey'],
           $toOneRelationships[$expand]['parentKey']
         );
-      };
+      }
       
       return self::getForeignKeyRelation(
         $objects,
@@ -76,7 +89,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $relationFactory,
         $toOneRelationships[$expand]['relationKey'],
       );
-    };
+    }
     
     $toManyRelationships = static::getToManyRelationships();
     if (array_key_exists($expand, $toManyRelationships)) {
@@ -93,7 +106,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $relationFactory,
           $toManyRelationships[$expand]['relationKey'],
         );
-      };
+      }
       
       return self::getManyToOneRelation(
         $objects,
@@ -101,13 +114,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $relationFactory,
         $toManyRelationships[$expand]['relationKey'],
       );
-    };
+    }
     
     throw new InternalError("Internal error: Expansion '$expand' not implemented!");
   }
   
   
   /**
+   * @return AbstractModelFactory<TModel>
    * @throws HttpError
    */
   final protected static function getFactory(): object {
@@ -156,6 +170,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * of $intermediateFactory joining on $joinField (between 'intermediate' and 'target'). Filtered by
    * $filterField at $intermediateFactory.
    *
+   * A bit hacky solution to get a to one through an intermediate table, currently only used by tasks to include a hashlist through the taskwrapper
+   * another solution can be to overwrite fetchExpandObjects() in tasks.routes
+   *
    * @param array $objects Objects Fetch relation for selected Objects
    * @param string $objectField Field to use as base for $objects
    * @param object $intermediateFactory Factory used as intermediate between parentObject and targetObject
@@ -164,9 +181,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param string $parentKey
    * @return array $many2One which is a map where the key is the id of the parent object and the value is an array of the included
    *                objects that are included for this parent object
+   * @throws HttpError
+   * @throws Exception
    */
-  //A bit hacky solution to get a to one through an intermediate table, currently only used by tasks to include a hashlist through the taskwrapper
-  //another solution can be to overwrite fetchExpandObjects() in tasks.routes
   final protected static function getManyToOneRelationViaIntermediate(
     array $objects,
     string $objectField,
@@ -215,18 +232,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    *
    * @param array $objects Objects Fetch relation for selected Objects
    * @param string $objectField Field to use as base for $objects
-   * @param object $factory Factory used to retrieve objects
+   * @param AbstractModelFactory $factory Factory used to retrieve objects
    * @param string $filterField Filter field of $field to filter against $objects field
    *
    * @return array
+   * @throws Exception
    */
   final protected static function getForeignKeyRelation(
     array $objects,
     string $objectField,
-    object $factory,
+    AbstractModelFactory $factory,
     string $filterField
   ): array {
-    assert($factory instanceof AbstractModelFactory);
     $retval = array();
     
     /* Fetch required objects */
@@ -242,7 +259,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $f2o = [];
     foreach ($hO as $relationObject) {
       $f2o[$relationObject->getKeyValueDict()[$filterField]] = $relationObject;
-    };
+    }
     
     /* Map objects */
     foreach ($objects as $object) {
@@ -264,6 +281,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param string $filterField Filter field of $field to filter against $objects field
    *
    * @return array
+   * @throws Exception
    */
   final protected static function getManyToOneRelation(
     array $objects,
@@ -306,6 +324,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param string $joinField Field to connect 'intermediate' to 'target'
    * @return array $many2many which is a map where the key is the id of the parent object and the value is an array of the included
    *                objects that are included for this parent object
+   * @throws Exception
    */
   final protected static function getManyToManyRelationViaIntermediate(
     array $objects,
@@ -371,6 +390,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HTException
    * @throws HttpForbidden
    * @throws ResourceNotFoundError
+   * @throws HttpError
    */
   public function deleteOne(Request $request, Response $response, array $args): Response
     // TODO how to handle cascading deletes?
@@ -390,10 +410,22 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   }
   
   /**
+   * Checks if a user has access to the given single element retrieved
+   * @param User $user
+   * @param AbstractModel $object
+   * @return bool true if the access is allowed
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
+    return true;
+  }
+  
+  /**
    * Request single object from database & validate permissions
+   * @return TModel
    * @throws ResourceNotFoundError
    * @throws HttpForbidden
    * @throws HttpError
+   * @throws Exception
    */
   protected function doFetch(string $pk, ?AbstractModelFactory $otherFactory = null): mixed {
     if ($otherFactory != null) {
@@ -446,6 +478,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     return $updates;
   }
   
+  /**
+   * @throws HttpError
+   */
   protected static function calculate_next_cursor(string|int $cursor, bool $ascending = true): int|string {
     if (is_int($cursor)) {
       if ($ascending) {
@@ -525,7 +560,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    */
   protected static function decode_cursor(string $encoded_cursor): array {
     $json = base64_decode($encoded_cursor);
-    if ($json == false) {
+    if (!$json) {
       throw new HttpError("Invallid pagination cursor, cursor has to be base64 encoded");
     }
     $cursor = json_decode($json, true);
@@ -588,6 +623,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * API entry point for requesting multiple objects
    * @throws HttpError
+   * @throws Exception
    */
   public static function getManyResources(object $apiClass, Request $request, Response $response, array $relationFs = []): Response {
     $apiClass->preCommon($request);
@@ -648,8 +684,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
      */
     $sortList = $apiClass->getQueryParameterAsList($request, 'sort');
     $isNegativeSort = $sortList != null && $sortList[0][0] == '-';
-    //this is used to reverse the array to show the data correctly for the user 
-    $reverseArray = false;
+    //this is used to reverse the array to show the data correctly for the user
 
     if ($isNegativeSort) {
       $firstCursorSort = "DESC";
@@ -694,9 +729,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     else if ($isNegativeSort) {
       //the default negative case to retrieve the first elements in a descending way
       $defaultSort = "DESC";
+      $reverseArray = false;
     }
     else {
       $defaultSort = "ASC";
+      $reverseArray = false;
     }
     $primaryKey = $apiClass->getPrimaryKey();
     
@@ -789,7 +826,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     // $lastParams['page']['before'] = $apiClass::encode_cursor(self::calculate_next_cursor($max));
     if ($primaryKeyIsNotPrimaryFilter && isset($lastCursorObject)) {
       $new_secondary_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
-      $last_cursor = $apiClass::build_cursor($primaryFilter, $lastCursorObject->expose()[$primaryFilter], $primaryKeyIsNotPrimaryFilter, $primaryKey, $new_secondary_cursor);
+      $last_cursor = $apiClass::build_cursor($primaryFilter, $lastCursorObject->expose()[$primaryFilter], true, $primaryKey, $new_secondary_cursor);
     }
     else if (isset($lastCursorObject)) {
       $new_cursor = $apiClass::calculate_next_cursor($lastCursorObject->getId(), !$isNegativeSort);
@@ -926,7 +963,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $cast_key = $matches['key'] == '_id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
         if (!array_key_exists($cast_key, $features)) {
           continue; //not a valid filter for current model
-        };
+        }
         $modelFilterMap[$model::class][$filter] = $value;
         break; //filter has been found for current model, so break to go to next filter
       }
@@ -947,6 +984,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws JsonException
    * @throws ContainerExceptionInterface
    * @throws NotFoundExceptionInterface
+   * @throws Exception
    */
   public function count(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1005,10 +1043,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @return Response
    * @throws ContainerExceptionInterface
    * @throws HTException
+   * @throws HttpError
    * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
    * @throws NotFoundExceptionInterface
    * @throws ResourceNotFoundError
-   * @throws HttpError
    */
   public function getOne(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1026,10 +1066,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param mixed $object
    * @param mixed $data
    * @return Response
+   * @throws ContainerExceptionInterface
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
+   * @throws NotFoundExceptionInterface
    * @throws ResourceNotFoundError
+   * @throws Exception
    */
   public function patchSingleObject(Request $request, Response $response, mixed $object, mixed $data): Response {
     if (!$this->validateResourceRecord($data)) {
@@ -1053,7 +1098,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     // Return updated object
     $newObject = $this->getFactory()->get($object->getId());
-    return $this->getOneResource($this, $newObject, $request, $response, 200);
+    return $this->getOneResource($this, $newObject, $request, $response);
   }
   
   /**
@@ -1062,9 +1107,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param Response $response
    * @param array $args
    * @return Response
+   * @throws ContainerExceptionInterface
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
+   * @throws NotFoundExceptionInterface
    * @throws ResourceNotFoundError
    */
   public function patchOne(Request $request, Response $response, array $args): Response {
@@ -1104,6 +1153,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws ResourceNotFoundError
    */
   public function patchMultiple(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1160,6 +1210,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * Overridable function to update multiple objects
    * @objects ia an array where id is the key and the values are the attributes that need to be patched
+   * @param array $objects
+   *
+   * @return void
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws ResourceNotFoundError
    */
   protected function updateObjects(array $objects): void {
     foreach ($objects as $objectId => $attributes) {
@@ -1173,9 +1229,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param Response $response
    * @param array $args
    * @return Response
+   * @throws ContainerExceptionInterface
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
+   * @throws NotFoundExceptionInterface
+   * @throws Exception
    */
   public function post(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1221,6 +1282,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ResourceNotFoundError
    * @throws HttpError
+   * @throws Exception
    */
   public function getToOneRelatedResource(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1281,6 +1343,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws NotFoundExceptionInterface
    * @throws ResourceNotFoundError
    * @throws HttpError
+   * @throws Exception
    */
   public function getToOneRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1318,7 +1381,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     else {
       $object = $this->doFetch($args['id']);
-    };
+    }
     
     $id = $object->getKeyValueDict()[$relation['key']];
     
@@ -1364,6 +1427,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HttpError
    * @throws HttpForbidden
    * @throws ResourceNotFoundError
+   * @throws Exception
    */
   public function patchToOneRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1384,7 +1448,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $features = $this->getFeatures();
     $this->isAllowedToMutate($features, $relationKey, $data == null);
     
-    $factory = $this->getFactory();
     $object = $this->doFetch(intval($args['id']));
     if ($data == null) {
       $this->DatabaseSet($object, $relationKey, null);
@@ -1548,6 +1611,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HttpError
    * @throws HttpForbidden
    * @throws InternalError
+   * @throws Exception
    */
   protected function updateToManyRelationship(Request $request, array $data, array $args): void {
     $relation = $this->getToManyRelationships()[$args['relation']];
@@ -1613,6 +1677,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws InternalError
    * @throws ResourceNotFoundError
    * @throws HttpConflict
+   * @throws Exception
    */
   public function postToManyRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1665,10 +1730,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $relation["junctionTableFilterField"] => $baseItem->getId(),
           $relation["junctionTableJoinField"] => $relationItem->getId(),
         ];
-        $table_entry = $factory->createObjectFromDict(-1, $table_entry_dict);
+        $table_entry = $factory->createObjectFromDict($table_entry_dict);
         $factory->save($table_entry);
       }
-      $factory->getDB()->commit();
     }
     else {
       $relationType = $relation['relationType'];
@@ -1694,8 +1758,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
       
       $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
-      $factory->getDB()->commit();
     }
+    $factory->getDB()->commit();
     
     return $response->withStatus(201)
       ->withHeader("Content-Type", "application/vnd.api+json");
@@ -1711,6 +1775,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws Exception
    */
   public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
@@ -1750,9 +1815,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $object = $factory->filter([Factory::FILTER => [$qF, $qF2]])[0];
         $factory->delete($object);
       }
-      if (!$factory->getDB()->commit()) {
-        throw new HttpError("Some resources failed updating");
-      }
     }
     else {
       $updates = [];
@@ -1765,9 +1827,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
       $factory->getDB()->beginTransaction(); //start transaction to be able roll back
       $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
-      if (!$factory->getDB()->commit()) {
-        throw new HttpError("Some resources failed updating");
-      }
+    }
+    if (!$factory->getDB()->commit()) {
+      throw new HttpError("Some resources failed updating");
     }
     
     return $response->withStatus(201)
@@ -1777,6 +1839,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * Function to update fields in the database
    * @throws HttpError
+   * @throws Exception
    */
   protected function DatabaseSet($object, $key, $value): void {
     try {
@@ -1834,7 +1897,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
       
       $validFeatures[$name] = $feature;
-    };
+    }
     
     // Ensure debugging response lists are in sorted order
     ksort($validFeatures);
@@ -1844,9 +1907,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   
   /**
    * Override-able registering of options
+   *
+   * @param App $app
+   * @return void
+   * @throws ContainerExceptionInterface
+   * @throws NotFoundExceptionInterface
    */
   static public function register(App $app): void {
-    $me = get_called_class();
+    $me = static::class;
     $baseUri = $me::getBaseUri();
     $baseUriOne = $baseUri . '/{id:[0-9]+}';
     $baseUriCount = $baseUri . "/count";
@@ -1867,15 +1935,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $available_methods = $me::getAvailableMethods();
     
     if (in_array("GET", $available_methods)) {
-      $app->get($baseUri, $me . ':get')->setname($me . ':get');
-      $app->get($baseUriCount, $me . ':count')->setname($me . ':count');
+      $app->get($baseUri, [$me, 'get'])->setname($me . ':get');
+      $app->get($baseUriCount, [$me, 'count'])->setname($me . ':count');
     }
-    
+
     foreach ($me::getToOneRelationships() as $name => $relationship) {
       $relationUri = '{relation:' . $name . '}';
-      $app->get($baseUriOne . '/' . $relationUri, $me . ':getToOneRelatedResource')->setname($me . ':getToOneRelatedResource');
-      $app->get($baseUriRelationships . '/' . $relationUri, $me . ':getToOneRelationshipLink')->setname($me . ':getToOneRelationshipLink');
-      $app->patch($baseUriRelationships . '/' . $relationUri, $me . ':patchToOneRelationshipLink')->setname($me . ':patchToOneRelationshipLink');
+      $app->get($baseUriOne . '/' . $relationUri, [$me, 'getToOneRelatedResource'])->setname($me . ':getToOneRelatedResource');
+      $app->get($baseUriRelationships . '/' . $relationUri, [$me, 'getToOneRelationshipLink'])->setname($me . ':getToOneRelationshipLink');
+      $app->patch($baseUriRelationships . '/' . $relationUri, [$me, 'patchToOneRelationshipLink'])->setname($me . ':patchToOneRelationshipLink');
       $app->options($baseUriOne . '/' . $relationUri, function (Request $request, Response $response): Response {
         return $response;
       });
@@ -1883,14 +1951,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         return $response;
       });
     }
-    
+
     foreach ($me::getToManyRelationships() as $name => $relationship) {
       $relationUri = '{relation:' . $name . '}';
-      $app->get($baseUriOne . '/' . $relationUri, $me . ':getToManyRelatedResource')->setname($me . ':getToManyRelatedResource');
-      $app->get($baseUriRelationships . '/' . $relationUri, $me . ':getToManyRelationshipLink')->setname($me . ':getToManyRelationshipLink');
-      $app->patch($baseUriRelationships . '/' . $relationUri, $me . ':patchToManyRelationshipLink')->setname($me . ':patchToManyRelationshipLink');
-      $app->post($baseUriRelationships . '/' . $relationUri, $me . ':postToManyRelationshipLink')->setname($me . ':postToManyRelationshipLink');
-      $app->delete($baseUriRelationships . '/' . $relationUri, $me . ':deleteToManyRelationshipLink')->setname($me . ':deleteToManyRelationshipLink');
+      $app->get($baseUriOne . '/' . $relationUri, [$me, 'getToManyRelatedResource'])->setname($me . ':getToManyRelatedResource');
+      $app->get($baseUriRelationships . '/' . $relationUri, [$me, 'getToManyRelationshipLink'])->setname($me . ':getToManyRelationshipLink');
+      $app->patch($baseUriRelationships . '/' . $relationUri, [$me, 'patchToManyRelationshipLink'])->setname($me . ':patchToManyRelationshipLink');
+      $app->post($baseUriRelationships . '/' . $relationUri, [$me, 'postToManyRelationshipLink'])->setname($me . ':postToManyRelationshipLink');
+      $app->delete($baseUriRelationships . '/' . $relationUri, [$me, 'deleteToManyRelationshipLink'])->setname($me . ':deleteToManyRelationshipLink');
       $app->options($baseUriOne . '/' . $relationUri, function (Request $request, Response $response): Response {
         return $response;
       });
@@ -1898,23 +1966,23 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         return $response;
       });
     }
-    
+
     if (in_array("POST", $available_methods)) {
-      $app->post($baseUri, $me . ':post')->setname($me . ':post');
+      $app->post($baseUri, [$me, 'post'])->setname($me . ':post');
     }
-    
+
     if (in_array("GET", $available_methods)) {
-      $app->get($baseUriOne, $me . ':getOne')->setName($me . ':getOne');
+      $app->get($baseUriOne, [$me, 'getOne'])->setName($me . ':getOne');
     }
-    
+
     if (in_array("PATCH", $available_methods)) {
-      $app->patch($baseUriOne, $me . ':patchOne')->setName($me . ':patchOne');
-      $app->patch($baseUri, $me . ':patchMultiple')->setName($me . ':patchMultiple');
+      $app->patch($baseUriOne, [$me, 'patchOne'])->setName($me . ':patchOne');
+      $app->patch($baseUri, [$me, 'patchMultiple'])->setName($me . ':patchMultiple');
     }
-    
+
     if (in_array("DELETE", $available_methods)) {
-      $app->delete($baseUriOne, $me . ':deleteOne')->setName($me . ':deleteOne');
-      $app->delete($baseUri, $me . ':deleteMultiple')->setName($me . 'deleteMultiple');
+      $app->delete($baseUriOne, [$me, 'deleteOne'])->setName($me . ':deleteOne');
+      $app->delete($baseUri, [$me, 'deleteMultiple'])->setName($me . 'deleteMultiple');
     }
   }
 }

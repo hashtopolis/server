@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessControlUtils;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\User;
@@ -14,6 +15,9 @@ use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
 
 
+/**
+ * @extends AbstractModelAPI<RightGroup>
+ */
 class GlobalPermissionGroupAPI extends AbstractModelAPI {
   public static function getBaseUri(): string {
     return "/api/v2/ui/globalpermissiongroups";
@@ -68,9 +72,11 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
   }
   
   /**
+   * @param RightGroup $object
+   * @throws HTException
    * @throws HttpError
    */
-  protected function deleteObject(object $object): void {
+  protected function deleteObject(AbstractModel $object): void {
     AccessControlUtils::deleteGroup($object->getId());
   }
   
