@@ -22,16 +22,16 @@ jobs:
         with:
           db_system: mysql
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
       - name: Cache npm downloads
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.npm
           key: ${{ runner.os }}-npm-openapi-spectral6.15.1-redocly2.24.0
       - name: Install OpenAPI tooling
-        run: npm install -g @stoplight/spectral-cli@6.15.1 @redocly/cli@2.24.0
+        run: npm install -g @stoplight/spectral-cli@6.15.1 @redocly/cli@2.24.0 --min-release-age=14
       - name: Download OpenAPI schema
         run: wget -q http://localhost:8080/api/v2/openapi.json -O openapi.json
       - name: Lint OpenAPI schema with Redocly
