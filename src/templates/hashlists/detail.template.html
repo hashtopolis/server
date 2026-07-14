@@ -181,11 +181,18 @@
                   </form>
                 {{ENDIF}}
                 {{IF [[list.getVal('hashlist')->getCracked()]] < [[list.getVal('hashlist')->getHashCount()]] && [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
-                  <form style='float: left;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
+                  <form style='float: left; margin: 0px 5px;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
                     <input type='hidden' name='action' value='[[$DHashlistAction::ZAP_HASHLIST]]'>
                     <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
                     <input type="hidden" name="csrf" value="[[csrf]]">
                     <input type='submit' class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value='Import pre-cracked hashes'>
+                  </form>
+                {{ENDIF}}
+                {{IF [[list.getVal('hashlist')->getCracked()]] < [[list.getVal('hashlist')->getHashCount()]] && [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
+                  <form style='float: left; margin: 0px 5px;' action="tasks.php" method='get'>
+                    <input type='hidden' name='new' value='true'>
+                    <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
+                    <input type='submit' class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value='Create New Task'>
                   </form>
                 {{ENDIF}}
               </div>

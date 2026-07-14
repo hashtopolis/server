@@ -382,6 +382,10 @@ else if (isset($_GET['new'])) {
       $copy = TaskUtils::getFromPretask($copy);
     }
   }
+  else if (isset($_GET["hashlist"])) {
+    $hashlistId = $_GET["hashlist"];
+  }
+
   if ($copy === null) {
     $copy = TaskUtils::getDefault();
   }
