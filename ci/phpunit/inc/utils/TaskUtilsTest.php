@@ -5,9 +5,6 @@ namespace Hashtopolis\inc\utils;
 use Exception;
 
 use Hashtopolis\dba\Factory;
-use Hashtopolis\dba\models\Agent;
-use Hashtopolis\dba\models\Chunk;
-use Hashtopolis\dba\models\ChunkFactory;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 
