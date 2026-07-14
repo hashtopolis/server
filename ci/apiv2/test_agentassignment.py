@@ -69,10 +69,12 @@ class AgentStatTest(BaseTest):
         totalEnd = totalSum = 0
         for chunk in sorted(chunks, key=lambda c: c.dispatchTime): # Expects list to be sorted by time
             if chunk.dispatchTime > 0 and chunk.solveTime > 0:
-                totalSum = totalSum + (chunk.solveTime - chunk.dispatchTime) # Add current time span to running total
-                - max(0, totalEnd - chunk.dispatchTime) # Correct for potential overlapping if current start before previous end
-                + max(0, totalEnd - chunk.solveTime); # Correct for potential overcorrection if current end before previous end
-                totalEnd = max(totalEnd, chunk.solveTime); # Extend window if current end exceeds previous end
+                totalSum = (
+                    totalSum + (chunk.solveTime - chunk.dispatchTime)
+                    - max(0, totalEnd - chunk.dispatchTime)
+                    + max(0, totalEnd - chunk.solveTime)
+                )
+                totalEnd = max(totalEnd, chunk.solveTime)
 
         # Get the aggregate cracking time from the application
         aggregate_attrs = ['crackingTime']
