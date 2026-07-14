@@ -1,4 +1,4 @@
-import time, random
+import time
 from hashtopolis import AgentAssignment, Chunk
 
 from utils import BaseTest, do_create_dummy_agent, do_create_agentassignent

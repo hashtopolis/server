@@ -1500,7 +1500,7 @@ class TaskUtils {
     // Since an agent can only work on one chunk at a time, there inherently are no overlapping time spans to consider.
     // We can therefore simply sum up the corresponding time spans in the database already.
     $qF1 = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
-    $qF2 = $taskId ? new QueryFilter(Chunk::TASK_ID, $taskId, "=") : null;
+    $qF2 = $taskId !== null ? new QueryFilter(Chunk::TASK_ID, $taskId, "=") : null;
     $qF3 = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
     $qF4 = new QueryFilter(Chunk::DISPATCH_TIME, 0, ">");
     $agg1 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::SUM);
