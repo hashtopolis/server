@@ -54,15 +54,15 @@ class AgentStatTest(BaseTest):
 
     def test_cracking_time_aggregation(self):
         dummy_agent, agent, _, task = self.create_agent_with_task().values()
-        time.sleep(random.randint(1, 3)) # Simulate random cracking time
+        time.sleep(1)  # Simulate cracking time
         dummy_agent.send_process(progress=100)
         dummy_agent.get_chunk()
-        time.sleep(random.randint(1, 3)) # Simulate random cracking time
+        time.sleep(1)  # Simulate cracking time
         dummy_agent.send_process(progress=100)
         dummy_agent.get_chunk()
-        time.sleep(random.randint(1, 3)) # Simulate random cracking time
+        time.sleep(1)  # Simulate cracking time
         dummy_agent.send_process(progress=100)
-        dummy_agent.get_chunk() # Leave the last chunk unfinished for a more meaningful test
+        dummy_agent.get_chunk()  # Leave the last chunk unfinished for a more meaningful test
 
         # Calculate a reference value for the cracking time by applying an interval merge algorithm
         chunks = Chunk.objects.filter(agentId=agent.id, taskId=task.id)
