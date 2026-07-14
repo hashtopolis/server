@@ -26,6 +26,7 @@ use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\TaskUtils;
 
 
 /**
@@ -65,14 +66,7 @@ class AgentAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getAggregateCrackingTime(AbstractModel $object): int {
-    // in order to make sense of the diff, we need to make sure that both values solve time and dispatch time are set (i.e. >0).
-    $qF1 = new QueryFilter(Chunk::AGENT_ID, $object->getId(), "=");
-    $qF2 = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
-    $qF3 = new QueryFilter(Chunk::DISPATCH_TIME, 0, ">");
-    $agg1 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::SUM);
-    $agg2 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::SUM);
-    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], [$agg1, $agg2]);
-    return $results[$agg1->getName()] - $results[$agg2->getName()];
+    return TaskUtils::getAggregateCrackingTime($object->getId());
   }
   
   /**

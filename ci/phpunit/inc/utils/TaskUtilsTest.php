@@ -5,6 +5,9 @@ namespace Hashtopolis\inc\utils;
 use Exception;
 
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\Chunk;
+use Hashtopolis\dba\models\ChunkFactory;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 
@@ -249,6 +252,46 @@ final class TaskUtilsTest extends TestBase {
     TaskUtils::setCpuTask($taskObjects["task"]->getId(), 0, $taskObjects["user"]);
     $taskUpdated = Factory::getTaskFactory()->get($taskObjects["task"]->getId());
     $this->assertEquals(0, $taskUpdated->getIsCpuTask());
+  }
+  
+  
+  /**
+   * Test archiving a task.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testCrackingTimeAggregation(): void {
+    $task = $this->createTaskHelper()["task"];
+    $agent1 = $this->createAgent("test");
+    $agent2 = $this->createAgent("test");
+    $timeSpans = (array) [
+      [1000, 2000, $agent1],
+      [3000, 8000, $agent1],
+      [8000, 10000, $agent1],
+      [15000, 20000, $agent1],
+      [3000, 5000, $agent2],
+    ];
+    foreach ($timeSpans as [$start, $end, $agent]) {
+      $chunk = $this->createChunk($task, $agent, 4);
+      $chunk->setDispatchTime($start);
+      $chunk->setSolveTime($end);
+      Factory::getChunkFactory()->update($chunk);
+    }
+    
+    // Calculate reference value via an interval merge algorithm
+    $totalEnd = $referenceSum = 0;
+    foreach ($timeSpans as [$currentStart, $currentEnd]) { // Expects list to be sorted by time
+      $referenceSum = $referenceSum + ($currentEnd - $currentStart) // Add current time span to running total
+        - max(0, $totalEnd - $currentStart) // Correct for potential overlapping when current start before previous end
+        + max(0, $totalEnd - $currentEnd); // Correct for potential overcorrection when current end before previous end
+      $totalEnd = max($totalEnd, $currentEnd); // Extend window if current end exceeds previous end
+    }
+    
+    // Calculate aggregate cracking time via TaskUtils
+    $crackingTime = TaskUtils::getAggregateCrackingTime($agent1->getId(), $task->getId());
+    
+    $this->assertEquals($referenceSum, $crackingTime);
   }
 
   public function createTaskHelper(): array {

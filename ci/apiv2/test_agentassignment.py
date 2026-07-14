@@ -1,6 +1,7 @@
-from hashtopolis import AgentAssignment
+import time, random
+from hashtopolis import AgentAssignment, Chunk
 
-from utils import BaseTest, do_create_dummy_agent
+from utils import BaseTest, do_create_dummy_agent, do_create_agentassignent
 
 
 class AgentStatTest(BaseTest):
@@ -50,3 +51,31 @@ class AgentStatTest(BaseTest):
     def test_acl(self):
         model_obj = self.create_test_object()
         self._test_acl_list(model_obj, {'permAgentAssignmentRead': True})
+
+    def test_cracking_time_aggregation(self):
+        dummy_agent, agent, _, task = self.create_agent_with_task().values()
+        time.sleep(random.randint(1, 3)) # Simulate random cracking time
+        dummy_agent.send_process(progress=100)
+        dummy_agent.get_chunk()
+        time.sleep(random.randint(1, 3)) # Simulate random cracking time
+        dummy_agent.send_process(progress=100)
+        dummy_agent.get_chunk()
+        time.sleep(random.randint(1, 3)) # Simulate random cracking time
+        dummy_agent.send_process(progress=100)
+        dummy_agent.get_chunk() # Leave the last chunk unfinished for a more meaningful test
+
+        # Calculate a reference value for the cracking time by applying an interval merge algorithm
+        chunks = Chunk.objects.filter(agentId=agent.id, taskId=task.id)
+        totalEnd = totalSum = 0
+        for chunk in sorted(chunks, key=lambda c: c.dispatchTime): # Expects list to be sorted by time
+            if chunk.dispatchTime > 0 and chunk.solveTime > 0:
+                totalSum = totalSum + (chunk.solveTime - chunk.dispatchTime) # Add current time span to running total
+                - max(0, totalEnd - chunk.dispatchTime) # Correct for potential overlapping if current start before previous end
+                + max(0, totalEnd - chunk.solveTime); # Correct for potential overcorrection if current end before previous end
+                totalEnd = max(totalEnd, chunk.solveTime); # Extend window if current end exceeds previous end
+
+        # Get the aggregate cracking time from the application
+        aggregate_attrs = ['crackingTime']
+        assignment = AgentAssignment.objects.params(**{"aggregate[assignment]": ','.join(aggregate_attrs)}).get(agentId=agent.id, taskId=task.id)
+
+        self.assertEqual(totalSum, assignment.crackingTime)

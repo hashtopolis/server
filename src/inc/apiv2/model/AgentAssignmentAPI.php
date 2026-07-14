@@ -7,6 +7,7 @@ use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\inc\utils\AssignmentUtils;
+use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\ExistsFilter;
 use Hashtopolis\dba\ContainFilter;
@@ -105,6 +106,23 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     return [
       Assignment::BENCHMARK => fn($value) => AssignmentUtils::setBenchmark($id, $value, $current_user)
     ];
+  }
+  
+  public function getAggregateFieldsets(): array {
+    return [
+      'assignment' => [
+        'crackingTime' => [$this, 'getAggregateCrackingTime'],
+      ]
+    ];
+  }
+  
+  /**
+   * @param object $object
+   * @return int
+   * @throws Exception
+   */
+  protected function getAggregateCrackingTime(object $object): int {
+    return TaskUtils::getAggregateCrackingTime($object->getAgentId(), $object->getTaskId());
   }
   
   /**
