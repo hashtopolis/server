@@ -117,11 +117,11 @@ class AgentAssignmentAPI extends AbstractModelAPI {
   }
   
   /**
-   * @param object $object
+   * @param Assignment $object
    * @return int
    * @throws Exception
    */
-  protected function getAggregateCrackingTime(object $object): int {
+  protected function getAggregateCrackingTime(AbstractModel $object): int {
     return TaskUtils::getAggregateCrackingTime($object->getAgentId(), $object->getTaskId());
   }
   
