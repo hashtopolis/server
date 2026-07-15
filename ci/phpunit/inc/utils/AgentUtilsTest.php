@@ -51,7 +51,7 @@ final class AgentUtilsTest extends TestBase {
       }
     }
     
-    // Calculate aggregate cracking time via TaskUtils
+    // Calculate aggregate cracking time via AgentUtils
     $crackingTime = AgentUtils::getAggregateCrackingTime($agent1->getId(), $task->getId());
     
     $this->assertEquals($referenceSum, $crackingTime);
