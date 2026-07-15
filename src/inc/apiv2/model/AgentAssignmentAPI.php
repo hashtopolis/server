@@ -7,7 +7,6 @@ use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\inc\utils\AssignmentUtils;
-use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\ExistsFilter;
 use Hashtopolis\dba\ContainFilter;
@@ -122,7 +121,7 @@ class AgentAssignmentAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getAggregateCrackingTime(AbstractModel $object): int {
-    return TaskUtils::getAggregateCrackingTime($object->getAgentId(), $object->getTaskId());
+    return AgentUtils::getAggregateCrackingTime($object->getAgentId(), $object->getTaskId());
   }
   
   /**

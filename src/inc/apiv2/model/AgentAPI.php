@@ -4,7 +4,6 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
 use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\Aggregation;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\inc\defines\DHashcatStatus;
@@ -26,7 +25,6 @@ use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
-use Hashtopolis\inc\utils\TaskUtils;
 
 
 /**
@@ -66,7 +64,7 @@ class AgentAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getAggregateCrackingTime(AbstractModel $object): int {
-    return TaskUtils::getAggregateCrackingTime($object->getId());
+    return AgentUtils::getAggregateCrackingTime($object->getId());
   }
   
   /**
