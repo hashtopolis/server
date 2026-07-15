@@ -107,6 +107,23 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     ];
   }
   
+  public function getAggregateFieldsets(): array {
+    return [
+      'assignment' => [
+        'crackingTime' => [$this, 'getAggregateCrackingTime'],
+      ]
+    ];
+  }
+  
+  /**
+   * @param Assignment $object
+   * @return int
+   * @throws Exception
+   */
+  protected function getAggregateCrackingTime(AbstractModel $object): int {
+    return AgentUtils::getAggregateCrackingTime($object->getAgentId(), $object->getTaskId());
+  }
+  
   /**
    * @param Assignment $object
    * @throws HTException

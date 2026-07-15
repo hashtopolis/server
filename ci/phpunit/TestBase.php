@@ -316,6 +316,23 @@ class TestBase extends TestCase {
     return $agent;
   }
   
+  public function createTaskHelper(): array {
+    $user = $this->createUser("phpunit");
+    $accessGroup = $this->createAccessGroup("phpunit");
+    $this->createAccessGroupUser($user, $accessGroup);
+    
+    $hashType = $this->createHashType();
+    $hashlist = $this->createHashlist($accessGroup, $hashType);
+    
+    $taskWrapper = $this->createTaskWrapper($accessGroup, $hashlist);
+    
+    $crackerBinaryType = $this->createCrackerBinaryType();
+    $crackerBinary = $this->createCrackerBinary($crackerBinaryType);
+    $task = $this->createTask($taskWrapper, $crackerBinary, $crackerBinaryType);
+    
+    return array("user"=> $user, "accessGroup"=>$accessGroup, "hashType"=>$hashType, "hashlist"=>$hashlist, "taskWrapper"=>$taskWrapper, "crackerBinaryType"=>$crackerBinaryType, "crackerBinary"=>$crackerBinary, "task"=>$task);
+  }
+  
   /**
    * used to create an object in the database and then register it directly for deletion to be cleaned up after the test
    *

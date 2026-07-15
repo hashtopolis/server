@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\utils;
 
 use Exception;
+use Hashtopolis\dba\Aggregation;
 use Hashtopolis\inc\DataSet;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\QueryFilter;
@@ -602,5 +603,28 @@ class AgentUtils {
       throw new HTException("Invalid voucher!");
     }
     Factory::getRegVoucherFactory()->delete($voucher);
+  }
+  
+  /**
+   * Get the aggregate cracking time of an agent or more specifically
+   * (if task ID is specified) of an agent on a specific task.
+   *
+   * @param int $agentId
+   * @param int|null $taskId
+   * @return int
+   * @throws Exception
+   */
+  public static function getAggregateCrackingTime(int $agentId, ?int $taskId = null): int {
+    // In order to make sense of the diff, we need to make sure that both values solve time and dispatch time are set (i.e. > 0).
+    // Since an agent can only work on one chunk at a time, there inherently are no overlapping time spans to consider.
+    // We can therefore simply sum up the corresponding time spans in the database already.
+    $qF1 = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
+    $qF2 = $taskId !== null ? new QueryFilter(Chunk::TASK_ID, $taskId, "=") : null;
+    $qF3 = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
+    $qF4 = new QueryFilter(Chunk::DISPATCH_TIME, 0, ">");
+    $agg1 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::SUM);
+    $agg2 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::SUM);
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2, $qF3, $qF4])], [$agg1, $agg2]);
+    return $results[$agg1->getName()] - $results[$agg2->getName()];
   }
 }

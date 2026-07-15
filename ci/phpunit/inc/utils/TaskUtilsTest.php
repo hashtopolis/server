@@ -250,21 +250,4 @@ final class TaskUtilsTest extends TestBase {
     $taskUpdated = Factory::getTaskFactory()->get($taskObjects["task"]->getId());
     $this->assertEquals(0, $taskUpdated->getIsCpuTask());
   }
-
-  public function createTaskHelper(): array {
-    $user = $this->createUser("phpunit");
-    $accessGroup = $this->createAccessGroup("phpunit");
-    $this->createAccessGroupUser($user, $accessGroup);
-
-    $hashType = $this->createHashType();
-    $hashlist = $this->createHashlist($accessGroup, $hashType);
-
-    $taskWrapper = $this->createTaskWrapper($accessGroup, $hashlist);
-
-    $crackerBinaryType = $this->createCrackerBinaryType();
-    $crackerBinary = $this->createCrackerBinary($crackerBinaryType);
-    $task = $this->createTask($taskWrapper, $crackerBinary, $crackerBinaryType);
-
-    return array("user"=> $user, "accessGroup"=>$accessGroup, "hashType"=>$hashType, "hashlist"=>$hashlist, "taskWrapper"=>$taskWrapper, "crackerBinaryType"=>$crackerBinaryType, "crackerBinary"=>$crackerBinary, "task"=>$task);
-  }
 }
