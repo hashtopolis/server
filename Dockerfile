@@ -138,6 +138,9 @@ RUN apt-get update \
 COPY ./ci/apiv2/requirements.txt /tmp/requirements.txt
 RUN pip3 install -r /tmp/requirements.txt --break-system-packages
 
+# install python-hashtopolis (floating, always newest; cannot be hashed in requirements.txt)
+RUN pip3 install git+https://github.com/hashtopolis/python-hashtopolis.git --break-system-packages
+
 # Adding VSCode user and fixing permissions
 RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \
     && chown -R vscode:www-data /var/www \
