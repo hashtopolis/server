@@ -1444,15 +1444,16 @@ class TaskUtils {
   
   /**
    * @param $task Task
+   * @param Agent|null $agent Agent
    * @return int
    * @throws Exception
    */
-  public static function getTaskProgress(Task $task): int {
+  public static function getTaskProgress(Task $task, ?Agent $agent = null): int {
     $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    
+    $qF2 = $agent !== null ? new QueryFilter(Chunk::AGENT_ID, $agent->getId(), "=") : null;
     $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
     $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
-    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qF1], [$agg1, $agg2]);
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2])], [$agg1, $agg2]);
     return $results[$agg1->getName()] - $results[$agg2->getName()];
   }
   
@@ -1484,5 +1485,26 @@ class TaskUtils {
       }
     }
     return $timeSpent;
+  }
+  
+  /**
+   *  Get the current speed of a task or (if agent ID is specified) that of a specific agent working on a task,
+   *  in which case it's only one chunk that is being summed up over.
+   *
+   * @param int $taskId
+   * @param int|null $agentId
+   * @throws Exception
+   */
+  public static function getCurrentSpeedOfTask(int $taskId, ?int $agentId = null): int {
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $taskId, "=");
+    $qF2 = $agentId !== null ? new QueryFilter(Chunk::AGENT_ID, $agentId, "=") : null;
+    $qF3 = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
+    $qF4 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+    $agg = new Aggregation(Chunk::SPEED, Aggregation::SUM);
+    $speed = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2, $qF3, $qF4])], [$agg])[$agg->getName()];
+    if ($speed == null) {
+      $speed = 0;
+    }
+    return $speed;
   }
 }
