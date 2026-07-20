@@ -1501,10 +1501,6 @@ class TaskUtils {
     $qF3 = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
     $qF4 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
     $agg = new Aggregation(Chunk::SPEED, Aggregation::SUM);
-    $speed = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2, $qF3, $qF4])], [$agg])[$agg->getName()];
-    if ($speed == null) {
-      $speed = 0;
-    }
-    return $speed;
+    return (int)(Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2, $qF3, $qF4])], [$agg])[$agg->getName()] ?? 0);
   }
 }
