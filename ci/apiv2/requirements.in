@@ -2,3 +2,4 @@ click
 click_log
 pytest
 confidence
+requests
