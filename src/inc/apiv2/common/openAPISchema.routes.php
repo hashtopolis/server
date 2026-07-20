@@ -649,7 +649,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
               "in" => "query",
               "schema" => [
                 "type" => "string",
-                "format" => "json",
+                "format" => "byte",
               ],
               "example" => base64_encode($exampleCursor),
               "required" => false,
@@ -662,7 +662,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
               "in" => "query",
               "schema" => [
                 "type" => "string",
-                "format" => "json",
+                "format" => "byte",
               ],
               "example" => base64_encode($exampleCursor),
               "required" => false,

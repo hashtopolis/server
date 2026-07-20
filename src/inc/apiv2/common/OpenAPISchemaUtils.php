@@ -106,7 +106,7 @@ class OpenAPISchemaUtils {
         ],
         "first" => [
           "type" => "string",
-          "default" => $self . "&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+          "default" => $self
         ],
         "last" => [
           "type" => "string",
@@ -114,11 +114,11 @@ class OpenAPISchemaUtils {
         ],
         "next" => [
           "type" => "string",
-          "default" => $self . "&page[after]=25"
+          "default" => $self . "&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
         ],
         "previous" => [
           "type" => "string",
-          "default" => $self . "&page[before]=25"
+          "default" => $self . "&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
         ]
       ]
     ]
