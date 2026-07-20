@@ -123,7 +123,9 @@ RUN curl -fL --output /tmp/pie.phar https://github.com/php/pie/releases/download
     && chmod +x /tmp/pie.phar \
     && mv /tmp/pie.phar /usr/local/bin/pie \
     && pie install --skip-enable-extension xdebug/xdebug:3.5.3 \
-    && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
+    && XDEBUG_SO="$(find /usr/local/lib/php/extensions/ -name xdebug.so -print -quit)" \
+    && test -n "$XDEBUG_SO" \
+    && echo "zend_extension=$XDEBUG_SO" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.mode = debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.start_with_request = yes" >> /usr/local/etc/php/conf.d/xdebug.ini \
 	&& echo "xdebug.client_port = 9003" >> /usr/local/etc/php/conf.d/xdebug.ini \
