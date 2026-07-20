@@ -115,6 +115,7 @@ class AgentAssignmentAPI extends AbstractModelAPI {
         'cracked' => [$this, 'getAggregateCracked'],
         'currentSpeed' => [$this, 'getAggregateCurrentSpeed'],
         'searched' => [$this, 'getAggregateSearched'],
+        'cprogress' => [$this, 'getAggregateCProgress'],
       ]
     ];
   }
@@ -153,6 +154,14 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     $task = Factory::getTaskFactory()->get($object->getTaskId());
     $keyspace = $task->getKeyspace();
     return Util::showperc(TaskUtils::getTaskProgress($object->getTaskId(), $object->getAgentId()), $keyspace);
+  }
+  
+  /**
+   * @param Assignment $object
+   * @throws Exception
+   */
+  protected function getAggregateCProgress(AbstractModel $object): int {
+    return TaskUtils::getTaskProgress($object->getTaskId(), $object->getAgentId());
   }
   
   /**
