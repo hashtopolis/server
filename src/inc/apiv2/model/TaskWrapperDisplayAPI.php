@@ -128,7 +128,7 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
     
     $keyspace = $object->getKeyspace();
     $task = TaskUtils::getTasksOfWrapper($object->getId())[0];
-    return Util::showperc(TaskUtils::getTaskProgress($task), $keyspace);
+    return Util::showperc(TaskUtils::getTaskProgress($task->getId()), $keyspace);
   }
   
   /**
@@ -214,7 +214,7 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
     }
     
     $task = TaskUtils::getTasksOfWrapper($object->getId())[0];
-    return TaskUtils::getTaskProgress($task);
+    return TaskUtils::getTaskProgress($task->getId());
   }
   
   /**

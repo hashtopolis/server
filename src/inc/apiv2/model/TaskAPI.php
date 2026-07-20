@@ -188,7 +188,7 @@ class TaskAPI extends AbstractModelAPI {
    */
   protected function getAggregateSearched(AbstractModel $object): string {
     $keyspace = $object->getKeyspace();
-    return Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
+    return Util::showperc(TaskUtils::getTaskProgress($object->getId()), $keyspace);
   }
   
   /**
@@ -235,7 +235,7 @@ class TaskAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getAggregateCProgress(AbstractModel $object): int {
-    return TaskUtils::getTaskProgress($object);
+    return TaskUtils::getTaskProgress($object->getId());
   }
   
   /**

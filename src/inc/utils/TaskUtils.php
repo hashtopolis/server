@@ -141,7 +141,7 @@ class TaskUtils {
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
     //status 1 is running, 2 is idle and 3 is completed.
     $status = 2;
-    $keyspaceProgress = TaskUtils::getTaskProgress($task);
+    $keyspaceProgress = TaskUtils::getTaskProgress($task->getId());
     if ($keyspaceProgress >= $task->getKeyspace() && $keyspaceProgress > 0) {
       $status = 3;
     }
@@ -1443,14 +1443,14 @@ class TaskUtils {
   }
   
   /**
-   * @param $task Task
-   * @param Agent|null $agent Agent
+   * @param int $taskId
+   * @param int|null $agentId
    * @return int
    * @throws Exception
    */
-  public static function getTaskProgress(Task $task, ?Agent $agent = null): int {
-    $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $qF2 = $agent !== null ? new QueryFilter(Chunk::AGENT_ID, $agent->getId(), "=") : null;
+  public static function getTaskProgress(int $taskId, ?int $agentId = null): int {
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $taskId, "=");
+    $qF2 = $agentId !== null ? new QueryFilter(Chunk::AGENT_ID, $agentId, "=") : null;
     $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM);
     $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM);
     $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2])], [$agg1, $agg2]);

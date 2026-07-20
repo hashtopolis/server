@@ -151,9 +151,8 @@ class AgentAssignmentAPI extends AbstractModelAPI {
    */
   protected function getAggregateSearched(AbstractModel $object): string {
     $task = Factory::getTaskFactory()->get($object->getTaskId());
-    $agent = Factory::getAgentFactory()->get($object->getAgentId());
     $keyspace = $task->getKeyspace();
-    return Util::showperc(TaskUtils::getTaskProgress($task, $agent), $keyspace);
+    return Util::showperc(TaskUtils::getTaskProgress($object->getTaskId(), $object->getAgentId()), $keyspace);
   }
   
   /**
