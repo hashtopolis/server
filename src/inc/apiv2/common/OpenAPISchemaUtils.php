@@ -106,11 +106,11 @@ class OpenAPISchemaUtils {
         ],
         "first" => [
           "type" => "string",
-          "default" => $self . "&page[after]=0"
+          "default" => $self . "&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
         ],
         "last" => [
           "type" => "string",
-          "default" => $self . "&page[before]=500"
+          "default" => $self . "&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
         ],
         "next" => [
           "type" => "string",

@@ -641,28 +641,34 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
       }
       else {
         if ($method == 'get') {
+          $primaryKey = array_find(call_user_func($class->getDBAclass() . '::getFeatures'),  function (array $feature) { return $feature["pk"] === true; });
+          $exampleCursor = "{\"primary\":{\"".($primaryKey['alias'] ?? "id")."\": 123}}";
           $parameters = [
             [
               "name" => "page[after]",
               "in" => "query",
               "schema" => [
-                "type" => "integer",
-                "format" => "int32"
+                "type" => "string",
+                "format" => "json",
               ],
-              "example" => 0,
+              "example" => base64_encode($exampleCursor),
               "required" => false,
-              "description" => "Pointer to paginate to retrieve the data after the value provided"
+              "description" => "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.
+              \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`
+              \n\nExample: `$exampleCursor` -> `".(base64_encode($exampleCursor))."`"
             ],
             [
               "name" => "page[before]",
               "in" => "query",
               "schema" => [
-                "type" => "integer",
-                "format" => "int32"
+                "type" => "string",
+                "format" => "json",
               ],
-              "example" => 0,
+              "example" => base64_encode($exampleCursor),
               "required" => false,
-              "description" => "Pointer to paginate to retrieve the data before the value provided"
+              "description" => "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.
+              \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`
+              \n\nExample: `$exampleCursor` -> `".(base64_encode($exampleCursor))."`"
             ],
             [
               "name" => "page[size]",
