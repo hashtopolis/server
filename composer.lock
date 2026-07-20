@@ -4162,8 +4162,10 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2",
+        "ext-curl": "*",
         "ext-gd": "*",
         "ext-json": "*",
+        "ext-mbstring": "*",
         "ext-pdo": "*"
     },
     "platform-dev": {},

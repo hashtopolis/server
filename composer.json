@@ -18,8 +18,10 @@
     ],
     "require": {
         "php": "^8.2",
+        "ext-curl": "*",
         "ext-gd": "*",
         "ext-json": "*",
+        "ext-mbstring": "*",
         "ext-pdo": "*",
         "composer/semver": "^3.4",
         "crell/api-problem": "^3.6",
