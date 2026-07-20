@@ -642,6 +642,6 @@ class AgentUtils {
     $qF2 = $taskId !== null ? new QueryFilter(Chunk::TASK_ID, $taskId, "=") : null;
     $agg1 = new Aggregation(Chunk::CRACKED, Aggregation::SUM);
     $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2])], [$agg1]);
-    return $results[$agg1->getName()];
+    return (int)($results[$agg1->getName()] ?? 0);
   }
 }
