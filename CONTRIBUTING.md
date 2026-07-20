@@ -22,6 +22,16 @@
 
 - **Branch cleanup** — The person merging the pull request is responsible for deleting the branch after the merge.
 
+## Xdebug installation (dev container)
+
+The dev Docker image (`hashtopolis-server-dev`) installs xdebug via [PIE](https://github.com/php/pie) (PHP Installer for Extensions), which is the official replacement for the now-deprecated PECL.
+
+- **PIE** is downloaded as a pinned PHAR (`1.4.8`) from the GitHub releases, verified with a SHA-256 checksum, and placed at `/usr/local/bin/pie`.
+- **xdebug** is installed with `pie install --skip-enable-extension xdebug/xdebug:3.5.3` (version-pinned). The `--skip-enable-extension` flag prevents PIE from writing its own ini; a custom `xdebug.ini` is written instead with the project's debug settings (`xdebug.mode = debug`, `xdebug.client_port = 9003`, `xdebug.idekey = PHPSTORM`).
+- **Build deps** `libtool` and `unzip` are installed via apt in the same `RUN` block (PIE needs them; pecl didn't).
+
+To bump xdebug or PIE, edit the `Dockerfile` and update both the version pin (`xdebug/xdebug:<version>`) and — if bumping PIE — the PHAR URL + SHA-256. The SHA-256 of a release PHAR can be obtained with `curl -fL https://github.com/php/pie/releases/download/<version>/pie.phar | sha256sum`.
+
 ## Pull Requests — Backend
 
 When submitting a pull request that includes database migration scripts, adhere to the following:
