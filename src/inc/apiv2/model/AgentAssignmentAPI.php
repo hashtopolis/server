@@ -149,7 +149,7 @@ class AgentAssignmentAPI extends AbstractModelAPI {
    * @param Assignment $object
    * @throws Exception
    */
-  protected function getAggregateSearched(AbstractModel $object): string {
+  protected function getAggregateSearched(AbstractModel $object): int {
     return TaskUtils::getTaskProgress($object->getTaskId(), $object->getAgentId());
   }
   
