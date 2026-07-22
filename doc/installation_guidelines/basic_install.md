@@ -61,7 +61,10 @@ nano .env
 docker compose up --detach
 ```   
 
-5. Access the Hashtopolis UI through: ```http://127.0.0.1:8080``` using the credentials set in the *.env* file, default are user=admin and password=hashtopolis.
+5. Access the Hashtopolis web UI through: ```http://127.0.0.1:4200``` using the credentials set in the *.env* file, defaults are user=admin and password=hashtopolis.
+
+> [!NOTE]
+> The web UI is served by the frontend container on port 4200. The backend container listens on port 8080: it serves the API used by the agents as well as the legacy web interface.
 
 
 ## Agent installation
@@ -76,7 +79,7 @@ To install the agent, ensure that the following prerequisites are met:
 python3 --version
 ```
 
-2. Python Packages: The Hashtopolis agents depends on the following Python packages:
+2. Python Packages: The Hashtopolis agent depends on the following Python packages:
 
    - requests
    - psutil
@@ -95,8 +98,8 @@ pip install requests psutil
 
 ### Download the Hashtopolis agent
 
-1. Connect to the Hashtopolis server: ```http://<server-ip-address>:8080``` and log in. Navigate to the page *Agents > Show Agents* and click on the button *'+ New Agent'*. 
-2. On that page you can click on "..." and choose to download the agent binary or copy the URL of the agent binary and download the agent using wget/curl:
+1. Connect to the Hashtopolis web UI: ```http://<server-ip-address>:4200``` and log in. Navigate to the page *Agents > Show Agents* and click on the button *'+ New Agent'*. 
+2. On that page you can click on "..." and choose to download the agent binary or copy the URL of the agent binary and download the agent using wget/curl (note that the agent binary is served by the backend on port 8080):
 
 ```
 curl -o hashtopolis.zip "http://<server-ip-address>:8080/agents.php?download=1"

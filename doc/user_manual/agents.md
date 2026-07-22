@@ -45,8 +45,6 @@ The visuals use the following color code:
 ---
 
 ## Agent Overview 
-***(To be checked with the new interface)***
-
 
 Clicking on an agent in the list opens the **Agent Overview** page, which provides detailed information and management options for that agent as described below:
 

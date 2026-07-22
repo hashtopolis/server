@@ -21,9 +21,8 @@ nav:
       - user_manual/settings_and_configuration.md
       - user_manual/users.md
       - user_manual/user-settings.md
-  - FAQ and Tips:
+  - FAQ:
       - faq_tips/faq.md
-      - faq_tips/tips.md
   - changelog.md
   - API Reference:
       - APIv2: api.md
@@ -32,6 +31,9 @@ theme:
   name: material
   custom_dir: doc/overrides
   logo: assets/images/logo.png
+  font:
+    text: Roboto
+    code: Fira Code
   palette:
     - scheme: default
       primary: blue
@@ -57,7 +59,7 @@ theme:
     - navigation.footer
     - content.tabs.link
 
-edit_uri: blob/docs/doc/
+edit_uri: edit/master/doc/
 
 markdown_extensions:
   - github-callouts
@@ -68,13 +70,6 @@ markdown_extensions:
 
 extra_css:
   - assets/stylesheets/hero.css
-  - assets/stylesheets/redoc-dark.css
-  
-
-extra:
-  font:
-    text: Roboto
-    code: Fira Code
 
 plugins:
   - swagger-ui-tag
@@ -83,6 +78,3 @@ plugins:
       minify_html: true
   - git-revision-date-localized:
       fallback_to_build_date: true
-
-extra_javascript:
-  - https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js
