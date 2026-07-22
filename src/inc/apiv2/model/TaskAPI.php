@@ -5,14 +5,12 @@ namespace Hashtopolis\inc\apiv2\model;
 use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
-use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 
 use Hashtopolis\dba\models\Agent;
-use Hashtopolis\dba\Aggregation;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\CrackerBinary;
@@ -28,7 +26,6 @@ use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
-use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;
 
@@ -191,7 +188,7 @@ class TaskAPI extends AbstractModelAPI {
    */
   protected function getAggregateSearched(AbstractModel $object): string {
     $keyspace = $object->getKeyspace();
-    return Util::showperc(TaskUtils::getTaskProgress($object), $keyspace);
+    return Util::showperc(TaskUtils::getTaskProgress($object->getId()), $keyspace);
   }
   
   /**
@@ -216,15 +213,7 @@ class TaskAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getAggregateCurrentSpeed(AbstractModel $object): int {
-    $qF1 = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
-    $qF2 = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
-    $qF3 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
-    $agg = new Aggregation(Chunk::SPEED, Aggregation::SUM);
-    $speed = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => [$qF1, $qF2, $qF3]], [$agg])[$agg->getName()];
-    if ($speed == null) {
-      $speed = 0;
-    }
-    return $speed;
+    return TaskUtils::getCurrentSpeedOfTask($object->getId());
   }
   
   /**
@@ -246,7 +235,7 @@ class TaskAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getAggregateCProgress(AbstractModel $object): int {
-    return TaskUtils::getTaskProgress($object);
+    return TaskUtils::getTaskProgress($object->getId());
   }
   
   /**
