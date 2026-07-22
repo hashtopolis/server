@@ -561,11 +561,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   protected static function decode_cursor(string $encoded_cursor): array {
     $json = base64_decode($encoded_cursor);
     if (!$json) {
-      throw new HttpError("Invallid pagination cursor, cursor has to be base64 encoded");
+      throw new HttpError("Invalid pagination cursor, cursor has to be base64 encoded");
     }
     $cursor = json_decode($json, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
-      throw new HttpError("Invallid pagination cursor, it has to be a valid json string");
+      throw new HttpError("Invalid pagination cursor, it has to be a valid json string");
     }
     return $cursor;
   }
