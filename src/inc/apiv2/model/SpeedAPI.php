@@ -4,6 +4,7 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
 use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\dba\ExistsFilter;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\defines\DAccessControl;
 use Hashtopolis\dba\models\AccessGroupAgent;
@@ -74,13 +75,12 @@ class SpeedAPI extends AbstractModelAPI {
     
     return [
       Factory::JOIN => [
-        new JoinFilter(Factory::getAccessGroupAgentFactory(), Speed::AGENT_ID, AccessGroupAgent::AGENT_ID),
         new JoinFilter(Factory::getTaskFactory(), Speed::TASK_ID, Task::TASK_ID),
         new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskFactory()),
         new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID, Factory::getTaskWrapperFactory()),
       ],
       Factory::FILTER => [
-        new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory()),
+        new ExistsFilter(Factory::getAccessGroupAgentFactory(), AccessGroupAgent::AGENT_ID, Speed::AGENT_ID, [new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroups, Factory::getAccessGroupAgentFactory())]),
         new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory()),
       ]
     ];
