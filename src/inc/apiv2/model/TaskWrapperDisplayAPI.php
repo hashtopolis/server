@@ -119,10 +119,6 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
   
   protected function getAggregateStatus(object $object): int {
     // TODO: this could be optimized by only requesting taskId, keyspace and keyspaceProgress of all tasks of that wrapper (columnFilter)
-    $hashlist = Factory::getHashlistFactory()->get($object->getHashlistId());
-    if ($hashlist->getCracked() === $hashlist->getHashCount()) {
-      return 3;
-    }
     $tasks = TaskUtils::getTasksOfWrapper($object->getId());
     $completed = 0;
     $total = 0;
@@ -145,6 +141,17 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
       }
       else {
         $status = 2;
+      }
+    }
+    if ($status !== 3) {
+      $hashlist = Factory::getHashlistFactory()->get($object->getHashlistId());
+      if ($hashlist->getCracked() === $hashlist->getHashCount()) {
+        if($object->getCracked() > 0) {
+          return 3;
+        } else {
+          // If all hashes are cracked and this task has not found a crack, turn it to skipped state
+          return 4;
+        }
       }
     }
     return $status;
