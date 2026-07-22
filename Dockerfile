@@ -113,9 +113,19 @@ ENTRYPOINT [ "docker-entrypoint.sh" ]
 # ----BEGIN----
 FROM hashtopolis-server-base AS hashtopolis-server-dev
 
-# Setting up development requirements, install xdebug
-RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
-    && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
+# Install python (unittests)
+RUN apt-get update \
+    && apt-get install -y python3 python3-pip python3-requests python3-pytest libtool unzip
+
+# Setting up development requirements, install xdebug via PIE (PECL is deprecated)
+RUN curl -fL --output /tmp/pie.phar https://github.com/php/pie/releases/download/1.4.8/pie.phar \
+    && echo "ef9f19c2698334aa8ce8fc458c8cf2a31a2fd6a29230216dbde3422343cf952d  /tmp/pie.phar" | sha256sum -c - \
+    && chmod +x /tmp/pie.phar \
+    && mv /tmp/pie.phar /usr/local/bin/pie \
+    && pie install --skip-enable-extension xdebug/xdebug:3.5.3 \
+    && XDEBUG_SO="$(find /usr/local/lib/php/extensions/ -name xdebug.so -print -quit)" \
+    && test -n "$XDEBUG_SO" \
+    && echo "zend_extension=$XDEBUG_SO" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.mode = debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.start_with_request = yes" >> /usr/local/etc/php/conf.d/xdebug.ini \
 	&& echo "xdebug.client_port = 9003" >> /usr/local/etc/php/conf.d/xdebug.ini \

@@ -22,6 +22,28 @@
 
 - **Branch cleanup** — The person merging the pull request is responsible for deleting the branch after the merge.
 
+## Pull Requests — Backend
+
+When submitting a pull request that includes database migration scripts, adhere to the following:
+
+- **Never alter an existing migration script** that has been released or lived on `master` for any amount of time. Changing a released migration will leave setups that already applied the unaltered script in an inconsistent state that cannot be recovered without manual intervention or deletion.
+
+- **One migration per atomic change** — Create a new migration script for each distinct feature or change. The database must be in a healthy, consistent state between every migration.
+
+- **Dual database support** — New migration scripts must be provided for **both** MySQL and PostgreSQL in their respective directories (`src/migrations/mysql/` and `src/migrations/postgres/`).
+
+- **Timestamp ordering** — Right before a PR with new migration scripts is merged, the script file names must be updated to reflect the actual merge date prefix. This ensures correct ordering across concurrent PRs. Commit this rename into the PR branch before merging.
+
+## Xdebug installation (dev container)
+
+The dev Docker image (`hashtopolis-server-dev`) installs xdebug via [PIE](https://github.com/php/pie) (PHP Installer for Extensions), which is the official replacement for the now-deprecated PECL.
+
+- **PIE** is downloaded as a pinned PHAR (`1.4.8`) from the GitHub releases, verified with a SHA-256 checksum, and placed at `/usr/local/bin/pie`.
+- **xdebug** is installed with `pie install --skip-enable-extension xdebug/xdebug:3.5.3` (version-pinned). The `--skip-enable-extension` flag prevents PIE from writing its own ini; a custom `xdebug.ini` is written instead with the project's debug settings (`xdebug.mode = debug`, `xdebug.client_port = 9003`, `xdebug.idekey = PHPSTORM`).
+- **Build deps** `libtool` and `unzip` are installed via apt in the same `RUN` block (PIE needs them; pecl didn't).
+
+To bump xdebug or PIE, edit the `Dockerfile` and update both the version pin (`xdebug/xdebug:<version>`) and — if bumping PIE — the PHAR URL + SHA-256. The SHA-256 of a release PHAR can be obtained with `curl -fL https://github.com/php/pie/releases/download/<version>/pie.phar | sha256sum`.
+
 ## Dependency pinning (Python API tests)
 
 The pytest suite in `ci/apiv2/` uses pinned dependencies installed into a virtualenv at `/opt/venv` inside the dev container (see `Dockerfile`). The venv's `bin/` is prepended to `PATH`, so `pytest` and `python3` resolve to the venv automatically — no manual activation needed.
@@ -61,17 +83,4 @@ pip-compile --generate-hashes --output-file requirements.txt requirements.in
 Then commit both `requirements.in` and the regenerated `requirements.txt`.
 
 Note: `doc/requirements.txt` must be compiled with **Python 3.10** to match the `setup-python` version in the workflows. Use a matching environment when regenerating.
-
-## Pull Requests — Backend
-
-When submitting a pull request that includes database migration scripts, adhere to the following:
-
-- **Never alter an existing migration script** that has been released or lived on `master` for any amount of time. Changing a released migration will leave setups that already applied the unaltered script in an inconsistent state that cannot be recovered without manual intervention or deletion.
-
-- **One migration per atomic change** — Create a new migration script for each distinct feature or change. The database must be in a healthy, consistent state between every migration.
-
-- **Dual database support** — New migration scripts must be provided for **both** MySQL and PostgreSQL in their respective directories (`src/migrations/mysql/` and `src/migrations/postgres/`).
-
-- **Timestamp ordering** — Right before a PR with new migration scripts is merged, the script file names must be updated to reflect the actual merge date prefix. This ensures correct ordering across concurrent PRs. Commit this rename into the PR branch before merging.
-
 
