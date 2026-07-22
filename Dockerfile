@@ -140,13 +140,24 @@ RUN curl -fL --output /tmp/pie.phar https://github.com/php/pie/releases/download
 	&& echo "log_errors = On" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "error_log = /dev/stderr" >> /usr/local/etc/php/conf.d/custom.ini
 
+# Install python (unittests)
+RUN apt-get update \
+    && apt-get install -y python3 python3-venv
+
+# Create virtualenv for Python test dependencies (isolates from system-managed packages)
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
 # install dependencies from ./ci/apiv2/requirements.txt
 COPY ./ci/apiv2/requirements.txt /tmp/requirements.txt
-RUN pip3 install -r /tmp/requirements.txt --break-system-packages
+RUN /opt/venv/bin/pip install -r /tmp/requirements.txt
+
+# install python-hashtopolis (floating, always newest; cannot be hashed in requirements.txt)
+RUN /opt/venv/bin/pip install git+https://github.com/hashtopolis/python-hashtopolis.git
 
 # Adding VSCode user and fixing permissions
 RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \
-    && chown -R vscode:www-data /var/www \
+    && chown -R vscode:www-data /var/www /opt/venv \
     && chmod -R g+w /var/www
 
 # This is a seperate step so that changes to the code do not cause the container to be rebuild

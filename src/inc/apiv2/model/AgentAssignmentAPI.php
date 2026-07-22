@@ -23,6 +23,7 @@ use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\TaskUtils;
 
 
 /**
@@ -111,6 +112,9 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     return [
       'assignment' => [
         'crackingTime' => [$this, 'getAggregateCrackingTime'],
+        'cracked' => [$this, 'getAggregateCracked'],
+        'currentSpeed' => [$this, 'getAggregateCurrentSpeed'],
+        'searched' => [$this, 'getAggregateSearched'],
       ]
     ];
   }
@@ -122,6 +126,31 @@ class AgentAssignmentAPI extends AbstractModelAPI {
    */
   protected function getAggregateCrackingTime(AbstractModel $object): int {
     return AgentUtils::getAggregateCrackingTime($object->getAgentId(), $object->getTaskId());
+  }
+  
+  /**
+   * @param Assignment $object
+   * @return int
+   * @throws Exception
+   */
+  protected function getAggregateCracked(AbstractModel $object): int {
+    return AgentUtils::getAggregateCracked($object->getAgentId(), $object->getTaskId());
+  }
+  
+  /**
+   * @param Assignment $object
+   * @throws Exception
+   */
+  protected function getAggregateCurrentSpeed(AbstractModel $object): int {
+    return TaskUtils::getCurrentSpeedOfTask($object->getTaskId(), $object->getAgentId());
+  }
+  
+  /**
+   * @param Assignment $object
+   * @throws Exception
+   */
+  protected function getAggregateSearched(AbstractModel $object): int {
+    return TaskUtils::getTaskProgress($object->getTaskId(), $object->getAgentId());
   }
   
   /**

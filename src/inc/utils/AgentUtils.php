@@ -606,7 +606,7 @@ class AgentUtils {
   }
   
   /**
-   * Get the aggregate cracking time of an agent or more specifically
+   * Get the aggregate cracking time of an agent or
    * (if task ID is specified) of an agent on a specific task.
    *
    * @param int $agentId
@@ -626,5 +626,22 @@ class AgentUtils {
     $agg2 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::SUM);
     $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2, $qF3, $qF4])], [$agg1, $agg2]);
     return $results[$agg1->getName()] - $results[$agg2->getName()];
+  }
+  
+  /**
+   * Get the aggregate number of hashes cracked by an agent or
+   *  (if task ID is specified) by an agent on a specific task.
+   *
+   * @param int $agentId
+   * @param int|null $taskId
+   * @return int
+   * @throws Exception
+   */
+  public static function getAggregateCracked(int $agentId, ?int $taskId = null): int {
+    $qF1 = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
+    $qF2 = $taskId !== null ? new QueryFilter(Chunk::TASK_ID, $taskId, "=") : null;
+    $agg1 = new Aggregation(Chunk::CRACKED, Aggregation::SUM);
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2])], [$agg1]);
+    return (int)($results[$agg1->getName()] ?? 0);
   }
 }
