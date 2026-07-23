@@ -39,7 +39,7 @@ class GetCompletedCountHelperAPI extends AbstractHelperAPI {
   }
   
   public static function getResponse(): string {
-    return "";
+    return "Task";
   }
   
   /**
