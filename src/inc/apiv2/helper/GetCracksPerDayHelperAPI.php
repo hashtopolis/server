@@ -62,9 +62,9 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
       $counts[$key] = ($counts[$key] ?? 0) + $value;
     }
     
-    $ret = self::createJsonResponse(meta: $counts);
+    $ret = self::createJsonResponse(data: $counts);
     if(empty($counts)) {
-      $ret["meta"] = new stdClass();
+      $ret["data"] = new stdClass();
     }
     
     $body = $response->getBody();
