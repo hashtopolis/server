@@ -481,7 +481,7 @@ abstract class AbstractModelFactory {
    * @param array $options
    * @param JoinFilter $joinFilter
    * @param Aggregation[] $aggregations
-   * @return mixed
+   * @return array
    * @throws Exception
    */
   public function joinAggregationFilter(array $options, JoinFilter $joinFilter, array $aggregations): array {
