@@ -161,6 +161,17 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
         $status = 2;
       }
     }
+    if ($status !== 3) {
+      $hashlist = Factory::getHashlistFactory()->get($object->getHashlistId());
+      if ($hashlist->getCracked() === $hashlist->getHashCount()) {
+        if($object->getCracked() > 0) {
+          return 3;
+        } else {
+          // If all hashes are cracked and this task has not found a crack, turn it to skipped state
+          return 4;
+        }
+      }
+    }
     return $status;
   }
   

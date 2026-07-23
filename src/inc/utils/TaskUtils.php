@@ -156,6 +156,18 @@ class TaskUtils {
         }
       }
     }
+    if ($status !== 3) {
+      $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+      $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
+      if ($hashlist->getCracked() === $hashlist->getHashCount()) {
+        if($taskWrapper->getCracked() > 0) {
+          return 3;
+        } else {
+          // If all hashes are cracked and this task has not found a crack, turn it to skipped state
+          return 4;
+        }
+      }
+    }
     return $status;
   }
   
