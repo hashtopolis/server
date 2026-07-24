@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.0.0-rc2 -> v1.0.0-rc3
+
+**Bugfixes**
+- Fixed small typo in config.php (#2066)
+- Fixed include in dba/init (#2272)
+- Fixed LikeFilterInsensitive to cast integer columns to text before LIKE (#2285)
+- Check for task completion by using task progress (#2290)
+- Fixed installation docs: broken download URLs and outdated upgrade guide (#2311)
+- Remove encoding of HTML entities by the API (#2296)
+- Fix cursor pagination documentation in OpenAPI docs (#2351)
+
+**Enhancements**
+- Added migrations generations (#2237)
+- Removed environment variable to selectively enable new API (#2275)
+- Upgrading to mysql:9.7 and test also upgrades with different versions (#2286)
+- Adding initial data insertion into setup script (#2293)
+- Removed the legacy install script (#2299)
+- Upgraded all composer packages (#2301)
+- Removed obselete version attribute from dockerfiles (#2314)
+- Updated actions for linting workflow and added npm min age (#2334)
+- Replace PECL with PIE (as PECL is deprecated and may be removed in the future) (#2352)
+- Also make task status finished when hashlist has been cracked (#2321)
+
 ## v1.0.0-rc1 -> v1.0.0-rc2
 
 **Bugfixes**
