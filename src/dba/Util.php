@@ -30,14 +30,20 @@ class Util {
   
   /**
    * Used to create the full select string of a table query
-   * @param $table string
-   * @param $keys array
+   * @param string $table
+   * @param array $keys
+   * @param bool $nameOnly
    * @return string
    */
-  public static function createPrefixedString(string $table, array $keys): string {
+  public static function createPrefixedString(string $table, array $keys, bool $nameOnly = false): string {
     $arr = array();
     foreach ($keys as $key) {
-      $arr[] = "$table.$key AS " . $table . "_" . $key;
+      if ($nameOnly) {
+        $arr[] = $table . "_" . $key;
+      }
+      else {
+        $arr[] = "$table.$key AS " . $table . "_" . $key;
+      }
     }
     return implode(", ", $arr);
   }
