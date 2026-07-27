@@ -478,6 +478,88 @@ abstract class AbstractModelFactory {
   }
   
   /**
+   * @param array $options
+   * @param JoinFilter $joinFilter
+   * @param Aggregation[] $aggregations
+   * @return array
+   * @throws Exception
+   */
+  public function joinAggregationFilter(array $options, JoinFilter $joinFilter, array $aggregations): array {
+    $elements = [];
+    foreach ($aggregations as $aggregation) {
+      $elements[] = $aggregation->getQueryString($this, true);
+    }
+    
+    $query = "SELECT " . Util::createPrefixedString($this->getMappedModelTable(), self::getMappedModelKeys($this->getNullObject())) . ", " . join(",", $elements). " FROM " . $this->getMappedModelTable();
+    $vals = [];
+    
+    $match1 = self::getMappedModelKey($this->getNullObject(), $joinFilter->getMatch1());
+    $match2 = self::getMappedModelKey($joinFilter->getOtherFactory()->getNullObject(), $joinFilter->getMatch2());
+    $query .= " " . $joinFilter->getJoinType() . " JOIN " . $joinFilter->getOtherFactory()->getMappedModelTable() . " ON " . $this->getMappedModelTable() . "." . $match1 . "=" . $joinFilter->getOtherFactory()->getMappedModelTable() . "." . $match2 . " ";
+    
+    // Apply all normal filter to this query
+    if (array_key_exists(Factory::FILTER, $options)) {
+      $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
+    }
+    
+    $query .= " GROUP BY " . Util::createPrefixedString($this->getMappedModelTable(), self::getMappedModelKeys($this->getNullObject()), true);
+    
+    // Apply order filter
+    if (!array_key_exists(Factory::ORDER, $options)) {
+      // Add a asc order on the primary keys as a standard
+      $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
+      $orderOptions = array($oF);
+      $options[Factory::ORDER] = $orderOptions;
+    }
+    $query .= $this->applyOrder($options[Factory::ORDER]);
+    
+    // Apply limits
+    if (array_key_exists(Factory::LIMIT, $options)) {
+      $query .= $this->applyLimit($options[Factory::LIMIT]);
+    }
+    
+    $dbh = self::getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    
+    // the result gets mapped into N (>=2) array, one consisting of the object requested on the factory as a Model
+    // and the further arrays containing the results of the aggregations
+    $res = [];
+    $res[$this->getModelTable()] = [];
+    foreach($aggregations as $aggregation) {
+      $res[$aggregation->getName()] = [];
+    }
+    
+    $values = [];
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $values[$this->getModelTable()] = [];
+      
+      foreach ($row as $k => $v) {
+        $k = strtolower($k);
+        if (str_starts_with($k, strtolower($this->getMappedModelTable()))) {
+          $column = str_replace(strtolower($this->getMappedModelTable()) . "_", "", $k);
+          $values[$this->getModelTable()][strtolower($column)] = $v;
+        }
+        
+        foreach($aggregations as $aggregation) {
+          if ($k == $aggregation->getName()) {
+            $values[$aggregation->getName()] = $v;
+          }
+        }
+      }
+      
+      $model = $this->createObjectFromDict($values[$this->getModelTable()]);
+      $res[$this->getModelTable()][] = $model;
+      
+      foreach($aggregations as $aggregation) {
+        $res[$aggregation->getName()][] = $values[$aggregation->getName()];
+      }
+    }
+    
+    return $res;
+  }
+  
+  /**
    * @param $options array as usual, to filter and join
    * @param $aggregations array of Aggregation objects
    * @return mixed

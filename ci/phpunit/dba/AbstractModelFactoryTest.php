@@ -5,6 +5,7 @@ namespace Hashtopolis\dba;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\models\File;
@@ -12,6 +13,7 @@ use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\HealthCheck;
 use Hashtopolis\dba\models\HealthCheckAgent;
+use Hashtopolis\dba\models\Task;
 use Hashtopolis\TestBase;
 use Random\RandomException;
 use Hashtopolis\dba\models\Hashlist;
@@ -1409,6 +1411,263 @@ final class AbstractModelFactoryTest extends TestBase {
   }
   
   /**
+   * Basic structure check: joinAggregationFilter must return an array keyed
+   * by the model table (containing the requested model objects) and by each
+   * aggregation name (containing the aggregation values).
+   * Uses the Task/Chunk 1-n relation described in the feature request.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testJoinAggregationFilterResultStructure(): void {
+    [$task] = $this->setupTaskWithChunks([10, 20, 30]);
+    
+    $qF = new QueryFilter(Task::TASK_ID, $task->getId(), "=");
+    $jF = new JoinFilter(Factory::getChunkFactory(), Task::TASK_ID, Chunk::TASK_ID);
+    $aggregations = [new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM, Factory::getChunkFactory())];
+    
+    $res = Factory::getTaskFactory()->joinAggregationFilter([Factory::FILTER => $qF], $jF, $aggregations);
+    
+    $taskTable = Factory::getTaskFactory()->getModelTable();
+    $this->assertArrayHasKey($taskTable, $res);
+    $this->assertArrayHasKey($aggregations[0]->getName(), $res);
+    $this->assertNotEmpty($res[$taskTable]);
+    foreach ($res[$taskTable] as $model) {
+      $this->assertInstanceOf(Task::class, $model);
+    }
+  }
+  
+  /**
+   * The main use case from the feature description: request Tasks, join with
+   * the 1-n related Chunks and determine the SUM of all checkpoints of the
+   * associated chunks. One task with three chunks (checkpoints 10, 20, 30)
+   * must result in a single Task row with sum_checkpoint = 60.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testJoinAggregationFilterSumCheckpoints(): void {
+    [$task] = $this->setupTaskWithChunks([10, 20, 30]);
+    
+    $qF = new QueryFilter(Task::TASK_ID, $task->getId(), "=");
+    $jF = new JoinFilter(Factory::getChunkFactory(), Task::TASK_ID, Chunk::TASK_ID);
+    $aggregations = [new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM, Factory::getChunkFactory())];
+    
+    $res = Factory::getTaskFactory()->joinAggregationFilter([Factory::FILTER => $qF], $jF, $aggregations);
+    
+    $taskTable = Factory::getTaskFactory()->getModelTable();
+    $this->assertCount(1, $res[$taskTable]);
+    $this->assertEquals($task->getId(), $res[$taskTable][0]->getId());
+    $this->assertCount(1, $res[$aggregations[0]->getName()]);
+    $this->assertEquals(60, $res[$aggregations[0]->getName()][0]);
+  }
+  
+  /**
+   * Verify that multiple aggregations are returned together with the model
+   * objects, each aggregation result aligned with the corresponding row.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testJoinAggregationFilterMultipleAggregations(): void {
+    [$task] = $this->setupTaskWithChunks([10, 20, 30]);
+    
+    $qF = new QueryFilter(Task::TASK_ID, $task->getId(), "=");
+    $jF = new JoinFilter(Factory::getChunkFactory(), Task::TASK_ID, Chunk::TASK_ID);
+    $aggregations = [
+      new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM, Factory::getChunkFactory()),
+      new Aggregation(Chunk::CHECKPOINT, Aggregation::MAX, Factory::getChunkFactory()),
+      new Aggregation(Chunk::CHECKPOINT, Aggregation::MIN, Factory::getChunkFactory()),
+      new Aggregation(Chunk::CHECKPOINT, Aggregation::COUNT, Factory::getChunkFactory()),
+    ];
+    
+    $res = Factory::getTaskFactory()->joinAggregationFilter([Factory::FILTER => $qF], $jF, $aggregations);
+    
+    $taskTable = Factory::getTaskFactory()->getModelTable();
+    $this->assertCount(1, $res[$taskTable]);
+    $this->assertEquals(60, $res[$aggregations[0]->getName()][0]);
+    $this->assertEquals(30, $res[$aggregations[1]->getName()][0]);
+    $this->assertEquals(10, $res[$aggregations[2]->getName()][0]);
+    $this->assertEquals(3, $res[$aggregations[3]->getName()][0]);
+  }
+  
+  /**
+   * With several tasks each having their own chunks, the aggregation must be
+   * applied per task (one result row per task). Task A has chunks summing to
+   * 60, Task B has chunks summing to 5.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testJoinAggregationFilterMultipleTasks(): void {
+    [$taskA] = $this->setupTaskWithChunks([10, 20, 30]);
+    [$taskB] = $this->setupTaskWithChunks([2, 3]);
+    
+    $cF = new ContainFilter(Task::TASK_ID, [$taskA->getId(), $taskB->getId()]);
+    $oF = new OrderFilter(Task::TASK_ID, "ASC");
+    $jF = new JoinFilter(Factory::getChunkFactory(), Task::TASK_ID, Chunk::TASK_ID);
+    $aggregations = [new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM, Factory::getChunkFactory())];
+    
+    $res = Factory::getTaskFactory()->joinAggregationFilter([Factory::FILTER => $cF, Factory::ORDER => $oF], $jF, $aggregations);
+    
+    $taskTable = Factory::getTaskFactory()->getModelTable();
+    $this->assertCount(2, $res[$taskTable]);
+    $this->assertEquals($taskA->getId(), $res[$taskTable][0]->getId());
+    $this->assertEquals($taskB->getId(), $res[$taskTable][1]->getId());
+    $this->assertEquals(60, $res[$aggregations[0]->getName()][0]);
+    $this->assertEquals(5, $res[$aggregations[0]->getName()][1]);
+  }
+  
+  /**
+   * A filter on the joined table (Chunk) column must restrict the rows
+   * considered for the aggregation. Only chunks with checkpoint >= 20 are
+   * taken into account, so the sum over [10, 20, 30] becomes 50.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testJoinAggregationFilterWithJoinTableFilter(): void {
+    [$task] = $this->setupTaskWithChunks([10, 20, 30]);
+    
+    $qF = new QueryFilter(Chunk::CHECKPOINT, 20, ">=", Factory::getChunkFactory());
+    $jF = new JoinFilter(Factory::getChunkFactory(), Task::TASK_ID, Chunk::TASK_ID);
+    $aggregations = [new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM, Factory::getChunkFactory())];
+    
+    $res = Factory::getTaskFactory()->joinAggregationFilter([Factory::FILTER => $qF], $jF, $aggregations);
+    
+    $taskTable = Factory::getTaskFactory()->getModelTable();
+    $this->assertCount(1, $res[$taskTable]);
+    $this->assertEquals(50, $res[$aggregations[0]->getName()][0]);
+  }
+  
+  /**
+   * Order by the aggregation result descending. The task with the larger
+   * checkpoint sum must come first.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testJoinAggregationFilterWithOrder(): void {
+    [$taskA] = $this->setupTaskWithChunks([2, 3]);
+    [$taskB] = $this->setupTaskWithChunks([10, 20, 30]);
+    
+    $cF = new ContainFilter(Task::TASK_ID, [$taskA->getId(), $taskB->getId()]);
+    $oF = new OrderFilter(Task::TASK_ID, "DESC");
+    $jF = new JoinFilter(Factory::getChunkFactory(), Task::TASK_ID, Chunk::TASK_ID);
+    $aggregations = [new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM, Factory::getChunkFactory())];
+    
+    $res = Factory::getTaskFactory()->joinAggregationFilter([Factory::FILTER => $cF, Factory::ORDER => $oF], $jF, $aggregations);
+    
+    $taskTable = Factory::getTaskFactory()->getModelTable();
+    $this->assertCount(2, $res[$taskTable]);
+    $this->assertEquals(max($taskA->getId(), $taskB->getId()), $res[$taskTable][0]->getId());
+  }
+  
+  /**
+   * A limit must restrict the number of returned rows.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testJoinAggregationFilterWithLimit(): void {
+    [$taskA] = $this->setupTaskWithChunks([1]);
+    [$taskB] = $this->setupTaskWithChunks([2]);
+    [$taskC] = $this->setupTaskWithChunks([3]);
+    
+    $cF = new ContainFilter(Task::TASK_ID, [$taskA->getId(), $taskB->getId(), $taskC->getId()]);
+    $oF = new OrderFilter(Task::TASK_ID, "ASC");
+    $lF = new LimitFilter(2);
+    $jF = new JoinFilter(Factory::getChunkFactory(), Task::TASK_ID, Chunk::TASK_ID);
+    $aggregations = [new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM, Factory::getChunkFactory())];
+    
+    $res = Factory::getTaskFactory()->joinAggregationFilter(
+      [Factory::FILTER => $cF, Factory::ORDER => $oF, Factory::LIMIT => $lF],
+      $jF,
+      $aggregations
+    );
+    
+    $taskTable = Factory::getTaskFactory()->getModelTable();
+    $this->assertCount(2, $res[$taskTable]);
+    $this->assertCount(2, $res[$aggregations[0]->getName()]);
+  }
+  
+  /**
+   * When no rows match the filter, the result arrays must be empty (not null),
+   * but the keys must still be present.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testJoinAggregationFilterEmptyResult(): void {
+    [$task] = $this->setupTaskWithChunks([10]);
+    
+    $qF = new QueryFilter(Task::TASK_ID, 999999999, "=");
+    $jF = new JoinFilter(Factory::getChunkFactory(), Task::TASK_ID, Chunk::TASK_ID);
+    $aggregations = [new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM, Factory::getChunkFactory())];
+    
+    $res = Factory::getTaskFactory()->joinAggregationFilter([Factory::FILTER => $qF], $jF, $aggregations);
+    
+    $taskTable = Factory::getTaskFactory()->getModelTable();
+    $this->assertArrayHasKey($taskTable, $res);
+    $this->assertArrayHasKey($aggregations[0]->getName(), $res);
+    $this->assertSame([], $res[$taskTable]);
+    $this->assertSame([], $res[$aggregations[0]->getName()]);
+  }
+  
+  /**
+   * A task that has no chunks at all must still be returned (with a NULL/0
+   * aggregation) when a LEFT join is used, matching the 1-n semantics where the
+   * "1" side may have zero related "n" entries.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testJoinAggregationFilterLeftJoinNoChunks(): void {
+    [$task] = $this->setupTaskWithChunks([10, 20]);
+    // second task without any chunks
+    $helper = $this->createTaskHelper();
+    /** @var Task $taskEmpty */
+    $taskEmpty = $helper['task'];
+    
+    $cF = new ContainFilter(Task::TASK_ID, [$task->getId(), $taskEmpty->getId()]);
+    $oF = new OrderFilter(Task::TASK_ID, "ASC");
+    $jF = new JoinFilter(Factory::getChunkFactory(), Task::TASK_ID, Chunk::TASK_ID, null, JoinFilter::LEFT);
+    $aggregations = [new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM, Factory::getChunkFactory())];
+    
+    $res = Factory::getTaskFactory()->joinAggregationFilter([Factory::FILTER => $cF, Factory::ORDER => $oF], $jF, $aggregations);
+    
+    $taskTable = Factory::getTaskFactory()->getModelTable();
+    $this->assertCount(2, $res[$taskTable]);
+    // first task (lower id) has chunks summing to 30
+    $this->assertEquals(30, $res[$aggregations[0]->getName()][0]);
+    // second task has no chunks, sum must be 0 (or null) — not an error
+    $this->assertContains($res[$aggregations[0]->getName()][1], [0, null]);
+  }
+  
+  /**
+   * Aggregating on a column of the main factory (Task) itself, joined with the
+   * 1-n table. Verifies aggregations without overrideFactory resolve against the
+   * main factory.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testJoinAggregationFilterOnMainFactoryColumn(): void {
+    [$task] = $this->setupTaskWithChunks([10, 20, 30]);
+    
+    $qF = new QueryFilter(Task::TASK_ID, $task->getId(), "=");
+    $jF = new JoinFilter(Factory::getChunkFactory(), Task::TASK_ID, Chunk::TASK_ID);
+    $aggregations = [new Aggregation(Task::TASK_ID, Aggregation::COUNT)];
+    
+    $res = Factory::getTaskFactory()->joinAggregationFilter([Factory::FILTER => $qF], $jF, $aggregations);
+    
+    $taskTable = Factory::getTaskFactory()->getModelTable();
+    $this->assertCount(1, $res[$taskTable]);
+    // COUNT of taskId over the joined rows equals the number of chunks
+    $this->assertEquals(3, $res[$aggregations[0]->getName()][0]);
+  }
+  
+  /**
    * @return array
    * @throws Exception
    */
@@ -1429,5 +1688,30 @@ final class AbstractModelFactoryTest extends TestBase {
     $healthCheck = $this->createDatabaseObject(Factory::getHealthCheckFactory(), $healthCheck);
     
     return [$agent, $healthCheck];
+  }
+  
+  /**
+   * Creates a fully wired Task and attaches a chunk for every checkpoint value
+   * given in $checkpoints, returning the task, the agent and the created chunks.
+   * All created objects are registered for teardown cleanup.
+   *
+   * @param array<int> $checkpoints checkpoint values, one chunk per entry
+   * @return array{0: Task, 1: Agent, 2: array<Chunk>}
+   * @throws Exception
+   */
+  private function setupTaskWithChunks(array $checkpoints): array {
+    $helper = $this->createTaskHelper();
+    /** @var Task $task */
+    $task = $helper['task'];
+    $agent = $this->createAgent('phpunit');
+    
+    $chunks = [];
+    foreach ($checkpoints as $cp) {
+      $chunks[] = $this->createDatabaseObject(
+        Factory::getChunkFactory(),
+        new Chunk(null, $task->getId(), 0, 100, $agent->getId(), time(), 0, $cp, 0, 0, 0, 0)
+      );
+    }
+    return [$task, $agent, $chunks];
   }
 }
