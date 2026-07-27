@@ -1465,7 +1465,7 @@ abstract class AbstractBaseAPI {
       if ($method === "GET" && $this instanceof AbstractModelAPI) {
         $features = $this->getFeatures();
         foreach ($features as $arr) {
-          if ($arr['public']) {
+          if ($arr['public'] ?? false) {
             $this->addPublicAttributeClass($this->getDBAClass());
           }
         }
