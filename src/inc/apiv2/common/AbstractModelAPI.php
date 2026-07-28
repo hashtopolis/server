@@ -737,7 +737,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     $primaryKey = $apiClass->getPrimaryKey();
     
-    $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $defaultSort);
+    $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $defaultSort, $reverseArray);
     $orderTemplates[0]["type"] = $defaultSort;
     $primaryFilter = $orderTemplates[0]['by'];
     $orderFilters = [];
@@ -779,8 +779,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       if ($secondary_cursor) {
         $secondary_cursor_key = key($secondary_cursor);
         $secondary_cursor_key = $secondary_cursor_key == '_id' ? array_column($aliasedfeatures, 'alias', 'dbname')[$apiClass->getPrimaryKey()] : $secondary_cursor_key;
+        $secondaryOperator = $reverseArray ? "<" : ">";
         $finalFs[Factory::FILTER][] = new PaginationFilter($primary_cursor_key, current($primary_cursor),
-          $operator, $secondary_cursor_key, current($secondary_cursor), $pagination_filters
+          $operator, $secondary_cursor_key, current($secondary_cursor), $pagination_filters, null, $secondaryOperator
         );
       }
       else {

@@ -42,6 +42,15 @@ final class PaginationFilterTest extends TestBase {
     $this->assertStringContainsString('AND Hashlist.hashTypeId>?', $result);
     $this->assertStringContainsString('AND Hashlist.hashlistName LIKE BINARY ?', $result);
   }
+
+  /** Verify mixed cursor operators support DESC primary sort with ASC tie-breaker. */
+  public function testQueryStringMixedOperators(): void {
+    $filter = new PaginationFilter(HashType::IS_SALTED, 5, '<', HashType::HASH_TYPE_ID, 10, [], null, '>');
+    $this->assertEquals(
+      '(isSalted<?) OR (isSalted=? AND hashTypeId>?)',
+      $filter->getQueryString(Factory::getHashTypeFactory())
+    );
+  }
   
   /** Verify mapped table name (htp_User) is used. */
   public function testQueryStringMappedTable(): void {
@@ -128,5 +137,52 @@ final class PaginationFilterTest extends TestBase {
     foreach ($results as $ht) {
       $this->assertLessThan(6, $ht->getIsSalted());
     }
+  }
+
+  /**
+   * Verify cursor filtering for ORDER BY isSalted DESC, hashTypeId ASC.
+   *
+   * With a cursor on the first row of the duplicated primary value, the next rows are
+   * the higher primary key within the tie and then lower primary values.
+   *
+   * @throws Exception
+   */
+  public function testFilterPaginationDescPrimaryAscTieBreaker(): void {
+    $testId = uniqid();
+    $firstDuplicate = $this->createDatabaseObject(
+      Factory::getHashTypeFactory(),
+      new HashType(null, 'ht_dup1_' . $testId, 5, 0)
+    );
+    $secondDuplicate = $this->createDatabaseObject(
+      Factory::getHashTypeFactory(),
+      new HashType(null, 'ht_dup2_' . $testId, 5, 0)
+    );
+    $lowerPrimary = $this->createDatabaseObject(
+      Factory::getHashTypeFactory(),
+      new HashType(null, 'ht_low_' . $testId, 1, 0)
+    );
+
+    $scope = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
+    $pf = new PaginationFilter(
+      HashType::IS_SALTED,
+      5,
+      '<',
+      HashType::HASH_TYPE_ID,
+      $firstDuplicate->getId(),
+      [$scope],
+      null,
+      '>'
+    );
+    $results = Factory::getHashTypeFactory()->filter([
+      Factory::FILTER => [$scope, $pf],
+      Factory::ORDER => [
+        new OrderFilter(HashType::IS_SALTED, 'DESC'),
+        new OrderFilter(HashType::HASH_TYPE_ID, 'ASC'),
+      ],
+    ]);
+
+    $this->assertCount(2, $results);
+    $this->assertSame($secondDuplicate->getId(), $results[0]->getId());
+    $this->assertSame($lowerPrimary->getId(), $results[1]->getId());
   }
 }

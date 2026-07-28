@@ -1,6 +1,7 @@
 from hashtopolis import Task, TaskWrapper, Config, HashtopolisResponseError
-from utils import BaseTest
+from utils import BaseTest, do_create_dummy_agent, do_create_agentassignent
 from hashtopolis_agent import ProcessState
+import base64
 
 
 class TaskTest(BaseTest):
@@ -305,3 +306,76 @@ class TaskTest(BaseTest):
         with self.assertRaises(HashtopolisResponseError) as e:
             self._test_patch(model_obj, 'attackCmd', config.value)
         self.assertEqual(e.exception.status_code, 500)
+
+    def test_cracked_aggregate_zero_for_new_task(self):
+        task = self.create_test_object()
+        obj = Task.objects.params(**{"aggregate[task]": "cracked"}).get(taskId=task.id)
+        self.assertEqual(obj.cracked, 0)
+
+    def test_cracked_aggregate_returns_int(self):
+        task_containing_chunks = self.create_test_agent_object()
+        obj = Task.objects.params(**{"aggregate[task]": "cracked"}).get(taskId=task_containing_chunks.id)
+        self.assertIsInstance(obj.cracked, int)
+
+    def test_cracked_aggregate_with_matching_hashes(self):
+        # Create a hashlist containing the exact hashes the DummyAgent sends as cracks
+        source_data = base64.b64encode(
+            b'7fde65673fd28736423f23423786f\n7fde65673f28987f7423f2342378f\n'
+        ).decode()
+        hashlist = self.create_hashlist(extra_payload={'sourceData': source_data})
+        task = self.create_task(hashlist=hashlist, file_id='004')
+
+        dummy_agent, agent = do_create_dummy_agent()
+        self.delete_after_test(agent)
+        do_create_agentassignent(agent, task)
+
+        dummy_agent.get_task()
+        dummy_agent.get_hashlist()
+        dummy_agent.get_chunk()
+        # Satisfy keyspace/benchmark requests until a real chunk is dispatched
+        while dummy_agent.chunk['status'] != 'OK':
+            status = dummy_agent.chunk['status']
+            if status == 'keyspace_required':
+                dummy_agent.send_keyspace(keyspace=56800)
+            elif status == 'benchmark':
+                dummy_agent.send_benchmark()
+            dummy_agent.get_chunk()
+
+        # send_process sends 2 cracks matching our hashlist -> cracked should be 2
+        dummy_agent.send_process(progress=50)
+
+        obj = Task.objects.params(**{"aggregate[task]": "cracked"}).get(taskId=task.id)
+        self.assertEqual(obj.cracked, 2)
+
+    def test_cracked_aggregate_sums_across_chunks(self):
+        # Create a hashlist with 2 hashes matching the DummyAgent's cracks
+        source_data = base64.b64encode(
+            b'7fde65673fd28736423f23423786f\n7fde65673f28987f7423f2342378f\n'
+        ).decode()
+        hashlist = self.create_hashlist(extra_payload={'sourceData': source_data})
+        task = self.create_task(hashlist=hashlist, file_id='004')
+
+        dummy_agent, agent = do_create_dummy_agent()
+        self.delete_after_test(agent)
+        do_create_agentassignent(agent, task)
+
+        dummy_agent.get_task()
+        dummy_agent.get_hashlist()
+        dummy_agent.get_chunk()
+        while dummy_agent.chunk['status'] != 'OK':
+            status = dummy_agent.chunk['status']
+            if status == 'keyspace_required':
+                dummy_agent.send_keyspace(keyspace=56800)
+            elif status == 'benchmark':
+                dummy_agent.send_benchmark()
+            dummy_agent.get_chunk()
+
+        # First chunk: 2 cracks match -> chunk cracked = 2
+        dummy_agent.send_process(progress=100, state=ProcessState.EXHAUSTED)
+        # Get a second chunk and send the same cracks (already cracked, so 0 new)
+        dummy_agent.get_chunk()
+        dummy_agent.send_process(progress=100, state=ProcessState.EXHAUSTED)
+
+        obj = Task.objects.params(**{"aggregate[task]": "cracked"}).get(taskId=task.id)
+        # Only the first chunk cracks hashes; the sum across all chunks is still 2
+        self.assertEqual(obj.cracked, 2)
