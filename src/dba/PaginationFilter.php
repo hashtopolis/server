@@ -6,6 +6,7 @@ class PaginationFilter extends Filter {
   private string $key;
   private mixed $value;
   private string $operator;
+  private string $tieBreakerOperator;
   private string $tieBreakerKey;
   private mixed $tieBreakerValue;
   /** @var Filter[] $filters */
@@ -13,13 +14,14 @@ class PaginationFilter extends Filter {
   
   private ?AbstractModelFactory $overrideFactory;
   
-  function __construct($key, $value, $operator, $tieBreakerKey, $tieBreakerValue, $filters = [], $overrideFactory = null) {
+  function __construct($key, $value, $operator, $tieBreakerKey, $tieBreakerValue, $filters = [], $overrideFactory = null, $tieBreakerOperator = null) {
     /**
      * @param QueryFilter[] $filters
      */
     $this->key = $key;
     $this->value = $value;
     $this->operator = $operator;
+    $this->tieBreakerOperator = $tieBreakerOperator ?? $operator;
     $this->overrideFactory = $overrideFactory;
     $this->tieBreakerKey = $tieBreakerKey;
     $this->tieBreakerValue = $tieBreakerValue;
@@ -40,7 +42,7 @@ class PaginationFilter extends Filter {
     //    where (HashType.isSalted < 1) OR (HashType.isSalted = 1 and HashType.hashTypeId < 12600) 
     //    ORDER BY HashType.isSalted DESC, HashType.hashTypeId DESC LIMIT 25;
     $queryString = "(" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $this->operator . "?" . ") OR (" . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . "=" . "?"
-      . " AND " . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->tieBreakerKey) . $this->operator . "?";
+      . " AND " . $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->tieBreakerKey) . $this->tieBreakerOperator . "?";
     if (count($this->filters) > 0) {
       $queryString = $queryString . " AND " . implode(" AND ", $parts);
     }
