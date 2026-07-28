@@ -1,5 +1,6 @@
 import time
 from hashtopolis import AgentAssignment, Chunk
+from hashtopolis_agent import ProcessState
 
 from utils import BaseTest, do_create_dummy_agent, do_create_agentassignent
 
@@ -81,3 +82,55 @@ class AgentStatTest(BaseTest):
         assignment = AgentAssignment.objects.params(**{"aggregate[assignment]": ','.join(aggregate_attrs)}).get(agentId=agent.id, taskId=task.id)
 
         self.assertEqual(totalSum, assignment.crackingTime)
+
+    def _get_current_chunk_id(self, agent, task):
+        assignment = AgentAssignment.objects.params(
+            **{"aggregate[assignment]": "currentChunkId"}
+        ).get(agentId=agent.id, taskId=task.id)
+        return getattr(assignment, 'currentChunkId', None)
+
+    def test_current_chunk_id_null_before_any_chunk(self):
+        dummy_agent, agent = do_create_dummy_agent()
+        self.delete_after_test(agent)
+        hashlist = self.create_hashlist()
+        task = self.create_task(hashlist)
+        do_create_agentassignent(agent, task)
+        # Agent has the assignment but hasn't requested any chunk yet
+        chunk_id = self._get_current_chunk_id(agent, task)
+        self.assertIsNone(chunk_id)
+
+    def test_current_chunk_id_returns_active_chunk(self):
+        dummy_agent, agent, _, task = self.create_agent_with_task().values()
+        dummy_agent.get_chunk()
+        # Partial progress -> chunk is still active (progress < 10000)
+        dummy_agent.send_process(progress=50)
+
+        chunk_id = self._get_current_chunk_id(agent, task)
+        self.assertIsNotNone(chunk_id)
+        self.assertEqual(chunk_id, dummy_agent.chunk['chunkId'])
+
+    def test_current_chunk_id_null_after_chunk_completed(self):
+        dummy_agent, agent, _, task = self.create_agent_with_task().values()
+        dummy_agent.get_chunk()
+        # Full progress -> chunk is completed (progress == 10000, no longer < 10000)
+        dummy_agent.send_process(progress=100, state=ProcessState.EXHAUSTED)
+
+        chunk_id = self._get_current_chunk_id(agent, task)
+        self.assertIsNone(chunk_id)
+
+    def test_current_chunk_id_updates_to_new_chunk(self):
+        dummy_agent, agent, _, task = self.create_agent_with_task().values()
+        # First chunk: complete it
+        dummy_agent.get_chunk()
+        dummy_agent.send_process(progress=100, state=ProcessState.EXHAUSTED)
+        first_chunk_id = self._get_current_chunk_id(agent, task)
+        self.assertIsNone(first_chunk_id)
+
+        # Second chunk: leave it in progress
+        dummy_agent.get_chunk()
+        dummy_agent.send_process(progress=50)
+
+        chunk_id = self._get_current_chunk_id(agent, task)
+        self.assertIsNotNone(chunk_id)
+        self.assertEqual(chunk_id, dummy_agent.chunk['chunkId'])
+        self.assertNotEqual(chunk_id, first_chunk_id)
