@@ -15,7 +15,6 @@ paths, where `DummyAgent._do_request` would raise on non-SUCCESS responses).
 
 import json
 import re
-import subprocess
 import unittest
 
 import requests
@@ -109,74 +108,6 @@ class AgentProtocolBase(BaseTest):
         dummy, agent = do_create_dummy_agent()
         self.delete_after_test(agent)
         return dummy, agent
-
-    def _create_health_check_agent(self, health_check_id, agent_id):
-        """Create a HealthCheckAgent row linking a health check to an agent.
-
-        The v2 API only supports GET on HealthCheckAgent, so this is done via a
-        small PHP snippet that uses the server's own DBA layer.  Returns the
-        HealthCheckAgent id.
-        """
-        php = f"""
-require '/var/www/html/src/inc/startup/include.php';
-use Hashtopolis\dba\Factory;
-use Hashtopolis\dba\models\HealthCheckAgent;
-use Hashtopolis\inc\defines\DHealthCheckAgentStatus;
-$hca = new HealthCheckAgent(null, {health_check_id}, {agent_id}, DHealthCheckAgentStatus::PENDING, 0, 0, 0, 0, '');
-$hca = Factory::getHealthCheckAgentFactory()->save($hca);
-echo $hca->getId();
-"""
-        r = subprocess.run(
-            ['php', '-r', php],
-            capture_output=True, text=True, cwd='/var/www/html',
-        )
-        hca_id = r.stdout.strip()
-        if not hca_id.isdigit():
-            raise RuntimeError(f"Failed to create HealthCheckAgent: {r.stderr[:300]}")
-        return int(hca_id)
-
-    def _delete_health_check_agent(self, hca_id):
-        """Delete a HealthCheckAgent row by id (via PHP)."""
-        php = (
-            "require '/var/www/html/src/inc/startup/include.php';\n"
-            "use Hashtopolis\\dba\\Factory;\n"
-            "use Hashtopolis\\dba\\models\\HealthCheckAgent;\n"
-            "use Hashtopolis\\dba\\QueryFilter;\n"
-            "$qF = new QueryFilter(HealthCheckAgent::HEALTH_CHECK_AGENT_ID, " + str(hca_id) + ", '=');\n"
-            "Factory::getHealthCheckAgentFactory()->massDeletion([Factory::FILTER => $qF]);\n"
-        )
-        subprocess.run(['php', '-r', php], capture_output=True, text=True, cwd='/var/www/html')
-
-    def _delete_all_health_check_agents(self):
-        """Delete all HealthCheckAgent rows (via PHP).
-
-        The v2 API only supports GET on HealthCheckAgent, and the
-        ``delete-test-data`` cleanup script does not include HCA rows, so
-        leftover rows from previous runs can match newly-created HealthChecks
-        (because auto-increment IDs may collide after deletions).  This is
-        called before each health-check test to ensure a clean slate.
-        """
-        php = (
-            "require '/var/www/html/src/inc/startup/include.php';\n"
-            "use Hashtopolis\\dba\\Factory;\n"
-            "Factory::getHealthCheckAgentFactory()->massDeletion([]);\n"
-        )
-        subprocess.run(['php', '-r', php], capture_output=True, text=True, cwd='/var/www/html')
-
-    def _delete_hca_for_agent(self, health_check_id, agent_id):
-        """Delete the HealthCheckAgent row for a specific (hc, agent) pair."""
-        php = (
-            "require '/var/www/html/src/inc/startup/include.php';\n"
-            "use Hashtopolis\\dba\\Factory;\n"
-            "use Hashtopolis\\dba\\models\\HealthCheckAgent;\n"
-            "use Hashtopolis\\dba\\QueryFilter;\n"
-            "$qF1 = new QueryFilter(HealthCheckAgent::HEALTH_CHECK_ID, "
-            + str(health_check_id) + ", '=');\n"
-            "$qF2 = new QueryFilter(HealthCheckAgent::AGENT_ID, "
-            + str(agent_id) + ", '=');\n"
-            "Factory::getHealthCheckAgentFactory()->massDeletion([Factory::FILTER => [$qF1, $qF2]]);\n"
-        )
-        subprocess.run(['php', '-r', php], capture_output=True, text=True, cwd='/var/www/html')
 
     def _setup_assigned_agent(self, hashlist=None, task_extra=None):
         """Create agent + hashlist + task + assignment; return (dummy, agent, task, hashlist).
@@ -1655,45 +1586,48 @@ class TestHealthCheck(AgentProtocolBase):
         self.assertEqual(parse_envelope(body)['message'], "Invalid send health check query!")
 
     def test_send_health_check_success(self):
-        """sendHealthCheck success path returns response:"SUCCESS"."""
-        self._delete_all_health_check_agents()
-        dummy, agent = self._dummy_with_agent()
-        hc = HealthCheck(checkType=0, crackerBinaryId=1, hashtypeId=0)
-        hc.save()
-        self.delete_after_test(hc)
-        hca_id = self._create_health_check_agent(hc.id, agent.id)
-
-        try:
-            code, body = agent_request({
-                "action": "sendHealthCheck",
-                "token": dummy.token,
-                "checkId": hc.id,
-                "numCracked": 0,
-                "numGpus": 1,
-                "errors": [],
-                "start": 1,
-                "end": 2,
-            })
-            self.assertEqual(code, 200)
-            resp = parse_envelope(body)
-            self.assertEqual(resp['action'], "sendHealthCheck")
-            self.assertEqual(resp['response'], "SUCCESS")
-        finally:
-            self._delete_health_check_agent(hca_id)
-
-    def test_send_health_check_invalid_health_check_agent_id(self):
-        """HealthCheck exists but no HealthCheckAgent row for this agent.
+        """sendHealthCheck success path returns response:"SUCCESS".
 
         Creating a HealthCheck via the v2 API auto-creates HealthCheckAgent
-        rows for all agents, so we must explicitly delete the HCA for our
-        test agent to reach this error path.
+        rows for all agents (HealthUtils::createHealthCheck), so the agent
+        already has a pending HCA. Deleting the HealthCheck via the v2 API
+        cascades to its HCA rows (HealthUtils::deleteHealthCheck).
         """
         dummy, agent = self._dummy_with_agent()
         hc = HealthCheck(checkType=0, crackerBinaryId=1, hashtypeId=0)
         hc.save()
         self.delete_after_test(hc)
-        # The v2 API created HCA rows for all agents; delete the one for our agent
-        self._delete_hca_for_agent(hc.id, agent.id)
+
+        code, body = agent_request({
+            "action": "sendHealthCheck",
+            "token": dummy.token,
+            "checkId": hc.id,
+            "numCracked": 0,
+            "numGpus": 1,
+            "errors": [],
+            "start": 1,
+            "end": 2,
+        })
+        self.assertEqual(code, 200)
+        resp = parse_envelope(body)
+        self.assertEqual(resp['action'], "sendHealthCheck")
+        self.assertEqual(resp['response'], "SUCCESS")
+
+    def test_send_health_check_invalid_health_check_agent_id(self):
+        """HealthCheck exists but no HealthCheckAgent row for this agent.
+
+        We create the HealthCheck FIRST (which auto-creates HCA rows for all
+        existing agents), then register the dummy agent AFTER. Since the agent
+        didn't exist when the HC was created, there is no HCA row for it.
+        """
+        hc = HealthCheck(checkType=0, crackerBinaryId=1, hashtypeId=0)
+        hc.save()
+        self.delete_after_test(hc)
+        # Register agent AFTER the HC was created → no HCA row for this agent
+        voucher = do_create_voucher()
+        dummy = DummyAgent()
+        dummy.register(voucher=voucher.voucher, name='hca-invalid-test')
+        self.delete_after_test(Agent.objects.get(agentName='hca-invalid-test'))
         code, body = agent_request({
             "action": "sendHealthCheck",
             "token": dummy.token,
