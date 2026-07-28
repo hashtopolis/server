@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'doc/**'
+      - '.github/workflows/docs-build.yml'
+      - '.github/workflows/docs.yml'
 
 jobs:
   build:
