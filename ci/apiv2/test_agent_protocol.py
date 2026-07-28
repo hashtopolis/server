@@ -259,6 +259,7 @@ class TestRegister(AgentProtocolBase):
     def test_register_success(self):
         """Registering with a valid voucher returns a non-empty token and consumes the voucher."""
         voucher = do_create_voucher()
+        self.delete_after_test(voucher)
         agent = DummyAgent()
         agent.register(voucher=voucher.voucher, name='protocol-test-register')
         self.assertEqual(agent.token.__class__, str)
@@ -295,6 +296,7 @@ class TestRegister(AgentProtocolBase):
         config.save()
         try:
             voucher = do_create_voucher()
+            self.delete_after_test(voucher)
             agent = DummyAgent()
             agent.register(voucher=voucher.voucher, name='protocol-test-multi-voucher')
             self.assertGreaterEqual(len(agent.token), 1)
@@ -1694,6 +1696,7 @@ class TestHealthCheck(AgentProtocolBase):
         hc.save()
         self.delete_after_test(hc)
         voucher = do_create_voucher()
+        self.delete_after_test(voucher)
         dummy = DummyAgent()
         dummy.register(voucher=voucher.voucher, name='hca-invalid-test')
         self.delete_after_test(Agent.objects.get(agentName='hca-invalid-test'))
@@ -1729,6 +1732,7 @@ class TestDeregister(AgentProtocolBase):
         config.save()
         try:
             voucher = do_create_voucher()
+            self.delete_after_test(voucher)
             dummy = DummyAgent()
             dummy.register(voucher=voucher.voucher, name='protocol-test-deregister')
             code, body = agent_request({"action": "deregister", "token": dummy.token})
