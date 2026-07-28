@@ -153,7 +153,7 @@ COPY ./ci/apiv2/requirements.txt /tmp/requirements.txt
 RUN /opt/venv/bin/pip install -r /tmp/requirements.txt
 
 # install python-hashtopolis (floating, always newest; cannot be hashed in requirements.txt)
-RUN /opt/venv/bin/pip install git+https://github.com/hashtopolis/python-hashtopolis.git
+RUN /opt/venv/bin/pip install git+https://github.com/hashtopolis/python-hashtopolis.git@main
 
 # Adding VSCode user and fixing permissions
 RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \
