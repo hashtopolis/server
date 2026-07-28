@@ -30,6 +30,7 @@ class AgentStatTest(BaseTest):
 
     def test_agent_assign_task(self):
         (dummy, agent) = do_create_dummy_agent()
+        self.delete_after_test(agent)
         hashlist = self.create_hashlist()
         task = self.create_task(hashlist)
 
