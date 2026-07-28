@@ -159,6 +159,7 @@ class TaskAPI extends AbstractModelAPI {
         'estimatedTime' => [$this, 'getAggregateEstimatedTime'],
         'cprogress' => [$this, 'getAggregateCProgress'],
         'timeSpent' => [$this, 'getAggregateTimeSpent'],
+        'cracked' => [$this, 'getAggregateCracked'],
       ]
     ];
   }
@@ -244,6 +245,16 @@ class TaskAPI extends AbstractModelAPI {
    */
   protected function getAggregateTimeSpent(AbstractModel $object): int {
     return TaskUtils::getTimeSpentOnTask($object);
+  }
+  
+  /**
+   * @param Task $object
+   * @return int
+   * @throws Exception
+   */
+  protected function getAggregateCracked(AbstractModel $object): int {
+    $qF = new QueryFilter(Chunk::TASK_ID, $object->getId(), "=");
+    return Factory::getChunkFactory()->sumFilter([Factory::FILTER => $qF], Chunk::CRACKED);
   }
   
   /**

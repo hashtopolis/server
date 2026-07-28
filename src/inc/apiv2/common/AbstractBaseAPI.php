@@ -1352,9 +1352,10 @@ abstract class AbstractBaseAPI {
       }
     }
     
-    //when no primary key has been added in the sort parameter, add the default case of sorting on primary key as last sort
+    //when no primary key has been added in the sort parameter, add a stable tie-breaker on primary key
+    //the visible order is always ascending on the tie-breaker; internally reversed queries flip it too
     if (!$contains_primary_key) {
-      $orderTemplates[] = ['by' => $this->getPrimaryKey(), 'type' => $defaultSort, 'factory' => null, 'joinKey' => null];
+      $orderTemplates[] = ['by' => $this->getPrimaryKey(), 'type' => $reverseSort ? 'DESC' : 'ASC', 'factory' => null, 'joinKey' => null];
     }
     
     return $orderTemplates;
@@ -1465,7 +1466,7 @@ abstract class AbstractBaseAPI {
       if ($method === "GET" && $this instanceof AbstractModelAPI) {
         $features = $this->getFeatures();
         foreach ($features as $arr) {
-          if ($arr['public']) {
+          if ($arr['public'] ?? false) {
             $this->addPublicAttributeClass($this->getDBAClass());
           }
         }
