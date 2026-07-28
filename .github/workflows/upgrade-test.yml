@@ -38,13 +38,13 @@ jobs:
           - start-tag: v1.0.0-rc1
             db-type: postgres
             db-version: postgres:18
-          - start-tag: v1.0.0-rc2
+          - start-tag: v1.0.0-rc3
             db-type: mysql
             db-version: mysql:8.4
-          - start-tag: v1.0.0-rc2
+          - start-tag: v1.0.0-rc3
             db-type: mysql
             db-version: mysql:9.7
-          - start-tag: v1.0.0-rc2
+          - start-tag: v1.0.0-rc3
             db-type: postgres
             db-version: postgres:18
       fail-fast: false
