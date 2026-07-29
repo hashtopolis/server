@@ -161,6 +161,10 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
         $status = 2;
       }
     }
+    if ($status == 2 && $object->getTaskWrapperIsArchived() == 1) {
+      // if a task is archived, it should be skipped instead of idle
+      return 4;
+    }
     if ($status !== 3) {
       $hashlist = Factory::getHashlistFactory()->get($object->getHashlistId());
       if ($hashlist->getCracked() === $hashlist->getHashCount()) {

@@ -5,14 +5,10 @@ namespace Hashtopolis\inc\utils;
 use Exception;
 
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
-
-use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\TestBase;
-
-//TODO remove:
-use Hashtopolis\dba\models\User;
 
 
 require_once(dirname(__FILE__) . '/../../TestBase.php');
@@ -47,8 +43,85 @@ final class TaskUtilsTest extends TestBase {
   public function testGetStatus(): void {
     $taskObjects = $this->createTaskHelper();
     $this->assertEquals(2, TaskUtils::getStatus($taskObjects["task"]));
+  }
 
-    //TODO test status 1 (running) and 3 (completed) too
+  /**
+   * A task with a recently dispatched, incomplete chunk is running (status 1).
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testGetStatusRunning(): void {
+    $taskObjects = $this->createTaskHelper();
+    $agent = $this->createAgent('phpunit');
+    $this->createChunk($taskObjects["task"], $agent, 0);
+
+    $this->assertEquals(1, TaskUtils::getStatus($taskObjects["task"]));
+  }
+
+  /**
+   * An archived task that is idle (no running chunks) should be skipped (status 4).
+   * archiveTask() archives both the task and its taskWrapper.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testGetStatusSkippedWhenTaskArchived(): void {
+    $taskObjects = $this->createTaskHelper();
+    TaskUtils::archiveTask($taskObjects["task"]->getId(), $taskObjects["user"]);
+
+    $this->assertEquals(4, TaskUtils::getStatus($taskObjects["task"]));
+  }
+
+  /**
+   * A task whose taskWrapper is archived (but the task itself is not) should
+   * also be skipped (status 4) when idle.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testGetStatusSkippedWhenOnlyTaskWrapperArchived(): void {
+    $taskObjects = $this->createTaskHelper();
+    Factory::getTaskWrapperFactory()->set($taskObjects["taskWrapper"], TaskWrapper::IS_ARCHIVED, 1);
+
+    $this->assertEquals(4, TaskUtils::getStatus($taskObjects["task"]));
+  }
+
+  /**
+   * An archived task that has a running chunk should still be running (status 1),
+   * not skipped — the archived check only applies when the task is idle.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testGetStatusRunningNotSkippedWhenArchived(): void {
+    $taskObjects = $this->createTaskHelper();
+    $agent = $this->createAgent('phpunit');
+    $this->createChunk($taskObjects["task"], $agent, 0);
+    TaskUtils::archiveTask($taskObjects["task"]->getId(), $taskObjects["user"]);
+
+    $this->assertEquals(1, TaskUtils::getStatus($taskObjects["task"]));
+  }
+
+  /**
+   * An archived task that is fully completed (keyspace reached) should be
+   * completed (status 3), not skipped — the archived check only applies to
+   * idle tasks.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testGetStatusCompletedNotSkippedWhenArchived(): void {
+    $taskObjects = $this->createTaskHelper();
+
+    $agent = $this->createAgent('phpunit');
+    $chunk = $this->createChunk($taskObjects["task"], $agent, 0);
+    Factory::getChunkFactory()->mset($chunk, [Chunk::CHECKPOINT => 100, Chunk::PROGRESS => 10000]);
+    Factory::getTaskFactory()->set($taskObjects["task"], Task::KEYSPACE, 100);
+
+    TaskUtils::archiveTask($taskObjects["task"]->getId(), $taskObjects["user"]);
+
+    $this->assertEquals(3, TaskUtils::getStatus($taskObjects["task"]));
   }
 
   /**
