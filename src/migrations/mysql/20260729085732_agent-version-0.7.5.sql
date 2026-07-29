@@ -1,0 +1,1 @@
+UPDATE AgentBinary SET version='0.7.5' WHERE version='0.7.4' AND filename='hashtopolis.zip' AND binaryType='python';
