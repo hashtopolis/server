@@ -3,6 +3,7 @@
 ## v1.0.0-rc2 -> v1.0.0-rc3
 
 **Bugfixes**
+
 - Fixed small typo in config.php (#2066)
 - Fixed include in dba/init (#2272)
 - Fixed LikeFilterInsensitive to cast integer columns to text before LIKE (#2285)
@@ -12,6 +13,7 @@
 - Fix cursor pagination documentation in OpenAPI docs (#2351)
 
 **Enhancements**
+
 - Added migrations generations (#2237)
 - Removed environment variable to selectively enable new API (#2275)
 - Upgrading to mysql:9.7 and test also upgrades with different versions (#2286)
