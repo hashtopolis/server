@@ -23,6 +23,24 @@ jobs:
           - start-tag: v0.14.1
             db-type: mysql
             db-version: mysql:8.4
+          - start-tag: v0.14.2
+            db-type: mysql
+            db-version: mysql:8.4
+          - start-tag: v0.14.3
+            db-type: mysql
+            db-version: mysql:8.4
+          - start-tag: v0.14.4
+            db-type: mysql
+            db-version: mysql:8.4
+          - start-tag: v0.14.5
+            db-type: mysql
+            db-version: mysql:8.4
+          - start-tag: v0.14.6
+            db-type: mysql
+            db-version: mysql:8.4
+          - start-tag: v0.14.7
+            db-type: mysql
+            db-version: mysql:8.4
           - start-tag: v0.14.8
             db-type: mysql
             db-version: mysql:8.4
