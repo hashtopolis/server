@@ -266,6 +266,20 @@ No.
 It is not officially supported and there are no pre-built docker images available. ARM builds must be custom made.
 
 ---
+<span style="font-size:1.2em; font-weight:bold;">❓ Can I use a custom theme and how can I embed it?</span>
+
+Yes. You find all the necessary steps documented [here](https://docs.hashtopolis.org/installation_guidelines/custom-theme/).
+
+---
+<span style="font-size:1.2em; font-weight:bold;">❓ Configuring my global permissions leads to a weird behaviour: Some permissions are disabled/enabled once I configure another permission. Is this normal?</span>
+
+Yes, this behavior is completely normal and actually intentional. With the 1.0 release of Hashtopolis, **the permission scheme from the old UI was migrated into the new UI**, allowing dependencies between individual permissions to be defined and adjusted much more granularly. This behaviour will be removed once the old frontend will not be supported anymore.
+
+**Why permissions change automatically**
+
+When you configure a specific permission, the system may automatically enable or disable other, dependent permissions.
+
+---
 
 ## Server Configuration & Issues
 
