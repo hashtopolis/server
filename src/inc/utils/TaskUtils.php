@@ -156,8 +156,12 @@ class TaskUtils {
         }
       }
     }
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if ($status == 2 && ($task->getIsArchived() == 1 || $taskWrapper->getIsArchived() == 1)) {
+      // if a task is archived, it should be skipped instead of idle
+      return 4;
+    }
     if ($status !== 3) {
-      $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
       $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
       if ($hashlist->getCracked() === $hashlist->getHashCount()) {
         if($taskWrapper->getCracked() > 0) {
