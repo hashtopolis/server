@@ -1276,8 +1276,8 @@ class TestSendProgress(AgentProtocolBase):
     FAKE_HASH = "ffffffffffffffffffffffffffffffff"
     CRACK_HASH_2 = "098f6bcd4621d373cade4e832627b4f6"
     TWO_HASH_SOURCE_DATA = (
-        "Y2MwM2U3NDdhNmFmYmJjYmY4YmU3NjY4YWNmZWJlZTUKMDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYy"
-        "N2I0ZjYK"
+        "Y2MwM2U3NDdhNmFmYmJjYmY4YmU3NjY4YWNmZWJlZTUK"
+        "MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjYK"
     )
 
     def _make_chunk(self, dummy, task_id):
