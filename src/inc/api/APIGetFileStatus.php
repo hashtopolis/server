@@ -14,6 +14,8 @@ class APIGetFileStatus extends APIBasic {
    * @throws Exception
    */
   public function execute(array $QUERY = array()): void {
+    $this->checkToken(PActions::GET_FILE_STATUS, $QUERY);
+    
     $deleteRequests = Factory::getFileDeleteFactory()->filter([]);
     $files = [];
     foreach ($deleteRequests as $deleteRequest) {

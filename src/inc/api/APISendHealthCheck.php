@@ -70,7 +70,7 @@ class APISendHealthCheck extends APIBasic {
     HealthUtils::checkCompletion($healthCheck);
     $this->sendResponse([
         PResponse::ACTION => PActions::SEND_HEALTH_CHECK,
-        PResponse::RESPONSE => PValues::OK
+        PResponse::RESPONSE => PValues::SUCCESS
       ]
     );
   }

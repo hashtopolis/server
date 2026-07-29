@@ -55,7 +55,7 @@ def delete_test_data(commit):
         if commit is True:
             obj.delete()
 
-    sys.exit(1 if (len(test_objs) > 1 and commit is False) else 0)
+    sys.exit(1 if (len(test_objs) > 0 and commit is False) else 0)
 
 
 @main.command()

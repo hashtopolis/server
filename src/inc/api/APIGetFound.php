@@ -23,7 +23,7 @@ class APIGetFound extends APIBasic {
     if (!PQueryGetFound::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_FOUND, "Invalid found query!");
     }
-    $this->checkToken(PActions::GET_HASHLIST, $QUERY);
+    $this->checkToken(PActions::GET_FOUND, $QUERY);
     
     $hashlist = Factory::getHashlistFactory()->get($QUERY[PQueryGetFound::HASHLIST_ID]);
     if ($hashlist == null) {
