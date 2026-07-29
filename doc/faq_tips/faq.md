@@ -269,7 +269,7 @@ It is not officially supported and there are no pre-built docker images availabl
 ---
 <span style="font-size:1.2em; font-weight:bold;">❓ Can I use a custom layout and how can I embed it?</span>
 
-Yes. You find all the necessary steps documented here: https://github.com/hashtopolis/web-ui/tree/master/custom-themes
+Yes. You find all the necessary steps documented in our advanced installation guidelines.
 
 ---
 
