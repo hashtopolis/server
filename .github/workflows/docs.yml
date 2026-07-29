@@ -40,10 +40,18 @@ jobs:
         wget http://localhost:8080/api/v2/openapi.json -P /tmp/
         cat /tmp/openapi.json
         mv /tmp/openapi.json ./doc/
-    - name: Create function level documentation with phpdocumentor
+    - name: Cache phpDocumentor
+      uses: actions/cache@v4
+      with:
+        path: /tmp/phpDocumentor.phar
+        key: phpdocumentor-3.10.0
+    - name: Download phpDocumentor if not cached
       run: |
-        wget https://phpdoc.org/phpDocumentor.phar -P /tmp/
-        sudo php /tmp/phpDocumentor.phar --ignore vendor/ -d . -t ./doc/php-documentor/
+        if [ ! -f /tmp/phpDocumentor.phar ]; then
+          wget https://github.com/phpDocumentor/phpDocumentor/releases/download/v3.10.0/phpDocumentor.phar -P /tmp/
+        fi
+    - name: Create function level documentation with phpdocumentor
+      run: sudo php /tmp/phpDocumentor.phar --ignore vendor/ -d . -t ./doc/php-documentor/
     - name: Build MkDocs site
       run: |
         mkdocs build
