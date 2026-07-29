@@ -12,6 +12,7 @@ nav:
       - installation_guidelines/update.md 
       - installation_guidelines/tls.md 
       - installation_guidelines/docker.md
+      - installation_guidelines/custom-css.md
   - User Manual:
       - user_manual/agents.md
       - user_manual/tasks.md

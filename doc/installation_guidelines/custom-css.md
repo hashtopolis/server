@@ -1,6 +1,6 @@
 # Customize Web Interface
 
-you would like to customize the web-interface using your own layout just follow the instructions explained here:
+If you would like to customize the web-interface using your own layout just follow the instructions explained here:
 
 ## Custom Themes 
 
