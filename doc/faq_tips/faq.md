@@ -267,9 +267,23 @@ No.
 It is not officially supported and there are no pre-built docker images available. ARM builds must be custom made.
 
 ---
-<span style="font-size:1.2em; font-weight:bold;">❓ Can I use a custom layout and how can I embed it?</span>
+<span style="font-size:1.2em; font-weight:bold;">❓ Can I use a custom theme and how can I embed it?</span>
 
-Yes. You find all the necessary steps documented in our advanced installation guidelines.
+Yes. You find all the necessary steps documented [here](https://docs.hashtopolis.org/installation_guidelines/custom-theme/).
+
+---
+<span style="font-size:1.2em; font-weight:bold;">❓ Configuring my global permissions leads to a weird behaviour: Some permissions are disabled/enabled once I configure another permission. Is this normal?</span>
+
+Yes, this behavior is completely normal and actually intentional. With the 1.0 release of Hashtopolis, the permission scheme from the old UI was migrated into the new UI, allowing dependencies between individual permissions to be defined and adjusted much more granularly.
+
+**Why permissions change automatically**
+When you configure a specific permission, the system may automatically enable or disable other, dependent permissions. This is a core part of the new granular permission model, not a bug.
+
+**Recommendations for everyday use**
+Avoid manually overriding automatic enabling or disabling of permissions, as this can lead to unexpected behavior in your setup.
+Only make granular changes to individual permissions if you fully understand what effect that change will have on your overall configuration.
+Consider testing permission changes in a staging environment first, before applying them to production, to avoid surprises.
+With a bit of caution and a solid understanding of these dependencies, the new permission system lets you fine-tune access control very precisely to fit your needs.
 
 ---
 

@@ -1,16 +1,16 @@
-# Customize Web Interface
+# Custom Themes
 
-If you would like to customize the web-interface using your own layout just follow the instructions explained here:
+In the frontend it is possible to plug in themes. This guide covers how you can install such themes and how to create a custom one.
 
-## Custom Themes 
+## Using Custom Themes 
 
 Drop `.css` files in this folder to register custom runtime themes.
 
 No additional JSON or TypeScript changes are required for standard theme creation.
 
-For a complete authoring guide, see **Custom Theme Authoring Guide**.
+For a complete authoring guide, see below.
 
-In our repository you find two example themes — `rainbow.css` and `fallout.css`: https://github.com/hashtopolis/web-ui/tree/master/custom-themes
+In our repository you find two example themes — `rainbow.css` and `fallout.css`: [To the repo](https://github.com/hashtopolis/web-ui/tree/master/custom-themes)
 
 ### Enabling custom themes (opt-in)
 
@@ -58,10 +58,6 @@ These ids are built-in and cannot be overridden by custom files:
 
 - `light`
 - `dark`
-
-### How to get help generating a theme?
-
-Use the prompt template at the end of **Custom Theme Authoring Guide** with your favorite LLM.
 
 ## Custom Theme Authoring Guide
 
