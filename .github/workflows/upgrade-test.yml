@@ -183,13 +183,13 @@ jobs:
             docker exec db pg_dump -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} \
               --data-only --inserts --no-owner --no-privileges --no-comments \
               -t accessgroup -t agentbinary -t apigroup -t config -t configsection \
-              -t crackerbinary -t crackerbinarytype -t hashtype -t preprocessor -t rightgroup \
+              -t crackerbinarytype -t hashtype -t preprocessor -t rightgroup \
               | grep '^INSERT' | sort > upgraded.dump
           else
             docker exec db mysqldump -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
               --no-create-info --skip-extended-insert --skip-comments --skip-triggers \
               AccessGroup AgentBinary ApiGroup Config ConfigSection \
-              CrackerBinary CrackerBinaryType HashType Preprocessor RightGroup \
+              CrackerBinaryType HashType Preprocessor RightGroup \
               | grep '^INSERT' | sort > upgraded.dump
           fi
           echo "Upgraded side dump ($(wc -l < upgraded.dump) rows):"
@@ -237,13 +237,13 @@ jobs:
             docker exec db pg_dump -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} \
               --data-only --inserts --no-owner --no-privileges --no-comments \
               -t accessgroup -t agentbinary -t apigroup -t config -t configsection \
-              -t crackerbinary -t crackerbinarytype -t hashtype -t preprocessor -t rightgroup \
+              -t crackerbinarytype -t hashtype -t preprocessor -t rightgroup \
               | grep '^INSERT' | sort > fresh.dump
           else
             docker exec db mysqldump -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
               --no-create-info --skip-extended-insert --skip-comments --skip-triggers \
               AccessGroup AgentBinary ApiGroup Config ConfigSection \
-              CrackerBinary CrackerBinaryType HashType Preprocessor RightGroup \
+              CrackerBinaryType HashType Preprocessor RightGroup \
               | grep '^INSERT' | sort > fresh.dump
           fi
           echo "Fresh side dump ($(wc -l < fresh.dump) rows):"
