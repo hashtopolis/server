@@ -182,16 +182,23 @@ jobs:
           if [ "${{ matrix.db-type }}" = "postgres" ]; then
             docker exec db pg_dump -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} \
               --data-only --inserts --no-owner --no-privileges --no-comments \
-              -t accessgroup -t agentbinary -t apigroup -t config -t configsection \
+              -t accessgroup -t agentbinary -t apigroup -t configsection \
               -t crackerbinarytype -t hashtype -t preprocessor -t rightgroup \
-              | grep '^INSERT' | sort > upgraded.dump
+              | grep '^INSERT' > upgraded.dump
+            docker exec db psql -t -A -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} \
+              -c "SELECT 'Config\t' || item || E'\t' || configsectionid || E'\t' || value FROM config ORDER BY item;" \
+              >> upgraded.dump
           else
             docker exec db mysqldump -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
               --no-create-info --skip-extended-insert --skip-comments --skip-triggers \
-              AccessGroup AgentBinary ApiGroup Config ConfigSection \
+              AccessGroup AgentBinary ApiGroup ConfigSection \
               CrackerBinaryType HashType Preprocessor RightGroup \
-              | grep '^INSERT' | sort > upgraded.dump
+              | grep '^INSERT' > upgraded.dump
+            docker exec db mysql -N -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
+              -e "SELECT CONCAT('Config\t', item, '\t', configSectionId, '\t', value) FROM Config ORDER BY item;" \
+              >> upgraded.dump
           fi
+          sort -o upgraded.dump upgraded.dump
           echo "Upgraded side dump ($(wc -l < upgraded.dump) rows):"
           cat upgraded.dump
 
@@ -236,16 +243,23 @@ jobs:
           if [ "${{ matrix.db-type }}" = "postgres" ]; then
             docker exec db pg_dump -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} \
               --data-only --inserts --no-owner --no-privileges --no-comments \
-              -t accessgroup -t agentbinary -t apigroup -t config -t configsection \
+              -t accessgroup -t agentbinary -t apigroup -t configsection \
               -t crackerbinarytype -t hashtype -t preprocessor -t rightgroup \
-              | grep '^INSERT' | sort > fresh.dump
+              | grep '^INSERT' > fresh.dump
+            docker exec db psql -t -A -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} \
+              -c "SELECT 'Config\t' || item || E'\t' || configsectionid || E'\t' || value FROM config ORDER BY item;" \
+              >> fresh.dump
           else
             docker exec db mysqldump -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
               --no-create-info --skip-extended-insert --skip-comments --skip-triggers \
-              AccessGroup AgentBinary ApiGroup Config ConfigSection \
+              AccessGroup AgentBinary ApiGroup ConfigSection \
               CrackerBinaryType HashType Preprocessor RightGroup \
-              | grep '^INSERT' | sort > fresh.dump
+              | grep '^INSERT' > fresh.dump
+            docker exec db mysql -N -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
+              -e "SELECT CONCAT('Config\t', item, '\t', configSectionId, '\t', value) FROM Config ORDER BY item;" \
+              >> fresh.dump
           fi
+          sort -o fresh.dump fresh.dump
           echo "Fresh side dump ($(wc -l < fresh.dump) rows):"
           cat fresh.dump
 
