@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hashtopolis\inc\agentapi;
 
+use Exception;
 use Hashtopolis\inc\agent\PQuery;
 use Hashtopolis\inc\agentapi\common\ActionRegistry;
 use Hashtopolis\inc\agentapi\common\AgentAction;
@@ -74,7 +75,14 @@ final class AgentApiApp {
 
             /** @var AgentAction $controller */
             $controller = new $handlerClass();
-            return $controller($request, $response);
+            try {
+                return $controller($request, $response);
+            } catch (Exception $e) {
+                return AgentErrorHandler::errorResponse($action, $e->getMessage());
+            } catch (Throwable $e) {
+                error_log("AgentApi [$action]: " . $e->getMessage());
+                return AgentErrorHandler::errorResponse($action, 'Internal server error');
+            }
         });
 
         return $app;

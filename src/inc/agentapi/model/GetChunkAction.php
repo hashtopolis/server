@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hashtopolis\inc\agentapi\model;
 
+use Exception;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Chunk;
@@ -200,12 +201,13 @@ final class GetChunkAction implements AgentAction {
             PResponseGetChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED,
         ]);
     }
-
-    /**
-     * Commit the DB transaction, release the lock, and return the OK chunk
-     * response.  Returns null if the chunk is null (caller should continue
-     * to the next chunk or create a new one).
-     */
+  
+  /**
+   * Commit the DB transaction, release the lock, and return the OK chunk
+   * response.  Returns null if the chunk is null (caller should continue
+   * to the next chunk or create a new one).
+   * @throws Exception
+   */
     private function sendChunk(Response $response, ?Chunk $chunk): ?ResponseInterface {
         if ($chunk === null) {
             return null;

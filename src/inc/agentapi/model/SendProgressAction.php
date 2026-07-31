@@ -224,11 +224,11 @@ final class SendProgressAction implements AgentAction {
                     break;
 
                 case DHashlistFormat::WPA:
-                    $skipped += $this->processWPACrack($splitLine, $chunk, $agent, $totalHashlist, $cracked);
+                    $skipped += $this->processWPACrack($splitLine, $chunk, $totalHashlist, $cracked);
                     break;
 
                 case DHashlistFormat::BINARY:
-                    $skipped += $this->processBinaryCrack($splitLine, $chunk, $agent, $totalHashlist, $cracked);
+                    $skipped += $this->processBinaryCrack($splitLine, $chunk, $totalHashlist, $cracked);
                     break;
             }
         }
@@ -393,8 +393,11 @@ final class SendProgressAction implements AgentAction {
             PResponseSendProgress::HASH_ZAPS  => $toZap,
         ]);
     }
-
-    private function saveAgentStats(array $body, Agent $agent, int $dataTime): void {
+  
+  /**
+   * @throws Exception
+   */
+  private function saveAgentStats(array $body, Agent $agent, int $dataTime): void {
         $stats = [
             [PQuerySendProgress::GPU_TEMP, DAgentStatsType::GPU_TEMP, '<='],
             [PQuerySendProgress::GPU_UTIL, DAgentStatsType::GPU_UTIL, '<'],
@@ -417,8 +420,11 @@ final class SendProgressAction implements AgentAction {
             }
         }
     }
-
-    private function saveDebugOutput(array $body, Chunk $chunk): void {
+  
+  /**
+   * @throws Exception
+   */
+  private function saveDebugOutput(array $body, Chunk $chunk): void {
         if (!isset($body[PQuerySendProgress::DEBUG_OUTPUT])) {
             return;
         }
@@ -499,8 +505,11 @@ final class SendProgressAction implements AgentAction {
             'zaps' => $zaps,
         ];
     }
-
-    private function flushPlainBatch(array $plainUpdates, array $crackPosUpdates, array $timeUpdates, array $crackHashes, array $zaps, Chunk $chunk): void {
+  
+  /**
+   * @throws Exception
+   */
+  private function flushPlainBatch(array $plainUpdates, array $crackPosUpdates, array $timeUpdates, array $crackHashes, array $zaps, Chunk $chunk): void {
         $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
         $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
         $qF = new ContainFilter(Hash::HASH_ID, $crackHashes);
@@ -513,8 +522,11 @@ final class SendProgressAction implements AgentAction {
         Factory::getAgentFactory()->getDB()->commit();
         Factory::getAgentFactory()->getDB()->beginTransaction();
     }
-
-    private function processWPACrack(array $splitLine, Chunk $chunk, Agent $agent, Hashlist $totalHashlist, array &$cracked): int {
+  
+  /**
+   * @throws Exception
+   */
+  private function processWPACrack(array $splitLine, Chunk $chunk, Hashlist $totalHashlist, array &$cracked): int {
         $split = explode(':', $splitLine[0]);
         if (sizeof($split) == 4) {
             $mac_ap = $split[1];
@@ -531,7 +543,7 @@ final class SendProgressAction implements AgentAction {
             $mac_cli = $split[1];
             $essid = '';
         }
-        if (Util::startsWith($essid, '$HEX[') && Util::endsWith($essid, ']') && strlen($essid) % 2 == 0) {
+        if (str_starts_with($essid, '$HEX[') && str_starts_with($essid, ']') && strlen($essid) % 2 == 0) {
             $essid = substr($essid, 5, strlen($essid) - 6);
         }
         else if (sizeof($split) < 4) {
@@ -561,8 +573,11 @@ final class SendProgressAction implements AgentAction {
         }
         return $skipped;
     }
-
-    private function processBinaryCrack(array $splitLine, Chunk $chunk, Agent $agent, Hashlist $totalHashlist, array &$cracked): int {
+  
+  /**
+   * @throws Exception
+   */
+  private function processBinaryCrack(array $splitLine, Chunk $chunk, Hashlist $totalHashlist, array &$cracked): int {
         $plain = $splitLine[1];
         $crackPos = intval($splitLine[3]);
         $qF1 = new QueryFilter(HashBinary::HASHLIST_ID, $totalHashlist->getId(), '=');

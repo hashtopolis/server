@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hashtopolis\inc\agentapi\common;
 
+use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response;
@@ -22,6 +23,12 @@ interface AgentAction {
      * ``$request->getAttribute(AgentAction::AGENT_ATTRIBUTE)``.
      */
     public const AGENT_ATTRIBUTE = 'agent';
-
+  
+  /**
+   * @param Request $request
+   * @param Response $response
+   * @return ResponseInterface
+   * @throws Exception
+   */
     public function __invoke(Request $request, Response $response): ResponseInterface;
 }

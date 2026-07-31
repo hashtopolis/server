@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hashtopolis\inc\agentapi\model;
 
+use Exception;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\File;
@@ -127,8 +128,11 @@ final class GetTaskAction implements AgentAction {
             PResponseGetTask::REASON  => 'No suitable task available!',
         ]);
     }
-
-    private function sendTask(Response $response, Agent $agent, Task $task, ?Assignment $assignment): ResponseInterface {
+  
+  /**
+   * @throws Exception
+   */
+  private function sendTask(Response $response, Agent $agent, Task $task, ?Assignment $assignment): ResponseInterface {
         if ($assignment === null) {
             $assignment = new Assignment(null, $task->getId(), $agent->getId(), '0');
             $assignment = Factory::getAssignmentFactory()->save($assignment);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hashtopolis\inc\agentapi\common;
 
+use Exception;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\Util;
@@ -39,10 +40,11 @@ trait AgentResponseTrait {
         $response->getBody()->write(json_encode($envelope));
         return $response;
     }
-
-    /**
-     * Update the agent's last-IP / last-action / last-time fields.
-     */
+  
+  /**
+   * Update the agent's last-IP / last-action / last-time fields.
+   * @throws Exception
+   */
     private function updateAgent(Agent $agent, string $action): Agent {
         return Factory::getAgentFactory()->mset($agent, [
             Agent::LAST_IP   => Util::getIP(),
