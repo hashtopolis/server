@@ -77,6 +77,7 @@ jobs:
         run: |
           docker network create ht-test-net
           docker volume create ht-data
+          docker volume create ht-data-fresh
           docker volume create ht-db
 
       - name: Start database container ${{ matrix.db-version }}
@@ -176,6 +177,102 @@ jobs:
             docker exec db mysql -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} -e "SELECT version, description, installed_on, success, HEX(checksum) AS checksum, execution_time FROM _sqlx_migrations ORDER BY version;"
           fi
 
+      - name: Dump upgraded DB seed content
+        run: |
+          if [ "${{ matrix.db-type }}" = "postgres" ]; then
+            docker exec db pg_dump -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} \
+              --data-only --inserts --no-owner --no-privileges --no-comments \
+              -t accessgroup -t agentbinary -t apigroup -t configsection \
+              -t crackerbinarytype -t hashtype -t preprocessor -t rightgroup \
+              | grep '^INSERT' > upgraded.dump
+            docker exec db psql -t -A -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} \
+              -c "SELECT 'Config\t' || item || E'\t' || configsectionid || E'\t' || value FROM config ORDER BY item;" \
+              >> upgraded.dump
+          else
+            docker exec db mysqldump -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
+              --no-create-info --skip-extended-insert --skip-comments --skip-triggers \
+              AccessGroup AgentBinary ApiGroup ConfigSection \
+              CrackerBinaryType HashType Preprocessor RightGroup \
+              | grep '^INSERT' > upgraded.dump
+            docker exec db mysql -N -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
+              -e "SELECT CONCAT('Config\t', item, '\t', configSectionId, '\t', value) FROM Config ORDER BY item;" \
+              >> upgraded.dump
+          fi
+          sort -o upgraded.dump upgraded.dump
+          echo "Upgraded side dump ($(wc -l < upgraded.dump) rows):"
+          cat upgraded.dump
+
+      - name: Stop upgraded backend
+        run: |
+          docker stop backend
+          docker rm backend
+
+      - name: Reset database for fresh install
+        run: |
+          if [ "${{ matrix.db-type }}" = "postgres" ]; then
+            docker exec db psql -U ${{ env.DB_USER }} -d postgres -c "DROP DATABASE IF EXISTS ${{ env.DB_NAME }};"
+            docker exec db psql -U ${{ env.DB_USER }} -d postgres -c "CREATE DATABASE ${{ env.DB_NAME }} OWNER ${{ env.DB_USER }};"
+          else
+            docker exec db mysql -u root -p${{ env.DB_PASS }} -e "DROP DATABASE IF EXISTS ${{ env.DB_NAME }}; CREATE DATABASE ${{ env.DB_NAME }};"
+          fi
+
+      - name: Start fresh backend (newest version)
+        run: |
+          docker run -d --network ht-test-net --name backend \
+            -e HASHTOPOLIS_DB_TYPE=${{ matrix.db-type }} \
+            -e HASHTOPOLIS_DB_USER=${{ env.DB_USER }} \
+            -e HASHTOPOLIS_DB_PASS=${{ env.DB_PASS }} \
+            -e HASHTOPOLIS_DB_HOST=db \
+            -e HASHTOPOLIS_DB_DATABASE=${{ env.DB_NAME }} \
+            -e HASHTOPOLIS_ADMIN_USER=admin \
+            -e HASHTOPOLIS_ADMIN_PASSWORD=hashtopolis \
+            -v ht-data-fresh:/usr/local/share/hashtopolis \
+            hashtopolis/backend:test
+
+      - name: Wait for fresh backend initialization
+        run: |
+          timeout 60 bash -c 'until docker logs backend 2>&1 | grep -q "Initialization complete!"; do sleep 3; done'
+          echo "Fresh backend initialized"
+
+      - name: Show fresh backend logs
+        if: always()
+        run: docker logs backend
+
+      - name: Dump fresh DB seed content
+        run: |
+          if [ "${{ matrix.db-type }}" = "postgres" ]; then
+            docker exec db pg_dump -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} \
+              --data-only --inserts --no-owner --no-privileges --no-comments \
+              -t accessgroup -t agentbinary -t apigroup -t configsection \
+              -t crackerbinarytype -t hashtype -t preprocessor -t rightgroup \
+              | grep '^INSERT' > fresh.dump
+            docker exec db psql -t -A -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} \
+              -c "SELECT 'Config\t' || item || E'\t' || configsectionid || E'\t' || value FROM config ORDER BY item;" \
+              >> fresh.dump
+          else
+            docker exec db mysqldump -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
+              --no-create-info --skip-extended-insert --skip-comments --skip-triggers \
+              AccessGroup AgentBinary ApiGroup ConfigSection \
+              CrackerBinaryType HashType Preprocessor RightGroup \
+              | grep '^INSERT' > fresh.dump
+            docker exec db mysql -N -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
+              -e "SELECT CONCAT('Config\t', item, '\t', configSectionId, '\t', value) FROM Config ORDER BY item;" \
+              >> fresh.dump
+          fi
+          sort -o fresh.dump fresh.dump
+          echo "Fresh side dump ($(wc -l < fresh.dump) rows):"
+          cat fresh.dump
+
+      - name: Compare fresh vs upgraded DB seed content
+        run: |
+          if ! diff fresh.dump upgraded.dump > seed-drift.diff; then
+            echo "::error::Seed data drift detected between fresh and upgraded install"
+            echo "--- fresh.dump / +++ upgraded.dump"
+            cat seed-drift.diff
+            exit 1
+          fi
+          echo "No seed data drift detected."
+
       - name: Cleanup
         if: always()
         run: |
@@ -184,4 +281,4 @@ jobs:
           docker stop db 2>/dev/null || true
           docker rm db 2>/dev/null || true
           docker network rm ht-test-net 2>/dev/null || true
-          docker volume rm ht-db ht-data 2>/dev/null || true
+          docker volume rm ht-db ht-data ht-data-fresh 2>/dev/null || true

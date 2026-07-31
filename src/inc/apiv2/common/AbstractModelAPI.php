@@ -29,6 +29,8 @@ use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\PaginationFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\Util;
+use Hashtopolis\inc\SConfig;
+use Hashtopolis\inc\defines\DConfig;
 
 /**
  * @template TModel of AbstractModel
@@ -631,12 +633,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $aliasedfeatures = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
     
-    $defaultPageSize = 10000;
-    $maxPageSize = 50000;
-    // TODO: if 0.14.4 release has happened, following parameters can be retrieved from config
-    // $defaultPageSize = SConfig::getInstance()->getVal(DConfig::DEFAULT_PAGE_SIZE);
-    // $maxPageSize = SConfig::getInstance()->getVal(DConfig::MAX_PAGE_SIZE);
-    
+    $defaultPageSize = SConfig::getInstance()->getVal(DConfig::DEFAULT_PAGE_SIZE);
+    $maxPageSize = SConfig::getInstance()->getVal(DConfig::MAX_PAGE_SIZE);
+
     $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after');
     $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
