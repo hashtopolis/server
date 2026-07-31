@@ -8,8 +8,6 @@ use Hashtopolis\inc\agent\PResponse;
 use Hashtopolis\inc\agent\PResponseErrorMessage;
 use Hashtopolis\inc\agent\PValues;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Handlers\ErrorHandler as SlimErrorHandler;
 use Slim\Psr7\Response;
 
 /**

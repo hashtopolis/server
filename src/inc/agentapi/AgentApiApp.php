@@ -10,21 +10,22 @@ use Hashtopolis\inc\agentapi\common\AgentAction;
 use Hashtopolis\inc\agentapi\common\AgentBodyParserMiddleware;
 use Hashtopolis\inc\agentapi\auth\TokenAuthMiddleware;
 use Hashtopolis\inc\agentapi\error\AgentErrorHandler;
-use Hashtopolis\inc\api\APIBasic;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\Util;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\App;
 use Slim\Factory\AppFactory;
 use Slim\Psr7\Response;
+use Throwable;
 
 /**
  * Creates and configures the Slim 4 application for the agent API.
  *
  * A single ``POST`` route dispatches on the ``action`` field of the JSON body
- * via {@see ActionRegistry}.  Migrated actions use PSR-7 controllers that
- * return ``ResponseInterface``; un-migrated legacy actions delegate to the
- * existing ``src/inc/api/API*.php`` handlers (which use ``echo`` + ``die()``).
+ * via {@see ActionRegistry}.  All 19 actions are implemented as PSR-7
+ * controllers (implementing {@see AgentAction}) that return
+ * ``ResponseInterface`` — no ``echo``, no ``die()``.
  *
  * Middleware stack (outermost → innermost on the request path):
  *  1. Routing middleware
@@ -36,23 +37,24 @@ final class AgentApiApp {
     /**
      * Create the configured Slim application.
      */
-    public static function create(): \Slim\App {
+    public static function create(): App {
         $app = AppFactory::create();
 
         $app->add(new TokenAuthMiddleware());
         $app->add(new AgentBodyParserMiddleware());
 
         $errorMiddleware = $app->addErrorMiddleware(true, true, true);
-        $customErrorHandler = function (
-            Request $request,
-            \Throwable $exception,
-            bool $displayErrorDetails,
-            bool $logErrors,
-            bool $logErrorDetails,
-        ): ResponseInterface {
-            return AgentErrorHandler::invResponse();
-        };
-        $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
+        $errorMiddleware->setDefaultErrorHandler(
+            function (
+                Request $request,
+                Throwable $exception,
+                bool $displayErrorDetails,
+                bool $logErrors,
+                bool $logErrorDetails,
+            ): ResponseInterface {
+                return AgentErrorHandler::invResponse();
+            },
+        );
         $app->addRoutingMiddleware();
 
         $app->post('/api/server.php', function (Request $request, Response $response): ResponseInterface {
@@ -68,13 +70,6 @@ final class AgentApiApp {
             $handlerClass = ActionRegistry::getHandler($action);
             if ($handlerClass === null) {
                 return AgentErrorHandler::invResponse();
-            }
-
-            if (is_subclass_of($handlerClass, APIBasic::class)) {
-                /** @var APIBasic $handler Legacy handler using echo+die() */
-                $handler = new $handlerClass();
-                $handler->execute($body);
-                return $response;
             }
 
             /** @var AgentAction $controller */
