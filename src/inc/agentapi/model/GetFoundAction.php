@@ -23,7 +23,7 @@ use Slim\Psr7\Response;
 /**
  * PSR-7 controller for the ``getFound`` action.
  *
- * Mirrors {@see \Hashtopolis\inc\agentapi\model\GetHashlistAction} but returns
+ * Mirrors {@see GetHashlistAction} but returns
  * the download URL for the list of already-cracked hashes (``getFound.php``)
  * rather than the full hashlist.
  */

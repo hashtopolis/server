@@ -669,10 +669,10 @@ class TestGetTask(AgentProtocolBase):
         self.assertIn(resp['benchType'], ("speed", "run"))
 
     def test_get_task_missing_fields(self):
-        """Sending getTask without a token returns 'Invalid task query!'."""
+        """Sending getTask without a token returns 'Invalid token!' (middleware handles missing token for PSR-7 controllers)."""
         code, body = agent_request({"action": "getTask"})
         assert_error_envelope(self, body, "getTask")
-        self.assertEqual(parse_envelope(body)['message'], "Invalid task query!")
+        self.assertEqual(parse_envelope(body)['message'], "Invalid token!")
 
     def test_get_task_invalid_token(self):
         """Sending getTask with a bogus token returns 'Invalid token!'."""

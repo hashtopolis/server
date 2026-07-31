@@ -7,7 +7,6 @@ namespace Hashtopolis\inc\agentapi\model;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQuery;
-use Hashtopolis\inc\agent\PQueryDeRegister;
 use Hashtopolis\inc\agentapi\common\AgentAction;
 use Hashtopolis\inc\agentapi\common\AgentResponseTrait;
 use Hashtopolis\inc\defines\DConfig;
@@ -22,7 +21,7 @@ use Slim\Psr7\Response;
  * PSR-7 controller for the ``deregister`` action.
  *
  * When the ``ALLOW_DEREGISTER`` config option is enabled, deletes the calling
- * agent (and its associated data) via {@see \Hashtopolis\inc\utils\AgentUtils::delete}.
+ * agent (and its associated data) via {@see AgentUtils::delete}.
  * Note that, unlike the other auth actions, this one intentionally does **not**
  * call ``updateAgent()`` — the agent row no longer exists afterwards.
  */

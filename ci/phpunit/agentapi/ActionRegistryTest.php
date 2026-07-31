@@ -13,6 +13,7 @@ use Hashtopolis\inc\agentapi\model\GetFileStatusAction;
 use Hashtopolis\inc\agentapi\model\GetFoundAction;
 use Hashtopolis\inc\agentapi\model\GetHashlistAction;
 use Hashtopolis\inc\agentapi\model\GetHealthCheckAction;
+use Hashtopolis\inc\agentapi\model\GetTaskAction;
 use Hashtopolis\inc\agentapi\model\LoginAction;
 use Hashtopolis\inc\agentapi\model\RegisterAgentAction;
 use Hashtopolis\inc\agentapi\model\SendBenchmarkAction;
@@ -21,7 +22,6 @@ use Hashtopolis\inc\agentapi\model\SendKeyspaceAction;
 use Hashtopolis\inc\agentapi\model\TestConnectionAction;
 use Hashtopolis\inc\agentapi\model\UpdateInformationAction;
 use Hashtopolis\inc\api\APIGetChunk;
-use Hashtopolis\inc\api\APIGetTask;
 use Hashtopolis\inc\api\APISendProgress;
 use PHPUnit\Framework\TestCase;
 
@@ -79,7 +79,7 @@ final class ActionRegistryTest extends TestCase {
     $this->assertEquals(ClientErrorAction::class, ActionRegistry::getHandler(PActions::CLIENT_ERROR));
     $this->assertEquals(GetFileAction::class, ActionRegistry::getHandler(PActions::GET_FILE));
     $this->assertEquals(GetHashlistAction::class, ActionRegistry::getHandler(PActions::GET_HASHLIST));
-    $this->assertEquals(APIGetTask::class, ActionRegistry::getHandler(PActions::GET_TASK));
+    $this->assertEquals(GetTaskAction::class, ActionRegistry::getHandler(PActions::GET_TASK));
     $this->assertEquals(APIGetChunk::class, ActionRegistry::getHandler(PActions::GET_CHUNK));
     $this->assertEquals(SendKeyspaceAction::class, ActionRegistry::getHandler(PActions::SEND_KEYSPACE));
     $this->assertEquals(SendBenchmarkAction::class, ActionRegistry::getHandler(PActions::SEND_BENCHMARK));

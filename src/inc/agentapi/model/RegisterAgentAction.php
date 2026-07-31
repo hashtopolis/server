@@ -9,7 +9,7 @@ use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQueryRegister;
 use Hashtopolis\inc\agent\PResponseRegister;
 use Hashtopolis\inc\agentapi\common\AgentAction;
-use Hashtopolis\inc\agentapi\common\AgentEnvelope;
+use Hashtopolis\inc\agentapi\common\AgentResponseTrait;
 use Hashtopolis\inc\DataSet;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DNotificationType;
@@ -38,6 +38,8 @@ use Slim\Psr7\Response;
  * No token authentication is required for this action.
  */
 final class RegisterAgentAction implements AgentAction {
+    use AgentResponseTrait;
+
     public function __invoke(Request $request, Response $response): ResponseInterface {
         $body = $request->getParsedBody();
         if (!is_array($body)) {
@@ -89,18 +91,8 @@ final class RegisterAgentAction implements AgentAction {
         Factory::getAccessGroupAgentFactory()->save($accessGroupAgent);
         DServerLog::log(DServerLog::INFO, 'Assigned agent to access group', [$agent, $accessGroup]);
 
-        $envelope = AgentEnvelope::success(PActions::REGISTER, [
+        return $this->success($response, PActions::REGISTER, [
             PResponseRegister::TOKEN => $token,
         ]);
-        $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode($envelope));
-        return $response;
-    }
-
-    private function error(Response $response, string $action, string $message): ResponseInterface {
-        $envelope = AgentEnvelope::error($action, $message);
-        $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode($envelope));
-        return $response;
     }
 }

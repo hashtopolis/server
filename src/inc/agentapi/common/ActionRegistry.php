@@ -14,6 +14,7 @@ use Hashtopolis\inc\agentapi\model\GetFileStatusAction;
 use Hashtopolis\inc\agentapi\model\GetFoundAction;
 use Hashtopolis\inc\agentapi\model\GetHashlistAction;
 use Hashtopolis\inc\agentapi\model\GetHealthCheckAction;
+use Hashtopolis\inc\agentapi\model\GetTaskAction;
 use Hashtopolis\inc\agentapi\model\LoginAction;
 use Hashtopolis\inc\agentapi\model\RegisterAgentAction;
 use Hashtopolis\inc\agentapi\model\SendBenchmarkAction;
@@ -22,7 +23,6 @@ use Hashtopolis\inc\agentapi\model\SendKeyspaceAction;
 use Hashtopolis\inc\agentapi\model\TestConnectionAction;
 use Hashtopolis\inc\agentapi\model\UpdateInformationAction;
 use Hashtopolis\inc\api\APIGetChunk;
-use Hashtopolis\inc\api\APIGetTask;
 use Hashtopolis\inc\api\APISendProgress;
 
 /**
@@ -44,7 +44,7 @@ final class ActionRegistry {
         PActions::CLIENT_ERROR              => ClientErrorAction::class,
         PActions::GET_FILE                   => GetFileAction::class,
         PActions::GET_HASHLIST               => GetHashlistAction::class,
-        PActions::GET_TASK                   => APIGetTask::class,
+        PActions::GET_TASK                   => GetTaskAction::class,
         PActions::GET_CHUNK                  => APIGetChunk::class,
         PActions::SEND_KEYSPACE              => SendKeyspaceAction::class,
         PActions::SEND_BENCHMARK             => SendBenchmarkAction::class,
