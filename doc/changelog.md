@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.0.0-rc3 -> v1.0.0-rc4
+
+**Bugfixes**
+
+- Set the content-type header to application/json (https://github.com/hashtopolis/server/pull/2372)
+- Fixed sorting to tie breaker key ascend (https://github.com/hashtopolis/server/pull/2375)
+
+**Enhancements**
+
+- Added helper to retrieve counts of completed tasks and supertasks (https://github.com/hashtopolis/server/pull/2357)
+- Add fallback when checking for public fields in AbstractBaseAPI (https://github.com/hashtopolis/server/pull/2370)
+- Change from meta to data where results are delivered on helper (https://github.com/hashtopolis/server/pull/2358)
+- Added helper to retrieve config for all logged in users (https://github.com/hashtopolis/server/pull/2366)
+- Added aggregation 'cracked' to TaskAPI (https://github.com/hashtopolis/server/pull/2367)
+- Added aggregate to Assignment to retrieve the current chunk an agent is working on (https://github.com/hashtopolis/server/pull/2371)
+- Added skipped states to tasks that are not finshed but are archived(https://github.com/hashtopolis/server/pull/2381)
+- Fixed inconsistent success value (https://github.com/hashtopolis/server/pull/2368)
+
 ## v1.0.0-rc2 -> v1.0.0-rc3
 
 **Bugfixes**
