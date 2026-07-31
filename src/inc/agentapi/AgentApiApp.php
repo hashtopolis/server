@@ -6,7 +6,9 @@ namespace Hashtopolis\inc\agentapi;
 
 use Hashtopolis\inc\agent\PQuery;
 use Hashtopolis\inc\agentapi\common\ActionRegistry;
+use Hashtopolis\inc\agentapi\common\AgentAction;
 use Hashtopolis\inc\agentapi\error\AgentErrorHandler;
+use Hashtopolis\inc\api\APIBasic;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\Util;
 use Psr\Http\Message\ResponseInterface;
@@ -58,11 +60,17 @@ final class AgentApiApp {
                 return AgentErrorHandler::invResponse();
             }
 
-            /** @var \Hashtopolis\inc\api\APIBasic $handler */
-            $handler = new $handlerClass();
-            $handler->execute($body);
+            if (is_subclass_of($handlerClass, APIBasic::class)) {
+                /** @var APIBasic $handler Legacy handler using echo+die() */
+                $handler = new $handlerClass();
+                $handler->execute($body);
+                return $response;
+            }
 
-            return $response;
+            $request = $request->withParsedBody($body);
+            /** @var AgentAction $controller */
+            $controller = new $handlerClass();
+            return $controller($request, $response);
         });
 
         return $app;

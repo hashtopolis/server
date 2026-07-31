@@ -16,12 +16,12 @@ use Hashtopolis\inc\api\APIGetHashlist;
 use Hashtopolis\inc\api\APIGetHealthCheck;
 use Hashtopolis\inc\api\APIGetTask;
 use Hashtopolis\inc\api\APILogin;
-use Hashtopolis\inc\api\APIRegisterAgent;
 use Hashtopolis\inc\api\APISendBenchmark;
 use Hashtopolis\inc\api\APISendHealthCheck;
 use Hashtopolis\inc\api\APISendKeyspace;
 use Hashtopolis\inc\api\APISendProgress;
-use Hashtopolis\inc\api\APITestConnection;
+use Hashtopolis\inc\agentapi\model\RegisterAgentAction;
+use Hashtopolis\inc\agentapi\model\TestConnectionAction;
 use Hashtopolis\inc\api\APIUpdateClientInformation;
 use PHPUnit\Framework\TestCase;
 
@@ -70,8 +70,8 @@ final class ActionRegistryTest extends TestCase {
    * Each action string maps to the correct handler class.
    */
   public function testGetHandlerReturnsCorrectClass(): void {
-    $this->assertEquals(APITestConnection::class, ActionRegistry::getHandler(PActions::TEST_CONNECTION));
-    $this->assertEquals(APIRegisterAgent::class, ActionRegistry::getHandler(PActions::REGISTER));
+    $this->assertEquals(TestConnectionAction::class, ActionRegistry::getHandler(PActions::TEST_CONNECTION));
+    $this->assertEquals(RegisterAgentAction::class, ActionRegistry::getHandler(PActions::REGISTER));
     $this->assertEquals(APIUpdateClientInformation::class, ActionRegistry::getHandler(PActions::UPDATE_CLIENT_INFORMATION));
     $this->assertEquals(APILogin::class, ActionRegistry::getHandler(PActions::LOGIN));
     $this->assertEquals(APICheckClientVersion::class, ActionRegistry::getHandler(PActions::CHECK_CLIENT_VERSION));
