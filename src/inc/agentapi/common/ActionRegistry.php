@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Hashtopolis\inc\agentapi\common;
 
 use Hashtopolis\inc\agent\PActions;
+use Hashtopolis\inc\agentapi\model\LoginAction;
 use Hashtopolis\inc\agentapi\model\RegisterAgentAction;
 use Hashtopolis\inc\agentapi\model\TestConnectionAction;
 use Hashtopolis\inc\api\APICheckClientVersion;
@@ -18,7 +19,6 @@ use Hashtopolis\inc\api\APIGetFound;
 use Hashtopolis\inc\api\APIGetHashlist;
 use Hashtopolis\inc\api\APIGetHealthCheck;
 use Hashtopolis\inc\api\APIGetTask;
-use Hashtopolis\inc\api\APILogin;
 use Hashtopolis\inc\api\APISendBenchmark;
 use Hashtopolis\inc\api\APISendHealthCheck;
 use Hashtopolis\inc\api\APISendKeyspace;
@@ -38,7 +38,7 @@ final class ActionRegistry {
         PActions::TEST_CONNECTION           => TestConnectionAction::class,
         PActions::REGISTER                  => RegisterAgentAction::class,
         PActions::UPDATE_CLIENT_INFORMATION => APIUpdateClientInformation::class,
-        PActions::LOGIN                     => APILogin::class,
+        PActions::LOGIN                     => LoginAction::class,
         PActions::CHECK_CLIENT_VERSION      => APICheckClientVersion::class,
         PActions::DOWNLOAD_BINARY           => APIDownloadBinary::class,
         PActions::CLIENT_ERROR              => APIClientError::class,

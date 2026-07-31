@@ -6,6 +6,8 @@ namespace Hashtopolis\inc\agentapi\auth;
 
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agent\PQuery;
+use Hashtopolis\inc\agentapi\common\ActionRegistry;
+use Hashtopolis\inc\agentapi\error\AgentErrorHandler;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
@@ -15,21 +17,23 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Slim\Psr7\Response;
 
 /**
  * Reads the agent token from the JSON body and loads the matching Agent.
  *
  * Auth is skipped for ``testConnection`` and ``register`` (no token needed).
- * For all other actions the token is looked up in the Agent table; if not
- * found, the standard error envelope ``{"action":<action>,"response":"ERROR",
- * "message":"Invalid token!"}`` is emitted and the request short-circuits.
+ * For unknown / missing actions the request passes through to the route
+ * handler, which produces the ``INV`` error envelope — the middleware must
+ * NOT short-circuit on token errors for unregistered actions, otherwise the
+ * client would see ``"Invalid token!"`` instead of ``"Invalid query!"``.
+ *
+ * For all other registered actions the token is looked up in the Agent table;
+ * if not found, the standard error envelope
+ * ``{"action":<action>,"response":"ERROR","message":"Invalid token!"}`` is
+ * emitted and the request short-circuits.
  *
  * The loaded Agent is attached to the request via the ``agent`` attribute so
- * that Phase 2 controllers can access it without re-querying the database.
- *
- * In Phase 1 the existing ``API*.php`` handlers still call ``checkToken``
- * themselves; this middleware is the scaffolding that will replace those calls.
+ * that PSR-7 controllers can access it without re-querying the database.
  */
 final class TokenAuthMiddleware implements MiddlewareInterface {
     /**
@@ -48,29 +52,22 @@ final class TokenAuthMiddleware implements MiddlewareInterface {
             return $handler->handle($request);
         }
 
+        if ($action === null || ActionRegistry::getHandler($action) === null) {
+            return $handler->handle($request);
+        }
+
         $token = is_array($body) ? ($body[PQuery::TOKEN] ?? null) : null;
         if ($token === null) {
-            return $this->errorResponse($action ?? 'INV', 'Invalid token!');
+            return AgentErrorHandler::errorResponse($action, 'Invalid token!');
         }
 
         $qF = new QueryFilter(Agent::TOKEN, $token, '=');
         $agent = Factory::getAgentFactory()->filter([Factory::FILTER => [$qF]], true);
         if ($agent === null) {
             DServerLog::log(DServerLog::WARNING, 'Agent from ' . Util::getIP() . ' sent invalid token!');
-            return $this->errorResponse($action ?? 'INV', 'Invalid token!');
+            return AgentErrorHandler::errorResponse($action, 'Invalid token!');
         }
 
         return $handler->handle($request->withAttribute('agent', $agent));
-    }
-
-    private function errorResponse(string $action, string $message): ResponseInterface {
-        $response = new Response();
-        $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode([
-            'action'   => $action,
-            'response' => 'ERROR',
-            'message'  => $message,
-        ]));
-        return $response;
     }
 }
