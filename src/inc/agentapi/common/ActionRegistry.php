@@ -16,13 +16,13 @@ use Hashtopolis\inc\agentapi\model\GetHashlistAction;
 use Hashtopolis\inc\agentapi\model\GetHealthCheckAction;
 use Hashtopolis\inc\agentapi\model\LoginAction;
 use Hashtopolis\inc\agentapi\model\RegisterAgentAction;
+use Hashtopolis\inc\agentapi\model\SendBenchmarkAction;
 use Hashtopolis\inc\agentapi\model\SendHealthCheckAction;
+use Hashtopolis\inc\agentapi\model\SendKeyspaceAction;
 use Hashtopolis\inc\agentapi\model\TestConnectionAction;
 use Hashtopolis\inc\agentapi\model\UpdateInformationAction;
 use Hashtopolis\inc\api\APIGetChunk;
 use Hashtopolis\inc\api\APIGetTask;
-use Hashtopolis\inc\api\APISendBenchmark;
-use Hashtopolis\inc\api\APISendKeyspace;
 use Hashtopolis\inc\api\APISendProgress;
 
 /**
@@ -46,8 +46,8 @@ final class ActionRegistry {
         PActions::GET_HASHLIST               => GetHashlistAction::class,
         PActions::GET_TASK                   => APIGetTask::class,
         PActions::GET_CHUNK                  => APIGetChunk::class,
-        PActions::SEND_KEYSPACE              => APISendKeyspace::class,
-        PActions::SEND_BENCHMARK             => APISendBenchmark::class,
+        PActions::SEND_KEYSPACE              => SendKeyspaceAction::class,
+        PActions::SEND_BENCHMARK             => SendBenchmarkAction::class,
         PActions::SEND_PROGRESS              => APISendProgress::class,
         PActions::GET_FILE_STATUS            => GetFileStatusAction::class,
         PActions::GET_HEALTH_CHECK           => GetHealthCheckAction::class,
