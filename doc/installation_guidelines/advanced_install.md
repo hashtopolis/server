@@ -1,44 +1,66 @@
 # Advanced installation
 
-## Installation in an offline environment
-If you want to run Hashtopolis on a network without internet access, you need a separate machine with internet to either pull the images from Docker Hub or build them yourself.
+> [!NOTE]
+> Throughout this page, *docker-compose.yml* refers to the file created during the installation (basic or offline), which is saved under that name whether you chose the MySQL or the PostgreSQL variant. Unless stated otherwise, the modifications described on this page apply identically to both variants.
 
-Here are the commands to pull the images from Docker hub. To build the images from source, follow the instructions in the section related to building images.
+## Installation in an offline environment
+If you want to run Hashtopolis on a network without internet access, you need a separate machine with internet to either pull the images from Docker Hub or build them yourself (to build the images from source, follow the instructions in the [dedicated section](#build-hashtopolis-images-yourself)).
+
+Hashtopolis supports MySQL and PostgreSQL since v.1.0.0-rainbow5. The procedure is the same for both databases — only the database image and the docker-compose/env files differ — so simply follow the subsection matching your choice. In both cases, make sure the database image version matches the one pinned in the docker-compose file of the release you are installing.
+
+### Offline installation with MySQL
+
+1. On the machine with internet access, pull the images from Docker Hub and save them as .tar archives:
 ```
 docker pull hashtopolis/backend:latest
 docker pull hashtopolis/frontend:latest
 docker pull mysql:9.7
-```
 
-The images can then be saved as .tar archives:
-```
 docker save hashtopolis/backend:latest --output hashtopolis-backend.tar
 docker save hashtopolis/frontend:latest --output hashtopolis-frontend.tar
 docker save mysql:9.7 --output mysql.tar
 ```
 
-Next, transfer both file to your Hashtopolis server and import them using the following commands:
+2. Download the docker-compose and env files:
+```
+wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.mysql.yml -O docker-compose.yml
+wget https://raw.githubusercontent.com/hashtopolis/server/master/env.mysql.example -O .env
+```
+
+3. Transfer the .tar archives, *docker-compose.yml* and *.env* to your Hashtopolis server and import the images:
 ```
 docker load --input hashtopolis-backend.tar
 docker load --input hashtopolis-frontend.tar
 docker load --input mysql.tar
 ```
 
-Hashtopolis supports MySQL and PostgreSQL since v.1.0.0-rainbow5. You can choose between both databases. Depending of your choice, download the corresponding files:.
+### Offline installation with PostgreSQL
 
-Download docker-compose.mysql.yml and env.mysql.example for MySQL   
+1. On the machine with internet access, pull the images from Docker Hub and save them as .tar archives:
 ```
-wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.mysql.yml -O docker-compose.yml
-wget https://raw.githubusercontent.com/hashtopolis/server/master/env.mysql.example -O .env
-```   
+docker pull hashtopolis/backend:latest
+docker pull hashtopolis/frontend:latest
+docker pull postgres:18
 
-**or**
+docker save hashtopolis/backend:latest --output hashtopolis-backend.tar
+docker save hashtopolis/frontend:latest --output hashtopolis-frontend.tar
+docker save postgres:18 --output postgres.tar
+```
 
-Download docker-compose.postgres.yml and env.postgres.example for PostgreSQL   
- ```
+2. Download the docker-compose and env files:
+```
 wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.postgres.yml -O docker-compose.yml
 wget https://raw.githubusercontent.com/hashtopolis/server/master/env.postgres.example -O .env
- ```
+```
+
+3. Transfer the .tar archives, *docker-compose.yml* and *.env* to your Hashtopolis server and import the images:
+```
+docker load --input hashtopolis-backend.tar
+docker load --input hashtopolis-frontend.tar
+docker load --input postgres.tar
+```
+
+### Finalize the installation
 
 Continue with the normal docker installation described in the [basic installation section](basic_install.md#setup-hashtopolis-server).
 
@@ -70,10 +92,10 @@ In your docker-compose.yml-file you have to add an additional container:
       - 8081:80
 
 ```
-Adapt the configuration as needed. In this example you have to put your binary-ZIP-files in the `./data`-folder, where your docker-compose.yml is located and the webserver listens on port 8081.
+Adapt the configuration as needed. In this example you have to put your binary-ZIP-files in the `./data`-folder, where your docker-compose.yml is located, and the webserver listens on port 8081. Port 8081 is used on purpose: port 8080 is already taken by the Hashtopolis backend, so this dedicated file-download server must use a different one.
 
-!!! note "Note:" 
-    If your environment is offline, keep in mind that you need to export and import the nginx image first following a similar process than for the hashtopolis images as described [previously](./advanced_install.md#installation-in-an-offline-environment). 
+> [!NOTE]
+> If your environment is offline, keep in mind that you need to export and import the nginx image first, following a similar process to the one described for the Hashtopolis images [previously](./advanced_install.md#installation-in-an-offline-environment). 
 
 ### nginx.conf
 
@@ -237,12 +259,12 @@ Finally, copy the data back into the appropriate folders after recreating the co
 
 ## Backup and Restore
 
-What the best way to backup and restore your hashtopolis instance depends heavily on the way the instance is set up and what configurations are made.
+The best way to back up and restore your Hashtopolis instance depends heavily on the way the instance is set up and what configurations are made.
 Therefore, there is no guide available for backing up / restoring which works for everyone, but some considerations which need to be taken into account:
 
 - Depending on the amount of data (files, database size, etc.) in the hashtopolis instance, a complete backup can become quite large. If it is needed to just be able to restore information about executed tasks, progress etc. (e.g. in case of a fatal failure of the system) it is enough to just back up the database, but of course this would not allow a easy restore to a previous state.
 - If you plan to do a backup in a way to be able to completely restore it to the previous state (files, logs, database, users, etc.), you need to be careful to include all required items into your backup and when restoring make sure that nothing gets left out during that process, otherwise you may end up with a semi-broken or non-functional hashtopolis instance.
-- In case you have set up your hashtopolis instance only using volumes (one for the database, one for all the hashtopolis data), backup up the complete content of these volumes is enough to have all data backed up.
+- In case you have set up your hashtopolis instance only using volumes (one for the database, one for all the hashtopolis data), backing up the complete content of these volumes is enough to have all data backed up.
 - Restoring only parts (some tasks, only users, other database parts) from a backup is very tricky and should only be done by experts and very easily goes wrong when primary keys are not sequential and not updated for auto increment in the database.
 
 ## Set up a fresh and clean instance
@@ -254,7 +276,7 @@ When there is the need for a complete reset/clean setup (e.g. for testing), you 
 
 These steps assume that you have set up your hashtopolis instance using a `docker-compose.yml` file (either MySQL or PostgreSQL).
 
-First stop all running all containers and clean them up:
+First stop all running containers and clean them up:
 
 ```
 cd <directory-containing-docker-compose.yml>

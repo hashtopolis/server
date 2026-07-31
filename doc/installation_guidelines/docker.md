@@ -35,7 +35,7 @@ docker compose down
 ```
 docker compose ps
 ```
- Here you see the different containers (frontend, backend and db), that are need to run Hashtopolis. In addition you see, when the containers were created and since when they are running.
+ Here you see the different containers (frontend, backend and db) that are needed to run Hashtopolis. In addition you see when the containers were created and since when they are running.
 
 ## Access the database:
 

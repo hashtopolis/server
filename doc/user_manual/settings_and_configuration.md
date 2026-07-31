@@ -51,7 +51,7 @@
 
 - **Forbidden Characters in Attack Command Input**:  List of characters not allowed in the attack command line to prevent injection or command errors.
 
-- **Automatic Assignment of Tasks with Priority 0 (Needed, Check File)**:  Controls whether tasks with priority 0 are automatically assigned to agents or require manual action.
+- **Automatic Assignment of Tasks with Priority 0**:  Controls whether tasks with priority 0 are automatically assigned to agents or require manual action.
 
 - **Display Cracks per Minute for Active Tasks**:  Enables showing real-time statistics of password cracks per minute for currently running tasks.
 
@@ -137,38 +137,6 @@ Click on *+ New Hashtype* to add a new hashtype. Fill the corresponding fields d
 - **Description**: A human-readable name for the hashtype, typically matching the hashmode name.
 - **Salted**: Salted indicates whether the hash algorithm uses a separate salt value (e.g., vBulletin). It does not apply to algorithms where the salt is embedded within the hash itself (e.g., bcrypt). This setting allows Hashtopolis to automatically check the Salted box when importing a hashlist that uses such an algorithm.
 - **Slow Hash**: Check this box if the hashmode is a computationally intensive (slow) hash function. 
-
-<!-- > [!TIP]
-> Considering that the hashmode is configured in your hashcat binary, you can obtain all these information directly from hashcat:
-> ```
-> hashcat.bin --exam -m 3200
-> 
-> hashcat (v6.2.6-850-gfafb277e0+) starting in hash-info mode
-> 
-> Hash Info:
-> ==========
-> 
-> Hash mode #3200
->   Name................: bcrypt $2*$, Blowfish (Unix)
->   Category............: Operating System
->   Slow.Hash...........: Yes
->   Password.Len.Min....: 0
->   Password.Len.Max....: 72
->   Salt.Type...........: Embedded
->   Salt.Len.Min........: 0
->   Salt.Len.Max........: 256
->   Kernel.Type(s)......: pure
->   Example.Hash.Format.: plain
->   Example.Hash........: $2a$05$MBCzKhG1KhezLh.0LRa0Kuw12nLJtpHy6DIaU.JAnqJUDYspHC.Ou
->   Example.Pass........: hashcat
->   Benchmark.Mask......: ?b?b?b?b?b?b?b
->   Autodetect.Enabled..: Yes
->   Self.Test.Enabled...: Yes
->   Potfile.Enabled.....: Yes
->   Custom.Plugin.......: No
->   Plaintext.Encoding..: ASCII, HEX
-> 
-> ``` -->
 
 !!! tip "Tip: Using hashcat to inspect hashmodes"
 

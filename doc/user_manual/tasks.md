@@ -10,7 +10,7 @@ To create a new task, click on the button "+ New Task" on the *Tasks > Show Task
 
 1. **Name**: Provide a name for the task you want to create. This name will be shown during [task monitoring](./tasks.md#task-overview) and should be descriptive enough for easy identification.
 
-2. **Hashlist**: Select the hashlist you want this task to target. Tasks are ordered by their IDs. [SuperHashlists](./hashlist.md#super-hashlists) are at the bottom of the list ordered by their respective IDs.
+2. **Hashlist**: Select the hashlist you want this task to target. Hashlists are ordered by their IDs. [SuperHashlists](./hashlist.md#super-hashlists) are at the bottom of the list ordered by their respective IDs.
 
 3. **Command Line**: Provide the attack command to be executed by the agent. The placeholder #HL# represents the hashlist and is automatically replaced with the correct path during execution. Do not remove or replace it manually. For example, to perform a 6-digit mask attack, use: ```#HL# -a3 ?d?d?d?d?d?d```. For a dictionary attack with rules, select the necessary files from the right-side panel. Selecting a rule file automatically includes it and the '-r' flag in the command line.
 
@@ -38,7 +38,7 @@ These additional task configuration options allow greater control over execution
 
 13. **Binary type to run the task**: Specify the binary type and version to use for this task. Defaults to the latest available in the [Binaries](./crackers_binary.md#crackers) section. 
 
-14. **Set as preprocessor task**: Such option allows the usage of a preprocessor. By default hashtopolis is installed with a single preprocessor, namely [*Prince*](https://github.com/hashcat/princeprocessor). Additional preprocessors can be defined in the [*preprocessors*](./crackers_binary.md#preprocessors) page. The command that should be used for this preprocessor must be defined in the free text zone below. A task define with a preprocessor will result in the execution of the preprocessor redirecting the output as stdin for the command line defined above in the same task. This allows the usage of "external" candidate generator such as Prince.  
+14. **Set as preprocessor task**: This option allows the usage of a preprocessor. By default Hashtopolis is installed with a single preprocessor, namely [*Prince*](https://github.com/hashcat/princeprocessor). Additional preprocessors can be defined in the [*preprocessors*](./crackers_binary.md#preprocessors) page. The command that should be used for this preprocessor must be defined in the free text zone below. A task defined with a preprocessor will result in the execution of the preprocessor, redirecting its output as stdin for the command line defined above in the same task. This allows the usage of "external" candidate generators such as Prince.  
 
 15. **Skip a given keyspace at the beginning of the task**: Assign an integer value X. Skips the first X candidates in the keyspace, equivalent to adding *-s X* in the Hashcat command. Useful for resuming from a previous partial run.
 
@@ -111,14 +111,14 @@ The **SuperTask menu** shows a list of all supertasks and their associated preco
 
 ### SuperTask in the *ShowTasks* Menu
 
-Supertask are not displayed as regular tasks in the *Show Task* menu as displayed in the picture below. 
+Supertasks are not displayed as regular tasks in the *Show Tasks* menu, as shown in the picture below. 
 
 
 <figure markdown="span">
     ![screenshot_showtask_supertask](../assets/images/supertasks_showtasks.png)
 </figure>
 
-The same information than those of a task are displayed. The *copy to Pretask* and *copy to task* options are not available. There is instead an information button which open a pop-up window displaying the list of subtasks of the supertask. This window is identical to the ShowTasks page apart that only the subtasks of the supertask are displayed in it as shown in the figure below. 
+The same information as for a regular task is displayed. The *Copy to Pretask* and *Copy to Task* options are not available. There is instead an information button which opens a pop-up window displaying the list of subtasks of the supertask. This window is identical to the *Show Tasks* page except that only the subtasks of the supertask are displayed in it, as shown in the figure below. 
 
 <figure markdown="span">
     ![screenshot_import_file](../assets/images/supertasks_subtasks.png)
@@ -130,34 +130,47 @@ The **SuperTask Builder** menu offers functionalities to create SuperTasks and t
 
 ### Masks
 
-This functionality allows the user to create a supertask from a mask file or a set of masks. It is a good alternative to replace the --increment option of hashcat that cannot be use in hashtopolis.
+This functionality allows the user to create a supertask from a mask file or a set of masks. It is a good alternative to the --increment option of hashcat that cannot be used in Hashtopolis.
 
 - **Name**: Defines the name that will be given at the created SuperTask
-- **Are small tasks**: If this parameter is set to yes, a single agent can be assigned to the tasks that will be created when the resulting supertask is apply to a hashlist. This is relevant for small tasks or to assign the full keyspace in a single chunk to an agent. Note that this is **NOT** equivalent to define the *Maximum number of agents* to 1. Indeed, in this latter case, the task will still be divided in chunks according to the *chunk size* parameter. The parameter is set to No by default.
-- **Max Agents**: Specify the maximum agents that can be assigned to the tasks that will be created when the resulting supertask is apply to a hashlist. If this amount is reached, future available agents will be assigned to the next task available with a lower priority even if the all the chunks of the task have been distributed. The default value of 0 means that there is no maximum and therefore, all available agents are assigned to this tasks until all the chunks have been distributed. This functionality is helpful to only use a portion of the cluster for a specific task, and therefore allowing to split the workers on different tasks.
+- **Are small tasks**: If this parameter is set to yes, a single agent can be assigned to the tasks that will be created when the resulting supertask is applied to a hashlist. This is relevant for small tasks or to assign the full keyspace in a single chunk to an agent. Note that this is **NOT** equivalent to define the *Maximum number of agents* to 1. Indeed, in this latter case, the task will still be divided in chunks according to the *chunk size* parameter. The parameter is set to No by default.
+- **Max Agents**: Specify the maximum number of agents that can be assigned to the tasks that will be created when the resulting supertask is applied to a hashlist. If this amount is reached, further available agents will be assigned to the next available task with a lower priority, even if not all the chunks of the task have been distributed. The default value of 0 means that there is no maximum and therefore all available agents are assigned to these tasks until all the chunks have been distributed. This functionality is helpful to only use a portion of the cluster for a specific task, allowing to split the workers on different tasks.
 - **Are CPU tasks**: If this parameter is set to yes, only the agents that are declared as CPU only can be assigned to this task. More details can be found in the [agent section](./agents.md) of this manual. The parameter is set to No by default. 
 - **Use Optimized flag (-O)**: If this parameter is set to Yes, the optimized flag -O will be added to the command line of all the sub-tasks of this supertask. The -O flag in Hashcat enables the use of optimized kernels for better performance. This improves cracking speed yet it has an impact on some aspects such as limiting the maximum length of the candidates to be tested, e.g. from 256 to 55 in the case of MD5 or from 256 to 27 for NTLM. 
 - **Benchmark Type**: Select which benchmarking type should be used for the subtasks of the supertask. It is recommended to use the default *Speed Test* for mask attack. Only in few cases, such as tasks with big salted lists, the *Runtime* may be used.
 - **Cracker Binary which is used to run this task**: This parameter specifies the binary type to use for this specific task. 
 - **Insert Masks**: The mask lines that will generate the subtask should be written here. The expected format is the one of a *.hcmask" file for hashcat. In a nutshell, there should be one mask per line following the format **[?1,][?2,][?3,][?4,]mask**, where [?x] specifies the optional charset that can be used in the mask. More details can be found [here](https://hashcat.net/wiki/doku.php?id=mask_attack).
 
-A subtask will be created for each line of the the *Insert masks* text zone and they will be grouped in a supertask. The subtasks are pre-configured task from the database point of view, however they are not displayed in the *Preconfigured Tasks* page. The subtasks that will be generated in this supertasks will be ordered accordingly to their order in the *Insert masks* text zone giving the highest priority to the first line.
+A subtask will be created for each line of the *Insert masks* text zone and they will be grouped in a supertask. The subtasks are pre-configured tasks from the database point of view, however they are not displayed in the *Preconfigured Tasks* page. The subtasks generated in this supertask will be ordered according to their order in the *Insert masks* text zone, giving the highest priority to the first line.
 
 > [!NOTE]
 > Note that the options above will be applied to all the pre-configured tasks that will be created during the generation of the supertasks from this build.
 
 ### Wordlist/Rule bulk
 
-The wordlist/Rule bulk functionality allows to create a set of subtasks for an iteration of several files selected by the user. It allows for example to create an attack strategy of a succession of wordlists to be applied one after the other or to use different rule files with a single wordlist. 
+The Wordlist/Rule bulk functionality allows creating a set of subtasks iterating over several files selected by the user. It allows for example to create an attack strategy consisting of a succession of wordlists to be applied one after the other, or to use different rule files with a single wordlist. 
 
-Most of the options are identical to those of the Mask supertask creation. The main difference is that the *Insert Masks* is obviously not present and is replaced by the *Base Command* option. In this text zone the user is expected to type the command line that should be iterated. Similarly to the *New Task* page, *#HL#* is filled in by default in the command line. It is a placeholder for the hashlist and will be replaced automatically at execution time by the agent with the correct path to the hashlist file. The user then need to select the Rules and Wordlist to use in the supertask. When selecting a file as a base - wether a Rule file, a wordlist or other - the file is immediately added at the command line like in a regular task creation. 
+Most of the options are identical to those of the Masks supertask creation. The main difference is that *Insert Masks* is obviously not present and is replaced by the *Base Command* option. In this text zone the user is expected to type the command line that should be iterated. Similarly to the *New Task* page, *#HL#* is filled in by default in the command line. It is a placeholder for the hashlist and will be replaced automatically at execution time by the agent with the correct path to the hashlist file. The user then needs to select the Rules and Wordlists to use in the supertask. When selecting a file as a base — whether a rule file, a wordlist or other — the file is immediately added to the command line like in a regular task creation. 
 
-Multiple files are expected to be selected as "Iterate". They should be of the same type (rules/wordlists/other), yet this functionality allows to select different type of files. The placeholder **FILE** should be manually placed by the user. During creation of the supertask, one subtask is created for each file selected as iterate replacing the FILE placeholder by one of the "Iterate File". 
+Multiple files are expected to be selected as "Iterate". They should usually be of the same type (rules/wordlists/other), yet this functionality allows selecting different types of files. The placeholder **FILE** should be manually placed by the user. During creation of the supertask, one subtask is created for each file selected as iterate, replacing the FILE placeholder by one of the "Iterate" files. 
 
-Similarly to a regular task, any hashcat parameter can be added to the command line. For example, if the user wants that the Optimized Kernel option (-O) is used, it should be added. That is the reason why this option is not offered to the user among the options contrary to the *Build Masks*.
+Similarly to a regular task, any hashcat parameter can be added to the command line. For example, if the user wants the Optimized Kernel option (-O) to be used, it should be added manually. That is the reason why this option is not offered among the options, contrary to the *Masks* builder.
 
+**Example**: Suppose you want to run the wordlist *rockyou.txt* against the hashlist with three different rule files: *best64.rule*, *dive.rule* and *leetspeak.rule*.
 
-**MAKE AN EXAMPLE WITH SOME FIGURES**
+1. Select *rockyou.txt* as base file — it is automatically appended to the command line.
+2. Write the base command including the **-r FILE** placeholder:
+```
+#HL# -O rockyou.txt -r FILE
+```
+3. Select the three rule files as "Iterate".
+
+When creating the supertask, one subtask is generated per iterated file:
+```
+#HL# -O rockyou.txt -r best64.rule
+#HL# -O rockyou.txt -r dive.rule
+#HL# -O rockyou.txt -r leetspeak.rule
+```
 
 > [!CAUTION]
-> If the iteration is done over rule files, the flag **-r** will not be added when FILE is replaced by the rule file. It should therefore be added in the command line as displayed in the example above. 
+> If the iteration is done over rule files, the flag **-r** will not be added automatically when FILE is replaced by the rule file. It must therefore be included in the base command, as displayed in the example above. 

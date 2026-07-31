@@ -19,13 +19,13 @@ Click on the **+ New User** button to create a new user which will open the user
 
 ### Edit user to set a password
 
-If an email server has not been properly set, it is necessary for the admin to set a password for the newly created user to give her the possibility to login. To do this, click on **edit-user** in the action field for this user as depicted on the picture below. A freely chosen password can then be set. The newly created user can now log in with a user name and password. The rights that the user has are defined in the corresponding permission group and determine which areas will be visible and editable for the new user (see the [Access management](users.md#access-management) section).
+If an email server has not been properly set up, it is necessary for the admin to set a password for the newly created user so that they can log in. To do this, click on **edit-user** in the action field for this user as depicted on the picture below. A freely chosen password can then be set. The newly created user can now log in with a user name and password. The rights that the user has are defined in the corresponding permission group and determine which areas will be visible and editable for the new user (see the [Access management](users.md#access-management) section).
 
 <figure markdown="span">
     ![screenshot_new_user](../assets/images/edit_user.png){ width="600" }
 </figure>
 
-In addition, users can be deactivated. A deactivated user can no longer log in. He will receive the error message **Check Credentials**. Deactivated users can be reactivated at any time by an admin.
+In addition, users can be deactivated. A deactivated user can no longer log in. They will receive the error message **Check Credentials**. Deactivated users can be reactivated at any time by an admin.
 
 
 
@@ -38,12 +38,12 @@ The very first step is to create the global permission group. This can be easily
 
 In the second step, the authorizations of the created permission group must be defined. To do this, simply click on **Edit Permission Group** in the overview area. We can now define which rights the global permission group should have for the individual access areas. We differentiate here between the **Create**, **Read**, **Update** and **Delete** events. Depending on the access area, there are dependencies, for example it is partly predefined that the authorization **Create Agent** must also receive the authorization **Reg Voucher**, as the two processes are technically linked. Nevertheless, authorizations can be defined in fine granularity.
 
-We now drag the link to the user administration. Each user must be a member of a permission group, which is selected when the user is created. This ensures that the user has defined authorizations at all times and can only see the areas that are intended. It is important to note that a user can only be a member of a single permission group. The permission group can be changed via the settings under **Edit User**. The individual members of a permission group can be viewed under **Edit Permission Group**. This logic also means that a permission group can only be deleted when no more users belong to it, so that it has been ensured that the users have been transferred to another permission group.
+This connects to the user administration: each user must be a member of a permission group, which is selected when the user is created. This ensures that the user has defined authorizations at all times and can only see the areas that are intended. It is important to note that a user can only be a member of a single permission group. The permission group can be changed via the settings under **Edit User**. The individual members of a permission group can be viewed under **Edit Permission Group**. This logic also means that a permission group can only be deleted when no more users belong to it, so that it has been ensured that the users have been transferred to another permission group.
 
 ### Access Groups
 In the global permissions, we have defined what rights users are generally allowed to have. For example, creating an agent or registering a voucher. The access groups now define the specific objects on which these rights can be executed. Let's do an example of this:
 
-When creating a hash list, I have to define which access group this hash list is assigned to. As a user with the global permission **Create Task,** I can now only see the hash list when creating the task if I am also a member of the corresponding access group. The Access Group can therefore regulate who can see, use and work with which files.
+When creating a hashlist, I have to define which access group this hashlist is assigned to. As a user with the global permission **Create Task**, I can now only see the hashlist when creating the task if I am also a member of the corresponding access group. The Access Group can therefore regulate who can see, use and work with which files.
 The same applies to the agents. I can therefore use the access groups to control who gets which access to my computing resources.
 
 In contrast to the permission groups, a user can be a member of none, one or more access groups in order to keep the options offered by Hashtopolis as flexible as possible.
