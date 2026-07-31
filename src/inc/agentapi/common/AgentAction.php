@@ -15,5 +15,13 @@ use Slim\Psr7\Response;
  * PSR-7 ``ResponseInterface`` (no ``echo``, no ``die()``).
  */
 interface AgentAction {
+    /**
+     * Name of the request attribute under which the authenticated Agent
+     * (loaded by {@see \Hashtopolis\inc\agentapi\auth\TokenAuthMiddleware})
+     * is stored.  Controllers read it via
+     * ``$request->getAttribute(AgentAction::AGENT_ATTRIBUTE)``.
+     */
+    public const AGENT_ATTRIBUTE = 'agent';
+
     public function __invoke(Request $request, Response $response): ResponseInterface;
 }

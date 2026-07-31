@@ -339,10 +339,21 @@ class TestLogin(AgentProtocolBase):
         self.assertEqual(parse_envelope(body)['message'], "Invalid token!")
 
     def test_login_missing_fields(self):
-        """Login without required fields (token, clientSignature) returns 'Invalid login query!'."""
-        code, body = agent_request({"action": "login", "token": "x"})
+        """Login without any required fields (no token, no clientSignature) returns 'Invalid login query!'."""
+        code, body = agent_request({"action": "login"})
         assert_error_envelope(self, body, "login")
         self.assertEqual(parse_envelope(body)['message'], "Invalid login query!")
+
+    def test_login_invalid_token_takes_priority_over_missing_fields(self):
+        """When the token is present but invalid, 'Invalid token!' takes priority over missing-field errors.
+
+        The TokenAuthMiddleware checks the token before the controller validates
+        other fields, so an invalid token with a missing clientSignature returns
+        'Invalid token!' rather than 'Invalid login query!'.
+        """
+        code, body = agent_request({"action": "login", "token": "x"})
+        assert_error_envelope(self, body, "login")
+        self.assertEqual(parse_envelope(body)['message'], "Invalid token!")
 
 
 # ---------------------------------------------------------------------------
