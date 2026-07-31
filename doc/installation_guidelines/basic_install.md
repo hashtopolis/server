@@ -138,4 +138,4 @@ Collecting agent data...
 Login successful!
 ```
 
-Your agent is now ready to receive new tasks. If you wish to fine-tune the configuration of your agent, please consult the [Agent Settings section](../user_manual/settings_and_configuration.md#agent-settings) or the specific parameters within the [agent overview](../user_manual/agents.md#agent-overview) page. Otherwise, to start using Hashtopolis, consult the [Basic workflow section](../user_manual/basic_workflow.md).
+Your agent is now ready to receive new tasks. If you wish to fine-tune the configuration of your agent, please consult the [Agent Settings section](../user_manual/settings_and_configuration.md#agent-settings) or the specific parameters within the [show agent](../user_manual/agents.md#agent-overview) page. Otherwise, to start using Hashtopolis, consult the [Basic workflow section](../user_manual/basic_workflow.md).

@@ -44,9 +44,9 @@ The visuals use the following color code:
 
 ---
 
-## Agent Overview 
+## Show Agent 
 
-Clicking on an agent in the list opens the **Agent Overview** page, which provides detailed information and management options for that agent as described below:
+Clicking on an agent in the list opens the **Show Agent** page, which provides detailed information and management options for that agent as described below:
 
 
 - **Agent ID**: Unique identifier assigned to each agent by the system.

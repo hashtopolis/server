@@ -3,7 +3,7 @@
 Before using Hashtopolis, it's important to understand key terms commonly used in the manual and the application:
 
 - **Agent**: A Hashtopolis client instance that performs password cracking using its available/associated hardware resources (e.g., GPUs and CPUs).
-- **Hashlist**: A collection of hashes stored in the database. Hashlists are most commonly in TEXT, yet other formats like HCCAPX or BINARY are also supported.
+- **Hashlist**: A collection of hashes stored in the database. Hashlists are most commonly in TEXT, yet other formats like HCCAPX or BINARY are also supported. BUT: HCCAPX and BINARY support will be removed soon since they are deprecated.
 - **Task**: A specific password cracking job, defined by a command line specifying all the parameters, files to use, hashlist to target and binary to use.
 - **Supertask**: A container grouping multiple subtasks together for easier management and monitoring. It is not a standalone cracking task.
 - **Subtask**: A smaller task within a supertask, which behaves like a normal task but whose priority matters only inside the supertask.
