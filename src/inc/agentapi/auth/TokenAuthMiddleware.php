@@ -9,6 +9,7 @@ use Hashtopolis\inc\agent\PQuery;
 use Hashtopolis\inc\agentapi\common\ActionRegistry;
 use Hashtopolis\inc\agentapi\common\AgentAction;
 use Hashtopolis\inc\agentapi\error\AgentErrorHandler;
+use Hashtopolis\inc\api\APIBasic;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
@@ -27,13 +28,18 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
  * envelope).
  *
  * For all other registered actions:
- * - If the token is **missing** the request passes through to the controller,
- *   which handles it as a field-validation error (``"Invalid X query!"``).
- * - If the token is **present but invalid** the middleware short-circuits with
- *   ``{"action":<action>,"response":"ERROR","message":"Invalid token!"}``,
- *   so controllers never need to duplicate this check.
- * - If the token is **present and valid** the Agent is attached to the request
- *   via {@see AgentAction::AGENT_ATTRIBUTE} for controllers to use.
+ * - **PSR-7 controllers** (implementing {@see AgentAction}): the middleware
+ *   handles ALL auth failures — both missing and invalid tokens short-circuit
+ *   with ``"Invalid token!"``.  Controllers can assume the agent is always
+ *   non-null and never need to duplicate this check.
+ * - **Legacy handlers** (extending {@see APIBasic}): the middleware only
+ *   short-circuits on **present but invalid** tokens.  When the token is
+ *   missing, the request passes through so the legacy handler's own
+ *   ``isValid()`` can produce the field-validation error
+ *   ``"Invalid X query!"``.
+ *
+ * In all cases where the token is present and valid, the Agent is attached to
+ * the request via {@see AgentAction::AGENT_ATTRIBUTE}.
  */
 final class TokenAuthMiddleware implements MiddlewareInterface {
     /**
@@ -52,12 +58,18 @@ final class TokenAuthMiddleware implements MiddlewareInterface {
             return $handler->handle($request);
         }
 
-        if ($action === null || ActionRegistry::getHandler($action) === null) {
+        $handlerClass = ActionRegistry::getHandler($action);
+        if ($handlerClass === null) {
             return $handler->handle($request);
         }
 
+        $isPSR7 = !is_subclass_of($handlerClass, APIBasic::class);
+
         $token = is_array($body) ? ($body[PQuery::TOKEN] ?? null) : null;
         if ($token === null) {
+            if ($isPSR7) {
+                return AgentErrorHandler::errorResponse($action, 'Invalid token!');
+            }
             return $handler->handle($request);
         }
 

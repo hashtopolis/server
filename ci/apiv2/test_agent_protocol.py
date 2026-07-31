@@ -339,10 +339,10 @@ class TestLogin(AgentProtocolBase):
         self.assertEqual(parse_envelope(body)['message'], "Invalid token!")
 
     def test_login_missing_fields(self):
-        """Login without any required fields (no token, no clientSignature) returns 'Invalid login query!'."""
+        """Login without any fields (no token, no clientSignature) returns 'Invalid token!' (middleware handles missing token for PSR-7 controllers)."""
         code, body = agent_request({"action": "login"})
         assert_error_envelope(self, body, "login")
-        self.assertEqual(parse_envelope(body)['message'], "Invalid login query!")
+        self.assertEqual(parse_envelope(body)['message'], "Invalid token!")
 
     def test_login_invalid_token_takes_priority_over_missing_fields(self):
         """When the token is present but invalid, 'Invalid token!' takes priority over missing-field errors.
@@ -1619,10 +1619,10 @@ class TestHealthCheck(AgentProtocolBase):
         self.assertEqual(parse_envelope(body)['message'], "No health check available for this agent!")
 
     def test_get_health_check_missing_fields(self):
-        """Sending getHealthCheck without a token returns 'Invalid get health check query!'."""
+        """Sending getHealthCheck without a token returns 'Invalid token!' (middleware handles missing token for PSR-7 controllers)."""
         code, body = agent_request({"action": "getHealthCheck"})
         assert_error_envelope(self, body, "getHealthCheck")
-        self.assertEqual(parse_envelope(body)['message'], "Invalid get health check query!")
+        self.assertEqual(parse_envelope(body)['message'], "Invalid token!")
 
     def test_get_health_check_invalid_token(self):
         """Sending getHealthCheck with a bogus token returns 'Invalid token!'."""
@@ -1779,7 +1779,7 @@ class TestDeregister(AgentProtocolBase):
         self.assertEqual(parse_envelope(body)['message'], "Invalid token!")
 
     def test_deregister_missing_fields(self):
-        """Sending deregister without a token returns 'Invalid de-registering query!'."""
+        """Sending deregister without a token returns 'Invalid token!' (middleware handles missing token for PSR-7 controllers)."""
         code, body = agent_request({"action": "deregister"})
         assert_error_envelope(self, body, "deregister")
-        self.assertEqual(parse_envelope(body)['message'], "Invalid de-registering query!")
+        self.assertEqual(parse_envelope(body)['message'], "Invalid token!")

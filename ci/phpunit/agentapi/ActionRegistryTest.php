@@ -4,25 +4,25 @@ namespace Hashtopolis\agentapi;
 
 use Hashtopolis\inc\agent\PActions;
 use Hashtopolis\inc\agentapi\common\ActionRegistry;
-use Hashtopolis\inc\api\APICheckClientVersion;
-use Hashtopolis\inc\api\APIClientError;
-use Hashtopolis\inc\api\APIDeRegisterAgent;
-use Hashtopolis\inc\api\APIDownloadBinary;
-use Hashtopolis\inc\api\APIGetChunk;
-use Hashtopolis\inc\api\APIGetFile;
-use Hashtopolis\inc\api\APIGetFileStatus;
-use Hashtopolis\inc\api\APIGetFound;
-use Hashtopolis\inc\api\APIGetHashlist;
-use Hashtopolis\inc\api\APIGetHealthCheck;
-use Hashtopolis\inc\api\APIGetTask;
-use Hashtopolis\inc\api\APISendBenchmark;
-use Hashtopolis\inc\api\APISendHealthCheck;
-use Hashtopolis\inc\api\APISendKeyspace;
-use Hashtopolis\inc\api\APISendProgress;
+use Hashtopolis\inc\agentapi\model\CheckClientVersionAction;
+use Hashtopolis\inc\agentapi\model\ClientErrorAction;
+use Hashtopolis\inc\agentapi\model\DeregisterAction;
+use Hashtopolis\inc\agentapi\model\DownloadBinaryAction;
+use Hashtopolis\inc\agentapi\model\GetFileAction;
+use Hashtopolis\inc\agentapi\model\GetFileStatusAction;
+use Hashtopolis\inc\agentapi\model\GetFoundAction;
+use Hashtopolis\inc\agentapi\model\GetHashlistAction;
+use Hashtopolis\inc\agentapi\model\GetHealthCheckAction;
 use Hashtopolis\inc\agentapi\model\LoginAction;
 use Hashtopolis\inc\agentapi\model\RegisterAgentAction;
+use Hashtopolis\inc\agentapi\model\SendHealthCheckAction;
 use Hashtopolis\inc\agentapi\model\TestConnectionAction;
-use Hashtopolis\inc\api\APIUpdateClientInformation;
+use Hashtopolis\inc\agentapi\model\UpdateInformationAction;
+use Hashtopolis\inc\api\APIGetChunk;
+use Hashtopolis\inc\api\APIGetTask;
+use Hashtopolis\inc\api\APISendBenchmark;
+use Hashtopolis\inc\api\APISendKeyspace;
+use Hashtopolis\inc\api\APISendProgress;
 use PHPUnit\Framework\TestCase;
 
 require_once(dirname(__FILE__) . '/../TestBase.php');
@@ -72,23 +72,23 @@ final class ActionRegistryTest extends TestCase {
   public function testGetHandlerReturnsCorrectClass(): void {
     $this->assertEquals(TestConnectionAction::class, ActionRegistry::getHandler(PActions::TEST_CONNECTION));
     $this->assertEquals(RegisterAgentAction::class, ActionRegistry::getHandler(PActions::REGISTER));
-    $this->assertEquals(APIUpdateClientInformation::class, ActionRegistry::getHandler(PActions::UPDATE_CLIENT_INFORMATION));
+    $this->assertEquals(UpdateInformationAction::class, ActionRegistry::getHandler(PActions::UPDATE_CLIENT_INFORMATION));
     $this->assertEquals(LoginAction::class, ActionRegistry::getHandler(PActions::LOGIN));
-    $this->assertEquals(APICheckClientVersion::class, ActionRegistry::getHandler(PActions::CHECK_CLIENT_VERSION));
-    $this->assertEquals(APIDownloadBinary::class, ActionRegistry::getHandler(PActions::DOWNLOAD_BINARY));
-    $this->assertEquals(APIClientError::class, ActionRegistry::getHandler(PActions::CLIENT_ERROR));
-    $this->assertEquals(APIGetFile::class, ActionRegistry::getHandler(PActions::GET_FILE));
-    $this->assertEquals(APIGetHashlist::class, ActionRegistry::getHandler(PActions::GET_HASHLIST));
+    $this->assertEquals(CheckClientVersionAction::class, ActionRegistry::getHandler(PActions::CHECK_CLIENT_VERSION));
+    $this->assertEquals(DownloadBinaryAction::class, ActionRegistry::getHandler(PActions::DOWNLOAD_BINARY));
+    $this->assertEquals(ClientErrorAction::class, ActionRegistry::getHandler(PActions::CLIENT_ERROR));
+    $this->assertEquals(GetFileAction::class, ActionRegistry::getHandler(PActions::GET_FILE));
+    $this->assertEquals(GetHashlistAction::class, ActionRegistry::getHandler(PActions::GET_HASHLIST));
     $this->assertEquals(APIGetTask::class, ActionRegistry::getHandler(PActions::GET_TASK));
     $this->assertEquals(APIGetChunk::class, ActionRegistry::getHandler(PActions::GET_CHUNK));
     $this->assertEquals(APISendKeyspace::class, ActionRegistry::getHandler(PActions::SEND_KEYSPACE));
     $this->assertEquals(APISendBenchmark::class, ActionRegistry::getHandler(PActions::SEND_BENCHMARK));
     $this->assertEquals(APISendProgress::class, ActionRegistry::getHandler(PActions::SEND_PROGRESS));
-    $this->assertEquals(APIGetFileStatus::class, ActionRegistry::getHandler(PActions::GET_FILE_STATUS));
-    $this->assertEquals(APIGetHealthCheck::class, ActionRegistry::getHandler(PActions::GET_HEALTH_CHECK));
-    $this->assertEquals(APISendHealthCheck::class, ActionRegistry::getHandler(PActions::SEND_HEALTH_CHECK));
-    $this->assertEquals(APIGetFound::class, ActionRegistry::getHandler(PActions::GET_FOUND));
-    $this->assertEquals(APIDeRegisterAgent::class, ActionRegistry::getHandler(PActions::DEREGISTER));
+    $this->assertEquals(GetFileStatusAction::class, ActionRegistry::getHandler(PActions::GET_FILE_STATUS));
+    $this->assertEquals(GetHealthCheckAction::class, ActionRegistry::getHandler(PActions::GET_HEALTH_CHECK));
+    $this->assertEquals(SendHealthCheckAction::class, ActionRegistry::getHandler(PActions::SEND_HEALTH_CHECK));
+    $this->assertEquals(GetFoundAction::class, ActionRegistry::getHandler(PActions::GET_FOUND));
+    $this->assertEquals(DeregisterAction::class, ActionRegistry::getHandler(PActions::DEREGISTER));
   }
 
   /**
