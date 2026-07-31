@@ -11,6 +11,7 @@ use Hashtopolis\inc\agentapi\model\DeregisterAction;
 use Hashtopolis\inc\agentapi\model\DownloadBinaryAction;
 use Hashtopolis\inc\agentapi\model\GetFileAction;
 use Hashtopolis\inc\agentapi\model\GetFileStatusAction;
+use Hashtopolis\inc\agentapi\model\GetChunkAction;
 use Hashtopolis\inc\agentapi\model\GetFoundAction;
 use Hashtopolis\inc\agentapi\model\GetHashlistAction;
 use Hashtopolis\inc\agentapi\model\GetHealthCheckAction;
@@ -20,10 +21,9 @@ use Hashtopolis\inc\agentapi\model\RegisterAgentAction;
 use Hashtopolis\inc\agentapi\model\SendBenchmarkAction;
 use Hashtopolis\inc\agentapi\model\SendHealthCheckAction;
 use Hashtopolis\inc\agentapi\model\SendKeyspaceAction;
+use Hashtopolis\inc\agentapi\model\SendProgressAction;
 use Hashtopolis\inc\agentapi\model\TestConnectionAction;
 use Hashtopolis\inc\agentapi\model\UpdateInformationAction;
-use Hashtopolis\inc\api\APIGetChunk;
-use Hashtopolis\inc\api\APISendProgress;
 
 /**
  * Maps agent API action strings to their handler class names.
@@ -45,10 +45,10 @@ final class ActionRegistry {
         PActions::GET_FILE                   => GetFileAction::class,
         PActions::GET_HASHLIST               => GetHashlistAction::class,
         PActions::GET_TASK                   => GetTaskAction::class,
-        PActions::GET_CHUNK                  => APIGetChunk::class,
+        PActions::GET_CHUNK                  => GetChunkAction::class,
         PActions::SEND_KEYSPACE              => SendKeyspaceAction::class,
         PActions::SEND_BENCHMARK             => SendBenchmarkAction::class,
-        PActions::SEND_PROGRESS              => APISendProgress::class,
+        PActions::SEND_PROGRESS              => SendProgressAction::class,
         PActions::GET_FILE_STATUS            => GetFileStatusAction::class,
         PActions::GET_HEALTH_CHECK           => GetHealthCheckAction::class,
         PActions::SEND_HEALTH_CHECK          => SendHealthCheckAction::class,

@@ -1597,11 +1597,10 @@ class TestSendProgress(AgentProtocolBase):
         self.assertIsInstance(resp['skipped'], int)
 
     def test_send_progress_missing_fields(self):
-        """Sending sendProgress without required fields returns 'Invalid progress query!'."""
-        dummy = self._dummy()
-        code, body = agent_request({"action": "sendProgress", "token": dummy.token})
+        """Sending sendProgress without required fields returns 'Invalid token!' (middleware handles missing token for PSR-7 controllers)."""
+        code, body = agent_request({"action": "sendProgress"})
         assert_error_envelope(self, body, "sendProgress")
-        self.assertEqual(parse_envelope(body)['message'], "Invalid progress query!")
+        self.assertEqual(parse_envelope(body)['message'], "Invalid token!")
 
 
 # ---------------------------------------------------------------------------
