@@ -725,6 +725,101 @@ class PermissionsTest(BaseTest):
                 self.assertEqual(response.status_code, 403, response.text)
                 self.assertIn('permAccessGroupDelete', response.text)
 
+    def test_api_token_access_group_member_relationship_patch_requires_update_scope(self):
+        """PATCH relationship mutations currently require permAccessGroupUpdate.
+
+        The generic relationship route maps PATCH to the parent model update permission.
+        These access group relationships use junction tables, so full replacement is not
+        the useful mutation path here, but the permission gate should still reject missing
+        update scope before it reaches relationship update logic.
+        """
+        group = self._create_unique_accessgroup()
+        user = self.create_user()
+        agent = self.create_agent()
+        cases = {
+            'userMembers': self._relationship_payload('user', user.id),
+            'agentMembers': self._relationship_payload('agent', agent.id),
+        }
+
+        for relationship, payload in cases.items():
+            with self.subTest(relationship=relationship):
+                response = request_with_api_token(
+                    self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permAccessGroupUpdate'])}).token,
+                    f'/ui/accessgroups/{group.id}/relationships/{relationship}',
+                    method='PATCH',
+                    payload=payload,
+                )
+                self.assertEqual(response.status_code, 403, response.text)
+                self.assertIn('permAccessGroupUpdate', response.text)
+
+    def test_api_token_access_group_member_relationship_patch_junction_replacement_is_not_supported(self):
+        """PATCH replacement is not supported for access group junction relationships.
+
+        POST and DELETE are the supported mutation paths for userMembers and agentMembers.
+        With the required update scope present, PATCH reaches the generic replacement
+        implementation, which cannot mutate these immutable junction-table foreign keys and
+        returns a failure instead of replacing the membership set.
+        """
+        group = self._create_unique_accessgroup()
+        user = self.create_user()
+        agent = self.create_agent()
+        cases = {
+            'userMembers': self._relationship_payload('user', user.id),
+            'agentMembers': self._relationship_payload('agent', agent.id),
+        }
+
+        for relationship, payload in cases.items():
+            with self.subTest(relationship=relationship):
+                response = request_with_api_token(
+                    self.create_apitoken(extra_payload={'scopes': ['permAccessGroupUpdate']}).token,
+                    f'/ui/accessgroups/{group.id}/relationships/{relationship}',
+                    method='PATCH',
+                    payload=payload,
+                )
+                self.assertEqual(response.status_code, 403, response.text)
+                self.assertIn('immutable', response.text)
+
+    def test_api_token_readonly_taskwrapperdisplay_tasks_relationship_post_patch_denied(self):
+        """Readonly taskwrapperdisplay tasks relationship rejects POST and PATCH.
+
+        TaskWrapperDisplayAPI marks the tasks relationship as readonly. With sufficient
+        parent-model permissions, POST and PATCH both reach the readonly guard and return a
+        400 error instead of creating or replacing task relationships.
+        """
+        hashlist = self.create_hashlist()
+        task = self.create_task(hashlist)
+        payload = self._relationship_payload('task', task.id)
+
+        for method in ['POST', 'PATCH']:
+            with self.subTest(method=method):
+                response = request_with_api_token(
+                    self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])}).token,
+                    f'/ui/taskwrapperdisplays/{task.taskWrapperId}/relationships/tasks',
+                    method=method,
+                    payload=payload,
+                )
+                self.assertEqual(response.status_code, 400, response.text)
+                self.assertIn('readonly', response.text)
+
+    def test_api_token_readonly_taskwrapperdisplay_tasks_relationship_delete_denied(self):
+        """Readonly taskwrapperdisplay tasks relationship rejects DELETE mutations.
+
+        DELETE should use the same readonly guard as POST and PATCH, so all write methods
+        consistently reject attempts to mutate TaskWrapperDisplayAPI's readonly tasks
+        relationship before touching task foreign keys.
+        """
+        hashlist = self.create_hashlist()
+        task = self.create_task(hashlist)
+
+        response = request_with_api_token(
+            self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])}).token,
+            f'/ui/taskwrapperdisplays/{task.taskWrapperId}/relationships/tasks',
+            method='DELETE',
+            payload=self._relationship_payload('task', task.id),
+        )
+        self.assertEqual(response.status_code, 400, response.text)
+        self.assertIn('readonly', response.text)
+
     def test_api_token_user_read_scope_public_attributes(self):
         """User reads degrade to public attributes when permUserRead is missing.
 
