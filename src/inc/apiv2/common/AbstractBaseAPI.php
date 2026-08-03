@@ -1490,6 +1490,9 @@ abstract class AbstractBaseAPI {
         // if we also have permissions from expanded entries we need to check them as well
         if (count($permsExpandMatching)) {
           foreach ($missing_permissions as $missing_permission) {
+            if (!array_key_exists($missing_permission, $permsExpandMatching)) {
+              continue;
+            }
             $expands = $permsExpandMatching[$missing_permission];
             foreach ($expands as $expand) {
               $classType = null;
@@ -1519,9 +1522,10 @@ abstract class AbstractBaseAPI {
           }
         }
       }
+      $reducedMissingPermissions = array_values(array_unique($reducedMissingPermissions));
       
       if (count($reducedMissingPermissions) > 0) {
-        $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" . join(", ", $required_perms) . "', user_permissions='" . join(", ", $user_available_perms) . "']");
+        $this->permissionErrors = array("No '" . join(",", $reducedMissingPermissions) . "' permission(s). [required_permissions='" . join(", ", $required_perms) . "', user_permissions='" . join(", ", $user_available_perms) . "']");
         $this->missing_permissions = $reducedMissingPermissions;
         return FALSE;
       }
