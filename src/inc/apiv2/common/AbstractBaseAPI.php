@@ -1460,11 +1460,13 @@ abstract class AbstractBaseAPI {
     
     // Find if all permissions are matched
     $missing_permissions = array_diff($required_perms, $user_available_perms);
-    $reducedMissingPermissions = [];
+    $reducedMissingPermissions = $missing_permissions;
     if (count($missing_permissions) > 0) {
       // When there are public attributes, only these will be returned when creating the get response and the non public
       // attributes are stripped away.
       if ($method === "GET" && $this instanceof AbstractModelAPI) {
+        $reducedMissingPermissions = [];
+        
         $features = $this->getFeatures();
         $perm = $this->getDBAclass()::PERM_READ;
         $missingPermissionMatching = false;
