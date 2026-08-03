@@ -51,6 +51,51 @@ ASSIGNMENT_AGGREGATES = 'crackingTime,currentChunkId,searched,currentSpeed,crack
 
 TASK_WRAPPER_DISPLAY_AGGREGATES = 'totalAssignedAgents,searched,dispatched,status,currentSpeed'
 
+HELPER_PERMISSION_CASES = [
+    {
+        'name': 'createSupertask',
+        'path': '/helper/createSupertask',
+        'payload': {'supertaskTemplateId': 1, 'hashlistId': 1, 'crackerVersionId': 1},
+        'permissions': [
+            'permTaskWrapperCreate',
+            'permTaskCreate',
+            'permSupertaskRead',
+            'permHashlistRead',
+            'permCrackerBinaryRead',
+        ],
+    },
+    {
+        'name': 'exportCrackedHashes',
+        'path': '/helper/exportCrackedHashes',
+        'payload': {'hashlistId': 1},
+        'permissions': ['permHashlistRead', 'permHashRead', 'permFileCreate'],
+    },
+    {
+        'name': 'exportLeftHashes',
+        'path': '/helper/exportLeftHashes',
+        'payload': {'hashlistId': 1},
+        'permissions': ['permHashlistRead', 'permHashRead', 'permFileCreate'],
+    },
+    {
+        'name': 'exportWordlist',
+        'path': '/helper/exportWordlist',
+        'payload': {'hashlistId': 1},
+        'permissions': ['permHashlistRead', 'permHashRead', 'permFileCreate'],
+    },
+    {
+        'name': 'assignAgent',
+        'path': '/helper/assignAgent',
+        'payload': {'agentId': 1, 'taskId': 1},
+        'permissions': ['permAgentUpdate', 'permTaskUpdate'],
+    },
+    {
+        'name': 'abortChunk',
+        'path': '/helper/abortChunk',
+        'payload': {'chunkId': 1},
+        'permissions': ['permChunkUpdate', 'permChunkDelete'],
+    },
+]
+
 
 class PermissionsTest(BaseTest):
     def test_api_token_agent_read_scope(self):
@@ -470,6 +515,52 @@ class PermissionsTest(BaseTest):
         self.assertEqual(denied_body['data'][0]['id'], hash_obj.id)
         self.assertEqual(denied_body['data'][0]['attributes']['chunkId'], hash_obj.chunkId)
         self.assertNotIn('chunk', {item['type'] for item in denied_body.get('included', [])})
+
+    def test_api_token_high_value_helpers_report_each_missing_required_scope(self):
+        """High-value helper endpoints enforce every declared required permission.
+
+        Helper permission checks run before payload validation or action execution, so the
+        test can safely use minimal dummy payloads without creating side effects. Each
+        subtest removes exactly one required scope from an otherwise fully-scoped token and
+        verifies the helper returns 403 naming that missing permission. This covers the
+        multi-permission helpers from the priority list: createSupertask, hash exports,
+        assignAgent, and abortChunk.
+        """
+        for helper in HELPER_PERMISSION_CASES:
+            for permission in helper['permissions']:
+                with self.subTest(helper=helper['name'], permission=permission):
+                    token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [permission])})
+
+                    response = request_with_api_token(
+                        token.token,
+                        helper['path'],
+                        method='POST',
+                        payload=helper['payload'],
+                    )
+                    self.assertEqual(response.status_code, 403, response.text)
+                    self.assertIn(permission, response.text)
+
+    def test_api_token_assign_agent_helper_allowed_with_update_scopes(self):
+        """assignAgent helper succeeds with both Agent and Task update scopes.
+
+        The missing-permission matrix proves the helper denies absent scopes before action
+        execution. This end-to-end branch creates real agent/task fixtures and verifies a
+        token with exactly permAgentUpdate and permTaskUpdate can execute the helper and
+        receives the expected success metadata.
+        """
+        agent = self.create_agent()
+        hashlist = self.create_hashlist()
+        task = self.create_task(hashlist)
+        token = self.create_apitoken(extra_payload={'scopes': ['permAgentUpdate', 'permTaskUpdate']})
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/assignAgent',
+            method='POST',
+            payload={'agentId': agent.id, 'taskId': task.id},
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['meta']['Assign'], 'Success')
 
     def test_api_token_user_read_scope_public_attributes(self):
         """User reads degrade to public attributes when permUserRead is missing.
