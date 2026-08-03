@@ -25,6 +25,7 @@ use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\ConfigUtils;
 
 
 /**
@@ -89,6 +90,15 @@ class AgentAPI extends AbstractModelAPI {
     }
     
     return parent::aggregateData($object, $includedData, $aggregateFieldsets);
+  }
+
+  protected function filterData(array $object): array {
+
+    if (ConfigUtils::get('hideIpInfo')->getValue() === "1") {
+      $object[Agent::LAST_IP] = "Hidden";
+    }
+    return $object;
+
   }
   
   /**

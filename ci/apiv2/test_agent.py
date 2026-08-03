@@ -1,6 +1,6 @@
 import test_task
 import test_user
-from hashtopolis import Agent, Helper
+from hashtopolis import Agent, Config, Helper
 from hashtopolis import HashtopolisError
 
 from utils import BaseTest
@@ -84,6 +84,28 @@ class AgentTest(BaseTest):
         agents = [self.create_agent() for i in range(5)]
         active_attributes = [True for i in range(5)]
         Agent.objects.patch_many(agents, active_attributes, "isActive")
+
+    def test_hide_ip_info(self):
+        agent_obj = self.create_test_object()
+        config = Config.objects.get(item='hideIpInfo')
+        original_value = config.value
+
+        try:
+            config.value = "0"
+            config.save()
+
+            visible_agent = Agent.objects.get(pk=agent_obj.id)
+            self.assertIsNotNone(visible_agent.lastIp)
+            self.assertNotEqual(visible_agent.lastIp, "Hidden")
+
+            config.value = "1"
+            config.save()
+
+            hidden_agent = Agent.objects.get(pk=agent_obj.id)
+            self.assertEqual(hidden_agent.lastIp, "Hidden")
+        finally:
+            config.value = original_value
+            config.save()
 
     def test_acl(self):
         model_obj = self.create_test_object()
