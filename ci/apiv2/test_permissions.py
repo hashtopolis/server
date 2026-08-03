@@ -90,6 +90,28 @@ class PermissionsTest(BaseTest):
         self.assertNotIn('included', body)
         self.assertIn('permRightGroupRead', json.dumps(body['meta']))
 
+    def test_api_token_user_read_attributes_with_denied_global_permission_group_include(self):
+        scope_template = _decode_jwt_scope(self.create_apitoken(extra_payload={'scopes': []}).token)
+        scopes = [
+            permission for permission in scope_template
+            if permission != 'permRightGroupRead'
+        ]
+        token = self.create_apitoken(extra_payload={'scopes': scopes})
+
+        response = request_with_api_token(
+            token.token,
+            '/ui/users?include=globalPermissionGroup&page[size]=1',
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        user_attributes = body['data'][0]['attributes']
+        self.assertIn('name', user_attributes)
+        self.assertIn('email', user_attributes)
+        self.assertIn('isValid', user_attributes)
+        self.assertIn('globalPermissionGroupId', user_attributes)
+        self.assertNotIn('included', body)
+        self.assertIn('permRightGroupRead', json.dumps(body['meta']))
+
     def test_api_token_hashtype_create_scope(self):
         hash_type_id = 90000 + int(time.time() * 1000) % 900
         payload = _resource_payload('HashType', _hashtype_attributes(hash_type_id))
