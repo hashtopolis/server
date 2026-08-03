@@ -20,7 +20,7 @@ class AbortChunkHelperAPI extends AbstractHelperAPI {
   }
   
   public function getRequiredPermissions(string $method): array {
-    return [Chunk::PERM_UPDATE, Chunk::PERM_DELETE];
+    return [Chunk::PERM_UPDATE];
   }
   
   /**

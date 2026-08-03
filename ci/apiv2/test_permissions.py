@@ -65,6 +65,12 @@ HELPER_PERMISSION_CASES = [
         ],
     },
     {
+        'name': 'createSuperHashlist',
+        'path': '/helper/createSuperHashlist',
+        'payload': {'hashlistIds': [1], 'name': 'Permission Test Superhashlist'},
+        'permissions': ['permHashlistCreate', 'permHashlistRead', 'permHashlistHashlistCreate'],
+    },
+    {
         'name': 'exportCrackedHashes',
         'path': '/helper/exportCrackedHashes',
         'payload': {'hashlistId': 1},
@@ -92,7 +98,14 @@ HELPER_PERMISSION_CASES = [
         'name': 'abortChunk',
         'path': '/helper/abortChunk',
         'payload': {'chunkId': 1},
-        'permissions': ['permChunkUpdate', 'permChunkDelete'],
+        'permissions': ['permChunkUpdate'],
+    },
+    {
+        'name': 'getTaskProgressImage',
+        'path': '/helper/getTaskProgressImage?task=1',
+        'method': 'GET',
+        'payload': None,
+        'permissions': ['permTaskRead', 'permTaskWrapperRead'],
     },
 ]
 
@@ -534,7 +547,7 @@ class PermissionsTest(BaseTest):
                     response = request_with_api_token(
                         token.token,
                         helper['path'],
-                        method='POST',
+                        method=helper.get('method', 'POST'),
                         payload=helper['payload'],
                     )
                     self.assertEqual(response.status_code, 403, response.text)
