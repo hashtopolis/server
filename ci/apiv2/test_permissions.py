@@ -1,8 +1,11 @@
 import base64
 import json
+from pathlib import Path
 import time
 
-from hashtopolis import Hash, HashType, Helper
+import confidence
+import requests
+from hashtopolis import Chunk, Hash, HashType, Helper
 
 from utils import BaseTest, do_create_agentassignent, do_create_dummy_agent, request_with_api_token
 
@@ -36,6 +39,13 @@ def _decode_jwt_scope(token):
 def _all_scopes_except(test, excluded):
     scope_template = _decode_jwt_scope(test.create_apitoken(extra_payload={'scopes': []}).token)
     return [permission for permission in scope_template if permission not in excluded]
+
+
+def _agent_request(payload):
+    load_order = (str(Path(__file__).parent.joinpath('{name}-defaults.{extension}')),) + confidence.DEFAULT_LOAD_ORDER
+    uri = confidence.load_name('hashtopolis-test', load_order=load_order)['hashtopolis_uri']
+    response = requests.post(f'{uri}/api/server.php', json=payload)
+    return response.status_code, response.text
 
 
 AGENT_INCLUDE_PERMISSIONS = {
@@ -360,6 +370,15 @@ class PermissionsTest(BaseTest):
         )
         self.delete_after_test(superhashlist)
         return superhashlist, member_hashlists
+
+    def _create_supertask_wrapper(self):
+        pretasks = [self.create_pretask() for _ in range(2)]
+        supertask = self.create_supertask(pretasks=pretasks)
+        cracker = self.create_cracker()
+        hashlist = self.create_hashlist()
+        task_wrapper = Helper().create_supertask(supertask, hashlist, cracker)
+        self.delete_after_test(task_wrapper)
+        return task_wrapper
 
     def _create_cracked_hash_with_chunk(self):
         source_data = base64.b64encode(
@@ -703,6 +722,553 @@ class PermissionsTest(BaseTest):
         included = {(item['type'], item['id']) for item in body.get('included', [])}
         self.assertIn(('user', user.id), included)
         self.assertIn(('agent', agent.id), included)
+
+    def test_api_token_supertask_subtasks_aggregate_request_allowed(self):
+        """Subtasks of a supertask can be listed with task aggregate fields.
+
+        This covers the frontend request that opens a supertask and lists the generated
+        child tasks by `taskWrapperId`. The request asks for dashboard aggregate fields on
+        each task, so the test verifies the rows belong to the created supertask wrapper
+        and that all requested aggregate attributes are present.
+        """
+        task_wrapper = self._create_supertask_wrapper()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/tasks?filter[taskWrapperId__eq]={task_wrapper.id}'
+            '&aggregate[task]=dispatched,searched,totalAssignedAgents,status,currentSpeed,cracked&page[size]=10',
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertGreater(body['meta']['page']['total_elements'], 0)
+        for item in body['data']:
+            attributes = item['attributes']
+            self.assertEqual(attributes['taskWrapperId'], task_wrapper.id)
+            self.assertIn('dispatched', attributes)
+            self.assertIn('searched', attributes)
+            self.assertIn('totalAssignedAgents', attributes)
+            self.assertIn('status', attributes)
+            self.assertIn('currentSpeed', attributes)
+            self.assertIn('cracked', attributes)
+
+    def test_api_token_supertask_subtasks_aggregate_request_requires_task_read(self):
+        """Subtask aggregate list requests still require base permTaskRead.
+
+        Aggregates do not bypass the base task read permission. Without permTaskRead the
+        task list request must fail before returning generated supertask child rows.
+        """
+        task_wrapper = self._create_supertask_wrapper()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permTaskRead'])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/tasks?filter[taskWrapperId__eq]={task_wrapper.id}'
+            '&aggregate[task]=dispatched,searched,totalAssignedAgents,status,currentSpeed,cracked&page[size]=10',
+        )
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permTaskRead', response.text)
+
+    def test_api_token_supertasks_list_aggregate_request_allowed(self):
+        """Supertask list requests can include the amountPretasks aggregate.
+
+        The frontend supertask table asks for `aggregate[supertask]=amountPretasks` so it
+        can display how many pretasks belong to each supertask. This test creates a
+        supertask with two pretasks and verifies the aggregate is returned on the filtered
+        list response.
+        """
+        pretasks = [self.create_pretask() for _ in range(2)]
+        supertask = self.create_supertask(pretasks=pretasks)
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/supertasks?filter[supertaskId__eq]={supertask.id}'
+            '&aggregate[supertask]=amountPretasks&page[size]=1',
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertEqual(body['data'][0]['id'], supertask.id)
+        self.assertEqual(body['data'][0]['attributes']['amountPretasks'], 2)
+
+    def test_api_token_supertasks_list_aggregate_request_requires_supertask_read(self):
+        """Supertask aggregate list requests require base permSupertaskRead.
+
+        Aggregate fields do not grant access to the supertask rows themselves. Removing
+        permSupertaskRead must deny the list request with 403 before aggregate data is
+        returned.
+        """
+        pretasks = [self.create_pretask() for _ in range(2)]
+        supertask = self.create_supertask(pretasks=pretasks)
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permSupertaskRead'])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/supertasks?filter[supertaskId__eq]={supertask.id}'
+            '&aggregate[supertask]=amountPretasks&page[size]=1',
+        )
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permSupertaskRead', response.text)
+
+    def _chunk_table_query_path(self, chunk):
+        return (
+            f'/ui/chunks?include=agent,task&filter[agentId__eq]={chunk.agentId}'
+            f'&filter[taskId__eq]={chunk.taskId}&filter[chunkId__eq]={chunk.id}&page[size]=1'
+        )
+
+    def _create_agent_error(self):
+        created = self.create_agent_with_task()
+        status_code, body = _agent_request({
+            'action': 'clientError',
+            'token': created['dummy_agent'].token,
+            'taskId': created['task'].id,
+            'message': 'permission test agent error',
+        })
+        self.assertEqual(status_code, 200, body)
+        self.assertIn('SUCCESS', body)
+        return created
+
+    def test_api_token_chunks_table_include_filter_request_allowed(self):
+        """Chunk table requests can combine filters with agent/task includes.
+
+        The chunk table filters by task/agent/chunk identifiers and includes the related
+        agent and task records. A real chunk is created through the existing dummy-agent
+        protocol so both includes can be materialized.
+        """
+        created = self.create_agent_with_task()
+        chunk = Chunk.objects.filter(taskId=created['task'].id)[0]
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(token.token, self._chunk_table_query_path(chunk))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertEqual(body['data'][0]['id'], chunk.id)
+        included_types = {item['type'] for item in body.get('included', [])}
+        self.assertEqual(included_types, {'agent', 'task'})
+
+    def test_api_token_chunks_table_include_filter_request_requires_chunk_read(self):
+        """Chunk table requests require base permChunkRead.
+
+        Include permissions for agent/task do not grant access to chunk rows. Removing the
+        base chunk read scope must deny the filtered table request with 403.
+        """
+        created = self.create_agent_with_task()
+        chunk = Chunk.objects.filter(taskId=created['task'].id)[0]
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permChunkRead'])})
+
+        response = request_with_api_token(token.token, self._chunk_table_query_path(chunk))
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permChunkRead', response.text)
+
+    def test_api_token_chunks_table_include_filter_request_reports_missing_include_scopes(self):
+        """Chunk table includes are omitted when agent/task read scopes are absent.
+
+        The base chunk read permission remains present, so the table rows are returned.
+        Removing `permAgentRead` or `permTaskRead` should report the missing include scope
+        and omit only that included resource.
+        """
+        created = self.create_agent_with_task()
+        chunk = Chunk.objects.filter(taskId=created['task'].id)[0]
+        include_permissions = {
+            'agent': 'permAgentRead',
+            'task': 'permTaskRead',
+        }
+
+        for relationship, permission in include_permissions.items():
+            with self.subTest(relationship=relationship):
+                token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [permission])})
+
+                response = request_with_api_token(token.token, self._chunk_table_query_path(chunk))
+                self.assertEqual(response.status_code, 200, response.text)
+                body = response.json()
+                self.assertEqual(body['meta']['page']['total_elements'], 1)
+                self.assertIn(permission, json.dumps(body['meta']))
+                self.assertNotIn(relationship, {item['type'] for item in body.get('included', [])})
+
+    def test_api_token_agent_errors_include_task_filter_request_allowed(self):
+        """Agent error table requests can include the related task.
+
+        The frontend filters agent errors by agent and includes the task that caused the
+        error. This test creates a real agent error through the agent `clientError`
+        action, then verifies the filtered API-token request returns the error row and
+        materializes the task include.
+        """
+        created = self._create_agent_error()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/agenterrors?include=task&filter[agentId__eq]={created["agent"].id}&page[size]=1',
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertEqual(body['data'][0]['attributes']['agentId'], created['agent'].id)
+        self.assertEqual(body['data'][0]['attributes']['taskId'], created['task'].id)
+        included = {(item['type'], item['id']) for item in body.get('included', [])}
+        self.assertIn(('task', created['task'].id), included)
+
+    def test_api_token_agent_errors_include_task_filter_request_requires_agent_error_read(self):
+        """Agent error table requests require base permAgentErrorRead.
+
+        Having permission to read included tasks is not enough to read agent error rows.
+        Removing the base agent-error read scope must deny the filtered request.
+        """
+        created = self._create_agent_error()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permAgentErrorRead'])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/agenterrors?include=task&filter[agentId__eq]={created["agent"].id}&page[size]=1',
+        )
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permAgentErrorRead', response.text)
+
+    def test_api_token_agent_errors_include_task_filter_request_reports_missing_task_read(self):
+        """Agent error task includes are omitted when permTaskRead is absent.
+
+        The base agent-error read permission remains present, so the error row is still
+        returned. The missing task read scope should be reported in include metadata and
+        no task resource should be materialized.
+        """
+        created = self._create_agent_error()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permTaskRead'])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/agenterrors?include=task&filter[agentId__eq]={created["agent"].id}&page[size]=1',
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertIn('permTaskRead', json.dumps(body['meta']))
+        self.assertNotIn('task', {item['type'] for item in body.get('included', [])})
+
+    def _file_list_query_path(self, file_obj):
+        return (
+            f'/ui/files?include=accessGroup&filter[fileType__eq]={file_obj.fileType}'
+            f'&filter[fileId__eq]={file_obj.id}&page[size]=1'
+        )
+
+    def test_api_token_files_list_include_access_group_filter_request_allowed(self):
+        """File list requests can include the owning access group.
+
+        The frontend file table filters by file type and includes the file's access group.
+        This verifies a real file fixture is returned by the filtered list request and
+        the access group include is materialized when both permissions are present.
+        """
+        file_obj = self.create_file()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(token.token, self._file_list_query_path(file_obj))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertEqual(body['data'][0]['id'], file_obj.id)
+        included = {(item['type'], item['id']) for item in body.get('included', [])}
+        self.assertIn(('accessGroup', file_obj.accessGroupId), included)
+
+    def test_api_token_files_list_include_access_group_filter_request_requires_file_read(self):
+        """File list requests require base permFileRead.
+
+        The access group include permission does not grant access to file rows. Removing
+        the base file read scope must deny the filtered file table request.
+        """
+        file_obj = self.create_file()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permFileRead'])})
+
+        response = request_with_api_token(token.token, self._file_list_query_path(file_obj))
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permFileRead', response.text)
+
+    def test_api_token_files_list_include_access_group_filter_request_reports_missing_access_group_read(self):
+        """File accessGroup includes are omitted when permAccessGroupRead is absent.
+
+        The file row remains visible because permFileRead is present, but the missing
+        access group read scope should be reported in include metadata and the related
+        access group resource should not be included.
+        """
+        file_obj = self.create_file()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permAccessGroupRead'])})
+
+        response = request_with_api_token(token.token, self._file_list_query_path(file_obj))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertIn('permAccessGroupRead', json.dumps(body['meta']))
+        self.assertNotIn('accessGroup', {item['type'] for item in body.get('included', [])})
+
+    def _create_task_with_file(self):
+        hashlist = self.create_hashlist()
+        file_obj = self.create_file()
+        task = self.create_task(hashlist, extra_payload={'files': [file_obj.id]})
+        return task, file_obj
+
+    def test_api_token_task_resource_include_files_request_allowed(self):
+        """Task resource requests can include attached files.
+
+        The frontend task detail request asks for `include=files` so it can display the
+        files assigned to the task. This test creates a task with one file and verifies
+        the single-resource response includes that file when both read scopes are present.
+        """
+        task, file_obj = self._create_task_with_file()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(token.token, f'/ui/tasks/{task.id}?include=files')
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['data']['id'], task.id)
+        included = {(item['type'], item['id']) for item in body.get('included', [])}
+        self.assertIn(('file', file_obj.id), included)
+
+    def test_api_token_task_resource_include_files_request_requires_task_read(self):
+        """Task file include requests require base permTaskRead.
+
+        File read permission alone cannot expose the parent task resource. Removing the
+        task read scope must deny the single-task request before file includes are loaded.
+        """
+        task, _ = self._create_task_with_file()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permTaskRead'])})
+
+        response = request_with_api_token(token.token, f'/ui/tasks/{task.id}?include=files')
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permTaskRead', response.text)
+
+    def test_api_token_task_resource_include_files_request_reports_missing_file_read(self):
+        """Task file includes are omitted when permFileRead is absent.
+
+        The task itself remains visible because permTaskRead is present. The missing file
+        read permission should be reported in include metadata and the file resource must
+        not be materialized.
+        """
+        task, _ = self._create_task_with_file()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permFileRead'])})
+
+        response = request_with_api_token(token.token, f'/ui/tasks/{task.id}?include=files')
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertIn('permFileRead', json.dumps(body['meta']))
+        self.assertNotIn('file', {item['type'] for item in body.get('included', [])})
+
+    def _create_pretask_with_file(self):
+        file_obj = self.create_file()
+        pretask = self.create_pretask(files=[file_obj])
+        return pretask, file_obj
+
+    def test_api_token_pretasks_list_include_files_request_allowed(self):
+        """Pretask list requests can include attached pretaskFiles.
+
+        The frontend can request `include=pretaskFiles` on pretask lists. This creates a
+        pretask with one file, filters the list to that pretask, and verifies the file is
+        materialized when pretask and file read scopes are both present.
+        """
+        pretask, file_obj = self._create_pretask_with_file()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/pretasks?include=pretaskFiles&filter[pretaskId__eq]={pretask.id}&page[size]=1',
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertEqual(body['data'][0]['id'], pretask.id)
+        included = {(item['type'], item['id']) for item in body.get('included', [])}
+        self.assertIn(('file', file_obj.id), included)
+
+    def test_api_token_pretasks_list_include_files_request_requires_pretask_read(self):
+        """Pretask file include requests require base permPretaskRead.
+
+        File read permission does not expose the parent pretask rows. Removing the pretask
+        read scope must deny the filtered pretask list request.
+        """
+        pretask, _ = self._create_pretask_with_file()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permPretaskRead'])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/pretasks?include=pretaskFiles&filter[pretaskId__eq]={pretask.id}&page[size]=1',
+        )
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permPretaskRead', response.text)
+
+    def test_api_token_pretasks_list_include_files_request_reports_missing_file_read(self):
+        """Pretask file includes are omitted when permFileRead is absent.
+
+        The pretask row remains visible because permPretaskRead is present. The missing
+        file read scope should be reported in include metadata and the related file must
+        not be included.
+        """
+        pretask, _ = self._create_pretask_with_file()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permFileRead'])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/pretasks?include=pretaskFiles&filter[pretaskId__eq]={pretask.id}&page[size]=1',
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertIn('permFileRead', json.dumps(body['meta']))
+        self.assertNotIn('file', {item['type'] for item in body.get('included', [])})
+
+    def _create_global_permission_group_with_user(self):
+        group = self.create_globalpermissiongroup()
+        user = self.create_user(global_permission_group_id=group.id)
+        return group, user
+
+    def test_api_token_global_permission_group_include_user_members_allowed(self):
+        """Global permission group resource requests can include userMembers.
+
+        The frontend opens a global permission group and asks for its users. This test
+        creates a group with one user and verifies the `userMembers` include is returned
+        when both right-group and user read permissions are present.
+        """
+        group, user = self._create_global_permission_group_with_user()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(token.token, f'/ui/globalpermissiongroups/{group.id}?include=userMembers')
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['data']['id'], group.id)
+        included = {(item['type'], item['id']) for item in body.get('included', [])}
+        self.assertIn(('user', user.id), included)
+
+    def test_api_token_global_permission_group_include_user_members_requires_right_group_read(self):
+        """Global permission group member requests require base permRightGroupRead.
+
+        User read permission cannot expose the parent permission group. Removing the base
+        right-group read scope must deny the single-group include request.
+        """
+        group, _ = self._create_global_permission_group_with_user()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permRightGroupRead'])})
+
+        response = request_with_api_token(token.token, f'/ui/globalpermissiongroups/{group.id}?include=userMembers')
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permRightGroupRead', response.text)
+
+    def test_api_token_global_permission_group_include_user_members_uses_user_public_fallback(self):
+        """Global permission group userMembers include can fall back to public user data.
+
+        Users expose public attributes, so a missing permUserRead does not have to remove
+        the member include entirely. The included user should be reduced to public fields
+        and omit private fields such as `email`.
+        """
+        group, user = self._create_global_permission_group_with_user()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permUserRead'])})
+
+        response = request_with_api_token(token.token, f'/ui/globalpermissiongroups/{group.id}?include=userMembers')
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        included_users = [item for item in body.get('included', []) if item['type'] == 'user' and item['id'] == user.id]
+        self.assertEqual(len(included_users), 1)
+        attributes = included_users[0]['attributes']
+        self.assertEqual(attributes['name'], user.name)
+        self.assertNotIn('email', attributes)
+
+    def _api_tokens_list_query_path(self, token_obj):
+        return f'/ui/apiTokens?include=user&filter[jwtApiKeyId__eq]={token_obj.id}&page[size]=1'
+
+    def test_api_token_api_tokens_list_include_user_allowed(self):
+        """API token list requests can include the owning user.
+
+        The frontend token table asks for `include=user`. This creates a token owned by
+        the current test user and verifies the filtered list response includes that owner
+        when JWT API key and user read scopes are both present.
+        """
+        listed_token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+        bearer_token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(bearer_token.token, self._api_tokens_list_query_path(listed_token))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertEqual(body['data'][0]['id'], listed_token.id)
+        included = {(item['type'], item['id']) for item in body.get('included', [])}
+        self.assertIn(('user', listed_token.userId), included)
+
+    def test_api_token_api_tokens_list_include_user_requires_jwt_api_key_read(self):
+        """API token list requests require base permJwtApiKeyRead.
+
+        User read permission does not expose API token rows. Removing the JWT API key read
+        scope must deny the filtered token list request.
+        """
+        listed_token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+        bearer_token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permJwtApiKeyRead'])})
+
+        response = request_with_api_token(bearer_token.token, self._api_tokens_list_query_path(listed_token))
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permJwtApiKeyRead', response.text)
+
+    def test_api_token_api_tokens_list_include_user_uses_user_public_fallback(self):
+        """API token user includes can fall back to public user data.
+
+        The token row remains visible because permJwtApiKeyRead is present. Without
+        permUserRead, the owner include should still be present with public user fields
+        and private fields such as email omitted.
+        """
+        listed_token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+        bearer_token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permUserRead'])})
+
+        response = request_with_api_token(bearer_token.token, self._api_tokens_list_query_path(listed_token))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        included_users = [item for item in body.get('included', []) if item['type'] == 'user' and item['id'] == listed_token.userId]
+        self.assertEqual(len(included_users), 1)
+        self.assertIn('name', included_users[0]['attributes'])
+        self.assertNotIn('email', included_users[0]['attributes'])
+
+    def _health_checks_list_query_path(self, health_check):
+        return f'/ui/healthchecks?include=hashType&filter[healthCheckId__eq]={health_check.id}&page[size]=1'
+
+    def test_api_token_health_checks_include_hash_type_allowed(self):
+        """Health check list requests can include hashType.
+
+        The frontend health check table asks for `include=hashType`. This verifies a real
+        health check row includes its hash type when both health-check and hash-type read
+        scopes are present.
+        """
+        health_check = self.create_healthcheck()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(token.token, self._health_checks_list_query_path(health_check))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertEqual(body['data'][0]['id'], health_check.id)
+        included = {(item['type'], item['id']) for item in body.get('included', [])}
+        self.assertIn(('hashType', health_check.hashtypeId), included)
+
+    def test_api_token_health_checks_include_hash_type_requires_health_check_read(self):
+        """Health check list requests require base permHealthCheckRead.
+
+        Hash type read permission does not expose health check rows. Removing the base
+        health-check read scope must deny the filtered list request.
+        """
+        health_check = self.create_healthcheck()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permHealthCheckRead'])})
+
+        response = request_with_api_token(token.token, self._health_checks_list_query_path(health_check))
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permHealthCheckRead', response.text)
+
+    def test_api_token_health_checks_include_hash_type_reports_missing_hash_type_read(self):
+        """Health check hashType includes are omitted when permHashTypeRead is absent.
+
+        The health check row remains visible because permHealthCheckRead is present. The
+        missing hash type read scope should be reported and the hashType include omitted.
+        """
+        health_check = self.create_healthcheck()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permHashTypeRead'])})
+
+        response = request_with_api_token(token.token, self._health_checks_list_query_path(health_check))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertIn('permHashTypeRead', json.dumps(body['meta']))
+        self.assertNotIn('hashType', {item['type'] for item in body.get('included', [])})
 
     def test_api_token_high_value_helpers_report_each_missing_required_scope(self):
         """High-value helper endpoints enforce every declared required permission.
