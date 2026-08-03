@@ -1469,15 +1469,17 @@ abstract class AbstractBaseAPI {
         
         $features = $this->getFeatures();
         $perm = $this->getDBAclass()::PERM_READ;
-        $missingPermissionMatching = false;
-        foreach ($features as $arr) {
-          if ($arr['public'] ?? false) {
-            $this->addPublicAttributeClass($this->getDBAClass());
-            $missingPermissionMatching = true;
+        if (in_array($perm, $missing_permissions, true)) {
+          $missingPermissionMatching = false;
+          foreach ($features as $arr) {
+            if ($arr['public'] ?? false) {
+              $this->addPublicAttributeClass($this->getDBAClass());
+              $missingPermissionMatching = true;
+            }
           }
-        }
-        if (!$missingPermissionMatching && in_array($perm, $missing_permissions)) {
-          $reducedMissingPermissions[] = $perm;
+          if (!$missingPermissionMatching) {
+            $reducedMissingPermissions[] = $perm;
+          }
         }
         
         // if we also have permissions from expanded entries we need to check them as well
