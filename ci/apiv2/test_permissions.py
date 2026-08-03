@@ -575,6 +575,156 @@ class PermissionsTest(BaseTest):
         self.assertEqual(response.status_code, 200, response.text)
         self.assertEqual(response.json()['meta']['Assign'], 'Success')
 
+    def _relationship_payload(self, resource_type, resource_id):
+        return {'data': [{'type': resource_type, 'id': resource_id}]}
+
+    def _create_unique_accessgroup(self):
+        return self.create_accessgroup(extra_payload={'groupName': f'Permission Group {time.time_ns()}'})
+
+    def test_api_token_access_group_user_member_relationship_add_remove_allowed(self):
+        """Access group user membership can be added and removed through relationship links.
+
+        This covers the non-CRUD JSON:API relationship mutation path for userMembers.
+        The current generic relationship route maps POST to the parent model create scope
+        and DELETE to the parent model delete scope, so the test uses those exact scopes
+        and verifies the membership appears after POST and disappears after DELETE.
+        """
+        group = self._create_unique_accessgroup()
+        user = self.create_user()
+        payload = self._relationship_payload('user', user.id)
+
+        add_response = request_with_api_token(
+            self.create_apitoken(extra_payload={'scopes': ['permAccessGroupCreate']}).token,
+            f'/ui/accessgroups/{group.id}/relationships/userMembers',
+            method='POST',
+            payload=payload,
+        )
+        self.assertEqual(add_response.status_code, 201, add_response.text)
+
+        get_response = request_with_api_token(
+            self.create_apitoken(extra_payload={'scopes': ['permAccessGroupRead', 'permUserRead']}).token,
+            f'/ui/accessgroups/{group.id}/relationships/userMembers',
+        )
+        self.assertEqual(get_response.status_code, 200, get_response.text)
+        self.assertIn(user.id, [item['id'] for item in get_response.json()['data']])
+
+        delete_response = request_with_api_token(
+            self.create_apitoken(extra_payload={'scopes': ['permAccessGroupDelete']}).token,
+            f'/ui/accessgroups/{group.id}/relationships/userMembers',
+            method='DELETE',
+            payload=payload,
+        )
+        self.assertEqual(delete_response.status_code, 201, delete_response.text)
+
+        get_after_delete_response = request_with_api_token(
+            self.create_apitoken(extra_payload={'scopes': ['permAccessGroupRead', 'permUserRead']}).token,
+            f'/ui/accessgroups/{group.id}/relationships/userMembers',
+        )
+        self.assertEqual(get_after_delete_response.status_code, 200, get_after_delete_response.text)
+        self.assertNotIn(user.id, [item['id'] for item in get_after_delete_response.json()['data']])
+
+    def test_api_token_access_group_agent_member_relationship_add_remove_allowed(self):
+        """Access group agent membership can be added and removed through relationship links.
+
+        This mirrors the userMembers relationship test for agentMembers and uses a real
+        dummy-agent fixture. It confirms POST creates the junction-table membership and
+        DELETE removes it through the generic relationship endpoints.
+        """
+        group = self._create_unique_accessgroup()
+        agent = self.create_agent()
+        payload = self._relationship_payload('agent', agent.id)
+
+        add_response = request_with_api_token(
+            self.create_apitoken(extra_payload={'scopes': ['permAccessGroupCreate']}).token,
+            f'/ui/accessgroups/{group.id}/relationships/agentMembers',
+            method='POST',
+            payload=payload,
+        )
+        self.assertEqual(add_response.status_code, 201, add_response.text)
+
+        get_response = request_with_api_token(
+            self.create_apitoken(extra_payload={'scopes': ['permAccessGroupRead', 'permAgentRead']}).token,
+            f'/ui/accessgroups/{group.id}/relationships/agentMembers',
+        )
+        self.assertEqual(get_response.status_code, 200, get_response.text)
+        self.assertIn(agent.id, [item['id'] for item in get_response.json()['data']])
+
+        delete_response = request_with_api_token(
+            self.create_apitoken(extra_payload={'scopes': ['permAccessGroupDelete']}).token,
+            f'/ui/accessgroups/{group.id}/relationships/agentMembers',
+            method='DELETE',
+            payload=payload,
+        )
+        self.assertEqual(delete_response.status_code, 201, delete_response.text)
+
+        get_after_delete_response = request_with_api_token(
+            self.create_apitoken(extra_payload={'scopes': ['permAccessGroupRead', 'permAgentRead']}).token,
+            f'/ui/accessgroups/{group.id}/relationships/agentMembers',
+        )
+        self.assertEqual(get_after_delete_response.status_code, 200, get_after_delete_response.text)
+        self.assertNotIn(agent.id, [item['id'] for item in get_after_delete_response.json()['data']])
+
+    def test_api_token_access_group_member_relationship_post_requires_create_scope(self):
+        """POST relationship mutations currently require permAccessGroupCreate.
+
+        The generic relationship route validates permissions before resource lookup or
+        payload mutation. Each subtest removes the create scope and verifies adding either
+        userMembers or agentMembers is denied with 403 and names permAccessGroupCreate.
+        """
+        group = self._create_unique_accessgroup()
+        user = self.create_user()
+        agent = self.create_agent()
+        cases = {
+            'userMembers': self._relationship_payload('user', user.id),
+            'agentMembers': self._relationship_payload('agent', agent.id),
+        }
+
+        for relationship, payload in cases.items():
+            with self.subTest(relationship=relationship):
+                response = request_with_api_token(
+                    self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permAccessGroupCreate'])}).token,
+                    f'/ui/accessgroups/{group.id}/relationships/{relationship}',
+                    method='POST',
+                    payload=payload,
+                )
+                self.assertEqual(response.status_code, 403, response.text)
+                self.assertIn('permAccessGroupCreate', response.text)
+
+    def test_api_token_access_group_member_relationship_delete_requires_delete_scope(self):
+        """DELETE relationship mutations currently require permAccessGroupDelete.
+
+        The relationships are first seeded with full permissions. Each subtest then tries
+        to remove a membership without the delete scope and verifies the relationship route
+        denies the mutation before deleting the junction-table row.
+        """
+        group = self._create_unique_accessgroup()
+        user = self.create_user()
+        agent = self.create_agent()
+        cases = {
+            'userMembers': self._relationship_payload('user', user.id),
+            'agentMembers': self._relationship_payload('agent', agent.id),
+        }
+        seed_token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+        for relationship, payload in cases.items():
+            seed_response = request_with_api_token(
+                seed_token.token,
+                f'/ui/accessgroups/{group.id}/relationships/{relationship}',
+                method='POST',
+                payload=payload,
+            )
+            self.assertEqual(seed_response.status_code, 201, seed_response.text)
+
+        for relationship, payload in cases.items():
+            with self.subTest(relationship=relationship):
+                response = request_with_api_token(
+                    self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permAccessGroupDelete'])}).token,
+                    f'/ui/accessgroups/{group.id}/relationships/{relationship}',
+                    method='DELETE',
+                    payload=payload,
+                )
+                self.assertEqual(response.status_code, 403, response.text)
+                self.assertIn('permAccessGroupDelete', response.text)
+
     def test_api_token_user_read_scope_public_attributes(self):
         """User reads degrade to public attributes when permUserRead is missing.
 
