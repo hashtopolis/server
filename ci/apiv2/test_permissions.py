@@ -2,9 +2,9 @@ import base64
 import json
 import time
 
-from hashtopolis import HashType
+from hashtopolis import Hash, HashType
 
-from utils import BaseTest, request_with_api_token
+from utils import BaseTest, do_create_agentassignent, do_create_dummy_agent, request_with_api_token
 
 
 def _resource_payload(resource_type, attributes, resource_id=None):
@@ -281,6 +281,195 @@ class PermissionsTest(BaseTest):
         self.assertEqual(response.status_code, 403, response.text)
         self.assertIn('permTaskRead', response.text)
         self.assertIn('permTaskWrapperRead', response.text)
+
+    def _hashlist_include_query_path(self, hashlist):
+        return (
+            f'/ui/hashlists?filter[hashlistId__eq]={hashlist.id}'
+            f'&filter[isArchived__eq]=false&include=hashType,accessGroup&page[size]=1'
+        )
+
+    def _hash_include_query_path(self, hashlist):
+        return f'/ui/hashes?filter[hashlistId__eq]={hashlist.id}&include=hashlist,chunk&page[size]=1'
+
+    def _hash_include_query_path_by_hash(self, hash_obj):
+        return f'/ui/hashes?filter[hashId__eq]={hash_obj.id}&include=hashlist,chunk&page[size]=1'
+
+    def _create_cracked_hash_with_chunk(self):
+        source_data = base64.b64encode(
+            b'7fde65673fd28736423f23423786f\n7fde65673f28987f7423f2342378f\n'
+        ).decode()
+        hashlist = self.create_hashlist(extra_payload={'sourceData': source_data})
+        task = self.create_task(hashlist=hashlist, file_id='004')
+        dummy_agent, agent = do_create_dummy_agent()
+        self.delete_after_test(agent)
+        do_create_agentassignent(agent, task)
+
+        dummy_agent.get_task()
+        dummy_agent.get_hashlist()
+        dummy_agent.get_chunk()
+        while dummy_agent.chunk['status'] != 'OK':
+            status = dummy_agent.chunk['status']
+            if status == 'keyspace_required':
+                dummy_agent.send_keyspace(keyspace=56800)
+            elif status == 'benchmark':
+                dummy_agent.send_benchmark()
+            else:
+                raise AssertionError(f'Unexpected chunk status: {status}')
+            dummy_agent.get_chunk()
+
+        dummy_agent.send_process(progress=50)
+        hash_obj = Hash.objects.filter(hashlistId=hashlist.id)[0]
+        self.assertIsNotNone(hash_obj.chunkId)
+        return hash_obj
+
+    def test_api_token_hashlist_include_request_allowed(self):
+        """Hashlist table requests can include hashType and accessGroup.
+
+        This mirrors the common frontend hashlist table flow with filters for a concrete
+        non-archived hashlist and includes for both related display columns. With all
+        required read permissions present, the hashlist row is returned and both related
+        resources are materialized without include errors.
+        """
+        hashlist = self.create_hashlist()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(token.token, self._hashlist_include_query_path(hashlist))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertEqual(body['meta']['Include errors'], [])
+        self.assertEqual(body['data'][0]['id'], hashlist.id)
+        self.assertEqual(body['data'][0]['attributes']['isArchived'], False)
+        self.assertEqual({item['type'] for item in body['included']}, {'hashType', 'accessGroup'})
+
+    def test_api_token_hashlist_include_request_requires_base_read(self):
+        """Hashlist include requests still require permHashlistRead on the base model.
+
+        Even when the token has every include permission, omitting permHashlistRead must
+        deny the entire hashlist table request with 403. This ensures include permissions
+        cannot be used to bypass the hashlist model read permission.
+        """
+        hashlist = self.create_hashlist()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permHashlistRead'])})
+
+        response = request_with_api_token(token.token, self._hashlist_include_query_path(hashlist))
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permHashlistRead', response.text)
+
+    def test_api_token_hashlist_include_request_reports_missing_include_scopes(self):
+        """Hashlist includes are independently omitted when their read scope is absent.
+
+        The base hashlist read permission remains present, so the table request succeeds.
+        Each subtest removes one include permission and verifies the API reports the
+        missing related-model scope and omits only that relationship's included resource.
+        """
+        hashlist = self.create_hashlist()
+        include_permissions = {
+            'hashType': 'permHashTypeRead',
+            'accessGroup': 'permAccessGroupRead',
+        }
+
+        for relationship, permission in include_permissions.items():
+            with self.subTest(relationship=relationship):
+                token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [permission])})
+
+                response = request_with_api_token(token.token, self._hashlist_include_query_path(hashlist))
+                self.assertEqual(response.status_code, 200, response.text)
+                body = response.json()
+                self.assertEqual(body['meta']['page']['total_elements'], 1)
+                self.assertIn(permission, json.dumps(body['meta']))
+                included_types = {item['type'] for item in body.get('included', [])}
+                self.assertNotIn(relationship, included_types)
+
+    def test_api_token_hash_include_request_allowed(self):
+        """Hashes table requests can include the parent hashlist and optional chunk.
+
+        A newly-created hashlist creates hash rows with no chunk yet, matching hashes that
+        have not been assigned to cracking work. With full permissions, the request returns
+        the hash row, includes its parent hashlist, and reports no include error even though
+        the chunk relationship is null and therefore not materialized.
+        """
+        hashlist = self.create_hashlist()
+        hash_obj = Hash.objects.filter(hashlistId=hashlist.id)[0]
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(token.token, self._hash_include_query_path(hashlist))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertEqual(body['meta']['Include errors'], [])
+        self.assertEqual(body['data'][0]['id'], hash_obj.id)
+        self.assertEqual(body['data'][0]['relationships']['chunk']['data'], None)
+        self.assertEqual({item['type'] for item in body.get('included', [])}, {'hashlist'})
+
+    def test_api_token_hash_include_request_requires_base_read(self):
+        """Hashes include requests still require permHashRead on the base model.
+
+        The hashlist and chunk include permissions do not grant access to the hash rows
+        themselves. Removing permHashRead must deny the complete hashes table request with
+        403 before include materialization matters.
+        """
+        hashlist = self.create_hashlist()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permHashRead'])})
+
+        response = request_with_api_token(token.token, self._hash_include_query_path(hashlist))
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permHashRead', response.text)
+
+    def test_api_token_hash_include_request_reports_missing_include_scopes(self):
+        """Hash includes are independently permission-checked for hashlist and chunk.
+
+        The base hash read permission remains present. Removing permHashlistRead omits the
+        parent hashlist include, while removing permChunkRead reports the missing chunk
+        permission even though the fixture hash currently has a null chunk relationship.
+        """
+        hashlist = self.create_hashlist()
+        include_permissions = {
+            'hashlist': 'permHashlistRead',
+            'chunk': 'permChunkRead',
+        }
+
+        for relationship, permission in include_permissions.items():
+            with self.subTest(relationship=relationship):
+                token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [permission])})
+
+                response = request_with_api_token(token.token, self._hash_include_query_path(hashlist))
+                self.assertEqual(response.status_code, 200, response.text)
+                body = response.json()
+                self.assertEqual(body['meta']['page']['total_elements'], 1)
+                self.assertIn(permission, json.dumps(body['meta']))
+                included_types = {item['type'] for item in body.get('included', [])}
+                self.assertNotIn(relationship, included_types)
+
+    def test_api_token_hash_chunk_include_materializes_only_with_chunk_read_scope(self):
+        """Hash include=chunk materializes a real chunk only with permChunkRead.
+
+        Most freshly-created hashes have chunk=null, so they only prove include permission
+        validation. This test drives the existing dummy-agent protocol through chunk
+        dispatch and matching crack submission, which updates the cracked hash with a real
+        chunkId. The allowed request must include both hashlist and chunk resources; the
+        denied request must still return the hash row but omit chunk and report
+        permChunkRead in metadata.
+        """
+        hash_obj = self._create_cracked_hash_with_chunk()
+
+        allowed_token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+        allowed_response = request_with_api_token(allowed_token.token, self._hash_include_query_path_by_hash(hash_obj))
+        self.assertEqual(allowed_response.status_code, 200, allowed_response.text)
+        allowed_body = allowed_response.json()
+        self.assertEqual(allowed_body['meta']['Include errors'], [])
+        self.assertEqual(allowed_body['data'][0]['id'], hash_obj.id)
+        self.assertEqual(allowed_body['data'][0]['attributes']['chunkId'], hash_obj.chunkId)
+        self.assertEqual({item['type'] for item in allowed_body['included']}, {'hashlist', 'chunk'})
+
+        denied_token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permChunkRead'])})
+        denied_response = request_with_api_token(denied_token.token, self._hash_include_query_path_by_hash(hash_obj))
+        self.assertEqual(denied_response.status_code, 200, denied_response.text)
+        denied_body = denied_response.json()
+        self.assertIn('permChunkRead', json.dumps(denied_body['meta']))
+        self.assertEqual(denied_body['data'][0]['id'], hash_obj.id)
+        self.assertEqual(denied_body['data'][0]['attributes']['chunkId'], hash_obj.chunkId)
+        self.assertNotIn('chunk', {item['type'] for item in denied_body.get('included', [])})
 
     def test_api_token_user_read_scope_public_attributes(self):
         """User reads degrade to public attributes when permUserRead is missing.
