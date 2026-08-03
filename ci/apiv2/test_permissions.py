@@ -1,3 +1,5 @@
+import base64
+import json
 import time
 
 from hashtopolis import HashType
@@ -22,6 +24,13 @@ def _hashtype_attributes(hash_type_id, description='Permission Test HashType'):
         'isSalted': False,
         'isSlowHash': False,
     }
+
+
+def _decode_jwt_scope(token):
+    payload_b64 = token.split('.')[1]
+    payload_b64 += '=' * (-len(payload_b64) % 4)
+    payload = json.loads(base64.urlsafe_b64decode(payload_b64))
+    return json.loads(payload['scope'])
 
 
 class PermissionsTest(BaseTest):
@@ -61,6 +70,25 @@ class PermissionsTest(BaseTest):
         self.assertEqual(public_only_response.status_code, 200, public_only_response.text)
         public_only_attributes = public_only_response.json()['data'][0]['attributes']
         self.assertEqual(set(public_only_attributes), {'name'})
+
+    def test_api_token_user_public_attributes_with_denied_global_permission_group_include(self):
+        scope_template = _decode_jwt_scope(self.create_apitoken(extra_payload={'scopes': []}).token)
+        scopes = [
+            permission for permission in scope_template
+            if permission not in ['permUserRead', 'permRightGroupRead']
+        ]
+        token = self.create_apitoken(extra_payload={'scopes': scopes})
+
+        response = request_with_api_token(
+            token.token,
+            '/ui/users?include=globalPermissionGroup&page[size]=1',
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        user_attributes = body['data'][0]['attributes']
+        self.assertEqual(set(user_attributes), {'name'})
+        self.assertNotIn('included', body)
+        self.assertIn('permRightGroupRead', json.dumps(body['meta']))
 
     def test_api_token_hashtype_create_scope(self):
         hash_type_id = 90000 + int(time.time() * 1000) % 900
