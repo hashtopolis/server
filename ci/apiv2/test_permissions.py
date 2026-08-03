@@ -2,7 +2,7 @@ import base64
 import json
 import time
 
-from hashtopolis import Hash, HashType
+from hashtopolis import Hash, HashType, Helper
 
 from utils import BaseTest, do_create_agentassignent, do_create_dummy_agent, request_with_api_token
 
@@ -352,6 +352,15 @@ class PermissionsTest(BaseTest):
     def _hash_include_query_path_by_hash(self, hash_obj):
         return f'/ui/hashes?filter[hashId__eq]={hash_obj.id}&include=hashlist,chunk&page[size]=1'
 
+    def _create_superhashlist(self):
+        member_hashlists = [self.create_hashlist() for _ in range(2)]
+        superhashlist = Helper().create_superhashlist(
+            name=f'Permission Test Superhashlist {time.time_ns()}',
+            hashlists=member_hashlists,
+        )
+        self.delete_after_test(superhashlist)
+        return superhashlist, member_hashlists
+
     def _create_cracked_hash_with_chunk(self):
         source_data = base64.b64encode(
             b'7fde65673fd28736423f23423786f\n7fde65673f28987f7423f2342378f\n'
@@ -528,6 +537,172 @@ class PermissionsTest(BaseTest):
         self.assertEqual(denied_body['data'][0]['id'], hash_obj.id)
         self.assertEqual(denied_body['data'][0]['attributes']['chunkId'], hash_obj.chunkId)
         self.assertNotIn('chunk', {item['type'] for item in denied_body.get('included', [])})
+
+    def test_api_token_superhashlist_list_include_members_allowed(self):
+        """Superhashlist list requests can include member hashlists and hashType.
+
+        This completes the frontend superhashlist table flow by creating a real
+        superhashlist with two member hashlists, filtering list results to that object,
+        and verifying the self-referential `hashlists` include returns the members while
+        `hashType` is also included for the superhashlist row.
+        """
+        superhashlist, member_hashlists = self._create_superhashlist()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/hashlists?filter[hashlistId__eq]={superhashlist.id}'
+            '&filter[format__eq]=3&include=hashType,hashlists&page[size]=1',
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertEqual(body['data'][0]['id'], superhashlist.id)
+        self.assertEqual(body['data'][0]['attributes']['format'], 3)
+        included_types = {item['type'] for item in body['included']}
+        self.assertIn('hashType', included_types)
+        self.assertIn('hashlist', included_types)
+        included_member_ids = {item['id'] for item in body['included'] if item['type'] == 'hashlist'}
+        self.assertEqual(included_member_ids, {hashlist.id for hashlist in member_hashlists})
+
+    def test_api_token_single_superhashlist_include_members_allowed(self):
+        """Single superhashlist requests can include member hashlists and hashType.
+
+        This covers the detail-view version of the superhashlist include flow. It verifies
+        that `GET /ui/hashlists/{id}?include=hashlists,hashType` materializes both the
+        member hashlists and hash type when the token has the relevant read scopes.
+        """
+        superhashlist, member_hashlists = self._create_superhashlist()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/hashlists/{superhashlist.id}?include=hashlists,hashType',
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['data']['id'], superhashlist.id)
+        included_member_ids = {item['id'] for item in body['included'] if item['type'] == 'hashlist'}
+        self.assertEqual(included_member_ids, {hashlist.id for hashlist in member_hashlists})
+        self.assertIn('hashType', {item['type'] for item in body['included']})
+
+    def test_api_token_hashes_for_superhashlist_members_allowed(self):
+        """Hashes can be listed for member hashlists discovered from a superhashlist.
+
+        The frontend flow first loads the superhashlist members and then requests hashes
+        with `filter[hashlistId__in]`. This test performs the same two-step flow and
+        verifies the hash rows and parent hashlist includes are returned for both member
+        hashlists.
+        """
+        superhashlist, member_hashlists = self._create_superhashlist()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        members_response = request_with_api_token(
+            token.token,
+            f'/ui/hashlists/{superhashlist.id}?include=hashlists',
+        )
+        self.assertEqual(members_response.status_code, 200, members_response.text)
+        member_ids = [item['id'] for item in members_response.json()['included'] if item['type'] == 'hashlist']
+        self.assertEqual(set(member_ids), {hashlist.id for hashlist in member_hashlists})
+
+        hashes_response = request_with_api_token(
+            token.token,
+            f'/ui/hashes?include=hashlist,chunk&filter[hashlistId__in]={",".join(map(str, member_ids))}&page[size]=10',
+        )
+        self.assertEqual(hashes_response.status_code, 200, hashes_response.text)
+        body = hashes_response.json()
+        returned_hashlist_ids = {item['attributes']['hashlistId'] for item in body['data']}
+        self.assertEqual(returned_hashlist_ids, set(member_ids))
+        included_hashlist_ids = {item['id'] for item in body.get('included', []) if item['type'] == 'hashlist'}
+        self.assertEqual(included_hashlist_ids, set(member_ids))
+
+    def test_api_token_cracked_hashes_table_filter_includes_chunk(self):
+        """Cracked hash table requests filter cracked rows and include chunk data.
+
+        A matching dummy-agent crack creates a hash with `isCracked=true` and a real
+        chunkId. The frontend-style `filter[isCracked__eq]=true&include=chunk` request
+        must return that cracked hash and materialize the chunk include.
+        """
+        hash_obj = self._create_cracked_hash_with_chunk()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(
+            token.token,
+            f'/ui/hashes?include=chunk&filter[hashlistId__eq]={hash_obj.hashlistId}'
+            '&filter[isCracked__eq]=true&page[size]=10',
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertIn(hash_obj.id, [item['id'] for item in body['data']])
+        self.assertTrue(all(item['attributes']['isCracked'] for item in body['data']))
+        self.assertIn('chunk', {item['type'] for item in body.get('included', [])})
+
+    def test_api_token_hash_eq_and_contains_filters_include_hashlist(self):
+        """Hash table search filters work with hashlist includes.
+
+        This completes the partial hash search coverage for direct `/ui/hashes` table
+        filters. It checks both exact hash matching and contains matching while including
+        the parent hashlist resource.
+        """
+        hashlist = self.create_hashlist()
+        hash_obj = Hash.objects.filter(hashlistId=hashlist.id)[0]
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        exact_response = request_with_api_token(
+            token.token,
+            f'/ui/hashes?include=hashlist&filter[hash__eq]={hash_obj.hash}&page[size]=1',
+        )
+        self.assertEqual(exact_response.status_code, 200, exact_response.text)
+        exact_body = exact_response.json()
+        self.assertEqual(exact_body['data'][0]['id'], hash_obj.id)
+        self.assertEqual({item['type'] for item in exact_body.get('included', [])}, {'hashlist'})
+
+        contains_response = request_with_api_token(
+            token.token,
+            f'/ui/hashes?include=hashlist&filter[hash__contains]={hash_obj.hash[0:8]}&page[size]=10',
+        )
+        self.assertEqual(contains_response.status_code, 200, contains_response.text)
+        contains_body = contains_response.json()
+        self.assertIn(hash_obj.id, [item['id'] for item in contains_body['data']])
+        self.assertIn('hashlist', {item['type'] for item in contains_body.get('included', [])})
+
+    def test_api_token_access_group_resource_include_members_allowed(self):
+        """Access group resource requests can include userMembers and agentMembers.
+
+        Relationship-link mutations were already covered. This completes the resource
+        include flow by adding a user and agent to an access group, then requesting the
+        access group resource with both member relationships included.
+        """
+        group = self._create_unique_accessgroup()
+        user = self.create_user()
+        agent = self.create_agent()
+        seed_token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+        user_payload = self._relationship_payload('user', user.id)
+        agent_payload = self._relationship_payload('agent', agent.id)
+        user_seed = request_with_api_token(
+            seed_token.token,
+            f'/ui/accessgroups/{group.id}/relationships/userMembers',
+            method='POST',
+            payload=user_payload,
+        )
+        self.assertEqual(user_seed.status_code, 201, user_seed.text)
+        agent_seed = request_with_api_token(
+            seed_token.token,
+            f'/ui/accessgroups/{group.id}/relationships/agentMembers',
+            method='POST',
+            payload=agent_payload,
+        )
+        self.assertEqual(agent_seed.status_code, 201, agent_seed.text)
+
+        response = request_with_api_token(
+            self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])}).token,
+            f'/ui/accessgroups/{group.id}?include=userMembers,agentMembers',
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        included = {(item['type'], item['id']) for item in body.get('included', [])}
+        self.assertIn(('user', user.id), included)
+        self.assertIn(('agent', agent.id), included)
 
     def test_api_token_high_value_helpers_report_each_missing_required_scope(self):
         """High-value helper endpoints enforce every declared required permission.
