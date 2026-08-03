@@ -30,9 +30,9 @@ A notification can be triggered for the following triggers (if you are allowed t
 - **newHashlist**: When a new hashlist was created
 - **deleteHashlist**: When a hashlist was deleted
 - **hashlistAllCracked**: When all hashes in a hashlist got cracked
-- **hashlistCrackedHash. When any hash got cracked - 
+- **hashlistCrackedHash**: When any hash got cracked
 > [!CAUTION]
-> You could receive a lot of notifications if you try to crack a large hashlist.
+> The *hashlistCrackedHash* trigger fires for every single crack — you could receive a lot of notifications when cracking a large hashlist.
 - **userCreated**: When a new user was created
 - **userDeleted**: When a user was deleted
 - **userLoginFailed**: When a user login failed

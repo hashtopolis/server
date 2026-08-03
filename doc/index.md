@@ -11,7 +11,7 @@ Hashtopolis is built to:
 - **Efficiently distribute** workloads to multiple agents, locally or over a network, taking into account heterogeneous hardware configurations.
 - **Support various cracking tools**, primarily designed for **Hashcat**, as well as custom attack strategies.
 - Allow **easy monitoring**, **task automation**, and result collection in large-scale environments.
-- **Centralized management** of files (e.g. wordlists, rules,...) as well as binaries update and distribution.
+- **Centralized management** of files (e.g. wordlists, rules,...) as well as binary updates and distribution.
 - Support **multi-user environment** with configurable permission levels.
 
 
@@ -19,7 +19,7 @@ Hashtopolis is built to:
 
 Hashtopolis operates on a **client-server architecture**:
 
-- The **server** hosts the web interface and database, serving as the central hub where users upload hashes and files, configure cracking tasks, and monitor overall progress. It distributes all necessary files, hashlists, and binaries to agents, centralizes their cracking progress, and collects the recovered passwords. The server runs on PHP and uses MySQL as its database backend.
+- The **server** hosts the web interface and database, serving as the central hub where users upload hashes and files, configure cracking tasks, and monitor overall progress. It distributes all necessary files, hashlists, and binaries to agents, centralizes their cracking progress, and collects the recovered passwords. The server runs on PHP and uses MySQL or PostgreSQL as its database backend.
 
 - The **agents** are lightweight Python clients installed on various computing resources. They communicate with the server by requesting work, execute cracking tasks using Hashcat, and report results back to the server.
 

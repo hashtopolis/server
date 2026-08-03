@@ -1,18 +1,83 @@
-# What still has to be done
-- in advanced install there should be a note about files in www-data format etc
-- lots of screenshots and diagrams to make the text fancier
-- details about the config files, structure of repos etc.
-- booting from PxE, running hashtopolis as a service ?
-- Check if any difference for Agent overview in new interface
-- Hashtypes --> review hashcat --exam
-- make an example of supertask builder to make it clearer
-- Task overview is missing !!!
-- Creating an example of preprocessors in the preprocessors binary to simplify the related section in task creation
-- Explaining the global interface of hashtopolis
-- Check the style of the manual, page, buttons, code etc should always be within the same style
-- Agent installation is not compliant with v2
-- Pictures for installation
-- Sein: Review contribution guidelines
-- Hashlist page, define what is cracking position
-- change the port 8080 to 4200 in the installation part + add a note for the old ui
-- Mac OS installation
+# Documentation rework — worklist
+# (internal notes, not published; keep updated as items get done)
+
+## Stage 1 — Content fixes (one PR: remove mistakes/bugs visible to readers)
+
+Draft notes accidentally published on the docs site:
+- [x] agents.md:48 remove "(To be checked with the new interface)" — removed; full verification of Agent Overview against the new UI still pending (see backlog)
+- [x] tasks.md:160 "MAKE AN EXAMPLE WITH SOME FIGURES" -> worked rockyou/rules example written (figures still welcome, see backlog)
+- [x] hashlist.md:41 cracking position defined (keyspace position of the successful candidate, per crackPos in code)
+- [x] hashlist.md:48 Download Report -> verified: still exists but legacy UI only (src/templates/hashlists/detail.template.html); documented as such
+- [x] hashlist.md:63 removed musing
+- [x] hashlist.md:73-74 removed the NOTE
+- [x] hashlist.md:85 removed musing -> GitHub issue candidate: type check + filter at superhashlist creation (not created yet, on purpose)
+- [x] crackers_binary.md:94-97 "To be reviewed" resolved from code: Type unique + must match archive.hashtopolis.org/agent/<type>/, filename must exist in bin/, updateTrack = release channel for update checks
+- [x] files.md: import-from-server functionality is NOT legacy (reintroduced in the new frontend) -> commented-out section restored as live "Import a new file" section, updated for the new UI (placeholder image dropped; screenshot still needed, see backlog)
+- [x] user-settings.md:33 fixed malformed bullet
+- [x] settings_and_configuration.md "(Needed, Check File)" draft note removed; commented-out old TIP block deleted
+
+Factual errors / inconsistencies:
+- [x] index.md:22 mentions MySQL or PostgreSQL now
+- [x] Port story: basic_install now points to 4200 for the web UI with a note about backend/legacy UI on 8080
+- [x] faq.md upgrade answer aligned with update.md and linked
+- [x] tips.md removed (was a verbatim duplicate of the FAQ entry); nav section renamed FAQ
+- [x] hashlist.md:50-54 date formats checked against HashlistUtils.php -> docs were correct (code really mixes dd.mm.yyyy and dd-mm-yyyy); left as-is. GitHub issue candidate: unify in code
+- [x] copy-edit pass done on: index, basic_install, advanced_install, update, docker, tls, basic_workflow, agents, tasks, hashlist, files, crackers_binary, users, user-settings, settings_and_configuration, faq
+- [x] doc/README.md "mkdocs serve"
+
+mkdocs.yml bugs (config, still content-correctness not style):
+- [x] edit_uri -> edit/master/doc/
+- [x] fonts moved to theme.font
+- [x] Redoc CDN script + redoc-dark.css removed
+
+## Stage 2 — Legacy page (new page collecting old-UI / pre-Docker material)
+
+Decision to make first: legacy page vs docs versioning (mike + version selector).
+Pragmatic plan discussed: don't retrofit 0.14 docs; start versioning when v1.0.0 final
+ships (deploy as 1.0 + latest). Note: current FTP deploy would need adaptation
+(mike targets gh-pages) or manual versioned subdirectories + versions.json in CI.
+
+Create installation_guidelines/legacy.md (or user_manual/legacy.md; decide placement),
+add to nav, and move/label the following:
+- [ ] update.md "Migrating a non-Docker installation to Docker (pre-0.14.0)" section (already labeled legacy; can move wholesale)
+- [ ] faq.md pre-Docker entries: "Why does Apache show only a directory or a 500 error?" (apache/php.ini/.htaccess) and the non-Docker half of the upgrade question
+- [ ] agents.md: old-interface leftovers in Agent Overview once rewritten for the new UI
+- [ ] basic_install.md agent download via agents.php?download=1 -> check whether the new UI exposes a different URL; document old one as legacy if so
+- [ ] Add a short intro on the legacy page: which versions it applies to (old UI on :8080, pre-1.0 releases)
+- [ ] doc/protocol.{tex,pdf} and doc/user-api/ (v1 API LaTeX+PDF from 2018/2022): decide — delete, or link from the legacy page as archived v1 protocol docs
+- [ ] doc/php_style.xml is IDE config, not doc; move out of doc/ (index.md references it -> fix link)
+
+## Stage 3 — Style & theme modernization (separate PR after content is clean)
+
+mkdocs.yml / theme:
+- [ ] custom brand palette (CSS variables) instead of stock blue/indigo; add favicon; dark-mode logo variant
+- [ ] add auto light/dark palette entry (media: prefers-color-scheme)
+- [ ] replace toc.integrate with toc.follow (right-hand TOC); reconsider header.autohide
+- [ ] replace custom footer partial with native navigation.footer + extra.social icons
+- [ ] short nav titles in mkdocs.yml ("Files", "FAQ", ...) instead of long H1s
+
+Formatting conventions (apply across all pages):
+- [ ] one admonition style everywhere (github-callouts); remove !!! blocks, <pre><em> hack in settings_and_configuration.md
+- [ ] FAQ: replace <span style=...> question headers with real ### headings (TOC, anchors, search)
+- [ ] content tabs (pymdownx.tabbed) for MySQL vs PostgreSQL blocks in basic_install/advanced_install/update (content.tabs.link is already enabled)
+- [ ] standardize screenshot widths + captions; retake outdated ones with the new UI; consistent light/dark
+- [ ] check style consistency of page/buttons/code naming (bold vs quotes vs code) — define a small convention first
+
+## Stage 4 — Landing page & diagrams
+- [ ] real landing page on index.md: hero (assets exist: hero.svg/jpg + hero.css, currently unused) + grid cards (Get started / Install / Manual / FAQ / API)
+- [ ] Mermaid architecture diagram (server/agents/db) in index.md
+- [ ] Mermaid task-lifecycle diagram (keyspace -> benchmark -> chunks) replacing part of the prose
+- [ ] "Explaining the global interface of hashtopolis" — overview page/section of the new UI layout
+
+## Backlog — content additions (from previous TODO list, still valid)
+- [ ] advanced install: note about files in www-data format
+- [ ] details about config files, structure of repos
+- [ ] booting from PXE, running hashtopolis as a service?
+- [ ] supertask builder: worked example (ties into tasks.md marker above)
+- [ ] preprocessor example to simplify the related section in task creation
+- [ ] task overview section is thin -> expand
+- [ ] agent installation: check compliance with v2 / new UI, add pictures, Windows + macOS instructions
+- [ ] hashtypes: review hashcat --exam tip (partially done in settings page)
+- [ ] more screenshots and diagrams overall
+- [ ] Sein: review contribution guidelines
+- [ ] docs CI: phpDocumentor output is generated into doc/php-documentor/ but not linked in nav -> link it or drop the build step

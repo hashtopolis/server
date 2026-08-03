@@ -22,13 +22,13 @@ openssl req -x509 -newkey rsa:2048 -keyout nginx.key -out nginx.crt -days 365 -n
 
 ## Setting up docker-compose and env.example
 
-Refer to the [Basic installation](../installation_guidelines/basic_install.md) page on how to download those settings file. 
+Refer to the [Basic installation](../installation_guidelines/basic_install.md) page on how to download those settings files. 
 
 1. Edit docker-compose.yaml
 
 Add the following new container to the `service:` section in the docker-compose.yaml.
 
-```json
+```yaml
   nginx:
     container_name: nginx
     image: nginx:latest
