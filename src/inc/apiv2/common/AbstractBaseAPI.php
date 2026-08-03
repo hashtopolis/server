@@ -1481,6 +1481,11 @@ abstract class AbstractBaseAPI {
             $reducedMissingPermissions[] = $perm;
           }
         }
+        foreach ($missing_permissions as $missing_permission) {
+          if ($missing_permission !== $perm && !array_key_exists($missing_permission, $permsExpandMatching)) {
+            $reducedMissingPermissions[] = $missing_permission;
+          }
+        }
         
         // if we also have permissions from expanded entries we need to check them as well
         if (count($permsExpandMatching)) {
