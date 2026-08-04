@@ -734,7 +734,7 @@ abstract class AbstractBaseAPI {
     $aggregatedData = $apiClassObject->aggregateData($obj, $expandResult, $aggregateFieldsets);
     $attributes = array_merge($attributes, $aggregatedData);
 
-    $attributes = $this->filterData($attributes);
+    $attributes = $apiClassObject->filterData($attributes);
     
     /* Build JSON::API relationship resource */
     $toManyRelationships = $apiClass::getToManyRelationships();
