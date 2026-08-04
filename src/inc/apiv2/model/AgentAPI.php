@@ -4,6 +4,7 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
 use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\inc\defines\DHashcatStatus;
@@ -95,8 +96,10 @@ class AgentAPI extends AbstractModelAPI {
     $qFs = [];
     $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
     $qFs[] = new QueryFilter(Chunk::STATE, DHashcatStatus::RUNNING, "=");
+    $qFs[] = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+    $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
     
-    $active_chunk = Factory::getChunkFactory()->filter([Factory::FILTER => $qFs], true);
+    $active_chunk = Factory::getChunkFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF], true);
     if ($active_chunk !== NULL) {
       $includedData["chunks"][$agentId] = [$active_chunk];
     }
