@@ -47,7 +47,7 @@ class ApiTokenTest(BaseTest):
         })
         model_obj = create_apitoken_raw(self, auth, ['permHashlistRead'])
         scope = _decode_jwt_scope(model_obj.token)
-        self.assertTrue('permHashlistRead' in scope)
+        self.assertTrue(scope['permHashlistRead'])
 
     def test_token_scope_intersection_denies_unpermitted(self):
         """A restricted user must NOT receive a scope they do not have, even if they request it."""
@@ -57,5 +57,5 @@ class ApiTokenTest(BaseTest):
         })
         model_obj = create_apitoken_raw(self, auth, ['permHashlistRead', 'permFileRead'])
         scope = _decode_jwt_scope(model_obj.token)
-        self.assertTrue('permHashlistRead' in scope)
-        self.assertFalse('permFileRead' not in scope)
+        self.assertTrue(scope['permHashlistRead'])
+        self.assertFalse(scope['permFileRead'])
