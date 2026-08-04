@@ -23,14 +23,27 @@ use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
+use Psr\Container\ContainerInterface;
 
 
 /**
  * @extends AbstractModelAPI<Agent>
  */
 class AgentAPI extends AbstractModelAPI {
+  private bool $hideIpInfo;
+
+  /**
+   * @throws Exception
+   */
+  public function __construct(ContainerInterface $container) {
+    parent::__construct($container);
+    $this->hideIpInfo = SConfig::getInstance()->getVal(DConfig::HIDE_IP_INFO) === "1";
+  }
+
   public static function getBaseUri(): string {
     return "/api/v2/ui/agents";
   }
@@ -89,6 +102,13 @@ class AgentAPI extends AbstractModelAPI {
     }
     
     return parent::aggregateData($object, $includedData, $aggregateFieldsets);
+  }
+
+  protected function filterData(array $object): array {
+    if ($this->hideIpInfo && isset($object[Agent::LAST_IP])) {
+      $object[Agent::LAST_IP] = "Hidden";
+    }
+    return $object;
   }
   
   /**

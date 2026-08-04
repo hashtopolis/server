@@ -162,6 +162,16 @@ abstract class AbstractBaseAPI {
   protected function getUpdateHandlers($id, $current_user): array {
     return [];
   }
+
+  /**
+   * Overridable function to filter data in the object. Currently only used by agents
+   *
+   * @param array $object The object to filter data from.
+   * @return array Filtered data as key-value pairs.
+   */
+  protected function filterData(array $object): array {
+    return $object;
+  }
   
   /**
    * Overridable function to aggregate data in the object. Used for Tasks and Agents.
@@ -723,6 +733,8 @@ abstract class AbstractBaseAPI {
     
     $aggregatedData = $apiClassObject->aggregateData($obj, $expandResult, $aggregateFieldsets);
     $attributes = array_merge($attributes, $aggregatedData);
+
+    $attributes = $apiClassObject->filterData($attributes);
     
     /* Build JSON::API relationship resource */
     $toManyRelationships = $apiClass::getToManyRelationships();
