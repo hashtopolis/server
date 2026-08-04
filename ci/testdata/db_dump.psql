@@ -40285,12 +40285,12 @@ INSERT INTO taskwrapper (taskwrapperid, priority, maxagents, tasktype, hashlisti
 
 -- Data for table _sqlx_migrations
 INSERT INTO _sqlx_migrations (version, description, installed_on, success, checksum, execution_time) VALUES
-(20251127000000, 'initial', '2025-11-28 14:29:13', true, '\xa5a8f03aad0827c86c4a380d935bf1ccb3b5d5f174d7fc40b3d267fd0b6bb7dd4181a9c25efc5cfce24df760f4c2d881', 1),
-(20251209091723, 'postgres-index-fix', '2026-04-10 10:04:16', true, '\x6aad62bd6fd7b80e5832e1094e6b79d82f058117e6677fa69871a904fcc9d81b886a9afa0bbed1c40545635438bacf5c', 1516722),
-(20260116140300, 'bigint-keys-stats', '2026-04-10 10:04:16', true, '\xae96648d47b63ddf5dcf805273e424086188bb6d8b9245ca55c18a782f0df27b33f86827bcde6ecc89ed0ea6f86dcc52', 67145954),
-(20260212113000, 'indexes', '2026-04-10 10:04:16', true, '\x29d652d12d9bb27661574c8de77cdc06c52c87203e0800527affa49547b5466ca2e4c78c7ecd1b5f9e4b71aaffb3caaa', 65891691),
+(20251127000000, 'initial', '2025-11-28 14:29:13', true, '\xc6b69a409a71bdaead2cc094d71bcf15d41e697777362ed5eb8278db8630e153dbb0f17daebaf3238c2d300659868977', 1),
+(20251209091723, 'postgres-index-fix', '2026-04-10 10:04:16', true, '\x5acbd52b00ca4b7558d85d335361ebbd29c0090f16b3b0774e5ebb115c1170e753cdd26cb4d6b84c05c458d059e72e09', 1516722),
+(20260116140300, 'bigint-keys-stats', '2026-04-10 10:04:16', true, '\xdb8a2afafc71401d020365aa777a72d8c8dd996947ccfd4257c36e4d258e696b2548eea5c40f98c05d1d45598c063fc3', 67145954),
+(20260212113000, 'indexes', '2026-04-10 10:04:16', true, '\x41fbe896a62ffb7d283a52c8fb873fcf339115af890e36fdc71ceb844af03fb9ae0d7af4a621393ac1ba132946f4e7df', 65891691),
 (20260302144000, 'cracker-binary-type', '2026-04-10 10:04:16', true, '\xb4a51750c1f4e9f492303255d4e439c8429e1fd3f1958f3b214f8336c2f7dc6b0a307d5bd1ace3fa17948fe2c528b8e1', 19216496),
-(20260309164000, 'api-key', '2026-04-10 10:04:16', true, '\x5171bf90558005cf50613b9a2b9799e2349bf87dfc05ad58753883ecba767e6fe92d7995274708ba86e21eddaa008f8e', 12626432),
+(20260309164000, 'api-key', '2026-04-10 10:04:16', true, '\xa56919aff51eff728560153cd8ace58de646d98a41ff0a0b0426abbd817782640fff623849c339f1454fefc43c402e37', 12626432),
 (20260317120000, 'remove-rule-split', '2026-05-18 08:48:04', true, '\x2eed97f0316d0c16fb7865ab404ccfbed756a78508b2061750b350337223c56472cf1ca5a472279de311729cd067c985', 143827868),
 (20260413140000, 'task-view', '2026-05-18 08:48:04', true, '\x33399465bd2c01da51a64d7c5965016dbf6161c3b135121c648f86d2b81efcfa7779abfc15e7396b21a9c7b7f85c1d74', 766917238),
 (20260518102000, 'task-view-add-color-field', '2026-05-19 06:48:01', true, '\x049762e93009edbf2b8ae587ea3454fe600648fc97b1a10447abbfc80e373f0b453e51e4ede7d729b154a02e8ab5fb8a', 14390518);
@@ -40308,7 +40308,7 @@ SELECT pg_catalog.setval('apigroup_apigroupid_seq', 1, true);
 SELECT pg_catalog.setval('apikey_apikeyid_seq', 1, false);
 SELECT pg_catalog.setval('assignment_assignmentid_seq', 40, true);
 SELECT pg_catalog.setval('chunk_chunkid_seq', 1220, true);
-SELECT pg_catalog.setval('config_configid_seq', 79, true);
+SELECT pg_catalog.setval('config_configid_seq', 77, true);
 SELECT pg_catalog.setval('configsection_configsectionid_seq', 7, true);
 SELECT pg_catalog.setval('crackerbinary_crackerbinaryid_seq', 2, true);
 SELECT pg_catalog.setval('crackerbinarytype_crackerbinarytypeid_seq', 1, true);
