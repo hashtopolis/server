@@ -5,9 +5,9 @@ import time
 
 import confidence
 import requests
-from hashtopolis import Chunk, Hash, HashType, Helper
+from hashtopolis import Chunk, CrackerType, Hash, HashType, Helper, User
 
-from utils import BaseTest, do_create_agentassignent, do_create_dummy_agent, request_with_api_token
+from utils import BaseTest, create_apitoken_raw, create_restricted_user, do_create_agentassignent, do_create_dummy_agent, request_with_api_token
 
 
 def _resource_payload(resource_type, attributes, resource_id=None):
@@ -105,6 +105,12 @@ HELPER_PERMISSION_CASES = [
         'permissions': ['permAgentUpdate', 'permTaskUpdate'],
     },
     {
+        'name': 'unassignAgent',
+        'path': '/helper/unassignAgent',
+        'payload': {'agentId': 1},
+        'permissions': ['permAgentUpdate', 'permTaskUpdate'],
+    },
+    {
         'name': 'abortChunk',
         'path': '/helper/abortChunk',
         'payload': {'chunkId': 1},
@@ -116,6 +122,24 @@ HELPER_PERMISSION_CASES = [
         'method': 'GET',
         'payload': None,
         'permissions': ['permTaskRead', 'permTaskWrapperRead'],
+    },
+    {
+        'name': 'rebuildChunkCache',
+        'path': '/helper/rebuildChunkCache',
+        'payload': {},
+        'permissions': ['permConfigUpdate'],
+    },
+    {
+        'name': 'rescanGlobalFiles',
+        'path': '/helper/rescanGlobalFiles',
+        'payload': {},
+        'permissions': ['permConfigUpdate'],
+    },
+    {
+        'name': 'recountFileLines',
+        'path': '/helper/recountFileLines',
+        'payload': {'fileId': 1},
+        'permissions': ['permFileUpdate'],
     },
 ]
 
@@ -1270,6 +1294,60 @@ class PermissionsTest(BaseTest):
         self.assertIn('permHashTypeRead', json.dumps(body['meta']))
         self.assertNotIn('hashType', {item['type'] for item in body.get('included', [])})
 
+    def _cracker_types_list_query_path(self, cracker_type):
+        return f'/ui/crackertypes?include=crackerVersions&filter[crackerBinaryTypeId__eq]={cracker_type.id}&page[size]=1'
+
+    def test_api_token_cracker_types_include_versions_allowed(self):
+        """Cracker type list requests can include crackerVersions.
+
+        The frontend cracker type table requests cracker versions as an include. This
+        creates a cracker type and a cracker binary version for it, then verifies both
+        the base row and included version are returned when both read scopes are present.
+        """
+        cracker_type = self.create_crackertype()
+        cracker = self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(token.token, self._cracker_types_list_query_path(cracker_type))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertEqual(body['data'][0]['id'], cracker_type.id)
+        included = {(item['type'], item['id']) for item in body.get('included', [])}
+        self.assertIn(('crackerBinary', cracker.id), included)
+
+    def test_api_token_cracker_types_include_versions_requires_cracker_type_read(self):
+        """Cracker type list requests require base permCrackerBinaryTypeRead.
+
+        Cracker binary read permission does not expose cracker type rows. Removing the
+        base cracker type read scope must deny the list request before includes load.
+        """
+        cracker_type = self.create_crackertype()
+        self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permCrackerBinaryTypeRead'])})
+
+        response = request_with_api_token(token.token, self._cracker_types_list_query_path(cracker_type))
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permCrackerBinaryTypeRead', response.text)
+
+    def test_api_token_cracker_types_include_versions_reports_missing_cracker_binary_read(self):
+        """Cracker version includes are omitted when permCrackerBinaryRead is absent.
+
+        The cracker type row remains visible because permCrackerBinaryTypeRead is present.
+        The missing cracker binary read scope should be reported in include metadata and
+        no crackerBinary include should be materialized.
+        """
+        cracker_type = self.create_crackertype()
+        self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permCrackerBinaryRead'])})
+
+        response = request_with_api_token(token.token, self._cracker_types_list_query_path(cracker_type))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertIn('permCrackerBinaryRead', json.dumps(body['meta']))
+        self.assertNotIn('crackerBinary', {item['type'] for item in body.get('included', [])})
+
     def test_api_token_high_value_helpers_report_each_missing_required_scope(self):
         """High-value helper endpoints enforce every declared required permission.
 
@@ -1315,6 +1393,148 @@ class PermissionsTest(BaseTest):
         )
         self.assertEqual(response.status_code, 200, response.text)
         self.assertEqual(response.json()['meta']['Assign'], 'Success')
+
+    def test_api_token_unassign_agent_helper_allowed_with_update_scopes(self):
+        """unassignAgent helper succeeds with both Agent and Task update scopes.
+
+        The missing-permission matrix verifies the helper denies absent scopes. This
+        allowed branch creates an assigned agent/task pair and verifies a token with the
+        exact declared update scopes can unassign the agent.
+        """
+        created = self.create_agent_with_task()
+        token = self.create_apitoken(extra_payload={'scopes': ['permAgentUpdate', 'permTaskUpdate']})
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/unassignAgent',
+            method='POST',
+            payload={'agentId': created['agent'].id},
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['meta']['Unassign'], 'Success')
+
+    def _create_empty_scope_token_for_restricted_user(self, permissions=None):
+        auth = create_restricted_user(self, {'permJwtApiKeyCreate': True, **(permissions or {})})
+        user = User.objects.get(name=auth[0])
+        token = create_apitoken_raw(self, auth, [])
+        return user, token
+
+    def test_api_token_current_user_get_allowed_without_scopes(self):
+        """currentUser GET is available to an authenticated API token without scopes.
+
+        The helper declares no required permissions because it only returns the token's
+        own user. This verifies an empty-scope token can read its own current-user record
+        and that the response is scoped to the token owner.
+        """
+        user, token = self._create_empty_scope_token_for_restricted_user()
+
+        response = request_with_api_token(token.token, '/helper/currentUser', method='GET')
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['data']['type'], 'user')
+        self.assertEqual(body['data']['id'], user.id)
+
+    def test_api_token_current_user_patch_allowed_without_scopes(self):
+        """currentUser PATCH can update the token owner's email without user-update scope.
+
+        The helper intentionally bypasses generic user update permissions for self-service
+        email changes. This verifies an empty-scope token can patch only its own user.
+        """
+        user, token = self._create_empty_scope_token_for_restricted_user()
+        new_email = f'permission-{time.time_ns()}@example.com'
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/currentUser',
+            method='PATCH',
+            payload={'data': {'type': 'user', 'id': user.id, 'attributes': {'email': new_email}}},
+        )
+        self.assertEqual(response.status_code, 204, response.text)
+        self.assertEqual(User.objects.get(pk=user.id).email, new_email)
+
+    def test_api_token_get_user_permission_allowed_without_scopes(self):
+        """getUserPermission returns the token owner's permission group without scopes.
+
+        The helper declares no required permissions and returns only the current user's
+        right group. This verifies an empty-scope token receives its own permission group.
+        """
+        user, token = self._create_empty_scope_token_for_restricted_user({'permHashlistRead': True})
+
+        response = request_with_api_token(token.token, '/helper/getUserPermission', method='GET')
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['data']['id'], user.globalPermissionGroupId)
+        self.assertTrue(body['data']['attributes']['permissions']['permHashlistRead'])
+
+    def test_api_token_get_global_config_allowed_without_scopes(self):
+        """getGlobalConfig is available to authenticated API tokens without scopes.
+
+        The helper currently declares no required permissions. This pins that behavior by
+        verifying an empty-scope token can retrieve the global config collection.
+        """
+        _, token = self._create_empty_scope_token_for_restricted_user()
+
+        response = request_with_api_token(token.token, '/helper/getGlobalConfig', method='GET')
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertGreater(len(body['data']), 0)
+        self.assertIn('item', body['data'][0]['attributes'])
+
+    def test_api_token_get_access_groups_allowed_without_scopes_and_scoped_to_user(self):
+        """getAccessGroups returns only the token owner's access groups without scopes.
+
+        Restricted test users are removed from the default access group. This verifies the
+        no-required-permission helper does not disclose unrelated access groups.
+        """
+        _, token = self._create_empty_scope_token_for_restricted_user()
+
+        response = request_with_api_token(token.token, '/helper/getAccessGroups', method='GET')
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['data'], [])
+
+    def test_api_token_rebuild_chunk_cache_helper_allowed_with_config_update_scope(self):
+        """rebuildChunkCache succeeds with permConfigUpdate.
+
+        Operational cache rebuilds require config update permission. The matrix verifies
+        denial without the scope; this allowed branch verifies the declared scope is
+        sufficient and returns the expected metadata.
+        """
+        token = self.create_apitoken(extra_payload={'scopes': ['permConfigUpdate']})
+
+        response = request_with_api_token(token.token, '/helper/rebuildChunkCache', method='POST', payload={})
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['meta']['Rebuild'], 'Success')
+
+    def test_api_token_rescan_global_files_helper_allowed_with_config_update_scope(self):
+        """rescanGlobalFiles succeeds with permConfigUpdate.
+
+        Rescanning global files is an operational config-level action. The matrix verifies
+        denial without the scope; this allowed branch verifies the declared scope works.
+        """
+        token = self.create_apitoken(extra_payload={'scopes': ['permConfigUpdate']})
+
+        response = request_with_api_token(token.token, '/helper/rescanGlobalFiles', method='POST', payload={})
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['meta']['Rescan'], 'Success')
+
+    def test_api_token_recount_file_lines_helper_allowed_with_file_update_scope(self):
+        """recountFileLines succeeds with permFileUpdate for an accessible file.
+
+        Recounting file lines mutates cached file metadata. The matrix verifies denial
+        without permFileUpdate; this allowed branch verifies the declared scope works for
+        a real file fixture.
+        """
+        file_obj = self.create_file()
+        token = self.create_apitoken(extra_payload={'scopes': ['permFileUpdate']})
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/recountFileLines',
+            method='POST',
+            payload={'fileId': file_obj.id},
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['meta']['fileId'], file_obj.id)
 
     def _relationship_payload(self, resource_type, resource_id):
         return {'data': [{'type': resource_type, 'id': resource_id}]}
