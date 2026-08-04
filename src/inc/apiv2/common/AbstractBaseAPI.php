@@ -164,7 +164,7 @@ abstract class AbstractBaseAPI {
   }
 
   /**
-   * Overridable function to filter data in the object. Currrently only used by agents
+   * Overridable function to filter data in the object. Currently only used by agents
    *
    * @param array $object The object to filter data from.
    * @return array Filtered data as key-value pairs.
