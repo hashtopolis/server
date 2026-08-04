@@ -9,6 +9,13 @@ inputs:
     options:
       - "mysql"
       - "postgres"
+  test_dataset:
+    description: "Test dataset to initialize"
+    required: false
+    default: "synthetic"
+    options:
+      - "synthetic"
+      - "realworld"
 
 runs:
   using: "composite"
@@ -23,4 +30,8 @@ runs:
 #      shell: bash
     - name: Wait until entrypoint is finished and Hashtopolis is started
       run: bash .github/scripts/await-hashtopolis-startup.sh
+      shell: bash
+    - name: Import real-world test dataset
+      if: ${{ inputs.test_dataset == 'realworld' }}
+      run: bash .github/scripts/import-testdata-dump.sh ${{ inputs.db_system }}
       shell: bash
