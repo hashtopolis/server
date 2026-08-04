@@ -3,7 +3,7 @@ import json
 import time
 
 import requests
-from hashtopolis import Agent, Chunk, CrackerType, File, Hash, Hashlist, HashType, Helper, HealthCheckAgent, Task, TaskWrapper, User, Helper
+from hashtopolis import Agent, Chunk, File, Hash, Hashlist, HashType, HealthCheckAgent, Helper, Task, TaskWrapper, User
 
 from utils import BaseTest, create_apitoken_raw, create_restricted_user, do_create_agentassignent, do_create_dummy_agent, request_with_api_token, get_hashtopolis_uri
 
