@@ -13,6 +13,7 @@ use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
 
 use Hashtopolis\dba\models\Hashlist;
+use Hashtopolis\dba\models\HashlistHashlist;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\HTException;
 
@@ -26,7 +27,7 @@ class CreateSuperHashlistHelperAPI extends AbstractHelperAPI {
   }
   
   public function getRequiredPermissions(string $method): array {
-    return [Hashlist::PERM_CREATE, Hashlist::PERM_READ];
+    return [Hashlist::PERM_CREATE, Hashlist::PERM_READ, HashlistHashlist::PERM_CREATE];
   }
   
   /**

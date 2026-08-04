@@ -1472,21 +1472,39 @@ abstract class AbstractBaseAPI {
     
     // Find if all permissions are matched
     $missing_permissions = array_diff($required_perms, $user_available_perms);
+    $reducedMissingPermissions = $missing_permissions;
     if (count($missing_permissions) > 0) {
       // When there are public attributes, only these will be returned when creating the get response and the non public
       // attributes are stripped away.
       if ($method === "GET" && $this instanceof AbstractModelAPI) {
+        $reducedMissingPermissions = [];
+        
         $features = $this->getFeatures();
-        foreach ($features as $arr) {
-          if ($arr['public'] ?? false) {
-            $this->addPublicAttributeClass($this->getDBAClass());
+        $perm = $this->getDBAclass()::PERM_READ;
+        if (in_array($perm, $missing_permissions, true)) {
+          $missingPermissionMatching = false;
+          foreach ($features as $arr) {
+            if ($arr['public'] ?? false) {
+              $this->addPublicAttributeClass($this->getDBAClass());
+              $missingPermissionMatching = true;
+            }
+          }
+          if (!$missingPermissionMatching) {
+            $reducedMissingPermissions[] = $perm;
+          }
+        }
+        foreach ($missing_permissions as $missing_permission) {
+          if ($missing_permission !== $perm && !array_key_exists($missing_permission, $permsExpandMatching)) {
+            $reducedMissingPermissions[] = $missing_permission;
           }
         }
         
-        $missingPermissionMatching = true;
         // if we also have permissions from expanded entries we need to check them as well
         if (count($permsExpandMatching)) {
           foreach ($missing_permissions as $missing_permission) {
+            if (!array_key_exists($missing_permission, $permsExpandMatching)) {
+              continue;
+            }
             $expands = $permsExpandMatching[$missing_permission];
             foreach ($expands as $expand) {
               $classType = null;
@@ -1507,8 +1525,7 @@ abstract class AbstractBaseAPI {
                 }
               }
               if (count($expandPublicAttributes) == 0) {
-                $missingPermissionMatching = false;
-                break;
+                $reducedMissingPermissions[] = $missing_permission;
               }
               else {
                 $this->addPublicAttributeClass($classType);
@@ -1516,18 +1533,15 @@ abstract class AbstractBaseAPI {
             }
           }
         }
-        if (!$missingPermissionMatching) {
-          $this->publicAttributeFilterClasses = [];
-        }
-        
-        if (count($this->publicAttributeFilterClasses) > 0) {
-          // if there are public attributes we don't return false, but the list of classes which needs to be filtered is saved in the attribteFilterClasses list
-          return TRUE;
-        }
       }
-      $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" . join(", ", $required_perms) . "', user_permissions='" . join(", ", $user_available_perms) . "']");
-      $this->missing_permissions = $missing_permissions;
-      return FALSE;
+      $reducedMissingPermissions = array_values(array_unique($reducedMissingPermissions));
+      
+      if (count($reducedMissingPermissions) > 0) {
+        $this->permissionErrors = array("No '" . join(",", $reducedMissingPermissions) . "' permission(s). [required_permissions='" . join(", ", $required_perms) . "', user_permissions='" . join(", ", $user_available_perms) . "']");
+        $this->missing_permissions = $reducedMissingPermissions;
+        return FALSE;
+      }
+      return TRUE;
     }
     else {
       $this->permissionErrors = array();

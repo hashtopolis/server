@@ -115,6 +115,21 @@ def do_create_apitoken(extra_payload={}, **kwargs):
     return _do_create_obj_from_file(ApiToken, 'create_apitoken', extra_payload, **kwargs)
 
 
+def request_with_api_token(token, path, method='GET', payload=None, headers=None):
+    connector = ApiToken.objects.get_conn()
+    uri = connector._api_endpoint + path
+    final_headers = {
+        'Authorization': f'Bearer {token}',
+    }
+    if payload is not None:
+        final_headers['Content-Type'] = 'application/json'
+    if headers:
+        final_headers.update(headers)
+
+    data = json.dumps(payload) if payload is not None else None
+    return requests.request(method, uri, headers=final_headers, data=data)
+
+
 def do_create_accessgroup(**kwargs):
     return _do_create_obj_from_file(AccessGroup, 'create_accessgroup', **kwargs)
 

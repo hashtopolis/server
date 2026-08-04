@@ -16,6 +16,7 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Task;
+use Hashtopolis\dba\models\TaskWrapper;
 use Middlewares\Utils\HttpErrorException;
 use Slim\Exception\HttpNotFoundException;
 
@@ -29,7 +30,7 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
   }
   
   public function getRequiredPermissions(string $method): array {
-    return [Task::PERM_READ];
+    return [Task::PERM_READ, TaskWrapper::PERM_READ];
   }
   
   /**
