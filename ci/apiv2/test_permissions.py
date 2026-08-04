@@ -1,13 +1,11 @@
 import base64
 import json
-from pathlib import Path
 import time
 
-import confidence
 import requests
 from hashtopolis import Agent, Chunk, CrackerType, File, Hash, HashType, Helper, Task, User
 
-from utils import BaseTest, create_apitoken_raw, create_restricted_user, do_create_agentassignent, do_create_dummy_agent, request_with_api_token
+from utils import BaseTest, create_apitoken_raw, create_restricted_user, do_create_agentassignent, do_create_dummy_agent, get_hashtopolis_uri, request_with_api_token
 
 
 def _resource_payload(resource_type, attributes, resource_id=None):
@@ -42,9 +40,7 @@ def _all_scopes_except(test, excluded):
 
 
 def _agent_request(payload):
-    load_order = (str(Path(__file__).parent.joinpath('{name}-defaults{suffix}')),) + confidence.DEFAULT_LOAD_ORDER
-    uri = confidence.load_name('hashtopolis-test', load_order=load_order)['hashtopolis_uri']
-    response = requests.post(f'{uri}/api/server.php', json=payload)
+    response = requests.post(f'{get_hashtopolis_uri()}/api/server.php', json=payload)
     return response.status_code, response.text
 
 

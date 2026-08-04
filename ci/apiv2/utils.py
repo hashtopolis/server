@@ -40,6 +40,17 @@ class ApiToken(Model, uri="/ui/apiTokens"):
     def delete(obj):
         pass  # we override the delete function for the tests as tokens cannot be deleted, but the teardown always calls delete after a test
 
+
+def get_test_config():
+    load_order = (str(Path(__file__).parent.joinpath('{name}-defaults{suffix}')),) \
+                 + confidence.DEFAULT_LOAD_ORDER
+    return confidence.load_name('hashtopolis-test', load_order=load_order)
+
+
+def get_hashtopolis_uri():
+    return get_test_config()['hashtopolis_uri']
+
+
 def _do_create_obj_from_file(model_class, file_prefix, extra_payload={}, **kwargs):
     file_id = kwargs.get('file_id') or '001'
     p = Path(__file__).parent.joinpath(f'testfiles/{model_class.__name__.lower()}/{file_prefix}_{file_id}.json')
@@ -320,9 +331,7 @@ class TestBase(unittest.TestCase, abc.ABC):
     @classmethod
     def setUpClass(cls):
         # Request access TOKEN, used throughout the test
-        load_order = (str(Path(__file__).parent.joinpath('{name}-defaults{suffix}')),) \
-                     + confidence.DEFAULT_LOAD_ORDER
-        cls._cfg = confidence.load_name('hashtopolis-test', load_order=load_order)
+        cls._cfg = get_test_config()
         cls._api_endpoint = cls._cfg['hashtopolis_uri'] + '/api/v2'
         cls._uri = cls._api_endpoint + cls.getBaseURI(cls)
 
