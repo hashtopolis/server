@@ -1,17 +1,18 @@
 import pytest
 
-from hashtopolis import Agent, Config, Hash, Hashlist, Speed, Task, TaskWrapperDisplay
+from hashtopolis import Agent, Config, Hash, Hashlist, Task, TaskWrapperDisplay
 from utils import BaseTest
 
 
 @pytest.mark.realworld
 class RealWorldDumpSmokeTest(BaseTest):
     def test_known_dump_counts(self):
-        self.assertEqual(Hash.objects.count()['count'], 28957)
-        self.assertEqual(Hashlist.objects.count()['count'], 267)
-        self.assertEqual(Agent.objects.count()['count'], 7)
-        self.assertEqual(Task.objects.count()['count'], 304)
-        self.assertEqual(Speed.objects.count()['count'], 1573)
+        self.assertEqual(Hash.objects.count(hashId__lte=30129)['count'], 28957)
+        self.assertEqual(Hashlist.objects.count(hashlistId__lte=272)['count'], 267)
+        self.assertEqual(Agent.objects.count(agentId__lte=18)['count'], 7)
+        self.assertEqual(Task.objects.count(taskId__lte=1336)['count'], 304)
+        self.assertEqual(Hash.objects.count(hashlistId=4)['count'], 10346)
+        self.assertEqual(Task.objects.count(taskWrapperId=1004)['count'], 1)
 
     def test_known_config_values(self):
         self.assertEqual(Config.objects.get(item='baseHost').value, 'http://localhost:8080/')

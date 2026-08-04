@@ -1,3 +1,5 @@
+import pytest
+
 from hashtopolis import File, Helper
 from utils import BaseTest
 
@@ -62,6 +64,7 @@ class FileTest(BaseTest):
         model_obj = self.create_test_object()
         self._test_acl_list(model_obj, {'permFileRead': True})
 
+    @pytest.mark.synthetic_only
     def test_helper_rescan_global_files(self):
         model_obj1 = self.create_test_object()
         model_obj2 = self.create_test_object()
