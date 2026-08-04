@@ -3,7 +3,7 @@ import json
 import time
 
 import requests
-from hashtopolis import Agent, Chunk, CrackerType, File, Hash, HashType, Helper, Task, User
+from hashtopolis import Agent, Chunk, CrackerType, File, Hash, Hashlist, HashType, Helper, Task, TaskWrapper, User
 
 from utils import BaseTest, create_apitoken_raw, create_restricted_user, do_create_agentassignent, do_create_dummy_agent, get_hashtopolis_uri, request_with_api_token
 
@@ -1531,6 +1531,132 @@ class PermissionsTest(BaseTest):
         )
         self.assertEqual(response.status_code, 200, response.text)
         self.assertEqual(response.json()['meta']['fileId'], file_obj.id)
+
+    def test_api_token_abort_chunk_helper_allowed_with_chunk_update_scope(self):
+        """abortChunk helper succeeds with permChunkUpdate.
+
+        The missing-permission matrix proves permChunkUpdate is required. This allowed
+        branch creates a real chunk through the dummy-agent task flow and verifies the
+        exact declared scope can abort it.
+        """
+        created = self.create_agent_with_task()
+        chunk = Chunk.objects.filter(taskId=created['task'].id)[0]
+        token = self.create_apitoken(extra_payload={'scopes': ['permChunkUpdate']})
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/abortChunk',
+            method='POST',
+            payload={'chunkId': chunk.id},
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['meta']['Abort'], 'Success')
+
+    def test_api_token_get_task_progress_image_helper_allowed_with_task_and_wrapper_read_scopes(self):
+        """getTaskProgressImage helper succeeds with task and task-wrapper read scopes.
+
+        The helper returns binary image data rather than a JSON resource. This verifies a
+        token with exactly the declared read scopes can retrieve a progress image for a
+        real task.
+        """
+        hashlist = self.create_hashlist()
+        task = self.create_task(hashlist)
+        token = self.create_apitoken(extra_payload={'scopes': ['permTaskRead', 'permTaskWrapperRead']})
+
+        response = request_with_api_token(token.token, f'/helper/getTaskProgressImage?task={task.id}', method='GET')
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertIn('image/', response.headers['Content-Type'])
+        self.assertGreater(len(response.content), 0)
+
+    def test_api_token_create_supertask_helper_allowed_with_declared_scopes(self):
+        """createSupertask helper succeeds with exactly its declared required scopes.
+
+        The missing-permission matrix proves each declared scope is required. This allowed
+        branch creates real pretask, supertask, hashlist, and cracker fixtures and verifies
+        those scopes are sufficient to create a supertask task wrapper.
+        """
+        pretasks = [self.create_pretask() for _ in range(2)]
+        supertask = self.create_supertask(pretasks=pretasks)
+        hashlist = self.create_hashlist()
+        cracker = self.create_cracker()
+        token = self.create_apitoken(extra_payload={'scopes': [
+            'permTaskWrapperCreate',
+            'permTaskCreate',
+            'permSupertaskRead',
+            'permHashlistRead',
+            'permCrackerBinaryRead',
+        ]})
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/createSupertask',
+            method='POST',
+            payload={'supertaskTemplateId': supertask.id, 'hashlistId': hashlist.id, 'crackerVersionId': cracker.id},
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        task_wrapper_id = response.json()['data']['id']
+        task_wrapper = TaskWrapper.objects.get(pk=task_wrapper_id)
+        self.delete_after_test(task_wrapper)
+        self.assertEqual(task_wrapper.hashlistId, hashlist.id)
+
+    def test_api_token_create_superhashlist_helper_allowed_with_declared_scopes(self):
+        """createSuperHashlist helper succeeds with exactly its declared required scopes.
+
+        The missing-permission matrix proves each declared scope is required. This allowed
+        branch creates real member hashlists and verifies those scopes are sufficient to
+        create a superhashlist containing them.
+        """
+        member_hashlists = [self.create_hashlist() for _ in range(2)]
+        name = f'Permission Test Superhashlist {time.time_ns()}'
+        token = self.create_apitoken(extra_payload={'scopes': [
+            'permHashlistCreate',
+            'permHashlistRead',
+            'permHashlistHashlistCreate',
+        ]})
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/createSuperHashlist',
+            method='POST',
+            payload={'hashlistIds': [hashlist.id for hashlist in member_hashlists], 'name': name},
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        superhashlist = Hashlist.objects.get(pk=response.json()['data']['id'])
+        self.delete_after_test(superhashlist)
+        self.assertEqual(superhashlist.name, name)
+
+    def test_api_token_export_helpers_allowed_with_declared_scopes_and_create_expected_files(self):
+        """Hash export helpers create the expected file records with declared scopes.
+
+        Each export helper requires hashlist read, hash read, and file create scopes. This
+        verifies those scopes are sufficient and that the returned file exists in the API
+        with the filename prefix used by the corresponding export path.
+        """
+        hashlist = self.create_hashlist(file_id='001')
+        cracked = 'cc03e747a6afbbcbf8be7668acfebee5:test123'
+        Helper().import_cracked_hashes(hashlist, 'paste', cracked, ':', 0)
+        helpers = [
+            ('exportCrackedHashes', 'Pre-cracked_'),
+            ('exportLeftHashes', 'Leftlist_'),
+            ('exportWordlist', 'Wordlist_'),
+        ]
+
+        for helper_name, filename_prefix in helpers:
+            with self.subTest(helper=helper_name):
+                token = self.create_apitoken(extra_payload={'scopes': ['permHashlistRead', 'permHashRead', 'permFileCreate']})
+
+                response = request_with_api_token(
+                    token.token,
+                    f'/helper/{helper_name}',
+                    method='POST',
+                    payload={'hashlistId': hashlist.id},
+                )
+                self.assertEqual(response.status_code, 200, response.text)
+                file_id = response.json()['data']['id']
+                exported_file = File.objects.get(fileId=file_id)
+                self.delete_after_test(exported_file)
+                self.assertTrue(exported_file.filename.startswith(filename_prefix), exported_file.filename)
+                self.assertEqual(exported_file.accessGroupId, hashlist.accessGroupId)
 
     def test_api_token_user_bulk_patch_requires_user_update_scope(self):
         """User bulk PATCH enforces permUserUpdate.
