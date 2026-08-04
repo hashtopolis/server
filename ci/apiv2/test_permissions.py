@@ -5,7 +5,7 @@ import time
 
 import confidence
 import requests
-from hashtopolis import Chunk, CrackerType, Hash, HashType, Helper, User
+from hashtopolis import Agent, Chunk, CrackerType, File, Hash, HashType, Helper, Task, User
 
 from utils import BaseTest, create_apitoken_raw, create_restricted_user, do_create_agentassignent, do_create_dummy_agent, request_with_api_token
 
@@ -42,7 +42,7 @@ def _all_scopes_except(test, excluded):
 
 
 def _agent_request(payload):
-    load_order = (str(Path(__file__).parent.joinpath('{name}-defaults.{extension}')),) + confidence.DEFAULT_LOAD_ORDER
+    load_order = (str(Path(__file__).parent.joinpath('{name}-defaults{suffix}')),) + confidence.DEFAULT_LOAD_ORDER
     uri = confidence.load_name('hashtopolis-test', load_order=load_order)['hashtopolis_uri']
     response = requests.post(f'{uri}/api/server.php', json=payload)
     return response.status_code, response.text
@@ -1535,6 +1535,159 @@ class PermissionsTest(BaseTest):
         )
         self.assertEqual(response.status_code, 200, response.text)
         self.assertEqual(response.json()['meta']['fileId'], file_obj.id)
+
+    def test_api_token_user_bulk_patch_requires_user_update_scope(self):
+        """User bulk PATCH enforces permUserUpdate.
+
+        Account activation state is security-sensitive and uses the generic bulk PATCH
+        route. Removing the user update scope must deny a bulk deactivate request before
+        any generated user is mutated.
+        """
+        users = [self.create_user() for _ in range(2)]
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permUserUpdate'])})
+        payload = {'data': [
+            {'type': 'user', 'id': user.id, 'attributes': {'isValid': False}}
+            for user in users
+        ]}
+
+        response = request_with_api_token(token.token, '/ui/users', method='PATCH', payload=payload)
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permUserUpdate', response.text)
+
+    def test_api_token_user_bulk_patch_allowed_with_user_update_scope(self):
+        """User bulk PATCH succeeds with permUserUpdate.
+
+        This allowed branch proves the generic bulk PATCH route can deactivate generated
+        users when the token has exactly the user update scope.
+        """
+        users = [self.create_user() for _ in range(2)]
+        token = self.create_apitoken(extra_payload={'scopes': ['permUserUpdate']})
+        payload = {'data': [
+            {'type': 'user', 'id': user.id, 'attributes': {'isValid': False}}
+            for user in users
+        ]}
+
+        response = request_with_api_token(token.token, '/ui/users', method='PATCH', payload=payload)
+        self.assertEqual(response.status_code, 204, response.text)
+        for user in users:
+            self.assertFalse(User.objects.get(pk=user.id).isValid)
+
+    def test_api_token_file_bulk_delete_requires_file_delete_scope(self):
+        """File bulk DELETE enforces permFileDelete.
+
+        File deletion is destructive and uses the generic bulk DELETE route. Removing the
+        file delete scope must deny deletion of generated file fixtures.
+        """
+        files = [self.create_file() for _ in range(2)]
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permFileDelete'])})
+        payload = {'data': [{'type': 'file', 'id': file_obj.id} for file_obj in files]}
+
+        response = request_with_api_token(token.token, '/ui/files', method='DELETE', payload=payload)
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permFileDelete', response.text)
+
+    def test_api_token_file_bulk_delete_denies_user_without_file_access_group(self):
+        """File bulk DELETE enforces file access-group ACLs.
+
+        A restricted user with permFileDelete but no membership in the file's access group
+        must not be able to delete files through the bulk route.
+        """
+        file_obj = self.create_file()
+        auth = create_restricted_user(self, {'permJwtApiKeyCreate': True, 'permFileDelete': True})
+        token = create_apitoken_raw(self, auth, ['permFileDelete'])
+
+        response = request_with_api_token(
+            token.token,
+            '/ui/files',
+            method='DELETE',
+            payload={'data': [{'type': 'file', 'id': file_obj.id}]},
+        )
+        self.assertEqual(response.status_code, 403, response.text)
+
+    def test_api_token_file_bulk_delete_allowed_with_file_delete_scope(self):
+        """File bulk DELETE succeeds with permFileDelete for accessible files.
+
+        This allowed branch omits the files from automatic cleanup because the request
+        itself should delete them through the generic bulk route.
+        """
+        files = [self.create_file(delete=False) for _ in range(2)]
+        token = self.create_apitoken(extra_payload={'scopes': ['permFileDelete']})
+        payload = {'data': [{'type': 'file', 'id': file_obj.id} for file_obj in files]}
+
+        response = request_with_api_token(token.token, '/ui/files', method='DELETE', payload=payload)
+        self.assertEqual(response.status_code, 204, response.text)
+        for file_obj in files:
+            self.assertEqual(len(File.objects.filter(fileId=file_obj.id)), 0)
+
+    def test_api_token_task_bulk_patch_requires_task_update_scope(self):
+        """Task bulk PATCH enforces permTaskUpdate.
+
+        Archiving tasks is operationally significant and uses the generic bulk PATCH
+        route. Removing the task update scope must deny the request.
+        """
+        tasks = [self.create_task(self.create_hashlist()) for _ in range(2)]
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permTaskUpdate'])})
+        payload = {'data': [
+            {'type': 'task', 'id': task.id, 'attributes': {'isArchived': True}}
+            for task in tasks
+        ]}
+
+        response = request_with_api_token(token.token, '/ui/tasks', method='PATCH', payload=payload)
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permTaskUpdate', response.text)
+
+    def test_api_token_task_bulk_patch_allowed_with_task_update_scope(self):
+        """Task bulk PATCH succeeds with permTaskUpdate.
+
+        This allowed branch proves multiple generated tasks can be archived through the
+        generic bulk PATCH route with exactly the task update scope.
+        """
+        tasks = [self.create_task(self.create_hashlist()) for _ in range(2)]
+        token = self.create_apitoken(extra_payload={'scopes': ['permTaskUpdate']})
+        payload = {'data': [
+            {'type': 'task', 'id': task.id, 'attributes': {'isArchived': True}}
+            for task in tasks
+        ]}
+
+        response = request_with_api_token(token.token, '/ui/tasks', method='PATCH', payload=payload)
+        self.assertEqual(response.status_code, 204, response.text)
+        for task in tasks:
+            self.assertTrue(Task.objects.get(pk=task.id).isArchived)
+
+    def test_api_token_agent_bulk_patch_requires_agent_update_scope(self):
+        """Agent bulk PATCH enforces permAgentUpdate.
+
+        Agent activation state controls worker availability and uses the generic bulk
+        PATCH route. Removing the agent update scope must deny the request.
+        """
+        agents = [self.create_agent() for _ in range(2)]
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permAgentUpdate'])})
+        payload = {'data': [
+            {'type': 'agent', 'id': agent.id, 'attributes': {'isActive': True}}
+            for agent in agents
+        ]}
+
+        response = request_with_api_token(token.token, '/ui/agents', method='PATCH', payload=payload)
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permAgentUpdate', response.text)
+
+    def test_api_token_agent_bulk_patch_allowed_with_agent_update_scope(self):
+        """Agent bulk PATCH succeeds with permAgentUpdate.
+
+        This allowed branch proves multiple generated agents can be updated through the
+        generic bulk PATCH route with exactly the agent update scope.
+        """
+        agents = [self.create_agent() for _ in range(2)]
+        token = self.create_apitoken(extra_payload={'scopes': ['permAgentUpdate']})
+        payload = {'data': [
+            {'type': 'agent', 'id': agent.id, 'attributes': {'isActive': True}}
+            for agent in agents
+        ]}
+
+        response = request_with_api_token(token.token, '/ui/agents', method='PATCH', payload=payload)
+        self.assertEqual(response.status_code, 204, response.text)
+        for agent in agents:
+            self.assertTrue(Agent.objects.get(pk=agent.id).isActive)
 
     def _relationship_payload(self, resource_type, resource_id):
         return {'data': [{'type': resource_type, 'id': resource_id}]}

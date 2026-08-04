@@ -31,7 +31,7 @@ def _uri():
     """Return the configured server base URI (resolved the same way as BaseTest)."""
     from pathlib import Path
     import confidence
-    load_order = (str(Path(__file__).parent.joinpath('{name}-defaults.{extension}')),) \
+    load_order = (str(Path(__file__).parent.joinpath('{name}-defaults{suffix}')),) \
                  + confidence.DEFAULT_LOAD_ORDER
     cfg = confidence.load_name('hashtopolis-test', load_order=load_order)
     return cfg['hashtopolis_uri']
