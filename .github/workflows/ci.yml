@@ -38,7 +38,7 @@ jobs:
         if: ${{ always() }}
         run: docker exec hashtopolis-server-dev find /var/www/html
 
-  realworld-smoke:
+  realworld:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -55,8 +55,8 @@ jobs:
           test_dataset: realworld
       - name: Give Apache permissions on necessary directories
         run: docker exec -u root hashtopolis-server-dev bash -c "chown -R www-data:www-data /var/www/html/src && chmod -R g+w /var/www/html/src"
-      - name: Run real-world API smoke tests
-        run: docker exec -w /var/www/html/ci/apiv2 -e HASHTOPOLIS_TEST_DATASET=realworld hashtopolis-server-dev pytest -m realworld
+      - name: Test with pytest on real-world test data
+        run: docker exec -w /var/www/html/ci/apiv2 -e HASHTOPOLIS_TEST_DATASET=realworld hashtopolis-server-dev pytest
       - name: Show docker log files
         if: ${{ always() }}
         run: docker logs hashtopolis-server-dev
