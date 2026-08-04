@@ -105,7 +105,7 @@ class AgentAPI extends AbstractModelAPI {
   }
 
   protected function filterData(array $object): array {
-    if ($this->hideIpInfo) {
+    if ($this->hideIpInfo && isset($object[Agent::LAST_IP])) {
       $object[Agent::LAST_IP] = "Hidden";
     }
     return $object;
