@@ -1,12 +1,9 @@
 import base64
 import json
-import time
-
-import requests
 
 from hashtopolis import Model
 
-from utils import BaseTest, create_restricted_user, ApiToken
+from utils import ApiToken, BaseTest, create_apitoken_raw, create_restricted_user
 
 
 def _decode_jwt_scope(token):
@@ -15,30 +12,6 @@ def _decode_jwt_scope(token):
     payload_b64 += '=' * (-len(payload_b64) % 4)
     payload = json.loads(base64.urlsafe_b64decode(payload_b64))
     return json.loads(payload['scope'])
-
-
-def _create_apitoken_raw(test, auth, scopes):
-    """POST /ui/apiTokens as the given user and register the resulting token for cleanup."""
-    connector = ApiToken.objects.get_conn()
-    connector.authenticate(auth=auth)
-    uri = connector._api_endpoint + '/ui/apiTokens'
-    headers = {**connector._headers, 'Content-Type': 'application/json'}
-    now = int(time.time())
-    payload = {
-        'data': {
-            'attributes': {
-                'scopes': scopes,
-                'startValid': now,
-                'endValid': now + 3600,
-            },
-            'type': 'ApiToken',
-        },
-    }
-    r = requests.post(uri, headers=headers, data=json.dumps(payload))
-    assert r.status_code == 201, f"Failed to create apitoken: status={r.status_code} body={r.text}"
-    obj = ApiToken(**r.json()['data'])
-    test.delete_after_test(obj)
-    return obj
 
 
 class ApiTokenTest(BaseTest):
@@ -72,7 +45,7 @@ class ApiTokenTest(BaseTest):
             'permHashlistRead': True,
             'permJwtApiKeyCreate': True,
         })
-        model_obj = _create_apitoken_raw(self, auth, ['permHashlistRead'])
+        model_obj = create_apitoken_raw(self, auth, ['permHashlistRead'])
         scope = _decode_jwt_scope(model_obj.token)
         self.assertTrue('permHashlistRead' in scope)
 
@@ -82,7 +55,7 @@ class ApiTokenTest(BaseTest):
             'permHashlistRead': True,
             'permJwtApiKeyCreate': True,
         })
-        model_obj = _create_apitoken_raw(self, auth, ['permHashlistRead', 'permFileRead'])
+        model_obj = create_apitoken_raw(self, auth, ['permHashlistRead', 'permFileRead'])
         scope = _decode_jwt_scope(model_obj.token)
         self.assertTrue('permHashlistRead' in scope)
         self.assertFalse('permFileRead' not in scope)

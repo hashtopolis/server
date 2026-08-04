@@ -5,9 +5,9 @@ import time
 
 import confidence
 import requests
-from hashtopolis import Chunk, Hash, HashType, Helper
+from hashtopolis import Chunk, Hash, Hashlist, HashType, HealthCheckAgent, Helper
 
-from utils import BaseTest, do_create_agentassignent, do_create_dummy_agent, request_with_api_token
+from utils import BaseTest, create_apitoken_raw, create_restricted_user, do_create_agentassignent, do_create_dummy_agent, request_with_api_token
 
 
 def _resource_payload(resource_type, attributes, resource_id=None):
@@ -111,11 +111,69 @@ HELPER_PERMISSION_CASES = [
         'permissions': ['permChunkUpdate'],
     },
     {
+        'name': 'resetChunk',
+        'path': '/helper/resetChunk',
+        'payload': {'chunkId': 1},
+        'permissions': ['permChunkUpdate'],
+    },
+    {
+        'name': 'purgeTask',
+        'path': '/helper/purgeTask',
+        'payload': {'taskId': 1},
+        'permissions': ['permChunkDelete', 'permTaskUpdate'],
+    },
+    {
+        'name': 'setUserPassword',
+        'path': '/helper/setUserPassword',
+        'payload': {'userId': 1, 'password': 'permission-test-pass-123!'},
+        'permissions': ['permUserUpdate'],
+    },
+    {
+        'name': 'importCrackedHashes',
+        'path': '/helper/importCrackedHashes',
+        'payload': {
+            'hashlistId': 1,
+            'sourceType': 'paste',
+            'sourceData': base64.b64encode(b'cc03e747a6afbbcbf8be7668acfebee5:test123').decode('ascii'),
+            'separator': ':',
+            'overwrite': 0,
+        },
+        'permissions': ['permHashlistUpdate', 'permHashUpdate'],
+    },
+    {
+        'name': 'getFile',
+        'path': '/helper/getFile?file=1',
+        'method': 'GET',
+        'payload': None,
+        'permissions': ['permFileRead'],
+    },
+    {
         'name': 'getTaskProgressImage',
         'path': '/helper/getTaskProgressImage?task=1',
         'method': 'GET',
         'payload': None,
         'permissions': ['permTaskRead', 'permTaskWrapperRead'],
+    },
+    {
+        'name': 'getCracksOfTask',
+        'path': '/helper/getCracksOfTask?task=1',
+        'method': 'GET',
+        'payload': None,
+        'permissions': ['permHashlistRead', 'permHashRead', 'permTaskRead'],
+    },
+    {
+        'name': 'getCompletedCount',
+        'path': '/helper/getCompletedCount',
+        'method': 'GET',
+        'payload': None,
+        'permissions': ['permTaskWrapperRead', 'permTaskRead'],
+    },
+    {
+        'name': 'getCracksPerDay',
+        'path': '/helper/getCracksPerDay',
+        'method': 'GET',
+        'payload': None,
+        'permissions': ['permHashlistRead', 'permHashRead'],
     },
 ]
 
@@ -1315,6 +1373,305 @@ class PermissionsTest(BaseTest):
         )
         self.assertEqual(response.status_code, 200, response.text)
         self.assertEqual(response.json()['meta']['Assign'], 'Success')
+
+    def test_api_token_set_user_password_helper_allowed_with_user_update_scope(self):
+        """setUserPassword helper succeeds with permUserUpdate.
+
+        Password changes are security-sensitive, so the missing-permission matrix verifies
+        denial without permUserUpdate and this allowed branch verifies the exact declared
+        scope is sufficient for a real user fixture.
+        """
+        user = self.create_user()
+        token = self.create_apitoken(extra_payload={'scopes': ['permUserUpdate']})
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/setUserPassword',
+            method='POST',
+            payload={'userId': user.id, 'password': 'permission-test-pass-123!'},
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['meta']['Set password'], 'Success')
+
+    def test_api_token_get_file_helper_allowed_with_file_read_scope(self):
+        """getFile helper downloads a file with permFileRead.
+
+        File download is data-exfiltration sensitive, so the missing-permission matrix
+        verifies denial without permFileRead and this allowed branch verifies that the
+        declared scope can download a real file fixture.
+        """
+        file_obj = self.create_file()
+        token = self.create_apitoken(extra_payload={'scopes': ['permFileRead']})
+
+        response = request_with_api_token(token.token, f'/helper/getFile?file={file_obj.id}', method='GET')
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertIn(b'princess', response.content)
+
+    def test_api_token_get_file_helper_denies_user_without_file_access_group(self):
+        """getFile helper must enforce file access-group ACLs.
+
+        A token with permFileRead but whose user is not a member of the file's access
+        group must not be able to download the file. This protects the binary download
+        helper from bypassing the ACL enforced by `/ui/files`.
+        """
+        file_obj = self.create_file()
+        auth = create_restricted_user(self, {
+            'permJwtApiKeyCreate': True,
+            'permFileRead': True,
+        })
+        token = create_apitoken_raw(self, auth, ['permFileRead'])
+
+        response = request_with_api_token(token.token, f'/helper/getFile?file={file_obj.id}', method='GET')
+        self.assertEqual(response.status_code, 403, response.text)
+
+    def test_api_token_import_cracked_hashes_helper_allowed_with_hashlist_and_hash_update_scopes(self):
+        """importCrackedHashes helper succeeds with hashlist/hash update scopes.
+
+        Importing cracked hashes mutates both the hashlist counters and matching hash
+        rows. The missing-permission matrix verifies each required scope is enforced;
+        this allowed branch verifies the exact declared scopes can import a real cracked
+        hash into a hashlist fixture.
+        """
+        hashlist = self.create_hashlist(file_id='001')
+        cracked = 'cc03e747a6afbbcbf8be7668acfebee5:test123'
+        token = self.create_apitoken(extra_payload={'scopes': ['permHashlistUpdate', 'permHashUpdate']})
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/importCrackedHashes',
+            method='POST',
+            payload={
+                'hashlistId': hashlist.id,
+                'sourceType': 'paste',
+                'sourceData': base64.b64encode(cracked.encode('utf-8')).decode('ascii'),
+                'separator': ':',
+                'overwrite': 0,
+            },
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['meta']['totalLines'], 1)
+        self.assertEqual(response.json()['meta']['newCracked'], 1)
+        self.assertEqual(Hashlist.objects.get(hashlistId=hashlist.id).cracked, 1)
+
+    def test_api_token_reset_chunk_helper_allowed_with_chunk_update_scope(self):
+        """resetChunk helper succeeds with permChunkUpdate.
+
+        Resetting a chunk mutates operational work state. The missing-permission matrix
+        verifies permChunkUpdate is required; this allowed branch verifies the declared
+        scope can reset a real chunk created by the dummy-agent task flow.
+        """
+        created = self.create_agent_with_task()
+        chunk = Chunk.objects.filter(taskId=created['task'].id)[0]
+        token = self.create_apitoken(extra_payload={'scopes': ['permChunkUpdate']})
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/resetChunk',
+            method='POST',
+            payload={'chunkId': chunk.id},
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['meta']['Reset'], 'Success')
+
+    def test_api_token_purge_task_helper_allowed_with_chunk_delete_and_task_update_scopes(self):
+        """purgeTask helper succeeds with chunk delete and task update scopes.
+
+        Purging a task deletes its chunks and resets task progress, so this validates the
+        exact declared destructive scopes on a real task with materialized chunks.
+        """
+        created = self.create_agent_with_task()
+        chunks_before = Chunk.objects.filter(taskId=created['task'].id)
+        self.assertGreaterEqual(len(chunks_before), 1)
+        token = self.create_apitoken(extra_payload={'scopes': ['permChunkDelete', 'permTaskUpdate']})
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/purgeTask',
+            method='POST',
+            payload={'taskId': created['task'].id},
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['meta']['Purge'], 'Success')
+        self.assertEqual(len(Chunk.objects.filter(taskId=created['task'].id)), 0)
+
+    def test_api_token_bulk_patch_requires_update_scope(self):
+        """Bulk PATCH enforces the target model update permission.
+
+        Bulk mutation uses a separate generic code path from single-resource PATCH. This
+        verifies a hashlist bulk archive request is denied before mutation when
+        permHashlistUpdate is absent.
+        """
+        hashlist = self.create_hashlist()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permHashlistUpdate'])})
+
+        response = request_with_api_token(
+            token.token,
+            '/ui/hashlists',
+            method='PATCH',
+            payload={'data': [{'type': 'hashlist', 'id': hashlist.id, 'attributes': {'isArchived': True}}]},
+        )
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permHashlistUpdate', response.text)
+
+    def test_api_token_bulk_patch_allowed_with_update_scope(self):
+        """Bulk PATCH succeeds with the target model update permission.
+
+        This is the allowed counterpart to the denial test and proves the bulk route can
+        mutate a real hashlist when the token has exactly permHashlistUpdate.
+        """
+        hashlist = self.create_hashlist()
+        token = self.create_apitoken(extra_payload={'scopes': ['permHashlistUpdate']})
+
+        response = request_with_api_token(
+            token.token,
+            '/ui/hashlists',
+            method='PATCH',
+            payload={'data': [{'type': 'hashlist', 'id': hashlist.id, 'attributes': {'isArchived': True}}]},
+        )
+        self.assertEqual(response.status_code, 204, response.text)
+        self.assertTrue(Hashlist.objects.get(hashlistId=hashlist.id).isArchived)
+
+    def test_api_token_bulk_delete_requires_delete_scope(self):
+        """Bulk DELETE enforces the target model delete permission.
+
+        Bulk deletion uses a separate generic route from single-resource DELETE. This
+        verifies a hashlist bulk delete request is denied when permHashlistDelete is
+        absent.
+        """
+        hashlist = self.create_hashlist()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permHashlistDelete'])})
+
+        response = request_with_api_token(
+            token.token,
+            '/ui/hashlists',
+            method='DELETE',
+            payload={'data': [{'type': 'hashlist', 'id': hashlist.id}]},
+        )
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permHashlistDelete', response.text)
+
+    def test_api_token_bulk_delete_allowed_with_delete_scope(self):
+        """Bulk DELETE succeeds with the target model delete permission.
+
+        The allowed branch uses a hashlist omitted from automatic cleanup because the
+        request itself should delete it through the generic bulk route.
+        """
+        hashlist = self.create_hashlist(delete=False)
+        token = self.create_apitoken(extra_payload={'scopes': ['permHashlistDelete']})
+
+        response = request_with_api_token(
+            token.token,
+            '/ui/hashlists',
+            method='DELETE',
+            payload={'data': [{'type': 'hashlist', 'id': hashlist.id}]},
+        )
+        self.assertEqual(response.status_code, 204, response.text)
+
+    def _create_health_check_agent(self):
+        _, agent = do_create_dummy_agent()
+        self.delete_after_test(agent)
+        health_check = self.create_healthcheck()
+        health_check_agent = HealthCheckAgent.objects.filter(healthCheckId=health_check.id, agentId=agent.id)[0]
+        return health_check, agent, health_check_agent
+
+    def _health_check_agents_query_path(self, health_check, agent):
+        return (
+            f'/ui/healthcheckagents?include=agent&filter[healthCheckId__eq]={health_check.id}'
+            f'&filter[agentId__eq]={agent.id}&page[size]=1'
+        )
+
+    def test_api_token_health_check_agents_include_agent_allowed(self):
+        """Health check agent list requests can include agent.
+
+        Creating a health check after registering an agent creates a HealthCheckAgent row.
+        This verifies the frontend request shape can list that row and include the agent
+        when both read scopes are present.
+        """
+        health_check, agent, health_check_agent = self._create_health_check_agent()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+
+        response = request_with_api_token(token.token, self._health_check_agents_query_path(health_check, agent))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertEqual(body['data'][0]['id'], health_check_agent.id)
+        included = {(item['type'], item['id']) for item in body.get('included', [])}
+        self.assertIn(('agent', agent.id), included)
+
+    def test_api_token_health_check_agents_include_agent_requires_health_check_agent_read(self):
+        """Health check agent list requests require base permHealthCheckAgentRead.
+
+        Agent read permission cannot expose health-check-agent rows. Removing the base
+        read scope must deny the filtered list request.
+        """
+        health_check, agent, _ = self._create_health_check_agent()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permHealthCheckAgentRead'])})
+
+        response = request_with_api_token(token.token, self._health_check_agents_query_path(health_check, agent))
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertIn('permHealthCheckAgentRead', response.text)
+
+    def test_api_token_health_check_agents_include_agent_reports_missing_agent_read(self):
+        """Health check agent includes are omitted when permAgentRead is absent.
+
+        The health-check-agent row remains visible because its base read scope is present.
+        The missing agent read permission should be reported in include metadata and the
+        related agent resource should not be materialized.
+        """
+        health_check, agent, _ = self._create_health_check_agent()
+        token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, ['permAgentRead'])})
+
+        response = request_with_api_token(token.token, self._health_check_agents_query_path(health_check, agent))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['meta']['page']['total_elements'], 1)
+        self.assertIn('permAgentRead', json.dumps(body['meta']))
+        self.assertNotIn('agent', {item['type'] for item in body.get('included', [])})
+
+    def test_api_token_get_completed_count_helper_allowed_with_task_read_scopes(self):
+        """getCompletedCount helper succeeds with task wrapper and task read scopes.
+
+        The helper returns dashboard counts derived from task wrappers and tasks. The
+        missing-permission matrix verifies both scopes are required; this allowed branch
+        verifies the exact read scopes can call the endpoint.
+        """
+        token = self.create_apitoken(extra_payload={'scopes': ['permTaskWrapperRead', 'permTaskRead']})
+
+        response = request_with_api_token(token.token, '/helper/getCompletedCount', method='GET')
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertIn('completedTasks', body['data'])
+        self.assertIn('completedSupertasks', body['data'])
+
+    def test_api_token_get_cracks_per_day_helper_allowed_with_hash_read_scopes(self):
+        """getCracksPerDay helper succeeds with hashlist/hash read scopes.
+
+        The helper exposes aggregate crack history. The missing-permission matrix verifies
+        both read scopes are required; this allowed branch verifies the exact scopes can
+        call the endpoint and receive a JSON:API data member.
+        """
+        token = self.create_apitoken(extra_payload={'scopes': ['permHashlistRead', 'permHashRead']})
+
+        response = request_with_api_token(token.token, '/helper/getCracksPerDay', method='GET')
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertIn('data', response.json())
+
+    def test_api_token_get_cracks_of_task_helper_allowed_with_hashlist_hash_and_task_read_scopes(self):
+        """getCracksOfTask helper succeeds with hashlist, hash, and task read scopes.
+
+        This helper exposes cracked hashes for a task, so it needs all three read scopes.
+        A cracked hash is materialized through the dummy-agent flow and the endpoint is
+        called for the chunk's task.
+        """
+        hash_obj = self._create_cracked_hash_with_chunk()
+        chunk = Chunk.objects.get(chunkId=hash_obj.chunkId)
+        token = self.create_apitoken(extra_payload={'scopes': ['permHashlistRead', 'permHashRead', 'permTaskRead']})
+
+        response = request_with_api_token(token.token, f'/helper/getCracksOfTask?task={chunk.taskId}', method='GET')
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertGreaterEqual(len(body['data']), 1)
+        self.assertIn(hash_obj.id, [item['id'] for item in body['data']])
 
     def _relationship_payload(self, resource_type, resource_id):
         return {'data': [{'type': resource_type, 'id': resource_id}]}

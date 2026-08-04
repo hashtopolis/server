@@ -115,6 +115,30 @@ def do_create_apitoken(extra_payload={}, **kwargs):
     return _do_create_obj_from_file(ApiToken, 'create_apitoken', extra_payload, **kwargs)
 
 
+def create_apitoken_raw(test, auth, scopes):
+    """POST /ui/apiTokens as `auth` and register the resulting token for cleanup."""
+    connector = ApiToken.objects.get_conn()
+    connector.authenticate(auth=auth)
+    uri = connector._api_endpoint + '/ui/apiTokens'
+    headers = {**connector._headers, 'Content-Type': 'application/json'}
+    now = int(time.time())
+    payload = {
+        'data': {
+            'attributes': {
+                'scopes': scopes,
+                'startValid': now,
+                'endValid': now + 3600,
+            },
+            'type': 'ApiToken',
+        },
+    }
+    response = requests.post(uri, headers=headers, data=json.dumps(payload))
+    assert response.status_code == 201, f'Failed to create API token: status={response.status_code} body={response.text}'
+    token = ApiToken(**response.json()['data'])
+    test.delete_after_test(token)
+    return token
+
+
 def request_with_api_token(token, path, method='GET', payload=None, headers=None):
     connector = ApiToken.objects.get_conn()
     uri = connector._api_endpoint + path
