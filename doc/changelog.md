@@ -1,5 +1,8 @@
 # Changelog
 
+> [!NOTE]
+> This changelog is deprecated, please use the github release notes for the backend.
+
 ## v1.0.0-rc3 -> v1.0.0-rc4
 
 **Bugfixes**
