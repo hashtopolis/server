@@ -2,6 +2,7 @@ import base64
 import json
 import time
 
+import pytest
 import requests
 from hashtopolis import Agent, Chunk, File, Hash, Hashlist, HashType, HealthCheckAgent, Helper, Task, TaskWrapper, User
 
@@ -1559,6 +1560,7 @@ class PermissionsTest(BaseTest):
         self.assertEqual(response.status_code, 200, response.text)
         self.assertEqual(response.json()['meta']['Rebuild'], 'Success')
 
+    @pytest.mark.synthetic_only
     def test_api_token_rescan_global_files_helper_allowed_with_config_update_scope(self):
         """rescanGlobalFiles succeeds with permConfigUpdate.
 
