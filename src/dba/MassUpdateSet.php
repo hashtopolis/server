@@ -3,15 +3,15 @@
 namespace Hashtopolis\dba;
 
 class MassUpdateSet {
-  private string $matchValue;
+  private mixed $matchValue;
   private mixed $updateValue;
   
-  function __construct(string $matchValue, mixed $updateValue) {
+  function __construct(mixed $matchValue, mixed $updateValue) {
     $this->matchValue = $matchValue;
     $this->updateValue = $updateValue;
   }
   
-  function getMatchValue(): string {
+  function getMatchValue(): mixed {
     return $this->matchValue;
   }
   

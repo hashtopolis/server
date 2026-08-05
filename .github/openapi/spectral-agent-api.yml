@@ -1,0 +1,23 @@
+extends:
+  - spectral:oas
+
+formats:
+  - oas3.1
+
+# Relaxed ruleset for the Hashtopolis agent API.
+#
+# The agent API is a single-endpoint JSON API (POST /api/server.php) that
+# dispatches on the "action" field in the request body. It uses
+# application/json (not application/vnd.api+json), so the JSON:API ruleset
+# (spectral-jsonapi.yml) does NOT apply. This ruleset extends the base
+# Spectral OAS rules and disables rules that don't fit the agent API design.
+
+rules:
+  # Auth is via token in the JSON body, not via HTTP security schemes.
+  oas3-api-servers: off
+  oas3-operation-security-defined: off
+  # The single endpoint doesn't use tags.
+  operation-tag-defined: off
+  # The API doesn't define contact or license info.
+  info-contact: off
+  info-license: off

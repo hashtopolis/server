@@ -10,6 +10,8 @@
 	\section*{Introduction}
 	The communication between Hashtopolis Clients (Agents) and Server is always in JSON formatted values. When sending a request to the server, it should be a POST containing the JSON data.
 
+	A machine-readable OpenAPI 3.1 specification of this protocol is available at \texttt{/api/server\_openapi.php} on the running server. It is generated from the server's source code and always reflects the current implementation. The examples in this document remain the canonical human-readable reference.
+
 	\section*{Errors}
 	In case of an error with the query which the client sends to the server, the response will have following format with the corresponding action which was requested and the error message which should help in getting information about this error.
 	\begin{verbatim}
