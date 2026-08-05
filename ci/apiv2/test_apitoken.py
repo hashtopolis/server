@@ -37,7 +37,7 @@ class ApiTokenTest(BaseTest):
         """Admin holds every legacy permission, so any requested scope must be granted in the JWT."""
         model_obj = self.create_test_object()
         scope = _decode_jwt_scope(model_obj.token)
-        self.assertTrue('permHashlistRead' in scope)
+        self.assertTrue(scope['permHashlistRead'])
 
     def test_token_scope_intersection_grants_permitted(self):
         """A restricted user is granted a requested scope they hold via the legacy permission mapping."""

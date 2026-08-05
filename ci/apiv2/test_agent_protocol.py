@@ -21,7 +21,7 @@ import requests
 
 from hashtopolis import Agent, Config, HealthCheck, Voucher
 from hashtopolis_agent import DummyAgent
-from utils import BaseTest, do_create_agentassignent, do_create_dummy_agent, do_create_voucher
+from utils import BaseTest, do_create_agentassignent, do_create_dummy_agent, do_create_voucher, get_hashtopolis_uri
 
 
 AGENT_ENDPOINT = '/api/server.php'
@@ -29,12 +29,7 @@ AGENT_ENDPOINT = '/api/server.php'
 
 def _uri():
     """Return the configured server base URI (resolved the same way as BaseTest)."""
-    from pathlib import Path
-    import confidence
-    load_order = (str(Path(__file__).parent.joinpath('{name}-defaults.{extension}')),) \
-                 + confidence.DEFAULT_LOAD_ORDER
-    cfg = confidence.load_name('hashtopolis-test', load_order=load_order)
-    return cfg['hashtopolis_uri']
+    return get_hashtopolis_uri()
 
 
 def agent_request(payload):
