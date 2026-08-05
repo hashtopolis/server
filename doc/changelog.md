@@ -1,6 +1,6 @@
 # Changelogs
 
-The changelogs are available at the respective releases for the backend and frontent at:
+The release changelogs are available at the corresponding release for the backend and frontent at:
 
 - **Backend:** [https://github.com/hashtopolis/server/releases](https://github.com/hashtopolis/server/releases)
 - **Frontend:** [https://github.com/hashtopolis/web-ui/releases](https://github.com/hashtopolis/web-ui/releases)
