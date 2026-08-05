@@ -1,9 +1,15 @@
-# Changelog
+# Changelogs
 
-> [!NOTE]
-> This changelog is deprecated, please use the github release notes for the backend.
+The release changelogs are available at the corresponding release for the backend and frontent at:
 
-## v1.0.0-rc3 -> v1.0.0-rc4
+- **Backend:** [https://github.com/hashtopolis/server/releases](https://github.com/hashtopolis/server/releases)
+- **Frontend:** [https://github.com/hashtopolis/web-ui/releases](https://github.com/hashtopolis/web-ui/releases)
+
+## Backend Legacy Changelog
+
+The following was the legacy changelog for the backend used until before the 1.0.0 release.
+
+### v1.0.0-rc3 -> v1.0.0-rc4
 
 **Bugfixes**
 
@@ -21,7 +27,7 @@
 - Added skipped states to tasks that are not finshed but are archived(https://github.com/hashtopolis/server/pull/2381)
 - Fixed inconsistent success value (https://github.com/hashtopolis/server/pull/2368)
 
-## v1.0.0-rc2 -> v1.0.0-rc3
+### v1.0.0-rc2 -> v1.0.0-rc3
 
 **Bugfixes**
 
@@ -46,7 +52,7 @@
 - Replace PECL with PIE (as PECL is deprecated and may be removed in the future) (#2352)
 - Also make task status finished when hashlist has been cracked (#2321)
 
-## v1.0.0-rc1 -> v1.0.0-rc2
+### v1.0.0-rc1 -> v1.0.0-rc2
 
 **Bugfixes**
 
@@ -65,7 +71,7 @@
 - Additional unittests and removal of legacy openssl calls (#2259)
 - Added documentation for versioning, branch handling and release process (#2263)
 
-## v1.0.0-rainbow6 -> v1.0.0-rc1
+### v1.0.0-rainbow6 -> v1.0.0-rc1
 
 **Bugfixes**
 
@@ -97,7 +103,7 @@
 - Update time filter to use one year from current time (#2133)
 - Added assigned agents to taskwrapperdisplay (#2154)
 
-## v1.0.0-rainbow5 -> v1.0.0-rainbow6
+### v1.0.0-rainbow5 -> v1.0.0-rainbow6
 
 **Bugfixes**
 
@@ -134,7 +140,7 @@
 - Added a flag isActive to tasks api response to show whether a task is active (#2005)
 - Check if the total hash count of a hashlist needs to be fixed (#2033)
 
-## v1.0.0-rainbow4 -> v1.0.0-rainbow5
+### v1.0.0-rainbow4 -> v1.0.0-rainbow5
 
 **Bugfixes**
 
@@ -162,14 +168,14 @@
 
 **Full Changelog**: https://github.com/hashtopolis/server/compare/v1.0.0-rainbow4...v1.0.0-rainbow5
 
-## v1.0.0-rainbow3 -> v1.0.0-rainbow4
+### v1.0.0-rainbow3 -> v1.0.0-rainbow4
 
 **Bugfixes**
 
 - Fixed status calculation in backend (#1716)
 - Fixed upgrade of agentbinary to new binaryType (#1722)
 
-## v1.0.0-rainbow2 -> v1.0.0-rainbow3
+### v1.0.0-rainbow2 -> v1.0.0-rainbow3
 
 **Enhancements**
 
@@ -180,7 +186,7 @@
 - Only use the mask as subtask name in supertask import to avoid too long names (#1681)
 - Fixed error in tests by removing deprecated {extension} from new confidence version (#1677)
 
-## v1.0.0-rainbow -> v1.0.0-rainbow2
+### v1.0.0-rainbow -> v1.0.0-rainbow2
 
 **Enhancements**
 
@@ -190,7 +196,7 @@
 
 - Fixed searchHashes helper to return the objects properly (#1662)
 
-## v0.14.6 -> v1.0.0-rainbow
+### v0.14.6 -> v1.0.0-rainbow
 
 **Enhancements**
 
@@ -203,13 +209,13 @@
 - Fixed missing .htaccess to avoid access to install directory on docker setups
 - Many more bugfixes to work correctly with the new frontend
 
-## v0.14.5 -> v0.14.6
+### v0.14.5 -> v0.14.6
 
 **Bugfixes**
 
 - Fixed upate script v0.14.4 -> v0.14.5 where some hash types were incorrectly named due to double quotes and dollar signs in names
 
-## v0.14.4 -> v0.14.5
+### v0.14.4 -> v0.14.5
 
 **Enhancements**
 
@@ -218,7 +224,7 @@
 - Added an additional multi-column index in MySQL on the chunk table to increase performance for agents getting tasks (Note: these are not created on update due to performance issues, only on new installs)
 
 
-## v0.14.3 -> v0.14.4
+### v0.14.3 -> v0.14.4
 
 **Enhancements**
 
@@ -231,7 +237,7 @@
 - Implemented sending emails inside docker container
 
 
-## v0.14.2 -> v0.14.3
+### v0.14.2 -> v0.14.3
 
 **Tech Preview New API**
 
@@ -255,7 +261,7 @@ Changes/Bugfixes on new UI:
 - Increase the limit of the attack command length
 
 
-## v0.14.1 -> v0.14.2
+### v0.14.1 -> v0.14.2
 
 **Tech Preview New API**
 
@@ -266,7 +272,7 @@ Release 0.14.2 comes with an update to the tech preview of APIv2. Be aware, it i
 - Setting maxAgent after creating doesn't update the maxAgents of the taskwrapper. This only causes issues when the maxAgents was set at creation time. #1013
 
 
-## v0.14.0 -> v0.14.1
+### v0.14.0 -> v0.14.1
 
 **Tech Preview New API**
 
@@ -284,7 +290,7 @@ Release 0.14.1 comes with an update to the tech preview of APIv2. Be aware, it i
 - Number of agents per supertask/taskwrapper can be limited (#769).
 
 
-## v0.13.1 -> v0.14.0
+### v0.13.1 -> v0.14.0
 
 **Tech Preview New API**
 
@@ -302,7 +308,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Setting 'Salt is in hex' during Hashlist creation will not set the --hex-salt flag (#892)
 
 
-## v0.13.0 -> v0.13.1
+### v0.13.0 -> v0.13.1
 
 **Bugfixes**
 
@@ -316,7 +322,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Hash.hash is now of type MEDIUMTEXT to avoid issues with longer hashes (e.g. LUKS, issue #851).
 
 
-## v0.12.0 -> v0.13.0
+### v0.12.0 -> v0.13.0
 
 **Features**
 
@@ -370,7 +376,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Increase size of database column for storing agentstats.
 
 
-## v0.11.0 -> v0.12.0
+### v0.11.0 -> v0.12.0
 
 **Features**
 
@@ -402,7 +408,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Adjusted to PMKID handling of Hashcat.
 
 
-## v0.10.1 -> v0.11.0
+### v0.10.1 -> v0.11.0
 
 **Bugfixes**
 
@@ -426,7 +432,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Support for new Hashcat versions without 32/64-bit naming.
 
 
-## v0.10.0 -> v0.10.1
+### v0.10.0 -> v0.10.1
 
 **Bugfixes**
 
@@ -436,7 +442,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed wrong saving of build number if it didn't exist.
 
 
-## v0.9.0 -> v0.10.0
+### v0.9.0 -> v0.10.0
 
 **Features**
 
@@ -458,7 +464,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Make more clear naming on rule splitting tasks, rules have an empty line at the end to increase readability.
 
 
-## v0.8.0 -> v0.9.0
+### v0.8.0 -> v0.9.0
 
 **Features**
 
@@ -487,7 +493,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - If needed it can be set that the server should also distribute tasks with priority 0.
 
 
-## v0.7.1 -> v0.8.0
+### v0.7.1 -> v0.8.0
 
 **Features**
 
@@ -518,7 +524,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed non-working secret checkbox for hashlists.
 
 
-## v0.7.0 -> v0.7.1
+### v0.7.0 -> v0.7.1
 
 **Bugfixes**
 
@@ -529,7 +535,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed hiding of mask imports in preconfigured task list on hashlist page
 
 
-## v0.6.0 -> v0.7.0
+### v0.6.0 -> v0.7.0
 
 **Features**
 
@@ -554,7 +560,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed zapping querying on progress sending from agent to also match for agent null values.
 
 
-## v0.5.1 -> v0.6.0
+### v0.5.1 -> v0.6.0
 
 **Features**
 
@@ -569,7 +575,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - DB Connection check during installation is now tested correctly
 
 
-## v0.5.0 -> v0.5.1
+### v0.5.0 -> v0.5.1
 
 **Bugfixes**
 
@@ -582,7 +588,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed renaming/uploading of files which allowed to override hidden files (e.g. .htaccess file)
 
 
-## v0.4.3 -> v0.5.0
+### v0.4.3 -> v0.5.0
 
 **Large Update**
 
@@ -607,7 +613,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Error message which was always shown when adding new hash types fixed
 
 
-## v0.4.2 -> v0.4.3
+### v0.4.2 -> v0.4.3
 
 **Features**
 
@@ -627,7 +633,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Implemented missing ownAgentError notification execution
 
 
-## v0.4.1 -> v0.4.2
+### v0.4.1 -> v0.4.2
 
 **Features**
 
@@ -648,7 +654,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Fixed remaining fragments when deleting finished supertasks
 
 
-## v0.4.0 -> v0.4.1
+### v0.4.0 -> v0.4.1
 
 **Bugfixes**
 
@@ -659,7 +665,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Improved code handling, constants can be used in templates.
 
 
-## v0.3.2 -> v0.4.0
+### v0.3.2 -> v0.4.0
 
 **Features**
 
@@ -690,7 +696,7 @@ With the release 0.14.0 the default installation method changed to Docker. Docke
 - Changed the way hashcat version is queried (should work properly on linux/mac)
 
 
-## v0.3.1 -> v0.3.2
+### v0.3.1 -> v0.3.2
 
 **Client**
 
