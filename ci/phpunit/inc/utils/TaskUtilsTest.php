@@ -7,11 +7,15 @@ use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\AgentError;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\FileDownload;
+use Hashtopolis\dba\models\FileTask;
 use Hashtopolis\dba\models\Hashlist;
+use Hashtopolis\dba\models\Speed;
 use Hashtopolis\dba\models\Task;
+use Hashtopolis\dba\models\TaskDebugOutput;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\QueryFilter;
 
@@ -213,12 +217,13 @@ final class TaskUtilsTest extends TestBase {
    * @throws Exception
    */
   public function testGetTaskWrappersForUser(): void {
-    $taskObjects = $this->createTaskHelper();
+    $taskObjects1 = $this->createTaskHelper();
+    $existingTaskWrappers = count(TaskUtils::getTaskWrappersForUser($taskObjects1["user"]));
     $taskObjects2 = $this->createTaskHelper();
+
+    $this->createAccessGroupUser($taskObjects1["user"], $taskObjects2["accessGroup"]);
     
-    Factory::getTaskWrapperFactory()->set($taskObjects2["taskWrapper"], TaskWrapper::ACCESS_GROUP_ID, $taskObjects["accessGroup"]->getId());
-    
-    $this->assertEquals(2, count(TaskUtils::getTaskWrappersForUser($taskObjects["user"])));
+    $this->assertEquals($existingTaskWrappers + 1, count(TaskUtils::getTaskWrappersForUser($taskObjects1["user"])));
   }
 
   /**
@@ -510,26 +515,65 @@ final class TaskUtilsTest extends TestBase {
   }
 
   /**
+   * Test deleting a supertask.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testDeleteSupertaskKeepingTaskwrapper(): void {
+    $supertaskObjects = $this->createSupertaskHelper();
+    TaskUtils::delete($supertaskObjects["tasks"][0]->getId(), $supertaskObjects["user"], true);
+
+    $qF = new QueryFilter(Task::TASK_ID, $supertaskObjects["tasks"][0]->getId(), "=");
+    $deletedTask = Factory::getTaskFactory()->filter([Factory::FILTER => $qF]);
+    $this->assertEquals([], $deletedTask);
+
+    // For supertasks the TaskWrapper shouldn't get deleted
+    $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $supertaskObjects["taskWrapper"]->getId(), "=");
+    $nonDeletedTaskWrapper = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => $qF]);
+    $this->assertEquals($supertaskObjects["taskWrapper"], $nonDeletedTaskWrapper[0]);
+  }
+
+  /**
    * Test deleting a task.
    *
    * @return void
    * @throws Exception
    */
-/*  public function testDelete(): void {
-    $taskObjects = $this->createTaskHelper();    
-    TaskUtils::delete($taskObjects["task"]->getId(), $taskObjects["user"]);
+  public function testDelete(): void {
+    $taskObjects = $this->createRunningTaskHelper();
+    // Add a file to that task
+    $file = $this->createFile($taskObjects['accessGroup']);
+    $taskObjects["taskFile"] = new FileTask(null, $file->getId(), $taskObjects["task"]->getId());
+    Factory::getFileTaskFactory()->save($taskObjects["taskFile"]);
+    
+    TaskUtils::delete($taskObjects["task"]->getId(), $taskObjects["user"], true);
 
     $qF = new QueryFilter(Task::TASK_ID, $taskObjects["task"]->getId(), "=");
     $deletedTask = Factory::getTaskFactory()->filter([Factory::FILTER => $qF]);
     $this->assertEquals([], $deletedTask);
 
+    // Assignments, agent errors, task debug output, speed tests and files should also be deleted
+    $qF = new QueryFilter(Assignment::TASK_ID, $taskObjects["task"]->getId(), "=");
+    $this->assertEquals([], Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]));
+    $qF = new QueryFilter(AgentError::TASK_ID, $taskObjects["task"]->getId(), "=");
+    $this->assertEquals([], Factory::getAgentErrorFactory()->filter([Factory::FILTER => $qF]));
+    $qF = new QueryFilter(TaskDebugOutput::TASK_ID, $taskObjects["task"]->getId(), "=");
+    $this->assertEquals([], Factory::getTaskDebugOutputFactory()->filter([Factory::FILTER => $qF]));
+    $qF = new QueryFilter(Speed::TASK_ID, $taskObjects["task"]->getId(), "=");
+    $this->assertEquals([], Factory::getSpeedFactory()->filter([Factory::FILTER => $qF]));
+    $qF = new QueryFilter(FileTask::TASK_ID, $taskObjects["task"]->getId(), "=");
+    $this->assertEquals([], Factory::getFileTaskFactory()->filter([Factory::FILTER => $qF]));
+
+    // Test if chunks are deleted too
+    $qF = new QueryFilter(Chunk::TASK_ID, $taskObjects["task"]->getId(), "=");
+    $this->assertEquals([], Factory::getChunkFactory()->filter([Factory::FILTER => $qF]));
+
+    // For normal tasks the TaskWrapper should be deleted
+    $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $taskObjects["taskWrapper"]->getId(), "=");
     $deletedTaskWrapper = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => $qF]);
     $this->assertEquals([], $deletedTaskWrapper);
-
-    //TODO everything from deleteTask deleted too or do it in a separate test
-
-    //if supertask: task wrapper not deleted?
-  }*/
+  }
 
   /**
    * Test creating a task with an invalid hashlist.
@@ -844,7 +888,7 @@ final class TaskUtilsTest extends TestBase {
 
     // Delete the FileDownload, FileTask, Task and TaskWrapper in the right order manually.
     // They've been created in the createTask function of TaskUtils during the successful creation.
-    $qF = new QueryFilter(FileDownload::FILE_ID, $file->getId(), "=");    
+    $qF = new QueryFilter(FileDownload::FILE_ID, $file->getId(), "=");
     $fileDownload = Factory::getFileDownloadFactory()->filter([Factory::FILTER => $qF]);
     Factory::getFileDownloadFactory()->delete($fileDownload[0]);
 
@@ -897,55 +941,91 @@ final class TaskUtilsTest extends TestBase {
   }
 
   /**
-   * Test if getting the best tasks returns the correct order.
+   * Test if getting the single best task and if the list of best tasks returns the correct order.
    *
    * @return void
    */
   public function testGetBestTasksOrdered(): void {
     $taskObjects1 = $this->createRunningTaskHelper();
     $taskObjects2 = $this->createRunningTaskHelper();
-    Factory::getTaskWrapperFactory()->set($taskObjects2["taskWrapper"], TaskWrapper::PRIORITY, 100);
     $this->createAccessGroupAgent($taskObjects1["agent"], $taskObjects2["accessGroup"]);
 
-/*    $newAgent = $this->createAgent("phpunit");
+    Factory::getTaskWrapperFactory()->set($taskObjects2["taskWrapper"], TaskWrapper::PRIORITY, 100);
+    Factory::getTaskFactory()->set($taskObjects2["task"], Task::PRIORITY, 100);
+
+    // One agent is already assigned to the task with a MAX_AGENTS setting of 1, expect the currently assigned task
+    $bestTasks = TaskUtils::getBestTask($taskObjects1["agent"], true);
+    $this->assertEquals($bestTasks[0]->getId(), $taskObjects1["task"]->getId());
+    $this->assertEquals(count($bestTasks), 1);
+    $this->assertEquals(TaskUtils::getBestTask($taskObjects1["agent"])->getId(), $taskObjects1["task"]->getId());
+
+    // Increase MAX_AGENTS so the task with the higher priority gets returned first
+    Factory::getTaskWrapperFactory()->set($taskObjects1["taskWrapper"], TaskWrapper::MAX_AGENTS, 5);
+    Factory::getTaskWrapperFactory()->set($taskObjects2["taskWrapper"], TaskWrapper::MAX_AGENTS, 5);
+    Factory::getTaskFactory()->set($taskObjects1["task"], Task::MAX_AGENTS, 5);
+    Factory::getTaskFactory()->set($taskObjects2["task"], Task::MAX_AGENTS, 5);
+
+    $bestTasks = TaskUtils::getBestTask($taskObjects1["agent"], true);
+    $this->assertEquals($bestTasks[0]->getId(), $taskObjects2["task"]->getId());
+    $this->assertEquals(count($bestTasks), 2);
+    $this->assertEquals(TaskUtils::getBestTask($taskObjects1["agent"])->getId(), $taskObjects2["task"]->getId());
+
+    // Test the order with an entirely new agent too
+    $newAgent = $this->createAgent("phpunit");
     $this->createAccessGroupAgent($newAgent, $taskObjects1["accessGroup"]);
     $this->createAccessGroupAgent($newAgent, $taskObjects2["accessGroup"]);
 
     $bestTasks = TaskUtils::getBestTask($newAgent, true);
     $this->assertEquals($bestTasks[0]->getId(), $taskObjects2["task"]->getId());
     $this->assertEquals($bestTasks[1]->getId(), $taskObjects1["task"]->getId());
-*/
-    $bestTasks = TaskUtils::getBestTask($taskObjects1["agent"], true);
-    $this->assertEquals($bestTasks[0]->getId(), $taskObjects1["task"]->getId());
-    $this->assertEquals(count($bestTasks), 1);
+    $this->assertEquals(TaskUtils::getBestTask($newAgent)->getId(), $taskObjects2["task"]->getId());
 
+    // Test the order with deleted assignments too
     Factory::getAssignmentFactory()->delete($taskObjects1["assignment"]);
     Factory::getAssignmentFactory()->delete($taskObjects2["assignment"]);
     
     $bestTasks = TaskUtils::getBestTask($taskObjects1["agent"], true);
     $this->assertEquals($bestTasks[0]->getId(), $taskObjects2["task"]->getId());
     $this->assertEquals($bestTasks[1]->getId(), $taskObjects1["task"]->getId());
+    $this->assertEquals(TaskUtils::getBestTask($taskObjects1["agent"])->getId(), $taskObjects2["task"]->getId());
 
-    //TODO add: high prio and secret file but no trusted agent || high prio but already finished || high prio and cpu task but non-cpu agent
-  }
-
-  /**
-   * Test getting the best task.
-   *
-   * @return void
-   */
-  public function testGetBestTask(): void {
-    $taskObjects1 = $this->createRunningTaskHelper();
-    $taskObjects2 = $this->createRunningTaskHelper();
-    Factory::getTaskWrapperFactory()->set($taskObjects2["taskWrapper"], TaskWrapper::PRIORITY, 100);
-    $this->createAccessGroupAgent($taskObjects1["agent"], $taskObjects2["accessGroup"]);
+    // Test with a high prio task having a secret file but a non-trusted agent
+    $secretFile = $this->createFile($taskObjects2["accessGroup"], 1);
+    $this->createFileTask($secretFile, $taskObjects2["task"]);
     
-    $this->assertEquals(TaskUtils::getBestTask($taskObjects1["agent"])->getId(), $taskObjects1["task"]->getId());
-/*
+    $untrustedAgent = $this->createAgent("phpunit", 0);
+    $this->createAccessGroupAgent($untrustedAgent, $taskObjects1["accessGroup"]);
+    $this->createAccessGroupAgent($untrustedAgent, $taskObjects2["accessGroup"]);
+
+    $bestTasks = TaskUtils::getBestTask($untrustedAgent, true);
+    $this->assertEquals($bestTasks[0]->getId(), $taskObjects1["task"]->getId());
+    $this->assertEquals(count($bestTasks), 1);
+    $this->assertEquals(TaskUtils::getBestTask($untrustedAgent)->getId(), $taskObjects1["task"]->getId());
+
+    // Test with a high prio task being cpu-only but a non-cpu agent
+    $GPUAgent = $this->createAgent("phpunit");
+    $this->createAccessGroupAgent($GPUAgent, $taskObjects1["accessGroup"]);
+    $this->createAccessGroupAgent($GPUAgent, $taskObjects2["accessGroup"]);
+
+    Factory::getTaskFactory()->set($taskObjects2["task"], Task::IS_CPU_TASK, 1);
+
+    $bestTasks = TaskUtils::getBestTask($GPUAgent, true);
+    $this->assertEquals($bestTasks[0]->getId(), $taskObjects1["task"]->getId());
+    $this->assertEquals(count($bestTasks), 1);
+    $this->assertEquals(TaskUtils::getBestTask($GPUAgent)->getId(), $taskObjects1["task"]->getId());
+
+    // Test with a high prio but an already finished task
+    Factory::getTaskFactory()->set($taskObjects2["task"], Task::IS_CPU_TASK, 0);
+    Factory::getTaskFactory()->set($taskObjects2["task"], Task::KEYSPACE, 1);
+
     $newAgent = $this->createAgent("phpunit");
     $this->createAccessGroupAgent($newAgent, $taskObjects1["accessGroup"]);
     $this->createAccessGroupAgent($newAgent, $taskObjects2["accessGroup"]);
-    $this->assertEquals(TaskUtils::getBestTask($newAgent)->getId(), $taskObjects2["task"]->getId());*/
+
+    $bestTasks = TaskUtils::getBestTask($newAgent, true);
+    $this->assertEquals($bestTasks[0]->getId(), $taskObjects1["task"]->getId());
+    $this->assertEquals(count($bestTasks), 1);
+    $this->assertEquals(TaskUtils::getBestTask($newAgent)->getId(), $taskObjects1["task"]->getId());
   }
 
   /**
@@ -1174,7 +1254,7 @@ final class TaskUtilsTest extends TestBase {
     );
   }
 
-  public function createTaskHelper(int $taskType = DTaskTypes::NORMAL, int $isSecret = 0): array {
+  public function createTaskHelper(int $taskType = DTaskTypes::NORMAL, int $isSecret = 0, array $files = []): array {
     $user = $this->createUser("phpunit");
     $accessGroup = $this->createAccessGroup("phpunit");
     $this->createAccessGroupUser($user, $accessGroup);
