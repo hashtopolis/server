@@ -37,3 +37,26 @@ jobs:
       - name: Show installed files tree in /var/www/html
         if: ${{ always() }}
         run: docker exec hashtopolis-server-dev find /var/www/html
+
+  realworld:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - db_system: mysql
+          - db_system: postgres
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Start Hashtopolis server with real-world test data
+        uses: ./.github/actions/start-hashtopolis
+        with:
+          db_system: ${{ matrix.db_system }}
+          test_dataset: realworld
+      - name: Give Apache permissions on necessary directories
+        run: docker exec -u root hashtopolis-server-dev bash -c "chown -R www-data:www-data /var/www/html/src && chmod -R g+w /var/www/html/src"
+      - name: Test with pytest on real-world test data
+        run: docker exec -w /var/www/html/ci/apiv2 -e HASHTOPOLIS_TEST_DATASET=realworld hashtopolis-server-dev pytest
+      - name: Show docker log files
+        if: ${{ always() }}
+        run: docker logs hashtopolis-server-dev
