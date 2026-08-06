@@ -46,3 +46,16 @@ class GlobalConfigHelperTest(BaseTest):
         result1 = Helper().get_global_config()
         result2 = Helper().get_global_config()
         self.assertEqual(result1, result2)
+
+    def test_bounds_are_exposed(self):
+        configs = Helper().get_global_config()
+
+        port_config = next(c for c in configs if c.item == 'hashcatBrainPort')
+        self.assertEqual(port_config.min, 1)
+        self.assertEqual(port_config.max, 65535)
+
+        field_separator = next(c for c in configs if c.item == 'fieldseparator')
+        self.assertEqual(field_separator.maxLength, 1)
+
+        tickbox_config = next(c for c in configs if c.item == 'multicastTransferRateEnable')
+        self.assertEqual(tickbox_config.binaryValues, ['0', '1'])
