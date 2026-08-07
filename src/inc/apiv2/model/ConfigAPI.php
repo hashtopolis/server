@@ -66,4 +66,20 @@ class ConfigAPI extends AbstractModelAPI {
   protected function updateObjects(array $objects): void {
     ConfigUtils::updateConfigs($objects);
   }
+
+  public function getAggregateFieldsets(): array {
+    return [
+      'config' => [
+        'valueBoundaries' => [$this, 'getAggregateValueBoundaries'],
+      ]
+    ];
+  }
+
+  protected function getAggregateValueBoundaries(AbstractModel $object): ?array {
+    if (!($object instanceof Config) || !is_string($object->getItem()) || $object->getItem() === '') {
+      return null;
+    }
+
+    return ConfigUtils::getConfigValueBounds($object->getItem());
+  }
 }
