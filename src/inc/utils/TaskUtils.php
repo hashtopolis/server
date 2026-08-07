@@ -1537,7 +1537,9 @@ class TaskUtils {
     // Limit how much difference a chunk can have to the previous.
     $differenceToChunk = ($differenceToChunk > 1.5) ? 1.5 : $differenceToChunk;
     $differenceToChunk = ($differenceToChunk < (2/3)) ? (2/3) : $differenceToChunk;
-    if ($differenceToChunk > 0.8 && $differenceToChunk < 1.2) return;
+    if ($differenceToChunk < 1.2) return; // if the difference is less than 20% don't make any adjustments, margin of error. We also disregard any 
+                                          // adjustments that would result in a smaller chunk size (anything < 1.0), since we do not want to perform
+                                          // automatic reductions in chunk size.
     
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $chunk->getAgentId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $chunk->getTaskId(), "=");
