@@ -7,25 +7,26 @@ use ReflectionClass;
 
 class DConfig {
   // Section: Cracking/Tasks
-  const BENCHMARK_TIME         = "benchtime";
-  const CHUNK_DURATION         = "chunktime";
-  const CHUNK_TIMEOUT          = "chunktimeout";
-  const AGENT_TIMEOUT          = "agenttimeout";
-  const FIELD_SEPARATOR        = "fieldseparator";
-  const HASHLIST_ALIAS         = "hashlistAlias";
-  const STATUS_TIMER           = "statustimer";
-  const BLACKLIST_CHARS        = "blacklistChars";
-  const DISP_TOLERANCE         = "disptolerance";
-  const DEFAULT_BENCH          = "defaultBenchmark";
-  const AGENT_DATA_LIFETIME    = "agentDataLifetime";
-  const DISABLE_TRIMMING       = "disableTrimming";
-  const PRIORITY_0_START       = "priority0Start";
-  const HASHCAT_BRAIN_ENABLE   = "hashcatBrainEnable";
-  const HASHCAT_BRAIN_HOST     = "hashcatBrainHost";
-  const HASHCAT_BRAIN_PORT     = "hashcatBrainPort";
-  const HASHCAT_BRAIN_PASS     = "hashcatBrainPass";
-  const HASHLIST_IMPORT_CHECK  = "hashlistImportCheck";
-  const HC_ERROR_IGNORE        = "hcErrorIgnore";
+  const BENCHMARK_TIME            = "benchtime";
+  const CHUNK_DURATION            = "chunktime";
+  const CHUNK_DURATION_AUTO_TUNE  = "chunktimeAutoTune";
+  const CHUNK_TIMEOUT             = "chunktimeout";
+  const AGENT_TIMEOUT             = "agenttimeout";
+  const FIELD_SEPARATOR           = "fieldseparator";
+  const HASHLIST_ALIAS            = "hashlistAlias";
+  const STATUS_TIMER              = "statustimer";
+  const BLACKLIST_CHARS           = "blacklistChars";
+  const DISP_TOLERANCE            = "disptolerance";
+  const DEFAULT_BENCH             = "defaultBenchmark";
+  const AGENT_DATA_LIFETIME       = "agentDataLifetime";
+  const DISABLE_TRIMMING          = "disableTrimming";
+  const PRIORITY_0_START          = "priority0Start";
+  const HASHCAT_BRAIN_ENABLE      = "hashcatBrainEnable";
+  const HASHCAT_BRAIN_HOST        = "hashcatBrainHost";
+  const HASHCAT_BRAIN_PORT        = "hashcatBrainPort";
+  const HASHCAT_BRAIN_PASS        = "hashcatBrainPass";
+  const HASHLIST_IMPORT_CHECK     = "hashlistImportCheck";
+  const HC_ERROR_IGNORE           = "hcErrorIgnore";
   
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
@@ -122,6 +123,7 @@ class DConfig {
     return match ($config) {
       DConfig::BENCHMARK_TIME => DConfigType::NUMBER_INPUT,
       DConfig::CHUNK_DURATION => DConfigType::NUMBER_INPUT,
+      DConfig::CHUNK_DURATION_AUTO_TUNE => DConfigType::TICKBOX,
       DConfig::CHUNK_TIMEOUT => DConfigType::NUMBER_INPUT,
       DConfig::AGENT_TIMEOUT => DConfigType::NUMBER_INPUT,
       DConfig::HASHES_PAGE_SIZE => DConfigType::NUMBER_INPUT,
@@ -190,6 +192,7 @@ class DConfig {
     return match ($config) {
       DConfig::BENCHMARK_TIME => "Time in seconds an agent should benchmark a task.",
       DConfig::CHUNK_DURATION => "Time in seconds a client should be working on a single chunk.",
+      DConfig::CHUNK_DURATION_AUTO_TUNE => "Automatically adjust chunk sizes to get the actual chunk working time for a client as close as possible to the configured chunk duration.",
       DConfig::CHUNK_TIMEOUT => "Time in seconds the server will consider an issued chunk as inactive or timed out and will reallocate to another client.",
       DConfig::AGENT_TIMEOUT => "Time in seconds the server will consider a client inactive or timed out.",
       DConfig::HASHES_PAGE_SIZE => "Number of hashes shown on each page of the hashes view.",

@@ -495,6 +495,11 @@ class APISendProgress extends APIBasic {
         // the chunk has finished (exhausted)
         $chunk = Factory::getChunkFactory()->mset($chunk, [Chunk::SPEED => 0, Chunk::PROGRESS => 10000, Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength()]);
         DServerLog::log(DServerLog::TRACE, "Chunk is exhausted (cracker status)", [$this->agent, $chunk]);
+
+        // If we don't make use of static chunks we attempt to tune the duration a chunk takes to calculate
+        if($task->getStaticChunks() === 0 && SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION_AUTO_TUNE) === 1) {
+            TaskUtils::tuneChunkDuration($chunk, $task);
+        }
         break;
       case DHashcatStatus::CRACKED:
         // the chunk has finished (cracked whole hashList)
