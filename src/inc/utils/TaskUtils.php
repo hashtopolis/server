@@ -44,6 +44,7 @@ use Hashtopolis\inc\defines\DPayloadKeys;
 use Hashtopolis\inc\defines\DPrince;
 use Hashtopolis\inc\defines\DTaskStaticChunking;
 use Hashtopolis\inc\defines\DTaskTypes;
+use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
@@ -1518,5 +1519,37 @@ class TaskUtils {
     $qF4 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
     $agg = new Aggregation(Chunk::SPEED, Aggregation::SUM);
     return (int)(Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2, $qF3, $qF4])], [$agg])[$agg->getName()] ?? 0);
+  }
+
+  /**
+   *  Adjust the benchmark of an agent for a task to ensure the actual time it takes to calculate a chunk
+   *  is within 20% of the configured chunk duration time.
+   *
+   * @param Chunk $chunk
+   * @param Task $task
+   * @throws Exception
+   */
+  public static function tuneChunkDuration(Chunk $chunk, Task $task, Agent $agent): void {
+    $timeTaken = $chunk->getSolveTime() - $chunk->getDispatchTime();
+    if($timeTaken < 0) return; // prevent math & logic errors
+
+    $differenceToChunk = $task->getChunkTime() / $timeTaken;
+    // Limit how much difference a chunk can have to the previous.
+    $differenceToChunk = ($differenceToChunk > 1.5) ? 1.5 : $differenceToChunk;
+    $differenceToChunk = ($differenceToChunk < (2/3)) ? (2/3) : $differenceToChunk;
+    if ($differenceToChunk > 0.8 && $differenceToChunk < 1.2) return;
+    
+    $qF1 = new QueryFilter(Assignment::AGENT_ID, $chunk->getAgentId(), "=");
+    $qF2 = new QueryFilter(Assignment::TASK_ID, $chunk->getTaskId(), "=");
+    $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]])[0];
+
+    $benchmark = $assignment->getBenchmark();
+    $benchmarkParts = explode(":", $benchmark);
+    if($benchmarkParts[0] == 0 || count($benchmarkParts) != 2) return;
+    $newBenchmark = $differenceToChunk * $benchmarkParts[0];
+    $assignment->setBenchmark(round($newBenchmark).":".round($benchmarkParts[1]));
+    DServerLog::log(DServerLog::INFO, "{$timeTaken}---{$task->getChunkTime()}", [$agent, $assignment]);
+    DServerLog::log(DServerLog::INFO, "Multiplied the benchmark of agent by ".round($differenceToChunk,2), [$agent, $assignment]);
+    Factory::getAssignmentFactory()->update($assignment);
   }
 }
