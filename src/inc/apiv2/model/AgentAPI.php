@@ -97,8 +97,8 @@ class AgentAPI extends AbstractModelAPI {
     $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
     $qFs[] = new QueryFilter(Chunk::STATE, DHashcatStatus::RUNNING, "=");
     $qFs[] = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+    $qFs[] = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
     $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
-    
     $active_chunk = Factory::getChunkFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF], true);
     if ($active_chunk !== NULL) {
       $includedData["chunks"][$agentId] = [$active_chunk];
