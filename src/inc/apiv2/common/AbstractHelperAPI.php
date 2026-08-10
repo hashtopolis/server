@@ -214,7 +214,7 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
       }
     }
     
-    $length = $end - $start + 1; //content-length
+    $length = $status === 200 ? $size : $end - $start + 1; //content-length
     if ($status === 200) {
       if (fseek($fp, 0) !== 0) {
         fclose($fp);
@@ -226,7 +226,10 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
         }
         
         public function __destruct() {
-          $this->close();
+          $stream = $this->detach();
+          if (is_resource($stream)) {
+            fclose($stream);
+          }
         }
       });
     }
