@@ -215,6 +215,7 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     
     $length = $end - $start + 1; //content-length
     if ($status === 200 && $start === 0 && $end === $size - 1) {
+      fseek($fp, 0);
       register_shutdown_function(static function () use ($fp): void {
         fclose($fp);
       });
