@@ -164,8 +164,7 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     }
     $start = $c_start;
     $end = $c_end;
-    fseek($fp, $start);
-    return true;
+    return fseek($fp, $start) === 0;
   }
   
   /**
@@ -214,12 +213,16 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     }
     
     $length = $end - $start + 1; //content-length
-    if ($status === 200 && $start === 0 && $end === $size - 1) {
-      fseek($fp, 0);
-      register_shutdown_function(static function () use ($fp): void {
+    if ($status === 200) {
+      if (fseek($fp, 0) !== 0) {
         fclose($fp);
+        throw new HttpForbiddenException($request, "Can't seek the file");
+      }
+      $response = $response->withBody(new class($fp) extends Stream {
+        public function __destruct() {
+          $this->close();
+        }
       });
-      $response = $response->withBody(new Stream($fp));
     }
     else {
       $buffer = 1024 * 100;
