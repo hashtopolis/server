@@ -27,6 +27,7 @@ use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DAgentStatsType;
 use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DLogEntryIssuer;
 use Hashtopolis\inc\defines\DNotificationObjectType;
@@ -643,5 +644,25 @@ class AgentUtils {
     $agg1 = new Aggregation(Chunk::CRACKED, Aggregation::SUM);
     $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2])], [$agg1]);
     return (int)($results[$agg1->getName()] ?? 0);
+  }
+  
+  /**
+   * Get the active chunk being worked on by an agent or
+   *  (if task ID is specified) by an agent on a specific task.
+   *
+   * @param int $agentId
+   * @param int|null $taskId
+   * @return Chunk|null
+   * @throws Exception
+   */
+  public static function getActiveChunk(int $agentId, ?int $taskId = null): ?Chunk {
+    $qFs = [];
+    $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
+    $qFs[] = $taskId !== null ? new QueryFilter(Chunk::TASK_ID, $taskId, "=") : null;
+    $qFs[] = new QueryFilter(Chunk::STATE, DHashcatStatus::RUNNING, "=");
+    $qFs[] = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
+    $qFs[] = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+    $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
+    return Factory::getChunkFactory()->filter([Factory::FILTER => array_filter($qFs), Factory::ORDER => $oF], true);
   }
 }

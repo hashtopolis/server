@@ -93,17 +93,10 @@ class AgentAPI extends AbstractModelAPI {
    */
   function aggregateData(AbstractModel $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     $agentId = $object->getId();
-    $qFs = [];
-    $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
-    $qFs[] = new QueryFilter(Chunk::STATE, DHashcatStatus::RUNNING, "=");
-    $qFs[] = new QueryFilter(Chunk::PROGRESS, 10000, "<");
-    $qFs[] = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
-    $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
-    $active_chunk = Factory::getChunkFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF], true);
-    if ($active_chunk !== NULL) {
+    $active_chunk = AgentUtils::getActiveChunk($agentId);
+    if ($active_chunk !== null) {
       $includedData["chunks"][$agentId] = [$active_chunk];
     }
-    
     return parent::aggregateData($object, $includedData, $aggregateFieldsets);
   }
 
