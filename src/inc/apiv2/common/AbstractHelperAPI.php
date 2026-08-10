@@ -220,18 +220,7 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
         fclose($fp);
         throw new HttpInternalServerErrorException($request, "Can't seek the file");
       }
-      $response = $response->withBody(new class($fp) extends Stream {
-        public function __construct($stream) {
-          parent::__construct($stream);
-        }
-        
-        public function __destruct() {
-          $stream = $this->detach();
-          if (is_resource($stream)) {
-            fclose($stream);
-          }
-        }
-      });
+      $response = $response->withBody(new Stream($fp));
     }
     else {
       $buffer = 1024 * 100;
