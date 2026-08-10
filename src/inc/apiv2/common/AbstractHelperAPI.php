@@ -15,6 +15,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Exception\HttpForbiddenException;
+use Slim\Psr7\Stream;
 use Hashtopolis\inc\Util;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
@@ -213,15 +214,20 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     }
     
     $length = $end - $start + 1; //content-length
-    $buffer = 1024 * 100;
-    $stream = $response->getBody();
-    while (!feof($fp) && ($p = ftell($fp)) <= $end) {
-      if ($p + $buffer > $end) {
-        $buffer = $end - $p + 1;
-      }
-      $stream->write(fread($fp, $buffer));
+    if ($status === 200) {
+      $response = $response->withBody(new Stream($fp));
     }
-    fclose($fp);
+    else {
+      $buffer = 1024 * 100;
+      $stream = $response->getBody();
+      while (!feof($fp) && ($p = ftell($fp)) <= $end) {
+        if ($p + $buffer > $end) {
+          $buffer = $end - $p + 1;
+        }
+        $stream->write(fread($fp, $buffer));
+      }
+      fclose($fp);
+    }
     
     return $response->withStatus($status)
       ->withHeader("Content-Type", $contentType)
