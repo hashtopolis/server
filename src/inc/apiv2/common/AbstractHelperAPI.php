@@ -215,26 +215,7 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     }
     
     $length = $status === 200 ? $size : $end - $start + 1; //content-length
-    if ($status === 200) {
-      if (fseek($fp, 0) !== 0) {
-        fclose($fp);
-        throw new HttpInternalServerErrorException($request, "Can't seek the file");
-      }
-      $response = $response->withBody(new Stream($fp));
-    }
-    else {
-      $buffer = 1024 * 100;
-      $stream = $response->getBody();
-      while (!feof($fp) && ($p = ftell($fp)) <= $end) {
-        if ($p + $buffer > $end) {
-          $buffer = $end - $p + 1;
-        }
-        $stream->write(fread($fp, $buffer));
-      }
-      fclose($fp);
-    }
-    
-    return $response->withStatus($status)
+    $response = $response->withStatus($status)
       ->withHeader("Content-Type", $contentType)
       ->withHeader("Content-Description", $filename)
       ->withHeader("Content-Disposition", "attachment; filename=\"" . $filename . "\"")
@@ -242,5 +223,25 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
       ->withHeader("Content-Range", "bytes $start-$end/$size")
       ->withHeader("Content-Length", $length)
       ->withHeader("ETag", $etag);
+    
+    if ($status === 200) {
+      if (fseek($fp, 0) !== 0) {
+        fclose($fp);
+        throw new HttpInternalServerErrorException($request, "Can't seek file for download");
+      }
+      return $response->withBody(new Stream($fp));
+    }
+    
+    $buffer = 1024 * 100;
+    $stream = $response->getBody();
+    while (!feof($fp) && ($p = ftell($fp)) <= $end) {
+      if ($p + $buffer > $end) {
+        $buffer = $end - $p + 1;
+      }
+      $stream->write(fread($fp, $buffer));
+    }
+    fclose($fp);
+    
+    return $response;
   }
 }
