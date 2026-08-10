@@ -214,7 +214,10 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     }
     
     $length = $end - $start + 1; //content-length
-    if ($status === 200) {
+    if ($status === 200 && $start === 0 && $end === $size - 1) {
+      register_shutdown_function(static function () use ($fp): void {
+        fclose($fp);
+      });
       $response = $response->withBody(new Stream($fp));
     }
     else {
