@@ -123,6 +123,7 @@ def do_create_apitoken(extra_payload={}, **kwargs):
     extra_payload = dict(extra_payload or {})
     extra_payload.setdefault('startValid', now)
     extra_payload.setdefault('endValid', now + 3600)
+    extra_payload.setdefault('tokenName', 'pytest-token')
     return _do_create_obj_from_file(ApiToken, 'create_apitoken', extra_payload, **kwargs)
 
 
@@ -139,6 +140,7 @@ def create_apitoken_raw(test, auth, scopes):
                 'scopes': scopes,
                 'startValid': now,
                 'endValid': now + 3600,
+                'tokenName': 'pytest-token',
             },
             'type': 'ApiToken',
         },
