@@ -15,6 +15,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Exception\HttpForbiddenException;
+use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Psr7\Stream;
 use Hashtopolis\inc\Util;
 
@@ -173,6 +174,7 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
    * @param string $filename
    * @return Response
    * @throws HttpForbiddenException
+   * @throws HttpInternalServerErrorException
    */
   protected function startDownload(Request $request, Response $response, string $filename): Response {
     $size = Util::filesize($filename);
@@ -216,9 +218,13 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     if ($status === 200) {
       if (fseek($fp, 0) !== 0) {
         fclose($fp);
-        throw new HttpForbiddenException($request, "Can't seek the file");
+        throw new HttpInternalServerErrorException($request, "Can't seek the file");
       }
       $response = $response->withBody(new class($fp) extends Stream {
+        public function __construct($stream) {
+          parent::__construct($stream);
+        }
+        
         public function __destruct() {
           $this->close();
         }
