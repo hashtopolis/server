@@ -10,13 +10,15 @@ class JwtApiKey extends AbstractModel {
   private ?int $endValid;
   private ?int $userId;
   private ?int $isRevoked;
+  private ?string $tokenName;
   
-  function __construct(?int $jwtApiKeyId, ?int $startValid, ?int $endValid, ?int $userId, ?int $isRevoked) {
+  function __construct(?int $jwtApiKeyId, ?int $startValid, ?int $endValid, ?int $userId, ?int $isRevoked, ?string $tokenName) {
     $this->jwtApiKeyId = $jwtApiKeyId;
     $this->startValid = $startValid;
     $this->endValid = $endValid;
     $this->userId = $userId;
     $this->isRevoked = $isRevoked;
+    $this->tokenName = $tokenName;
   }
   
   function getKeyValueDict(): array {
@@ -26,6 +28,7 @@ class JwtApiKey extends AbstractModel {
     $dict['endValid'] = $this->endValid;
     $dict['userId'] = $this->userId;
     $dict['isRevoked'] = $this->isRevoked;
+    $dict['tokenName'] = $this->tokenName;
     
     return $dict;
   }
@@ -37,6 +40,7 @@ class JwtApiKey extends AbstractModel {
     $dict['endValid'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "endValid", "public" => False, "dba_mapping" => False];
     $dict['userId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "userId", "public" => False, "dba_mapping" => False];
     $dict['isRevoked'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isRevoked", "public" => False, "dba_mapping" => False];
+    $dict['tokenName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "tokenName", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
@@ -97,11 +101,20 @@ class JwtApiKey extends AbstractModel {
     $this->isRevoked = $isRevoked;
   }
   
+  function getTokenName(): ?string {
+    return $this->tokenName;
+  }
+  
+  function setTokenName(?string $tokenName): void {
+    $this->tokenName = $tokenName;
+  }
+  
   const JWT_API_KEY_ID = "jwtApiKeyId";
   const START_VALID = "startValid";
   const END_VALID = "endValid";
   const USER_ID = "userId";
   const IS_REVOKED = "isRevoked";
+  const TOKEN_NAME = "tokenName";
 
   const PERM_CREATE = "permJwtApiKeyCreate";
   const PERM_READ = "permJwtApiKeyRead";

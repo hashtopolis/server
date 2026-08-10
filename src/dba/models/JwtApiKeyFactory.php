@@ -32,7 +32,7 @@ class JwtApiKeyFactory extends AbstractModelFactory {
    * @return JwtApiKey
    */
   function getNullObject(): JwtApiKey {
-    return new JwtApiKey(-1, null, null, null, null);
+    return new JwtApiKey(-1, null, null, null, null, null);
   }
   
   /**
@@ -45,6 +45,6 @@ class JwtApiKeyFactory extends AbstractModelFactory {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
-    return new JwtApiKey($dict['jwtapikeyid'], $dict['startvalid'], $dict['endvalid'], $dict['userid'], $dict['isrevoked']);
+    return new JwtApiKey($dict['jwtapikeyid'], $dict['startvalid'], $dict['endvalid'], $dict['userid'], $dict['isrevoked'], $dict['tokenname']);
   }
 }
