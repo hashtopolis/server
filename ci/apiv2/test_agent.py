@@ -4,7 +4,7 @@ from hashtopolis import Agent, Config, Helper
 from hashtopolis import HashtopolisError
 from hashtopolis_agent import ProcessState
 
-from utils import BaseTest, do_create_dummy_agent, do_create_agentassignent
+from utils import BaseTest
 
 
 class AgentTest(BaseTest):
