@@ -4,10 +4,6 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
 use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\models\Chunk;
-use Hashtopolis\dba\QueryFilter;
-use Hashtopolis\inc\defines\DConfig;
-use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\inc\utils\AssignmentUtils;
