@@ -4,7 +4,6 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
 use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\inc\defines\DHashcatStatus;
