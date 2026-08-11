@@ -1534,12 +1534,16 @@ class TaskUtils {
     if($timeTaken < 0) return; // prevent math & logic errors
 
     $differenceToChunk = $task->getChunkTime() / $timeTaken;
-    // Limit how much difference a chunk can have to the previous.
-    $differenceToChunk = ($differenceToChunk > 1.5) ? 1.5 : $differenceToChunk;
-    $differenceToChunk = ($differenceToChunk < (2/3)) ? (2/3) : $differenceToChunk;
     if ($differenceToChunk < 1.2) return; // if the difference is less than 20% don't make any adjustments, margin of error. We also disregard any 
                                           // adjustments that would result in a smaller chunk size (anything < 1.0), since we do not want to perform
                                           // automatic reductions in chunk size.
+    
+    // Limit the multiplier to 1.5, this prevents overshooting the time an agent should work on a chunk.
+    // This value could be increased (to allow for faster ramping up), but since the benchmark results and/or 
+    // chunk calculation times for small chunks can be pretty inaccurate this is a pretty safe and reasonable
+    // multiplier. Keep in mind the chunk duration will not be tuned down, only up. So once overshot, you're
+    // stuck with that time for the remainder of the task.
+    $differenceToChunk = ($differenceToChunk > 1.5) ? 1.5 : $differenceToChunk;
     
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $chunk->getAgentId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $chunk->getTaskId(), "=");
