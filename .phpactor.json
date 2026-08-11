@@ -1,0 +1,6 @@
+{
+    "$schema": "/phpactor.schema.json",
+    "language_server_phpstan.enabled": false,
+    "php_code_sniffer.enabled": false,
+    "prophecy.enabled": false
+}

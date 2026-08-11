@@ -5,6 +5,8 @@ namespace Hashtopolis\inc\apiv2\model;
 use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DTaskStatus;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\ContainFilter;
@@ -163,7 +165,36 @@ class TaskAPI extends AbstractModelAPI {
       ]
     ];
   }
-  
+
+  public static function getAggregateFeatures(): array {
+    $base = [
+      'pk' => false,
+      'private' => false,
+      'choices' => 'unset',
+      'null' => false,
+      'protected' => false,
+      'read_only' => true,
+      'subtype' => 'unset',
+      'public' => false,
+      'dba_mapping' => false,
+    ];
+    return [
+      'totalAssignedAgents' => array_merge($base, ['type' => 'int', 'alias' => 'totalAssignedAgents']),
+      'dispatched' => array_merge($base, ['type' => 'str', 'alias' => 'dispatched']),
+      'searched' => array_merge($base, ['type' => 'str', 'alias' => 'searched']),
+      'status' => array_merge($base, [
+        'type' => 'int',
+        'alias' => 'status',
+        'choices' => DTaskStatus::choices(),
+      ]),
+      'totalNumberOfChunks' => array_merge($base, ['type' => 'int', 'alias' => 'totalNumberOfChunks']),
+      'currentSpeed' => array_merge($base, ['type' => 'int', 'alias' => 'currentSpeed']),
+      'estimatedTime' => array_merge($base, ['type' => 'int', 'alias' => 'estimatedTime']),
+      'timeSpent' => array_merge($base, ['type' => 'int', 'alias' => 'timeSpent']),
+      'cprogress' => array_merge($base, ['type' => 'int', 'alias' => 'cprogress']),
+    ];
+  }
+
   /**
    * @param Task $object
    * @throws Exception

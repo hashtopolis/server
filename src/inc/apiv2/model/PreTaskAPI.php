@@ -58,7 +58,24 @@ class PreTaskAPI extends AbstractModelAPI {
       ]
     ];
   }
-  
+
+  public static function getAggregateFeatures(): array {
+    $base = [
+      'pk' => false,
+      'private' => false,
+      'choices' => 'unset',
+      'null' => false,
+      'protected' => false,
+      'read_only' => true,
+      'subtype' => 'unset',
+      'public' => false,
+      'dba_mapping' => false,
+    ];
+    return [
+      'auxiliaryKeyspace' => array_merge($base, ['type' => 'int', 'alias' => 'auxiliaryKeyspace']),
+    ];
+  }
+
   /**
    * @param Pretask $object
    * @return int

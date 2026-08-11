@@ -20,71 +20,10 @@ use Hashtopolis\inc\apiv2\auth\HashtopolisAuthenticator;
 use Hashtopolis\inc\apiv2\auth\JWTBeforeHandler;
 use Hashtopolis\inc\apiv2\common\ClassMapper;
 use Hashtopolis\inc\apiv2\error\ErrorHandler;
-use Hashtopolis\inc\apiv2\helper\GetCompletedCountHelperAPI;
-use Hashtopolis\inc\apiv2\helper\GetGlobalConfigHelperAPI;
 use Hashtopolis\inc\apiv2\util\CorsHackMiddleware;
 use Hashtopolis\inc\apiv2\util\JsonBodyParserMiddleware;
 use Hashtopolis\inc\apiv2\util\TokenAsParameterMiddleware;
-use Hashtopolis\inc\apiv2\helper\AbortChunkHelperAPI;
-use Hashtopolis\inc\apiv2\helper\AssignAgentHelperAPI;
-use Hashtopolis\inc\apiv2\helper\BulkSupertaskBuilderHelperAPI;
-use Hashtopolis\inc\apiv2\helper\ChangeOwnPasswordHelperAPI;
-use Hashtopolis\inc\apiv2\helper\CreateSuperHashlistHelperAPI;
-use Hashtopolis\inc\apiv2\helper\CreateSupertaskHelperAPI;
-use Hashtopolis\inc\apiv2\helper\CurrentUserHelperAPI;
-use Hashtopolis\inc\apiv2\helper\ExportCrackedHashesHelperAPI;
-use Hashtopolis\inc\apiv2\helper\ExportLeftHashesHelperAPI;
-use Hashtopolis\inc\apiv2\helper\ExportWordlistHelperAPI;
-use Hashtopolis\inc\apiv2\helper\GetAccessGroupsHelperAPI;
-use Hashtopolis\inc\apiv2\helper\GetAgentBinaryHelperAPI;
-use Hashtopolis\inc\apiv2\helper\GetCracksOfTaskHelper;
-use Hashtopolis\inc\apiv2\helper\GetCracksPerDayHelperAPI;
-use Hashtopolis\inc\apiv2\helper\GetBestTasksAgent;
-use Hashtopolis\inc\apiv2\helper\GetFileHelperAPI;
-use Hashtopolis\inc\apiv2\helper\GetTaskProgressImageHelperAPI;
-use Hashtopolis\inc\apiv2\helper\GetUserPermissionHelperAPI;
-use Hashtopolis\inc\apiv2\helper\ImportCrackedHashesHelperAPI;
-use Hashtopolis\inc\apiv2\helper\ImportFileHelperAPI;
-use Hashtopolis\inc\apiv2\helper\MaskSupertaskBuilderHelperAPI;
-use Hashtopolis\inc\apiv2\helper\PurgeTaskHelperAPI;
-use Hashtopolis\inc\apiv2\helper\RebuildChunkCacheHelperAPI;
-use Hashtopolis\inc\apiv2\helper\RecountFileLinesHelperAPI;
-use Hashtopolis\inc\apiv2\helper\RescanGlobalFilesHelperAPI;
-use Hashtopolis\inc\apiv2\helper\ResetChunkHelperAPI;
-use Hashtopolis\inc\apiv2\helper\ResetUserPasswordHelperAPI;
-use Hashtopolis\inc\apiv2\helper\SearchHashesHelperAPI;
-use Hashtopolis\inc\apiv2\helper\SetUserPasswordHelperAPI;
-use Hashtopolis\inc\apiv2\helper\UnassignAgentHelperAPI;
-use Hashtopolis\inc\apiv2\model\AccessGroupAPI;
-use Hashtopolis\inc\apiv2\model\AgentAPI;
-use Hashtopolis\inc\apiv2\model\AgentAssignmentAPI;
-use Hashtopolis\inc\apiv2\model\AgentBinaryAPI;
-use Hashtopolis\inc\apiv2\model\AgentErrorAPI;
-use Hashtopolis\inc\apiv2\model\AgentStatAPI;
-use Hashtopolis\inc\apiv2\model\ApiTokenAPI;
-use Hashtopolis\inc\apiv2\model\ChunkAPI;
-use Hashtopolis\inc\apiv2\model\ConfigAPI;
-use Hashtopolis\inc\apiv2\model\ConfigSectionAPI;
-use Hashtopolis\inc\apiv2\model\CrackerBinaryAPI;
-use Hashtopolis\inc\apiv2\model\CrackerBinaryTypeAPI;
-use Hashtopolis\inc\apiv2\model\FileAPI;
-use Hashtopolis\inc\apiv2\model\GlobalPermissionGroupAPI;
-use Hashtopolis\inc\apiv2\model\HashAPI;
-use Hashtopolis\inc\apiv2\model\HashlistAPI;
-use Hashtopolis\inc\apiv2\model\HashTypeAPI;
-use Hashtopolis\inc\apiv2\model\HealthCheckAgentAPI;
-use Hashtopolis\inc\apiv2\model\HealthCheckAPI;
-use Hashtopolis\inc\apiv2\model\LogEntryAPI;
-use Hashtopolis\inc\apiv2\model\NotificationSettingAPI;
-use Hashtopolis\inc\apiv2\model\PreprocessorAPI;
-use Hashtopolis\inc\apiv2\model\PreTaskAPI;
-use Hashtopolis\inc\apiv2\model\SpeedAPI;
-use Hashtopolis\inc\apiv2\model\SupertaskAPI;
-use Hashtopolis\inc\apiv2\model\TaskAPI;
-use Hashtopolis\inc\apiv2\model\TaskWrapperAPI;
-use Hashtopolis\inc\apiv2\model\TaskWrapperDisplayAPI;
-use Hashtopolis\inc\apiv2\model\UserAPI;
-use Hashtopolis\inc\apiv2\model\VoucherAPI;
+use Hashtopolis\inc\apiv2\common\ApiRegistry;
 
 use DI\Container;
 use Hashtopolis\inc\StartupConfig;
@@ -146,7 +85,7 @@ $container->set("JwtAuthentication", function (ContainerInterface $container) {
   );
 
   $rules = [
-    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/auth/oauth-token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"]),
+    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/auth/oauth-token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json", "/api/v2/openapi-compliant.json"]),
     new RequestMethodRule(ignore: ["OPTIONS"])
   ];
   return new JwtAuthentication($options, $decoder, $rules);
@@ -227,70 +166,10 @@ $errorMiddlewareMethodNotAllowed->setErrorHandler(HttpMethodNotAllowedException:
 include(__DIR__ . "/../../inc/apiv2/common/openAPISchema.routes.php");
 include(__DIR__ . "/../../inc/apiv2/auth/token.routes.php");
 
-// register model APIs
-AccessGroupAPI::register($app);
-AgentAPI::register($app);
-AgentAssignmentAPI::register($app);
-AgentBinaryAPI::register($app);
-AgentErrorAPI::register($app);
-AgentStatAPI::register($app);
-ApiTokenAPI::register($app);
-ChunkAPI::register($app);
-ConfigAPI::register($app);
-ConfigSectionAPI::register($app);
-CrackerBinaryAPI::register($app);
-CrackerBinaryTypeAPI::register($app);
-FileAPI::register($app);
-GlobalPermissionGroupAPI::register($app);
-HashAPI::register($app);
-HashlistAPI::register($app);
-HashTypeAPI::register($app);
-HealthCheckAgentAPI::register($app);
-HealthCheckAPI::register($app);
-LogEntryAPI::register($app);
-NotificationSettingAPI::register($app);
-PreprocessorAPI::register($app);
-PreTaskAPI::register($app);
-SpeedAPI::register($app);
-SupertaskAPI::register($app);
-TaskAPI::register($app);
-TaskWrapperAPI::register($app);
-TaskWrapperDisplayAPI::register($app);
-UserAPI::register($app);
-VoucherAPI::register($app);
-
-// register helpers
-AbortChunkHelperAPI::register($app);
-AssignAgentHelperAPI::register($app);
-BulkSupertaskBuilderHelperAPI::register($app);
-ChangeOwnPasswordHelperAPI::register($app);
-CreateSuperHashlistHelperAPI::register($app);
-CreateSupertaskHelperAPI::register($app);
-CurrentUserHelperAPI::register($app);
-ExportCrackedHashesHelperAPI::register($app);
-ExportLeftHashesHelperAPI::register($app);
-ExportWordlistHelperAPI::register($app);
-GetAccessGroupsHelperAPI::register($app);
-GetAgentBinaryHelperAPI::register($app);
-GetBestTasksAgent::register($app);
-GetCompletedCountHelperAPI::register($app);
-GetCracksOfTaskHelper::register($app);
-GetCracksPerDayHelperAPI::register($app);
-GetFileHelperAPI::register($app);
-GetGlobalConfigHelperAPI::register($app);
-GetTaskProgressImageHelperAPI::register($app);
-GetUserPermissionHelperAPI::register($app);
-ImportCrackedHashesHelperAPI::register($app);
-ImportFileHelperAPI::register($app);
-MaskSupertaskBuilderHelperAPI::register($app);
-PurgeTaskHelperAPI::register($app);
-RebuildChunkCacheHelperAPI::register($app);
-RecountFileLinesHelperAPI::register($app);
-RescanGlobalFilesHelperAPI::register($app);
-ResetChunkHelperAPI::register($app);
-ResetUserPasswordHelperAPI::register($app);
-SearchHashesHelperAPI::register($app);
-SetUserPasswordHelperAPI::register($app);
-UnassignAgentHelperAPI::register($app);
+// register model and helper APIs (order matters: it defines route and
+// OpenAPI spec ordering, see ApiRegistry)
+foreach (ApiRegistry::allApiClasses() as $apiClass) {
+  $apiClass::register($app);
+}
 
 $app->run();

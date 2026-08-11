@@ -64,6 +64,7 @@
     },
     "scripts": {
         "start": "php -S localhost:8080 -t src",
-        "test": "phpunit"
+        "test": "phpunit",
+        "openapi": "php ci/tools/generate-openapi.php"
     }
 }

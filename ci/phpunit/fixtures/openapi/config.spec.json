@@ -1,0 +1,2738 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Hashtopolis API",
+        "version": "v2"
+    },
+    "servers": [
+        {
+            "url": "/"
+        }
+    ],
+    "paths": {
+        "/api/v2/ui/configs": {
+            "get": {
+                "tags": [
+                    "Configs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfigListResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permConfigRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET many request to retrieve multiple objects.",
+                "parameters": [
+                    {
+                        "name": "page[after]",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        },
+                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=",
+                        "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=`"
+                    },
+                    {
+                        "name": "page[before]",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        },
+                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=",
+                        "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=`"
+                    },
+                    {
+                        "name": "page[size]",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        },
+                        "example": 100,
+                        "description": "Amout of data to retrieve inside a single page"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "path",
+                        "style": "deepobject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object"
+                        },
+                        "description": "Filters results using a query",
+                        "example": "\"filter[hashlistId__gt]\": 200"
+                    },
+                    {
+                        "name": "include",
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Items to include, comma seperated. Possible options: configSection"
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: config: valueBoundaries",
+                        "example": {
+                            "aggregate[config]": "valueBoundaries"
+                        }
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Configs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permConfigUpdate"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "PATCH request to update attributes of a single object.",
+                "parameters": []
+            }
+        },
+        "/api/v2/ui/configs/count": {
+            "get": {
+                "tags": [
+                    "Configs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfigListResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permConfigRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET many request to retrieve multiple objects.",
+                "parameters": [
+                    {
+                        "name": "page[after]",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        },
+                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=",
+                        "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=`"
+                    },
+                    {
+                        "name": "page[before]",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        },
+                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=",
+                        "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=`"
+                    },
+                    {
+                        "name": "page[size]",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        },
+                        "example": 100,
+                        "description": "Amout of data to retrieve inside a single page"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "path",
+                        "style": "deepobject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object"
+                        },
+                        "description": "Filters results using a query",
+                        "example": "\"filter[hashlistId__gt]\": 200"
+                    },
+                    {
+                        "name": "include",
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Items to include, comma seperated. Possible options: configSection"
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: config: valueBoundaries",
+                        "example": {
+                            "aggregate[config]": "valueBoundaries"
+                        }
+                    }
+                ]
+            }
+        },
+        "/api/v2/ui/configs/{id:[0-9]+}/{relation:configSection}": {
+            "get": {
+                "tags": [
+                    "Configs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfigRelationConfigSectionGetResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permConfigRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET request to retrieve a single object.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    }
+                ]
+            }
+        },
+        "/api/v2/ui/configs/{id:[0-9]+}/relationships/{relation:configSection}": {
+            "get": {
+                "tags": [
+                    "Configs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfigResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permConfigRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET request for  for a to-one relationship link. Returns the resource record of the object that is part of the specified relation.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Configs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "Successfull operation"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permConfigUpdate"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "PATCH request to update a to one relationship.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ConfigRelationConfigSection"
+                            }
+                        }
+                    }
+                },
+                "parameters": []
+            }
+        },
+        "/api/v2/ui/configs/{id:[0-9]+}": {
+            "get": {
+                "tags": [
+                    "Configs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfigResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permConfigRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET request to retrieve a single object.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Items to include. Comma seperated"
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Configs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfigPostPatchResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permConfigUpdate"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "PATCH request to update attributes of a single object.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ConfigPatch"
+                            }
+                        }
+                    }
+                },
+                "parameters": []
+            }
+        },
+        "/api/v2/ui/configsections": {
+            "get": {
+                "tags": [
+                    "ConfigSections"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfigSectionListResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permConfigSectionRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET many request to retrieve multiple objects.",
+                "parameters": [
+                    {
+                        "name": "page[after]",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        },
+                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319",
+                        "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configSectionId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319`"
+                    },
+                    {
+                        "name": "page[before]",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        },
+                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319",
+                        "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configSectionId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319`"
+                    },
+                    {
+                        "name": "page[size]",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        },
+                        "example": 100,
+                        "description": "Amout of data to retrieve inside a single page"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "path",
+                        "style": "deepobject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object"
+                        },
+                        "description": "Filters results using a query",
+                        "example": "\"filter[hashlistId__gt]\": 200"
+                    },
+                    {
+                        "name": "include",
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Items to include, comma seperated. Possible options: "
+                    }
+                ]
+            }
+        },
+        "/api/v2/ui/configsections/count": {
+            "get": {
+                "tags": [
+                    "ConfigSections"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfigSectionListResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permConfigSectionRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET many request to retrieve multiple objects.",
+                "parameters": [
+                    {
+                        "name": "page[after]",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        },
+                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319",
+                        "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configSectionId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319`"
+                    },
+                    {
+                        "name": "page[before]",
+                        "in": "path",
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        },
+                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319",
+                        "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configSectionId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319`"
+                    },
+                    {
+                        "name": "page[size]",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        },
+                        "example": 100,
+                        "description": "Amout of data to retrieve inside a single page"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "path",
+                        "style": "deepobject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object"
+                        },
+                        "description": "Filters results using a query",
+                        "example": "\"filter[hashlistId__gt]\": 200"
+                    },
+                    {
+                        "name": "include",
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Items to include, comma seperated. Possible options: "
+                    }
+                ]
+            }
+        },
+        "/api/v2/ui/configsections/{id:[0-9]+}": {
+            "get": {
+                "tags": [
+                    "ConfigSections"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfigSectionResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permConfigSectionRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET request to retrieve a single object.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Items to include. Comma seperated"
+                    }
+                ]
+            }
+        },
+        "/api/v2/auth/token": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Token"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/helper/importFile": {
+            "post": {
+                "parameters": [
+                    {
+                        "name": "Upload-Metadata",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^([a-zA-Z0-9]+ [A-Za-z0-9+/=]+)(,[a-zA-Z0-9]+ [A-Za-z0-9+/=]+)*$"
+                        },
+                        "example": "filename ZXhhbXBsZS50eHQ=",
+                        "description": " The Upload-Metadata header contains one or more comma-separated key-value pairs.\n            Each pair is formatted as `<key> <base64(value)>`, where:\n              - `key` is a string without spaces.\n              - `value` is base64-encoded"
+                    },
+                    {
+                        "name": "Upload-Length",
+                        "in": "header",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        "example": 10000,
+                        "description": "The total size of the upload in bytes. Must be a positive integer.\n          Required if `Upload-Defer-Length` is not set."
+                    },
+                    {
+                        "name": "Upload-Defer-Length",
+                        "in": "header",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1,
+                        "description": "Indicates that the upload length is not known at creation time.\n          Value must be `1`. If present, `Upload-Length` must be omitted."
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "successful operation",
+                        "headers": {
+                            "Tus-Resumable": {
+                                "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
+                                "schema": {
+                                    "type": "string",
+                                    "enum": "enum: ['1.0.0']"
+                                }
+                            },
+                            "Location": {
+                                "description": "Location of the file where the user can push to.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/pdf": {
+                                "type": "string",
+                                "format": "binary"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}": {
+            "patch": {
+                "parameters": [
+                    {
+                        "name": "Upload-Offset",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": "512",
+                        "description": " The Upload-Offset header's value MUST be equal to the current offset of the resource"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "application/offset+octet-stream"
+                            ]
+                        }
+                    }
+                ],
+                "requestBody": [
+                    {
+                        "required": "true",
+                        "description": "The binary data to push to the file",
+                        "content": {
+                            "application/offset+octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Chunk accepted",
+                        "headers": {
+                            "Tus-Resumable": {
+                                "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
+                                "schema": {
+                                    "type": "string",
+                                    "enum": "enum: ['1.0.0']"
+                                }
+                            },
+                            "Upload-Offset": {
+                                "description": "The new offset after the chunk is accepted. Indicates how many bytes were received so far.",
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "head": {
+                "responses": {
+                    "200": {
+                        "description": "successful request",
+                        "headers": {
+                            "Tus-Resumable": {
+                                "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
+                                "schema": {
+                                    "type": "string",
+                                    "enum": "enum: ['1.0.0']"
+                                }
+                            },
+                            "Upload-Offset": {
+                                "description": "Number of bytes already received",
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            },
+                            "Upload-Length": {
+                                "description": "Total upload length (if known)",
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            },
+                            "Upload-Defer-Length": {
+                                "description": "Indicates deferred upload length (if applicable)",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "Upload-Metadata": {
+                                "description": "Original metadata sent during creation",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ErrorResponse": {
+                "type": "object",
+                "required": [
+                    "status"
+                ],
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "about=>blank"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "Error details here"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": 400
+                    }
+                }
+            },
+            "NotFoundResponse": {
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "404 Not Found"
+                    },
+                    "exception": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "example": "Slim\\Exception\\HttpNotFoundException"
+                            },
+                            "code": {
+                                "type": "integer",
+                                "example": 404
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "Not Found"
+                            },
+                            "file": {
+                                "type": "string",
+                                "example": "../hashtopolis/server/vendor/slim/slim/Slim/Middleware/RoutingMiddleware.php"
+                            },
+                            "line": {
+                                "type": "integer",
+                                "example": 91
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigCreate": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "attributes"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "config"
+                            },
+                            "attributes": {
+                                "type": "object",
+                                "properties": {
+                                    "configSectionId": {
+                                        "type": "integer"
+                                    },
+                                    "item": {
+                                        "type": "string"
+                                    },
+                                    "value": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "configSectionId",
+                                    "item",
+                                    "value"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigPatch": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "attributes"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "config"
+                            },
+                            "attributes": {
+                                "type": "object",
+                                "properties": {
+                                    "item": {
+                                        "type": "string"
+                                    },
+                                    "value": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "object",
+                        "required": [
+                            "self"
+                        ],
+                        "properties": {
+                            "self": {
+                                "type": "string",
+                                "default": "/api/v2/ui/configs?page[size]=25"
+                            },
+                            "first": {
+                                "type": "string",
+                                "default": "/api/v2/ui/configs?page[size]=25"
+                            },
+                            "last": {
+                                "type": "string",
+                                "default": "/api/v2/ui/configs?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            },
+                            "next": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/configs?page[size]=25&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
+                            },
+                            "previous": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/configs?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "type": {
+                                "type": "string",
+                                "const": "config"
+                            },
+                            "attributes": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "title": "ServerLogLevel",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string",
+                                                "const": "serverLogLevel"
+                                            },
+                                            "value": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "0",
+                                                        "title": "TRACE",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "10",
+                                                        "title": "DEBUG",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "20",
+                                                        "title": "INFO",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "30",
+                                                        "title": "WARNING",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "40",
+                                                        "title": "ERROR",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "50",
+                                                        "title": "FATAL",
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
+                                    },
+                                    {
+                                        "type": "object",
+                                        "title": "NotificationsProxyType",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string",
+                                                "const": "notificationsProxyType"
+                                            },
+                                            "value": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "HTTP",
+                                                        "title": "HTTP",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "HTTPS",
+                                                        "title": "HTTPS",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "SOCKS4",
+                                                        "title": "SOCKS4",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "SOCKS5",
+                                                        "title": "SOCKS5",
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
+                                    },
+                                    {
+                                        "type": "object",
+                                        "title": "ConfigGeneric",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "relationships": {
+                        "type": "object",
+                        "required": [
+                            "configSection"
+                        ],
+                        "properties": {
+                            "configSection": {
+                                "type": "object",
+                                "required": [
+                                    "links"
+                                ],
+                                "properties": {
+                                    "links": {
+                                        "type": "object",
+                                        "required": [
+                                            "self",
+                                            "related"
+                                        ],
+                                        "properties": {
+                                            "self": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/configs/relationships/configSection"
+                                            },
+                                            "related": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/configs/configSection"
+                                            }
+                                        }
+                                    },
+                                    "data": {
+                                        "oneOf": [
+                                            {
+                                                "type": "object",
+                                                "required": [
+                                                    "type",
+                                                    "id"
+                                                ],
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string",
+                                                        "const": "configSection"
+                                                    },
+                                                    "id": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "included": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "configSection"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "required": [
+                                        "sectionName"
+                                    ],
+                                    "properties": {
+                                        "sectionName": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigSingleResponse": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "type": {
+                                "type": "string",
+                                "const": "config"
+                            },
+                            "attributes": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "title": "ServerLogLevel",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string",
+                                                "const": "serverLogLevel"
+                                            },
+                                            "value": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "0",
+                                                        "title": "TRACE",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "10",
+                                                        "title": "DEBUG",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "20",
+                                                        "title": "INFO",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "30",
+                                                        "title": "WARNING",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "40",
+                                                        "title": "ERROR",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "50",
+                                                        "title": "FATAL",
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
+                                    },
+                                    {
+                                        "type": "object",
+                                        "title": "NotificationsProxyType",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string",
+                                                "const": "notificationsProxyType"
+                                            },
+                                            "value": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "HTTP",
+                                                        "title": "HTTP",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "HTTPS",
+                                                        "title": "HTTPS",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "SOCKS4",
+                                                        "title": "SOCKS4",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "SOCKS5",
+                                                        "title": "SOCKS5",
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
+                                    },
+                                    {
+                                        "type": "object",
+                                        "title": "ConfigGeneric",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "relationships": {
+                        "type": "object",
+                        "required": [
+                            "configSection"
+                        ],
+                        "properties": {
+                            "configSection": {
+                                "type": "object",
+                                "required": [
+                                    "links"
+                                ],
+                                "properties": {
+                                    "links": {
+                                        "type": "object",
+                                        "required": [
+                                            "self",
+                                            "related"
+                                        ],
+                                        "properties": {
+                                            "self": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/configs/relationships/configSection"
+                                            },
+                                            "related": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/configs/configSection"
+                                            }
+                                        }
+                                    },
+                                    "data": {
+                                        "oneOf": [
+                                            {
+                                                "type": "object",
+                                                "required": [
+                                                    "type",
+                                                    "id"
+                                                ],
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string",
+                                                        "const": "configSection"
+                                                    },
+                                                    "id": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "included": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "configSection"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "required": [
+                                        "sectionName"
+                                    ],
+                                    "properties": {
+                                        "sectionName": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigPostPatchResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "type": {
+                                "type": "string",
+                                "const": "config"
+                            },
+                            "attributes": {
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "title": "ServerLogLevel",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string",
+                                                "const": "serverLogLevel"
+                                            },
+                                            "value": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "0",
+                                                        "title": "TRACE",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "10",
+                                                        "title": "DEBUG",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "20",
+                                                        "title": "INFO",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "30",
+                                                        "title": "WARNING",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "40",
+                                                        "title": "ERROR",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "50",
+                                                        "title": "FATAL",
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
+                                    },
+                                    {
+                                        "type": "object",
+                                        "title": "NotificationsProxyType",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string",
+                                                "const": "notificationsProxyType"
+                                            },
+                                            "value": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "HTTP",
+                                                        "title": "HTTP",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "HTTPS",
+                                                        "title": "HTTPS",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "SOCKS4",
+                                                        "title": "SOCKS4",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "SOCKS5",
+                                                        "title": "SOCKS5",
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
+                                    },
+                                    {
+                                        "type": "object",
+                                        "title": "ConfigGeneric",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigListResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "object",
+                        "required": [
+                            "self"
+                        ],
+                        "properties": {
+                            "self": {
+                                "type": "string",
+                                "default": "/api/v2/ui/configs?page[size]=25"
+                            },
+                            "first": {
+                                "type": "string",
+                                "default": "/api/v2/ui/configs?page[size]=25"
+                            },
+                            "last": {
+                                "type": "string",
+                                "default": "/api/v2/ui/configs?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            },
+                            "next": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/configs?page[size]=25&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
+                            },
+                            "previous": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/configs?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "config"
+                                },
+                                "attributes": {
+                                    "oneOf": [
+                                        {
+                                            "type": "object",
+                                            "title": "ServerLogLevel",
+                                            "properties": {
+                                                "configSectionId": {
+                                                    "type": "integer"
+                                                },
+                                                "item": {
+                                                    "type": "string",
+                                                    "const": "serverLogLevel"
+                                                },
+                                                "value": {
+                                                    "oneOf": [
+                                                        {
+                                                            "const": "0",
+                                                            "title": "TRACE",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "10",
+                                                            "title": "DEBUG",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "20",
+                                                            "title": "INFO",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "30",
+                                                            "title": "WARNING",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "40",
+                                                            "title": "ERROR",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "50",
+                                                            "title": "FATAL",
+                                                            "type": "string"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "configSectionId",
+                                                "item",
+                                                "value"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "title": "NotificationsProxyType",
+                                            "properties": {
+                                                "configSectionId": {
+                                                    "type": "integer"
+                                                },
+                                                "item": {
+                                                    "type": "string",
+                                                    "const": "notificationsProxyType"
+                                                },
+                                                "value": {
+                                                    "oneOf": [
+                                                        {
+                                                            "const": "HTTP",
+                                                            "title": "HTTP",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "HTTPS",
+                                                            "title": "HTTPS",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "SOCKS4",
+                                                            "title": "SOCKS4",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "SOCKS5",
+                                                            "title": "SOCKS5",
+                                                            "type": "string"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "configSectionId",
+                                                "item",
+                                                "value"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "title": "ConfigGeneric",
+                                            "properties": {
+                                                "configSectionId": {
+                                                    "type": "integer"
+                                                },
+                                                "item": {
+                                                    "type": "string"
+                                                },
+                                                "value": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "configSectionId",
+                                                "item",
+                                                "value"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "relationships": {
+                        "type": "object",
+                        "required": [
+                            "configSection"
+                        ],
+                        "properties": {
+                            "configSection": {
+                                "type": "object",
+                                "required": [
+                                    "links"
+                                ],
+                                "properties": {
+                                    "links": {
+                                        "type": "object",
+                                        "required": [
+                                            "self",
+                                            "related"
+                                        ],
+                                        "properties": {
+                                            "self": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/configs/relationships/configSection"
+                                            },
+                                            "related": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/configs/configSection"
+                                            }
+                                        }
+                                    },
+                                    "data": {
+                                        "oneOf": [
+                                            {
+                                                "type": "object",
+                                                "required": [
+                                                    "type",
+                                                    "id"
+                                                ],
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string",
+                                                        "const": "configSection"
+                                                    },
+                                                    "id": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "included": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "configSection"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "required": [
+                                        "sectionName"
+                                    ],
+                                    "properties": {
+                                        "sectionName": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigRelationConfigSection": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "id"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "configSection"
+                            },
+                            "id": {
+                                "type": "integer",
+                                "default": 1
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigRelationConfigSectionGetResponse": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "id"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "configSection"
+                            },
+                            "id": {
+                                "type": "integer",
+                                "default": 1
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigSectionCreate": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "attributes"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "configSection"
+                            },
+                            "attributes": {
+                                "type": "object",
+                                "properties": {
+                                    "sectionName": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "sectionName"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigSectionPatch": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "attributes"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "configSection"
+                            },
+                            "attributes": {
+                                "type": "object",
+                                "properties": {
+                                    "sectionName": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigSectionResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "object",
+                        "required": [
+                            "self"
+                        ],
+                        "properties": {
+                            "self": {
+                                "type": "string",
+                                "default": "/api/v2/ui/configsections?page[size]=25"
+                            },
+                            "first": {
+                                "type": "string",
+                                "default": "/api/v2/ui/configsections?page[size]=25"
+                            },
+                            "last": {
+                                "type": "string",
+                                "default": "/api/v2/ui/configsections?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            },
+                            "next": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/configsections?page[size]=25&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
+                            },
+                            "previous": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/configsections?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "type": {
+                                "type": "string",
+                                "const": "configSection"
+                            },
+                            "attributes": {
+                                "type": "object",
+                                "required": [
+                                    "sectionName"
+                                ],
+                                "properties": {
+                                    "sectionName": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "relationships": {
+                        "type": "object",
+                        "required": [],
+                        "properties": []
+                    },
+                    "included": {
+                        "type": "array",
+                        "items": {
+                            "oneOf": [],
+                            "discriminator": {
+                                "propertyName": "type"
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigSectionSingleResponse": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "type": {
+                                "type": "string",
+                                "const": "configSection"
+                            },
+                            "attributes": {
+                                "type": "object",
+                                "required": [
+                                    "sectionName"
+                                ],
+                                "properties": {
+                                    "sectionName": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "relationships": {
+                        "type": "object",
+                        "required": [],
+                        "properties": []
+                    },
+                    "included": {
+                        "type": "array",
+                        "items": {
+                            "oneOf": [],
+                            "discriminator": {
+                                "propertyName": "type"
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigSectionPostPatchResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "type",
+                            "attributes"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "type": {
+                                "type": "string",
+                                "const": "configSection"
+                            },
+                            "attributes": {
+                                "type": "object",
+                                "required": [
+                                    "sectionName"
+                                ],
+                                "properties": {
+                                    "sectionName": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ConfigSectionListResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "object",
+                        "required": [
+                            "self"
+                        ],
+                        "properties": {
+                            "self": {
+                                "type": "string",
+                                "default": "/api/v2/ui/configsections?page[size]=25"
+                            },
+                            "first": {
+                                "type": "string",
+                                "default": "/api/v2/ui/configsections?page[size]=25"
+                            },
+                            "last": {
+                                "type": "string",
+                                "default": "/api/v2/ui/configsections?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            },
+                            "next": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/configsections?page[size]=25&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
+                            },
+                            "previous": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/configsections?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "configSection"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "required": [
+                                        "sectionName"
+                                    ],
+                                    "properties": {
+                                        "sectionName": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "relationships": {
+                        "type": "object",
+                        "required": [],
+                        "properties": []
+                    },
+                    "included": {
+                        "type": "array",
+                        "items": {
+                            "oneOf": [],
+                            "discriminator": {
+                                "propertyName": "type"
+                            }
+                        }
+                    }
+                }
+            },
+            "Token": {
+                "type": "object",
+                "required": [
+                    "token",
+                    "expires"
+                ],
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    },
+                    "expires": {
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "TokenRequest": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "example": "role.all"
+                }
+            },
+            "ObjectRequest": {
+                "type": "object",
+                "properties": {
+                    "expand": {
+                        "type": "string"
+                    },
+                    "expires": {
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ObjectListRequest": {
+                "type": "object",
+                "properties": {
+                    "expand": {
+                        "type": "string"
+                    },
+                    "filter": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": ""
+                        }
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "JWT Authorization header using the Bearer scheme.",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "scopes": [
+                    "permConfigRead",
+                    "permConfigSectionRead",
+                    "permConfigUpdate"
+                ]
+            },
+            "basicAuth": {
+                "type": "http",
+                "description": "Basic Authorization header.",
+                "scheme": "basic"
+            }
+        }
+    }
+}

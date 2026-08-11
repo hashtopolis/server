@@ -80,9 +80,12 @@ class GetUserPermissionHelperAPI extends AbstractHelperAPI {
   
   /**
    * getAccessGroups is different because it returns via another function
+   *
+   * Must match the schema prefix derived from the model API class name
+   * (GlobalPermissionGroupAPI), not the DBA model name (RightGroup).
    */
   public static function getResponse(): string {
-    return "RightGroup";
+    return "GlobalPermissionGroup";
   }
 }
 
