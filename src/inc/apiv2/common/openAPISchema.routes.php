@@ -20,23 +20,6 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
 
   $group->get('', function (Request $request, Response $response) use ($app): Response {
     $result = (new SpecBuilder())->buildFromApp($app);
-
-    $body = $response->getBody();
-    $body->write(json_encode($result, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
-
-    return $response->withStatus(200)
-      ->withHeader("Content-Type", "application/json");
-  });
-});
-
-$app->group("/api/v2/openapi-compliant.json", function (RouteCollectorProxy $group) use ($app) {
-  /* Allow CORS preflight requests */
-  $group->options('', function (Request $request, Response $response): Response {
-    return $response;
-  });
-
-  $group->get('', function (Request $request, Response $response) use ($app): Response {
-    $result = (new SpecBuilder())->buildFromApp($app);
     $result = (new SpecSanitizer())->sanitize($result);
 
     $body = $response->getBody();
