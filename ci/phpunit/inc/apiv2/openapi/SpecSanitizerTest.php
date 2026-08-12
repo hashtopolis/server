@@ -70,6 +70,21 @@ final class SpecSanitizerTest extends TestCase {
     ], $result['paths']['/api/v2/ui/things/{id}']['delete']['parameters']);
   }
 
+  public function testCleansPathTemplatesWithBracesInsideRegexConstraint(): void {
+    $result = $this->sanitize($this->minimalSpec(
+      ['/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}' => [
+        'delete' => ['responses' => ['204' => ['description' => 'gone']]],
+      ]]
+    ));
+
+    $this->assertArrayHasKey('/api/v2/helper/importFile/{id}', $result['paths']);
+    $operation = $result['paths']['/api/v2/helper/importFile/{id}']['delete'];
+    /* The quantifier braces of the constraint must not leak into the
+       operationId, nor be mistaken for a second path parameter */
+    $this->assertSame('deleteImportFileById', $operation['operationId']);
+    $this->assertSame(['id'], array_column($operation['parameters'], 'name'));
+  }
+
   public function testMovesPaginationParamsToQueryAndFixesStyleCasing(): void {
     $result = $this->sanitize($this->minimalSpec(
       ['/api/v2/ui/things' => ['get' => [

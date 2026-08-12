@@ -55,8 +55,7 @@ class SpecSanitizer {
     // Phase 3: Clean path templates (strip Slim regex patterns)
     $newPaths = [];
     foreach ($spec['paths'] as $path => $pathItem) {
-      $cleanPath = preg_replace('/\{([^:}]+):[^}]+\}/', '{$1}', $path);
-      $newPaths[$cleanPath] = $pathItem;
+      $newPaths[$this->cleanPathTemplate((string)$path)] = $pathItem;
     }
     $spec['paths'] = $newPaths;
 
@@ -263,6 +262,52 @@ class SpecSanitizer {
     }
 
     return $spec;
+  }
+
+  /**
+   * Turns a Slim route pattern into an OpenAPI path template, dropping the
+   * regex constraint of every placeholder, e.g.
+   * "/importFile/{id:[0-9]{14}-[0-9a-f]{32}}" becomes "/importFile/{id}".
+   * Such a constraint contains balanced braces of its own, so the brace
+   * closing the placeholder is found by counting depth rather than by
+   * matching up to the first "}".
+   */
+  private function cleanPathTemplate(string $path): string {
+    $clean = '';
+    $length = strlen($path);
+
+    for ($i = 0; $i < $length; $i++) {
+      if ($path[$i] !== '{') {
+        $clean .= $path[$i];
+        continue;
+      }
+
+      $depth = 0;
+      $end = -1;
+      for ($j = $i; $j < $length; $j++) {
+        if ($path[$j] === '{') {
+          $depth++;
+        } elseif ($path[$j] === '}') {
+          $depth--;
+          if ($depth === 0) {
+            $end = $j;
+            break;
+          }
+        }
+      }
+      /* Unbalanced braces, keep the remainder as-is instead of mangling it */
+      if ($end === -1) {
+        $clean .= substr($path, $i);
+        break;
+      }
+
+      $placeholder = substr($path, $i + 1, $end - $i - 1);
+      $name = strstr($placeholder, ':', true);
+      $clean .= '{' . ($name === false ? $placeholder : $name) . '}';
+      $i = $end;
+    }
+
+    return $clean;
   }
 
   private function collectSchemaRefs(mixed $data, array &$refs): void {
