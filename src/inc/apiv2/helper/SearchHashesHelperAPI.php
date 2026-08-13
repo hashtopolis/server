@@ -48,9 +48,9 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
        "query" => "54321",
        "matches" => [[
                        "type" => "hash",
-                       "id" => 552,
+                       "id" => "552",
                        "attributes" => [
-                         "hashlistId" => 5,
+                         "hashlistId" => "5",
                          "hash" => "7682543218768",
                          "salt" => "",
                          "plaintext" => "",
@@ -79,9 +79,9 @@ class SearchHashesHelperAPI extends AbstractHelperAPI {
                      ],
                      [
                        "type" => "hash",
-                       "id" => 1,
+                       "id" => "1",
                        "attributes" => [
-                         "hashlistId" => 5,
+                         "hashlistId" => "5",
                          "hash" => "54321768671",
                          "salt" => "",
                          "plaintext" => "",
