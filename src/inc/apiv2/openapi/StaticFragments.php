@@ -8,19 +8,24 @@ namespace Hashtopolis\inc\apiv2\openapi;
  * TUS importFile endpoint documentation.
  */
 class StaticFragments {
+  /**
+   * The body of every error the APIv2 answers with: ErrorHandler::errorResponse
+   * renders an RFC 7807 problem document for all of them.
+   */
   public function errorComponents(): array {
     $components = [];
     $components["ErrorResponse"] = [
       "type" => "object",
       "required" => ["status"],
+      "description" => "RFC 7807 problem document",
       "properties" => [
         "title" => [
           "type" => "string",
-          "example" => "about=>blank"
+          "example" => "No access to this object!"
         ],
         "type" => [
           "type" => "string",
-          "example" => "Error details here"
+          "example" => "about:blank"
         ],
         "status" => [
           "type" => "integer",
@@ -28,44 +33,14 @@ class StaticFragments {
         ]
       ]
     ];
-    $components["NotFoundResponse"] = [
-      "type" => "object",
-      "required" => ["message"],
-      "properties" => [
-        "message" => [
-          "type" => "string",
-          "example" => "404 Not Found"
-        ],
-        "exception" => [
-          "type" => "object",
-          "properties" => [
-            "type" => [
-              "type" => "string",
-              "example" => "Slim\\Exception\\HttpNotFoundException"
-            ],
-            "code" => [
-              "type" => "integer",
-              "example" => 404
-            ],
-            "message" => [
-              "type" => "string",
-              "example" => "Not Found"
-            ],
-            "file" => [
-              "type" => "string",
-              "example" => "../hashtopolis/server/vendor/slim/slim/Slim/Middleware/RoutingMiddleware.php"
-            ],
-            "line" => [
-              "type" => "integer",
-              "example" => 91
-            ]
-          ]
-        ]
-      ]
-    ];
     return $components;
   }
 
+  /**
+   * The token endpoint exchanges basic auth credentials for a JWT. It is not a
+   * JSON:API resource endpoint: it answers a plain application/json body with
+   * status 201 (see token.routes.php).
+   */
   public function authTokenPath(): array {
     return [
       "post" => [
@@ -83,7 +58,7 @@ class StaticFragments {
           ]
         ],
         "responses" => [
-          "200" => [
+          "201" => [
             "description" => "Success",
             "content" => [
               "application/json" => [
@@ -93,30 +68,29 @@ class StaticFragments {
               ]
             ]
           ],
-          "401" => [
-            "description" => "Authentication failed",
-            "content" => [
-              "application/json" => [
-                "schema" => [
-                  '$ref' => "#/components/schemas/ErrorResponse"
-                ]
-              ]
-            ]
-          ],
-          "404" => [
-            "description" => "Not Found",
-            "content" => [
-              "application/json" => [
-                "schema" => [
-                  '$ref' => "#/components/schemas/NotFoundResponse"
-                ]
-              ]
-            ]
-          ]
+          "400" => $this->problemResponse("Invalid request"),
+          "401" => $this->problemResponse("Authentication failed")
         ],
         "security" => [
           [
             "basicAuth" => []
+          ]
+        ]
+      ]
+    ];
+  }
+
+  /**
+   * Errors are rendered as RFC 7807 problem documents by
+   * ErrorHandler::errorResponse, on every APIv2 route.
+   */
+  private function problemResponse(string $description): array {
+    return [
+      "description" => $description,
+      "content" => [
+        JsonApiFragments::PROBLEM_MEDIA_TYPE => [
+          "schema" => [
+            '$ref' => "#/components/schemas/ErrorResponse"
           ]
         ]
       ]
@@ -237,7 +211,7 @@ class StaticFragments {
         "schema" => [
           "type" => "integer",
         ],
-        "example" => "512",
+        "example" => 512,
         "description" => " The Upload-Offset header's value MUST be equal to the current offset of the resource"
       ],
       [
@@ -296,8 +270,9 @@ class StaticFragments {
       ]
     ];
 
+    /* TUS creation answers with headers only, the upload itself follows as PATCH */
     $paths["/api/v2/helper/importFile"]["post"]["responses"]["201"] = [
-      "description" => "successful operation",
+      "description" => "Upload created",
       "headers" => [
         "Tus-Resumable" => $this->tusHeader(),
         "Location" => [
@@ -305,12 +280,6 @@ class StaticFragments {
           "schema" => [
             "type" => "string"
           ]
-        ]
-      ],
-      "content" => [
-        "application/pdf" => [
-          "type" => "string",
-          "format" => "binary"
         ]
       ]
     ];

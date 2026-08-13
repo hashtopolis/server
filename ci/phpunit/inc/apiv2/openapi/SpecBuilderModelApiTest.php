@@ -31,7 +31,7 @@ final class SpecBuilderModelApiTest extends TestCase {
     $this->assertArrayHasKey('/api/v2/ui/hashtypes/{id:[0-9]+}', $spec['paths']);
 
     $response = $spec['components']['schemas']['HashTypeResponse'];
-    $this->assertSame(['jsonapi', 'data'], $response['required']);
+    $this->assertSame(['jsonapi', 'links', 'data'], $response['required']);
     $attributes = $response['properties']['data']['properties']['attributes'];
     $this->assertSame(['description', 'isSalted', 'isSlowHash'], $attributes['required']);
     $this->assertSame(['type' => 'boolean'], $attributes['properties']['isSalted']);
@@ -56,7 +56,7 @@ final class SpecBuilderModelApiTest extends TestCase {
     $this->assertArrayHasKey('oneOf', $response['properties']['data']['properties']['attributes']);
 
     // toOne relationship linkage: resource identifier with const type, nullable
-    $configSection = $response['properties']['relationships']['properties']['configSection'];
+    $configSection = $response['properties']['data']['properties']['relationships']['properties']['configSection'];
     $this->assertSame(
       ['type' => 'string', 'const' => 'configSection'],
       $configSection['properties']['data']['oneOf'][0]['properties']['type']
@@ -82,7 +82,7 @@ final class SpecBuilderModelApiTest extends TestCase {
 
     $response = $spec['components']['schemas']['CrackerBinaryTypeResponse'];
     // toMany relationship linkage is an array of resource identifiers
-    $this->assertSame('array', $response['properties']['relationships']['properties']['tasks']['properties']['data']['type']);
+    $this->assertSame('array', $response['properties']['data']['properties']['relationships']['properties']['tasks']['properties']['data']['type']);
 
     // Multiple expandables produce a discriminated oneOf union in "included"
     $included = $response['properties']['included']['items'];

@@ -140,7 +140,7 @@ class SpecSanitizer {
 
         // Fix: Add missing path parameter definitions
         preg_match_all('/\{(\w+)\}/', $path, $pathParamMatches);
-        $expectedPathParams = $pathParamMatches[1] ?? [];
+        $expectedPathParams = $pathParamMatches[1];
         if (!empty($expectedPathParams)) {
           $definedPathParams = [];
           if (isset($operation['parameters'])) {

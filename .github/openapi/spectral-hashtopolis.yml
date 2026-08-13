@@ -1,0 +1,176 @@
+description: >
+  Lint ruleset for the generated Hashtopolis APIv2 OpenAPI spec.
+
+  It extends the upstream JSON:API styleguide (spectral-jsonapi.yml, kept
+  unmodified so it can be updated from upstream) and records the points where
+  the APIv2 knowingly departs from JSON:API. Those rules are relaxed here
+  instead of in the generator, because the generated spec has to keep describing
+  what the server actually answers. Every entry below names the code that
+  decides the behaviour, so the rule can be restored once the behaviour changes.
+
+extends:
+  - ./spectral-jsonapi.yml
+
+rules:
+  # The APIv2 never inspects the Accept header, so it cannot answer 406.
+  # There is no content negotiation middleware in src/inc/apiv2 at all.
+  406-response-code: off
+
+  # Only the TUS upload endpoint validates Content-Type and answers 415
+  # (ImportFileHelperAPI::processPatch). No other route does, so requiring a
+  # documented 415 on every POST and PATCH would document a reply that never
+  # comes.
+  415-response-code: off
+
+  # Two deviations are folded into this rule:
+  #   - Errors are RFC 7807 problem documents served as application/problem+json
+  #     by ErrorHandler::errorResponse, not JSON:API error documents, so only
+  #     success payloads are checked.
+  #   - Helper request bodies are flat maps of form fields read by
+  #     AbstractHelperAPI::processPost, not JSON:API documents, so request bodies
+  #     are only checked under /api/v2/ui/.
+  content-type:
+    description: "JSON:API payloads MUST use the `application/vnd.api+json` media type. Error
+      responses are excluded: the APIv2 answers those as RFC 7807 problem documents."
+    documentationUrl: "https://jsonapi.org/format/1.0/#content-negotiation"
+    message: "content MUST be 'application/vnd.api+json'"
+    severity: error
+    given:
+      - "$.paths[?(@property.match(/^\\/api\\/v2\\/ui\\//))]..requestBody.content"
+      - "$.paths..responses[?(@property >= '200' && @property < '300')].content"
+    then:
+      field: "@key"
+      function: enumeration
+      functionOptions:
+        values:
+          - application/vnd.api+json
+
+  # The rules below only hold for the JSON:API resource routes under
+  # /api/v2/ui/. The routes under /api/v2/helper/ are RPC style actions and file
+  # transfers: they take a flat body, answer 200 with a meta document
+  # (AbstractBaseAPI::getMetaResponse) and have no conflict semantics.
+  post-2xx-response-codes:
+    description: "`POST` requests MUST support one of the following 2xx codes: 201, 202 or 204."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-creating-responses"
+    message: "POST requests MUST support one Of the following 2xx codes: 201, 202 or 204"
+    severity: error
+    given: "$.paths[?(@property.match(/^\\/api\\/v2\\/ui\\//))][post].responses"
+    then:
+      function: schema
+      functionOptions:
+        dialect: "draft2020-12"
+        schema:
+          type: object
+          anyOf:
+            - required: ["201"]
+            - required: ["202"]
+            - required: ["204"]
+
+  post-409-response-code:
+    description: "`POST` requests MUST document and support response code 409."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-creating-responses"
+    message: "POST paths must support response codes: 409"
+    severity: error
+    given: "$.paths[?(@property.match(/^\\/api\\/v2\\/ui\\//))][post].responses"
+    then:
+      field: "409"
+      function: truthy
+
+  patch-409-response-code:
+    description: "`PATCH` requests MUST document and support response code 409."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-updating-responses"
+    message: "PATCH requests MUST support response codes: 409"
+    severity: error
+    given: "$.paths[?(@property.match(/^\\/api\\/v2\\/ui\\//))][patch].responses"
+    then:
+      field: "409"
+      function: truthy
+
+  patch-404-response-code:
+    description: "`PATCH` requests MUST support response code 404."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-updating-responses"
+    message: "PATCH requests MUST support response code 404"
+    severity: error
+    given: "$.paths[?(@property.match(/^\\/api\\/v2\\/ui\\//))][patch].responses"
+    then:
+      field: "404"
+      function: truthy
+
+  delete-404-response-code:
+    description: "`DELETE` requests MUST support response code 404."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-deleting-responses"
+    message: "DELETE requests MUST support response code 404"
+    severity: error
+    given: "$.paths[?(@property.match(/^\\/api\\/v2\\/ui\\//))][delete].responses"
+    then:
+      field: "404"
+      function: truthy
+
+  # A collection level PATCH updates many objects in one request
+  # (AbstractModelAPI::patchMultiple), which JSON:API 1.0 does not describe. The
+  # rule assumes every PATCH body holds exactly one resource object.
+  patch-requests-single-object: off
+
+  # Upstream applies this to every POST body, but a POST to a to-many
+  # relationship URL MUST carry an array of resource identifiers, so the rule
+  # only holds for the resource creation routes.
+  post-requests-single-object:
+    description: "A `POST` that creates a resource MUST carry a single resource object.
+      Relationship routes are excluded: posting to a to-many relationship carries an array
+      of resource identifier objects."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-creating"
+    message: "POST requests MAY only contain a single resource object"
+    severity: error
+    given: "$.paths[?(!@property.match(/\\/relationships\\//))].post.requestBody.content[application/vnd.api+json].schema.properties.data[?(@property==='type' && @ === 'array')]"
+    then:
+      function: falsy
+
+  # Helper request bodies are flat maps of form fields and helper responses are
+  # meta documents, so the top level document rules only apply under
+  # /api/v2/ui/.
+  top-level-json-properties:
+    description: "The root of a JSON:API document MUST follow the JSON:API document schema."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-top-level"
+    message: "Root JSON object MUST follow the jsonapi schema"
+    severity: error
+    given: "$.paths[?(@property.match(/^\\/api\\/v2\\/ui\\//))]..content['application/vnd.api+json'].schema"
+    then:
+      field: "properties"
+      function: schema
+      functionOptions:
+        dialect: "draft2020-12"
+        schema:
+          type: object
+          anyOf:
+            - required: ["data"]
+            - required: ["errors"]
+            - required: ["meta"]
+          not:
+            anyOf:
+              - required: ["data", "errors"]
+          dependentRequired:
+            included: ["data"]
+
+  top-level-json-object:
+    description: "A JSON:API request or response body MUST be a JSON object."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-top-level"
+    message: "Request/response body must be wrapped in root level JSON object"
+    severity: error
+    given: "$.paths[?(@property.match(/^\\/api\\/v2\\/ui\\//))]..content['application/vnd.api+json'].schema"
+    then:
+      field: type
+      function: enumeration
+      functionOptions:
+        values:
+          - object
+
+overrides:
+  # /api/v2/auth/token exchanges basic auth credentials for a JWT. It is not a
+  # JSON:API resource endpoint: it takes a scope list and answers a plain
+  # application/json body (see token.routes.php).
+  - files:
+      - "**#/paths/~1api~1v2~1auth~1token"
+    rules:
+      content-type: off
+      400-response-code: off
+      403-response-code: off

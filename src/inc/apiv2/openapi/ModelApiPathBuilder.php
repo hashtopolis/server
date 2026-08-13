@@ -28,6 +28,7 @@ class ModelApiPathBuilder {
 
     /* Quick to find out if single parameter object is used */
     $singleObject = ((strstr($path, '/{id:')) !== false);
+    $isCount = str_ends_with($path, '/count');
     $api_name_parts = explode('\\', get_class($class));
     $name = substr(end($api_name_parts), 0, -3); // Remove "API" suffix
     $typeName = lcfirst($name);
@@ -67,66 +68,102 @@ class ModelApiPathBuilder {
           "properties" => $allResponseProperties
         ];
       }
-      $properties_return_post_patch = [
-        "data" => [
+      /**
+       * The resource object as AbstractBaseAPI::obj2Resource builds it: the
+       * primary key becomes the id, the remaining features the attributes, and
+       * both the self link and the relationships are part of the resource
+       * object itself rather than of the document around it.
+       */
+      $resourceObjectRequired = ["id", "type", "attributes", "links"];
+      $resourceObjectProperties = [
+        "id" => $this->jsonApiFragments->resourceIdSchema(),
+        "type" => [
+          "type" => "string",
+          "const" => $typeName
+        ],
+        "attributes" => $attributesSchema,
+        "links" => [
           "type" => "object",
-          "required" => ["id", "type", "attributes"],
+          "required" => ["self"],
           "properties" => [
-            "id" => [
-              "type" => "integer",
-            ],
-            "type" => [
+            "self" => [
               "type" => "string",
-              "const" => $typeName
-            ],
-            "attributes" => $attributesSchema,
+              "default" => $uri . "/1"
+            ]
           ]
         ]
       ];
 
       $relationshipProperties = $this->makeRelationships($class, $uri, $container);
-      $relationships = ["relationships" => [
+      if (count($relationshipProperties) > 0) {
+        $resourceObjectRequired[] = "relationships";
+        $resourceObjectProperties["relationships"] = [
+          "type" => "object",
+          "required" => array_keys($relationshipProperties),
+          "properties" => $relationshipProperties
+        ];
+      }
+
+      $resourceObject = [
         "type" => "object",
-        "required" => array_keys($relationshipProperties),
-        "properties" => $relationshipProperties
-      ]
+        "required" => $resourceObjectRequired,
+        "properties" => $resourceObjectProperties
       ];
+
       $expandables = $this->makeExpandables($class, $container);
-      $includedItems = count($expandables) === 1
-        ? array_merge(["type" => "object"], $expandables[0])
-        : [
-            "oneOf" => array_map(
-              fn($e) => array_merge(["type" => "object"], $e),
-              $expandables
-            ),
-            "discriminator" => ["propertyName" => "type"]
-          ];
-      $included = ["included" => [
-        "type" => "array",
-        "items" => $includedItems,
-      ]
-      ];
-
-      $properties_return_list = [
-        "data" => [
+      /**
+       * A model without relationships has nothing to include, so it must not
+       * carry an "included" member: an empty oneOf is not a valid schema.
+       */
+      $included = [];
+      if (count($expandables) > 0) {
+        $includedItems = count($expandables) === 1
+          ? array_merge(["type" => "object"], $expandables[0])
+          : [
+              "oneOf" => array_map(
+                fn($e) => array_merge(["type" => "object"], $e),
+                $expandables
+              ),
+              "discriminator" => ["propertyName" => "type"]
+            ];
+        $included = ["included" => [
           "type" => "array",
-          "items" => $properties_return_post_patch["data"]
+          "items" => $includedItems,
         ]
-      ];
-
-      $properties_get_single = array_merge($properties_return_post_patch, $relationships, $included);
+        ];
+      }
 
       $json_api_header = $this->jsonApiFragments->makeJsonApiHeader();
-      $links = $this->jsonApiFragments->makeLinks($uri);
-      $properties_return_post_patch = array_merge($json_api_header, $properties_return_post_patch);
+
+      /**
+       * A single resource document carries only the self link, a collection
+       * document the full set of cursor pagination links plus the element count
+       * (see AbstractBaseAPI::getOneResource and AbstractModelAPI::get).
+       */
+      $properties_get_single = array_merge(
+        $json_api_header,
+        $this->jsonApiFragments->makeSelfLink($uri),
+        ["data" => $resourceObject],
+        $included
+      );
+      $properties_get_list = array_merge(
+        $json_api_header,
+        $this->jsonApiFragments->makeLinks($uri),
+        $this->jsonApiFragments->makeListMeta(),
+        ["data" => [
+          "type" => "array",
+          "items" => $resourceObject
+        ]
+        ],
+        $included
+      );
+
       $createFeatures = $class->getAllPostParameters($class->getCreateValidFeatures());
       $requiredCreateAttributes = array_values(array_map(
         fn($f) => $f['alias'],
         array_filter($createFeatures, fn($f) => !$f['null'])
       ));
       $properties_create = $this->jsonApiFragments->buildPatchPost($this->typeMapper->makeProperties($createFeatures), $typeName, null, $requiredCreateAttributes);
-      $properties_get = array_merge($json_api_header, $links, $properties_get_single, $included);
-      $properties_get_list = array_merge($json_api_header, $links, $properties_return_list, $relationships, $included);
       $properties_patch = $this->jsonApiFragments->buildPatchPost($this->typeMapper->makeProperties($class->getPatchValidFeatures(), true), $typeName);
 
       $components[$name . "Create"] =
@@ -143,35 +180,50 @@ class ModelApiPathBuilder {
           "properties" => $properties_patch,
         ];
 
-      $components[$name . "Response"] =
-        [
-          "type" => "object",
-          "required" => ["jsonapi", "data"],
-          "properties" => $properties_get,
-        ];
-
-      $this->addRelationComponents($name, $relation, ($isToMany && !$isToOne), $components);
-
-      $components[$name . "SingleResponse"] =
+      $components[$name . "PatchMultiple"] =
         [
           "type" => "object",
           "required" => ["data"],
-          "properties" => $properties_get_single
+          "properties" => $this->jsonApiFragments->buildMultipleWriteEnvelope(
+            $typeName,
+            $this->typeMapper->makeProperties($class->getPatchValidFeatures(), true)
+          ),
         ];
 
-      $components[$name . "PostPatchResponse"] =
+      $components[$name . "DeleteMultiple"] =
         [
           "type" => "object",
-          "required" => ["jsonapi", "data"],
-          "properties" => $properties_return_post_patch
+          "required" => ["data"],
+          "properties" => $this->jsonApiFragments->buildMultipleWriteEnvelope($typeName),
         ];
+
+      /**
+       * Reading one object, creating one and updating one all answer with the
+       * same single resource document (AbstractBaseAPI::getOneResource), so all
+       * three schemas share one shape.
+       */
+      $singleDocument = [
+        "type" => "object",
+        "required" => ["jsonapi", "links", "data"],
+        "properties" => $properties_get_single
+      ];
+
+      $components[$name . "Response"] = $singleDocument;
+
+      $this->addRelationComponents($name, $relation, ($isToMany && !$isToOne), $components);
+
+      $components[$name . "SingleResponse"] = $singleDocument;
+
+      $components[$name . "PostPatchResponse"] = $singleDocument;
 
       $components[$name . "ListResponse"] =
         [
           "type" => "object",
-          "required" => ["jsonapi", "data"],
+          "required" => ["jsonapi", "links", "meta", "data"],
           "properties" => $properties_get_list,
         ];
+
+      $components[$name . "CountResponse"] = $this->jsonApiFragments->buildCountResponse();
     }
 
     /**
@@ -186,29 +238,7 @@ class ModelApiPathBuilder {
       "tags" => [
         $name . 's'
       ],
-      "responses" => [
-
-        "400" => [
-          "description" => "Invalid request",
-          "content" => [
-            "application/json" => [
-              "schema" => [
-                '$ref' => "#/components/schemas/ErrorResponse"
-              ]
-            ]
-          ]
-        ],
-        "401" => [
-          "description" => "Authentication failed",
-          "content" => [
-            "application/json" => [
-              "schema" => [
-                '$ref' => "#/components/schemas/ErrorResponse"
-              ]
-            ]
-          ]
-        ]
-      ],
+      "responses" => $this->jsonApiFragments->commonErrorResponses(),
       "security" => [
         [
           "bearerAuth" => [
@@ -228,44 +258,21 @@ class ModelApiPathBuilder {
     }
     if ($singleObject) {
       /* Single objects could not exists */
-      $paths[$path][$method]["responses"]["404"] =
-        [
-          "description" => "Not Found",
-          "content" => [
-            "application/json" => [
-              "schema" => [
-                '$ref' => "#/components/schemas/NotFoundResponse"
-              ]
-            ]
-          ]
-        ];
+      $paths[$path][$method]["responses"]["404"] = $this->jsonApiFragments->problemResponse("Not Found");
 
       /* Method specific responses and requests for single objects */
       if ($method == 'get') {
         if (!$isRelation && str_contains($path, "relation:")) {
-          $paths[$path][$method]["responses"]["200"] = [
-            "description" => "successful operation",
-            "content" => [
-              "application/json" => [
-                "schema" => [
-                  '$ref' => "#/components/schemas/" . $name . "Relation" . ucfirst($relation) . "GetResponse"
-
-                ]
-              ]
-            ]
-          ];
+          $paths[$path][$method]["responses"]["200"] = $this->jsonApiFragments->jsonApiResponse(
+            "successful operation",
+            "#/components/schemas/" . $name . "Relation" . ucfirst($relation) . "GetResponse"
+          );
         }
         else {
-          $paths[$path][$method]["responses"]["200"] = [
-            "description" => "successful operation",
-            "content" => [
-              "application/json" => [
-                "schema" => [
-                  '$ref' => "#/components/schemas/" . $name . "Response"
-                ]
-              ]
-            ]
-          ];
+          $paths[$path][$method]["responses"]["200"] = $this->jsonApiFragments->jsonApiResponse(
+            "successful operation",
+            "#/components/schemas/" . $name . "Response"
+          );
         }
 
         /* Supported by client, not by browser, disabled for APIdocs */
@@ -282,40 +289,23 @@ class ModelApiPathBuilder {
 
       }
       elseif ($method == 'patch') {
+        /* A rename can collide with an existing object */
+        $paths[$path][$method]["responses"]["409"] = $this->jsonApiFragments->problemResponse("Resource already exists");
+
         if ($isRelation) {
-          $paths[$path][$method]["requestBody"] = [
-            "required" => true,
-            "content" => [
-              "application/json" => [
-                "schema" => [
-                  '$ref' => "#/components/schemas/" . $name . "Relation" . ucfirst($relation)
-                ],
-              ],
-            ]
-          ];
+          $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
+            "#/components/schemas/" . $name . "Relation" . ucfirst($relation)
+          );
         }
         else {
-          $paths[$path][$method]["requestBody"] = [
-            "required" => true,
-            "content" => [
-              "application/json" => [
-                "schema" => [
-                  '$ref' => "#/components/schemas/" . $name . "Patch"
-                ],
-              ],
-            ]
-          ];
+          $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
+            "#/components/schemas/" . $name . "Patch"
+          );
 
-          $paths[$path][$method]["responses"]["200"] = [
-            "description" => "successful operation",
-            "content" => [
-              "application/json" => [
-                "schema" => [
-                  '$ref' => "#/components/schemas/" . $name . "PostPatchResponse"
-                ]
-              ]
-            ]
-          ];
+          $paths[$path][$method]["responses"]["200"] = $this->jsonApiFragments->jsonApiResponse(
+            "successful operation",
+            "#/components/schemas/" . $name . "PostPatchResponse"
+          );
         }
       }
       elseif ($method == 'delete') {
@@ -324,39 +314,23 @@ class ModelApiPathBuilder {
         ];
 
         if ($isRelation) {
-          $paths[$path][$method]["requestBody"] = [
-            "required" => true,
-            "content" => [
-              "application/json" => [
-                "schema" => [
-                  '$ref' => "#/components/schemas/" . $name . "Relation" . ucfirst($relation)
-                ],
-              ],
-            ]
-          ];
+          $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
+            "#/components/schemas/" . $name . "Relation" . ucfirst($relation)
+          );
         }
-        else {
-          /* Empty JSON object required */
-          $paths[$path][$method]["requestBody"] = [
-            "required" => true,
-            "content" => [
-              "application/json" => [],
-            ]
-          ];
-        }
+        /* deleteOne identifies the object by its path id and reads no body */
       }
       elseif ($method == 'post') {
         $paths[$path][$method]["responses"]["204"] = [
           "description" => "successfully created",
         ];
+        /* Linking a relation that already exists is a conflict */
+        $paths[$path][$method]["responses"]["409"] = $this->jsonApiFragments->problemResponse("Resource already exists");
 
-        /* Empty JSON object required */
-        $paths[$path][$method]["requestBody"] = [
-          "required" => true,
-          "content" => [
-            "application/json" => [],
-          ]
-        ];
+        /* The resource identifiers to link are sent as data */
+        $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
+          "#/components/schemas/" . $name . "Relation" . ucfirst($relation)
+        );
       }
       else {
         throw new HttpErrorException("Method '$method' not implemented");
@@ -365,16 +339,16 @@ class ModelApiPathBuilder {
     else {
       /* Model API entry point */
       if ($method == 'get') {
-        $paths[$path][$method]["responses"]["200"] = [
-          "description" => "successful operation",
-          "content" => [
-            "application/json" => [
-              "schema" => [
-                '$ref' => "#/components/schemas/" . $name . "ListResponse"
-              ]
-            ]
-          ]
-        ];
+        /* The /count route reports the number of matches under meta, it returns no objects */
+        $paths[$path][$method]["responses"]["200"] = $isCount
+          ? $this->jsonApiFragments->jsonApiResponse(
+              "successful operation",
+              "#/components/schemas/" . $name . "CountResponse"
+            )
+          : $this->jsonApiFragments->jsonApiResponse(
+              "successful operation",
+              "#/components/schemas/" . $name . "ListResponse"
+            );
 
         /* Supported by client, not by browser, disabled for APIdocs */
         // $paths[$path][$method]["requestBody"] = [
@@ -389,48 +363,51 @@ class ModelApiPathBuilder {
 
       }
       elseif ($method == 'post') {
-        $paths[$path][$method]["responses"]["201"] = [
-          "description" => "successful operation",
-          "content" => [
-            "application/json" => [
-              "schema" => [
-                '$ref' => "#/components/schemas/" . $name . "PostPatchResponse"
-              ]
-            ]
-          ]
-        ];
+        $paths[$path][$method]["responses"]["201"] = $this->jsonApiFragments->jsonApiResponse(
+          "successful operation",
+          "#/components/schemas/" . $name . "PostPatchResponse"
+        );
+        /* Creating an object whose unique attributes are taken is a conflict */
+        $paths[$path][$method]["responses"]["409"] = $this->jsonApiFragments->problemResponse("Resource already exists");
 
         if ($isRelation) {
-          $paths[$path][$method]["requestBody"] = [
-            "required" => true,
-            "content" => [
-              "application/json" => [
-                "schema" => [
-                  '$ref' => "#/components/schemas/" . $name . "Relation" . ucfirst($relation)
-                ],
-              ],
-            ]
-          ];
+          $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
+            "#/components/schemas/" . $name . "Relation" . ucfirst($relation)
+          );
         }
         else {
-          $paths[$path][$method]["requestBody"] = [
-            "required" => true,
-            "content" => [
-              "application/json" => [
-                "schema" => [
-                  '$ref' => "#/components/schemas/" . $name . "Create"
-                ],
-              ]
-            ]
-          ];
+          $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
+            "#/components/schemas/" . $name . "Create"
+          );
         }
 
       }
       elseif ($method == 'patch') {
-        // TODO add patch many here
+        /**
+         * patchMultiple: the resource records to update are sent as data, the
+         * updated objects are not returned (see AbstractModelAPI::patchMultiple).
+         */
+        $paths[$path][$method]["responses"]["204"] = [
+          "description" => "successfully updated",
+        ];
+        $paths[$path][$method]["responses"]["404"] = $this->jsonApiFragments->problemResponse("Not Found");
+        $paths[$path][$method]["responses"]["409"] = $this->jsonApiFragments->problemResponse("Resource already exists");
+        $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
+          "#/components/schemas/" . $name . "PatchMultiple"
+        );
       }
       elseif ($method == 'delete') {
-        // TODO add delete many here
+        /**
+         * deleteMultiple: the resource identifiers to delete are sent as data
+         * (see AbstractModelAPI::deleteMultiple).
+         */
+        $paths[$path][$method]["responses"]["204"] = [
+          "description" => "successfully deleted",
+        ];
+        $paths[$path][$method]["responses"]["404"] = $this->jsonApiFragments->problemResponse("Not Found");
+        $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
+          "#/components/schemas/" . $name . "DeleteMultiple"
+        );
       }
       else {
         throw new HttpErrorException("Method '$method' not implemented");
@@ -452,20 +429,32 @@ class ModelApiPathBuilder {
       ];
 
       if (!str_contains($path, "relation:")) {
-        $parameters[] = [
-          "name" => "include",
-          "in" => "query",
-          "schema" => [
-            "type" => "string"
-          ],
-          "description" => "Items to include. Comma seperated"
-        ];
+        $parameters[] = $this->makeIncludeParameter($class);
       };
     }
     else {
       if ($method == 'get') {
         $primaryKey = array_find(call_user_func($class->getDBAclass() . '::getFeatures'), function (array $feature) { return $feature["pk"] === true; });
         $exampleCursor = "{\"primary\":{\"" . ($primaryKey['alias'] ?? "id") . "\": 123}}";
+        /**
+         * The /count route counts the objects matching the filters, so it takes
+         * the filters but neither pagination nor include (AbstractModelAPI::count).
+         */
+        if ($isCount) {
+          $paths[$path][$method]["parameters"] = [
+            $this->makeFilterParameter($primaryKey),
+            [
+              "name" => "include_total",
+              "in" => "query",
+              "schema" => [
+                "type" => "boolean"
+              ],
+              "example" => true,
+              "description" => "Also report the number of objects without any filter applied, as `meta.total_count`"
+            ]
+          ];
+          return;
+        }
         $parameters = [
           [
             "name" => "page[after]",
@@ -501,25 +490,8 @@ class ModelApiPathBuilder {
             "example" => 100,
             "description" => "Amout of data to retrieve inside a single page"
           ],
-          [
-            "name" => "filter",
-            "in" => "path",
-            "style" => "deepobject",
-            "explode" => true,
-            "schema" => [
-              "type" => "object",
-            ],
-            "description" => "Filters results using a query",
-            "example" => '"filter[hashlistId__gt]": 200'
-          ],
-          [
-            "name" => "include",
-            "in" => "path",
-            "schema" => [
-              "type" => "string"
-            ],
-            "description" => "Items to include, comma seperated. Possible options: " . implode(", ", $class->getExpandables())
-          ]
+          $this->makeFilterParameter($primaryKey),
+          $this->makeIncludeParameter($class)
         ];
 
         $aggregateFieldsets = $class->getAggregateFieldsets();
@@ -558,6 +530,55 @@ class ModelApiPathBuilder {
       }
     }
     $paths[$path][$method]["parameters"] = $parameters;
+  }
+
+  /**
+   * The "filter" query parameter, a deep object whose keys are attribute names
+   * optionally suffixed with a comparison operator.
+   */
+  private function makeFilterParameter(?array $primaryKey): array {
+    $exampleKey = ($primaryKey['alias'] ?? "id") . "__gt";
+    return [
+      "name" => "filter",
+      "in" => "query",
+      "style" => "deepObject",
+      "explode" => true,
+      "schema" => [
+        "type" => "object",
+        "additionalProperties" => [
+          "type" => "string"
+        ]
+      ],
+      "description" => "Filters results using a query. Every key is an attribute name optionally suffixed with a comparison operator, e.g. `filter[" . $exampleKey . "]=200`.",
+      "example" => [$exampleKey => "200"]
+    ];
+  }
+
+  /**
+   * The JSON:API "include" query parameter. The API reads it as a single comma
+   * separated value, which is exactly how "style: form, explode: false"
+   * serializes a string array: `?include=a,b`.
+   */
+  private function makeIncludeParameter($class): array {
+    $expandables = $class->getExpandables();
+    $parameter = [
+      "name" => "include",
+      "in" => "query",
+      "style" => "form",
+      "explode" => false,
+      "schema" => [
+        "type" => "array",
+        "items" => [
+          "type" => "string"
+        ]
+      ],
+      "description" => "Relationships to include in the response, comma seperated. Possible options: " . implode(", ", $expandables)
+    ];
+    if (count($expandables) > 0) {
+      $parameter["schema"]["items"]["enum"] = array_values($expandables);
+      $parameter["example"] = array_slice(array_values($expandables), 0, 2);
+    }
+    return $parameter;
   }
 
   /**
@@ -649,9 +670,7 @@ class ModelApiPathBuilder {
             "type" => "string",
             "const" => $typeName
           ],
-          "id" => [
-            "type" => "integer"
-          ]
+          "id" => $this->jsonApiFragments->resourceIdSchema()
         ]
       ];
 
@@ -702,9 +721,7 @@ class ModelApiPathBuilder {
       $properties[$typeName] = [
         "required" => ["id", "type", "attributes"],
         "properties" => [
-          "id" => [
-            "type" => "integer"
-          ],
+          "id" => $this->jsonApiFragments->resourceIdSchema(),
           "type" => [
             "type" => "string",
             "const" => $typeName

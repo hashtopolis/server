@@ -25,21 +25,30 @@ final class SpecBuilderHelperApiTest extends TestCase {
     $this->assertStringStartsWith('Endpoint to stop a running chunk.', $post['description']);
 
     // Raw spec keys helper components by FQCN; the sanitizer renames them.
+    // A helper takes a flat body, so its request body stays application/json.
     $this->assertSame(
       ['$ref' => '#/components/schemas/' . AbortChunkHelperAPI::class],
       $post['requestBody']['content']['application/json']['schema']
     );
     $this->assertSame(
       ['$ref' => '#/components/schemas/' . AbortChunkHelperAPI::class . 'Response'],
-      $post['responses']['200']['content']['application/json']['schema']
+      $post['responses']['200']['content']['application/vnd.api+json']['schema']
     );
-    $this->assertSame([
-      'type' => 'array',
-      'items' => [
-        'type' => 'object',
-        'properties' => ['Abort' => ['type' => 'string', 'default' => 'Success']],
-      ],
-    ], $spec['components']['schemas'][AbortChunkHelperAPI::class . 'Response']);
+
+    // getMetaResponse puts the sample map under meta and leaves data empty
+    $responseSchema = $spec['components']['schemas'][AbortChunkHelperAPI::class . 'Response'];
+    $this->assertSame(['jsonapi', 'meta', 'data'], $responseSchema['required']);
+    $this->assertSame(
+      ['Abort' => ['type' => 'string', 'default' => 'Success']],
+      $responseSchema['properties']['meta']['properties']
+    );
+    $this->assertSame(0, $responseSchema['properties']['data']['maxItems']);
+
+    // Errors are RFC 7807 problem documents
+    $this->assertSame(
+      ['$ref' => '#/components/schemas/ErrorResponse'],
+      $post['responses']['403']['content']['application/problem+json']['schema']
+    );
   }
 
   public function testGetCracksPerDaySpec(): void {

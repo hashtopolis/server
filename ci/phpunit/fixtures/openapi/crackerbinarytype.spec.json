@@ -19,7 +19,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -29,7 +29,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -39,7 +49,7 @@
                     "200": {
                         "description": "successful operation",
                         "content": {
-                            "application/json": {
+                            "application/vnd.api+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/CrackerBinaryTypeListResponse"
                                 }
@@ -90,22 +100,40 @@
                     },
                     {
                         "name": "filter",
-                        "in": "path",
-                        "style": "deepobject",
+                        "in": "query",
+                        "style": "deepObject",
                         "explode": true,
                         "schema": {
-                            "type": "object"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         },
-                        "description": "Filters results using a query",
-                        "example": "\"filter[hashlistId__gt]\": 200"
+                        "description": "Filters results using a query. Every key is an attribute name optionally suffixed with a comparison operator, e.g. `filter[crackerBinaryTypeId__gt]=200`.",
+                        "example": {
+                            "crackerBinaryTypeId__gt": "200"
+                        }
                     },
                     {
                         "name": "include",
-                        "in": "path",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
                         "schema": {
-                            "type": "string"
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "crackerVersions",
+                                    "tasks"
+                                ]
+                            }
                         },
-                        "description": "Items to include, comma seperated. Possible options: crackerVersions, tasks"
+                        "description": "Relationships to include in the response, comma seperated. Possible options: crackerVersions, tasks",
+                        "example": [
+                            "crackerVersions",
+                            "tasks"
+                        ]
                     }
                 ]
             },
@@ -117,7 +145,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -127,7 +155,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -137,9 +175,19 @@
                     "201": {
                         "description": "successful operation",
                         "content": {
-                            "application/json": {
+                            "application/vnd.api+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/CrackerBinaryTypePostPatchResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -158,7 +206,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/vnd.api+json": {
                             "schema": {
                                 "$ref": "#/components/schemas/CrackerBinaryTypeCreate"
                             }
@@ -175,7 +223,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -185,7 +233,40 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "successfully updated"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -203,6 +284,16 @@
                     }
                 ],
                 "description": "PATCH request to update attributes of a single object.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CrackerBinaryTypePatchMultiple"
+                            }
+                        }
+                    }
+                },
                 "parameters": []
             },
             "delete": {
@@ -213,7 +304,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -223,7 +314,30 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "successfully deleted"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -241,6 +355,16 @@
                     }
                 ],
                 "description": "",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CrackerBinaryTypeDeleteMultiple"
+                            }
+                        }
+                    }
+                },
                 "parameters": []
             }
         },
@@ -253,7 +377,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -263,7 +387,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -273,9 +407,9 @@
                     "200": {
                         "description": "successful operation",
                         "content": {
-                            "application/json": {
+                            "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeListResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryTypeCountResponse"
                                 }
                             }
                         }
@@ -293,53 +427,29 @@
                 "description": "GET many request to retrieve multiple objects.",
                 "parameters": [
                     {
-                        "name": "page[after]",
-                        "in": "path",
-                        "schema": {
-                            "type": "string",
-                            "format": "byte"
-                        },
-                        "example": "eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlUeXBlSWQiOiAxMjN9fQ==",
-                        "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"crackerBinaryTypeId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlUeXBlSWQiOiAxMjN9fQ==`"
-                    },
-                    {
-                        "name": "page[before]",
-                        "in": "path",
-                        "schema": {
-                            "type": "string",
-                            "format": "byte"
-                        },
-                        "example": "eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlUeXBlSWQiOiAxMjN9fQ==",
-                        "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"crackerBinaryTypeId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlUeXBlSWQiOiAxMjN9fQ==`"
-                    },
-                    {
-                        "name": "page[size]",
-                        "in": "path",
-                        "schema": {
-                            "type": "integer",
-                            "format": "int32"
-                        },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
-                    },
-                    {
                         "name": "filter",
-                        "in": "path",
-                        "style": "deepobject",
+                        "in": "query",
+                        "style": "deepObject",
                         "explode": true,
                         "schema": {
-                            "type": "object"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         },
-                        "description": "Filters results using a query",
-                        "example": "\"filter[hashlistId__gt]\": 200"
+                        "description": "Filters results using a query. Every key is an attribute name optionally suffixed with a comparison operator, e.g. `filter[crackerBinaryTypeId__gt]=200`.",
+                        "example": {
+                            "crackerBinaryTypeId__gt": "200"
+                        }
                     },
                     {
-                        "name": "include",
-                        "in": "path",
+                        "name": "include_total",
+                        "in": "query",
                         "schema": {
-                            "type": "string"
+                            "type": "boolean"
                         },
-                        "description": "Items to include, comma seperated. Possible options: crackerVersions, tasks"
+                        "example": true,
+                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
                     }
                 ]
             }
@@ -353,7 +463,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -363,7 +473,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -373,9 +493,9 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -383,7 +503,7 @@
                     "200": {
                         "description": "successful operation",
                         "content": {
-                            "application/json": {
+                            "application/vnd.api+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersionsGetResponse"
                                 }
@@ -424,7 +544,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -434,7 +554,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -444,9 +574,9 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -454,7 +584,7 @@
                     "200": {
                         "description": "successful operation",
                         "content": {
-                            "application/json": {
+                            "application/vnd.api+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/CrackerBinaryTypeResponse"
                                 }
@@ -493,7 +623,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -503,7 +633,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -516,9 +656,19 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -537,7 +687,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/vnd.api+json": {
                             "schema": {
                                 "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersions"
                             }
@@ -554,7 +704,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -564,7 +714,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -577,9 +737,19 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -598,7 +768,11 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": []
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersions"
+                            }
+                        }
                     }
                 },
                 "parameters": []
@@ -611,7 +785,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -621,7 +795,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -634,9 +818,9 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -655,7 +839,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/vnd.api+json": {
                             "schema": {
                                 "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersions"
                             }
@@ -674,7 +858,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -684,7 +868,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -694,9 +888,9 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -704,7 +898,7 @@
                     "200": {
                         "description": "successful operation",
                         "content": {
-                            "application/json": {
+                            "application/vnd.api+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/CrackerBinaryTypeRelationTasksGetResponse"
                                 }
@@ -745,7 +939,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -755,7 +949,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -765,9 +969,9 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -775,7 +979,7 @@
                     "200": {
                         "description": "successful operation",
                         "content": {
-                            "application/json": {
+                            "application/vnd.api+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/CrackerBinaryTypeResponse"
                                 }
@@ -814,7 +1018,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -824,7 +1028,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -837,9 +1051,19 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -858,7 +1082,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/vnd.api+json": {
                             "schema": {
                                 "$ref": "#/components/schemas/CrackerBinaryTypeRelationTasks"
                             }
@@ -875,7 +1099,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -885,7 +1109,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -898,9 +1132,19 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -919,7 +1163,11 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": []
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CrackerBinaryTypeRelationTasks"
+                            }
+                        }
                     }
                 },
                 "parameters": []
@@ -932,7 +1180,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -942,7 +1190,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -955,9 +1213,9 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -976,7 +1234,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/vnd.api+json": {
                             "schema": {
                                 "$ref": "#/components/schemas/CrackerBinaryTypeRelationTasks"
                             }
@@ -995,7 +1253,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -1005,7 +1263,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -1015,9 +1283,9 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -1025,7 +1293,7 @@
                     "200": {
                         "description": "successful operation",
                         "content": {
-                            "application/json": {
+                            "application/vnd.api+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/CrackerBinaryTypeResponse"
                                 }
@@ -1057,10 +1325,23 @@
                     {
                         "name": "include",
                         "in": "query",
+                        "style": "form",
+                        "explode": false,
                         "schema": {
-                            "type": "string"
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "crackerVersions",
+                                    "tasks"
+                                ]
+                            }
                         },
-                        "description": "Items to include. Comma seperated"
+                        "description": "Relationships to include in the response, comma seperated. Possible options: crackerVersions, tasks",
+                        "example": [
+                            "crackerVersions",
+                            "tasks"
+                        ]
                     }
                 ]
             },
@@ -1072,7 +1353,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -1082,7 +1363,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -1092,9 +1383,19 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -1102,7 +1403,7 @@
                     "200": {
                         "description": "successful operation",
                         "content": {
-                            "application/json": {
+                            "application/vnd.api+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/CrackerBinaryTypePostPatchResponse"
                                 }
@@ -1123,7 +1424,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/vnd.api+json": {
                             "schema": {
                                 "$ref": "#/components/schemas/CrackerBinaryTypePatch"
                             }
@@ -1140,7 +1441,7 @@
                     "400": {
                         "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -1150,7 +1451,17 @@
                     "401": {
                         "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
@@ -1160,9 +1471,9 @@
                     "404": {
                         "description": "Not Found",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -1181,12 +1492,6 @@
                     }
                 ],
                 "description": "",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": []
-                    }
-                },
                 "parameters": []
             }
         },
@@ -1206,7 +1511,7 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Success",
                         "content": {
                             "application/json": {
@@ -1216,22 +1521,22 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Authentication failed",
+                    "400": {
+                        "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "401": {
+                        "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -1280,7 +1585,7 @@
                 ],
                 "responses": {
                     "201": {
-                        "description": "successful operation",
+                        "description": "Upload created",
                         "headers": {
                             "Tus-Resumable": {
                                 "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
@@ -1294,12 +1599,6 @@
                                 "schema": {
                                     "type": "string"
                                 }
-                            }
-                        },
-                        "content": {
-                            "application/pdf": {
-                                "type": "string",
-                                "format": "binary"
                             }
                         }
                     }
@@ -1316,7 +1615,7 @@
                         "schema": {
                             "type": "integer"
                         },
-                        "example": "512",
+                        "example": 512,
                         "description": " The Upload-Offset header's value MUST be equal to the current offset of the resource"
                     },
                     {
@@ -1415,55 +1714,19 @@
                 "required": [
                     "status"
                 ],
+                "description": "RFC 7807 problem document",
                 "properties": {
                     "title": {
                         "type": "string",
-                        "example": "about=>blank"
+                        "example": "No access to this object!"
                     },
                     "type": {
                         "type": "string",
-                        "example": "Error details here"
+                        "example": "about:blank"
                     },
                     "status": {
                         "type": "integer",
                         "example": 400
-                    }
-                }
-            },
-            "NotFoundResponse": {
-                "type": "object",
-                "required": [
-                    "message"
-                ],
-                "properties": {
-                    "message": {
-                        "type": "string",
-                        "example": "404 Not Found"
-                    },
-                    "exception": {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "example": "Slim\\Exception\\HttpNotFoundException"
-                            },
-                            "code": {
-                                "type": "integer",
-                                "example": 404
-                            },
-                            "message": {
-                                "type": "string",
-                                "example": "Not Found"
-                            },
-                            "file": {
-                                "type": "string",
-                                "example": "../hashtopolis/server/vendor/slim/slim/Slim/Middleware/RoutingMiddleware.php"
-                            },
-                            "line": {
-                                "type": "integer",
-                                "example": 91
-                            }
-                        }
                     }
                 }
             },
@@ -1534,10 +1797,84 @@
                     }
                 }
             },
+            "CrackerBinaryTypePatchMultiple": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "pattern": "^[0-9]+$",
+                                    "example": "1"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "crackerBinaryType"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "properties": {
+                                        "isChunkingAvailable": {
+                                            "type": [
+                                                "boolean",
+                                                "null"
+                                            ]
+                                        },
+                                        "typeName": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "CrackerBinaryTypeDeleteMultiple": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "pattern": "^[0-9]+$",
+                                    "example": "1"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "crackerBinaryType"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "CrackerBinaryTypeResponse": {
                 "type": "object",
                 "required": [
                     "jsonapi",
+                    "links",
                     "data"
                 ],
                 "properties": {
@@ -1570,29 +1907,7 @@
                         "properties": {
                             "self": {
                                 "type": "string",
-                                "default": "/api/v2/ui/crackertypes?page[size]=25"
-                            },
-                            "first": {
-                                "type": "string",
-                                "default": "/api/v2/ui/crackertypes?page[size]=25"
-                            },
-                            "last": {
-                                "type": "string",
-                                "default": "/api/v2/ui/crackertypes?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
-                            },
-                            "next": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ],
-                                "default": "/api/v2/ui/crackertypes?page[size]=25&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
-                            },
-                            "previous": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ],
-                                "default": "/api/v2/ui/crackertypes?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
+                                "default": "/api/v2/ui/crackertypes/1"
                             }
                         }
                     },
@@ -1601,11 +1916,15 @@
                         "required": [
                             "id",
                             "type",
-                            "attributes"
+                            "attributes",
+                            "links",
+                            "relationships"
                         ],
                         "properties": {
                             "id": {
-                                "type": "integer"
+                                "type": "string",
+                                "pattern": "^[0-9]+$",
+                                "example": "1"
                             },
                             "type": {
                                 "type": "string",
@@ -1628,98 +1947,114 @@
                                         ]
                                     }
                                 }
-                            }
-                        }
-                    },
-                    "relationships": {
-                        "type": "object",
-                        "required": [
-                            "crackerVersions",
-                            "tasks"
-                        ],
-                        "properties": {
-                            "crackerVersions": {
+                            },
+                            "links": {
                                 "type": "object",
                                 "required": [
-                                    "links"
+                                    "self"
                                 ],
                                 "properties": {
-                                    "links": {
-                                        "type": "object",
-                                        "required": [
-                                            "self",
-                                            "related"
-                                        ],
-                                        "properties": {
-                                            "self": {
-                                                "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
-                                            },
-                                            "related": {
-                                                "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/crackerVersions"
-                                            }
-                                        }
-                                    },
-                                    "data": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "required": [
-                                                "type",
-                                                "id"
-                                            ],
-                                            "properties": {
-                                                "type": {
-                                                    "type": "string",
-                                                    "const": "crackerBinary"
-                                                },
-                                                "id": {
-                                                    "type": "integer"
-                                                }
-                                            }
-                                        }
+                                    "self": {
+                                        "type": "string",
+                                        "default": "/api/v2/ui/crackertypes/1"
                                     }
                                 }
                             },
-                            "tasks": {
+                            "relationships": {
                                 "type": "object",
                                 "required": [
-                                    "links"
+                                    "crackerVersions",
+                                    "tasks"
                                 ],
                                 "properties": {
-                                    "links": {
+                                    "crackerVersions": {
                                         "type": "object",
                                         "required": [
-                                            "self",
-                                            "related"
+                                            "links"
                                         ],
                                         "properties": {
-                                            "self": {
-                                                "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackertypes/crackerVersions"
+                                                    }
+                                                }
                                             },
-                                            "related": {
-                                                "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/tasks"
+                                            "data": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "type",
+                                                        "id"
+                                                    ],
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string",
+                                                            "const": "crackerBinary"
+                                                        },
+                                                        "id": {
+                                                            "type": "string",
+                                                            "pattern": "^[0-9]+$",
+                                                            "example": "1"
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     },
-                                    "data": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "required": [
-                                                "type",
-                                                "id"
-                                            ],
-                                            "properties": {
-                                                "type": {
-                                                    "type": "string",
-                                                    "const": "task"
-                                                },
-                                                "id": {
-                                                    "type": "integer"
+                                    "tasks": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackertypes/tasks"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "type",
+                                                        "id"
+                                                    ],
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string",
+                                                            "const": "task"
+                                                        },
+                                                        "id": {
+                                                            "type": "string",
+                                                            "pattern": "^[0-9]+$",
+                                                            "example": "1"
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -1741,7 +2076,9 @@
                                     ],
                                     "properties": {
                                         "id": {
-                                            "type": "integer"
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$",
+                                            "example": "1"
                                         },
                                         "type": {
                                             "type": "string",
@@ -1781,7 +2118,9 @@
                                     ],
                                     "properties": {
                                         "id": {
-                                            "type": "integer"
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$",
+                                            "example": "1"
                                         },
                                         "type": {
                                             "type": "string",
@@ -1909,19 +2248,58 @@
             "CrackerBinaryTypeSingleResponse": {
                 "type": "object",
                 "required": [
+                    "jsonapi",
+                    "links",
                     "data"
                 ],
                 "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "object",
+                        "required": [
+                            "self"
+                        ],
+                        "properties": {
+                            "self": {
+                                "type": "string",
+                                "default": "/api/v2/ui/crackertypes/1"
+                            }
+                        }
+                    },
                     "data": {
                         "type": "object",
                         "required": [
                             "id",
                             "type",
-                            "attributes"
+                            "attributes",
+                            "links",
+                            "relationships"
                         ],
                         "properties": {
                             "id": {
-                                "type": "integer"
+                                "type": "string",
+                                "pattern": "^[0-9]+$",
+                                "example": "1"
                             },
                             "type": {
                                 "type": "string",
@@ -1944,98 +2322,114 @@
                                         ]
                                     }
                                 }
-                            }
-                        }
-                    },
-                    "relationships": {
-                        "type": "object",
-                        "required": [
-                            "crackerVersions",
-                            "tasks"
-                        ],
-                        "properties": {
-                            "crackerVersions": {
+                            },
+                            "links": {
                                 "type": "object",
                                 "required": [
-                                    "links"
+                                    "self"
                                 ],
                                 "properties": {
-                                    "links": {
-                                        "type": "object",
-                                        "required": [
-                                            "self",
-                                            "related"
-                                        ],
-                                        "properties": {
-                                            "self": {
-                                                "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
-                                            },
-                                            "related": {
-                                                "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/crackerVersions"
-                                            }
-                                        }
-                                    },
-                                    "data": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "required": [
-                                                "type",
-                                                "id"
-                                            ],
-                                            "properties": {
-                                                "type": {
-                                                    "type": "string",
-                                                    "const": "crackerBinary"
-                                                },
-                                                "id": {
-                                                    "type": "integer"
-                                                }
-                                            }
-                                        }
+                                    "self": {
+                                        "type": "string",
+                                        "default": "/api/v2/ui/crackertypes/1"
                                     }
                                 }
                             },
-                            "tasks": {
+                            "relationships": {
                                 "type": "object",
                                 "required": [
-                                    "links"
+                                    "crackerVersions",
+                                    "tasks"
                                 ],
                                 "properties": {
-                                    "links": {
+                                    "crackerVersions": {
                                         "type": "object",
                                         "required": [
-                                            "self",
-                                            "related"
+                                            "links"
                                         ],
                                         "properties": {
-                                            "self": {
-                                                "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackertypes/crackerVersions"
+                                                    }
+                                                }
                                             },
-                                            "related": {
-                                                "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/tasks"
+                                            "data": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "type",
+                                                        "id"
+                                                    ],
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string",
+                                                            "const": "crackerBinary"
+                                                        },
+                                                        "id": {
+                                                            "type": "string",
+                                                            "pattern": "^[0-9]+$",
+                                                            "example": "1"
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     },
-                                    "data": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "required": [
-                                                "type",
-                                                "id"
-                                            ],
-                                            "properties": {
-                                                "type": {
-                                                    "type": "string",
-                                                    "const": "task"
-                                                },
-                                                "id": {
-                                                    "type": "integer"
+                                    "tasks": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackertypes/tasks"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "type",
+                                                        "id"
+                                                    ],
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string",
+                                                            "const": "task"
+                                                        },
+                                                        "id": {
+                                                            "type": "string",
+                                                            "pattern": "^[0-9]+$",
+                                                            "example": "1"
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -2057,7 +2451,9 @@
                                     ],
                                     "properties": {
                                         "id": {
-                                            "type": "integer"
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$",
+                                            "example": "1"
                                         },
                                         "type": {
                                             "type": "string",
@@ -2097,7 +2493,9 @@
                                     ],
                                     "properties": {
                                         "id": {
-                                            "type": "integer"
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$",
+                                            "example": "1"
                                         },
                                         "type": {
                                             "type": "string",
@@ -2226,71 +2624,7 @@
                 "type": "object",
                 "required": [
                     "jsonapi",
-                    "data"
-                ],
-                "properties": {
-                    "jsonapi": {
-                        "type": "object",
-                        "required": [
-                            "version"
-                        ],
-                        "properties": {
-                            "version": {
-                                "type": "string",
-                                "default": "1.1"
-                            },
-                            "ext": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "default": [
-                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
-                                ]
-                            }
-                        }
-                    },
-                    "data": {
-                        "type": "object",
-                        "required": [
-                            "id",
-                            "type",
-                            "attributes"
-                        ],
-                        "properties": {
-                            "id": {
-                                "type": "integer"
-                            },
-                            "type": {
-                                "type": "string",
-                                "const": "crackerBinaryType"
-                            },
-                            "attributes": {
-                                "type": "object",
-                                "required": [
-                                    "typeName",
-                                    "isChunkingAvailable"
-                                ],
-                                "properties": {
-                                    "typeName": {
-                                        "type": "string"
-                                    },
-                                    "isChunkingAvailable": {
-                                        "type": [
-                                            "boolean",
-                                            "null"
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "CrackerBinaryTypeListResponse": {
-                "type": "object",
-                "required": [
-                    "jsonapi",
+                    "links",
                     "data"
                 ],
                 "properties": {
@@ -2323,159 +2657,154 @@
                         "properties": {
                             "self": {
                                 "type": "string",
-                                "default": "/api/v2/ui/crackertypes?page[size]=25"
-                            },
-                            "first": {
-                                "type": "string",
-                                "default": "/api/v2/ui/crackertypes?page[size]=25"
-                            },
-                            "last": {
-                                "type": "string",
-                                "default": "/api/v2/ui/crackertypes?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
-                            },
-                            "next": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ],
-                                "default": "/api/v2/ui/crackertypes?page[size]=25&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
-                            },
-                            "previous": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ],
-                                "default": "/api/v2/ui/crackertypes?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0"
+                                "default": "/api/v2/ui/crackertypes/1"
                             }
                         }
                     },
                     "data": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "required": [
-                                "id",
-                                "type",
-                                "attributes"
-                            ],
-                            "properties": {
-                                "id": {
-                                    "type": "integer"
-                                },
-                                "type": {
-                                    "type": "string",
-                                    "const": "crackerBinaryType"
-                                },
-                                "attributes": {
-                                    "type": "object",
-                                    "required": [
-                                        "typeName",
-                                        "isChunkingAvailable"
-                                    ],
-                                    "properties": {
-                                        "typeName": {
-                                            "type": "string"
-                                        },
-                                        "isChunkingAvailable": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "relationships": {
                         "type": "object",
                         "required": [
-                            "crackerVersions",
-                            "tasks"
+                            "id",
+                            "type",
+                            "attributes",
+                            "links",
+                            "relationships"
                         ],
                         "properties": {
-                            "crackerVersions": {
+                            "id": {
+                                "type": "string",
+                                "pattern": "^[0-9]+$",
+                                "example": "1"
+                            },
+                            "type": {
+                                "type": "string",
+                                "const": "crackerBinaryType"
+                            },
+                            "attributes": {
                                 "type": "object",
                                 "required": [
-                                    "links"
+                                    "typeName",
+                                    "isChunkingAvailable"
                                 ],
                                 "properties": {
-                                    "links": {
-                                        "type": "object",
-                                        "required": [
-                                            "self",
-                                            "related"
-                                        ],
-                                        "properties": {
-                                            "self": {
-                                                "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
-                                            },
-                                            "related": {
-                                                "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/crackerVersions"
-                                            }
-                                        }
+                                    "typeName": {
+                                        "type": "string"
                                     },
-                                    "data": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "required": [
-                                                "type",
-                                                "id"
-                                            ],
-                                            "properties": {
-                                                "type": {
-                                                    "type": "string",
-                                                    "const": "crackerBinary"
-                                                },
-                                                "id": {
-                                                    "type": "integer"
-                                                }
-                                            }
-                                        }
+                                    "isChunkingAvailable": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
                                     }
                                 }
                             },
-                            "tasks": {
+                            "links": {
                                 "type": "object",
                                 "required": [
-                                    "links"
+                                    "self"
                                 ],
                                 "properties": {
-                                    "links": {
+                                    "self": {
+                                        "type": "string",
+                                        "default": "/api/v2/ui/crackertypes/1"
+                                    }
+                                }
+                            },
+                            "relationships": {
+                                "type": "object",
+                                "required": [
+                                    "crackerVersions",
+                                    "tasks"
+                                ],
+                                "properties": {
+                                    "crackerVersions": {
                                         "type": "object",
                                         "required": [
-                                            "self",
-                                            "related"
+                                            "links"
                                         ],
                                         "properties": {
-                                            "self": {
-                                                "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackertypes/crackerVersions"
+                                                    }
+                                                }
                                             },
-                                            "related": {
-                                                "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/tasks"
+                                            "data": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "type",
+                                                        "id"
+                                                    ],
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string",
+                                                            "const": "crackerBinary"
+                                                        },
+                                                        "id": {
+                                                            "type": "string",
+                                                            "pattern": "^[0-9]+$",
+                                                            "example": "1"
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     },
-                                    "data": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "required": [
-                                                "type",
-                                                "id"
-                                            ],
-                                            "properties": {
-                                                "type": {
-                                                    "type": "string",
-                                                    "const": "task"
-                                                },
-                                                "id": {
-                                                    "type": "integer"
+                                    "tasks": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackertypes/tasks"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "type",
+                                                        "id"
+                                                    ],
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string",
+                                                            "const": "task"
+                                                        },
+                                                        "id": {
+                                                            "type": "string",
+                                                            "pattern": "^[0-9]+$",
+                                                            "example": "1"
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -2497,7 +2826,9 @@
                                     ],
                                     "properties": {
                                         "id": {
-                                            "type": "integer"
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$",
+                                            "example": "1"
                                         },
                                         "type": {
                                             "type": "string",
@@ -2537,7 +2868,9 @@
                                     ],
                                     "properties": {
                                         "id": {
-                                            "type": "integer"
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$",
+                                            "example": "1"
                                         },
                                         "type": {
                                             "type": "string",
@@ -2662,6 +2995,488 @@
                     }
                 }
             },
+            "CrackerBinaryTypeListResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "links",
+                    "meta",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "object",
+                        "required": [
+                            "self",
+                            "first",
+                            "last",
+                            "next",
+                            "prev"
+                        ],
+                        "properties": {
+                            "self": {
+                                "type": "string",
+                                "default": "/api/v2/ui/crackertypes?page[size]=25"
+                            },
+                            "first": {
+                                "type": "string",
+                                "default": "/api/v2/ui/crackertypes?page[size]=25"
+                            },
+                            "last": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/crackertypes?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            },
+                            "next": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/crackertypes?page[size]=25&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            },
+                            "prev": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/crackertypes?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "required": [
+                            "page"
+                        ],
+                        "properties": {
+                            "page": {
+                                "type": "object",
+                                "required": [
+                                    "total_elements"
+                                ],
+                                "properties": {
+                                    "total_elements": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes",
+                                "links",
+                                "relationships"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "pattern": "^[0-9]+$",
+                                    "example": "1"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "crackerBinaryType"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "required": [
+                                        "typeName",
+                                        "isChunkingAvailable"
+                                    ],
+                                    "properties": {
+                                        "typeName": {
+                                            "type": "string"
+                                        },
+                                        "isChunkingAvailable": {
+                                            "type": [
+                                                "boolean",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "links": {
+                                    "type": "object",
+                                    "required": [
+                                        "self"
+                                    ],
+                                    "properties": {
+                                        "self": {
+                                            "type": "string",
+                                            "default": "/api/v2/ui/crackertypes/1"
+                                        }
+                                    }
+                                },
+                                "relationships": {
+                                    "type": "object",
+                                    "required": [
+                                        "crackerVersions",
+                                        "tasks"
+                                    ],
+                                    "properties": {
+                                        "crackerVersions": {
+                                            "type": "object",
+                                            "required": [
+                                                "links"
+                                            ],
+                                            "properties": {
+                                                "links": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "self",
+                                                        "related"
+                                                    ],
+                                                    "properties": {
+                                                        "self": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
+                                                        },
+                                                        "related": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/crackertypes/crackerVersions"
+                                                        }
+                                                    }
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "type",
+                                                            "id"
+                                                        ],
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "const": "crackerBinary"
+                                                            },
+                                                            "id": {
+                                                                "type": "string",
+                                                                "pattern": "^[0-9]+$",
+                                                                "example": "1"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "tasks": {
+                                            "type": "object",
+                                            "required": [
+                                                "links"
+                                            ],
+                                            "properties": {
+                                                "links": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "self",
+                                                        "related"
+                                                    ],
+                                                    "properties": {
+                                                        "self": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                                        },
+                                                        "related": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/crackertypes/tasks"
+                                                        }
+                                                    }
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "type",
+                                                            "id"
+                                                        ],
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "const": "task"
+                                                            },
+                                                            "id": {
+                                                                "type": "string",
+                                                                "pattern": "^[0-9]+$",
+                                                                "example": "1"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "included": {
+                        "type": "array",
+                        "items": {
+                            "oneOf": [
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$",
+                                            "example": "1"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "crackerBinary"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "crackerBinaryTypeId",
+                                                "version",
+                                                "downloadUrl",
+                                                "binaryName"
+                                            ],
+                                            "properties": {
+                                                "crackerBinaryTypeId": {
+                                                    "type": "integer"
+                                                },
+                                                "version": {
+                                                    "type": "string"
+                                                },
+                                                "downloadUrl": {
+                                                    "type": "string"
+                                                },
+                                                "binaryName": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$",
+                                            "example": "1"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "task"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "taskName",
+                                                "attackCmd",
+                                                "chunkTime",
+                                                "statusTimer",
+                                                "keyspace",
+                                                "keyspaceProgress",
+                                                "priority",
+                                                "maxAgents",
+                                                "color",
+                                                "isSmall",
+                                                "isCpuTask",
+                                                "useNewBench",
+                                                "skipKeyspace",
+                                                "crackerBinaryId",
+                                                "crackerBinaryTypeId",
+                                                "taskWrapperId",
+                                                "isArchived",
+                                                "notes",
+                                                "staticChunks",
+                                                "chunkSize",
+                                                "forcePipe",
+                                                "preprocessorId",
+                                                "preprocessorCommand"
+                                            ],
+                                            "properties": {
+                                                "taskName": {
+                                                    "type": "string"
+                                                },
+                                                "attackCmd": {
+                                                    "type": "string"
+                                                },
+                                                "chunkTime": {
+                                                    "type": "integer"
+                                                },
+                                                "statusTimer": {
+                                                    "type": "integer"
+                                                },
+                                                "keyspace": {
+                                                    "type": "integer",
+                                                    "format": "int64"
+                                                },
+                                                "keyspaceProgress": {
+                                                    "type": "integer",
+                                                    "format": "int64"
+                                                },
+                                                "priority": {
+                                                    "type": "integer"
+                                                },
+                                                "maxAgents": {
+                                                    "type": "integer"
+                                                },
+                                                "color": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "isSmall": {
+                                                    "type": "boolean"
+                                                },
+                                                "isCpuTask": {
+                                                    "type": "boolean"
+                                                },
+                                                "useNewBench": {
+                                                    "type": "boolean"
+                                                },
+                                                "skipKeyspace": {
+                                                    "type": "integer",
+                                                    "format": "int64"
+                                                },
+                                                "crackerBinaryId": {
+                                                    "type": "integer"
+                                                },
+                                                "crackerBinaryTypeId": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "taskWrapperId": {
+                                                    "type": "integer"
+                                                },
+                                                "isArchived": {
+                                                    "type": "boolean"
+                                                },
+                                                "notes": {
+                                                    "type": "string"
+                                                },
+                                                "staticChunks": {
+                                                    "type": "integer"
+                                                },
+                                                "chunkSize": {
+                                                    "type": "integer",
+                                                    "format": "int64"
+                                                },
+                                                "forcePipe": {
+                                                    "type": "boolean"
+                                                },
+                                                "preprocessorId": {
+                                                    "type": "integer"
+                                                },
+                                                "preprocessorCommand": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "discriminator": {
+                                "propertyName": "type"
+                            }
+                        }
+                    }
+                }
+            },
+            "CrackerBinaryTypeCountResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "meta",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "required": [
+                            "count"
+                        ],
+                        "properties": {
+                            "count": {
+                                "type": "integer",
+                                "description": "Number of objects matching the given filters"
+                            },
+                            "total_count": {
+                                "type": "integer",
+                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        },
+                        "maxItems": 0,
+                        "description": "Always empty: the count is reported under meta."
+                    }
+                }
+            },
             "CrackerBinaryTypeRelationCrackerVersions": {
                 "type": "object",
                 "required": [
@@ -2682,8 +3497,9 @@
                                     "const": "crackerVersions"
                                 },
                                 "id": {
-                                    "type": "integer",
-                                    "default": 1
+                                    "type": "string",
+                                    "pattern": "^[0-9]+$",
+                                    "example": "1"
                                 }
                             }
                         }
@@ -2710,8 +3526,9 @@
                                     "const": "crackerVersions"
                                 },
                                 "id": {
-                                    "type": "integer",
-                                    "default": 1
+                                    "type": "string",
+                                    "pattern": "^[0-9]+$",
+                                    "example": "1"
                                 }
                             }
                         }
@@ -2738,8 +3555,9 @@
                                     "const": "tasks"
                                 },
                                 "id": {
-                                    "type": "integer",
-                                    "default": 1
+                                    "type": "string",
+                                    "pattern": "^[0-9]+$",
+                                    "example": "1"
                                 }
                             }
                         }
@@ -2766,8 +3584,9 @@
                                     "const": "tasks"
                                 },
                                 "id": {
-                                    "type": "integer",
-                                    "default": 1
+                                    "type": "string",
+                                    "pattern": "^[0-9]+$",
+                                    "example": "1"
                                 }
                             }
                         }

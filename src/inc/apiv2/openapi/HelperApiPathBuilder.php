@@ -11,7 +11,10 @@ use ReflectionMethod;
  * swagger params and sample responses).
  */
 class HelperApiPathBuilder {
-  public function __construct(private FeatureTypeMapper $typeMapper) {
+  public function __construct(
+    private FeatureTypeMapper $typeMapper,
+    private JsonApiFragments $jsonApiFragments
+  ) {
   }
 
   public function addRoute(RouteTarget $target, AbstractHelperAPI $api, array &$paths, array &$components): void {
@@ -31,9 +34,21 @@ class HelperApiPathBuilder {
         "type" => "object",
         "properties" => $properties,
       ];
+    /**
+     * Helpers run behind the same authentication and permission checks as the
+     * model routes and resolve the objects they act on, so they answer the same
+     * errors.
+     */
+    $paths[$path][$method]["responses"] = $this->jsonApiFragments->commonErrorResponses();
+    $paths[$path][$method]["responses"]["404"] = $this->jsonApiFragments->problemResponse("Not Found");
+
     if ($method == "post") {
       $reflectionMethodFormFields = new ReflectionMethod($name, "getFormFields");
       $bodyDescription = $this->parsePhpDoc($reflectionMethodFormFields->getDocComment());
+      /**
+       * A helper takes a flat map of its form fields, not a JSON:API document,
+       * so its request body is plain application/json.
+       */
       $paths[$path][$method]["requestBody"] = [
         "description" => $bodyDescription,
         "required" => true,
@@ -52,8 +67,9 @@ class HelperApiPathBuilder {
     $request_response = $class->getResponse();
     $ref = null;
     if (is_array($request_response)) {
-      $responseProperties = $this->typeMapper->mapToProperties($request_response);
-      $components[$name . "Response"] = $responseProperties;
+      $components[$name . "Response"] = $this->jsonApiFragments->buildMetaResponse(
+        $this->typeMapper->mapToProperties($request_response)
+      );
       $ref = "#/components/schemas/" . $name . "Response";
     }
     else if (is_string($request_response)) {
@@ -64,16 +80,7 @@ class HelperApiPathBuilder {
       return;
     }
     if (isset($ref)) {
-      $paths[$path][$method]["responses"]["200"] = [
-        "description" => "successful operation",
-        "content" => [
-          "application/json" => [
-            "schema" => [
-              '$ref' => $ref
-            ]
-          ]
-        ]
-      ];
+      $paths[$path][$method]["responses"]["200"] = $this->jsonApiFragments->jsonApiResponse("successful operation", $ref);
     }
     else {
       $paths[$path][$method]["responses"]["200"] = [
@@ -82,7 +89,7 @@ class HelperApiPathBuilder {
     }
   }
 
-  private function parsePhpDoc($doc): array|string {
+  private function parsePhpDoc($doc): string {
     $cleanedDoc = preg_replace([
       '/^\/\*\*/',   // Remove opening /**
       '/\*\/$/',      // Remove closing */

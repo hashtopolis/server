@@ -13,6 +13,58 @@
         "/api/v2/helper/abortChunk": {
             "post": {
                 "description": "Endpoint to stop a running chunk.",
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Hashtopolis\\inc\\apiv2\\helper\\AbortChunkHelperAPIResponse"
+                                }
+                            }
+                        }
+                    }
+                },
                 "requestBody": {
                     "description": "ChunkID is the ID of the chunk that needs to be aborted.",
                     "required": true,
@@ -20,18 +72,6 @@
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/Hashtopolis\\inc\\apiv2\\helper\\AbortChunkHelperAPI"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Hashtopolis\\inc\\apiv2\\helper\\AbortChunkHelperAPIResponse"
-                                }
                             }
                         }
                     }
@@ -54,7 +94,7 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Success",
                         "content": {
                             "application/json": {
@@ -64,22 +104,22 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Authentication failed",
+                    "400": {
+                        "description": "Invalid request",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "401": {
+                        "description": "Authentication failed",
                         "content": {
-                            "application/json": {
+                            "application/problem+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/NotFoundResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -128,7 +168,7 @@
                 ],
                 "responses": {
                     "201": {
-                        "description": "successful operation",
+                        "description": "Upload created",
                         "headers": {
                             "Tus-Resumable": {
                                 "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
@@ -142,12 +182,6 @@
                                 "schema": {
                                     "type": "string"
                                 }
-                            }
-                        },
-                        "content": {
-                            "application/pdf": {
-                                "type": "string",
-                                "format": "binary"
                             }
                         }
                     }
@@ -164,7 +198,7 @@
                         "schema": {
                             "type": "integer"
                         },
-                        "example": "512",
+                        "example": 512,
                         "description": " The Upload-Offset header's value MUST be equal to the current offset of the resource"
                     },
                     {
@@ -263,55 +297,19 @@
                 "required": [
                     "status"
                 ],
+                "description": "RFC 7807 problem document",
                 "properties": {
                     "title": {
                         "type": "string",
-                        "example": "about=>blank"
+                        "example": "No access to this object!"
                     },
                     "type": {
                         "type": "string",
-                        "example": "Error details here"
+                        "example": "about:blank"
                     },
                     "status": {
                         "type": "integer",
                         "example": 400
-                    }
-                }
-            },
-            "NotFoundResponse": {
-                "type": "object",
-                "required": [
-                    "message"
-                ],
-                "properties": {
-                    "message": {
-                        "type": "string",
-                        "example": "404 Not Found"
-                    },
-                    "exception": {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "example": "Slim\\Exception\\HttpNotFoundException"
-                            },
-                            "code": {
-                                "type": "integer",
-                                "example": 404
-                            },
-                            "message": {
-                                "type": "string",
-                                "example": "Not Found"
-                            },
-                            "file": {
-                                "type": "string",
-                                "example": "../hashtopolis/server/vendor/slim/slim/Slim/Middleware/RoutingMiddleware.php"
-                            },
-                            "line": {
-                                "type": "integer",
-                                "example": 91
-                            }
-                        }
                     }
                 }
             },
@@ -324,14 +322,50 @@
                 }
             },
             "Hashtopolis\\inc\\apiv2\\helper\\AbortChunkHelperAPIResponse": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "Abort": {
-                            "type": "string",
-                            "default": "Success"
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "meta",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
                         }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "properties": {
+                            "Abort": {
+                                "type": "string",
+                                "default": "Success"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        },
+                        "maxItems": 0,
+                        "description": "Always empty: a helper answers with meta only."
                     }
                 }
             },

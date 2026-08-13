@@ -119,17 +119,11 @@ final class FeatureTypeMapperTest extends TestCase {
 
   public function testMapToPropertiesInfersTypesFromSampleValues(): void {
     $this->assertSame([
-      'type' => 'array',
-      'items' => [
-        'type' => 'object',
-        'properties' => [
-          'file' => ['type' => 'string', 'default' => 'abc.txt'],
-          'size' => ['type' => 'integer', 'default' => 123],
-          'ratio' => ['type' => 'number', 'default' => 0.5],
-          'ok' => ['type' => 'boolean', 'default' => true],
-          'meta' => ['type' => 'object', 'default' => []],
-        ],
-      ],
+      'file' => ['type' => 'string', 'default' => 'abc.txt'],
+      'size' => ['type' => 'integer', 'default' => 123],
+      'ratio' => ['type' => 'number', 'default' => 0.5],
+      'ok' => ['type' => 'boolean', 'default' => true],
+      'meta' => ['type' => 'object', 'default' => []],
     ], $this->mapper->mapToProperties(['file' => 'abc.txt', 'size' => 123, 'ratio' => 0.5, 'ok' => true, 'meta' => []]));
   }
 }

@@ -784,7 +784,7 @@ abstract class AbstractBaseAPI {
         foreach ($expandObjects as $relationObject) {
           $relationships[$relationshipName]["data"][] = [
             "type" => $this->getObjectTypeName($relationObject),
-            "id" => $relationObject->getId()
+            "id" => (string)$relationObject->getId()
           ];
         }
       }
@@ -805,15 +805,16 @@ abstract class AbstractBaseAPI {
         
         $relationships[$relationshipName]["data"] = [
           "type" => $this->getObjectTypeName($expandObject),
-          "id" => $expandObject->getId()
+          "id" => (string)$expandObject->getId()
         ];
       }
     }
     
     
+    /* JSON:API requires the id of a resource object to be a string */
     $newObject = [
       "type" => $this->getObjectTypeName($obj),
-      "id" => $obj->getId(),
+      "id" => (string)$obj->getId(),
       "attributes" => $attributes,
       "links" => [
         "self" => $linkSelf,

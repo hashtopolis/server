@@ -63,8 +63,12 @@ class FeatureTypeMapper {
     ];
   }
 
+  /**
+   * Turns a map of sample values (the getResponse() of a helper) into the
+   * schema properties describing it.
+   */
   public function mapToProperties($map): array {
-    $properties = array_map(function ($value) {
+    return array_map(function ($value) {
       if (is_int($value)) {
         $type = "integer";
       } elseif (is_float($value)) {
@@ -81,13 +85,6 @@ class FeatureTypeMapper {
         "default" => $value,
       ];
     }, $map);
-    return [
-      "type" => "array",
-      "items" => [
-        "type" => "object",
-        "properties" => $properties
-      ]
-    ];
   }
 
   /**

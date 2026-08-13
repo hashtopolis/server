@@ -89,7 +89,95 @@ final class FullSpecTest extends TestCase {
   public function testAuthTokenEndpointUsesBasicAuth(): void {
     $post = self::$sanitized['paths']['/api/v2/auth/token']['post'];
     $this->assertSame([['basicAuth' => []]], $post['security']);
-    $this->assertSame('#/components/schemas/Token', $post['responses']['200']['content']['application/json']['schema']['$ref']);
+    /* token.routes.php answers 201 with a plain JSON body, it is not a JSON:API route */
+    $this->assertSame('#/components/schemas/Token', $post['responses']['201']['content']['application/json']['schema']['$ref']);
+    $this->assertArrayNotHasKey('200', $post['responses']);
+  }
+
+  /**
+   * Every JSON:API payload is served as application/vnd.api+json and every
+   * error as an RFC 7807 problem document, matching what the API sends.
+   */
+  public function testMediaTypesMatchWhatTheApiSends(): void {
+    foreach (self::$sanitized['paths'] as $path => $pathItem) {
+      if (!str_starts_with($path, '/api/v2/ui/')) {
+        continue;
+      }
+      foreach ($pathItem as $method => $operation) {
+        foreach ($operation['responses'] ?? [] as $code => $response) {
+          $mediaTypes = array_keys($response['content'] ?? []);
+          if ($mediaTypes === []) {
+            continue;
+          }
+          $expected = ((int)$code >= 400) ? 'application/problem+json' : 'application/vnd.api+json';
+          $this->assertSame([$expected], $mediaTypes, "$method $path response $code");
+        }
+        if (isset($operation['requestBody']['content'])) {
+          $this->assertSame(
+            ['application/vnd.api+json'],
+            array_keys($operation['requestBody']['content']),
+            "$method $path request body"
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * obj2Resource puts the self link and the relationships inside the resource
+   * object, not next to it in the document.
+   */
+  public function testResourceObjectsCarryLinksAndRelationships(): void {
+    $data = self::$sanitized['components']['schemas']['AccessGroupResponse']['properties']['data'];
+    $this->assertArrayHasKey('self', $data['properties']['links']['properties']);
+    $this->assertArrayHasKey('userMembers', $data['properties']['relationships']['properties']);
+    $this->assertArrayNotHasKey(
+      'relationships',
+      self::$sanitized['components']['schemas']['AccessGroupResponse']['properties'],
+      'relationships belong to the resource object, not to the document'
+    );
+  }
+
+  /**
+   * JSON:API requires resource ids to be strings, and obj2Resource casts them,
+   * so no schema may describe an id as an integer. Covers resource objects,
+   * relationship linkage, included resources and the write envelopes at once.
+   */
+  public function testEveryResourceIdIsDeclaredAsString(): void {
+    $offenders = [];
+    $this->collectIdSchemas(self::$sanitized['components']['schemas'], '', $offenders);
+    $this->assertSame([], $offenders, 'Resource ids must be declared as string');
+  }
+
+  private function collectIdSchemas(array $node, string $path, array &$offenders): void {
+    foreach ($node as $key => $value) {
+      if (!is_array($value)) {
+        continue;
+      }
+      /**
+       * An "id" sibling of a "type" holding a const is a resource identifier;
+       * that pairing is what distinguishes it from an "id" attribute of a model.
+       */
+      if ($key === 'properties' && isset($value['id']['type'], $value['type']['const'])) {
+        if ($value['id']['type'] !== 'string') {
+          $offenders[] = "$path.id declares {$value['id']['type']}";
+        }
+      }
+      $this->collectIdSchemas($value, $path === '' ? (string)$key : "$path.$key", $offenders);
+    }
+  }
+
+  public function testCountRouteReportsTheCountUnderMeta(): void {
+    $get = self::$sanitized['paths']['/api/v2/ui/accessgroups/count']['get'];
+    $this->assertSame(
+      '#/components/schemas/AccessGroupCountResponse',
+      $get['responses']['200']['content']['application/vnd.api+json']['schema']['$ref']
+    );
+    $countSchema = self::$sanitized['components']['schemas']['AccessGroupCountResponse'];
+    $this->assertArrayHasKey('count', $countSchema['properties']['meta']['properties']);
+    /* Counting takes filters, not pagination */
+    $parameterNames = array_column($get['parameters'], 'name');
+    $this->assertSame(['filter', 'include_total'], $parameterNames);
   }
 
   public function testKnownShapeSpotChecks(): void {
@@ -131,7 +219,7 @@ final class FullSpecTest extends TestCase {
     // Helper responses reference the schema of the model API they return
     $this->assertSame(
       '#/components/schemas/GlobalPermissionGroupSingleResponse',
-      self::$sanitized['paths']['/api/v2/helper/getUserPermission']['get']['responses']['200']['content']['application/json']['schema']['$ref']
+      self::$sanitized['paths']['/api/v2/helper/getUserPermission']['get']['responses']['200']['content']['application/vnd.api+json']['schema']['$ref']
     );
   }
 
