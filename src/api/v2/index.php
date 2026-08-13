@@ -20,6 +20,7 @@ use Hashtopolis\inc\apiv2\auth\HashtopolisAuthenticator;
 use Hashtopolis\inc\apiv2\auth\JWTBeforeHandler;
 use Hashtopolis\inc\apiv2\common\ClassMapper;
 use Hashtopolis\inc\apiv2\error\ErrorHandler;
+use Hashtopolis\inc\apiv2\util\ContentNegotiationMiddleware;
 use Hashtopolis\inc\apiv2\util\CorsHackMiddleware;
 use Hashtopolis\inc\apiv2\util\JsonBodyParserMiddleware;
 use Hashtopolis\inc\apiv2\util\TokenAsParameterMiddleware;
@@ -105,6 +106,7 @@ $app = AppFactory::create();
 
 $app->addBodyParsingMiddleware();
 $app->add(new JsonBodyParserMiddleware());
+$app->add(new ContentNegotiationMiddleware());   // NOTE: answers 415/406 on unusable JSON:API media type parameters
 $app->add("HttpBasicAuthentication");
 $app->add("JwtAuthentication");
 $app->add(new TokenAsParameterMiddleware());

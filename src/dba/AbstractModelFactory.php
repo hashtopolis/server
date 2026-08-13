@@ -1152,12 +1152,12 @@ abstract class AbstractModelFactory {
       if ($dbType == 'mysql') {
         // connect as mysql
         $dsn = "mysql:dbname=$dbDB;host=$dbHost;port=$dbPort;charset=utf8mb4";
-        self::$dbh = new PDO($dsn, $dbUser, $dbPass);
+        self::$dbh = new NestedTransactionPDO($dsn, $dbUser, $dbPass);
       }
       else if ($dbType == 'postgres') {
         // connect as postgres
         $dsn = "pgsql:dbname=$dbDB;host=$dbHost;port=$dbPort;user=$dbUser;password=$dbPass";
-        self::$dbh = new PDO($dsn);
+        self::$dbh = new NestedTransactionPDO($dsn);
       }
       else {
         // unknown type

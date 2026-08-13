@@ -62,13 +62,6 @@ class ConfigAPI extends AbstractModelAPI {
     ConfigUtils::updateSingleConfig($objectId, $data);
   }
   
-  /**
-   * @throws HTException
-   */
-  protected function updateObjects(array $objects): void {
-    ConfigUtils::updateConfigs($objects);
-  }
-
   public function getAggregateFieldsets(): array {
     return [
       'config' => [

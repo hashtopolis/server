@@ -188,7 +188,55 @@ final class SpecSanitizerTest extends TestCase {
     $this->assertSame('postAbortChunk', $operation['operationId']);
     $this->assertSame('Create Helpers', $operation['description']);
     $this->assertSame([['bearerAuth' => []]], $operation['security']);
-    $this->assertSame([['name' => 'Helpers']], $result['tags']);
+    $this->assertSame(
+      [[
+        'name' => 'Helpers',
+        'description' => 'Helper endpoints under `/api/v2/helper/`: actions and file transfers that do not map onto a resource collection.'
+      ]],
+      $result['tags']
+    );
+  }
+
+  /**
+   * Every tag needs a description. For a resource collection it names the
+   * collection and whether it can be modified, which follows from the methods
+   * its operations use.
+   */
+  public function testDescribesTagsOfResourceCollections(): void {
+    $result = $this->sanitize($this->minimalSpec([
+      '/api/v2/ui/things' => [
+        'get' => ['tags' => ['Things'], 'responses' => ['200' => ['description' => 'ok']]],
+        'patch' => ['tags' => ['Things'], 'responses' => ['204' => ['description' => 'ok']]],
+      ],
+      '/api/v2/ui/things/{id}' => [
+        'get' => ['tags' => ['Things'], 'responses' => ['200' => ['description' => 'ok']]],
+      ],
+      '/api/v2/ui/readonlys' => [
+        'get' => ['tags' => ['Readonlys'], 'responses' => ['200' => ['description' => 'ok']]],
+      ],
+    ]));
+
+    $descriptions = array_column($result['tags'], 'description', 'name');
+    $this->assertSame(
+      'Reading the resources served under `/api/v2/ui/readonlys`.',
+      $descriptions['Readonlys']
+    );
+    $this->assertSame(
+      'Reading and writing the resources served under `/api/v2/ui/things`.',
+      $descriptions['Things']
+    );
+  }
+
+  public function testAddsTheLicenseOfTheServer(): void {
+    $result = $this->sanitize($this->minimalSpec(
+      ['/api/v2/ui/things' => ['get' => ['responses' => ['200' => ['description' => 'ok']]]]]
+    ));
+
+    $this->assertSame('GPL-3.0', $result['info']['license']['name']);
+    $this->assertSame(
+      'https://github.com/hashtopolis/server/blob/master/LICENSE.txt',
+      $result['info']['license']['url']
+    );
   }
 
   public function testAddsMissing2xxResponse(): void {

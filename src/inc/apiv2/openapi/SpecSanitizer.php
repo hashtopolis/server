@@ -17,6 +17,13 @@ class SpecSanitizer {
         'url' => 'https://github.com/hashtopolis/server'
       ];
     }
+    /* The license of the server itself, as stated by LICENSE.txt in its repository */
+    if (!isset($spec['info']['license'])) {
+      $spec['info']['license'] = [
+        'name' => 'GPL-3.0',
+        'url' => 'https://github.com/hashtopolis/server/blob/master/LICENSE.txt'
+      ];
+    }
 
     // Phase 1: Build rename map for schema names containing backslashes
     $renameMap = [];
@@ -233,16 +240,22 @@ class SpecSanitizer {
     $spec = $this->recursiveFixValues($spec, $renameMap);
 
     // Phase 6: Build global tags array from all operations
-    $allTags = [];
-    foreach ($spec['paths'] as $pathItem) {
-      foreach ($pathItem as $op) {
+    $tagOperations = [];
+    foreach ($spec['paths'] as $path => $pathItem) {
+      foreach ($pathItem as $method => $op) {
         if (is_array($op) && isset($op['tags'])) {
-          foreach ($op['tags'] as $tag) { $allTags[$tag] = true; }
+          foreach ($op['tags'] as $tag) { $tagOperations[$tag][$path][] = (string)$method; }
         }
       }
     }
-    ksort($allTags);
-    $spec['tags'] = array_map(fn($name) => ['name' => $name], array_keys($allTags));
+    ksort($tagOperations);
+    $spec['tags'] = [];
+    foreach ($tagOperations as $name => $operations) {
+      $spec['tags'][] = [
+        'name' => $name,
+        'description' => $this->tagDescription((string)$name, $operations)
+      ];
+    }
 
     // Phase 7: Remove unreferenced component schemas (iterative until stable)
     if (isset($spec['components']['schemas'])) {
@@ -262,6 +275,38 @@ class SpecSanitizer {
     }
 
     return $spec;
+  }
+
+  /**
+   * The description of a tag, derived from the operations carrying it: the
+   * collection they are served under and whether that collection can be
+   * modified. The helper and login tags do not describe a collection, so they
+   * are named explicitly.
+   *
+   * @param string $name tag name
+   * @param array<string, list<string>> $operations methods per path carrying the tag
+   */
+  private function tagDescription(string $name, array $operations): string {
+    if ($name === 'Helpers') {
+      return 'Helper endpoints under `/api/v2/helper/`: actions and file transfers that do not map onto a resource collection.';
+    }
+    if ($name === 'Login') {
+      return 'Exchanging basic auth credentials for the JWT that every other endpoint requires.';
+    }
+    if ($name === 'Authentication') {
+      return 'Endpoints under `/api/v2/auth/`.';
+    }
+
+    /* The shortest path carrying the tag is the collection itself */
+    $paths = array_keys($operations);
+    usort($paths, fn($a, $b) => strlen($a) <=> strlen($b));
+    $collection = $paths[0];
+
+    $methods = array_merge(...array_values($operations));
+    $writable = count(array_intersect(['post', 'patch', 'delete'], $methods)) > 0;
+
+    return ($writable ? 'Reading and writing' : 'Reading')
+      . ' the resources served under `' . $collection . '`.';
   }
 
   /**

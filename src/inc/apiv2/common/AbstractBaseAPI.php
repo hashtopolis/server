@@ -1601,11 +1601,21 @@ abstract class AbstractBaseAPI {
   
   /**
    * Common features for all requests, like setting user and checking basic permissions
+   *
+   * The permissions to check follow from the HTTP method of the request. A
+   * request that carries write operations of its own kind can name the method
+   * to check instead: the JSON:API atomic operations endpoint is a POST, but
+   * its operations require the create, update or delete permission depending on
+   * the operation (see AbstractModelAPI::atomicOperations).
+   *
+   * @param Request $request
+   * @param ?string $permissionMethod HTTP method to derive the permissions from,
+   *   defaults to the method of the request
    * @throws HTException
    * @throws HttpForbidden
    * @throws Exception
    */
-  protected function preCommon(Request $request): void {
+  protected function preCommon(Request $request, ?string $permissionMethod = null): void {
     $userId = $request->getAttribute(('userId'));
     $user = UserUtils::getUser($userId);
     if ($user->getIsValid() != 1) {
@@ -1624,9 +1634,10 @@ abstract class AbstractBaseAPI {
     $routeContext = RouteContext::fromRequest($request);
     $this->routeParser = $routeContext->getRouteParser();
     
-    $required_perms = $this->getRequiredPermissions($request->getMethod());
-    
-    if ($this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $request->getAttribute("aud")) === FALSE) {
+    $method = $permissionMethod ?? $request->getMethod();
+    $required_perms = $this->getRequiredPermissions($method);
+
+    if ($this->validatePermissions($request->getAttribute("scope"), $required_perms, $method, $request->getAttribute("aud")) === FALSE) {
       throw new HttpForbidden(join('||', $this->permissionErrors));
     }
   }
@@ -1695,7 +1706,11 @@ abstract class AbstractBaseAPI {
     $response = [
       "jsonapi" => [
         "version" => "1.1",
-        "ext" => [
+        /**
+         * Cursor pagination is a profile, not an extension: JSON:API 1.1 keeps
+         * extension URIs in "ext" and profile URIs in "profile".
+         */
+        "profile" => [
           "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
         ],
       ],

@@ -36,6 +36,22 @@ use Hashtopolis\inc\defines\DConfig;
  * @template TModel of AbstractModel
  */
 abstract class AbstractModelAPI extends AbstractBaseAPI {
+  /** URI of the JSON:API atomic operations extension (JSON:API 1.1, extensions). */
+  public const ATOMIC_EXT_URI = "https://jsonapi.org/ext/atomic";
+
+  /** Media type of every request and response document of that extension. */
+  public const ATOMIC_MEDIA_TYPE = 'application/vnd.api+json;ext="' . self::ATOMIC_EXT_URI . '"';
+
+  /**
+   * The HTTP method an atomic operation corresponds to. It decides which
+   * permission the operation requires and which modification it performs.
+   */
+  private const ATOMIC_OP_METHODS = [
+    "add" => "POST",
+    "update" => "PATCH",
+    "remove" => "DELETE"
+  ];
+
   /**
    * @return class-string<TModel>
    */
@@ -1081,24 +1097,39 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       return ErrorHandler::errorResponse($response, "No valid resource identifier object was given as data!", 403);
     }
     
-    $attributes = $data['attributes'];
+    $this->updateResource($object, $data['attributes']);
+
+    // Return updated object
+    $newObject = $this->getFactory()->get($object->getId());
+    return $this->getOneResource($this, $newObject, $request, $response);
+  }
+
+  /**
+   * Update $object with the given (aliased) attributes. Shared by the PATCH
+   * routes and by the 'update' operation of the atomic operations endpoint.
+   *
+   * @param mixed $object
+   * @param array $attributes
+   * @return void
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws ResourceNotFoundError
+   */
+  private function updateResource(mixed $object, array $attributes): void {
     $aliasedFeatures = $this->getAliasedFeatures();
-    
+
     // Validate incoming data
     foreach (array_keys($attributes) as $key) {
-      // Ensure key can be updated 
+      // Ensure key can be updated
       $this->isAllowedToMutate($aliasedFeatures, $key);
     }
     // Validate input data if it matches the correct type or subtype
     $this->validateData($attributes, $aliasedFeatures);
-    
+
     // This does the real things, patch the values that were sent in the data.
     $mappedData = $this->unaliasData($attributes, $aliasedFeatures);
     $this->updateObject($object->getId(), $mappedData);
-    
-    // Return updated object
-    $newObject = $this->getFactory()->get($object->getId());
-    return $this->getOneResource($this, $newObject, $request, $response);
   }
   
   /**
@@ -1126,103 +1157,226 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     return $this->patchSingleObject($request, $response, $object, $data);
   }
   
-  //follows style of bulk methods: https://github.com/json-api/json-api/blob/9c7a03dbc37f80f6ca81b16d444c960e96dd7a57/extensions/bulk/index.md
-  //1. parse into key => value pairs of what is updated or object => key => value dict
-  //2. retrieve object $object = $this->doFetch($request, $args['id']);
-  //3. create updateObjects functions, that in base case will just do updateObject on every element in array
-  //4. overload function in config route
   /**
-   * {
-   * "data": [{
-   *   "id": "1",
-   *  "type": "articles"
-   *   "attributes": {
-   *     "title": "To TDD or Not"
-   *   }
-   * }, {
-   *   "id": "2",
-   *  "type": "articles"
-   *   "attributes": {
-   *     "title": "LOL Engineering"
-   *   }
-   * }]
-   * @param Request $request
-   * @param Response $response
-   * @param array $args
-   * @return Response
-   * @throws HTException
-   * @throws HttpError
-   * @throws HttpForbidden
-   * @throws ResourceNotFoundError
-   */
-  public function patchMultiple(Request $request, Response $response, array $args): Response {
-    $this->preCommon($request);
-    $data = $request->getParsedBody()['data'];
-    $objects = [];
-    $aliasedfeatures = $this->getAliasedFeatures();
-    foreach ($data as $resourceRecord) {
-      if (!$this->validateResourceRecord($resourceRecord)) {
-        throw new HttpError('No valid resource identifier object was given as data!', 403);
-      }
-      $attributes = $resourceRecord["attributes"];
-      foreach (array_keys($attributes) as $key) {
-        // Ensure key can be updated 
-        $this->isAllowedToMutate($aliasedfeatures, $key);
-      }
-      $mappedData = $this->unaliasData($attributes, $aliasedfeatures);
-      $objects[$resourceRecord["id"]] = $mappedData;
-      
-    }
-    $this->updateObjects($objects);
-    
-    // $newObject = $this->getFactory()->get($object->getId());
-    // return self::getOneResource($this, $newObject, $request, $response, 200);
-    //TODO maybe nicer to return all changed objects
-    return $response->withStatus(204)
-      ->withHeader("Content-Type", "application/json");
-  }
-  
-  /**
-   * @param Request $request
-   * @param Response $response
-   * @param array $args
-   * @return Response
-   * @throws HTException
-   * @throws HttpError
-   * @throws HttpForbidden
-   * @throws ResourceNotFoundError
-   */
-  public function deleteMultiple(Request $request, Response $response, array $args): Response {
-    $this->preCommon($request);
-    $data = $request->getParsedBody()['data'];
-    
-    foreach ($data as $resourceRecord) {
-      if (!$this->validateResourceRecord($resourceRecord)) {
-        throw new HttpError('No valid resource identifier object was given as data!', 403);
-      }
-      $object = $this->doFetch($resourceRecord['id']);
-      $this->deleteObject($object);
-    }
-    return $response->withStatus(204)
-      ->withHeader("Content-Type", "application/json");
-  }
-  
-  /**
-   * Overridable function to update multiple objects
-   * @objects ia an array where id is the key and the values are the attributes that need to be patched
-   * @param array $objects
+   * API entry point of the JSON:API atomic operations extension
+   * (https://jsonapi.org/ext/atomic/). It is the JSON:API compliant way to
+   * create, update and delete several objects of this collection in one
+   * request:
    *
-   * @return void
+   * {
+   *   "atomic:operations": [
+   *     {"op": "add", "data": {"type": "hashType", "attributes": {...}}},
+   *     {"op": "update", "data": {"type": "hashType", "id": "1", "attributes": {...}}},
+   *     {"op": "remove", "ref": {"type": "hashType", "id": "2"}}
+   *   ]
+   * }
+   *
+   * The operations are applied in the order they are sent and inside one
+   * transaction, as the extension requires: a failing operation invalidates the
+   * effects of the ones before it. The answer reports one result per operation,
+   * or is empty when no operation returns data.
+   *
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   * @throws ContainerExceptionInterface
+   * @throws HTException
    * @throws HttpError
    * @throws HttpForbidden
+   * @throws InternalError
+   * @throws JsonException
+   * @throws NotFoundExceptionInterface
    * @throws ResourceNotFoundError
+   * @throws Exception
    */
-  protected function updateObjects(array $objects): void {
-    foreach ($objects as $objectId => $attributes) {
-      $this->updateObject($objectId, $attributes);
+  public function atomicOperations(Request $request, Response $response, array $args): Response {
+    /* The extension is only applied when the client asked for it by media type */
+    $contentType = $request->getHeaderLine("Content-Type");
+    if (!str_contains($contentType, "application/vnd.api+json") || !str_contains($contentType, self::ATOMIC_EXT_URI)) {
+      throw new HttpError("Atomic operations require the Content-Type '" . self::ATOMIC_MEDIA_TYPE . "'", 415);
+    }
+
+    $operations = $this->parseAtomicOperations($request->getParsedBody());
+
+    /**
+     * The request itself is a POST, but the permission an operation requires is
+     * the one of the modification it describes. Every method the operations map
+     * to is validated before the first of them is applied.
+     */
+    $methods = array_unique(array_map(fn(array $operation) => self::ATOMIC_OP_METHODS[$operation["op"]], $operations));
+    foreach ($methods as $method) {
+      $this->preCommon($request, $method);
+    }
+
+    /* Either all operations are applied or none of them is */
+    $db = $this->getFactory()->getDB();
+    $db->beginTransaction();
+    try {
+      $results = [];
+      foreach ($operations as $operation) {
+        $results[] = $this->applyAtomicOperation($operation);
+      }
+    }
+    catch (Exception $exception) {
+      /**
+       * Undo everything, including a transaction a failing operation opened and
+       * left behind (some Utils functions throw without rolling back).
+       */
+      while ($db->inTransaction()) {
+        $db->rollBack();
+      }
+      throw $exception;
+    }
+    if (!$db->commit()) {
+      throw new HttpError("Was not able to apply the atomic operations");
+    }
+
+    /* Only 'remove' returns no data, so a body of removals is answered empty */
+    $resultsWithData = array_filter($results, fn(?array $result) => $result !== null);
+    if (count($resultsWithData) === 0) {
+      return $response->withStatus(204)
+        ->withHeader("Content-Type", self::ATOMIC_MEDIA_TYPE);
+    }
+
+    $document = [
+      "jsonapi" => [
+        "version" => "1.1",
+        "ext" => [self::ATOMIC_EXT_URI]
+      ],
+      "atomic:results" => array_map(
+        fn(?array $result) => ($result === null) ? new \stdClass() : ["data" => $result],
+        $results
+      )
+    ];
+
+    $body = $response->getBody();
+    $body->write(self::ret2json($document));
+
+    return $response->withStatus(200)
+      ->withHeader("Content-Type", self::ATOMIC_MEDIA_TYPE);
+  }
+
+  /**
+   * Validate the request document of an atomic operations request and reduce it
+   * to the list of operations to apply. Every operation must address the type of
+   * this collection and a modification the collection supports.
+   *
+   * @param mixed $body parsed request body
+   * @return list<array{op: string, id: ?string, attributes: array}>
+   * @throws HttpError
+   * @throws HttpForbidden
+   */
+  final protected function parseAtomicOperations(mixed $body): array {
+    if (!is_array($body) || !isset($body["atomic:operations"]) || !is_array($body["atomic:operations"])) {
+      throw new HttpError('No operations were sent! Send them as {"atomic:operations":[{"op":"update","data":{...}}]}');
+    }
+
+    $operations = $body["atomic:operations"];
+    if (!array_is_list($operations) || count($operations) === 0) {
+      throw new HttpError("The 'atomic:operations' member must be a non-empty array of operation objects");
+    }
+
+    $typeName = $this->getObjectTypeName($this->getDBAClass());
+    $availableMethods = static::getAvailableMethods();
+
+    $parsed = [];
+    foreach ($operations as $index => $operation) {
+      if (!is_array($operation) || !isset($operation["op"]) || !is_string($operation["op"])) {
+        throw new HttpError("Operation $index does not name its 'op'");
+      }
+
+      $op = $operation["op"];
+      if (!array_key_exists($op, self::ATOMIC_OP_METHODS)) {
+        throw new HttpError("Operation $index has unknown 'op' value '$op', supported are: " . implode(", ", array_keys(self::ATOMIC_OP_METHODS)));
+      }
+      if (isset($operation["href"])) {
+        throw new HttpError("Operation $index targets a resource by 'href', which is not supported. Use 'ref' or 'data' instead");
+      }
+      if (!in_array(self::ATOMIC_OP_METHODS[$op], $availableMethods, true)) {
+        throw new HttpForbidden("Operation $index: '$op' is not available for '$typeName' objects");
+      }
+
+      /* A removal identifies its object and carries nothing else */
+      if ($op === "remove") {
+        $ref = $operation["ref"] ?? null;
+        if (!is_array($ref) || !isset($ref["type"], $ref["id"]) || !is_numeric($ref["id"])) {
+          throw new HttpError("Operation $index must identify the object to remove as {\"ref\":{\"type\":\"$typeName\",\"id\":\"1\"}}");
+        }
+        $this->assertAtomicOperationType($ref["type"], $typeName, $index);
+        $parsed[] = ["op" => $op, "id" => (string)$ref["id"], "attributes" => []];
+        continue;
+      }
+
+      $data = $operation["data"] ?? null;
+      if (!is_array($data) || !isset($data["type"])) {
+        throw new HttpError("Operation $index must carry the resource object of the object to " . $op . " as 'data'");
+      }
+      $this->assertAtomicOperationType($data["type"], $typeName, $index);
+      if (!isset($data["attributes"]) || !is_array($data["attributes"])) {
+        throw new HttpError("Operation $index must carry the attributes of the object as 'data.attributes'");
+      }
+      if ($op === "update" && !is_numeric($data["id"] ?? null)) {
+        throw new HttpError("Operation $index must identify the object to update by its 'data.id'");
+      }
+
+      $parsed[] = [
+        "op" => $op,
+        "id" => ($op === "update") ? (string)$data["id"] : null,
+        "attributes" => $data["attributes"]
+      ];
+    }
+
+    return $parsed;
+  }
+
+  /**
+   * @throws HttpError
+   */
+  private function assertAtomicOperationType(mixed $type, string $typeName, int $index): void {
+    if ($type !== $typeName) {
+      throw new HttpError("Operation $index addresses type '" . (is_string($type) ? $type : gettype($type)) . "', this endpoint only accepts '$typeName'");
     }
   }
-  
+
+  /**
+   * Apply a single operation of an atomic operations request and return the
+   * resource object of its result, or null when it has no data to report.
+   *
+   * @param array{op: string, id: ?string, attributes: array} $operation
+   * @return ?array
+   * @throws ContainerExceptionInterface
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws InternalError
+   * @throws NotFoundExceptionInterface
+   * @throws ResourceNotFoundError
+   * @throws Exception
+   */
+  private function applyAtomicOperation(array $operation): ?array {
+    switch ($operation["op"]) {
+      case "add":
+        $objectId = $this->createResource($operation["attributes"]);
+        break;
+
+      case "update":
+        $object = $this->doFetch($operation["id"]);
+        $this->updateResource($object, $operation["attributes"]);
+        $objectId = $object->getId();
+        break;
+
+      default: /* remove */
+        $this->deleteObject($this->doFetch($operation["id"]));
+        return null;
+    }
+
+    /* Request the object again, post-modified entries are not reflected into it */
+    $expandResult = [];
+    return $this->obj2Resource($this->getFactory()->get($objectId), $expandResult);
+  }
+
+
   /**
    * API entry point creation of new object
    * @param Request $request
@@ -1249,23 +1403,38 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if (!isset($data['type'])) {
       throw new HttpError('No valid resource identifier object with type was given as data!', 403);
     }
-    $attributes = $data["attributes"];
-    
-    $allFeatures = $this->getAliasedFeatures();
-    
-    // Validate incoming parameters
-    $this->validateParameters($attributes, $allFeatures);
-    
-    // Validate incoming data by value
-    $this->validateData($attributes, $allFeatures);
-    
-    // Remove key aliases and sanitize to 'db values and request creation
-    $mappedData = $this->unaliasData($attributes, $allFeatures);
-    $pk = $this->createObject($mappedData);
-    
+    $pk = $this->createResource($data["attributes"]);
+
     // Request object again, since post-modified entries are not reflected into object.
     $object = $this->getFactory()->get($pk);
     return self::getOneResource($this, $object, $request, $response, 201);
+  }
+
+  /**
+   * Create an object from the given (aliased) attributes and return its primary
+   * key. Shared by the POST route and by the 'add' operation of the atomic
+   * operations endpoint.
+   *
+   * @param array $attributes
+   * @return int
+   * @throws HTException
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws InternalError
+   * @throws Exception
+   */
+  private function createResource(array $attributes): int {
+    $allFeatures = $this->getAliasedFeatures();
+
+    // Validate incoming parameters
+    $this->validateParameters($attributes, $allFeatures);
+
+    // Validate incoming data by value
+    $this->validateData($attributes, $allFeatures);
+
+    // Remove key aliases and sanitize to 'db values and request creation
+    $mappedData = $this->unaliasData($attributes, $allFeatures);
+    return $this->createObject($mappedData);
   }
   
   
@@ -1921,9 +2090,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $baseUri = $me::getBaseUri();
     $baseUriOne = $baseUri . '/{id:[0-9]+}';
     $baseUriCount = $baseUri . "/count";
-    
+    $baseUriOperations = $baseUri . "/operations";
+
     $baseUriRelationships = $baseUri . '/{id:[0-9]+}/relationships';
-    $uris = [$baseUri, $baseUriOne, $baseUriCount, $baseUriRelationships];
+    $uris = [$baseUri, $baseUriOne, $baseUriCount, $baseUriOperations, $baseUriRelationships];
     
     $classMapper = $app->getContainer()->get('classMapper');
     $classMapper->add($me::getDBAclass(), $me);
@@ -1980,12 +2150,21 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     if (in_array("PATCH", $available_methods)) {
       $app->patch($baseUriOne, [$me, 'patchOne'])->setName($me . ':patchOne');
-      $app->patch($baseUri, [$me, 'patchMultiple'])->setName($me . ':patchMultiple');
     }
 
     if (in_array("DELETE", $available_methods)) {
       $app->delete($baseUriOne, [$me, 'deleteOne'])->setName($me . ':deleteOne');
-      $app->delete($baseUri, [$me, 'deleteMultiple'])->setName($me . 'deleteMultiple');
+    }
+
+    /**
+     * Modifying several objects of the collection in one request is done with
+     * the atomic operations extension, which JSON:API describes, and not with a
+     * PATCH or DELETE on the collection, which it does not. The endpoint is only
+     * offered when the collection can be modified at all (see
+     * AbstractModelAPI::atomicOperations).
+     */
+    if (count(array_intersect(["POST", "PATCH", "DELETE"], $available_methods)) > 0) {
+      $app->post($baseUriOperations, [$me, 'atomicOperations'])->setName($me . ':atomicOperations');
     }
   }
 }

@@ -29,6 +29,7 @@ class ModelApiPathBuilder {
     /* Quick to find out if single parameter object is used */
     $singleObject = ((strstr($path, '/{id:')) !== false);
     $isCount = str_ends_with($path, '/count');
+    $isOperations = str_ends_with($path, '/operations');
     $api_name_parts = explode('\\', get_class($class));
     $name = substr(end($api_name_parts), 0, -3); // Remove "API" suffix
     $typeName = lcfirst($name);
@@ -163,8 +164,15 @@ class ModelApiPathBuilder {
         fn($f) => $f['alias'],
         array_filter($createFeatures, fn($f) => !$f['null'])
       ));
-      $properties_create = $this->jsonApiFragments->buildPatchPost($this->typeMapper->makeProperties($createFeatures), $typeName, null, $requiredCreateAttributes);
-      $properties_patch = $this->jsonApiFragments->buildPatchPost($this->typeMapper->makeProperties($class->getPatchValidFeatures(), true), $typeName);
+      $createProperties = $this->typeMapper->makeProperties($createFeatures);
+      $patchProperties = $this->typeMapper->makeProperties($class->getPatchValidFeatures(), true);
+      $properties_create = $this->jsonApiFragments->buildPatchPost($createProperties, $typeName, null, $requiredCreateAttributes);
+      /**
+       * A single object patch identifies its object by id, both in the URL and
+       * in the resource object it carries (AbstractModelAPI::patchSingleObject
+       * rejects a body without one).
+       */
+      $properties_patch = $this->jsonApiFragments->buildPatchPost($patchProperties, $typeName, true);
 
       $components[$name . "Create"] =
         [
@@ -180,22 +188,27 @@ class ModelApiPathBuilder {
           "properties" => $properties_patch,
         ];
 
-      $components[$name . "PatchMultiple"] =
-        [
-          "type" => "object",
-          "required" => ["data"],
-          "properties" => $this->jsonApiFragments->buildMultipleWriteEnvelope(
-            $typeName,
-            $this->typeMapper->makeProperties($class->getPatchValidFeatures(), true)
-          ),
-        ];
+      /**
+       * The atomic operations extension is served for every collection that can
+       * be modified at all, and accepts exactly the operations the API class
+       * enables (see AbstractModelAPI::register).
+       */
+      $writeMethods = array_intersect(["POST", "PATCH", "DELETE"], $class::getAvailableMethods());
+      if (count($writeMethods) > 0) {
+        $components[$name . "ResourceObject"] = $resourceObject;
 
-      $components[$name . "DeleteMultiple"] =
-        [
-          "type" => "object",
-          "required" => ["data"],
-          "properties" => $this->jsonApiFragments->buildMultipleWriteEnvelope($typeName),
-        ];
+        $components[$name . "AtomicOperations"] = $this->jsonApiFragments->buildAtomicOperationsRequest(
+          $typeName,
+          in_array("POST", $writeMethods, true) ? $createProperties : null,
+          $requiredCreateAttributes,
+          in_array("PATCH", $writeMethods, true) ? $patchProperties : null,
+          in_array("DELETE", $writeMethods, true)
+        );
+
+        $components[$name . "AtomicResults"] = $this->jsonApiFragments->buildAtomicResults(
+          "#/components/schemas/" . $name . "ResourceObject"
+        );
+      }
 
       /**
        * Reading one object, creating one and updating one all answer with the
@@ -230,8 +243,14 @@ class ModelApiPathBuilder {
      * Create path objects
      */
 
-    /* Determine the scopes required for the call */
-    $required_scopes = $class->getRequiredPermissions($method);
+    /**
+     * Determine the scopes required for the call. The atomic operations
+     * endpoint is a POST, but every operation it carries requires the
+     * permission of the modification it describes.
+     */
+    $required_scopes = $isOperations
+      ? $this->atomicOperationsScopes($class)
+      : $class->getRequiredPermissions($method);
     array_push($all_scopes, ...$required_scopes);
 
     $paths[$path][$method] = [
@@ -250,6 +269,38 @@ class ModelApiPathBuilder {
 
     $paths[$path][$method]["description"] = $this->jsonApiFragments->makeDescription($isRelation, $method, $singleObject);
 
+    /* A request body under an unusable JSON:API media type never reaches the route */
+    if (in_array($method, ["post", "patch"], true)) {
+      $paths[$path][$method]["responses"]["415"] = $this->jsonApiFragments->unsupportedMediaTypeResponse();
+    }
+
+    if ($isOperations) {
+      $paths[$path][$method]["summary"] = "Atomic operations on " . $name . "s";
+      $paths[$path][$method]["description"] = $this->jsonApiFragments->makeAtomicOperationsDescription($typeName);
+      $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
+        "#/components/schemas/" . $name . "AtomicOperations",
+        JsonApiFragments::ATOMIC_MEDIA_TYPE
+      );
+      $paths[$path][$method]["responses"]["200"] = $this->jsonApiFragments->jsonApiResponse(
+        "successful operation, one result per operation",
+        "#/components/schemas/" . $name . "AtomicResults",
+        JsonApiFragments::ATOMIC_MEDIA_TYPE
+      );
+      $paths[$path][$method]["responses"]["204"] = [
+        "description" => "successfully applied, no operation returned data"
+      ];
+      /* An update or a removal can name an object that does not exist */
+      $paths[$path][$method]["responses"]["404"] = $this->jsonApiFragments->errorResponse("Not Found");
+      /* Creating an object whose unique attributes are taken is a conflict */
+      $paths[$path][$method]["responses"]["409"] = $this->jsonApiFragments->errorResponse("Resource already exists");
+      $paths[$path][$method]["responses"]["415"] = $this->jsonApiFragments->errorResponse(
+        "The Content-Type does not name the atomic operations extension, or carries a media type parameter"
+        . " other than `ext` and `profile`"
+      );
+      $paths[$path][$method]["parameters"] = [];
+      return;
+    }
+
     if ($isRelation && in_array($method, ["post", "patch", "delete"], true)) {
       $paths[$path][$method]["responses"]["204"] =
         [
@@ -258,7 +309,7 @@ class ModelApiPathBuilder {
     }
     if ($singleObject) {
       /* Single objects could not exists */
-      $paths[$path][$method]["responses"]["404"] = $this->jsonApiFragments->problemResponse("Not Found");
+      $paths[$path][$method]["responses"]["404"] = $this->jsonApiFragments->errorResponse("Not Found");
 
       /* Method specific responses and requests for single objects */
       if ($method == 'get') {
@@ -290,7 +341,7 @@ class ModelApiPathBuilder {
       }
       elseif ($method == 'patch') {
         /* A rename can collide with an existing object */
-        $paths[$path][$method]["responses"]["409"] = $this->jsonApiFragments->problemResponse("Resource already exists");
+        $paths[$path][$method]["responses"]["409"] = $this->jsonApiFragments->errorResponse("Resource already exists");
 
         if ($isRelation) {
           $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
@@ -325,7 +376,7 @@ class ModelApiPathBuilder {
           "description" => "successfully created",
         ];
         /* Linking a relation that already exists is a conflict */
-        $paths[$path][$method]["responses"]["409"] = $this->jsonApiFragments->problemResponse("Resource already exists");
+        $paths[$path][$method]["responses"]["409"] = $this->jsonApiFragments->errorResponse("Resource already exists");
 
         /* The resource identifiers to link are sent as data */
         $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
@@ -368,7 +419,7 @@ class ModelApiPathBuilder {
           "#/components/schemas/" . $name . "PostPatchResponse"
         );
         /* Creating an object whose unique attributes are taken is a conflict */
-        $paths[$path][$method]["responses"]["409"] = $this->jsonApiFragments->problemResponse("Resource already exists");
+        $paths[$path][$method]["responses"]["409"] = $this->jsonApiFragments->errorResponse("Resource already exists");
 
         if ($isRelation) {
           $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
@@ -382,34 +433,13 @@ class ModelApiPathBuilder {
         }
 
       }
-      elseif ($method == 'patch') {
-        /**
-         * patchMultiple: the resource records to update are sent as data, the
-         * updated objects are not returned (see AbstractModelAPI::patchMultiple).
-         */
-        $paths[$path][$method]["responses"]["204"] = [
-          "description" => "successfully updated",
-        ];
-        $paths[$path][$method]["responses"]["404"] = $this->jsonApiFragments->problemResponse("Not Found");
-        $paths[$path][$method]["responses"]["409"] = $this->jsonApiFragments->problemResponse("Resource already exists");
-        $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
-          "#/components/schemas/" . $name . "PatchMultiple"
-        );
-      }
-      elseif ($method == 'delete') {
-        /**
-         * deleteMultiple: the resource identifiers to delete are sent as data
-         * (see AbstractModelAPI::deleteMultiple).
-         */
-        $paths[$path][$method]["responses"]["204"] = [
-          "description" => "successfully deleted",
-        ];
-        $paths[$path][$method]["responses"]["404"] = $this->jsonApiFragments->problemResponse("Not Found");
-        $paths[$path][$method]["requestBody"] = $this->jsonApiFragments->jsonApiRequestBody(
-          "#/components/schemas/" . $name . "DeleteMultiple"
-        );
-      }
       else {
+        /**
+         * A collection takes GET and POST, and the atomic operations endpoint
+         * next to it takes the modifications of several of its objects. There is
+         * no PATCH or DELETE on the collection itself (see
+         * AbstractModelAPI::register).
+         */
         throw new HttpErrorException("Method '$method' not implemented");
       }
     }
@@ -530,6 +560,20 @@ class ModelApiPathBuilder {
       }
     }
     $paths[$path][$method]["parameters"] = $parameters;
+  }
+
+  /**
+   * The permissions the atomic operations endpoint can require: those of every
+   * modification the collection supports.
+   *
+   * @return list<string>
+   */
+  private function atomicOperationsScopes(AbstractModelAPI $class): array {
+    $scopes = [];
+    foreach (array_intersect(["POST", "PATCH", "DELETE"], $class::getAvailableMethods()) as $method) {
+      array_push($scopes, ...$class->getRequiredPermissions($method));
+    }
+    return array_values(array_unique($scopes));
   }
 
   /**

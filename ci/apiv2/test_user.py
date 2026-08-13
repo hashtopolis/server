@@ -1,5 +1,5 @@
 from hashtopolis import User, Helper, HashtopolisError
-from utils import BaseTest
+from utils import BaseTest, error_title, patch_many
 
 
 class UserTest(BaseTest):
@@ -50,7 +50,7 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             helper._test_authentication(user.name, password)
         self.assertEqual(e.exception.status_code, 403)
-        self.assertEqual(e.exception.title, f"Cannot log in. Please contact your administrator for further information")
+        self.assertEqual(error_title(e.exception), f"Cannot log in. Please contact your administrator for further information")
 
         #  Enable user
         user.isValid = True
@@ -66,7 +66,7 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             user.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, f"You cannot disable yourself!")
+        self.assertEqual(error_title(e.exception), f"You cannot disable yourself!")
         user = User.objects.get(id=1)
         self.assertTrue(user.isValid)
 
@@ -83,12 +83,12 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             helper.set_user_password(user, "")
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, f"Password cannot be of zero length!")
+        self.assertEqual(error_title(e.exception), f"Password cannot be of zero length!")
 
     def test_bulk_deactivate(self):
         users = [self.create_test_object() for i in range(5)]
         active_attributes = [False for i in range(5)]
-        User.objects.patch_many(users, active_attributes, "isValid")
+        patch_many(User, users, active_attributes, "isValid")
 
     def test_patch_invalid_email(self):
         model_obj = self.create_test_object()
@@ -96,7 +96,7 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, f"Invalid email address!")
+        self.assertEqual(error_title(e.exception), f"Invalid email address!")
 
     def test_patch_empty_email(self):
         model_obj = self.create_test_object()
@@ -104,7 +104,7 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, f"Invalid email address!")
+        self.assertEqual(error_title(e.exception), f"Invalid email address!")
 
     def test_patch_invalid_session_lifetime_zero(self):
         model_obj = self.create_test_object()
@@ -112,7 +112,7 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, f"Lifetime must be larger than 1 minute and smaller than 48 hours!")
+        self.assertEqual(error_title(e.exception), f"Lifetime must be larger than 1 minute and smaller than 48 hours!")
 
     def test_patch_invalid_session_lifetime_negative(self):
         model_obj = self.create_test_object()
@@ -120,7 +120,7 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, f"Lifetime must be larger than 1 minute and smaller than 48 hours!")
+        self.assertEqual(error_title(e.exception), f"Lifetime must be larger than 1 minute and smaller than 48 hours!")
 
     def test_patch_invalid_session_lifetime_large(self):
         model_obj = self.create_test_object()
@@ -128,7 +128,7 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, f"Lifetime must be larger than 1 minute and smaller than 48 hours!")
+        self.assertEqual(error_title(e.exception), f"Lifetime must be larger than 1 minute and smaller than 48 hours!")
 
     def test_patch_registeredSince(self):
         model_obj = self.create_test_object()
@@ -136,7 +136,7 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 403)
-        self.assertEqual(e.exception.title, f"Key 'registeredSince' is immutable")
+        self.assertEqual(error_title(e.exception), f"Key 'registeredSince' is immutable")
 
     def test_patch_lastLoginDate(self):
         model_obj = self.create_test_object()
@@ -144,7 +144,7 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 403)
-        self.assertEqual(e.exception.title, f"Key 'lastLoginDate' is immutable")
+        self.assertEqual(error_title(e.exception), f"Key 'lastLoginDate' is immutable")
 
     def test_patch_username(self):
         model_obj = self.create_test_object()
@@ -152,5 +152,5 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 403)
-        self.assertEqual(e.exception.title, f"Key 'name' is immutable")
+        self.assertEqual(error_title(e.exception), f"Key 'name' is immutable")
 

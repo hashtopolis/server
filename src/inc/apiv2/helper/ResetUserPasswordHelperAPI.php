@@ -22,7 +22,7 @@ class ResetUserPasswordHelperAPI extends AbstractHelperAPI {
     return [];
   }
   
-  public function preCommon(ServerRequestInterface $request): void {
+  public function preCommon(ServerRequestInterface $request, ?string $permissionMethod = null): void {
     // nothing, there is no user for this request as it is an unauthenticated request
   }
   

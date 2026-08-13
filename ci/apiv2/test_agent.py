@@ -3,7 +3,7 @@ import test_user
 from hashtopolis import Agent, Config, Helper
 from hashtopolis import HashtopolisError
 
-from utils import BaseTest
+from utils import BaseTest, error_title, patch_many
 
 
 class AgentTest(BaseTest):
@@ -54,7 +54,7 @@ class AgentTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             self._test_patch(model_obj, 'agentName', too_long_name)  # name exceeds max size of 100
         self.assertEqual(e.exception.status_code, 400)
-        self.assertEqual(e.exception.title, f"The string value: '{too_long_name}' is too long. The max size is '100'")
+        self.assertEqual(error_title(e.exception), f"The string value: '{too_long_name}' is too long. The max size is '100'")
 
     def test_expandables(self):
         model_obj = self.create_test_object()
@@ -83,7 +83,7 @@ class AgentTest(BaseTest):
     def test_bulk_activate(self):
         agents = [self.create_agent() for i in range(5)]
         active_attributes = [True for i in range(5)]
-        Agent.objects.patch_many(agents, active_attributes, "isActive")
+        patch_many(Agent, agents, active_attributes, "isActive")
 
     def test_hide_ip_info(self):
         agent_obj = self.create_test_object()

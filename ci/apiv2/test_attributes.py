@@ -4,7 +4,7 @@ import time
 
 from hashtopolis import HashtopolisConnector, HashtopolisConfig, HashtopolisError
 from hashtopolis import User
-from utils import BaseTest
+from utils import BaseTest, error_title
 
 
 class AttributeTypeTest(BaseTest):
@@ -34,7 +34,7 @@ class AttributeTypeTest(BaseTest):
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))
 
         self.assertEqual(r.status_code, 403)
-        self.assertIn('immutable', r.json().get('title'))
+        self.assertIn('immutable', r.json()['errors'][0]['title'])
         user.delete()
 
     def test_create_protected(self):
@@ -52,7 +52,7 @@ class AttributeTypeTest(BaseTest):
             user.save()
         
         self.assertEqual(e.exception.status_code, 403)
-        self.assertIn(' not valid input ', e.exception.title)
+        self.assertIn(' not valid input ', error_title(e.exception))
 
     def test_get_private(self):
         stamp = int(time.time() * 1000)

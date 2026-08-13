@@ -31,7 +31,7 @@ class SpecBuilder {
     $this->routeIntrospector = new RouteIntrospector();
     $this->helperApiPathBuilder = new HelperApiPathBuilder($typeMapper, $jsonApiFragments);
     $this->modelApiPathBuilder = new ModelApiPathBuilder($typeMapper, $jsonApiFragments);
-    $this->staticFragments = new StaticFragments();
+    $this->staticFragments = new StaticFragments($jsonApiFragments);
   }
 
   /**

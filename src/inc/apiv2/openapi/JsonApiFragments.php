@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\openapi;
 
+use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
+
 /**
  * Builders for the recurring JSON:API document fragments (jsonapi header,
  * pagination links, write envelopes, canned descriptions).
@@ -11,11 +13,21 @@ class JsonApiFragments {
   public const MEDIA_TYPE = "application/vnd.api+json";
 
   /**
-   * Media type of the error documents. Every APIv2 error is rendered by
-   * ErrorHandler::errorResponse as an RFC 7807 problem document, not as a
-   * JSON:API error document.
+   * Media type of the atomic operations extension: the same JSON:API media type
+   * with the extension named in its "ext" parameter, as the extension requires.
+   * Taken from the endpoint implementing it, so spec and server cannot drift.
    */
-  public const PROBLEM_MEDIA_TYPE = "application/problem+json";
+  public const ATOMIC_MEDIA_TYPE = AbstractModelAPI::ATOMIC_MEDIA_TYPE;
+
+  /** URI identifying the atomic operations extension. */
+  public const ATOMIC_EXT_URI = AbstractModelAPI::ATOMIC_EXT_URI;
+
+  /**
+   * URI of the cursor pagination profile the APIv2 follows. It is a profile and
+   * not an extension: it adds no document member, it only gives meaning to the
+   * page[after]/page[before] query parameters JSON:API already allows.
+   */
+  public const CURSOR_PAGINATION_PROFILE = "https://jsonapi.org/profiles/ethanresnick/cursor-pagination";
 
   /**
    * The id of a resource object or resource identifier object. JSON:API requires
@@ -31,13 +43,14 @@ class JsonApiFragments {
   }
 
   /**
-   * A response carrying the JSON:API document described by $schemaRef.
+   * A response carrying the JSON:API document described by $schemaRef. Documents
+   * of an extension are served under the media type of that extension.
    */
-  public function jsonApiResponse(string $description, string $schemaRef): array {
+  public function jsonApiResponse(string $description, string $schemaRef, string $mediaType = self::MEDIA_TYPE): array {
     return [
       "description" => $description,
       "content" => [
-        self::MEDIA_TYPE => [
+        $mediaType => [
           "schema" => ['$ref' => $schemaRef]
         ]
       ]
@@ -47,11 +60,11 @@ class JsonApiFragments {
   /**
    * A required request body carrying the JSON:API document described by $schemaRef.
    */
-  public function jsonApiRequestBody(string $schemaRef): array {
+  public function jsonApiRequestBody(string $schemaRef, string $mediaType = self::MEDIA_TYPE): array {
     return [
       "required" => true,
       "content" => [
-        self::MEDIA_TYPE => [
+        $mediaType => [
           "schema" => ['$ref' => $schemaRef]
         ]
       ]
@@ -59,13 +72,14 @@ class JsonApiFragments {
   }
 
   /**
-   * A single RFC 7807 problem response.
+   * An error response: a JSON:API error document, as ErrorHandler::errorResponse
+   * renders every error of the APIv2.
    */
-  public function problemResponse(string $description): array {
+  public function errorResponse(string $description): array {
     return [
       "description" => $description,
       "content" => [
-        self::PROBLEM_MEDIA_TYPE => [
+        self::MEDIA_TYPE => [
           "schema" => ['$ref' => "#/components/schemas/ErrorResponse"]
         ]
       ]
@@ -74,38 +88,74 @@ class JsonApiFragments {
 
   /**
    * The errors every authenticated APIv2 route can answer with: 400 on a
-   * malformed request, 401 without a usable token and 403 when the token lacks
-   * the permission the route requires.
+   * malformed request, 401 without a usable token, 403 when the token lacks the
+   * permission the route requires and 406 when the Accept header asks for the
+   * JSON:API media type in a way the server cannot serve
+   * (ContentNegotiationMiddleware).
    */
   public function commonErrorResponses(): array {
     return [
-      "400" => $this->problemResponse("Invalid request"),
-      "401" => $this->problemResponse("Authentication failed"),
-      "403" => $this->problemResponse("Permission denied")
+      "400" => $this->errorResponse("Invalid request"),
+      "401" => $this->errorResponse("Authentication failed"),
+      "403" => $this->errorResponse("Permission denied"),
+      "406" => $this->errorResponse(
+        "The Accept header only asks for instances of `" . self::MEDIA_TYPE . "` that cannot be served,"
+        . " because they carry a media type parameter other than `ext` and `profile` or name an unsupported extension"
+      )
     ];
   }
 
-  // "jsonapi": {
-  //   "version": "1.1",
-  //   "ext": [
-  //       "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
-  //   ]
-  // },
-  public function makeJsonApiHeader(): array {
+  /**
+   * The answer to a request body sent as the JSON:API media type modified with a
+   * media type parameter the specification does not define, or naming an
+   * extension the server does not implement (ContentNegotiationMiddleware).
+   */
+  public function unsupportedMediaTypeResponse(): array {
+    return $this->errorResponse(
+      "The Content-Type is `" . self::MEDIA_TYPE . "` with a media type parameter other than `ext` and `profile`,"
+      . " or names an unsupported extension"
+    );
+  }
+
+  /**
+   * The jsonapi member of a document, as AbstractBaseAPI::createJsonResponse
+   * builds it:
+   *
+   * "jsonapi": {
+   *   "version": "1.1",
+   *   "profile": ["https://jsonapi.org/profiles/ethanresnick/cursor-pagination"]
+   * }
+   *
+   * JSON:API 1.1 keeps the URIs of applied extensions in "ext" and those of
+   * applied profiles in "profile", so a document of the atomic operations
+   * extension reports that extension while an ordinary one reports the cursor
+   * pagination profile.
+   *
+   * @param list<string> $profile URIs of the profiles the document applies
+   * @param list<string> $ext URIs of the extensions the document applies
+   */
+  public function makeJsonApiHeader(array $profile = [self::CURSOR_PAGINATION_PROFILE], array $ext = []): array {
+    $properties = [
+      "version" => [
+        "type" => "string",
+        "default" => "1.1"
+      ]
+    ];
+    foreach (["ext" => $ext, "profile" => $profile] as $member => $uris) {
+      if (count($uris) === 0) {
+        continue;
+      }
+      $properties[$member] = [
+        "type" => "array",
+        "items" => ["type" => "string"],
+        "default" => $uris
+      ];
+    }
+
     return ["jsonapi" => [
       "type" => "object",
       "required" => ["version"],
-      "properties" => [
-        "version" => [
-          "type" => "string",
-          "default" => "1.1"
-        ],
-        "ext" => [
-          "type" => "array",
-          "items" => ["type" => "string"],
-          "default" => ["https://jsonapi.org/profiles/ethanresnick/cursor-pagination"]
-        ]
-      ]
+      "properties" => $properties
     ]
     ];
   }
@@ -289,36 +339,146 @@ class JsonApiFragments {
   }
 
   /**
-   * The write envelope of the collection level patch and delete routes. Unlike
-   * the single object routes these carry a list of resource records as data,
-   * each identified by its own id. Attributes are only part of a patch, a
-   * delete identifies the objects to remove and nothing else.
+   * The request document of the atomic operations extension
+   * (https://jsonapi.org/ext/atomic/), as AbstractModelAPI::atomicOperations
+   * reads it: a non-empty list of operations, each addressing one object of this
+   * collection. Only the operations the collection supports are described, an
+   * unsupported one is rejected with 403.
+   *
+   * @param string $typeName resource type every operation must address
+   * @param ?array $createProperties attributes an "add" accepts, null when the
+   *   collection cannot be created in
+   * @param array $requiredCreateAttributes attributes an "add" must carry
+   * @param ?array $patchProperties attributes an "update" accepts, null when the
+   *   collection cannot be updated
+   * @param bool $allowRemove whether objects of the collection can be removed
    */
-  public function buildMultipleWriteEnvelope(string $name, ?array $properties = null): array {
-    $required = ["id", "type"];
-    $recordProperties = [
-      "id" => $this->resourceIdSchema(),
-      "type" => [
-        "type" => "string",
-        "const" => $name
-      ]
-    ];
-    if ($properties !== null) {
-      $required[] = "attributes";
-      $recordProperties["attributes"] = [
+  public function buildAtomicOperationsRequest(
+    string $typeName,
+    ?array $createProperties,
+    array $requiredCreateAttributes,
+    ?array $patchProperties,
+    bool $allowRemove
+  ): array {
+    $operations = [];
+    if ($createProperties !== null) {
+      $operations[] = $this->buildAtomicWriteOperation("add", $typeName, $createProperties, $requiredCreateAttributes, false);
+    }
+    if ($patchProperties !== null) {
+      $operations[] = $this->buildAtomicWriteOperation("update", $typeName, $patchProperties, [], true);
+    }
+    if ($allowRemove) {
+      $operations[] = [
         "type" => "object",
-        "properties" => $properties
+        "description" => "Deletes the object named by `ref`, the same modification as a `DELETE` on that object.",
+        "required" => ["op", "ref"],
+        "properties" => [
+          "op" => [
+            "type" => "string",
+            "const" => "remove"
+          ],
+          "ref" => [
+            "type" => "object",
+            "required" => ["type", "id"],
+            "properties" => [
+              "type" => [
+                "type" => "string",
+                "const" => $typeName
+              ],
+              "id" => $this->resourceIdSchema()
+            ]
+          ]
+        ]
       ];
     }
 
-    return ["data" => [
-      "type" => "array",
-      "items" => [
-        "type" => "object",
-        "required" => $required,
-        "properties" => $recordProperties
+    return [
+      "type" => "object",
+      "required" => ["atomic:operations"],
+      "properties" => [
+        "atomic:operations" => [
+          "type" => "array",
+          "minItems" => 1,
+          "description" => "The operations to apply, in the order they are applied. Either all of them take effect or none does.",
+          "items" => (count($operations) === 1) ? $operations[0] : ["oneOf" => $operations]
+        ]
       ]
-    ]
+    ];
+  }
+
+  /**
+   * An "add" or "update" operation: both carry the object they write as a
+   * resource object, an "update" identifies it by its id.
+   */
+  private function buildAtomicWriteOperation(string $op, string $typeName, array $properties, array $requiredAttributes, bool $needsId): array {
+    $attributesSchema = [
+      "type" => "object",
+      "properties" => $properties
+    ];
+    if (count($requiredAttributes) > 0) {
+      $attributesSchema["required"] = $requiredAttributes;
+    }
+
+    $dataRequired = ["type", "attributes"];
+    $dataProperties = [
+      "type" => [
+        "type" => "string",
+        "const" => $typeName
+      ],
+      "attributes" => $attributesSchema
+    ];
+    if ($needsId) {
+      $dataRequired = ["id", "type", "attributes"];
+      $dataProperties = ["id" => $this->resourceIdSchema()] + $dataProperties;
+    }
+
+    $description = ($op === "add")
+      ? "Creates one object from the attributes given, the same modification as a `POST` to this collection."
+      : "Updates the attributes of the object named by `data.id`, the same modification as a `PATCH` on that object.";
+
+    return [
+      "type" => "object",
+      "description" => $description,
+      "required" => ["op", "data"],
+      "properties" => [
+        "op" => [
+          "type" => "string",
+          "const" => $op
+        ],
+        "data" => [
+          "type" => "object",
+          "required" => $dataRequired,
+          "properties" => $dataProperties
+        ]
+      ]
+    ];
+  }
+
+  /**
+   * The response document of the atomic operations extension: one result per
+   * operation, in the order the operations were sent. A result carries the
+   * object the operation wrote, and is empty for a removal.
+   */
+  public function buildAtomicResults(string $resourceObjectRef): array {
+    return [
+      "type" => "object",
+      "required" => ["jsonapi", "atomic:results"],
+      "properties" => array_merge(
+        $this->makeJsonApiHeader([], [self::ATOMIC_EXT_URI]),
+        [
+          "atomic:results" => [
+            "type" => "array",
+            "description" => "One result per operation, in request order.",
+            "items" => [
+              "type" => "object",
+              "description" => "The object written by the operation, empty (`{}`) for a removal.",
+              "properties" => [
+                "data" => ['$ref' => $resourceObjectRef]
+              ]
+            ]
+          ]
+        ]
+      )
     ];
   }
 
@@ -395,9 +555,40 @@ class JsonApiFragments {
           }
         }
         else {
-          $description = "PATCH request to update attributes of a single object.";
+          $description = "PATCH request to update attributes of a single object."
+            . " Several objects are updated in one request with the atomic operations endpoint of this collection"
+            . " (`POST .../operations`).";
+        }
+        break;
+      case "delete":
+        if ($isRelation) {
+          $description = "DELETE request to remove a to-many relationship link.";
+        }
+        else {
+          $description = "DELETE request to remove a single object."
+            . " Several objects are removed in one request with the atomic operations endpoint of this collection"
+            . " (`POST .../operations`).";
         }
     }
     return $description;
+  }
+
+  /**
+   * The endpoint of the atomic operations extension. It is documented per
+   * collection because that is where it is served and because the permissions
+   * of the collection apply to it (see AbstractModelAPI::atomicOperations).
+   */
+  public function makeAtomicOperationsDescription(string $typeName): string {
+    return "Applies a list of JSON:API atomic operations to the `" . $typeName . "` collection"
+      . " ([atomic operations extension](https://jsonapi.org/ext/atomic/))."
+      . " Every operation addresses one `" . $typeName . "` object: `add` creates it, `update` updates its attributes and"
+      . " `remove` deletes it. Only the operations this collection supports are accepted."
+      . "<br />The operations are applied in the order they are sent and inside one transaction, so a failing operation"
+      . " invalidates the effects of the ones before it."
+      . "<br />Request and response carry the `ext=\"" . self::ATOMIC_EXT_URI . "\"` media type parameter; a request"
+      . " without it is answered with 415. The answer reports one result per operation, and is 204 when no operation"
+      . " returns data (a body of `remove` operations only)."
+      . "<br />An operation requires the permission of the modification it describes: `add` the create, `update` the"
+      . " update and `remove` the delete permission of this collection.";
   }
 }

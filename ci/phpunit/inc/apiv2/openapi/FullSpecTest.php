@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\openapi;
 
+use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\common\ApiRegistry;
 use Hashtopolis\inc\defines\DTaskStatus;
 use PHPUnit\Framework\TestCase;
@@ -95,32 +96,151 @@ final class FullSpecTest extends TestCase {
   }
 
   /**
-   * Every JSON:API payload is served as application/vnd.api+json and every
-   * error as an RFC 7807 problem document, matching what the API sends.
+   * Every payload is served as application/vnd.api+json, errors included:
+   * ErrorHandler::errorResponse answers JSON:API error documents. The documents
+   * of the atomic operations extension carry its "ext" parameter, as JSON:API
+   * 1.1 requires (AbstractModelAPI::atomicOperations).
    */
   public function testMediaTypesMatchWhatTheApiSends(): void {
     foreach (self::$sanitized['paths'] as $path => $pathItem) {
       if (!str_starts_with($path, '/api/v2/ui/')) {
         continue;
       }
+      $isOperations = str_ends_with($path, '/operations');
+      $successMediaType = $isOperations ? AbstractModelAPI::ATOMIC_MEDIA_TYPE : 'application/vnd.api+json';
       foreach ($pathItem as $method => $operation) {
         foreach ($operation['responses'] ?? [] as $code => $response) {
           $mediaTypes = array_keys($response['content'] ?? []);
           if ($mediaTypes === []) {
             continue;
           }
-          $expected = ((int)$code >= 400) ? 'application/problem+json' : 'application/vnd.api+json';
+          $expected = ((int)$code >= 400) ? 'application/vnd.api+json' : $successMediaType;
           $this->assertSame([$expected], $mediaTypes, "$method $path response $code");
         }
         if (isset($operation['requestBody']['content'])) {
           $this->assertSame(
-            ['application/vnd.api+json'],
+            [$successMediaType],
             array_keys($operation['requestBody']['content']),
             "$method $path request body"
           );
         }
       }
     }
+  }
+
+  /**
+   * The atomic operations endpoint of a collection describes exactly the
+   * operations the API class enables, answers 200 with one result per operation
+   * and 204 when none of them returns data.
+   */
+  public function testAtomicOperationsEndpoints(): void {
+    /* Every collection that can be modified has one, read-only ones do not */
+    $this->assertArrayHasKey('/api/v2/ui/agents/operations', self::$sanitized['paths']);
+    $this->assertArrayNotHasKey('/api/v2/ui/chunks/operations', self::$sanitized['paths']);
+
+    $post = self::$sanitized['paths']['/api/v2/ui/hashtypes/operations']['post'];
+    $this->assertSame(['HashTypes'], $post['tags']);
+    $this->assertSame(
+      '#/components/schemas/HashTypeAtomicOperations',
+      $post['requestBody']['content'][AbstractModelAPI::ATOMIC_MEDIA_TYPE]['schema']['$ref']
+    );
+    $this->assertSame(
+      '#/components/schemas/HashTypeAtomicResults',
+      $post['responses']['200']['content'][AbstractModelAPI::ATOMIC_MEDIA_TYPE]['schema']['$ref']
+    );
+    $this->assertArrayHasKey('204', $post['responses']);
+    /* Without the ext parameter the endpoint answers 415 */
+    $this->assertArrayHasKey('415', $post['responses']);
+
+    /* HashTypes support all three operations */
+    $operations = self::$sanitized['components']['schemas']['HashTypeAtomicOperations'];
+    $this->assertSame(['atomic:operations'], $operations['required']);
+    $items = $operations['properties']['atomic:operations']['items'];
+    $this->assertSame(
+      ['add', 'update', 'remove'],
+      array_map(fn($op) => $op['properties']['op']['const'], $items['oneOf'])
+    );
+
+    /* Configs can only be updated, so that is the only operation offered */
+    $configItems = self::$sanitized['components']['schemas']['ConfigAtomicOperations']['properties']['atomic:operations']['items'];
+    $this->assertArrayNotHasKey('oneOf', $configItems);
+    $this->assertSame('update', $configItems['properties']['op']['const']);
+    $this->assertSame(['id', 'type', 'attributes'], $configItems['properties']['data']['required']);
+
+    /* A result reports the written object, the extension is named in the header */
+    $results = self::$sanitized['components']['schemas']['HashTypeAtomicResults'];
+    $this->assertSame([AbstractModelAPI::ATOMIC_EXT_URI], $results['properties']['jsonapi']['properties']['ext']['default']);
+    $this->assertSame(
+      '#/components/schemas/HashTypeResourceObject',
+      $results['properties']['atomic:results']['items']['properties']['data']['$ref']
+    );
+  }
+
+  /**
+   * Errors are JSON:API error documents: one error object under "errors", with
+   * the status as a string (ErrorHandler::errorResponse).
+   */
+  public function testErrorsAreJsonApiErrorDocuments(): void {
+    $error = self::$sanitized['components']['schemas']['ErrorResponse'];
+    $this->assertSame(['jsonapi', 'errors'], $error['required']);
+    $this->assertSame(1, $error['properties']['errors']['maxItems']);
+    $errorObject = $error['properties']['errors']['items'];
+    $this->assertSame(['status', 'title'], $errorObject['required']);
+    $this->assertSame('string', $errorObject['properties']['status']['type']);
+    /* An error document applies no extension and no profile */
+    $this->assertSame(['version'], array_keys($error['properties']['jsonapi']['properties']));
+  }
+
+  /**
+   * Cursor pagination is a profile, not an extension, so an ordinary document
+   * reports it under jsonapi.profile (AbstractBaseAPI::createJsonResponse).
+   */
+  public function testOrdinaryDocumentsReportTheCursorPaginationProfile(): void {
+    $header = self::$sanitized['components']['schemas']['AgentListResponse']['properties']['jsonapi']['properties'];
+    $this->assertArrayNotHasKey('ext', $header);
+    $this->assertSame(
+      [JsonApiFragments::CURSOR_PAGINATION_PROFILE],
+      $header['profile']['default']
+    );
+  }
+
+  /**
+   * A collection takes GET and POST only: several objects are modified through
+   * the atomic operations endpoint, not through a PATCH or DELETE on the
+   * collection, which JSON:API does not describe.
+   */
+  public function testCollectionsAreNotPatchedOrDeletedAsAWhole(): void {
+    foreach (self::$sanitized['paths'] as $path => $pathItem) {
+      if (!str_starts_with($path, '/api/v2/ui/') || preg_match('#/(\{id\}|count|operations)#', $path)) {
+        continue;
+      }
+      $this->assertSame([], array_intersect(['patch', 'delete'], array_keys($pathItem)), $path);
+    }
+  }
+
+  /**
+   * ContentNegotiationMiddleware runs for every route, so every operation can
+   * answer 406, and every operation taking a body can answer 415.
+   */
+  public function testEveryOperationDocumentsContentNegotiation(): void {
+    foreach (self::$sanitized['paths'] as $path => $pathItem) {
+      foreach ($pathItem as $method => $operation) {
+        $this->assertArrayHasKey('406', $operation['responses'], "$method $path");
+        if (in_array($method, ['post', 'patch'], true)) {
+          $this->assertArrayHasKey('415', $operation['responses'], "$method $path");
+        }
+      }
+    }
+  }
+
+  /**
+   * A single object PATCH carries the id of the object it updates, which
+   * AbstractModelAPI::patchSingleObject requires and JSON:API mandates.
+   */
+  public function testSingleObjectPatchRequiresTheResourceId(): void {
+    $patch = self::$sanitized['components']['schemas']['HashTypePatch']['properties']['data'];
+    $this->assertContains('id', $patch['required']);
+    $this->assertSame('string', $patch['properties']['id']['type']);
   }
 
   /**

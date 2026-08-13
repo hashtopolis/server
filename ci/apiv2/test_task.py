@@ -1,5 +1,5 @@
 from hashtopolis import Task, TaskWrapper, Config, HashtopolisResponseError
-from utils import BaseTest, do_create_dummy_agent, do_create_agentassignent
+from utils import BaseTest, do_create_agentassignent, do_create_dummy_agent, patch_many
 from hashtopolis_agent import ProcessState
 import base64
 
@@ -126,7 +126,7 @@ class TaskTest(BaseTest):
     def test_bulk_archive(self):
         tasks = [self.create_test_object() for i in range(5)]
         active_attributes = [True for i in range(5)]
-        Task.objects.patch_many(tasks, active_attributes, "isArchived")
+        patch_many(Task, tasks, active_attributes, "isArchived")
 
     def test_toggle_archive_task_normal_type(self):
         """Test toggleArchiveTask functionality for normal tasks"""

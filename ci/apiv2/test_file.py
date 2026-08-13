@@ -1,7 +1,7 @@
 import pytest
 
 from hashtopolis import File, Helper
-from utils import BaseTest
+from utils import BaseTest, delete_many
 
 
 class FileTest(BaseTest):
@@ -58,7 +58,7 @@ class FileTest(BaseTest):
 
     def test_bulk_delete(self):
         files = [self.create_test_object(delete=False) for i in range(5)]
-        File.objects.delete_many(files)
+        delete_many(File, files)
 
     def test_acl(self):
         model_obj = self.create_test_object()

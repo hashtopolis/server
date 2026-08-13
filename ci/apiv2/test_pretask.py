@@ -1,5 +1,5 @@
 from hashtopolis import Pretask, HashtopolisError
-from utils import BaseTest
+from utils import BaseTest, error_title
 
 
 class PretaskTest(BaseTest):
@@ -58,7 +58,7 @@ class PretaskTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, f"The attack command does not contain the hashlist alias!")
+        self.assertEqual(error_title(e.exception), f"The attack command does not contain the hashlist alias!")
 
     def test_patch_empty_name(self):
         model_obj = self.create_test_object()
@@ -66,7 +66,7 @@ class PretaskTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, "Name cannot be empty!")
+        self.assertEqual(error_title(e.exception), "Name cannot be empty!")
 
     def test_patch_maxAgents_negative(self):
         model_obj = self.create_test_object()
@@ -74,7 +74,7 @@ class PretaskTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, "Max agents cannot be negative!")
+        self.assertEqual(error_title(e.exception), "Max agents cannot be negative!")
 
     def test_patch_invalid_color(self):
         model_obj = self.create_test_object()
@@ -82,7 +82,7 @@ class PretaskTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, "Invalid color!")
+        self.assertEqual(error_title(e.exception), "Invalid color!")
 
     def test_patch_invalid_isSmall(self):
         model_obj = self.create_test_object()
@@ -90,7 +90,7 @@ class PretaskTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 400)
-        self.assertEqual(e.exception.title, "Key 'isSmall' is not of type boolean")
+        self.assertEqual(error_title(e.exception), "Key 'isSmall' is not of type boolean")
 
     def test_patch_invalid_isCpuTask(self):
         model_obj = self.create_test_object()
@@ -98,7 +98,7 @@ class PretaskTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 400)
-        self.assertEqual(e.exception.title, "Key 'isCpuTask' is not of type boolean")
+        self.assertEqual(error_title(e.exception), "Key 'isCpuTask' is not of type boolean")
 
     def test_patch_useNewBench(self):
         model_obj = self.create_test_object()
@@ -112,7 +112,7 @@ class PretaskTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 400)
-        self.assertEqual(e.exception.title, "Key 'useNewBench' is not of type boolean")
+        self.assertEqual(error_title(e.exception), "Key 'useNewBench' is not of type boolean")
 
     def test_delete(self):
         model_obj = self.create_test_object(delete=False)
@@ -131,13 +131,13 @@ class PretaskTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj = self.create_test_object(file_id='inv_attackcmd')
         self.assertEqual(e.exception.status_code, 400)
-        self.assertEqual(e.exception.title, "The attack command does not contain the hashlist alias!")
+        self.assertEqual(error_title(e.exception), "The attack command does not contain the hashlist alias!")
 
     def test_create_empty_name(self):
         with self.assertRaises(HashtopolisError) as e:
             model_obj = self.create_test_object(file_id='inv_name')
         self.assertEqual(e.exception.status_code, 400)
-        self.assertEqual(e.exception.title, "Name cannot be empty!")
+        self.assertEqual(error_title(e.exception), "Name cannot be empty!")
 
     def test_create_chunktime_zero(self):
         model_obj = self.create_test_object(file_id='chunk_zero')

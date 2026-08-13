@@ -3,6 +3,7 @@ import datetime
 from io import BytesIO
 import json
 from pathlib import Path
+import re
 import requests
 import tempfile
 import time
@@ -286,6 +287,73 @@ def create_restricted_user(base_test, permissions):
 
     return (user.name, password)
 
+# JSON:API requires the extension to be named in the media type of a request
+# that uses it (https://jsonapi.org/ext/atomic/).
+ATOMIC_MEDIA_TYPE = 'application/vnd.api+json;ext="https://jsonapi.org/ext/atomic"'
+
+
+def resource_type_name(model_class, type_name=None):
+    """The JSON:API type of a collection, which is its name in lowerCamelCase."""
+    name = type_name or model_class.__name__
+    return name[0].lower() + name[1:]
+
+
+def post_atomic_operations(model_class, operations, content_type=ATOMIC_MEDIA_TYPE):
+    """POST a list of JSON:API atomic operations to the collection of model_class."""
+    connector = model_class.objects.get_conn()
+    connector.authenticate()
+    uri = connector._api_endpoint + model_class.objects._model_uri + '/operations'
+    headers = {**connector._headers, 'Content-Type': content_type}
+    return requests.post(uri, headers=headers, data=json.dumps({'atomic:operations': operations}))
+
+
+def patch_many(model_class, objects, attributes, field, type_name=None):
+    """Update one attribute of several objects in a single request.
+
+    Modifying several objects at once is done with the atomic operations
+    extension: JSON:API describes no PATCH on a collection.
+    """
+    operations = [
+        {'op': 'update', 'data': {'type': resource_type_name(model_class, type_name),
+                                  'id': str(obj.id),
+                                  'attributes': {field: attribute}}}
+        for obj, attribute in zip(objects, attributes)
+    ]
+    r = post_atomic_operations(model_class, operations)
+    assert r.status_code in (200, 204), f'Atomic update failed: status={r.status_code} body={r.text}'
+    return r
+
+
+def delete_many(model_class, objects, type_name=None):
+    """Delete several objects in a single atomic operations request."""
+    operations = [
+        {'op': 'remove', 'ref': {'type': resource_type_name(model_class, type_name), 'id': str(obj.id)}}
+        for obj in objects
+    ]
+    r = post_atomic_operations(model_class, operations)
+    assert r.status_code == 204, f'Atomic removal failed: status={r.status_code} body={r.text}'
+    return r
+
+
+def error_title(exception):
+    """The title of the JSON:API error object the server answered with.
+
+    The client still reads the flat error format the API used before it answered
+    JSON:API error documents, so the document is taken from the raw response body
+    the client keeps in the exception message.
+    """
+    match = re.search(r'\{.*\}\s*$', str(exception), re.S)
+    if match is not None:
+        try:
+            document = json.loads(match.group(0))
+        except json.JSONDecodeError:
+            document = {}
+        errors = document.get('errors') or []
+        if errors:
+            return errors[0].get('title', '')
+    return getattr(exception, 'title', None) or ''
+
+
 def find_stale_test_objects():
     # Order matters, for example a Task needs to be removed before Hashlist can be removed
     # Note: we are not removing default database objects
@@ -467,7 +535,7 @@ class BaseTest(unittest.TestCase):
             _ = func_create(*args, **kwargs)
         self.assertIn(e.exception.status_code,  [403, 500, 400])
         # checks len of both old and new exceptions style, TODO: old can be removed when ervything has been refactored.
-        self.assertTrue(len(e.exception.exception_details) >= 1 or len(e.exception.title) >= 1)
+        self.assertTrue(len(e.exception.exception_details) >= 1 or len(error_title(e.exception)) >= 1)
 
     def _test_acl_list(self, model_obj, permissions):
         """Test that a restricted user (with no access groups) cannot see the object in list results."""

@@ -40,7 +40,11 @@ class HelperApiPathBuilder {
      * errors.
      */
     $paths[$path][$method]["responses"] = $this->jsonApiFragments->commonErrorResponses();
-    $paths[$path][$method]["responses"]["404"] = $this->jsonApiFragments->problemResponse("Not Found");
+    $paths[$path][$method]["responses"]["404"] = $this->jsonApiFragments->errorResponse("Not Found");
+    /* A request body under an unusable media type never reaches the route */
+    if (in_array($method, ["post", "patch"], true)) {
+      $paths[$path][$method]["responses"]["415"] = $this->jsonApiFragments->unsupportedMediaTypeResponse();
+    }
 
     if ($method == "post") {
       $reflectionMethodFormFields = new ReflectionMethod($name, "getFormFields");

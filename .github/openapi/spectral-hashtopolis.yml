@@ -2,48 +2,50 @@ description: >
   Lint ruleset for the generated Hashtopolis APIv2 OpenAPI spec.
 
   It extends the upstream JSON:API styleguide (spectral-jsonapi.yml, kept
-  unmodified so it can be updated from upstream) and records the points where
-  the APIv2 knowingly departs from JSON:API. Those rules are relaxed here
-  instead of in the generator, because the generated spec has to keep describing
-  what the server actually answers. Every entry below names the code that
-  decides the behaviour, so the rule can be restored once the behaviour changes.
+  unmodified so it can be updated from upstream). No rule is switched off: the
+  entries below re-scope rules that upstream states more broadly than JSON:API
+  itself does, because the upstream ruleset is written against JSON:API 1.0
+  while the APIv2 speaks 1.1 (extensions carry the "ext" media type parameter)
+  and answers errors as RFC 7807 problem documents. Every entry names the code
+  that decides the behaviour, so the rule can be restored once the behaviour
+  changes.
+
+  Note that post-409-response and patch-409-response of the upstream ruleset
+  contradict its own post-409-response-code and patch-409-response-code: the
+  first pair requires that no 409 response is documented, the second that one
+  is. They are reported at severity "info", so they are visible without failing
+  the lint, which runs with the default fail severity of "error".
 
 extends:
   - ./spectral-jsonapi.yml
 
 rules:
-  # The APIv2 never inspects the Accept header, so it cannot answer 406.
-  # There is no content negotiation middleware in src/inc/apiv2 at all.
-  406-response-code: off
-
-  # Only the TUS upload endpoint validates Content-Type and answers 415
-  # (ImportFileHelperAPI::processPatch). No other route does, so requiring a
-  # documented 415 on every POST and PATCH would document a reply that never
-  # comes.
-  415-response-code: off
-
   # Two deviations are folded into this rule:
-  #   - Errors are RFC 7807 problem documents served as application/problem+json
-  #     by ErrorHandler::errorResponse, not JSON:API error documents, so only
-  #     success payloads are checked.
   #   - Helper request bodies are flat maps of form fields read by
   #     AbstractHelperAPI::processPost, not JSON:API documents, so request bodies
-  #     are only checked under /api/v2/ui/.
+  #     are only checked under /api/v2/ui/. Responses are checked everywhere,
+  #     errors included: ErrorHandler::errorResponse answers JSON:API error
+  #     documents.
+  #   - Upstream forbids media type parameters, which JSON:API 1.0 did. JSON:API
+  #     1.1 requires the "ext" parameter to name the extensions a document
+  #     applies, so the media type of the atomic operations endpoint
+  #     (AbstractModelAPI::atomicOperations) is allowed as well.
   content-type:
-    description: "JSON:API payloads MUST use the `application/vnd.api+json` media type. Error
-      responses are excluded: the APIv2 answers those as RFC 7807 problem documents."
-    documentationUrl: "https://jsonapi.org/format/1.0/#content-negotiation"
-    message: "content MUST be 'application/vnd.api+json'"
+    description: "JSON:API payloads MUST use the `application/vnd.api+json` media type, with the
+      `ext` parameter naming the extension when one is applied."
+    documentationUrl: "https://jsonapi.org/format/1.1/#extension-negotiation"
+    message: "content MUST be 'application/vnd.api+json', optionally with the 'ext' parameter of an applied extension"
     severity: error
     given:
       - "$.paths[?(@property.match(/^\\/api\\/v2\\/ui\\//))]..requestBody.content"
-      - "$.paths..responses[?(@property >= '200' && @property < '300')].content"
+      - "$.paths..responses.*.content"
     then:
       field: "@key"
       function: enumeration
       functionOptions:
         values:
           - application/vnd.api+json
+          - application/vnd.api+json;ext="https://jsonapi.org/ext/atomic"
 
   # The rules below only hold for the JSON:API resource routes under
   # /api/v2/ui/. The routes under /api/v2/helper/ are RPC style actions and file
@@ -106,10 +108,21 @@ rules:
       field: "404"
       function: truthy
 
-  # A collection level PATCH updates many objects in one request
-  # (AbstractModelAPI::patchMultiple), which JSON:API 1.0 does not describe. The
-  # rule assumes every PATCH body holds exactly one resource object.
-  patch-requests-single-object: off
+  # Upstream applies this to every PATCH body, but a PATCH of a to-many
+  # relationship link MUST carry an array of resource identifiers, so the rule
+  # only holds for the resource routes, exactly like post-requests-single-object
+  # below. Several objects are updated in one request through the atomic
+  # operations endpoint (AbstractModelAPI::atomicOperations), whose body is an
+  # operations document and not a resource object.
+  patch-requests-single-object:
+    description: "A `PATCH` MUST carry a single resource object. Relationship routes are excluded:
+      patching a to-many relationship carries an array of resource identifier objects."
+    documentationUrl: "https://jsonapi.org/format/1.0/#crud-updating"
+    message: "PATCH requests MAY only contain a single resource object"
+    severity: error
+    given: "$.paths[?(!@property.match(/\\/relationships\\//))].patch.requestBody.content[application/vnd.api+json].schema.properties.data[?(@property==='type' && @ === 'array')]"
+    then:
+      function: falsy
 
   # Upstream applies this to every POST body, but a POST to a to-many
   # relationship URL MUST carry an array of resource identifiers, so the rule
@@ -167,10 +180,9 @@ rules:
 overrides:
   # /api/v2/auth/token exchanges basic auth credentials for a JWT. It is not a
   # JSON:API resource endpoint: it takes a scope list and answers a plain
-  # application/json body (see token.routes.php).
+  # application/json body (see token.routes.php), which is the one media type
+  # the content-type rule cannot be satisfied with. The other rules hold for it.
   - files:
       - "**#/paths/~1api~1v2~1auth~1token"
     rules:
       content-type: off
-      400-response-code: off
-      403-response-code: off

@@ -44,10 +44,10 @@ final class SpecBuilderHelperApiTest extends TestCase {
     );
     $this->assertSame(0, $responseSchema['properties']['data']['maxItems']);
 
-    // Errors are RFC 7807 problem documents
+    // Errors are JSON:API error documents, served as the JSON:API media type
     $this->assertSame(
       ['$ref' => '#/components/schemas/ErrorResponse'],
-      $post['responses']['403']['content']['application/problem+json']['schema']
+      $post['responses']['403']['content']['application/vnd.api+json']['schema']
     );
   }
 

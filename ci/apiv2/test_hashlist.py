@@ -1,5 +1,5 @@
 from hashtopolis import Hashlist, Helper, File
-from utils import BaseTest
+from utils import BaseTest, delete_many, patch_many
 
 
 class HashlistTest(BaseTest):
@@ -153,11 +153,11 @@ class HashlistTest(BaseTest):
     def test_bulk_archive(self):
         hashlists = [self.create_test_object() for i in range(5)]
         active_attributes = [True for i in range(5)]
-        Hashlist.objects.patch_many(hashlists, active_attributes, "isArchived")
+        patch_many(Hashlist, hashlists, active_attributes, "isArchived")
 
     def test_bulk_delete(self):
         hashlists = [self.create_test_object(delete=False) for i in range(5)]
-        Hashlist.objects.delete_many(hashlists)
+        delete_many(Hashlist, hashlists)
 
     def test_acl(self):
         model_obj = self.create_test_object()
