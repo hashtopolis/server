@@ -26,9 +26,9 @@ class RegVoucher extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['regVoucherId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "regVoucherId", "public" => False, "dba_mapping" => False];
-    $dict['voucher'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "voucher", "public" => False, "dba_mapping" => False];
-    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time", "public" => False, "dba_mapping" => False];
+    $dict['regVoucherId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "regVoucherId", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['voucher'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "voucher", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time", "public" => False, "reference" => False, "dba_mapping" => False];
 
     return $dict;
   }

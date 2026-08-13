@@ -1307,7 +1307,7 @@
                                 "type": "object",
                                 "properties": {
                                     "configSectionId": {
-                                        "type": "integer"
+                                        "type": "string"
                                     },
                                     "item": {
                                         "type": "string"
@@ -1495,7 +1495,7 @@
                                         "title": "ServerLogLevel",
                                         "properties": {
                                             "configSectionId": {
-                                                "type": "integer"
+                                                "type": "string"
                                             },
                                             "item": {
                                                 "type": "string",
@@ -1547,7 +1547,7 @@
                                         "title": "NotificationsProxyType",
                                         "properties": {
                                             "configSectionId": {
-                                                "type": "integer"
+                                                "type": "string"
                                             },
                                             "item": {
                                                 "type": "string",
@@ -1589,7 +1589,7 @@
                                         "title": "ConfigGeneric",
                                         "properties": {
                                             "configSectionId": {
-                                                "type": "integer"
+                                                "type": "string"
                                             },
                                             "item": {
                                                 "type": "string"
@@ -1780,7 +1780,7 @@
                                         "title": "ServerLogLevel",
                                         "properties": {
                                             "configSectionId": {
-                                                "type": "integer"
+                                                "type": "string"
                                             },
                                             "item": {
                                                 "type": "string",
@@ -1832,7 +1832,7 @@
                                         "title": "NotificationsProxyType",
                                         "properties": {
                                             "configSectionId": {
-                                                "type": "integer"
+                                                "type": "string"
                                             },
                                             "item": {
                                                 "type": "string",
@@ -1874,7 +1874,7 @@
                                         "title": "ConfigGeneric",
                                         "properties": {
                                             "configSectionId": {
-                                                "type": "integer"
+                                                "type": "string"
                                             },
                                             "item": {
                                                 "type": "string"
@@ -2065,7 +2065,7 @@
                                         "title": "ServerLogLevel",
                                         "properties": {
                                             "configSectionId": {
-                                                "type": "integer"
+                                                "type": "string"
                                             },
                                             "item": {
                                                 "type": "string",
@@ -2117,7 +2117,7 @@
                                         "title": "NotificationsProxyType",
                                         "properties": {
                                             "configSectionId": {
-                                                "type": "integer"
+                                                "type": "string"
                                             },
                                             "item": {
                                                 "type": "string",
@@ -2159,7 +2159,7 @@
                                         "title": "ConfigGeneric",
                                         "properties": {
                                             "configSectionId": {
-                                                "type": "integer"
+                                                "type": "string"
                                             },
                                             "item": {
                                                 "type": "string"
@@ -2401,7 +2401,7 @@
                                             "title": "ServerLogLevel",
                                             "properties": {
                                                 "configSectionId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "item": {
                                                     "type": "string",
@@ -2453,7 +2453,7 @@
                                             "title": "NotificationsProxyType",
                                             "properties": {
                                                 "configSectionId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "item": {
                                                     "type": "string",
@@ -2495,7 +2495,7 @@
                                             "title": "ConfigGeneric",
                                             "properties": {
                                                 "configSectionId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "item": {
                                                     "type": "string"

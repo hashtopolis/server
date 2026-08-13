@@ -50,6 +50,14 @@ class FeatureTypeMapper {
       throw new HttpErrorException("Cast for type  '" . $feature['type'] . "' not implemented");
     }
 
+    // JSON:API requires resource ids to be strings. Foreign-key columns are
+    // tagged with a "reference" marker in the model features; emit them as
+    // string ids no matter how they are stored internally.
+    if (!empty($feature['reference'])) {
+      $type = "string";
+      $type_format = null;
+    }
+
     if (is_array($feature['choices'])) {
       $type_enum = array_keys($feature['choices']);
     }

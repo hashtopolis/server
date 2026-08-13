@@ -2094,7 +2094,7 @@
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "version": {
                                                     "type": "string"
@@ -2200,16 +2200,16 @@
                                                     "format": "int64"
                                                 },
                                                 "crackerBinaryId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "crackerBinaryTypeId": {
                                                     "type": [
-                                                        "integer",
+                                                        "string",
                                                         "null"
                                                     ]
                                                 },
                                                 "taskWrapperId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "isArchived": {
                                                     "type": "boolean"
@@ -2469,7 +2469,7 @@
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "version": {
                                                     "type": "string"
@@ -2575,16 +2575,16 @@
                                                     "format": "int64"
                                                 },
                                                 "crackerBinaryId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "crackerBinaryTypeId": {
                                                     "type": [
-                                                        "integer",
+                                                        "string",
                                                         "null"
                                                     ]
                                                 },
                                                 "taskWrapperId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "isArchived": {
                                                     "type": "boolean"
@@ -2844,7 +2844,7 @@
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "version": {
                                                     "type": "string"
@@ -2950,16 +2950,16 @@
                                                     "format": "int64"
                                                 },
                                                 "crackerBinaryId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "crackerBinaryTypeId": {
                                                     "type": [
-                                                        "integer",
+                                                        "string",
                                                         "null"
                                                     ]
                                                 },
                                                 "taskWrapperId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "isArchived": {
                                                     "type": "boolean"
@@ -3271,7 +3271,7 @@
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "version": {
                                                     "type": "string"
@@ -3377,16 +3377,16 @@
                                                     "format": "int64"
                                                 },
                                                 "crackerBinaryId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "crackerBinaryTypeId": {
                                                     "type": [
-                                                        "integer",
+                                                        "string",
                                                         "null"
                                                     ]
                                                 },
                                                 "taskWrapperId": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
                                                 "isArchived": {
                                                     "type": "boolean"

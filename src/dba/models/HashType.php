@@ -29,10 +29,10 @@ class HashType extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => False, "private" => False, "alias" => "hashTypeId", "public" => False, "dba_mapping" => False];
-    $dict['description'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "description", "public" => False, "dba_mapping" => False];
-    $dict['isSalted'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSalted", "public" => False, "dba_mapping" => False];
-    $dict['isSlowHash'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSlowHash", "public" => False, "dba_mapping" => False];
+    $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => False, "private" => False, "alias" => "hashTypeId", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['description'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "description", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['isSalted'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSalted", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['isSlowHash'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSlowHash", "public" => False, "reference" => False, "dba_mapping" => False];
 
     return $dict;
   }

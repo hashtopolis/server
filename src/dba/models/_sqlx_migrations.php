@@ -35,12 +35,12 @@ class _sqlx_migrations extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['version'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "version", "public" => False, "dba_mapping" => False];
-    $dict['description'] = ['read_only' => True, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "description", "public" => False, "dba_mapping" => False];
-    $dict['installed_on'] = ['read_only' => True, "type" => "datetime", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "installed_on", "public" => False, "dba_mapping" => False];
-    $dict['success'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "success", "public" => False, "dba_mapping" => False];
-    $dict['checksum'] = ['read_only' => True, "type" => "binary", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "checksum", "public" => False, "dba_mapping" => False];
-    $dict['execution_time'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "execution_time", "public" => False, "dba_mapping" => False];
+    $dict['version'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "version", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['description'] = ['read_only' => True, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "description", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['installed_on'] = ['read_only' => True, "type" => "datetime", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "installed_on", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['success'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "success", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['checksum'] = ['read_only' => True, "type" => "binary", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "checksum", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['execution_time'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "execution_time", "public" => False, "reference" => False, "dba_mapping" => False];
 
     return $dict;
   }

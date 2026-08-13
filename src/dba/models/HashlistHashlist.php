@@ -26,9 +26,9 @@ class HashlistHashlist extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['hashlistHashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashlistHashlistId", "public" => False, "dba_mapping" => False];
-    $dict['parentHashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "parentHashlistId", "public" => False, "dba_mapping" => False];
-    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashlistId", "public" => False, "dba_mapping" => False];
+    $dict['hashlistHashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashlistHashlistId", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['parentHashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "parentHashlistId", "public" => False, "reference" => "Hashlist", "dba_mapping" => False];
+    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashlistId", "public" => False, "reference" => "Hashlist", "dba_mapping" => False];
 
     return $dict;
   }

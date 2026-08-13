@@ -26,9 +26,9 @@ class TaskDebugOutput extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['taskDebugOutputId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "taskDebugOutputId", "public" => False, "dba_mapping" => False];
-    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId", "public" => False, "dba_mapping" => False];
-    $dict['output'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "output", "public" => False, "dba_mapping" => False];
+    $dict['taskDebugOutputId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "taskDebugOutputId", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId", "public" => False, "reference" => "Task", "dba_mapping" => False];
+    $dict['output'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "output", "public" => False, "reference" => False, "dba_mapping" => False];
 
     return $dict;
   }

@@ -611,7 +611,13 @@ abstract class AbstractBaseAPI {
    * Convert Database value to JSON object value
    */
   protected static function db2json(array $feature, mixed $val): mixed {
-    if ($feature['type'] == 'bool') {
+    // JSON:API requires resource ids to be strings. Foreign-key columns carry a
+    // "reference" marker; serialize their value as a string id (preserving null
+    // for optional relations) so the output matches the generated spec.
+    if (!empty($feature['reference'])) {
+      $obj = is_null($val) ? null : strval($val);
+    }
+    elseif ($feature['type'] == 'bool') {
       $obj = $val == "1";
     }
     elseif ($feature['type'] == 'dict') {
@@ -991,7 +997,24 @@ abstract class AbstractBaseAPI {
       }
       
       // Perform type mapping
-      if ($features[$key]['type'] == 'bool') {
+      if (!empty($features[$key]['reference'])) {
+        // Foreign-key ids are exchanged as JSON:API strings. Accept a numeric
+        // string (preferred) or a plain integer (backwards compatible) and
+        // range-check it like the integer column it maps to.
+        if (is_string($value) && preg_match('/^-?\d+$/', $value)) {
+          $intValue = (int)$value;
+        }
+        elseif (is_integer($value)) {
+          $intValue = $value;
+        }
+        else {
+          throw new HttpError("Key '$key' must be an integer id encoded as a string");
+        }
+        if ($intValue > 2147483647 || $intValue < -2147483647) {
+          throw new HttpError("The value exceeds the limit for an integer id.");
+        }
+      }
+      elseif ($features[$key]['type'] == 'bool') {
         if (!is_bool($value)) {
           throw new HttpError("Key '$key' is not of type boolean");
         }

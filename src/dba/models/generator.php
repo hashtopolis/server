@@ -463,7 +463,7 @@ $CONF['Pretask'] = [
     ['name' => 'priority', 'read_only' => False, 'type' => 'int'],
     ['name' => 'maxAgents', 'read_only' => False, 'type' => 'int'],
     ['name' => 'isMaskImport', 'read_only' => False, 'type' => 'bool'],
-    ['name' => 'crackerBinaryTypeId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'crackerBinaryTypeId', 'read_only' => False, 'type' => 'int', 'relation' => 'CrackerBinaryType'],
   ],
 ];
 $CONF['RegVoucher'] = [
@@ -572,7 +572,7 @@ $CONF['TaskWrapperDisplay'] = [
     ['name' => 'displayName', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'taskWrapperIsArchived', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Task'],
     ['name' => 'taskName', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'color', 'read_only' => False, 'type' => 'str(50)', 'null' => True],
     ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(65535)'],
@@ -589,7 +589,7 @@ $CONF['TaskWrapperDisplay'] = [
     ['name' => 'hashlistName', 'read_only' => True, 'type' => 'str(100)', 'protected' => True],
     ['name' => 'hashCount', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'hashlistCracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'HashType'],
     ['name' => 'hashTypeDescription', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
     ['name' => 'groupName', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
   ],
@@ -768,6 +768,11 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
       '"private" => ' . ($COLUMN['private'] ? 'True' : 'False') . ', ' .
       '"alias" => "' . $COLUMN['alias'] . '", ' .
       '"public" => ' . ($COLUMN['public'] ? 'True' : 'False') . ', ' .
+      // Foreign-key columns carry a "relation" in $CONF. Surface it as a
+      // "reference" marker so the serializer emits the value as a JSON:API
+      // string id and the spec types it as a string (see FeatureTypeMapper,
+      // AbstractBaseAPI::db2json and validateData).
+      '"reference" => ' . (empty($COLUMN['relation']) ? 'False' : '"' . $COLUMN['relation'] . '"') . ', ' .
       '"dba_mapping" => ' . ($COLUMN['dba_mapping'] ? 'True' : 'False') .
       '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";

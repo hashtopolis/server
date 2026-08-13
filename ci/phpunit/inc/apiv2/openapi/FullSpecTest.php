@@ -189,9 +189,10 @@ final class FullSpecTest extends TestCase {
       $schemas['ConfigResponse']['properties']['data']['properties']['attributes']
     );
 
-    // Nullable integer field rendered as 3.1 type array
+    // Foreign-key attributes are JSON:API string ids; a nullable relation
+    // (userId -> User) renders as a 3.1 ["string", "null"] type array.
     $agentAttributes = $schemas['AgentResponse']['properties']['data']['properties']['attributes']['properties'];
-    $this->assertSame(['integer', 'null'], $agentAttributes['userId']['type']);
+    $this->assertSame(['string', 'null'], $agentAttributes['userId']['type']);
 
     // Integer enum rendered as oneOf with const + title
     $this->assertSame(0, $agentAttributes['os']['oneOf'][0]['const']);

@@ -38,13 +38,13 @@ class File extends AbstractModel {
   
   static function getFeatures(): array {
     $dict = array();
-    $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileId", "public" => False, "dba_mapping" => False];
-    $dict['filename'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "filename", "public" => False, "dba_mapping" => False];
-    $dict['size'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "size", "public" => False, "dba_mapping" => False];
-    $dict['isSecret'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSecret", "public" => False, "dba_mapping" => False];
-    $dict['fileType'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => [0 => "Wordlist", 1 => "Rule", 2 => "Other", 100 => "Temporary", ], "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "fileType", "public" => False, "dba_mapping" => False];
-    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "accessGroupId", "public" => False, "dba_mapping" => False];
-    $dict['lineCount'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lineCount", "public" => False, "dba_mapping" => False];
+    $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileId", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['filename'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "filename", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['size'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "size", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['isSecret'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSecret", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['fileType'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => [0 => "Wordlist", 1 => "Rule", 2 => "Other", 100 => "Temporary", ], "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "fileType", "public" => False, "reference" => False, "dba_mapping" => False];
+    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "accessGroupId", "public" => False, "reference" => "AccessGroup", "dba_mapping" => False];
+    $dict['lineCount'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lineCount", "public" => False, "reference" => False, "dba_mapping" => False];
 
     return $dict;
   }
