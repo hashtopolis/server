@@ -268,7 +268,7 @@
                 ]
             }
         },
-        "/api/v2/ui/configs/{id:[0-9]+}/{relation:configSection}": {
+        "/api/v2/ui/configs/{id}/{relation}": {
             "get": {
                 "tags": [
                     "Configs"
@@ -359,7 +359,7 @@
                 ]
             }
         },
-        "/api/v2/ui/configs/{id:[0-9]+}/relationships/{relation:configSection}": {
+        "/api/v2/ui/configs/{id}/relationships/{relation}": {
             "get": {
                 "tags": [
                     "Configs"
@@ -551,7 +551,7 @@
                 "parameters": []
             }
         },
-        "/api/v2/ui/configs/{id:[0-9]+}": {
+        "/api/v2/ui/configs/{id}": {
             "get": {
                 "tags": [
                     "Configs"
@@ -1109,7 +1109,7 @@
                 ]
             }
         },
-        "/api/v2/ui/configsections/{id:[0-9]+}": {
+        "/api/v2/ui/configsections/{id}": {
             "get": {
                 "tags": [
                     "ConfigSections"
@@ -1353,7 +1353,7 @@
                 }
             }
         },
-        "/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}": {
+        "/api/v2/helper/importFile/{id}": {
             "patch": {
                 "parameters": [
                     {

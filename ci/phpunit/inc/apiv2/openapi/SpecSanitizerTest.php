@@ -49,34 +49,24 @@ final class SpecSanitizerTest extends TestCase {
     $this->assertArrayNotHasKey('scopes', $result['components']['securitySchemes']['bearerAuth']);
   }
 
-  public function testCleansPathTemplatesAndAddsMissingPathParams(): void {
+  /**
+   * Paths arrive as OpenAPI path templates (RouteIntrospector), so a
+   * placeholder in one names a path parameter the operation has to declare.
+   */
+  public function testAddsMissingPathParams(): void {
     $result = $this->sanitize($this->minimalSpec(
-      ['/api/v2/ui/things/{id:[0-9]+}' => ['delete' => ['responses' => ['204' => ['description' => 'gone']]]]]
+      ['/api/v2/ui/things/{id}' => ['delete' => ['responses' => ['204' => ['description' => 'gone']]]]]
     ));
 
-    $this->assertArrayHasKey('/api/v2/ui/things/{id}', $result['paths']);
-    $this->assertArrayNotHasKey('/api/v2/ui/things/{id:[0-9]+}', $result['paths']);
+    $operation = $result['paths']['/api/v2/ui/things/{id}']['delete'];
     $this->assertContains([
       'name' => 'id',
       'in' => 'path',
       'required' => true,
       'schema' => ['type' => 'integer'],
-    ], $result['paths']['/api/v2/ui/things/{id}']['delete']['parameters']);
-  }
-
-  public function testCleansPathTemplatesWithBracesInsideRegexConstraint(): void {
-    $result = $this->sanitize($this->minimalSpec(
-      ['/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}' => [
-        'delete' => ['responses' => ['204' => ['description' => 'gone']]],
-      ]]
-    ));
-
-    $this->assertArrayHasKey('/api/v2/helper/importFile/{id}', $result['paths']);
-    $operation = $result['paths']['/api/v2/helper/importFile/{id}']['delete'];
-    /* The quantifier braces of the constraint must not leak into the
-       operationId, nor be mistaken for a second path parameter */
-    $this->assertSame('deleteImportFileById', $operation['operationId']);
+    ], $operation['parameters']);
     $this->assertSame(['id'], array_column($operation['parameters'], 'name'));
+    $this->assertSame('deleteThingsById', $operation['operationId']);
   }
 
   public function testMovesPaginationParamsToQueryAndFixesStyleCasing(): void {
@@ -115,7 +105,7 @@ final class SpecSanitizerTest extends TestCase {
 
   public function testFillsEmptyMediaTypeObjects(): void {
     $result = $this->sanitize($this->minimalSpec(
-      ['/api/v2/ui/things/{id:[0-9]+}' => ['delete' => [
+      ['/api/v2/ui/things/{id}' => ['delete' => [
         'requestBody' => ['required' => true, 'content' => ['application/json' => []]],
         'responses' => ['200' => ['description' => 'ok', 'content' => ['application/json' => []]]],
       ]]]
