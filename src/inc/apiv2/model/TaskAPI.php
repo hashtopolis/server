@@ -167,31 +167,16 @@ class TaskAPI extends AbstractModelAPI {
   }
 
   public static function getAggregateFeatures(): array {
-    $base = [
-      'pk' => false,
-      'private' => false,
-      'choices' => 'unset',
-      'null' => false,
-      'protected' => false,
-      'read_only' => true,
-      'subtype' => 'unset',
-      'public' => false,
-      'dba_mapping' => false,
-    ];
     return [
-      'totalAssignedAgents' => array_merge($base, ['type' => 'int', 'alias' => 'totalAssignedAgents']),
-      'dispatched' => array_merge($base, ['type' => 'str', 'alias' => 'dispatched']),
-      'searched' => array_merge($base, ['type' => 'str', 'alias' => 'searched']),
-      'status' => array_merge($base, [
-        'type' => 'int',
-        'alias' => 'status',
-        'choices' => DTaskStatus::choices(),
-      ]),
-      'totalNumberOfChunks' => array_merge($base, ['type' => 'int', 'alias' => 'totalNumberOfChunks']),
-      'currentSpeed' => array_merge($base, ['type' => 'int', 'alias' => 'currentSpeed']),
-      'estimatedTime' => array_merge($base, ['type' => 'int', 'alias' => 'estimatedTime']),
-      'timeSpent' => array_merge($base, ['type' => 'int', 'alias' => 'timeSpent']),
-      'cprogress' => array_merge($base, ['type' => 'int', 'alias' => 'cprogress']),
+      'totalAssignedAgents' => self::aggregateFeature('int', 'totalAssignedAgents'),
+      'dispatched' => self::aggregateFeature('str', 'dispatched'),
+      'searched' => self::aggregateFeature('str', 'searched'),
+      'status' => self::aggregateFeature('int', 'status', ['choices' => DTaskStatus::choices()]),
+      'totalNumberOfChunks' => self::aggregateFeature('int', 'totalNumberOfChunks'),
+      'currentSpeed' => self::aggregateFeature('int', 'currentSpeed'),
+      'estimatedTime' => self::aggregateFeature('int', 'estimatedTime'),
+      'timeSpent' => self::aggregateFeature('int', 'timeSpent'),
+      'cprogress' => self::aggregateFeature('int', 'cprogress'),
     ];
   }
 
