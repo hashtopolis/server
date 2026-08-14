@@ -77,7 +77,17 @@ class SpecBuilder {
       "openapi" => "3.1.0",
       "info" => [
         "title" => "Hashtopolis API",
-        "version" => "v2"
+        "version" => "v2",
+        "description" => "Hashtopolis REST API",
+        "contact" => [
+          "name" => "Hashtopolis",
+          "url" => "https://github.com/hashtopolis/server"
+        ],
+        /* The license of the server itself, as stated by LICENSE.txt in its repository */
+        "license" => [
+          "name" => "GPL-3.0",
+          "url" => "https://github.com/hashtopolis/server/blob/master/LICENSE.txt"
+        ]
       ],
       "servers" => [
         [

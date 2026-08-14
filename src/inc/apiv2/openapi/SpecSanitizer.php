@@ -7,17 +7,6 @@ namespace Hashtopolis\inc\apiv2\openapi;
  */
 class SpecSanitizer {
   public function sanitize(array $spec): array {
-    // Fix: Add missing info fields
-    if (!isset($spec['info']['description'])) {
-      $spec['info']['description'] = 'Hashtopolis REST API';
-    }
-    if (!isset($spec['info']['contact'])) {
-      $spec['info']['contact'] = [
-        'name' => 'Hashtopolis',
-        'url' => 'https://github.com/hashtopolis/server'
-      ];
-    }
-
     // Phase 1: Build rename map for schema names containing backslashes
     $renameMap = [];
     if (isset($spec['components']['schemas'])) {
