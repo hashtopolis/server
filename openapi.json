@@ -149,6 +149,23 @@
                             "userMembers",
                             "agentMembers"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[accessGroup]=groupName`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `accessGroup`: groupName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user, agent.",
+                        "example": {
+                            "accessGroup": "groupName"
+                        }
                     }
                 ],
                 "summary": "List AccessGroups",
@@ -246,7 +263,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[accessGroup]=groupName`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `accessGroup`: groupName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user, agent.",
+                        "example": {
+                            "accessGroup": "groupName"
+                        }
+                    }
+                ],
                 "summary": "Create AccessGroups",
                 "operationId": "postAccessgroups"
             }
@@ -971,6 +1006,23 @@
                             "userMembers",
                             "agentMembers"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[accessGroup]=groupName`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `accessGroup`: groupName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user, agent.",
+                        "example": {
+                            "accessGroup": "groupName"
+                        }
                     }
                 ],
                 "summary": "Get AccessGroups",
@@ -1079,6 +1131,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[accessGroup]=groupName`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `accessGroup`: groupName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user, agent.",
+                        "example": {
+                            "accessGroup": "groupName"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -1416,6 +1485,23 @@
                             "user",
                             "accessGroups"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agent]=agentName,uid`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agent`: agentName, uid, os, devices, cmdPars, ignoreErrors, isActive, isTrusted, token, lastAct, lastTime, lastIp, userId, cpuOnly, clientSignature.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user, accessGroup, agentStat, agentError, chunk, task, agentAssignment.",
+                        "example": {
+                            "agent": "agentName,uid"
+                        }
                     },
                     {
                         "name": "aggregate",
@@ -2164,6 +2250,40 @@
                             "user",
                             "accessGroups"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agent]=agentName,uid`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agent`: agentName, uid, os, devices, cmdPars, ignoreErrors, isActive, isTrusted, token, lastAct, lastTime, lastIp, userId, cpuOnly, clientSignature.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user, accessGroup, agentStat, agentError, chunk, task, agentAssignment.",
+                        "example": {
+                            "agent": "agentName,uid"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: agent: crackingTime",
+                        "example": {
+                            "aggregate[agent]": "crackingTime"
+                        }
                     }
                 ],
                 "summary": "Get Agents",
@@ -2272,6 +2392,40 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agent]=agentName,uid`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agent`: agentName, uid, os, devices, cmdPars, ignoreErrors, isActive, isTrusted, token, lastAct, lastTime, lastIp, userId, cpuOnly, clientSignature.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user, accessGroup, agentStat, agentError, chunk, task, agentAssignment.",
+                        "example": {
+                            "agent": "agentName,uid"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: agent: crackingTime",
+                        "example": {
+                            "aggregate[agent]": "crackingTime"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -2606,6 +2760,23 @@
                         ]
                     },
                     {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agentAssignment]=taskId,agentId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agentAssignment`: taskId, agentId, benchmark.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: agent, task.",
+                        "example": {
+                            "agentAssignment": "taskId,agentId"
+                        }
+                    },
+                    {
                         "name": "aggregate",
                         "in": "query",
                         "style": "deepObject",
@@ -2718,7 +2889,42 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agentAssignment]=taskId,agentId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agentAssignment`: taskId, agentId, benchmark.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: agent, task.",
+                        "example": {
+                            "agentAssignment": "taskId,agentId"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: assignment: crackingTime, cracked, currentSpeed, currentChunkId, searched",
+                        "example": {
+                            "aggregate[assignment]": "crackingTime,cracked,currentSpeed,currentChunkId,searched"
+                        }
+                    }
+                ],
                 "summary": "Create AgentAssignments",
                 "operationId": "postAgentassignments"
             }
@@ -3231,6 +3437,40 @@
                             "agent",
                             "task"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agentAssignment]=taskId,agentId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agentAssignment`: taskId, agentId, benchmark.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: agent, task.",
+                        "example": {
+                            "agentAssignment": "taskId,agentId"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: assignment: crackingTime, cracked, currentSpeed, currentChunkId, searched",
+                        "example": {
+                            "aggregate[assignment]": "crackingTime,cracked,currentSpeed,currentChunkId,searched"
+                        }
                     }
                 ],
                 "summary": "Get AgentAssignments",
@@ -3339,6 +3579,40 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agentAssignment]=taskId,agentId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agentAssignment`: taskId, agentId, benchmark.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: agent, task.",
+                        "example": {
+                            "agentAssignment": "taskId,agentId"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: assignment: crackingTime, cracked, currentSpeed, currentChunkId, searched",
+                        "example": {
+                            "aggregate[assignment]": "crackingTime,cracked,currentSpeed,currentChunkId,searched"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -3663,6 +3937,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agentBinary]=binaryType,version`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agentBinary`: binaryType, version, operatingSystems, filename, updateTrack, updateAvailable.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "agentBinary": "binaryType,version"
+                        }
                     }
                 ],
                 "summary": "List AgentBinarys",
@@ -3760,7 +4051,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agentBinary]=binaryType,version`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agentBinary`: binaryType, version, operatingSystems, filename, updateTrack, updateAvailable.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "agentBinary": "binaryType,version"
+                        }
+                    }
+                ],
                 "summary": "Create AgentBinarys",
                 "operationId": "postAgentbinaries"
             }
@@ -3955,6 +4264,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agentBinary]=binaryType,version`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agentBinary`: binaryType, version, operatingSystems, filename, updateTrack, updateAvailable.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "agentBinary": "binaryType,version"
+                        }
                     }
                 ],
                 "summary": "Get AgentBinarys",
@@ -4063,6 +4389,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agentBinary]=binaryType,version`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agentBinary`: binaryType, version, operatingSystems, filename, updateTrack, updateAvailable.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "agentBinary": "binaryType,version"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -4393,6 +4736,23 @@
                         "example": [
                             "task"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agentError]=agentId,taskId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agentError`: agentId, taskId, chunkId, time, error.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: task.",
+                        "example": {
+                            "agentError": "agentId,taskId"
+                        }
                     }
                 ],
                 "summary": "List AgentErrors",
@@ -4905,6 +5265,23 @@
                         "example": [
                             "task"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agentError]=agentId,taskId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agentError`: agentId, taskId, chunkId, time, error.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: task.",
+                        "example": {
+                            "agentError": "agentId,taskId"
+                        }
                     }
                 ],
                 "summary": "Get AgentErrors",
@@ -5222,6 +5599,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agentStat]=agentId,statType`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agentStat`: agentId, statType, time, value.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "agentStat": "agentId,statType"
+                        }
                     }
                 ],
                 "summary": "List AgentStats",
@@ -5418,6 +5812,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[agentStat]=agentId,statType`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `agentStat`: agentId, statType, time, value.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "agentStat": "agentId,statType"
+                        }
                     }
                 ],
                 "summary": "Get AgentStats",
@@ -5741,6 +6152,23 @@
                         "example": [
                             "user"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[apiToken]=startValid,endValid`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `apiToken`: startValid, endValid, userId, isRevoked.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user.",
+                        "example": {
+                            "apiToken": "startValid,endValid"
+                        }
                     }
                 ],
                 "summary": "List ApiTokens",
@@ -5838,7 +6266,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[apiToken]=startValid,endValid`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `apiToken`: startValid, endValid, userId, isRevoked.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user.",
+                        "example": {
+                            "apiToken": "startValid,endValid"
+                        }
+                    }
+                ],
                 "summary": "Create ApiTokens",
                 "operationId": "postApiTokens"
             }
@@ -6349,6 +6795,23 @@
                         "example": [
                             "user"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[apiToken]=startValid,endValid`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `apiToken`: startValid, endValid, userId, isRevoked.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user.",
+                        "example": {
+                            "apiToken": "startValid,endValid"
+                        }
                     }
                 ],
                 "summary": "Get ApiTokens",
@@ -6457,6 +6920,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[apiToken]=startValid,endValid`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `apiToken`: startValid, endValid, userId, isRevoked.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user.",
+                        "example": {
+                            "apiToken": "startValid,endValid"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -6789,6 +7269,23 @@
                             "agent",
                             "task"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[chunk]=taskId,skip`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `chunk`: taskId, skip, length, agentId, dispatchTime, solveTime, checkpoint, progress, state, cracked, speed.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: agent, task.",
+                        "example": {
+                            "chunk": "taskId,skip"
+                        }
                     }
                 ],
                 "summary": "List Chunks",
@@ -7303,6 +7800,23 @@
                             "agent",
                             "task"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[chunk]=taskId,skip`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `chunk`: taskId, skip, length, agentId, dispatchTime, solveTime, checkpoint, progress, state, cracked, speed.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: agent, task.",
+                        "example": {
+                            "chunk": "taskId,skip"
+                        }
                     }
                 ],
                 "summary": "Get Chunks",
@@ -7437,6 +7951,23 @@
                         "example": [
                             "configSection"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[config]=configSectionId,item`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `config`: configSectionId, item, value.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: configSection.",
+                        "example": {
+                            "config": "configSectionId,item"
+                        }
                     },
                     {
                         "name": "aggregate",
@@ -7966,6 +8497,40 @@
                         "example": [
                             "configSection"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[config]=configSectionId,item`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `config`: configSectionId, item, value.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: configSection.",
+                        "example": {
+                            "config": "configSectionId,item"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: config: valueBoundaries",
+                        "example": {
+                            "aggregate[config]": "valueBoundaries"
+                        }
                     }
                 ],
                 "summary": "Get Configs",
@@ -8074,6 +8639,40 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[config]=configSectionId,item`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `config`: configSectionId, item, value.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: configSection.",
+                        "example": {
+                            "config": "configSectionId,item"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: config: valueBoundaries",
+                        "example": {
+                            "aggregate[config]": "valueBoundaries"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -8320,6 +8919,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[configSection]=sectionName`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `configSection`: sectionName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "configSection": "sectionName"
+                        }
                     }
                 ],
                 "summary": "List ConfigSections",
@@ -8516,6 +9132,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[configSection]=sectionName`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `configSection`: sectionName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "configSection": "sectionName"
+                        }
                     }
                 ],
                 "summary": "Get ConfigSections",
@@ -8652,6 +9285,23 @@
                             "crackerBinaryType",
                             "tasks"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[crackerBinary]=crackerBinaryTypeId,version`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `crackerBinary`: crackerBinaryTypeId, version, downloadUrl, binaryName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinaryType, task.",
+                        "example": {
+                            "crackerBinary": "crackerBinaryTypeId,version"
+                        }
                     }
                 ],
                 "summary": "List CrackerBinarys",
@@ -8749,7 +9399,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[crackerBinary]=crackerBinaryTypeId,version`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `crackerBinary`: crackerBinaryTypeId, version, downloadUrl, binaryName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinaryType, task.",
+                        "example": {
+                            "crackerBinary": "crackerBinaryTypeId,version"
+                        }
+                    }
+                ],
                 "summary": "Create CrackerBinarys",
                 "operationId": "postCrackers"
             }
@@ -9474,6 +10142,23 @@
                             "crackerBinaryType",
                             "tasks"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[crackerBinary]=crackerBinaryTypeId,version`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `crackerBinary`: crackerBinaryTypeId, version, downloadUrl, binaryName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinaryType, task.",
+                        "example": {
+                            "crackerBinary": "crackerBinaryTypeId,version"
+                        }
                     }
                 ],
                 "summary": "Get CrackerBinarys",
@@ -9582,6 +10267,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[crackerBinary]=crackerBinaryTypeId,version`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `crackerBinary`: crackerBinaryTypeId, version, downloadUrl, binaryName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinaryType, task.",
+                        "example": {
+                            "crackerBinary": "crackerBinaryTypeId,version"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -9914,6 +10616,23 @@
                             "crackerVersions",
                             "tasks"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[crackerBinaryType]=typeName,isChunkingAvailable`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `crackerBinaryType`: typeName, isChunkingAvailable.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, task.",
+                        "example": {
+                            "crackerBinaryType": "typeName,isChunkingAvailable"
+                        }
                     }
                 ],
                 "summary": "List CrackerBinaryTypes",
@@ -10011,7 +10730,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[crackerBinaryType]=typeName,isChunkingAvailable`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `crackerBinaryType`: typeName, isChunkingAvailable.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, task.",
+                        "example": {
+                            "crackerBinaryType": "typeName,isChunkingAvailable"
+                        }
+                    }
+                ],
                 "summary": "Create CrackerBinaryTypes",
                 "operationId": "postCrackertypes"
             }
@@ -10736,6 +11473,23 @@
                             "crackerVersions",
                             "tasks"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[crackerBinaryType]=typeName,isChunkingAvailable`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `crackerBinaryType`: typeName, isChunkingAvailable.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, task.",
+                        "example": {
+                            "crackerBinaryType": "typeName,isChunkingAvailable"
+                        }
                     }
                 ],
                 "summary": "Get CrackerBinaryTypes",
@@ -10844,6 +11598,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[crackerBinaryType]=typeName,isChunkingAvailable`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `crackerBinaryType`: typeName, isChunkingAvailable.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, task.",
+                        "example": {
+                            "crackerBinaryType": "typeName,isChunkingAvailable"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -11174,6 +11945,23 @@
                         "example": [
                             "accessGroup"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[file]=filename,size`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `file`: filename, size, isSecret, fileType, accessGroupId, lineCount.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: accessGroup.",
+                        "example": {
+                            "file": "filename,size"
+                        }
                     }
                 ],
                 "summary": "List Files",
@@ -11271,7 +12059,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[file]=filename,size`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `file`: filename, size, isSecret, fileType, accessGroupId, lineCount.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: accessGroup.",
+                        "example": {
+                            "file": "filename,size"
+                        }
+                    }
+                ],
                 "summary": "Create Files",
                 "operationId": "postFiles"
             }
@@ -11782,6 +12588,23 @@
                         "example": [
                             "accessGroup"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[file]=filename,size`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `file`: filename, size, isSecret, fileType, accessGroupId, lineCount.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: accessGroup.",
+                        "example": {
+                            "file": "filename,size"
+                        }
                     }
                 ],
                 "summary": "Get Files",
@@ -11890,6 +12713,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[file]=filename,size`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `file`: filename, size, isSecret, fileType, accessGroupId, lineCount.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: accessGroup.",
+                        "example": {
+                            "file": "filename,size"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -12220,6 +13060,23 @@
                         "example": [
                             "userMembers"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[globalPermissionGroup]=name,permissions`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `globalPermissionGroup`: name, permissions.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user.",
+                        "example": {
+                            "globalPermissionGroup": "name,permissions"
+                        }
                     }
                 ],
                 "summary": "List GlobalPermissionGroups",
@@ -12317,7 +13174,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[globalPermissionGroup]=name,permissions`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `globalPermissionGroup`: name, permissions.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user.",
+                        "example": {
+                            "globalPermissionGroup": "name,permissions"
+                        }
+                    }
+                ],
                 "summary": "Create GlobalPermissionGroups",
                 "operationId": "postGlobalpermissiongroups"
             }
@@ -13040,6 +13915,23 @@
                         "example": [
                             "userMembers"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[globalPermissionGroup]=name,permissions`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `globalPermissionGroup`: name, permissions.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user.",
+                        "example": {
+                            "globalPermissionGroup": "name,permissions"
+                        }
                     }
                 ],
                 "summary": "Get GlobalPermissionGroups",
@@ -13148,6 +14040,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[globalPermissionGroup]=name,permissions`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `globalPermissionGroup`: name, permissions.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user.",
+                        "example": {
+                            "globalPermissionGroup": "name,permissions"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -13480,6 +14389,23 @@
                             "chunk",
                             "hashlist"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hash]=hashlistId,hash`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hash`: hashlistId, hash, salt, plaintext, timeCracked, chunkId, isCracked, crackPos.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: chunk, hashlist.",
+                        "example": {
+                            "hash": "hashlistId,hash"
+                        }
                     }
                 ],
                 "summary": "List Hashs",
@@ -13994,6 +14920,23 @@
                             "chunk",
                             "hashlist"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hash]=hashlistId,hash`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hash`: hashlistId, hash, salt, plaintext, timeCracked, chunkId, isCracked, crackPos.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: chunk, hashlist.",
+                        "example": {
+                            "hash": "hashlistId,hash"
+                        }
                     }
                 ],
                 "summary": "Get Hashs",
@@ -14133,6 +15076,23 @@
                             "accessGroup",
                             "hashType"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hashlist]=name,format`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hashlist`: name, format, hashTypeId, hashCount, separator, cracked, isSecret, isHexSalt, isSalted, accessGroupId, notes, useBrain, brainFeatures, isArchived.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: accessGroup, hashType, hash, hashlist, task.",
+                        "example": {
+                            "hashlist": "name,format"
+                        }
                     }
                 ],
                 "summary": "List Hashlists",
@@ -14230,7 +15190,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hashlist]=name,format`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hashlist`: name, format, hashTypeId, hashCount, separator, cracked, isSecret, isHexSalt, isSalted, accessGroupId, notes, useBrain, brainFeatures, isArchived.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: accessGroup, hashType, hash, hashlist, task.",
+                        "example": {
+                            "hashlist": "name,format"
+                        }
+                    }
+                ],
                 "summary": "Create Hashlists",
                 "operationId": "postHashlists"
             }
@@ -14958,6 +15936,23 @@
                             "accessGroup",
                             "hashType"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hashlist]=name,format`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hashlist`: name, format, hashTypeId, hashCount, separator, cracked, isSecret, isHexSalt, isSalted, accessGroupId, notes, useBrain, brainFeatures, isArchived.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: accessGroup, hashType, hash, hashlist, task.",
+                        "example": {
+                            "hashlist": "name,format"
+                        }
                     }
                 ],
                 "summary": "Get Hashlists",
@@ -15066,6 +16061,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hashlist]=name,format`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hashlist`: name, format, hashTypeId, hashCount, separator, cracked, isSecret, isHexSalt, isSalted, accessGroupId, notes, useBrain, brainFeatures, isArchived.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: accessGroup, hashType, hash, hashlist, task.",
+                        "example": {
+                            "hashlist": "name,format"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -15390,6 +16402,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hashType]=description,isSalted`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hashType`: description, isSalted, isSlowHash.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "hashType": "description,isSalted"
+                        }
                     }
                 ],
                 "summary": "List HashTypes",
@@ -15487,7 +16516,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hashType]=description,isSalted`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hashType`: description, isSalted, isSlowHash.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "hashType": "description,isSalted"
+                        }
+                    }
+                ],
                 "summary": "Create HashTypes",
                 "operationId": "postHashtypes"
             }
@@ -15682,6 +16729,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hashType]=description,isSalted`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hashType`: description, isSalted, isSlowHash.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "hashType": "description,isSalted"
+                        }
                     }
                 ],
                 "summary": "Get HashTypes",
@@ -15790,6 +16854,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hashType]=description,isSalted`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hashType`: description, isSalted, isSlowHash.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "hashType": "description,isSalted"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -16122,6 +17203,23 @@
                             "agent",
                             "healthCheck"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[healthCheckAgent]=healthCheckId,agentId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `healthCheckAgent`: healthCheckId, agentId, status, cracked, numGpus, start, end, errors.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: agent, healthCheck.",
+                        "example": {
+                            "healthCheckAgent": "healthCheckId,agentId"
+                        }
                     }
                 ],
                 "summary": "List HealthCheckAgents",
@@ -16636,6 +17734,23 @@
                             "agent",
                             "healthCheck"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[healthCheckAgent]=healthCheckId,agentId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `healthCheckAgent`: healthCheckId, agentId, status, cracked, numGpus, start, end, errors.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: agent, healthCheck.",
+                        "example": {
+                            "healthCheckAgent": "healthCheckId,agentId"
+                        }
                     }
                 ],
                 "summary": "Get HealthCheckAgents",
@@ -16773,6 +17888,23 @@
                             "crackerBinary",
                             "hashType"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[healthCheck]=time,status`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `healthCheck`: time, status, checkType, hashtypeId, crackerBinaryId, expectedCracks, attackCmd.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, hashType, healthCheckAgent.",
+                        "example": {
+                            "healthCheck": "time,status"
+                        }
                     }
                 ],
                 "summary": "List HealthChecks",
@@ -16870,7 +18002,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[healthCheck]=time,status`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `healthCheck`: time, status, checkType, hashtypeId, crackerBinaryId, expectedCracks, attackCmd.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, hashType, healthCheckAgent.",
+                        "example": {
+                            "healthCheck": "time,status"
+                        }
+                    }
+                ],
                 "summary": "Create HealthChecks",
                 "operationId": "postHealthchecks"
             }
@@ -17596,6 +18746,23 @@
                             "crackerBinary",
                             "hashType"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[healthCheck]=time,status`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `healthCheck`: time, status, checkType, hashtypeId, crackerBinaryId, expectedCracks, attackCmd.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, hashType, healthCheckAgent.",
+                        "example": {
+                            "healthCheck": "time,status"
+                        }
                     }
                 ],
                 "summary": "Get HealthChecks",
@@ -17704,6 +18871,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[healthCheck]=time,status`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `healthCheck`: time, status, checkType, hashtypeId, crackerBinaryId, expectedCracks, attackCmd.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, hashType, healthCheckAgent.",
+                        "example": {
+                            "healthCheck": "time,status"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -18028,6 +19212,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[logEntry]=issuer,issuerId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `logEntry`: issuer, issuerId, level, message, time.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "logEntry": "issuer,issuerId"
+                        }
                     }
                 ],
                 "summary": "List LogEntrys",
@@ -18224,6 +19425,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[logEntry]=issuer,issuerId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `logEntry`: issuer, issuerId, level, message, time.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "logEntry": "issuer,issuerId"
+                        }
                     }
                 ],
                 "summary": "Get LogEntrys",
@@ -18358,6 +19576,23 @@
                         "example": [
                             "user"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[notificationSetting]=action,objectId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `notificationSetting`: action, objectId, notification, userId, receiver, isActive.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user.",
+                        "example": {
+                            "notificationSetting": "action,objectId"
+                        }
                     }
                 ],
                 "summary": "List NotificationSettings",
@@ -18455,7 +19690,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[notificationSetting]=action,objectId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `notificationSetting`: action, objectId, notification, userId, receiver, isActive.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user.",
+                        "example": {
+                            "notificationSetting": "action,objectId"
+                        }
+                    }
+                ],
                 "summary": "Create NotificationSettings",
                 "operationId": "postNotifications"
             }
@@ -18966,6 +20219,23 @@
                         "example": [
                             "user"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[notificationSetting]=action,objectId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `notificationSetting`: action, objectId, notification, userId, receiver, isActive.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user.",
+                        "example": {
+                            "notificationSetting": "action,objectId"
+                        }
                     }
                 ],
                 "summary": "Get NotificationSettings",
@@ -19074,6 +20344,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[notificationSetting]=action,objectId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `notificationSetting`: action, objectId, notification, userId, receiver, isActive.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: user.",
+                        "example": {
+                            "notificationSetting": "action,objectId"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -19398,6 +20685,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[preprocessor]=name,url`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `preprocessor`: name, url, binaryName, keyspaceCommand, skipCommand, limitCommand.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "preprocessor": "name,url"
+                        }
                     }
                 ],
                 "summary": "List Preprocessors",
@@ -19495,7 +20799,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[preprocessor]=name,url`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `preprocessor`: name, url, binaryName, keyspaceCommand, skipCommand, limitCommand.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "preprocessor": "name,url"
+                        }
+                    }
+                ],
                 "summary": "Create Preprocessors",
                 "operationId": "postPreprocessors"
             }
@@ -19690,6 +21012,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[preprocessor]=name,url`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `preprocessor`: name, url, binaryName, keyspaceCommand, skipCommand, limitCommand.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "preprocessor": "name,url"
+                        }
                     }
                 ],
                 "summary": "Get Preprocessors",
@@ -19798,6 +21137,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[preprocessor]=name,url`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `preprocessor`: name, url, binaryName, keyspaceCommand, skipCommand, limitCommand.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "preprocessor": "name,url"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -20130,6 +21486,23 @@
                         ]
                     },
                     {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[preTask]=taskName,attackCmd`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `preTask`: taskName, attackCmd, chunkTime, statusTimer, color, isSmall, isCpuTask, useNewBench, priority, maxAgents, isMaskImport, crackerBinaryTypeId.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: file.",
+                        "example": {
+                            "preTask": "taskName,attackCmd"
+                        }
+                    },
+                    {
                         "name": "aggregate",
                         "in": "query",
                         "style": "deepObject",
@@ -20242,7 +21615,42 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[preTask]=taskName,attackCmd`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `preTask`: taskName, attackCmd, chunkTime, statusTimer, color, isSmall, isCpuTask, useNewBench, priority, maxAgents, isMaskImport, crackerBinaryTypeId.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: file.",
+                        "example": {
+                            "preTask": "taskName,attackCmd"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: pretask: auxiliaryKeyspace",
+                        "example": {
+                            "aggregate[pretask]": "auxiliaryKeyspace"
+                        }
+                    }
+                ],
                 "summary": "Create PreTasks",
                 "operationId": "postPretasks"
             }
@@ -20965,6 +22373,40 @@
                         "example": [
                             "pretaskFiles"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[preTask]=taskName,attackCmd`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `preTask`: taskName, attackCmd, chunkTime, statusTimer, color, isSmall, isCpuTask, useNewBench, priority, maxAgents, isMaskImport, crackerBinaryTypeId.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: file.",
+                        "example": {
+                            "preTask": "taskName,attackCmd"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: pretask: auxiliaryKeyspace",
+                        "example": {
+                            "aggregate[pretask]": "auxiliaryKeyspace"
+                        }
                     }
                 ],
                 "summary": "Get PreTasks",
@@ -21073,6 +22515,40 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[preTask]=taskName,attackCmd`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `preTask`: taskName, attackCmd, chunkTime, statusTimer, color, isSmall, isCpuTask, useNewBench, priority, maxAgents, isMaskImport, crackerBinaryTypeId.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: file.",
+                        "example": {
+                            "preTask": "taskName,attackCmd"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: pretask: auxiliaryKeyspace",
+                        "example": {
+                            "aggregate[pretask]": "auxiliaryKeyspace"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -21405,6 +22881,23 @@
                             "agent",
                             "task"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[speed]=agentId,taskId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `speed`: agentId, taskId, speed, time.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: agent, task.",
+                        "example": {
+                            "speed": "agentId,taskId"
+                        }
                     }
                 ],
                 "summary": "List Speeds",
@@ -21919,6 +23412,23 @@
                             "agent",
                             "task"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[speed]=agentId,taskId`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `speed`: agentId, taskId, speed, time.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: agent, task.",
+                        "example": {
+                            "speed": "agentId,taskId"
+                        }
                     }
                 ],
                 "summary": "Get Speeds",
@@ -22055,6 +23565,23 @@
                         ]
                     },
                     {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[supertask]=supertaskName`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `supertask`: supertaskName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: preTask.",
+                        "example": {
+                            "supertask": "supertaskName"
+                        }
+                    },
+                    {
                         "name": "aggregate",
                         "in": "query",
                         "style": "deepObject",
@@ -22167,7 +23694,42 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[supertask]=supertaskName`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `supertask`: supertaskName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: preTask.",
+                        "example": {
+                            "supertask": "supertaskName"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: supertask: amountPretasks",
+                        "example": {
+                            "aggregate[supertask]": "amountPretasks"
+                        }
+                    }
+                ],
                 "summary": "Create Supertasks",
                 "operationId": "postSupertasks"
             }
@@ -22890,6 +24452,40 @@
                         "example": [
                             "pretasks"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[supertask]=supertaskName`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `supertask`: supertaskName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: preTask.",
+                        "example": {
+                            "supertask": "supertaskName"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: supertask: amountPretasks",
+                        "example": {
+                            "aggregate[supertask]": "amountPretasks"
+                        }
                     }
                 ],
                 "summary": "Get Supertasks",
@@ -22998,6 +24594,40 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[supertask]=supertaskName`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `supertask`: supertaskName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: preTask.",
+                        "example": {
+                            "supertask": "supertaskName"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: supertask: amountPretasks",
+                        "example": {
+                            "aggregate[supertask]": "amountPretasks"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -23336,6 +24966,23 @@
                         ]
                     },
                     {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[task]=taskName,attackCmd`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `task`: taskName, attackCmd, chunkTime, statusTimer, keyspace, keyspaceProgress, priority, maxAgents, color, isSmall, isCpuTask, useNewBench, skipKeyspace, crackerBinaryId, crackerBinaryTypeId, taskWrapperId, isArchived, notes, staticChunks, chunkSize, forcePipe, preprocessorId, preprocessorCommand.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, crackerBinaryType, hashlist, agent, file, speed.",
+                        "example": {
+                            "task": "taskName,attackCmd"
+                        }
+                    },
+                    {
                         "name": "aggregate",
                         "in": "query",
                         "style": "deepObject",
@@ -23448,7 +25095,42 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[task]=taskName,attackCmd`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `task`: taskName, attackCmd, chunkTime, statusTimer, keyspace, keyspaceProgress, priority, maxAgents, color, isSmall, isCpuTask, useNewBench, skipKeyspace, crackerBinaryId, crackerBinaryTypeId, taskWrapperId, isArchived, notes, staticChunks, chunkSize, forcePipe, preprocessorId, preprocessorCommand.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, crackerBinaryType, hashlist, agent, file, speed.",
+                        "example": {
+                            "task": "taskName,attackCmd"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: task: totalAssignedAgents, dispatched, searched, status, totalNumberOfChunks, currentSpeed, estimatedTime, cprogress, timeSpent, cracked",
+                        "example": {
+                            "aggregate[task]": "totalAssignedAgents,dispatched,searched,status,totalNumberOfChunks,currentSpeed,estimatedTime,cprogress,timeSpent,cracked"
+                        }
+                    }
+                ],
                 "summary": "Create Tasks",
                 "operationId": "postTasks"
             }
@@ -24177,6 +25859,40 @@
                             "crackerBinary",
                             "crackerBinaryType"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[task]=taskName,attackCmd`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `task`: taskName, attackCmd, chunkTime, statusTimer, keyspace, keyspaceProgress, priority, maxAgents, color, isSmall, isCpuTask, useNewBench, skipKeyspace, crackerBinaryId, crackerBinaryTypeId, taskWrapperId, isArchived, notes, staticChunks, chunkSize, forcePipe, preprocessorId, preprocessorCommand.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, crackerBinaryType, hashlist, agent, file, speed.",
+                        "example": {
+                            "task": "taskName,attackCmd"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: task: totalAssignedAgents, dispatched, searched, status, totalNumberOfChunks, currentSpeed, estimatedTime, cprogress, timeSpent, cracked",
+                        "example": {
+                            "aggregate[task]": "totalAssignedAgents,dispatched,searched,status,totalNumberOfChunks,currentSpeed,estimatedTime,cprogress,timeSpent,cracked"
+                        }
                     }
                 ],
                 "summary": "Get Tasks",
@@ -24285,6 +26001,40 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[task]=taskName,attackCmd`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `task`: taskName, attackCmd, chunkTime, statusTimer, keyspace, keyspaceProgress, priority, maxAgents, color, isSmall, isCpuTask, useNewBench, skipKeyspace, crackerBinaryId, crackerBinaryTypeId, taskWrapperId, isArchived, notes, staticChunks, chunkSize, forcePipe, preprocessorId, preprocessorCommand.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, crackerBinaryType, hashlist, agent, file, speed.",
+                        "example": {
+                            "task": "taskName,attackCmd"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: task: totalAssignedAgents, dispatched, searched, status, totalNumberOfChunks, currentSpeed, estimatedTime, cprogress, timeSpent, cracked",
+                        "example": {
+                            "aggregate[task]": "totalAssignedAgents,dispatched,searched,status,totalNumberOfChunks,currentSpeed,estimatedTime,cprogress,timeSpent,cracked"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -24620,6 +26370,23 @@
                             "accessGroup",
                             "hashlist"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[taskWrapper]=priority,maxAgents`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `taskWrapper`: priority, maxAgents, taskType, hashlistId, accessGroupId, taskWrapperName, isArchived, cracked.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: accessGroup, hashlist, hashType, task.",
+                        "example": {
+                            "taskWrapper": "priority,maxAgents"
+                        }
                     }
                 ],
                 "summary": "List TaskWrappers",
@@ -25349,6 +27116,23 @@
                             "accessGroup",
                             "hashlist"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[taskWrapper]=priority,maxAgents`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `taskWrapper`: priority, maxAgents, taskType, hashlistId, accessGroupId, taskWrapperName, isArchived, cracked.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: accessGroup, hashlist, hashType, task.",
+                        "example": {
+                            "taskWrapper": "priority,maxAgents"
+                        }
                     }
                 ],
                 "summary": "Get TaskWrappers",
@@ -25457,6 +27241,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[taskWrapper]=priority,maxAgents`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `taskWrapper`: priority, maxAgents, taskType, hashlistId, accessGroupId, taskWrapperName, isArchived, cracked.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: accessGroup, hashlist, hashType, task.",
+                        "example": {
+                            "taskWrapper": "priority,maxAgents"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -25787,6 +27588,23 @@
                         "example": [
                             "tasks"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[taskWrapperDisplay]=taskWrapperPriority,taskWrapperMaxAgents`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `taskWrapperDisplay`: taskWrapperPriority, taskWrapperMaxAgents, taskType, hashlistId, accessGroupId, taskWrapperName, displayName, taskWrapperIsArchived, cracked, taskId, taskName, color, attackCmd, chunkTime, statusTimer, keyspace, keyspaceProgress, taskPriority, taskMaxAgents, isSmall, isCpuTask, taskIsArchived, preprocessorId, hashlistName, hashCount, hashlistCracked, hashTypeId, hashTypeDescription, groupName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: task.",
+                        "example": {
+                            "taskWrapperDisplay": "taskWrapperPriority,taskWrapperMaxAgents"
+                        }
                     },
                     {
                         "name": "aggregate",
@@ -26528,6 +28346,40 @@
                         "example": [
                             "tasks"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[taskWrapperDisplay]=taskWrapperPriority,taskWrapperMaxAgents`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `taskWrapperDisplay`: taskWrapperPriority, taskWrapperMaxAgents, taskType, hashlistId, accessGroupId, taskWrapperName, displayName, taskWrapperIsArchived, cracked, taskId, taskName, color, attackCmd, chunkTime, statusTimer, keyspace, keyspaceProgress, taskPriority, taskMaxAgents, isSmall, isCpuTask, taskIsArchived, preprocessorId, hashlistName, hashCount, hashlistCracked, hashTypeId, hashTypeDescription, groupName.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: task.",
+                        "example": {
+                            "taskWrapperDisplay": "taskWrapperPriority,taskWrapperMaxAgents"
+                        }
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: taskwrapperdisplay: totalAssignedAgents, dispatched, searched, status, currentSpeed, estimatedTime, cprogress, timeSpent",
+                        "example": {
+                            "aggregate[taskwrapperdisplay]": "totalAssignedAgents,dispatched,searched,status,currentSpeed,estimatedTime,cprogress,timeSpent"
+                        }
                     }
                 ],
                 "summary": "Get TaskWrapperDisplays",
@@ -26664,6 +28516,23 @@
                             "globalPermissionGroup",
                             "accessGroups"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[user]=name,email`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `user`: name, email, isValid, isComputedPassword, lastLoginDate, registeredSince, sessionLifetime, globalPermissionGroupId, yubikey, otp1, otp2, otp3, otp4.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: globalPermissionGroup, accessGroup.",
+                        "example": {
+                            "user": "name,email"
+                        }
                     }
                 ],
                 "summary": "List Users",
@@ -26761,7 +28630,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[user]=name,email`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `user`: name, email, isValid, isComputedPassword, lastLoginDate, registeredSince, sessionLifetime, globalPermissionGroupId, yubikey, otp1, otp2, otp3, otp4.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: globalPermissionGroup, accessGroup.",
+                        "example": {
+                            "user": "name,email"
+                        }
+                    }
+                ],
                 "summary": "Create Users",
                 "operationId": "postUsers"
             }
@@ -27486,6 +29373,23 @@
                             "globalPermissionGroup",
                             "accessGroups"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[user]=name,email`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `user`: name, email, isValid, isComputedPassword, lastLoginDate, registeredSince, sessionLifetime, globalPermissionGroupId, yubikey, otp1, otp2, otp3, otp4.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: globalPermissionGroup, accessGroup.",
+                        "example": {
+                            "user": "name,email"
+                        }
                     }
                 ],
                 "summary": "Get Users",
@@ -27594,6 +29498,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[user]=name,email`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `user`: name, email, isValid, isComputedPassword, lastLoginDate, registeredSince, sessionLifetime, globalPermissionGroupId, yubikey, otp1, otp2, otp3, otp4.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: globalPermissionGroup, accessGroup.",
+                        "example": {
+                            "user": "name,email"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",
@@ -27918,6 +29839,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[voucher]=voucher,time`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `voucher`: voucher, time.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "voucher": "voucher,time"
+                        }
                     }
                 ],
                 "summary": "List Vouchers",
@@ -28015,7 +29953,25 @@
                         }
                     }
                 },
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[voucher]=voucher,time`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `voucher`: voucher, time.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "voucher": "voucher,time"
+                        }
+                    }
+                ],
                 "summary": "Create Vouchers",
                 "operationId": "postVouchers"
             }
@@ -28210,6 +30166,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[voucher]=voucher,time`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `voucher`: voucher, time.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "voucher": "voucher,time"
+                        }
                     }
                 ],
                 "summary": "Get Vouchers",
@@ -28318,6 +30291,23 @@
                     }
                 },
                 "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[voucher]=voucher,time`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `voucher`: voucher, time.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "voucher": "voucher,time"
+                        }
+                    },
                     {
                         "name": "id",
                         "in": "path",

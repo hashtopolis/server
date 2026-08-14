@@ -153,6 +153,23 @@
                             "crackerVersions",
                             "tasks"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[crackerBinaryType]=typeName,isChunkingAvailable`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `crackerBinaryType`: typeName, isChunkingAvailable.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, task.",
+                        "example": {
+                            "crackerBinaryType": "typeName,isChunkingAvailable"
+                        }
                     }
                 ]
             },
@@ -252,7 +269,25 @@
                         }
                     }
                 },
-                "parameters": []
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[crackerBinaryType]=typeName,isChunkingAvailable`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `crackerBinaryType`: typeName, isChunkingAvailable.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, task.",
+                        "example": {
+                            "crackerBinaryType": "typeName,isChunkingAvailable"
+                        }
+                    }
+                ]
             }
         },
         "/api/v2/ui/crackertypes/count": {
@@ -924,6 +959,23 @@
                             "crackerVersions",
                             "tasks"
                         ]
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[crackerBinaryType]=typeName,isChunkingAvailable`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `crackerBinaryType`: typeName, isChunkingAvailable.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, task.",
+                        "example": {
+                            "crackerBinaryType": "typeName,isChunkingAvailable"
+                        }
                     }
                 ]
             },
@@ -1033,7 +1085,25 @@
                         }
                     }
                 },
-                "parameters": []
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[crackerBinaryType]=typeName,isChunkingAvailable`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `crackerBinaryType`: typeName, isChunkingAvailable.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.\n\nTypes reachable through `include`: crackerBinary, task.",
+                        "example": {
+                            "crackerBinaryType": "typeName,isChunkingAvailable"
+                        }
+                    }
+                ]
             },
             "delete": {
                 "tags": [
