@@ -7,24 +7,6 @@ namespace Hashtopolis\inc\apiv2\openapi;
  */
 class SpecSanitizer {
   public function sanitize(array $spec): array {
-    // Fix: Add missing info fields
-    if (!isset($spec['info']['description'])) {
-      $spec['info']['description'] = 'Hashtopolis REST API';
-    }
-    if (!isset($spec['info']['contact'])) {
-      $spec['info']['contact'] = [
-        'name' => 'Hashtopolis',
-        'url' => 'https://github.com/hashtopolis/server'
-      ];
-    }
-    /* The license of the server itself, as stated by LICENSE.txt in its repository */
-    if (!isset($spec['info']['license'])) {
-      $spec['info']['license'] = [
-        'name' => 'GPL-3.0',
-        'url' => 'https://github.com/hashtopolis/server/blob/master/LICENSE.txt'
-      ];
-    }
-
     // Phase 1: Build rename map for schema names containing backslashes
     $renameMap = [];
     if (isset($spec['components']['schemas'])) {

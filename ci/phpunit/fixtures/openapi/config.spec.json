@@ -2,7 +2,16 @@
     "openapi": "3.1.0",
     "info": {
         "title": "Hashtopolis API",
-        "version": "v2"
+        "version": "v2",
+        "description": "Hashtopolis REST API",
+        "contact": {
+            "name": "Hashtopolis",
+            "url": "https://github.com/hashtopolis/server"
+        },
+        "license": {
+            "name": "GPL-3.0",
+            "url": "https://github.com/hashtopolis/server/blob/master/LICENSE.txt"
+        }
     },
     "servers": [
         {

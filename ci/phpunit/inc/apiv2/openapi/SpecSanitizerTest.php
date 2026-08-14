@@ -22,12 +22,6 @@ final class SpecSanitizerTest extends TestCase {
     ];
   }
 
-  public function testAddsMissingInfoFields(): void {
-    $result = $this->sanitize($this->minimalSpec());
-    $this->assertSame('Hashtopolis REST API', $result['info']['description']);
-    $this->assertSame('https://github.com/hashtopolis/server', $result['info']['contact']['url']);
-  }
-
   public function testRenamesBackslashSchemaNamesAndRewritesRefs(): void {
     $fqcn = 'Hashtopolis\\inc\\apiv2\\helper\\ThingHelperAPI';
     $result = $this->sanitize($this->minimalSpec(
@@ -224,18 +218,6 @@ final class SpecSanitizerTest extends TestCase {
     $this->assertSame(
       'Reading and writing the resources served under `/api/v2/ui/things`.',
       $descriptions['Things']
-    );
-  }
-
-  public function testAddsTheLicenseOfTheServer(): void {
-    $result = $this->sanitize($this->minimalSpec(
-      ['/api/v2/ui/things' => ['get' => ['responses' => ['200' => ['description' => 'ok']]]]]
-    ));
-
-    $this->assertSame('GPL-3.0', $result['info']['license']['name']);
-    $this->assertSame(
-      'https://github.com/hashtopolis/server/blob/master/LICENSE.txt',
-      $result['info']['license']['url']
     );
   }
 
