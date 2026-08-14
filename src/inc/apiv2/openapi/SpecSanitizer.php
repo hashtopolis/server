@@ -41,14 +41,7 @@ class SpecSanitizer {
       unset($spec['components']['securitySchemes']['bearerAuth']['scopes']);
     }
 
-    // Phase 3: Clean path templates (strip Slim regex patterns)
-    $newPaths = [];
-    foreach ($spec['paths'] as $path => $pathItem) {
-      $newPaths[$this->cleanPathTemplate((string)$path)] = $pathItem;
-    }
-    $spec['paths'] = $newPaths;
-
-    // Phase 4: Walk operations for fixes
+    // Phase 3: Walk operations for fixes
     foreach ($spec['paths'] as $path => &$pathItem) {
       foreach ($pathItem as $method => &$operation) {
         if (!is_array($operation)) continue;
@@ -218,10 +211,10 @@ class SpecSanitizer {
     }
     unset($pathItem);
 
-    // Phase 5: Recursive walk for $ref renaming, enum, required, description fixes
+    // Phase 4: Recursive walk for $ref renaming, enum, required, description fixes
     $spec = $this->recursiveFixValues($spec, $renameMap);
 
-    // Phase 6: Build global tags array from all operations
+    // Phase 5: Build global tags array from all operations
     $allTags = [];
     foreach ($spec['paths'] as $pathItem) {
       foreach ($pathItem as $op) {
@@ -233,7 +226,7 @@ class SpecSanitizer {
     ksort($allTags);
     $spec['tags'] = array_map(fn($name) => ['name' => $name], array_keys($allTags));
 
-    // Phase 7: Remove unreferenced component schemas (iterative until stable)
+    // Phase 6: Remove unreferenced component schemas (iterative until stable)
     if (isset($spec['components']['schemas'])) {
       $changed = true;
       while ($changed) {
@@ -251,52 +244,6 @@ class SpecSanitizer {
     }
 
     return $spec;
-  }
-
-  /**
-   * Turns a Slim route pattern into an OpenAPI path template, dropping the
-   * regex constraint of every placeholder, e.g.
-   * "/importFile/{id:[0-9]{14}-[0-9a-f]{32}}" becomes "/importFile/{id}".
-   * Such a constraint contains balanced braces of its own, so the brace
-   * closing the placeholder is found by counting depth rather than by
-   * matching up to the first "}".
-   */
-  private function cleanPathTemplate(string $path): string {
-    $clean = '';
-    $length = strlen($path);
-
-    for ($i = 0; $i < $length; $i++) {
-      if ($path[$i] !== '{') {
-        $clean .= $path[$i];
-        continue;
-      }
-
-      $depth = 0;
-      $end = -1;
-      for ($j = $i; $j < $length; $j++) {
-        if ($path[$j] === '{') {
-          $depth++;
-        } elseif ($path[$j] === '}') {
-          $depth--;
-          if ($depth === 0) {
-            $end = $j;
-            break;
-          }
-        }
-      }
-      /* Unbalanced braces, keep the remainder as-is instead of mangling it */
-      if ($end === -1) {
-        $clean .= substr($path, $i);
-        break;
-      }
-
-      $placeholder = substr($path, $i + 1, $end - $i - 1);
-      $name = strstr($placeholder, ':', true);
-      $clean .= '{' . ($name === false ? $placeholder : $name) . '}';
-      $i = $end;
-    }
-
-    return $clean;
   }
 
   private function collectSchemaRefs(mixed $data, array &$refs): void {

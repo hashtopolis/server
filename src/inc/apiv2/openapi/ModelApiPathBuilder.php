@@ -22,12 +22,15 @@ class ModelApiPathBuilder {
    * @throws HttpErrorException
    */
   public function addRoute(RouteTarget $target, AbstractModelAPI $api, ContainerInterface $container, array &$paths, array &$components, array &$all_scopes): void {
-    $path = $target->pattern;
+    /* The spec is keyed by the path template, while the placeholder
+       constraints of the raw pattern still say what kind of route this is */
+    $path = $target->pathTemplate;
+    $pattern = $target->pattern;
     $method = $target->httpMethod;
     $class = $api;
 
     /* Quick to find out if single parameter object is used */
-    $singleObject = ((strstr($path, '/{id:')) !== false);
+    $singleObject = ((strstr($pattern, '/{id:')) !== false);
     $isCount = str_ends_with($path, '/count');
     $api_name_parts = explode('\\', get_class($class));
     $name = substr(end($api_name_parts), 0, -3); // Remove "API" suffix
@@ -35,8 +38,8 @@ class ModelApiPathBuilder {
     $uri = $class->getBaseUri();
 
     $isRelation = (strstr($path, "/relationships/")) !== false;
-    if (str_contains($path, "relation:")) {
-      $relation = rtrim(explode("relation:", $path)[1], "}");
+    if (str_contains($pattern, "relation:")) {
+      $relation = rtrim(explode("relation:", $pattern)[1], "}");
       $isToMany = array_key_exists($relation, $class::getToManyRelationships());
       $isToOne = array_key_exists($relation, $class::getToOneRelationships());
       assert(!($isToMany && $isToOne), "An relationship cant be a to one and to many at the same time.");
@@ -262,7 +265,7 @@ class ModelApiPathBuilder {
 
       /* Method specific responses and requests for single objects */
       if ($method == 'get') {
-        if (!$isRelation && str_contains($path, "relation:")) {
+        if (!$isRelation && str_contains($pattern, "relation:")) {
           $paths[$path][$method]["responses"]["200"] = $this->jsonApiFragments->jsonApiResponse(
             "successful operation",
             "#/components/schemas/" . $name . "Relation" . ucfirst($relation) . "GetResponse"
@@ -428,7 +431,7 @@ class ModelApiPathBuilder {
         ]
       ];
 
-      if (!str_contains($path, "relation:")) {
+      if (!str_contains($pattern, "relation:")) {
         $parameters[] = $this->makeIncludeParameter($class);
       };
     }

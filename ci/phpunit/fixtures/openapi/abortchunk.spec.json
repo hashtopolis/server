@@ -197,7 +197,7 @@
                 }
             }
         },
-        "/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}": {
+        "/api/v2/helper/importFile/{id}": {
             "patch": {
                 "parameters": [
                     {

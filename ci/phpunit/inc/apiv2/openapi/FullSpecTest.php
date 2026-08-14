@@ -49,6 +49,18 @@ final class FullSpecTest extends TestCase {
     }
   }
 
+  /**
+   * Paths are OpenAPI path templates from the moment they are built, so no
+   * Slim regex constraint may survive into either variant.
+   */
+  public function testPathsCarryNoRouteConstraints(): void {
+    foreach (['raw' => self::$raw, 'sanitized' => self::$sanitized] as $variant => $spec) {
+      foreach (array_keys($spec['paths']) as $path) {
+        $this->assertStringNotContainsString(':', $path, "Route constraint in $variant spec: $path");
+      }
+    }
+  }
+
   public function testExpectedCoverage(): void {
     $this->assertGreaterThanOrEqual(160, count(self::$sanitized['paths']));
     $this->assertGreaterThanOrEqual(200, count(self::$sanitized['components']['schemas']));
