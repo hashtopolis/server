@@ -418,8 +418,8 @@ class ModelApiPathBuilder {
     }
 
     /**
-     * Sparse fieldsets address the attributes of the resource the operation
-     * returns, so their names are derived from the response features.
+     * Sparse fieldsets and sorting address the attributes of the resource the
+     * operation returns, so both are derived from the response features.
      *
      * A relationship route answers with the related resource rather than with
      * this one (AbstractModelAPI::getRelationship), so its attribute names are
@@ -510,7 +510,8 @@ class ModelApiPathBuilder {
             "description" => "Amout of data to retrieve inside a single page"
           ],
           $this->makeFilterParameter($primaryKey),
-          $this->makeIncludeParameter($class)
+          $this->makeIncludeParameter($class),
+          $this->makeSortParameter($this->sortableAttributeNames($attributeNames))
         ];
 
         $parameters = array_merge($parameters, $this->makeResourceShapeParameters($class, $typeName, $attributeNames, $container));
@@ -622,6 +623,21 @@ class ModelApiPathBuilder {
   }
 
   /**
+   * The attributes accepted as a sort key. The primary key is addressed as
+   * "id", and an attribute carrying a digit is left out because the sort
+   * parameter is parsed as [_a-zA-Z.]+ (AbstractBaseAPI::makeOrderFilterTemplates).
+   *
+   * @param list<string> $attributeNames
+   * @return list<string>
+   */
+  private function sortableAttributeNames(array $attributeNames): array {
+    return array_merge(
+      ["id"],
+      array_values(array_filter($attributeNames, fn(string $name) => preg_match('/\d/', $name) !== 1))
+    );
+  }
+
+  /**
    * The "aggregate" query parameter, offering the computed fields of
    * getAggregateFieldsets() by resource key. Returns null for a model that
    * offers none.
@@ -690,6 +706,38 @@ class ModelApiPathBuilder {
       "required" => false,
       "description" => $description,
       "example" => [$typeName => $example]
+    ];
+  }
+
+  /**
+   * The JSON:API "sort" query parameter. Read as a single comma separated value
+   * like "include", each entry optionally prefixed with "-" for descending
+   * order (AbstractBaseAPI::makeOrderFilterTemplates). The primary key is
+   * appended as a tie-breaker, so the order stays stable for pagination.
+   *
+   * @param list<string> $sortable attribute names accepted as a sort key
+   */
+  private function makeSortParameter(array $sortable): array {
+    /* Prefer an attribute over the primary key, which is the tie-breaker anyway */
+    $exampleKey = $sortable[1] ?? $sortable[0];
+    return [
+      "name" => "sort",
+      "in" => "query",
+      "style" => "form",
+      "explode" => false,
+      "schema" => [
+        "type" => "array",
+        "items" => [
+          "type" => "string"
+        ]
+      ],
+      "required" => false,
+      "description" => "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending,"
+        . " e.g. `sort=-" . $exampleKey . "`. `id` addresses the primary key of the resource, and an attribute of an"
+        . " included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a"
+        . " tie-breaker, so that pagination over the result stays stable."
+        . "\n\nAccepted keys: " . implode(", ", $sortable) . ".",
+      "example" => ["-" . $exampleKey]
     ];
   }
 

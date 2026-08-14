@@ -333,6 +333,37 @@ final class FullSpecTest extends TestCase {
   }
 
   /**
+   * Sorting is applied while paginating a collection, so it is offered on
+   * collection reads and nowhere else. Every key it advertises has to be an
+   * attribute of the collected resource and has to survive the parser, which
+   * accepts no digits (AbstractBaseAPI::makeOrderFilterTemplates).
+   */
+  public function testSortParameterIsOfferedOnCollectionsOnly(): void {
+    $withSort = [];
+    foreach (self::$sanitized['paths'] as $path => $pathItem) {
+      foreach ($pathItem as $method => $operation) {
+        $sort = $this->findParameter($operation, 'sort');
+        if ($sort === null) {
+          continue;
+        }
+        $withSort[] = "$method $path";
+        $this->assertSame('get', $method);
+        $this->assertStringEndsNotWith('/count', $path);
+
+        $attributes = $this->returnedAttributeNames($operation);
+        preg_match('/Accepted keys: (?P<keys>[^.]+)\./', $sort['description'], $matches);
+        $keys = explode(', ', $matches['keys']);
+        $this->assertSame('id', $keys[0], "The primary key is addressed as 'id': $method $path");
+        foreach (array_slice($keys, 1) as $key) {
+          $this->assertContains($key, $attributes, "Sortable key '$key' is not an attribute returned by $method $path");
+          $this->assertMatchesRegularExpression('/^[_a-zA-Z.]+$/', $key, "Sortable key '$key' is rejected by the sort parser");
+        }
+      }
+    }
+    $this->assertCount(30, $withSort);
+  }
+
+  /**
    * @return array<string, mixed>|null
    */
   private function findParameter(array $operation, string $name): ?array {
