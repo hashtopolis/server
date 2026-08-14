@@ -7,6 +7,10 @@
         "contact": {
             "name": "Hashtopolis",
             "url": "https://github.com/hashtopolis/server"
+        },
+        "license": {
+            "name": "GPL-3.0",
+            "url": "https://github.com/hashtopolis/server/blob/master/LICENSE.txt"
         }
     },
     "servers": [

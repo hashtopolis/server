@@ -31,6 +31,24 @@ final class FullSpecTest extends TestCase {
     $this->assertJson(json_encode(self::$raw, JSON_THROW_ON_ERROR));
   }
 
+  /**
+   * The document identifies the API and the terms it is served under, which
+   * the builder states once for both variants.
+   */
+  public function testInfoIdentifiesTheApiAndItsLicense(): void {
+    foreach (['raw' => self::$raw, 'sanitized' => self::$sanitized] as $variant => $spec) {
+      $this->assertSame('Hashtopolis API', $spec['info']['title'], $variant);
+      $this->assertSame('Hashtopolis REST API', $spec['info']['description'], $variant);
+      $this->assertSame('https://github.com/hashtopolis/server', $spec['info']['contact']['url'], $variant);
+      $this->assertSame('GPL-3.0', $spec['info']['license']['name'], $variant);
+      $this->assertSame(
+        'https://github.com/hashtopolis/server/blob/master/LICENSE.txt',
+        $spec['info']['license']['url'],
+        $variant
+      );
+    }
+  }
+
   public function testExpectedCoverage(): void {
     $this->assertGreaterThanOrEqual(160, count(self::$sanitized['paths']));
     $this->assertGreaterThanOrEqual(200, count(self::$sanitized['components']['schemas']));
