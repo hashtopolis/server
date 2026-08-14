@@ -73,7 +73,13 @@ class AgentAPI extends AbstractModelAPI {
       ]
     ];
   }
-  
+
+  public static function getAggregateFeatures(): array {
+    return [
+      'crackingTime' => self::aggregateFeature('int', 'crackingTime'),
+    ];
+  }
+
   /**
    * @param Agent $object
    * @return int

@@ -1644,6 +1644,31 @@
                                                 "type": "string"
                                             }
                                         ]
+                                    },
+                                    "valueBoundaries": {
+                                        "type": "object",
+                                        "minProperties": 1,
+                                        "properties": {
+                                            "min": {
+                                                "type": "integer",
+                                                "description": "Smallest accepted value of a numeric item"
+                                            },
+                                            "max": {
+                                                "type": "integer",
+                                                "description": "Largest accepted value of a numeric item"
+                                            },
+                                            "maxLength": {
+                                                "type": "integer",
+                                                "description": "Longest accepted value of a textual item"
+                                            },
+                                            "binaryValues": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "description": "The two values a tickbox item accepts"
+                                            }
+                                        }
                                     }
                                 },
                                 "required": [
@@ -1686,6 +1711,31 @@
                                                 "type": "string"
                                             }
                                         ]
+                                    },
+                                    "valueBoundaries": {
+                                        "type": "object",
+                                        "minProperties": 1,
+                                        "properties": {
+                                            "min": {
+                                                "type": "integer",
+                                                "description": "Smallest accepted value of a numeric item"
+                                            },
+                                            "max": {
+                                                "type": "integer",
+                                                "description": "Largest accepted value of a numeric item"
+                                            },
+                                            "maxLength": {
+                                                "type": "integer",
+                                                "description": "Longest accepted value of a textual item"
+                                            },
+                                            "binaryValues": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "description": "The two values a tickbox item accepts"
+                                            }
+                                        }
                                     }
                                 },
                                 "required": [
@@ -1706,6 +1756,31 @@
                                     },
                                     "value": {
                                         "type": "string"
+                                    },
+                                    "valueBoundaries": {
+                                        "type": "object",
+                                        "minProperties": 1,
+                                        "properties": {
+                                            "min": {
+                                                "type": "integer",
+                                                "description": "Smallest accepted value of a numeric item"
+                                            },
+                                            "max": {
+                                                "type": "integer",
+                                                "description": "Largest accepted value of a numeric item"
+                                            },
+                                            "maxLength": {
+                                                "type": "integer",
+                                                "description": "Longest accepted value of a textual item"
+                                            },
+                                            "binaryValues": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "description": "The two values a tickbox item accepts"
+                                            }
+                                        }
                                     }
                                 },
                                 "required": [
@@ -1994,6 +2069,31 @@
                                                         "type": "string"
                                                     }
                                                 ]
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -2036,6 +2136,31 @@
                                                         "type": "string"
                                                     }
                                                 ]
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -2056,6 +2181,31 @@
                                             },
                                             "value": {
                                                 "type": "string"
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -2279,6 +2429,31 @@
                                                         "type": "string"
                                                     }
                                                 ]
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -2321,6 +2496,31 @@
                                                         "type": "string"
                                                     }
                                                 ]
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -2341,6 +2541,31 @@
                                             },
                                             "value": {
                                                 "type": "string"
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -2564,6 +2789,31 @@
                                                         "type": "string"
                                                     }
                                                 ]
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -2606,6 +2856,31 @@
                                                         "type": "string"
                                                     }
                                                 ]
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -2626,6 +2901,31 @@
                                             },
                                             "value": {
                                                 "type": "string"
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -2900,6 +3200,31 @@
                                                             "type": "string"
                                                         }
                                                     ]
+                                                },
+                                                "valueBoundaries": {
+                                                    "type": "object",
+                                                    "minProperties": 1,
+                                                    "properties": {
+                                                        "min": {
+                                                            "type": "integer",
+                                                            "description": "Smallest accepted value of a numeric item"
+                                                        },
+                                                        "max": {
+                                                            "type": "integer",
+                                                            "description": "Largest accepted value of a numeric item"
+                                                        },
+                                                        "maxLength": {
+                                                            "type": "integer",
+                                                            "description": "Longest accepted value of a textual item"
+                                                        },
+                                                        "binaryValues": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "description": "The two values a tickbox item accepts"
+                                                        }
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -2942,6 +3267,31 @@
                                                             "type": "string"
                                                         }
                                                     ]
+                                                },
+                                                "valueBoundaries": {
+                                                    "type": "object",
+                                                    "minProperties": 1,
+                                                    "properties": {
+                                                        "min": {
+                                                            "type": "integer",
+                                                            "description": "Smallest accepted value of a numeric item"
+                                                        },
+                                                        "max": {
+                                                            "type": "integer",
+                                                            "description": "Largest accepted value of a numeric item"
+                                                        },
+                                                        "maxLength": {
+                                                            "type": "integer",
+                                                            "description": "Longest accepted value of a textual item"
+                                                        },
+                                                        "binaryValues": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "description": "The two values a tickbox item accepts"
+                                                        }
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -2962,6 +3312,31 @@
                                                 },
                                                 "value": {
                                                     "type": "string"
+                                                },
+                                                "valueBoundaries": {
+                                                    "type": "object",
+                                                    "minProperties": 1,
+                                                    "properties": {
+                                                        "min": {
+                                                            "type": "integer",
+                                                            "description": "Smallest accepted value of a numeric item"
+                                                        },
+                                                        "max": {
+                                                            "type": "integer",
+                                                            "description": "Largest accepted value of a numeric item"
+                                                        },
+                                                        "maxLength": {
+                                                            "type": "integer",
+                                                            "description": "Longest accepted value of a textual item"
+                                                        },
+                                                        "binaryValues": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "description": "The two values a tickbox item accepts"
+                                                        }
+                                                    }
                                                 }
                                             },
                                             "required": [

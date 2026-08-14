@@ -104,6 +104,15 @@ class FeatureTypeMapper {
       if ($skipPK && $feature['pk']) {
         continue;
       }
+      /**
+       * A feature can carry its own schema for values the feature types cannot
+       * describe, such as an object whose members differ in type. It is taken
+       * verbatim, so the type lookup does not apply to it.
+       */
+      if (!empty($feature['openapi_schema'])) {
+        $propertyVal[$feature['alias']] = $feature['openapi_schema'];
+        continue;
+      }
       $ret = $this->typeLookup($feature);
       $isNullable = $feature['null'] ?? false;
       if ($ret["type_enum"] !== null && $ret["type_enum_labels"] !== null) {
