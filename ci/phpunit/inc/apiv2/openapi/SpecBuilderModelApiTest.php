@@ -28,7 +28,7 @@ final class SpecBuilderModelApiTest extends TestCase {
     $this->assertSame('3.1.0', $spec['openapi']);
     $this->assertArrayHasKey('/api/v2/ui/hashtypes', $spec['paths']);
     $this->assertArrayHasKey('/api/v2/ui/hashtypes/count', $spec['paths']);
-    $this->assertArrayHasKey('/api/v2/ui/hashtypes/{id:[0-9]+}', $spec['paths']);
+    $this->assertArrayHasKey('/api/v2/ui/hashtypes/{id}', $spec['paths']);
 
     $response = $spec['components']['schemas']['HashTypeResponse'];
     $this->assertSame(['jsonapi', 'links', 'data'], $response['required']);
@@ -48,8 +48,8 @@ final class SpecBuilderModelApiTest extends TestCase {
 
     $this->assertMatchesJsonFixture($spec, 'config.spec.json');
 
-    $this->assertArrayHasKey('/api/v2/ui/configs/{id:[0-9]+}/{relation:configSection}', $spec['paths']);
-    $this->assertArrayHasKey('/api/v2/ui/configs/{id:[0-9]+}/relationships/{relation:configSection}', $spec['paths']);
+    $this->assertArrayHasKey('/api/v2/ui/configs/{id}/{relation}', $spec['paths']);
+    $this->assertArrayHasKey('/api/v2/ui/configs/{id}/relationships/{relation}', $spec['paths']);
 
     $response = $spec['components']['schemas']['ConfigResponse'];
     // getOpenAPIAttributesSchemaOverride() replaces the default attributes object
@@ -78,7 +78,7 @@ final class SpecBuilderModelApiTest extends TestCase {
     // Routes of mapper-only classes must not appear
     $this->assertArrayNotHasKey('/api/v2/ui/crackers', $spec['paths']);
     $this->assertArrayNotHasKey('/api/v2/ui/tasks', $spec['paths']);
-    $this->assertArrayHasKey('/api/v2/ui/crackertypes/{id:[0-9]+}/{relation:crackerVersions}', $spec['paths']);
+    $this->assertArrayHasKey('/api/v2/ui/crackertypes/{id}/{relation}', $spec['paths']);
 
     $response = $spec['components']['schemas']['CrackerBinaryTypeResponse'];
     // toMany relationship linkage is an array of resource identifiers

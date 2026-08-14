@@ -6,7 +6,9 @@ use Slim\App;
 
 /**
  * Resolves the registered Slim routes to the API classes and methods handling
- * them, so the spec builder can introspect those classes.
+ * them, so the spec builder can introspect those classes. The Slim route
+ * pattern is translated into an OpenAPI path template here, so that everything
+ * downstream only ever sees the template.
  */
 class RouteIntrospector {
   /**
@@ -24,7 +26,7 @@ class RouteIntrospector {
       /* Assume only one method per route call */
       assert(sizeof($route->getMethods()) == 1, "More than 1 methods found for this route");
       /* Path relative to basePath */
-      $path = $route->getPattern();
+      $pattern = $route->getPattern();
       $method = strtolower($route->getMethods()[0]);
 
       /* Retrieve parameters. Model API routes register array callables
@@ -40,8 +42,54 @@ class RouteIntrospector {
       } else {
         continue;
       }
-      $targets[] = new RouteTarget($path, $method, $apiClassName, $apiMethod);
+      $targets[] = new RouteTarget($pattern, $this->cleanPathTemplate($pattern), $method, $apiClassName, $apiMethod);
     }
     return $targets;
+  }
+
+  /**
+   * Turns a Slim route pattern into an OpenAPI path template, dropping the
+   * regex constraint of every placeholder, e.g.
+   * "/importFile/{id:[0-9]{14}-[0-9a-f]{32}}" becomes "/importFile/{id}".
+   * Such a constraint contains balanced braces of its own, so the brace
+   * closing the placeholder is found by counting depth rather than by
+   * matching up to the first "}".
+   */
+  private function cleanPathTemplate(string $path): string {
+    $clean = '';
+    $length = strlen($path);
+
+    for ($i = 0; $i < $length; $i++) {
+      if ($path[$i] !== '{') {
+        $clean .= $path[$i];
+        continue;
+      }
+
+      $depth = 0;
+      $end = -1;
+      for ($j = $i; $j < $length; $j++) {
+        if ($path[$j] === '{') {
+          $depth++;
+        } elseif ($path[$j] === '}') {
+          $depth--;
+          if ($depth === 0) {
+            $end = $j;
+            break;
+          }
+        }
+      }
+      /* Unbalanced braces, keep the remainder as-is instead of mangling it */
+      if ($end === -1) {
+        $clean .= substr($path, $i);
+        break;
+      }
+
+      $placeholder = substr($path, $i + 1, $end - $i - 1);
+      $name = strstr($placeholder, ':', true);
+      $clean .= '{' . ($name === false ? $placeholder : $name) . '}';
+      $i = $end;
+    }
+
+    return $clean;
   }
 }
