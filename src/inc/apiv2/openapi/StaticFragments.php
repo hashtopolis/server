@@ -163,6 +163,12 @@ class StaticFragments {
     ];
   }
 
+  /**
+   * The keys used here are OpenAPI path templates, matching what
+   * RouteIntrospector derives from the Slim patterns of the same routes, so
+   * that these fragments land on the existing path items instead of creating
+   * a second entry for the same endpoint.
+   */
   public function applyImportFileTusPaths(array &$paths): void {
     //Hard coded headers for the importfile endpoints.
     $paths["/api/v2/helper/importFile"]["post"]["parameters"] = [
@@ -203,7 +209,7 @@ class StaticFragments {
       ]
     ];
 
-    $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["patch"]["parameters"] = [
+    $paths["/api/v2/helper/importFile/{id}"]["patch"]["parameters"] = [
       [
         "name" => "Upload-Offset",
         "in" => "header",
@@ -224,7 +230,7 @@ class StaticFragments {
         ],
       ],
     ];
-    $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["patch"]["requestBody"] = [
+    $paths["/api/v2/helper/importFile/{id}"]["patch"]["requestBody"] = [
       [
         "required" => "true",
         "description" => "The binary data to push to the file",
@@ -239,7 +245,7 @@ class StaticFragments {
       ]
     ];
 
-    $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["head"]["responses"]["200"] = [
+    $paths["/api/v2/helper/importFile/{id}"]["head"]["responses"]["200"] = [
       "description" => "successful request",
       "headers" => [
         "Tus-Resumable" => $this->tusHeader(),
@@ -283,7 +289,7 @@ class StaticFragments {
         ]
       ]
     ];
-    $paths["/api/v2/helper/importFile/{id:[0-9]{14}-[0-9a-f]{32}}"]["patch"]["responses"]["204"] = [
+    $paths["/api/v2/helper/importFile/{id}"]["patch"]["responses"]["204"] = [
       "description" => "Chunk accepted",
       "headers" => [
         "Tus-Resumable" => $this->tusHeader(),

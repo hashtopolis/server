@@ -18,7 +18,7 @@ class HelperApiPathBuilder {
   }
 
   public function addRoute(RouteTarget $target, AbstractHelperAPI $api, array &$paths, array &$components): void {
-    $path = $target->pattern;
+    $path = $target->pathTemplate;
     $method = $target->httpMethod;
     $apiMethod = $target->methodName;
     $class = $api;
