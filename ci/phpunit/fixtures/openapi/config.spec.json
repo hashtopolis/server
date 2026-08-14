@@ -153,6 +153,23 @@
                         ]
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-configSectionId`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, configSectionId, item, value.",
+                        "example": [
+                            "-configSectionId"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -1095,6 +1112,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-sectionName`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, sectionName.",
+                        "example": [
+                            "-sectionName"
+                        ]
                     },
                     {
                         "name": "fields",

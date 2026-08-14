@@ -151,6 +151,23 @@
                         ]
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-groupName`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, groupName.",
+                        "example": [
+                            "-groupName"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -1487,6 +1504,23 @@
                         ]
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-agentName`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, agentName, uid, os, devices, cmdPars, ignoreErrors, isActive, isTrusted, token, lastAct, lastTime, lastIp, userId, cpuOnly, clientSignature.",
+                        "example": [
+                            "-agentName"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -2760,6 +2794,23 @@
                         ]
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-taskId`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, taskId, agentId, benchmark.",
+                        "example": [
+                            "-taskId"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -3939,6 +3990,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-binaryType`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, binaryType, version, operatingSystems, filename, updateTrack, updateAvailable.",
+                        "example": [
+                            "-binaryType"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -4735,6 +4803,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: task",
                         "example": [
                             "task"
+                        ]
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-agentId`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, agentId, taskId, chunkId, time, error.",
+                        "example": [
+                            "-agentId"
                         ]
                     },
                     {
@@ -5601,6 +5686,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-agentId`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, agentId, statType, time, value.",
+                        "example": [
+                            "-agentId"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -6151,6 +6253,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: user",
                         "example": [
                             "user"
+                        ]
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-startValid`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, startValid, endValid, userId, isRevoked.",
+                        "example": [
+                            "-startValid"
                         ]
                     },
                     {
@@ -7271,6 +7390,23 @@
                         ]
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-taskId`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, taskId, skip, length, agentId, dispatchTime, solveTime, checkpoint, progress, state, cracked, speed.",
+                        "example": [
+                            "-taskId"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -7950,6 +8086,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: configSection",
                         "example": [
                             "configSection"
+                        ]
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-configSectionId`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, configSectionId, item, value.",
+                        "example": [
+                            "-configSectionId"
                         ]
                     },
                     {
@@ -8921,6 +9074,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-sectionName`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, sectionName.",
+                        "example": [
+                            "-sectionName"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -9284,6 +9454,23 @@
                         "example": [
                             "crackerBinaryType",
                             "tasks"
+                        ]
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-crackerBinaryTypeId`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, crackerBinaryTypeId, version, downloadUrl, binaryName.",
+                        "example": [
+                            "-crackerBinaryTypeId"
                         ]
                     },
                     {
@@ -10618,6 +10805,23 @@
                         ]
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-typeName`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, typeName, isChunkingAvailable.",
+                        "example": [
+                            "-typeName"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -11947,6 +12151,23 @@
                         ]
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-filename`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, filename, size, isSecret, fileType, accessGroupId, lineCount.",
+                        "example": [
+                            "-filename"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -13059,6 +13280,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: userMembers",
                         "example": [
                             "userMembers"
+                        ]
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-name`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, name, permissions.",
+                        "example": [
+                            "-name"
                         ]
                     },
                     {
@@ -14391,6 +14629,23 @@
                         ]
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-hashlistId`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, hashlistId, hash, salt, plaintext, timeCracked, chunkId, isCracked, crackPos.",
+                        "example": [
+                            "-hashlistId"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -15075,6 +15330,23 @@
                         "example": [
                             "accessGroup",
                             "hashType"
+                        ]
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-name`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, name, format, hashTypeId, hashCount, separator, cracked, isSecret, isHexSalt, isSalted, accessGroupId, notes, useBrain, brainFeatures, isArchived.",
+                        "example": [
+                            "-name"
                         ]
                     },
                     {
@@ -16404,6 +16676,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-description`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, description, isSalted, isSlowHash.",
+                        "example": [
+                            "-description"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -17205,6 +17494,23 @@
                         ]
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-healthCheckId`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, healthCheckId, agentId, status, cracked, numGpus, start, end, errors.",
+                        "example": [
+                            "-healthCheckId"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -17887,6 +18193,23 @@
                         "example": [
                             "crackerBinary",
                             "hashType"
+                        ]
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-time`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, time, status, checkType, hashtypeId, crackerBinaryId, expectedCracks, attackCmd.",
+                        "example": [
+                            "-time"
                         ]
                     },
                     {
@@ -19214,6 +19537,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-issuer`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, issuer, issuerId, level, message, time.",
+                        "example": [
+                            "-issuer"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -19575,6 +19915,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: user",
                         "example": [
                             "user"
+                        ]
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-action`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, action, objectId, notification, userId, receiver, isActive.",
+                        "example": [
+                            "-action"
                         ]
                     },
                     {
@@ -20687,6 +21044,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-name`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, name, url, binaryName, keyspaceCommand, skipCommand, limitCommand.",
+                        "example": [
+                            "-name"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -21483,6 +21857,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: pretaskFiles",
                         "example": [
                             "pretaskFiles"
+                        ]
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-taskName`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, taskName, attackCmd, chunkTime, statusTimer, color, isSmall, isCpuTask, useNewBench, priority, maxAgents, isMaskImport, crackerBinaryTypeId.",
+                        "example": [
+                            "-taskName"
                         ]
                     },
                     {
@@ -22883,6 +23274,23 @@
                         ]
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-agentId`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, agentId, taskId, speed, time.",
+                        "example": [
+                            "-agentId"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -23562,6 +23970,23 @@
                         "description": "Relationships to include in the response, comma seperated. Possible options: pretasks",
                         "example": [
                             "pretasks"
+                        ]
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-supertaskName`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, supertaskName.",
+                        "example": [
+                            "-supertaskName"
                         ]
                     },
                     {
@@ -24963,6 +25388,23 @@
                         "example": [
                             "crackerBinary",
                             "crackerBinaryType"
+                        ]
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-taskName`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, taskName, attackCmd, chunkTime, statusTimer, keyspace, keyspaceProgress, priority, maxAgents, color, isSmall, isCpuTask, useNewBench, skipKeyspace, crackerBinaryId, crackerBinaryTypeId, taskWrapperId, isArchived, notes, staticChunks, chunkSize, forcePipe, preprocessorId, preprocessorCommand.",
+                        "example": [
+                            "-taskName"
                         ]
                     },
                     {
@@ -26372,6 +26814,23 @@
                         ]
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-priority`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, priority, maxAgents, taskType, hashlistId, accessGroupId, taskWrapperName, isArchived, cracked.",
+                        "example": [
+                            "-priority"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -27590,6 +28049,23 @@
                         ]
                     },
                     {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-taskWrapperPriority`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, taskWrapperPriority, taskWrapperMaxAgents, taskType, hashlistId, accessGroupId, taskWrapperName, displayName, taskWrapperIsArchived, cracked, taskId, taskName, color, attackCmd, chunkTime, statusTimer, keyspace, keyspaceProgress, taskPriority, taskMaxAgents, isSmall, isCpuTask, taskIsArchived, preprocessorId, hashlistName, hashCount, hashlistCracked, hashTypeId, hashTypeDescription, groupName.",
+                        "example": [
+                            "-taskWrapperPriority"
+                        ]
+                    },
+                    {
                         "name": "fields",
                         "in": "query",
                         "style": "deepObject",
@@ -28515,6 +28991,23 @@
                         "example": [
                             "globalPermissionGroup",
                             "accessGroups"
+                        ]
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-name`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, name, email, isValid, isComputedPassword, lastLoginDate, registeredSince, sessionLifetime, globalPermissionGroupId, yubikey.",
+                        "example": [
+                            "-name"
                         ]
                     },
                     {
@@ -29839,6 +30332,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to sort by, comma separated, each optionally prefixed with `-` to sort descending, e.g. `sort=-voucher`. `id` addresses the primary key of the resource, and an attribute of an included resource can be addressed as `<relationship>.<attribute>`. The primary key is always appended as a tie-breaker, so that pagination over the result stays stable.\n\nAccepted keys: id, voucher, time.",
+                        "example": [
+                            "-voucher"
+                        ]
                     },
                     {
                         "name": "fields",
