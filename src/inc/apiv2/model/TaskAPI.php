@@ -26,6 +26,7 @@ use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\defines\DTaskStatus;
 use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;
 
@@ -163,7 +164,21 @@ class TaskAPI extends AbstractModelAPI {
       ]
     ];
   }
-  
+
+  public static function getAggregateFeatures(): array {
+    return [
+      'totalAssignedAgents' => self::aggregateFeature('int', 'totalAssignedAgents'),
+      'dispatched' => self::aggregateFeature('str', 'dispatched'),
+      'searched' => self::aggregateFeature('str', 'searched'),
+      'status' => self::aggregateFeature('int', 'status', ['choices' => DTaskStatus::choices()]),
+      'totalNumberOfChunks' => self::aggregateFeature('int', 'totalNumberOfChunks'),
+      'currentSpeed' => self::aggregateFeature('int', 'currentSpeed'),
+      'estimatedTime' => self::aggregateFeature('int', 'estimatedTime'),
+      'timeSpent' => self::aggregateFeature('int', 'timeSpent'),
+      'cprogress' => self::aggregateFeature('int', 'cprogress'),
+    ];
+  }
+
   /**
    * @param Task $object
    * @throws Exception

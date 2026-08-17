@@ -37904,6 +37904,9 @@
                                     },
                                     "isRevoked": {
                                         "type": "boolean"
+                                    },
+                                    "token": {
+                                        "type": "string"
                                     }
                                 }
                             },
@@ -38146,6 +38149,9 @@
                                     },
                                     "isRevoked": {
                                         "type": "boolean"
+                                    },
+                                    "token": {
+                                        "type": "string"
                                     }
                                 }
                             },
@@ -38439,6 +38445,9 @@
                                         },
                                         "isRevoked": {
                                             "type": "boolean"
+                                        },
+                                        "token": {
+                                            "type": "string"
                                         }
                                     }
                                 },
@@ -58364,6 +58373,9 @@
                                     },
                                     "crackerBinaryTypeId": {
                                         "type": "integer"
+                                    },
+                                    "auxiliaryKeyspace": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -58621,6 +58633,9 @@
                                         "type": "boolean"
                                     },
                                     "crackerBinaryTypeId": {
+                                        "type": "integer"
+                                    },
+                                    "auxiliaryKeyspace": {
                                         "type": "integer"
                                     }
                                 }
@@ -58930,6 +58945,9 @@
                                             "type": "boolean"
                                         },
                                         "crackerBinaryTypeId": {
+                                            "type": "integer"
+                                        },
+                                        "auxiliaryKeyspace": {
                                             "type": "integer"
                                         }
                                     }
@@ -61883,6 +61901,59 @@
                                     },
                                     "preprocessorCommand": {
                                         "type": "string"
+                                    },
+                                    "totalAssignedAgents": {
+                                        "type": "integer"
+                                    },
+                                    "dispatched": {
+                                        "type": "string"
+                                    },
+                                    "searched": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "init",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "running",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "idle",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 3,
+                                                "title": "completed",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 4,
+                                                "title": "skipped",
+                                                "type": "integer"
+                                            }
+                                        ]
+                                    },
+                                    "totalNumberOfChunks": {
+                                        "type": "integer"
+                                    },
+                                    "currentSpeed": {
+                                        "type": "integer"
+                                    },
+                                    "estimatedTime": {
+                                        "type": "integer"
+                                    },
+                                    "timeSpent": {
+                                        "type": "integer"
+                                    },
+                                    "cprogress": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -62790,6 +62861,59 @@
                                     },
                                     "preprocessorCommand": {
                                         "type": "string"
+                                    },
+                                    "totalAssignedAgents": {
+                                        "type": "integer"
+                                    },
+                                    "dispatched": {
+                                        "type": "string"
+                                    },
+                                    "searched": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "init",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "running",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "idle",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 3,
+                                                "title": "completed",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 4,
+                                                "title": "skipped",
+                                                "type": "integer"
+                                            }
+                                        ]
+                                    },
+                                    "totalNumberOfChunks": {
+                                        "type": "integer"
+                                    },
+                                    "currentSpeed": {
+                                        "type": "integer"
+                                    },
+                                    "estimatedTime": {
+                                        "type": "integer"
+                                    },
+                                    "timeSpent": {
+                                        "type": "integer"
+                                    },
+                                    "cprogress": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -63697,6 +63821,59 @@
                                     },
                                     "preprocessorCommand": {
                                         "type": "string"
+                                    },
+                                    "totalAssignedAgents": {
+                                        "type": "integer"
+                                    },
+                                    "dispatched": {
+                                        "type": "string"
+                                    },
+                                    "searched": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "init",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "running",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "idle",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 3,
+                                                "title": "completed",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 4,
+                                                "title": "skipped",
+                                                "type": "integer"
+                                            }
+                                        ]
+                                    },
+                                    "totalNumberOfChunks": {
+                                        "type": "integer"
+                                    },
+                                    "currentSpeed": {
+                                        "type": "integer"
+                                    },
+                                    "estimatedTime": {
+                                        "type": "integer"
+                                    },
+                                    "timeSpent": {
+                                        "type": "integer"
+                                    },
+                                    "cprogress": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -64655,6 +64832,59 @@
                                         },
                                         "preprocessorCommand": {
                                             "type": "string"
+                                        },
+                                        "totalAssignedAgents": {
+                                            "type": "integer"
+                                        },
+                                        "dispatched": {
+                                            "type": "string"
+                                        },
+                                        "searched": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "oneOf": [
+                                                {
+                                                    "const": 0,
+                                                    "title": "init",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "running",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 2,
+                                                    "title": "idle",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 3,
+                                                    "title": "completed",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 4,
+                                                    "title": "skipped",
+                                                    "type": "integer"
+                                                }
+                                            ]
+                                        },
+                                        "totalNumberOfChunks": {
+                                            "type": "integer"
+                                        },
+                                        "currentSpeed": {
+                                            "type": "integer"
+                                        },
+                                        "estimatedTime": {
+                                            "type": "integer"
+                                        },
+                                        "timeSpent": {
+                                            "type": "integer"
+                                        },
+                                        "cprogress": {
+                                            "type": "integer"
                                         }
                                     }
                                 },
