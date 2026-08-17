@@ -37,4 +37,4 @@ jobs:
       - name: Lint OpenAPI schema with Redocly
         run: redocly lint openapi.json
       - name: Lint OpenAPI schema with Spectral
-        run: spectral lint openapi.json --ruleset .github/openapi/spectral-jsonapi.yml -D
+        run: spectral lint openapi.json --ruleset .github/openapi/spectral-hashtopolis.yml -D
