@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\openapi;
 
+use DI\Container;
+use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\common\ApiRegistry;
 use PHPUnit\Framework\TestCase;
 
@@ -253,6 +255,46 @@ final class FullSpecTest extends TestCase {
       '#/components/schemas/GlobalPermissionGroupSingleResponse',
       self::$sanitized['paths']['/api/v2/helper/getUserPermission']['get']['responses']['200']['content']['application/vnd.api+json']['schema']['$ref']
     );
+  }
+
+  /**
+   * Every option offered by getAggregateFieldsets() has to be declared in
+   * getAggregateFeatures(), or a client asking for the aggregate receives an
+   * attribute the document does not describe. Aggregates are only produced on
+   * request, so they belong in "properties" but never in "required".
+   */
+  public function testAggregateFieldsetsAreDocumented(): void {
+    $container = new Container();
+    $checked = 0;
+
+    foreach (ApiRegistry::MODEL_API_CLASSES as $apiClass) {
+      $fieldsets = (new $apiClass($container))->getAggregateFieldsets();
+      if (count($fieldsets) === 0) {
+        continue;
+      }
+      $declared = $apiClass::getAggregateFeatures();
+      $nameParts = explode('\\', $apiClass);
+      $name = substr(end($nameParts), 0, -3); // Remove "API" suffix
+
+      $this->assertArrayHasKey($name . 'Response', self::$sanitized['components']['schemas']);
+      $attributes = self::$sanitized['components']['schemas'][$name . 'Response']['properties']['data']['properties']['attributes'];
+      /* An attributes override offers a choice of shapes, any of which can carry an aggregate */
+      $branches = $attributes['oneOf'] ?? [$attributes];
+
+      foreach ($fieldsets as $fieldset) {
+        foreach (array_keys($fieldset) as $field) {
+          $this->assertArrayHasKey($field, $declared, "$apiClass offers aggregate '$field' but does not declare it in getAggregateFeatures()");
+          $this->assertSame($field, $declared[$field]['alias'], "Aggregate '$field' of $apiClass is declared under a different alias");
+          foreach ($branches as $branch) {
+            $this->assertArrayHasKey($field, $branch['properties'], "Aggregate '$field' missing from {$name}Response");
+            $this->assertNotContains($field, $branch['required'] ?? [], "Aggregate '$field' is only returned on request, so it must not be required in {$name}Response");
+          }
+          $checked++;
+        }
+      }
+    }
+
+    $this->assertGreaterThanOrEqual(25, $checked, 'Expected the registered APIs to offer aggregates');
   }
 
   public function testNoSchemaIsNamedAfterAMissingRelation(): void {

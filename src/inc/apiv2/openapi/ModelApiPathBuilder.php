@@ -60,7 +60,7 @@ class ModelApiPathBuilder {
       $allResponseProperties = array_merge($responseAttributeProperties, $aggregateAttributeProperties);
       $attributesOverride = $class->getOpenAPIAttributesSchemaOverride();
       if ($attributesOverride !== null) {
-        $attributesSchema = $attributesOverride;
+        $attributesSchema = $this->addAggregateProperties($attributesOverride, $aggregateAttributeProperties);
       } else {
         $attributesSchema = [
           "type" => "object",
@@ -533,6 +533,35 @@ class ModelApiPathBuilder {
       }
     }
     $paths[$path][$method]["parameters"] = $parameters;
+  }
+
+  /**
+   * Add the aggregate properties to an attributes schema supplied by
+   * getOpenAPIAttributesSchemaOverride(). The override replaces the
+   * feature-derived attributes, but aggregateData() still appends its fields to
+   * whatever the override describes, so they have to be part of it.
+   *
+   * An override that offers a choice of shapes carries the aggregates in every
+   * branch, since any of them can be returned with an aggregate requested.
+   *
+   * @param array<string, mixed> $schema
+   * @param array<string, mixed> $aggregateProperties
+   * @return array<string, mixed>
+   */
+  private function addAggregateProperties(array $schema, array $aggregateProperties): array {
+    if (count($aggregateProperties) === 0) {
+      return $schema;
+    }
+    if (array_key_exists("oneOf", $schema)) {
+      $schema["oneOf"] = array_map(
+        fn(array $branch) => $this->addAggregateProperties($branch, $aggregateProperties),
+        $schema["oneOf"]
+      );
+      return $schema;
+    }
+    /* Aggregates are only produced on request, so they are never required */
+    $schema["properties"] = array_merge($schema["properties"] ?? [], $aggregateProperties);
+    return $schema;
   }
 
   /**

@@ -131,6 +131,10 @@ abstract class AbstractBaseAPI {
    * Replace the OpenAPI "attributes" schema for the GET response. Return null
    * (default) to let the generator derive the schema from features. Return a
    * full JSON-schema object (e.g. ["oneOf" => [...]]) to substitute it.
+   *
+   * This replaces the feature-derived attributes only. The properties declared
+   * by getAggregateFeatures() are merged into the result either way, so an
+   * override cannot silently drop them.
    */
   public function getOpenAPIAttributesSchemaOverride(): ?array {
     return null;
@@ -234,6 +238,12 @@ abstract class AbstractBaseAPI {
   /**
    * Declare computed properties returned by aggregateData() for OpenAPI schema generation.
    * Override in subclasses that implement aggregateData().
+   *
+   * Every field offered by getAggregateFieldsets() should be declared here, so
+   * that a client asking for `aggregate[<resource>]=<field>` finds the field in
+   * the response schema. Aggregates are only produced on request, so they end
+   * up in the "properties" of the attributes schema but never in its
+   * "required" list.
    */
   public static function getAggregateFeatures(): array {
     return [];
@@ -268,7 +278,7 @@ abstract class AbstractBaseAPI {
       'dba_mapping' => false,
     ], $overrides);
   }
-
+  
   /**
    * Take all the dba features and converts them to a list.
    * It uses the data from the generator and replaces the keys with the aliases.

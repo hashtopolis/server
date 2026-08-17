@@ -91,7 +91,24 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
       ]
     ];
   }
-  
+
+  /**
+   * Everything but the agent count is reported for normal tasks only, and a
+   * supertask wrapper simply omits those keys (see aggregateData()).
+   */
+  public static function getAggregateFeatures(): array {
+    return [
+      'totalAssignedAgents' => self::aggregateFeature('int', 'totalAssignedAgents'),
+      'dispatched' => self::aggregateFeature('str', 'dispatched'),
+      'searched' => self::aggregateFeature('str', 'searched'),
+      'status' => self::aggregateFeature('int', 'status', ['choices' => DTaskStatus::choices()]),
+      'currentSpeed' => self::aggregateFeature('int', 'currentSpeed'),
+      'estimatedTime' => self::aggregateFeature('int', 'estimatedTime'),
+      'cprogress' => self::aggregateFeature('int', 'cprogress'),
+      'timeSpent' => self::aggregateFeature('int', 'timeSpent'),
+    ];
+  }
+
   /**
    * @param TaskWrapperDisplay $object
    * @throws Exception
