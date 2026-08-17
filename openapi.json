@@ -70098,100 +70098,132 @@
     },
     "tags": [
         {
-            "name": "AccessGroups"
+            "name": "AccessGroups",
+            "description": "Reading and writing the resources served under `/api/v2/ui/accessgroups`."
         },
         {
-            "name": "AgentAssignments"
+            "name": "AgentAssignments",
+            "description": "Reading and writing the resources served under `/api/v2/ui/agentassignments`."
         },
         {
-            "name": "AgentBinarys"
+            "name": "AgentBinarys",
+            "description": "Reading and writing the resources served under `/api/v2/ui/agentbinaries`."
         },
         {
-            "name": "AgentErrors"
+            "name": "AgentErrors",
+            "description": "Reading and writing the resources served under `/api/v2/ui/agenterrors`."
         },
         {
-            "name": "AgentStats"
+            "name": "AgentStats",
+            "description": "Reading and writing the resources served under `/api/v2/ui/agentstats`."
         },
         {
-            "name": "Agents"
+            "name": "Agents",
+            "description": "Reading and writing the resources served under `/api/v2/ui/agents`."
         },
         {
-            "name": "ApiTokens"
+            "name": "ApiTokens",
+            "description": "Reading and writing the resources served under `/api/v2/ui/apiTokens`."
         },
         {
-            "name": "Chunks"
+            "name": "Chunks",
+            "description": "Reading and writing the resources served under `/api/v2/ui/chunks`."
         },
         {
-            "name": "ConfigSections"
+            "name": "ConfigSections",
+            "description": "Reading the resources served under `/api/v2/ui/configsections`."
         },
         {
-            "name": "Configs"
+            "name": "Configs",
+            "description": "Reading and writing the resources served under `/api/v2/ui/configs`."
         },
         {
-            "name": "CrackerBinaryTypes"
+            "name": "CrackerBinaryTypes",
+            "description": "Reading and writing the resources served under `/api/v2/ui/crackertypes`."
         },
         {
-            "name": "CrackerBinarys"
+            "name": "CrackerBinarys",
+            "description": "Reading and writing the resources served under `/api/v2/ui/crackers`."
         },
         {
-            "name": "Files"
+            "name": "Files",
+            "description": "Reading and writing the resources served under `/api/v2/ui/files`."
         },
         {
-            "name": "GlobalPermissionGroups"
+            "name": "GlobalPermissionGroups",
+            "description": "Reading and writing the resources served under `/api/v2/ui/globalpermissiongroups`."
         },
         {
-            "name": "HashTypes"
+            "name": "HashTypes",
+            "description": "Reading and writing the resources served under `/api/v2/ui/hashtypes`."
         },
         {
-            "name": "Hashlists"
+            "name": "Hashlists",
+            "description": "Reading and writing the resources served under `/api/v2/ui/hashlists`."
         },
         {
-            "name": "Hashs"
+            "name": "Hashs",
+            "description": "Reading and writing the resources served under `/api/v2/ui/hashes`."
         },
         {
-            "name": "HealthCheckAgents"
+            "name": "HealthCheckAgents",
+            "description": "Reading and writing the resources served under `/api/v2/ui/healthcheckagents`."
         },
         {
-            "name": "HealthChecks"
+            "name": "HealthChecks",
+            "description": "Reading and writing the resources served under `/api/v2/ui/healthchecks`."
         },
         {
-            "name": "Helpers"
+            "name": "Helpers",
+            "description": "Helper endpoints under `/api/v2/helper/`: actions and file transfers that do not map onto a resource collection."
         },
         {
-            "name": "LogEntrys"
+            "name": "LogEntrys",
+            "description": "Reading the resources served under `/api/v2/ui/logentries`."
         },
         {
-            "name": "Login"
+            "name": "Login",
+            "description": "Exchanging basic auth credentials for the JWT that every other endpoint requires."
         },
         {
-            "name": "NotificationSettings"
+            "name": "NotificationSettings",
+            "description": "Reading and writing the resources served under `/api/v2/ui/notifications`."
         },
         {
-            "name": "PreTasks"
+            "name": "PreTasks",
+            "description": "Reading and writing the resources served under `/api/v2/ui/pretasks`."
         },
         {
-            "name": "Preprocessors"
+            "name": "Preprocessors",
+            "description": "Reading and writing the resources served under `/api/v2/ui/preprocessors`."
         },
         {
-            "name": "Speeds"
+            "name": "Speeds",
+            "description": "Reading and writing the resources served under `/api/v2/ui/speeds`."
         },
         {
-            "name": "Supertasks"
+            "name": "Supertasks",
+            "description": "Reading and writing the resources served under `/api/v2/ui/supertasks`."
         },
         {
-            "name": "TaskWrapperDisplays"
+            "name": "TaskWrapperDisplays",
+            "description": "Reading and writing the resources served under `/api/v2/ui/taskwrapperdisplays`."
         },
         {
-            "name": "TaskWrappers"
+            "name": "TaskWrappers",
+            "description": "Reading and writing the resources served under `/api/v2/ui/taskwrappers`."
         },
         {
-            "name": "Tasks"
+            "name": "Tasks",
+            "description": "Reading and writing the resources served under `/api/v2/ui/tasks`."
         },
         {
-            "name": "Users"
+            "name": "Users",
+            "description": "Reading and writing the resources served under `/api/v2/ui/users`."
         },
         {
-            "name": "Vouchers"
+            "name": "Vouchers",
+            "description": "Reading and writing the resources served under `/api/v2/ui/vouchers`."
         }
     ]
 }
