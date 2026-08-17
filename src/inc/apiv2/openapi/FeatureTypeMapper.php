@@ -64,27 +64,62 @@ class FeatureTypeMapper {
   }
 
   /**
-   * Turns a map of sample values (the getResponse() of a helper) into the
-   * schema properties describing it.
+   * Turns a sample value (the getResponse() of a helper) into the schema
+   * describing it. Lists and maps are walked, so a nested sample keeps its
+   * structure instead of collapsing into an untyped object carrying the whole
+   * sample as a value.
    */
-  public function mapToProperties($map): array {
-    return array_map(function ($value) {
-      if (is_int($value)) {
-        $type = "integer";
-      } elseif (is_float($value)) {
-        $type = "number";
-      } elseif (is_bool($value)) {
-        $type = "boolean";
-      } elseif (is_array($value) || is_object($value)) {
-        $type = "object";
-      } else {
-        $type = "string";
+  public function mapToSchema(mixed $value): array {
+    if (is_null($value)) {
+      /* The sample says nothing about the type beyond it being nullable */
+      return ["type" => ["string", "null"]];
+    }
+    if (is_bool($value)) {
+      return ["type" => "boolean", "example" => $value];
+    }
+    if (is_int($value)) {
+      return ["type" => "integer", "example" => $value];
+    }
+    if (is_float($value)) {
+      return ["type" => "number", "example" => $value];
+    }
+    if (is_string($value)) {
+      return ["type" => "string", "example" => $value];
+    }
+    if (is_object($value)) {
+      $value = get_object_vars($value);
+    }
+    if (!is_array($value)) {
+      return ["type" => "string"];
+    }
+    if (count($value) === 0) {
+      return ["type" => "array"];
+    }
+
+    if (array_is_list($value)) {
+      /**
+       * The entries of a sample list need not all carry the same keys, so the
+       * item schema merges the properties of all of them to describe the most
+       * complete entry.
+       */
+      $items = $this->mapToSchema($value[0]);
+      $mergedProperties = [];
+      foreach ($value as $entry) {
+        $entrySchema = $this->mapToSchema($entry);
+        if (isset($entrySchema["properties"])) {
+          $mergedProperties = array_merge($mergedProperties, $entrySchema["properties"]);
+        }
       }
-      return [
-        "type" => $type,
-        "default" => $value,
-      ];
-    }, $map);
+      if (count($mergedProperties) > 0) {
+        $items["properties"] = $mergedProperties;
+      }
+      return ["type" => "array", "items" => $items];
+    }
+
+    return [
+      "type" => "object",
+      "properties" => array_map(fn($entry) => $this->mapToSchema($entry), $value)
+    ];
   }
 
   /**

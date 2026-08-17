@@ -117,13 +117,52 @@ final class FeatureTypeMapperTest extends TestCase {
     );
   }
 
-  public function testMapToPropertiesInfersTypesFromSampleValues(): void {
+  public function testMapToSchemaInfersTypesFromSampleValues(): void {
     $this->assertSame([
-      'file' => ['type' => 'string', 'default' => 'abc.txt'],
-      'size' => ['type' => 'integer', 'default' => 123],
-      'ratio' => ['type' => 'number', 'default' => 0.5],
-      'ok' => ['type' => 'boolean', 'default' => true],
-      'meta' => ['type' => 'object', 'default' => []],
-    ], $this->mapper->mapToProperties(['file' => 'abc.txt', 'size' => 123, 'ratio' => 0.5, 'ok' => true, 'meta' => []]));
+      'type' => 'object',
+      'properties' => [
+        'file' => ['type' => 'string', 'example' => 'abc.txt'],
+        'size' => ['type' => 'integer', 'example' => 123],
+        'ratio' => ['type' => 'number', 'example' => 0.5],
+        'ok' => ['type' => 'boolean', 'example' => true],
+        'absent' => ['type' => ['string', 'null']],
+        'meta' => ['type' => 'array'],
+      ],
+    ], $this->mapper->mapToSchema([
+      'file' => 'abc.txt', 'size' => 123, 'ratio' => 0.5, 'ok' => true, 'absent' => null, 'meta' => []
+    ]));
+  }
+
+  /** A nested sample keeps its structure instead of collapsing to type: object. */
+  public function testMapToSchemaWalksNestedMaps(): void {
+    $this->assertSame([
+      'type' => 'object',
+      'properties' => [
+        'outer' => [
+          'type' => 'object',
+          'properties' => [
+            'inner' => ['type' => 'integer', 'example' => 7],
+          ],
+        ],
+      ],
+    ], $this->mapper->mapToSchema(['outer' => ['inner' => 7]]));
+  }
+
+  /** A sample list becomes an array schema, and the item schema merges the keys of all entries. */
+  public function testMapToSchemaMergesThePropertiesOfListEntries(): void {
+    $this->assertSame([
+      'type' => 'array',
+      'items' => [
+        'type' => 'object',
+        'properties' => [
+          'found' => ['type' => 'boolean', 'example' => true],
+          'query' => ['type' => 'string', 'example' => '54321'],
+          'matches' => ['type' => 'array'],
+        ],
+      ],
+    ], $this->mapper->mapToSchema([
+      ['found' => false, 'query' => '12345678'],
+      ['found' => true, 'query' => '54321', 'matches' => []],
+    ]));
   }
 }

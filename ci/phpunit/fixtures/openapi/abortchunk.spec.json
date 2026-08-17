@@ -364,7 +364,7 @@
                         "properties": {
                             "Abort": {
                                 "type": "string",
-                                "default": "Success"
+                                "example": "Success"
                             }
                         }
                     },

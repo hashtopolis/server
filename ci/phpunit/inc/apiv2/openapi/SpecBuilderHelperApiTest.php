@@ -38,8 +38,9 @@ final class SpecBuilderHelperApiTest extends TestCase {
     // getMetaResponse puts the sample map under meta and leaves data empty
     $responseSchema = $spec['components']['schemas'][AbortChunkHelperAPI::class . 'Response'];
     $this->assertSame(['jsonapi', 'meta', 'data'], $responseSchema['required']);
+    $this->assertSame('object', $responseSchema['properties']['meta']['type']);
     $this->assertSame(
-      ['Abort' => ['type' => 'string', 'default' => 'Success']],
+      ['Abort' => ['type' => 'string', 'example' => 'Success']],
       $responseSchema['properties']['meta']['properties']
     );
     $this->assertSame(0, $responseSchema['properties']['data']['maxItems']);

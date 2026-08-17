@@ -260,21 +260,19 @@ class JsonApiFragments {
   }
 
   /**
-   * The document a helper answers with when its action returns a map instead of
-   * an object: AbstractBaseAPI::getMetaResponse puts that map under "meta" and
-   * leaves data empty.
+   * The document a helper answers with when its action returns an array instead
+   * of an object: AbstractBaseAPI::getMetaResponse puts that array under "meta"
+   * verbatim and leaves data empty. The schema of the array is taken as given,
+   * because a helper may answer with a map as well as with a list.
    */
-  public function buildMetaResponse(array $metaProperties): array {
+  public function buildMetaResponse(array $metaSchema): array {
     return [
       "type" => "object",
       "required" => ["jsonapi", "meta", "data"],
       "properties" => array_merge(
         $this->makeJsonApiHeader(),
         [
-          "meta" => [
-            "type" => "object",
-            "properties" => $metaProperties
-          ],
+          "meta" => $metaSchema,
           "data" => [
             "type" => "array",
             "items" => [

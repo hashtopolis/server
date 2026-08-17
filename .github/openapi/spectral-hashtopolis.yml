@@ -52,6 +52,24 @@ rules:
   # comes. Restored once a middleware answers it for every route.
   415-response-code: off
 
+  # SearchHashesHelperAPI answers a bare list of per-query results, which
+  # getMetaResponse puts under the top level "meta", so that one document has an
+  # array where JSON:API requires an object. Every other path is still checked.
+  # Restore the upstream given once the helper answers the list under a member.
+  meta-object:
+    description: "`meta` property MUST be of type `object`. /api/v2/helper/searchHashes is excluded:
+      it answers a bare list of per-query results."
+    documentationUrl: "https://jsonapi.org/format/1.0/#document-meta"
+    message: "'meta' property MUST be of type object"
+    severity: error
+    given: "$.paths[?(!@property.match(/searchHashes/))]..content['application/vnd.api+json'].schema..properties[meta]"
+    then:
+      field: type
+      function: enumeration
+      functionOptions:
+        values:
+          - object
+
   # AbstractBaseAPI::obj2Resource answers the primary key of the model as the
   # integer it is in the database, so the spec describes an id as an integer and
   # the "id" half of the rule cannot hold. The "type" half is kept by dropping

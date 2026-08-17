@@ -30072,7 +30072,7 @@
         },
         "/api/v2/helper/importFile": {
             "post": {
-                "description": "register is overridden so no actionPost needed",
+                "description": "File import API<br />   Based on TUS protocol: https://tus.io/protocols/resumable-upload.html<br /> 1) Client 'Announce' file at ./api/v2/helper/importFile'<br />     - Ensure Upload-Metadata: filename= base64-encoded-filename is set<br /> 2) Server checks filename does not exists yet:<br />    - Checked not part of ongoing transfer (<uuid>.part / <uuid>.metatadata in import directory)<br />    - Checked not uploaded yet (import/<filename>)<br />    If all conditions are met, upload is created and user informed about UUID to push to.<br /> 3) Client pushes parts to ./api/v2/ui/files/<uuid><br />    - Checked if upload timeout is not expired<br /> 4) Server check if upload is completed<br />    - Checked if not present yet (import/<filename>)<br />    - Marks file and stores as import/<filename>",
                 "responses": {
                     "400": {
                         "description": "Invalid request",
@@ -30114,16 +30114,6 @@
                             }
                         }
                     },
-                    "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/vnd.api+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ImportFileHelperAPIResponse"
-                                }
-                            }
-                        }
-                    },
                     "201": {
                         "description": "Upload created",
                         "headers": {
@@ -30141,17 +30131,6 @@
                                 "schema": {
                                     "type": "string"
                                 }
-                            }
-                        }
-                    }
-                },
-                "requestBody": {
-                    "description": "Import file has no POST parameters",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ImportFileHelperAPI"
                             }
                         }
                     }
@@ -30243,14 +30222,7 @@
                         }
                     },
                     "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/vnd.api+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ImportFileHelperAPIResponse"
-                                }
-                            }
-                        }
+                        "description": "successful operation"
                     }
                 },
                 "parameters": [],
@@ -30413,16 +30385,6 @@
                             }
                         }
                     },
-                    "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/vnd.api+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ImportFileHelperAPIResponse"
-                                }
-                            }
-                        }
-                    },
                     "204": {
                         "description": "Chunk accepted",
                         "headers": {
@@ -30542,14 +30504,7 @@
                         }
                     },
                     "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/vnd.api+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ImportFileHelperAPIResponse"
-                                }
-                            }
-                        }
+                        "description": "successful operation"
                     }
                 },
                 "tags": [
@@ -30785,17 +30740,6 @@
                         }
                     }
                 },
-                "requestBody": {
-                    "description": "",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RebuildChunkCacheHelperAPI"
-                            }
-                        }
-                    }
-                },
                 "tags": [
                     "Helpers"
                 ],
@@ -30937,17 +30881,6 @@
                                 "schema": {
                                     "$ref": "#/components/schemas/RescanGlobalFilesHelperAPIResponse"
                                 }
-                            }
-                        }
-                    }
-                },
-                "requestBody": {
-                    "description": "",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RescanGlobalFilesHelperAPI"
                             }
                         }
                     }
@@ -74815,7 +74748,7 @@
                         "properties": {
                             "Abort": {
                                 "type": "string",
-                                "default": "Success"
+                                "example": "Success"
                             }
                         }
                     },
@@ -74874,7 +74807,7 @@
                         "properties": {
                             "Assign": {
                                 "type": "string",
-                                "default": "Success"
+                                "example": "Success"
                             }
                         }
                     },
@@ -74974,7 +74907,7 @@
                         "properties": {
                             "Change password": {
                                 "type": "string",
-                                "default": "Password succesfully updated!"
+                                "example": "Password succesfully updated!"
                             }
                         }
                     },
@@ -75094,87 +75027,31 @@
                         "properties": {
                             "totalLines": {
                                 "type": "integer",
-                                "default": 100
+                                "example": 100
                             },
                             "newCracked": {
                                 "type": "integer",
-                                "default": 5
+                                "example": 5
                             },
                             "alreadyCracked": {
                                 "type": "integer",
-                                "default": 2
+                                "example": 2
                             },
                             "invalid": {
                                 "type": "integer",
-                                "default": 1
+                                "example": 1
                             },
                             "notFound": {
                                 "type": "integer",
-                                "default": 1
+                                "example": 1
                             },
                             "processTime": {
                                 "type": "integer",
-                                "default": 60
+                                "example": 60
                             },
                             "tooLongPlaintexts": {
                                 "type": "integer",
-                                "default": 4
-                            }
-                        }
-                    },
-                    "data": {
-                        "type": "array",
-                        "items": {
-                            "type": "object"
-                        },
-                        "maxItems": 0,
-                        "description": "Always empty: a helper answers with meta only."
-                    }
-                }
-            },
-            "ImportFileHelperAPI": {
-                "type": "object",
-                "properties": {}
-            },
-            "ImportFileHelperAPIResponse": {
-                "type": "object",
-                "required": [
-                    "jsonapi",
-                    "meta",
-                    "data"
-                ],
-                "properties": {
-                    "jsonapi": {
-                        "type": "object",
-                        "required": [
-                            "version"
-                        ],
-                        "properties": {
-                            "version": {
-                                "type": "string",
-                                "default": "1.1"
-                            },
-                            "ext": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "default": [
-                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
-                                ]
-                            }
-                        }
-                    },
-                    "meta": {
-                        "type": "object",
-                        "properties": {
-                            "file": {
-                                "type": "string",
-                                "default": "abc.txt"
-                            },
-                            "size": {
-                                "type": "integer",
-                                "default": 123
+                                "example": 4
                             }
                         }
                     },
@@ -75259,7 +75136,7 @@
                         "properties": {
                             "Purge": {
                                 "type": "string",
-                                "default": "Success"
+                                "example": "Success"
                             }
                         }
                     },
@@ -75272,10 +75149,6 @@
                         "description": "Always empty: a helper answers with meta only."
                     }
                 }
-            },
-            "RebuildChunkCacheHelperAPI": {
-                "type": "object",
-                "properties": {}
             },
             "RebuildChunkCacheHelperAPIResponse": {
                 "type": "object",
@@ -75311,7 +75184,7 @@
                         "properties": {
                             "Rebuild": {
                                 "type": "string",
-                                "default": "Success"
+                                "example": "Success"
                             }
                         }
                     },
@@ -75332,10 +75205,6 @@
                         "type": "integer"
                     }
                 }
-            },
-            "RescanGlobalFilesHelperAPI": {
-                "type": "object",
-                "properties": {}
             },
             "RescanGlobalFilesHelperAPIResponse": {
                 "type": "object",
@@ -75371,7 +75240,7 @@
                         "properties": {
                             "Rescan": {
                                 "type": "string",
-                                "default": "Success"
+                                "example": "Success"
                             }
                         }
                     },
@@ -75427,7 +75296,7 @@
                         "properties": {
                             "Reset": {
                                 "type": "string",
-                                "default": "Success"
+                                "example": "Success"
                             }
                         }
                     },
@@ -75486,7 +75355,7 @@
                         "properties": {
                             "Reset": {
                                 "type": "string",
-                                "default": "Success"
+                                "example": "Success"
                             }
                         }
                     },
@@ -75544,84 +75413,122 @@
                         }
                     },
                     "meta": {
-                        "type": "object",
-                        "properties": {
-                            "0": {
-                                "type": "object",
-                                "default": {
-                                    "found": false,
-                                    "query": "12345678"
-                                }
-                            },
-                            "1": {
-                                "type": "object",
-                                "default": {
-                                    "found": true,
-                                    "query": "54321",
-                                    "matches": [
-                                        {
-                                            "type": "hash",
-                                            "id": 552,
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "found": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "query": {
+                                    "type": "string",
+                                    "example": "54321"
+                                },
+                                "matches": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "example": "hash"
+                                            },
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
                                             "attributes": {
-                                                "hashlistId": 5,
-                                                "hash": "7682543218768",
-                                                "salt": "",
-                                                "plaintext": "",
-                                                "timeCracked": 0,
-                                                "chunkId": null,
-                                                "isCracked": false,
-                                                "crackPos": 0
-                                            },
-                                            "links": {
-                                                "self": "/api/v2/ui/hashes/552"
-                                            },
-                                            "relationships": {
-                                                "chunk": {
-                                                    "links": {
-                                                        "self": "/api/v2/ui/hashes/552/relationships/chunk",
-                                                        "related": "/api/v2/ui/hashes/552/chunk"
-                                                    }
-                                                },
-                                                "hashlist": {
-                                                    "links": {
-                                                        "self": "/api/v2/ui/hashes/552/relationships/hashlist",
-                                                        "related": "/api/v2/ui/hashes/552/hashlist"
+                                                "type": "object",
+                                                "properties": {
+                                                    "hashlistId": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "hash": {
+                                                        "type": "string",
+                                                        "example": "54321768671"
+                                                    },
+                                                    "salt": {
+                                                        "type": "string",
+                                                        "example": ""
+                                                    },
+                                                    "plaintext": {
+                                                        "type": "string",
+                                                        "example": ""
+                                                    },
+                                                    "timeCracked": {
+                                                        "type": "integer",
+                                                        "example": 0
+                                                    },
+                                                    "chunkId": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "isCracked": {
+                                                        "type": "boolean",
+                                                        "example": false
+                                                    },
+                                                    "crackPos": {
+                                                        "type": "integer",
+                                                        "example": 0
                                                     }
                                                 }
-                                            }
-                                        },
-                                        {
-                                            "type": "hash",
-                                            "id": 1,
-                                            "attributes": {
-                                                "hashlistId": 5,
-                                                "hash": "54321768671",
-                                                "salt": "",
-                                                "plaintext": "",
-                                                "timeCracked": 0,
-                                                "chunkId": null,
-                                                "isCracked": false,
-                                                "crackPos": 0
                                             },
                                             "links": {
-                                                "self": "/api/v2/ui/hashes/1"
+                                                "type": "object",
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "example": "/api/v2/ui/hashes/1"
+                                                    }
+                                                }
                                             },
                                             "relationships": {
-                                                "chunk": {
-                                                    "links": {
-                                                        "self": "/api/v2/ui/hashes/1/relationships/chunk",
-                                                        "related": "/api/v2/ui/hashes/1/chunk"
-                                                    }
-                                                },
-                                                "hashlist": {
-                                                    "links": {
-                                                        "self": "/api/v2/ui/hashes/1/relationships/hashlist",
-                                                        "related": "/api/v2/ui/hashes/1/hashlist"
+                                                "type": "object",
+                                                "properties": {
+                                                    "chunk": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "links": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "self": {
+                                                                        "type": "string",
+                                                                        "example": "/api/v2/ui/hashes/1/relationships/chunk"
+                                                                    },
+                                                                    "related": {
+                                                                        "type": "string",
+                                                                        "example": "/api/v2/ui/hashes/1/chunk"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "hashlist": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "links": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "self": {
+                                                                        "type": "string",
+                                                                        "example": "/api/v2/ui/hashes/1/relationships/hashlist"
+                                                                    },
+                                                                    "related": {
+                                                                        "type": "string",
+                                                                        "example": "/api/v2/ui/hashes/1/hashlist"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
-                                    ]
+                                    }
                                 }
                             }
                         }
@@ -75681,7 +75588,7 @@
                         "properties": {
                             "Set password": {
                                 "type": "string",
-                                "default": "Success"
+                                "example": "Success"
                             }
                         }
                     },
@@ -75737,7 +75644,7 @@
                         "properties": {
                             "Unassign": {
                                 "type": "string",
-                                "default": "Success"
+                                "example": "Success"
                             }
                         }
                     },

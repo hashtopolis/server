@@ -23,17 +23,28 @@ class HelperApiPathBuilder {
     $apiMethod = $target->methodName;
     $class = $api;
 
+    /**
+     * The component keys are built from the fully qualified name, which
+     * SpecSanitizer shortens again; the class itself is identified by its short
+     * name, as that is how the helpers that need special treatment are known.
+     */
     $name = $class::class;
-    $apiMethod = ($apiMethod == "processPost" && $name != "ImportFileHelperAPI") ? "actionPost" : $apiMethod;
+    $shortName = substr($name, strrpos($name, '\\') + 1);
+
+    $apiMethod = ($apiMethod == "processPost" && $shortName != "ImportFileHelperAPI") ? "actionPost" : $apiMethod;
     $reflectionApiMethod = new ReflectionMethod($name, $apiMethod);
     $paths[$path][$method]["description"] = $this->parsePhpDoc($reflectionApiMethod->getDocComment());
     $parameters = $class->getCreateValidFeatures();
     $properties = $this->typeMapper->makeProperties($parameters);
-    $components[$name] =
-      [
-        "type" => "object",
-        "properties" => $properties,
-      ];
+    /* A helper without form fields takes no body, so it needs no schema for one */
+    $hasProperties = count($properties) > 0;
+    if ($hasProperties) {
+      $components[$name] =
+        [
+          "type" => "object",
+          "properties" => $properties,
+        ];
+    }
     /**
      * Helpers run behind the same authentication and permission checks as the
      * model routes and resolve the objects they act on, so they answer the same
@@ -42,7 +53,7 @@ class HelperApiPathBuilder {
     $paths[$path][$method]["responses"] = $this->jsonApiFragments->commonErrorResponses();
     $paths[$path][$method]["responses"]["404"] = $this->jsonApiFragments->problemResponse("Not Found");
 
-    if ($method == "post") {
+    if ($method == "post" && $hasProperties) {
       $reflectionMethodFormFields = new ReflectionMethod($name, "getFormFields");
       $bodyDescription = $this->parsePhpDoc($reflectionMethodFormFields->getDocComment());
       /**
@@ -64,20 +75,25 @@ class HelperApiPathBuilder {
     elseif ($method == "get") {
       $paths[$path][$method]["parameters"] = $class->getParamsSwagger();
     }
+    /**
+     * The TUS routes answer with headers only, whatever their getResponse()
+     * claims, so their success responses are the hand-written ones of
+     * StaticFragments rather than a generated meta document.
+     */
+    if ($shortName == "ImportFileHelperAPI") {
+      return;
+    }
+
     $request_response = $class->getResponse();
     $ref = null;
     if (is_array($request_response)) {
       $components[$name . "Response"] = $this->jsonApiFragments->buildMetaResponse(
-        $this->typeMapper->mapToProperties($request_response)
+        $this->typeMapper->mapToSchema($request_response)
       );
       $ref = "#/components/schemas/" . $name . "Response";
     }
     else if (is_string($request_response)) {
       $ref = "#/components/schemas/" . $request_response . "SingleResponse";
-    }
-    else if ($name == "ImportFileHelperAPI") {
-      //ImportFileHelperAPI is hardcoded, because its different than other helpers.
-      return;
     }
     if (isset($ref)) {
       $paths[$path][$method]["responses"]["200"] = $this->jsonApiFragments->jsonApiResponse("successful operation", $ref);
