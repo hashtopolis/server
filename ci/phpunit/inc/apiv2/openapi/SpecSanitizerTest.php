@@ -105,7 +105,6 @@ final class SpecSanitizerTest extends TestCase {
     );
   }
 
-
   /**
    * The security requirement a builder states is passed through untouched: the
    * builders emit the empty scope list a bearer scheme requires, so there is

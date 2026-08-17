@@ -273,51 +273,20 @@ class SpecSanitizer {
 
   private function recursiveFixValues(array $data, array $renameMap): array {
     foreach ($data as $key => &$value) {
-      // Fix: description as array -> string (skip schema objects named "description")
-      if ($key === 'description' && is_array($value) && !isset($value['type'])) {
-        $value = implode("\n", $value);
+      /* An object without members has to be encoded as {} rather than [] */
+      if ($key === 'properties' && is_array($value) && empty($value)) {
+        $value = new \stdClass();
         continue;
-      }
-
-      // Fix: properties must be a JSON object, not array
-      if ($key === 'properties' && is_array($value)) {
-        if (empty($value)) {
-          // Empty array -> stdClass so json_encode outputs {} not []
-          $value = new \stdClass();
-          continue;
-        }
-        if (isset($value[0])) {
-          // Indexed array -- try merging elements that have 'properties' sub-keys
-          $canMerge = true;
-          foreach ($value as $item) {
-            if (!is_array($item) || !isset($item['properties'])) {
-              $canMerge = false;
-              break;
-            }
-          }
-          if ($canMerge) {
-            $merged = [];
-            foreach ($value as $item) {
-              $merged = array_merge($merged, $item['properties']);
-            }
-            $value = $merged;
-          } else {
-            // Non-mergeable indexed array -> force to object
-            $value = (object)$value;
-            continue;
-          }
-        }
       }
 
       if (is_array($value)) {
         $value = $this->recursiveFixValues($value, $renameMap);
-      } else {
-        // Fix: $ref renaming (update references to renamed schemas)
-        if ($key === '$ref' && is_string($value) && str_starts_with($value, '#/components/schemas/')) {
-          $schemaName = substr($value, strlen('#/components/schemas/'));
-          if (isset($renameMap[$schemaName])) {
-            $value = '#/components/schemas/' . $renameMap[$schemaName];
-          }
+      }
+      elseif ($key === '$ref' && is_string($value) && str_starts_with($value, '#/components/schemas/')) {
+        /* References to schemas whose key lost its namespace in phase 1 */
+        $schemaName = substr($value, strlen('#/components/schemas/'));
+        if (isset($renameMap[$schemaName])) {
+          $value = '#/components/schemas/' . $renameMap[$schemaName];
         }
       }
     }
