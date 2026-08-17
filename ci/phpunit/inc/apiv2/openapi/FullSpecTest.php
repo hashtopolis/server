@@ -225,11 +225,16 @@ final class FullSpecTest extends TestCase {
     );
 
     // A string enum names its values the same way
-    $notificationAttributes = $schemas['NotificationSettingResponse']['properties']['data']['properties']['attributes']['properties'];
+    $notificationSetting = $schemas['NotificationSettingResponse']['properties']['data']['properties']['attributes'];
     $this->assertContains(
       'taskComplete',
-      array_column($notificationAttributes['action']['oneOf'], 'const')
+      array_column($notificationSetting['properties']['action']['oneOf'], 'const')
     );
+
+    // A notification not tied to an object reports objectId as null, so the
+    // attribute is present but nullable
+    $this->assertSame(['integer', 'null'], $notificationSetting['properties']['objectId']['type']);
+    $this->assertContains('objectId', $notificationSetting['required']);
 
     // Multi-expandable models get a discriminated union in "included"
     $this->assertSame(
