@@ -62,21 +62,18 @@ final class SpecSanitizerTest extends TestCase {
     $this->assertSame('deleteThingsById', $operation['operationId']);
   }
 
-  public function testMovesPaginationParamsToQueryAndFixesStyleCasing(): void {
+  public function testFixesStyleCasing(): void {
     $result = $this->sanitize($this->minimalSpec(
       ['/api/v2/ui/things' => ['get' => [
         'parameters' => [
-          ['name' => 'page[after]', 'in' => 'path', 'schema' => ['type' => 'integer']],
-          ['name' => 'filter', 'in' => 'path', 'style' => 'deepobject', 'schema' => ['type' => 'object']],
+          ['name' => 'filter', 'in' => 'query', 'style' => 'deepobject', 'schema' => ['type' => 'object']],
         ],
         'responses' => ['200' => ['description' => 'ok']],
       ]]]
     ));
 
     $parameters = $result['paths']['/api/v2/ui/things']['get']['parameters'];
-    $this->assertSame('query', $parameters[0]['in']);
-    $this->assertSame('query', $parameters[1]['in']);
-    $this->assertSame('deepObject', $parameters[1]['style']);
+    $this->assertSame('deepObject', $parameters[0]['style']);
   }
 
   public function testUnwrapsIndexedRequestBodyAndFixesRequiredString(): void {

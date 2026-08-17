@@ -78,7 +78,7 @@
                 "parameters": [
                     {
                         "name": "page[after]",
-                        "in": "path",
+                        "in": "query",
                         "schema": {
                             "type": "string",
                             "format": "byte"
@@ -88,7 +88,7 @@
                     },
                     {
                         "name": "page[before]",
-                        "in": "path",
+                        "in": "query",
                         "schema": {
                             "type": "string",
                             "format": "byte"
@@ -98,7 +98,7 @@
                     },
                     {
                         "name": "page[size]",
-                        "in": "path",
+                        "in": "query",
                         "schema": {
                             "type": "integer",
                             "format": "int32"
@@ -914,7 +914,7 @@
                 "parameters": [
                     {
                         "name": "page[after]",
-                        "in": "path",
+                        "in": "query",
                         "schema": {
                             "type": "string",
                             "format": "byte"
@@ -924,7 +924,7 @@
                     },
                     {
                         "name": "page[before]",
-                        "in": "path",
+                        "in": "query",
                         "schema": {
                             "type": "string",
                             "format": "byte"
@@ -934,7 +934,7 @@
                     },
                     {
                         "name": "page[size]",
-                        "in": "path",
+                        "in": "query",
                         "schema": {
                             "type": "integer",
                             "format": "int32"

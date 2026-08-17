@@ -41,14 +41,9 @@ class SpecSanitizer {
       foreach ($pathItem as $method => &$operation) {
         if (!is_array($operation)) continue;
 
-        // Fix: Query params incorrectly marked as path params + style casing
+        // Fix: style casing (deepobject -> deepObject)
         if (isset($operation['parameters'])) {
-          $queryParamNames = ['page[after]', 'page[before]', 'page[size]', 'filter', 'include'];
           foreach ($operation['parameters'] as &$param) {
-            if (isset($param['in']) && $param['in'] === 'path' && in_array($param['name'], $queryParamNames)) {
-              $param['in'] = 'query';
-            }
-            // Fix: style casing (deepobject -> deepObject)
             if (isset($param['style']) && $param['style'] === 'deepobject') {
               $param['style'] = 'deepObject';
             }

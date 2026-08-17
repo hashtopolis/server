@@ -482,7 +482,7 @@ class ModelApiPathBuilder {
         $parameters = [
           [
             "name" => "page[after]",
-            "in" => "path",
+            "in" => "query",
             "schema" => [
               "type" => "string",
               "format" => "byte",
@@ -494,7 +494,7 @@ class ModelApiPathBuilder {
           ],
           [
             "name" => "page[before]",
-            "in" => "path",
+            "in" => "query",
             "schema" => [
               "type" => "string",
               "format" => "byte",
@@ -506,7 +506,7 @@ class ModelApiPathBuilder {
           ],
           [
             "name" => "page[size]",
-            "in" => "path",
+            "in" => "query",
             "schema" => [
               "type" => "integer",
               "format" => "int32"
