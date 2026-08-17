@@ -55,14 +55,19 @@ class ModelApiPathBuilder {
     if (!array_key_exists($name, $components)) {
       $responseFeatures = array_filter($class->getFeaturesWithoutFormfields(), fn($f) => !$f['private']);
       $responseAttributeProperties = $this->typeMapper->makeProperties($responseFeatures, true);
-      $attributesSchema = [
-        "type" => "object",
-        "required" => array_values(array_map(
-          fn($f) => $f['alias'],
-          array_filter($responseFeatures, fn($f) => !$f['pk'])
-        )),
-        "properties" => $responseAttributeProperties
-      ];
+      $attributesOverride = $class->getOpenAPIAttributesSchemaOverride();
+      if ($attributesOverride !== null) {
+        $attributesSchema = $attributesOverride;
+      } else {
+        $attributesSchema = [
+          "type" => "object",
+          "required" => array_values(array_map(
+            fn($f) => $f['alias'],
+            array_filter($responseFeatures, fn($f) => !$f['pk'])
+          )),
+          "properties" => $responseAttributeProperties
+        ];
+      }
       /**
        * The resource object as AbstractBaseAPI::obj2Resource builds it: the
        * primary key becomes the id, the remaining features the attributes, and
