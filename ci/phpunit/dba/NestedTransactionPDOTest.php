@@ -88,6 +88,23 @@ final class NestedTransactionPDOTest extends TestCase {
     $this->assertSame(['after', 'outer'], $this->names());
   }
 
+  /**
+   * What AbstractModelAPI::atomicOperations checks before it commits: a nested
+   * transaction left open keeps the depth above the outermost level, so the
+   * commit would only release a savepoint.
+   */
+  public function testAnUnclosedNestedTransactionIsVisibleInTheDepth(): void {
+    $this->db->beginTransaction();
+    $this->insert('outer');
+
+    $this->db->beginTransaction();
+    $this->insert('leaked');
+
+    $this->assertSame(2, $this->db->getTransactionDepth());
+    $this->assertTrue($this->db->commit(), 'committing at depth 2 only releases the savepoint');
+    $this->assertSame(1, $this->db->getTransactionDepth());
+  }
+
   public function testASingleTransactionBehavesLikePlainPdo(): void {
     $this->db->beginTransaction();
     $this->assertSame(1, $this->db->getTransactionDepth());

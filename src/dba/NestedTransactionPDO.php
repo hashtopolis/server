@@ -51,7 +51,9 @@ class NestedTransactionPDO extends PDO {
     }
 
     $result = parent::commit();
-    $this->transactionDepth = 0;
+    if ($result) {
+      $this->transactionDepth = 0;
+    }
     return $result;
   }
 
@@ -69,7 +71,9 @@ class NestedTransactionPDO extends PDO {
     }
 
     $result = parent::rollBack();
-    $this->transactionDepth = 0;
+    if ($result) {
+      $this->transactionDepth = 0;
+    }
     return $result;
   }
 
