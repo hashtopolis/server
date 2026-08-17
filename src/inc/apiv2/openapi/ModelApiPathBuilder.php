@@ -202,22 +202,23 @@ class ModelApiPathBuilder {
 
       /**
        * Reading one object, creating one and updating one all answer with the
-       * same single resource document (AbstractBaseAPI::getOneResource), so all
-       * three schemas share one shape.
+       * same single resource document (AbstractBaseAPI::getOneResource). The
+       * document is described once and the other two names refer to it, so the
+       * three stay identical by construction instead of by three copies that
+       * have to be kept in step.
        */
-      $singleDocument = [
+      $components[$name . "Response"] = [
         "type" => "object",
         "required" => ["jsonapi", "links", "data"],
         "properties" => $properties_get_single
       ];
-
-      $components[$name . "Response"] = $singleDocument;
+      $singleDocumentRef = ['$ref' => "#/components/schemas/" . $name . "Response"];
 
       $this->addRelationComponents($name, $relation, ($isToMany && !$isToOne), $components);
 
-      $components[$name . "SingleResponse"] = $singleDocument;
+      $components[$name . "SingleResponse"] = $singleDocumentRef;
 
-      $components[$name . "PostPatchResponse"] = $singleDocument;
+      $components[$name . "PostPatchResponse"] = $singleDocumentRef;
 
       $components[$name . "ListResponse"] =
         [

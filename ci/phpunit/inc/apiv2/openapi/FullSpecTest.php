@@ -384,7 +384,8 @@ final class FullSpecTest extends TestCase {
   private function returnedResourceObject(array $operation): array {
     $codes = array_intersect(['200', '201'], array_keys($operation['responses']));
     $schema = $operation['responses'][reset($codes)]['content']['application/vnd.api+json']['schema'];
-    if (isset($schema['$ref'])) {
+    /* A response name may be an alias of another one, so follow the chain */
+    while (isset($schema['$ref'])) {
       $schema = self::$sanitized['components']['schemas'][substr($schema['$ref'], strlen('#/components/schemas/'))];
     }
     $data = $schema['properties']['data'];
