@@ -800,45 +800,10 @@ class ModelApiPathBuilder {
       ];
   }
 
-  private function makeRelationships($class, $uri, $container = null): array {
+  private function makeRelationships($class, $uri, $container): array {
     $toOneRelationships = $class->getToOneRelationships();
     $toManyRelationships = $class->getToManyRelationships();
 
-    // Legacy behavior when no container is provided
-    if ($container === null) {
-      $properties = [];
-      $relationshipsNames = array_merge(array_keys($toOneRelationships), array_keys($toManyRelationships));
-      sort($relationshipsNames);
-      foreach ($relationshipsNames as $relationshipName) {
-        $self = $uri . "/relationships/" . $relationshipName;
-        $related = $uri . "/" . $relationshipName;
-        $properties[] = [
-          "properties" => [
-            $relationshipName => [
-              "type" => "object",
-              "properties" => [
-                "links" => [
-                  "type" => "object",
-                  "properties" => [
-                    "self" => [
-                      "type" => "string",
-                      "default" => $self
-                    ],
-                    "related" => [
-                      "type" => "string",
-                      "default" => $related
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ];
-      }
-      return $properties;
-    }
-
-    // New behavior with container: resolve relationship types
     $properties = [];
     $classMapper = $container->get('classMapper');
 
