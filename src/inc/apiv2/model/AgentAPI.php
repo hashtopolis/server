@@ -27,21 +27,24 @@ use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
-use Psr\Container\ContainerInterface;
 
 
 /**
  * @extends AbstractModelAPI<Agent>
  */
 class AgentAPI extends AbstractModelAPI {
-  private bool $hideIpInfo;
+  private ?bool $hideIpInfo = null;
 
   /**
-   * @throws Exception
+   * Read once and cached, but only when data is actually filtered: the OpenAPI
+   * generator instantiates this class purely to introspect it and has no
+   * database connection.
    */
-  public function __construct(ContainerInterface $container) {
-    parent::__construct($container);
-    $this->hideIpInfo = SConfig::getInstance()->getVal(DConfig::HIDE_IP_INFO) === "1";
+  private function hideIpInfo(): bool {
+    if ($this->hideIpInfo === null) {
+      $this->hideIpInfo = SConfig::getInstance()->getVal(DConfig::HIDE_IP_INFO) === "1";
+    }
+    return $this->hideIpInfo;
   }
 
   public static function getBaseUri(): string {
@@ -105,7 +108,7 @@ class AgentAPI extends AbstractModelAPI {
   }
 
   protected function filterData(array $object): array {
-    if ($this->hideIpInfo && isset($object[Agent::LAST_IP])) {
+    if ($this->hideIpInfo() && isset($object[Agent::LAST_IP])) {
       $object[Agent::LAST_IP] = "Hidden";
     }
     return $object;
