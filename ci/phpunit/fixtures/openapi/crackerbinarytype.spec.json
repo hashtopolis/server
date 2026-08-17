@@ -1243,7 +1243,7 @@
                     {
                         "name": "Upload-Metadata",
                         "in": "header",
-                        "required": "true",
+                        "required": true,
                         "schema": {
                             "type": "string",
                             "pattern": "^([a-zA-Z0-9]+ [A-Za-z0-9+/=]+)(,[a-zA-Z0-9]+ [A-Za-z0-9+/=]+)*$"
@@ -1279,7 +1279,9 @@
                                 "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
                                 "schema": {
                                     "type": "string",
-                                    "enum": "enum: ['1.0.0']"
+                                    "enum": [
+                                        "1.0.0"
+                                    ]
                                 }
                             },
                             "Location": {
@@ -1294,66 +1296,20 @@
             }
         },
         "/api/v2/helper/importFile/{id}": {
-            "patch": {
+            "head": {
                 "parameters": [
                     {
-                        "name": "Upload-Offset",
-                        "in": "header",
-                        "required": "true",
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "example": 512,
-                        "description": " The Upload-Offset header's value MUST be equal to the current offset of the resource"
-                    },
-                    {
-                        "name": "Content-Type",
-                        "in": "header",
-                        "required": "true",
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Identifier of the upload, as returned in the Location header when it was created.",
                         "schema": {
                             "type": "string",
-                            "enum": [
-                                "application/offset+octet-stream"
-                            ]
-                        }
+                            "pattern": "^[0-9]{14}-[0-9a-f]{32}$"
+                        },
+                        "example": "20250101120000-0123456789abcdef0123456789abcdef"
                     }
                 ],
-                "requestBody": [
-                    {
-                        "required": "true",
-                        "description": "The binary data to push to the file",
-                        "content": {
-                            "application/offset+octet-stream": {
-                                "schema": {
-                                    "type": "string",
-                                    "format": "binary"
-                                }
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Chunk accepted",
-                        "headers": {
-                            "Tus-Resumable": {
-                                "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
-                                "schema": {
-                                    "type": "string",
-                                    "enum": "enum: ['1.0.0']"
-                                }
-                            },
-                            "Upload-Offset": {
-                                "description": "The new offset after the chunk is accepted. Indicates how many bytes were received so far.",
-                                "schema": {
-                                    "type": "integer"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "head": {
                 "responses": {
                     "200": {
                         "description": "successful request",
@@ -1362,7 +1318,9 @@
                                 "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
                                 "schema": {
                                     "type": "string",
-                                    "enum": "enum: ['1.0.0']"
+                                    "enum": [
+                                        "1.0.0"
+                                    ]
                                 }
                             },
                             "Upload-Offset": {
@@ -1387,6 +1345,107 @@
                                 "description": "Original metadata sent during creation",
                                 "schema": {
                                     "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Identifier of the upload, as returned in the Location header when it was created.",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]{14}-[0-9a-f]{32}$"
+                        },
+                        "example": "20250101120000-0123456789abcdef0123456789abcdef"
+                    },
+                    {
+                        "name": "Upload-Offset",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 512,
+                        "description": " The Upload-Offset header's value MUST be equal to the current offset of the resource"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "application/offset+octet-stream"
+                            ]
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "description": "The binary data to push to the file",
+                    "content": {
+                        "application/offset+octet-stream": {
+                            "schema": {
+                                "type": "string",
+                                "format": "binary"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Chunk accepted",
+                        "headers": {
+                            "Tus-Resumable": {
+                                "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
+                                "schema": {
+                                    "type": "string",
+                                    "enum": [
+                                        "1.0.0"
+                                    ]
+                                }
+                            },
+                            "Upload-Offset": {
+                                "description": "The new offset after the chunk is accepted. Indicates how many bytes were received so far.",
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Identifier of the upload, as returned in the Location header when it was created.",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]{14}-[0-9a-f]{32}$"
+                        },
+                        "example": "20250101120000-0123456789abcdef0123456789abcdef"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Upload discarded",
+                        "headers": {
+                            "Tus-Resumable": {
+                                "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
+                                "schema": {
+                                    "type": "string",
+                                    "enum": [
+                                        "1.0.0"
+                                    ]
                                 }
                             }
                         }

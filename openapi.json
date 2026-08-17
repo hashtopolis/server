@@ -31196,18 +31196,21 @@
                         }
                     }
                 },
-                "tags": [
-                    "Helpers"
-                ],
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
                         "required": true,
+                        "description": "Identifier of the upload, as returned in the Location header when it was created.",
                         "schema": {
-                            "type": "integer"
-                        }
+                            "type": "string",
+                            "pattern": "^[0-9]{14}-[0-9a-f]{32}$"
+                        },
+                        "example": "20250101120000-0123456789abcdef0123456789abcdef"
                     }
+                ],
+                "tags": [
+                    "Helpers"
                 ],
                 "summary": "Head Helpers",
                 "operationId": "headImportFileById",
@@ -31283,6 +31286,17 @@
                 },
                 "parameters": [
                     {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Identifier of the upload, as returned in the Location header when it was created.",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]{14}-[0-9a-f]{32}$"
+                        },
+                        "example": "20250101120000-0123456789abcdef0123456789abcdef"
+                    },
+                    {
                         "name": "Upload-Offset",
                         "in": "header",
                         "required": true,
@@ -31301,14 +31315,6 @@
                             "enum": [
                                 "application/offset+octet-stream"
                             ]
-                        }
-                    },
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
                         }
                     }
                 ],
@@ -31378,22 +31384,36 @@
                             }
                         }
                     },
-                    "200": {
-                        "description": "successful operation"
+                    "204": {
+                        "description": "Upload discarded",
+                        "headers": {
+                            "Tus-Resumable": {
+                                "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
+                                "schema": {
+                                    "type": "string",
+                                    "enum": [
+                                        "1.0.0"
+                                    ]
+                                }
+                            }
+                        }
                     }
                 },
-                "tags": [
-                    "Helpers"
-                ],
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
                         "required": true,
+                        "description": "Identifier of the upload, as returned in the Location header when it was created.",
                         "schema": {
-                            "type": "integer"
-                        }
+                            "type": "string",
+                            "pattern": "^[0-9]{14}-[0-9a-f]{32}$"
+                        },
+                        "example": "20250101120000-0123456789abcdef0123456789abcdef"
                     }
+                ],
+                "tags": [
+                    "Helpers"
                 ],
                 "summary": "Delete Helpers",
                 "operationId": "deleteImportFileById",

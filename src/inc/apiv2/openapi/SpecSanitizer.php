@@ -51,11 +51,6 @@ class SpecSanitizer {
           unset($param);
         }
 
-        // Fix: requestBody as indexed array -- unwrap to first element
-        if (isset($operation['requestBody'][0]) && is_array($operation['requestBody'][0])) {
-          $operation['requestBody'] = $operation['requestBody'][0];
-        }
-
         // Fix: Walk response content
         if (isset($operation['responses'])) {
           foreach ($operation['responses'] as &$responseObj) {
@@ -284,14 +279,6 @@ class SpecSanitizer {
         continue;
       }
 
-      // Fix: enum as string -> proper array
-      if ($key === 'enum' && is_string($value)) {
-        if (preg_match_all("/'([^']+)'/", $value, $matches)) {
-          $value = $matches[1];
-        }
-        continue;
-      }
-
       // Fix: properties must be a JSON object, not array
       if ($key === 'properties' && is_array($value)) {
         if (empty($value)) {
@@ -331,10 +318,6 @@ class SpecSanitizer {
           if (isset($renameMap[$schemaName])) {
             $value = '#/components/schemas/' . $renameMap[$schemaName];
           }
-        }
-        // Fix: required as string "true" -> boolean true
-        if ($key === 'required' && $value === "true") {
-          $value = true;
         }
       }
     }

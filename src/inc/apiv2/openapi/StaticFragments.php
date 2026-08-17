@@ -158,8 +158,28 @@ class StaticFragments {
         Must always be set to `1.0.0` in compliant servers.",
       "schema" => [
         "type" => "string",
-        "enum" => "enum: ['1.0.0']"
+        "enum" => ["1.0.0"]
       ]
+    ];
+  }
+
+  /**
+   * The upload id of the TUS routes. It is the identifier ImportFileHelperAPI
+   * hands out, matching the Slim constraint "{id:[0-9]{14}-[0-9a-f]{32}}" of
+   * those routes, and therefore a string rather than the numeric id the other
+   * endpoints take.
+   */
+  private function tusUploadIdParameter(): array {
+    return [
+      "name" => "id",
+      "in" => "path",
+      "required" => true,
+      "description" => "Identifier of the upload, as returned in the Location header when it was created.",
+      "schema" => [
+        "type" => "string",
+        "pattern" => '^[0-9]{14}-[0-9a-f]{32}$'
+      ],
+      "example" => "20250101120000-0123456789abcdef0123456789abcdef"
     ];
   }
 
@@ -175,7 +195,7 @@ class StaticFragments {
       [
         "name" => "Upload-Metadata",
         "in" => "header",
-        "required" => "true",
+        "required" => true,
         "schema" => [
           "type" => "string",
           "pattern" => '^([a-zA-Z0-9]+ [A-Za-z0-9+/=]+)(,[a-zA-Z0-9]+ [A-Za-z0-9+/=]+)*$'
@@ -209,37 +229,38 @@ class StaticFragments {
       ]
     ];
 
-    $paths["/api/v2/helper/importFile/{id}"]["patch"]["parameters"] = [
-      [
-        "name" => "Upload-Offset",
-        "in" => "header",
-        "required" => "true",
-        "schema" => [
-          "type" => "integer",
-        ],
-        "example" => 512,
-        "description" => " The Upload-Offset header's value MUST be equal to the current offset of the resource"
+    /* Every operation on the upload takes its id, which is not the numeric id of the other endpoints */
+    foreach (["head", "patch", "delete"] as $uploadMethod) {
+      $paths["/api/v2/helper/importFile/{id}"][$uploadMethod]["parameters"] = [$this->tusUploadIdParameter()];
+    }
+
+    $paths["/api/v2/helper/importFile/{id}"]["patch"]["parameters"][] = [
+      "name" => "Upload-Offset",
+      "in" => "header",
+      "required" => true,
+      "schema" => [
+        "type" => "integer",
       ],
-      [
-        "name" => "Content-Type",
-        "in" => "header",
-        "required" => "true",
-        "schema" => [
-          "type" => "string",
-          "enum" => ["application/offset+octet-stream"]
-        ],
+      "example" => 512,
+      "description" => " The Upload-Offset header's value MUST be equal to the current offset of the resource"
+    ];
+    $paths["/api/v2/helper/importFile/{id}"]["patch"]["parameters"][] = [
+      "name" => "Content-Type",
+      "in" => "header",
+      "required" => true,
+      "schema" => [
+        "type" => "string",
+        "enum" => ["application/offset+octet-stream"]
       ],
     ];
     $paths["/api/v2/helper/importFile/{id}"]["patch"]["requestBody"] = [
-      [
-        "required" => "true",
-        "description" => "The binary data to push to the file",
-        "content" => [
-          "application/offset+octet-stream" => [
-            "schema" => [
-              "type" => "string",
-              "format" => "binary"
-            ]
+      "required" => true,
+      "description" => "The binary data to push to the file",
+      "content" => [
+        "application/offset+octet-stream" => [
+          "schema" => [
+            "type" => "string",
+            "format" => "binary"
           ]
         ]
       ]
@@ -287,6 +308,13 @@ class StaticFragments {
             "type" => "string"
           ]
         ]
+      ]
+    ];
+    /* Discarding an upload answers with headers only */
+    $paths["/api/v2/helper/importFile/{id}"]["delete"]["responses"]["204"] = [
+      "description" => "Upload discarded",
+      "headers" => [
+        "Tus-Resumable" => $this->tusHeader()
       ]
     ];
     $paths["/api/v2/helper/importFile/{id}"]["patch"]["responses"]["204"] = [

@@ -76,23 +76,6 @@ final class SpecSanitizerTest extends TestCase {
     $this->assertSame('deepObject', $parameters[0]['style']);
   }
 
-  public function testUnwrapsIndexedRequestBodyAndFixesRequiredString(): void {
-    $result = $this->sanitize($this->minimalSpec(
-      ['/api/v2/helper/upload' => ['patch' => [
-        'requestBody' => [[
-          'required' => 'true',
-          'description' => 'binary data',
-          'content' => ['application/offset+octet-stream' => ['schema' => ['type' => 'string']]],
-        ]],
-        'responses' => ['204' => ['description' => 'accepted']],
-      ]]]
-    ));
-
-    $requestBody = $result['paths']['/api/v2/helper/upload']['patch']['requestBody'];
-    $this->assertTrue($requestBody['required']);
-    $this->assertSame('binary data', $requestBody['description']);
-  }
-
   public function testFillsEmptyMediaTypeObjects(): void {
     $result = $this->sanitize($this->minimalSpec(
       ['/api/v2/ui/things/{id}' => ['delete' => [
@@ -122,21 +105,6 @@ final class SpecSanitizerTest extends TestCase {
     );
   }
 
-  public function testParsesEnumStringsIntoArrays(): void {
-    $result = $this->sanitize($this->minimalSpec(
-      ['/api/v2/helper/importFile' => ['head' => [
-        'responses' => ['200' => [
-          'description' => 'ok',
-          'headers' => ['Tus-Resumable' => ['schema' => ['type' => 'string', 'enum' => "enum: ['1.0.0']"]]],
-        ]],
-      ]]]
-    ));
-
-    $this->assertSame(
-      ['1.0.0'],
-      $result['paths']['/api/v2/helper/importFile']['head']['responses']['200']['headers']['Tus-Resumable']['schema']['enum']
-    );
-  }
 
   /**
    * The security requirement a builder states is passed through untouched: the
