@@ -135,6 +135,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hashType]=description,isSalted`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hashType`: description, isSalted, isSlowHash.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "hashType": "description,isSalted"
+                        }
                     }
                 ]
             },
@@ -214,7 +231,25 @@
                         }
                     }
                 },
-                "parameters": []
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hashType]=description,isSalted`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hashType`: description, isSalted, isSlowHash.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "hashType": "description,isSalted"
+                        }
+                    }
+                ]
             },
             "patch": {
                 "tags": [
@@ -545,6 +580,23 @@
                             }
                         },
                         "description": "Relationships to include in the response, comma seperated. Possible options: "
+                    },
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hashType]=description,isSalted`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hashType`: description, isSalted, isSlowHash.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "hashType": "description,isSalted"
+                        }
                     }
                 ]
             },
@@ -634,7 +686,25 @@
                         }
                     }
                 },
-                "parameters": []
+                "parameters": [
+                    {
+                        "name": "fields",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Attributes to return per resource type, comma separated, e.g. `fields[hashType]=description,isSalted`. Applies to the primary data and to included resources alike. A type that is not named is returned in full.\n\nAttributes of `hashType`: description, isSalted, isSlowHash.\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute listed as required in the response schema.",
+                        "example": {
+                            "hashType": "description,isSalted"
+                        }
+                    }
+                ]
             },
             "delete": {
                 "tags": [

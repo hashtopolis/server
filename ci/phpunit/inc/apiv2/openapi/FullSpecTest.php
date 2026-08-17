@@ -297,6 +297,85 @@ final class FullSpecTest extends TestCase {
     $this->assertGreaterThanOrEqual(25, $checked, 'Expected the registered APIs to offer aggregates');
   }
 
+  /**
+   * Sparse fieldsets are keyed by the type of the resource they narrow, so the
+   * type the parameter advertises has to be the type the operation answers
+   * with. A relationship route answers with the related resource and therefore
+   * carries no "fields" parameter at all.
+   */
+  public function testSparseFieldsetsParameterMatchesTheReturnedType(): void {
+    $checked = 0;
+    foreach (self::$sanitized['paths'] as $path => $pathItem) {
+      foreach ($pathItem as $method => $operation) {
+        $fields = $this->findParameter($operation, 'fields');
+        if ($fields === null) {
+          continue;
+        }
+        $this->assertStringNotContainsString('/relationships/', $path, "Sparse fieldsets on a relationship route: $method $path");
+        $this->assertSame('deepObject', $fields['style']);
+        $this->assertCount(1, $fields['example'], "The example should name exactly one type: $method $path");
+
+        $advertisedType = array_key_first($fields['example']);
+        $this->assertSame(
+          $this->returnedResourceType($operation),
+          $advertisedType,
+          "fields[$advertisedType] does not name the type returned by $method $path"
+        );
+
+        /* Every attribute in the example is one the response actually carries */
+        foreach (explode(',', $fields['example'][$advertisedType]) as $attribute) {
+          $this->assertContains($attribute, $this->returnedAttributeNames($operation), "Unknown attribute in the fields example of $method $path");
+        }
+        $checked++;
+      }
+    }
+    $this->assertGreaterThanOrEqual(90, $checked);
+  }
+
+  /**
+   * @return array<string, mixed>|null
+   */
+  private function findParameter(array $operation, string $name): ?array {
+    foreach ($operation['parameters'] ?? [] as $parameter) {
+      if ($parameter['name'] === $name) {
+        return $parameter;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * The "data" member of the document an operation answers with, following the
+   * reference and unwrapping a collection.
+   *
+   * @return array<string, mixed>
+   */
+  private function returnedResourceObject(array $operation): array {
+    $codes = array_intersect(['200', '201'], array_keys($operation['responses']));
+    $schema = $operation['responses'][reset($codes)]['content']['application/vnd.api+json']['schema'];
+    if (isset($schema['$ref'])) {
+      $schema = self::$sanitized['components']['schemas'][substr($schema['$ref'], strlen('#/components/schemas/'))];
+    }
+    $data = $schema['properties']['data'];
+    return $data['type'] === 'array' ? $data['items'] : $data;
+  }
+
+  private function returnedResourceType(array $operation): string {
+    return $this->returnedResourceObject($operation)['properties']['type']['const'];
+  }
+
+  /**
+   * @return list<string>
+   */
+  private function returnedAttributeNames(array $operation): array {
+    $attributes = $this->returnedResourceObject($operation)['properties']['attributes'];
+    $names = [];
+    foreach ($attributes['oneOf'] ?? [$attributes] as $branch) {
+      $names = array_merge($names, array_keys($branch['properties']));
+    }
+    return array_values(array_unique($names));
+  }
+
   public function testNoSchemaIsNamedAfterAMissingRelation(): void {
     foreach (['raw' => self::$raw, 'sanitized' => self::$sanitized] as $variant => $spec) {
       foreach (array_keys($spec['components']['schemas']) as $name) {

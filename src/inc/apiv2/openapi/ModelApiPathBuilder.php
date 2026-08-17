@@ -417,6 +417,21 @@ class ModelApiPathBuilder {
       }
     }
 
+    /**
+     * Sparse fieldsets address the attributes of the resource the operation
+     * returns, so their names are derived from the response features.
+     *
+     * A relationship route answers with the related resource rather than with
+     * this one (AbstractModelAPI::getRelationship), so its attribute names are
+     * not the ones below and it is left out, the same way "include" is.
+     */
+    $isRelationRoute = str_contains($pattern, "relation:");
+    $publicFeatures = array_filter($class->getFeaturesWithoutFormfields(), fn($f) => !$f['private']);
+    $attributeNames = array_values(array_map(
+      fn($f) => $f['alias'],
+      array_filter($publicFeatures, fn($f) => !$f['pk'])
+    ));
+
     if ($singleObject && $method == 'get') {
       $parameters = [
         [
@@ -431,8 +446,9 @@ class ModelApiPathBuilder {
         ]
       ];
 
-      if (!str_contains($pattern, "relation:")) {
+      if (!$isRelationRoute) {
         $parameters[] = $this->makeIncludeParameter($class);
+        $parameters = array_merge($parameters, $this->makeResourceShapeParameters($class, $typeName, $attributeNames, $container));
       };
     }
     else {
@@ -497,36 +513,16 @@ class ModelApiPathBuilder {
           $this->makeIncludeParameter($class)
         ];
 
-        $aggregateFieldsets = $class->getAggregateFieldsets();
-        if (!empty($aggregateFieldsets)) {
-          $aggregateExamples = [];
-          $aggregateDescriptionParts = [];
-          foreach ($aggregateFieldsets as $fieldset => $options) {
-            if (empty($options)) {
-              continue;
-            }
-            $aggregateExamples["aggregate[" . $fieldset . "]"] = implode(",", array_keys($options));
-            $aggregateDescriptionParts[] = $fieldset . ": " . implode(", ", array_keys($options));
-          }
-
-          if (!empty($aggregateExamples)) {
-            $parameters[] = [
-              "name" => "aggregate",
-              "in" => "query",
-              "style" => "deepObject",
-              "explode" => true,
-              "schema" => [
-                "type" => "object",
-                "additionalProperties" => [
-                  "type" => "string"
-                ]
-              ],
-              "required" => false,
-              "description" => "Aggregated fields to include by type (comma separated values). Possible options: " . implode(" | ", $aggregateDescriptionParts),
-              "example" => $aggregateExamples
-            ];
-          }
-        }
+        $parameters = array_merge($parameters, $this->makeResourceShapeParameters($class, $typeName, $attributeNames, $container));
+      }
+      elseif (($method == 'post' || ($method == 'patch' && $singleObject)) && !$isRelationRoute) {
+        /**
+         * Creating one object and updating one answer with the resource they
+         * wrote, shaped like any other read. A collection PATCH updates several
+         * objects and answers 204 (AbstractModelAPI::patchMultiple), so there is
+         * no resource for the two parameters to shape.
+         */
+        $parameters = $this->makeResourceShapeParameters($class, $typeName, $attributeNames, $container);
       }
       else {
         $parameters = [];
@@ -583,6 +579,117 @@ class ModelApiPathBuilder {
       ],
       "description" => "Filters results using a query. Every key is an attribute name optionally suffixed with a comparison operator, e.g. `filter[" . $exampleKey . "]=200`.",
       "example" => [$exampleKey => "200"]
+    ];
+  }
+
+  /**
+   * The query parameters that shape the resource an operation returns rather
+   * than selecting which resources it returns. Every route answering with a
+   * resource honours them, whether it reads, creates or updates one
+   * (AbstractBaseAPI::getOneResource, AbstractModelAPI::getManyResources).
+   *
+   * @param list<string> $attributeNames
+   * @return list<array<string, mixed>>
+   */
+  private function makeResourceShapeParameters($class, string $typeName, array $attributeNames, ContainerInterface $container): array {
+    $parameters = [$this->makeSparseFieldsetsParameter(
+      $typeName,
+      $attributeNames,
+      $this->includableTypeNames($class, $container)
+    )];
+    $aggregateParameter = $this->makeAggregateParameter($class);
+    if ($aggregateParameter !== null) {
+      $parameters[] = $aggregateParameter;
+    }
+    return $parameters;
+  }
+
+  /**
+   * The resource types reachable through "include", which are the types a
+   * sparse fieldset can address next to the primary one.
+   *
+   * @return list<string>
+   */
+  private function includableTypeNames($class, ContainerInterface $container): array {
+    $typeNames = [];
+    $relationships = array_merge($class->getToOneRelationships(), $class->getToManyRelationships());
+    foreach ($relationships as $relationship) {
+      $apiClass = $container->get('classMapper')->get($relationship["relationType"]);
+      $nameParts = explode('\\', $apiClass);
+      $typeNames[] = lcfirst(substr(end($nameParts), 0, -3));
+    }
+    return array_values(array_unique($typeNames));
+  }
+
+  /**
+   * The "aggregate" query parameter, offering the computed fields of
+   * getAggregateFieldsets() by resource key. Returns null for a model that
+   * offers none.
+   */
+  private function makeAggregateParameter($class): ?array {
+    $examples = [];
+    $descriptionParts = [];
+    foreach ($class->getAggregateFieldsets() as $fieldset => $options) {
+      if (empty($options)) {
+        continue;
+      }
+      $examples["aggregate[" . $fieldset . "]"] = implode(",", array_keys($options));
+      $descriptionParts[] = $fieldset . ": " . implode(", ", array_keys($options));
+    }
+    if (empty($examples)) {
+      return null;
+    }
+    return [
+      "name" => "aggregate",
+      "in" => "query",
+      "style" => "deepObject",
+      "explode" => true,
+      "schema" => [
+        "type" => "object",
+        "additionalProperties" => [
+          "type" => "string"
+        ]
+      ],
+      "required" => false,
+      "description" => "Aggregated fields to include by type (comma separated values). Possible options: " . implode(" | ", $descriptionParts),
+      "example" => $examples
+    ];
+  }
+
+  /**
+   * The JSON:API "fields" query parameter (sparse fieldsets). Keys are resource
+   * types, values the comma separated attributes to keep. The server applies it
+   * to the primary data and to every included resource alike, keyed by the type
+   * of the resource in question (AbstractBaseAPI::obj2Resource).
+   *
+   * @param list<string> $attributeNames attributes of the primary resource type
+   * @param list<string> $includableTypes types reachable through "include"
+   */
+  private function makeSparseFieldsetsParameter(string $typeName, array $attributeNames, array $includableTypes): array {
+    $example = implode(",", array_slice($attributeNames, 0, 2));
+    $description = "Attributes to return per resource type, comma separated, e.g. `fields[$typeName]=$example`."
+      . " Applies to the primary data and to included resources alike."
+      . " A type that is not named is returned in full."
+      . "\n\nAttributes of `$typeName`: " . implode(", ", $attributeNames) . "."
+      . "\n\n**Note:** a resource whose attributes are narrowed this way no longer carries every attribute"
+      . " listed as required in the response schema.";
+    if (count($includableTypes) > 0) {
+      $description .= "\n\nTypes reachable through `include`: " . implode(", ", $includableTypes) . ".";
+    }
+    return [
+      "name" => "fields",
+      "in" => "query",
+      "style" => "deepObject",
+      "explode" => true,
+      "schema" => [
+        "type" => "object",
+        "additionalProperties" => [
+          "type" => "string"
+        ]
+      ],
+      "required" => false,
+      "description" => $description,
+      "example" => [$typeName => $example]
     ];
   }
 
