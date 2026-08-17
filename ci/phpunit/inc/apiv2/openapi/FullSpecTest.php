@@ -219,6 +219,17 @@ final class FullSpecTest extends TestCase {
     // Integer enum rendered as oneOf with const + title
     $this->assertSame(0, $agentAttributes['ignoreErrors']['oneOf'][0]['const']);
     $this->assertArrayHasKey('title', $agentAttributes['ignoreErrors']['oneOf'][0]);
+    $this->assertSame(
+      [0 => 'Linux', 1 => 'Windows', 2 => 'macOS'],
+      array_column($agentAttributes['os']['oneOf'], 'title', 'const')
+    );
+
+    // A string enum names its values the same way
+    $notificationAttributes = $schemas['NotificationSettingResponse']['properties']['data']['properties']['attributes']['properties'];
+    $this->assertContains(
+      'taskComplete',
+      array_column($notificationAttributes['action']['oneOf'], 'const')
+    );
 
     // Multi-expandable models get a discriminated union in "included"
     $this->assertSame(
