@@ -32,8 +32,17 @@ jobs:
           key: ${{ runner.os }}-npm-openapi-spectral6.15.1-redocly2.24.0
       - name: Install OpenAPI tooling
         run: npm install -g @stoplight/spectral-cli@6.15.1 @redocly/cli@2.24.0 --min-release-age=14
-      - name: Download OpenAPI schema
-        run: wget -q http://localhost:8080/api/v2/openapi.json -O openapi.json
+      - name: Download OpenAPI schema served by the backend
+        run: wget -q http://localhost:8080/api/v2/openapi.json -O openapi.served.json
+      - name: Confirm the committed OpenAPI schema matches the served one
+        run: |
+          jq -S . openapi.json > /tmp/openapi.committed.normalized.json
+          jq -S . openapi.served.json > /tmp/openapi.served.normalized.json
+          if ! diff -u /tmp/openapi.committed.normalized.json /tmp/openapi.served.normalized.json > /tmp/openapi.diff; then
+            echo "::error file=openapi.json::openapi.json is out of date: the backend serves a different spec. Regenerate it with 'php ci/tools/generate-openapi.php --pretty > openapi.json' and commit the result."
+            head -200 /tmp/openapi.diff
+            exit 1
+          fi
       - name: Lint OpenAPI schema with Redocly
         run: redocly lint openapi.json
       - name: Lint OpenAPI schema with Spectral
