@@ -174,8 +174,9 @@ class TaskAPI extends AbstractModelAPI {
       'totalNumberOfChunks' => self::aggregateFeature('int', 'totalNumberOfChunks'),
       'currentSpeed' => self::aggregateFeature('int', 'currentSpeed'),
       'estimatedTime' => self::aggregateFeature('int', 'estimatedTime'),
-      'timeSpent' => self::aggregateFeature('int', 'timeSpent'),
       'cprogress' => self::aggregateFeature('int', 'cprogress'),
+      'timeSpent' => self::aggregateFeature('int', 'timeSpent'),
+      'cracked' => self::aggregateFeature('int', 'cracked'),
     ];
   }
 

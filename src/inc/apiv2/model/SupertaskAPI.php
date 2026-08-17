@@ -114,7 +114,13 @@ class SupertaskAPI extends AbstractModelAPI {
       ]
     ];
   }
-  
+
+  public static function getAggregateFeatures(): array {
+    return [
+      'amountPretasks' => self::aggregateFeature('int', 'amountPretasks'),
+    ];
+  }
+
   /**
    * @param Supertask $object
    * @throws Exception

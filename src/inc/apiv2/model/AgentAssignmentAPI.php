@@ -122,7 +122,18 @@ class AgentAssignmentAPI extends AbstractModelAPI {
       ]
     ];
   }
-  
+
+  public static function getAggregateFeatures(): array {
+    return [
+      'crackingTime' => self::aggregateFeature('int', 'crackingTime'),
+      'cracked' => self::aggregateFeature('int', 'cracked'),
+      'currentSpeed' => self::aggregateFeature('int', 'currentSpeed'),
+      /* No chunk in progress yields no key rather than a null one */
+      'currentChunkId' => self::aggregateFeature('int', 'currentChunkId'),
+      'searched' => self::aggregateFeature('int', 'searched'),
+    ];
+  }
+
   /**
    * @param Assignment $object
    * @return int
