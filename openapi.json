@@ -31127,6 +31127,9 @@
                                     },
                                     "clientSignature": {
                                         "type": "string"
+                                    },
+                                    "crackingTime": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -32147,6 +32150,9 @@
                                     },
                                     "clientSignature": {
                                         "type": "string"
+                                    },
+                                    "crackingTime": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -33218,6 +33224,9 @@
                                         },
                                         "clientSignature": {
                                             "type": "string"
+                                        },
+                                        "crackingTime": {
+                                            "type": "integer"
                                         }
                                     }
                                 },
@@ -34400,6 +34409,21 @@
                                     },
                                     "benchmark": {
                                         "type": "string"
+                                    },
+                                    "crackingTime": {
+                                        "type": "integer"
+                                    },
+                                    "cracked": {
+                                        "type": "integer"
+                                    },
+                                    "currentSpeed": {
+                                        "type": "integer"
+                                    },
+                                    "currentChunkId": {
+                                        "type": "integer"
+                                    },
+                                    "searched": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -34859,6 +34883,21 @@
                                     },
                                     "benchmark": {
                                         "type": "string"
+                                    },
+                                    "crackingTime": {
+                                        "type": "integer"
+                                    },
+                                    "cracked": {
+                                        "type": "integer"
+                                    },
+                                    "currentSpeed": {
+                                        "type": "integer"
+                                    },
+                                    "currentChunkId": {
+                                        "type": "integer"
+                                    },
+                                    "searched": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -35369,6 +35408,21 @@
                                         },
                                         "benchmark": {
                                             "type": "string"
+                                        },
+                                        "crackingTime": {
+                                            "type": "integer"
+                                        },
+                                        "cracked": {
+                                            "type": "integer"
+                                        },
+                                        "currentSpeed": {
+                                            "type": "integer"
+                                        },
+                                        "currentChunkId": {
+                                            "type": "integer"
+                                        },
+                                        "searched": {
+                                            "type": "integer"
                                         }
                                     }
                                 },
@@ -40028,6 +40082,31 @@
                                                         "type": "string"
                                                     }
                                                 ]
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -40070,6 +40149,31 @@
                                                         "type": "string"
                                                     }
                                                 ]
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -40090,6 +40194,31 @@
                                             },
                                             "value": {
                                                 "type": "string"
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -40310,6 +40439,31 @@
                                                         "type": "string"
                                                     }
                                                 ]
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -40352,6 +40506,31 @@
                                                         "type": "string"
                                                     }
                                                 ]
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -40372,6 +40551,31 @@
                                             },
                                             "value": {
                                                 "type": "string"
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -40592,6 +40796,31 @@
                                                         "type": "string"
                                                     }
                                                 ]
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -40634,6 +40863,31 @@
                                                         "type": "string"
                                                     }
                                                 ]
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -40654,6 +40908,31 @@
                                             },
                                             "value": {
                                                 "type": "string"
+                                            },
+                                            "valueBoundaries": {
+                                                "type": "object",
+                                                "minProperties": 1,
+                                                "properties": {
+                                                    "min": {
+                                                        "type": "integer",
+                                                        "description": "Smallest accepted value of a numeric item"
+                                                    },
+                                                    "max": {
+                                                        "type": "integer",
+                                                        "description": "Largest accepted value of a numeric item"
+                                                    },
+                                                    "maxLength": {
+                                                        "type": "integer",
+                                                        "description": "Longest accepted value of a textual item"
+                                                    },
+                                                    "binaryValues": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": "The two values a tickbox item accepts"
+                                                    }
+                                                }
                                             }
                                         },
                                         "required": [
@@ -40925,6 +41204,31 @@
                                                             "type": "string"
                                                         }
                                                     ]
+                                                },
+                                                "valueBoundaries": {
+                                                    "type": "object",
+                                                    "minProperties": 1,
+                                                    "properties": {
+                                                        "min": {
+                                                            "type": "integer",
+                                                            "description": "Smallest accepted value of a numeric item"
+                                                        },
+                                                        "max": {
+                                                            "type": "integer",
+                                                            "description": "Largest accepted value of a numeric item"
+                                                        },
+                                                        "maxLength": {
+                                                            "type": "integer",
+                                                            "description": "Longest accepted value of a textual item"
+                                                        },
+                                                        "binaryValues": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "description": "The two values a tickbox item accepts"
+                                                        }
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -40967,6 +41271,31 @@
                                                             "type": "string"
                                                         }
                                                     ]
+                                                },
+                                                "valueBoundaries": {
+                                                    "type": "object",
+                                                    "minProperties": 1,
+                                                    "properties": {
+                                                        "min": {
+                                                            "type": "integer",
+                                                            "description": "Smallest accepted value of a numeric item"
+                                                        },
+                                                        "max": {
+                                                            "type": "integer",
+                                                            "description": "Largest accepted value of a numeric item"
+                                                        },
+                                                        "maxLength": {
+                                                            "type": "integer",
+                                                            "description": "Longest accepted value of a textual item"
+                                                        },
+                                                        "binaryValues": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "description": "The two values a tickbox item accepts"
+                                                        }
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -40987,6 +41316,31 @@
                                                 },
                                                 "value": {
                                                     "type": "string"
+                                                },
+                                                "valueBoundaries": {
+                                                    "type": "object",
+                                                    "minProperties": 1,
+                                                    "properties": {
+                                                        "min": {
+                                                            "type": "integer",
+                                                            "description": "Smallest accepted value of a numeric item"
+                                                        },
+                                                        "max": {
+                                                            "type": "integer",
+                                                            "description": "Largest accepted value of a numeric item"
+                                                        },
+                                                        "maxLength": {
+                                                            "type": "integer",
+                                                            "description": "Longest accepted value of a textual item"
+                                                        },
+                                                        "binaryValues": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "description": "The two values a tickbox item accepts"
+                                                        }
+                                                    }
                                                 }
                                             },
                                             "required": [
@@ -60105,6 +60459,9 @@
                                 "properties": {
                                     "supertaskName": {
                                         "type": "string"
+                                    },
+                                    "amountPretasks": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -60320,6 +60677,9 @@
                                 "properties": {
                                     "supertaskName": {
                                         "type": "string"
+                                    },
+                                    "amountPretasks": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -60535,6 +60895,9 @@
                                 "properties": {
                                     "supertaskName": {
                                         "type": "string"
+                                    },
+                                    "amountPretasks": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -60801,6 +61164,9 @@
                                     "properties": {
                                         "supertaskName": {
                                             "type": "string"
+                                        },
+                                        "amountPretasks": {
+                                            "type": "integer"
                                         }
                                     }
                                 },
@@ -61559,10 +61925,13 @@
                                     "estimatedTime": {
                                         "type": "integer"
                                     },
+                                    "cprogress": {
+                                        "type": "integer"
+                                    },
                                     "timeSpent": {
                                         "type": "integer"
                                     },
-                                    "cprogress": {
+                                    "cracked": {
                                         "type": "integer"
                                     }
                                 }
@@ -62519,10 +62888,13 @@
                                     "estimatedTime": {
                                         "type": "integer"
                                     },
+                                    "cprogress": {
+                                        "type": "integer"
+                                    },
                                     "timeSpent": {
                                         "type": "integer"
                                     },
-                                    "cprogress": {
+                                    "cracked": {
                                         "type": "integer"
                                     }
                                 }
@@ -63479,10 +63851,13 @@
                                     "estimatedTime": {
                                         "type": "integer"
                                     },
+                                    "cprogress": {
+                                        "type": "integer"
+                                    },
                                     "timeSpent": {
                                         "type": "integer"
                                     },
-                                    "cprogress": {
+                                    "cracked": {
                                         "type": "integer"
                                     }
                                 }
@@ -64490,10 +64865,13 @@
                                         "estimatedTime": {
                                             "type": "integer"
                                         },
+                                        "cprogress": {
+                                            "type": "integer"
+                                        },
                                         "timeSpent": {
                                             "type": "integer"
                                         },
-                                        "cprogress": {
+                                        "cracked": {
                                             "type": "integer"
                                         }
                                     }
@@ -68569,6 +68947,56 @@
                                     },
                                     "groupName": {
                                         "type": "string"
+                                    },
+                                    "totalAssignedAgents": {
+                                        "type": "integer"
+                                    },
+                                    "dispatched": {
+                                        "type": "string"
+                                    },
+                                    "searched": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "init",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "running",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "idle",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 3,
+                                                "title": "completed",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 4,
+                                                "title": "skipped",
+                                                "type": "integer"
+                                            }
+                                        ]
+                                    },
+                                    "currentSpeed": {
+                                        "type": "integer"
+                                    },
+                                    "estimatedTime": {
+                                        "type": "integer"
+                                    },
+                                    "cprogress": {
+                                        "type": "integer"
+                                    },
+                                    "timeSpent": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -69017,6 +69445,56 @@
                                         },
                                         "groupName": {
                                             "type": "string"
+                                        },
+                                        "totalAssignedAgents": {
+                                            "type": "integer"
+                                        },
+                                        "dispatched": {
+                                            "type": "string"
+                                        },
+                                        "searched": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "oneOf": [
+                                                {
+                                                    "const": 0,
+                                                    "title": "init",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "running",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 2,
+                                                    "title": "idle",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 3,
+                                                    "title": "completed",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 4,
+                                                    "title": "skipped",
+                                                    "type": "integer"
+                                                }
+                                            ]
+                                        },
+                                        "currentSpeed": {
+                                            "type": "integer"
+                                        },
+                                        "estimatedTime": {
+                                            "type": "integer"
+                                        },
+                                        "cprogress": {
+                                            "type": "integer"
+                                        },
+                                        "timeSpent": {
+                                            "type": "integer"
                                         }
                                     }
                                 },

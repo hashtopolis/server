@@ -77,6 +77,33 @@ class ConfigAPI extends AbstractModelAPI {
     ];
   }
 
+  /**
+   * The bounds an item accepts depend on its config type, so which members are
+   * present varies per item (see ConfigUtils::getConfigValueBounds). The object
+   * is never empty: an item of unknown type is treated as a string input and
+   * reports at least its maximum length.
+   */
+  public static function getAggregateFeatures(): array {
+    return [
+      'valueBoundaries' => self::aggregateFeature('dict', 'valueBoundaries', [
+        'openapi_schema' => [
+          'type' => 'object',
+          'minProperties' => 1,
+          'properties' => [
+            'min' => ['type' => 'integer', 'description' => 'Smallest accepted value of a numeric item'],
+            'max' => ['type' => 'integer', 'description' => 'Largest accepted value of a numeric item'],
+            'maxLength' => ['type' => 'integer', 'description' => 'Longest accepted value of a textual item'],
+            'binaryValues' => [
+              'type' => 'array',
+              'items' => ['type' => 'string'],
+              'description' => 'The two values a tickbox item accepts',
+            ],
+          ],
+        ],
+      ]),
+    ];
+  }
+
   protected function getAggregateValueBoundaries(AbstractModel $object): ?array {
     if (!($object instanceof Config) || !is_string($object->getItem()) || $object->getItem() === '') {
       return null;
