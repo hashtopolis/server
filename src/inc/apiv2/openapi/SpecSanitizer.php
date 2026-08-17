@@ -36,25 +36,10 @@ class SpecSanitizer {
       $spec['components']['schemas'] = $newSchemas;
     }
 
-    // Phase 2: Remove scopes from bearerAuth (only valid on OAuth2)
-    if (isset($spec['components']['securitySchemes']['bearerAuth']['scopes'])) {
-      unset($spec['components']['securitySchemes']['bearerAuth']['scopes']);
-    }
-
-    // Phase 3: Walk operations for fixes
+    // Phase 2: Walk operations for fixes
     foreach ($spec['paths'] as $path => &$pathItem) {
       foreach ($pathItem as $method => &$operation) {
         if (!is_array($operation)) continue;
-
-        // Fix: Security requirement - bearerAuth should have empty scopes array for HTTP bearer
-        if (isset($operation['security'])) {
-          foreach ($operation['security'] as &$secReq) {
-            if (isset($secReq['bearerAuth'])) {
-              $secReq['bearerAuth'] = [];
-            }
-          }
-          unset($secReq);
-        }
 
         // Fix: Query params incorrectly marked as path params + style casing
         if (isset($operation['parameters'])) {

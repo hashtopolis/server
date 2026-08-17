@@ -42,13 +42,6 @@ final class SpecSanitizerTest extends TestCase {
     );
   }
 
-  public function testRemovesBearerAuthScopesFromSecuritySchemes(): void {
-    $spec = $this->minimalSpec();
-    $spec['components']['securitySchemes']['bearerAuth'] = ['type' => 'http', 'scheme' => 'bearer', 'scopes' => ['a']];
-    $result = $this->sanitize($spec);
-    $this->assertArrayNotHasKey('scopes', $result['components']['securitySchemes']['bearerAuth']);
-  }
-
   /**
    * Paths arrive as OpenAPI path templates (RouteIntrospector), so a
    * placeholder in one names a path parameter the operation has to declare.
@@ -148,15 +141,23 @@ final class SpecSanitizerTest extends TestCase {
     );
   }
 
-  public function testEmptiesBearerAuthScopesOnOperations(): void {
+  /**
+   * The security requirement a builder states is passed through untouched: the
+   * builders emit the empty scope list a bearer scheme requires, so there is
+   * nothing left for the sanitizer to correct.
+   */
+  public function testLeavesSecurityRequirementsAlone(): void {
     $result = $this->sanitize($this->minimalSpec(
       ['/api/v2/ui/things' => ['get' => [
-        'security' => [['bearerAuth' => [['permission1', 'permission2']]]],
+        'security' => [['bearerAuth' => []]],
+        'x-required-permissions' => ['permission1', 'permission2'],
         'responses' => ['200' => ['description' => 'ok']],
       ]]]
     ));
 
-    $this->assertSame([['bearerAuth' => []]], $result['paths']['/api/v2/ui/things']['get']['security']);
+    $operation = $result['paths']['/api/v2/ui/things']['get'];
+    $this->assertSame([['bearerAuth' => []]], $operation['security']);
+    $this->assertSame(['permission1', 'permission2'], $operation['x-required-permissions']);
   }
 
   public function testSynthesizesTagsSummaryOperationIdAndSecurity(): void {

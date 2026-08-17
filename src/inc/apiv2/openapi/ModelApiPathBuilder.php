@@ -242,13 +242,18 @@ class ModelApiPathBuilder {
         $name . 's'
       ],
       "responses" => $this->jsonApiFragments->commonErrorResponses(),
+      /**
+       * OpenAPI only allows scopes on an OAuth2 scheme, so the list of a bearer
+       * requirement has to stay empty. The permissions the call needs are stated
+       * next to it instead, where they document the endpoint without making the
+       * security requirement invalid.
+       */
       "security" => [
         [
-          "bearerAuth" => [
-            $required_scopes
-          ]
+          "bearerAuth" => []
         ]
-      ]
+      ],
+      "x-required-permissions" => array_values(array_unique($required_scopes))
     ];
 
     $paths[$path][$method]["description"] = $this->jsonApiFragments->makeDescription($isRelation, $method, $singleObject);

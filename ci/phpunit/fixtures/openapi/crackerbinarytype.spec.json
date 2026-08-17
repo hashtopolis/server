@@ -68,12 +68,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeRead"
                 ],
                 "description": "GET many request to retrieve multiple objects.",
                 "parameters": [
@@ -238,12 +237,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeCreate"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeCreate"
                 ],
                 "description": "POST request to create a new object. The request must contain the resource record as data with the attributes of the new object.To add relationships, a relationships object can be added with the resource records of the relations that are part of this object.",
                 "requestBody": {
@@ -337,12 +335,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeUpdate"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeUpdate"
                 ],
                 "description": "PATCH request to update attributes of a single object.",
                 "requestBody": {
@@ -408,12 +405,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeDelete"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeDelete"
                 ],
                 "description": "",
                 "requestBody": {
@@ -478,12 +474,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeRead"
                 ],
                 "description": "GET many request to retrieve multiple objects.",
                 "parameters": [
@@ -574,12 +569,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeRead"
                 ],
                 "description": "GET request to retrieve a single object.",
                 "parameters": [
@@ -655,12 +649,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeRead"
                 ],
                 "description": "GET request for  for a to-one relationship link. Returns the resource record of the object that is part of the specified relation.",
                 "parameters": [
@@ -737,12 +730,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeUpdate"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeUpdate"
                 ],
                 "description": "PATCH request to update a to one relationship.",
                 "requestBody": {
@@ -818,12 +810,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeCreate"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeCreate"
                 ],
                 "description": "POST request to create a to-one relationship link.",
                 "requestBody": {
@@ -889,12 +880,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeDelete"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeDelete"
                 ],
                 "description": "",
                 "requestBody": {
@@ -969,12 +959,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeRead"
                 ],
                 "description": "GET request to retrieve a single object.",
                 "parameters": [
@@ -1096,12 +1085,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeUpdate"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeUpdate"
                 ],
                 "description": "PATCH request to update attributes of a single object.",
                 "requestBody": {
@@ -1185,12 +1173,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeDelete"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permCrackerBinaryTypeDelete"
                 ],
                 "description": "",
                 "parameters": []
@@ -3323,15 +3310,9 @@
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
-                "description": "JWT Authorization header using the Bearer scheme.",
+                "description": "JWT Authorization header using the Bearer scheme. Allowing the following permissions: permCrackerBinaryTypeCreate,<br>permCrackerBinaryTypeDelete,<br>permCrackerBinaryTypeRead,<br>permCrackerBinaryTypeUpdate",
                 "scheme": "bearer",
-                "bearerFormat": "JWT",
-                "scopes": [
-                    "permCrackerBinaryTypeCreate",
-                    "permCrackerBinaryTypeDelete",
-                    "permCrackerBinaryTypeRead",
-                    "permCrackerBinaryTypeUpdate"
-                ]
+                "bearerFormat": "JWT"
             },
             "basicAuth": {
                 "type": "http",

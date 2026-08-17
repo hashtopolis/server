@@ -98,12 +98,17 @@ class SpecBuilder {
       "components" => [
         "schemas" => $components,
         "securitySchemes" => [
+          /**
+           * A "scopes" entry is only valid on an OAuth2 scheme, so the
+           * permissions the API knows are named in the description. Which of
+           * them a single call needs is stated by its x-required-permissions.
+           */
           "bearerAuth" => [
             "type" => "http",
-            "description" => "JWT Authorization header using the Bearer scheme.",
+            "description" => "JWT Authorization header using the Bearer scheme."
+              . " Allowing the following permissions: " . implode(",<br>", $unique_all_scopes),
             "scheme" => "bearer",
             "bearerFormat" => "JWT",
-            "scopes" => array_values($unique_all_scopes),
           ],
           "basicAuth" => [
             "type" => "http",

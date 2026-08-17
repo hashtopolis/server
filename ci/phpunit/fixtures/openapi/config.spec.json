@@ -68,12 +68,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permConfigRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permConfigRead"
                 ],
                 "description": "GET many request to retrieve multiple objects.",
                 "parameters": [
@@ -256,12 +255,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permConfigUpdate"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permConfigUpdate"
                 ],
                 "description": "PATCH request to update attributes of a single object.",
                 "requestBody": {
@@ -326,12 +324,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permConfigRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permConfigRead"
                 ],
                 "description": "GET many request to retrieve multiple objects.",
                 "parameters": [
@@ -422,12 +419,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permConfigRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permConfigRead"
                 ],
                 "description": "GET request to retrieve a single object.",
                 "parameters": [
@@ -503,12 +499,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permConfigRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permConfigRead"
                 ],
                 "description": "GET request for  for a to-one relationship link. Returns the resource record of the object that is part of the specified relation.",
                 "parameters": [
@@ -585,12 +580,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permConfigUpdate"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permConfigUpdate"
                 ],
                 "description": "PATCH request to update a to one relationship.",
                 "requestBody": {
@@ -665,12 +659,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permConfigRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permConfigRead"
                 ],
                 "description": "GET request to retrieve a single object.",
                 "parameters": [
@@ -807,12 +800,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permConfigUpdate"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permConfigUpdate"
                 ],
                 "description": "PATCH request to update attributes of a single object.",
                 "requestBody": {
@@ -912,12 +904,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permConfigSectionRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permConfigSectionRead"
                 ],
                 "description": "GET many request to retrieve multiple objects.",
                 "parameters": [
@@ -1066,12 +1057,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permConfigSectionRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permConfigSectionRead"
                 ],
                 "description": "GET many request to retrieve multiple objects.",
                 "parameters": [
@@ -1162,12 +1152,11 @@
                 },
                 "security": [
                     {
-                        "bearerAuth": [
-                            [
-                                "permConfigSectionRead"
-                            ]
-                        ]
+                        "bearerAuth": []
                     }
+                ],
+                "x-required-permissions": [
+                    "permConfigSectionRead"
                 ],
                 "description": "GET request to retrieve a single object.",
                 "parameters": [
@@ -3802,14 +3791,9 @@
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
-                "description": "JWT Authorization header using the Bearer scheme.",
+                "description": "JWT Authorization header using the Bearer scheme. Allowing the following permissions: permConfigRead,<br>permConfigSectionRead,<br>permConfigUpdate",
                 "scheme": "bearer",
-                "bearerFormat": "JWT",
-                "scopes": [
-                    "permConfigRead",
-                    "permConfigSectionRead",
-                    "permConfigUpdate"
-                ]
+                "bearerFormat": "JWT"
             },
             "basicAuth": {
                 "type": "http",

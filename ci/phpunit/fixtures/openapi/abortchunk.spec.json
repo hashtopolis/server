@@ -433,10 +433,9 @@
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
-                "description": "JWT Authorization header using the Bearer scheme.",
+                "description": "JWT Authorization header using the Bearer scheme. Allowing the following permissions: ",
                 "scheme": "bearer",
-                "bearerFormat": "JWT",
-                "scopes": []
+                "bearerFormat": "JWT"
             },
             "basicAuth": {
                 "type": "http",
