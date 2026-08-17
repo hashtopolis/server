@@ -1,17 +1,49 @@
 <?php
 
 use Hashtopolis\inc\defines\DAgentIgnoreErrors;
+use Hashtopolis\inc\defines\DAgentStatsType;
+use Hashtopolis\inc\defines\DFileDownloadStatus;
+use Hashtopolis\inc\defines\DFileType;
+use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\inc\defines\DHashlistFormat;
+use Hashtopolis\inc\defines\DHealthCheckAgentStatus;
+use Hashtopolis\inc\defines\DHealthCheckMode;
+use Hashtopolis\inc\defines\DHealthCheckStatus;
+use Hashtopolis\inc\defines\DLogEntry;
+use Hashtopolis\inc\defines\DLogEntryIssuer;
+use Hashtopolis\inc\defines\DNotificationType;
+use Hashtopolis\inc\defines\DOperatingSystem;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\defines\UQueryHashlist;
+use Hashtopolis\inc\notifications\HashtopolisNotification;
 
 $CONF = array();
 
 require_once(dirname(__FILE__) . "/../../inc/defines/DAgentIgnoreErrors.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DAgentStatsType.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DFileDownloadStatus.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DFileType.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DHashcatStatus.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DHashlistFormat.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DHealthCheckAgentStatus.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DHealthCheckMode.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DHealthCheckStatus.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DLogEntry.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DLogEntryIssuer.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DNotificationType.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DOperatingSystem.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DTaskTypes.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/UQuery.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/UQueryHashlist.php");
+
+/* The delivery methods a notification setting can name are the registered notification instances */
+require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotification.php");
+require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotificationChatBot.php");
+require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotificationDiscordWebhook.php");
+require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotificationEmail.php");
+require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotificationExample.php");
+require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotificationSlack.php");
+require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotificationTelegram.php");
 
 //
 // Field choice declarations
@@ -32,6 +64,105 @@ $FieldHashlistFormatChoices = [
   ['key' => DHashlistFormat::WPA, 'label' => 'Hashlist format is WPA'],
   ['key' => DHashlistFormat::BINARY, 'label' => 'Hashlist format is BINARY'],
   ['key' => DHashlistFormat::SUPERHASHLIST, 'label' => 'Hashlist is SUPERHASHLIST'],
+];
+
+$FieldOperatingSystemChoices = [
+  ['key' => DOperatingSystem::LINUX, 'label' => 'Linux'],
+  ['key' => DOperatingSystem::WINDOWS, 'label' => 'Windows'],
+  ['key' => DOperatingSystem::OSX, 'label' => 'macOS'],
+];
+
+$FieldAgentStatTypeChoices = [
+  ['key' => DAgentStatsType::GPU_TEMP, 'label' => 'GPU temperature'],
+  ['key' => DAgentStatsType::GPU_UTIL, 'label' => 'GPU utilization'],
+  ['key' => DAgentStatsType::CPU_UTIL, 'label' => 'CPU utilization'],
+];
+
+$FieldHashcatStatusChoices = [
+  ['key' => DHashcatStatus::INIT, 'label' => 'Init'],
+  ['key' => DHashcatStatus::AUTOTUNE, 'label' => 'Autotune'],
+  ['key' => DHashcatStatus::RUNNING, 'label' => 'Running'],
+  ['key' => DHashcatStatus::PAUSED, 'label' => 'Paused'],
+  ['key' => DHashcatStatus::EXHAUSTED, 'label' => 'Exhausted'],
+  ['key' => DHashcatStatus::CRACKED, 'label' => 'Cracked'],
+  ['key' => DHashcatStatus::ABORTED, 'label' => 'Aborted'],
+  ['key' => DHashcatStatus::QUIT, 'label' => 'Quit'],
+  ['key' => DHashcatStatus::BYPASS, 'label' => 'Bypass'],
+  ['key' => DHashcatStatus::ABORTED_CHECKPOINT, 'label' => 'Aborted at checkpoint'],
+  ['key' => DHashcatStatus::STATUS_ABORTED_RUNTIME, 'label' => 'Aborted at runtime'],
+];
+
+$FieldFileTypeChoices = [
+  ['key' => DFileType::WORDLIST, 'label' => 'Wordlist'],
+  ['key' => DFileType::RULE, 'label' => 'Rule'],
+  ['key' => DFileType::OTHER, 'label' => 'Other'],
+  ['key' => DFileType::TEMPORARY, 'label' => 'Temporary'],
+];
+
+$FieldFileDownloadStatusChoices = [
+  ['key' => DFileDownloadStatus::DELETED, 'label' => 'Deleted'],
+  ['key' => DFileDownloadStatus::FAILED, 'label' => 'Failed'],
+  ['key' => DFileDownloadStatus::PENDING, 'label' => 'Pending'],
+  ['key' => DFileDownloadStatus::DONE, 'label' => 'Done'],
+];
+
+$FieldHealthCheckStatusChoices = [
+  ['key' => DHealthCheckStatus::ABORTED, 'label' => 'Aborted'],
+  ['key' => DHealthCheckStatus::PENDING, 'label' => 'Pending'],
+  ['key' => DHealthCheckStatus::COMPLETED, 'label' => 'Completed'],
+];
+
+$FieldHealthCheckModeChoices = [
+  ['key' => DHealthCheckMode::MD5, 'label' => 'MD5'],
+  ['key' => DHealthCheckMode::BCRYPT, 'label' => 'Bcrypt'],
+];
+
+$FieldHealthCheckAgentStatusChoices = [
+  ['key' => DHealthCheckAgentStatus::FAILED, 'label' => 'Failed'],
+  ['key' => DHealthCheckAgentStatus::PENDING, 'label' => 'Pending'],
+  ['key' => DHealthCheckAgentStatus::COMPLETED, 'label' => 'Completed'],
+];
+
+$FieldLogEntryIssuerChoices = [
+  ['key' => DLogEntryIssuer::API, 'label' => 'API'],
+  ['key' => DLogEntryIssuer::USER, 'label' => 'User'],
+];
+
+$FieldLogEntryLevelChoices = [
+  ['key' => DLogEntry::WARN, 'label' => 'Warning'],
+  ['key' => DLogEntry::ERROR, 'label' => 'Error'],
+  ['key' => DLogEntry::FATAL, 'label' => 'Fatal error'],
+  ['key' => DLogEntry::INFO, 'label' => 'Information'],
+];
+
+/**
+ * The delivery method of a notification setting, i.e. the name of the
+ * HashtopolisNotification implementation that sends it. NotificationUtils
+ * validates the column against exactly this registry.
+ */
+$FieldNotificationDeliveryChoices = array_map(
+  fn(string $name) => ['key' => $name, 'label' => $name],
+  array_keys(HashtopolisNotification::getInstances())
+);
+
+$FieldNotificationTypeChoices = [
+  ['key' => DNotificationType::TASK_COMPLETE, 'label' => 'Task completed'],
+  ['key' => DNotificationType::AGENT_ERROR, 'label' => 'Agent error'],
+  ['key' => DNotificationType::OWN_AGENT_ERROR, 'label' => 'Own agent error'],
+  ['key' => DNotificationType::LOG_ERROR, 'label' => 'Log error'],
+  ['key' => DNotificationType::NEW_TASK, 'label' => 'New task'],
+  ['key' => DNotificationType::NEW_HASHLIST, 'label' => 'New hashlist'],
+  ['key' => DNotificationType::HASHLIST_ALL_CRACKED, 'label' => 'Hashlist all cracked'],
+  ['key' => DNotificationType::HASHLIST_CRACKED_HASH, 'label' => 'Hashlist cracked hash'],
+  ['key' => DNotificationType::USER_CREATED, 'label' => 'User created'],
+  ['key' => DNotificationType::USER_DELETED, 'label' => 'User deleted'],
+  ['key' => DNotificationType::USER_LOGIN_FAILED, 'label' => 'User login failed'],
+  ['key' => DNotificationType::LOG_WARN, 'label' => 'Log warning'],
+  ['key' => DNotificationType::LOG_FATAL, 'label' => 'Log fatal'],
+  ['key' => DNotificationType::NEW_AGENT, 'label' => 'New agent'],
+  ['key' => DNotificationType::DELETE_TASK, 'label' => 'Delete task'],
+  ['key' => DNotificationType::DELETE_HASHLIST, 'label' => 'Delete hashlist'],
+  ['key' => DNotificationType::DELETE_AGENT, 'label' => 'Delete agent'],
 ];
 
 // Type: describes what kind of type the attribute is
@@ -58,7 +189,7 @@ $CONF['Agent'] = [
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'agentName', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'uid', 'read_only' => False, 'type' => 'str(100)'],
-    ['name' => 'os', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'os', 'read_only' => False, 'type' => 'int', 'choices' => $FieldOperatingSystemChoices],
     ['name' => 'devices', 'read_only' => True, 'type' => 'str(65535)'],
     ['name' => 'cmdPars', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'ignoreErrors', 'read_only' => False, 'type' => 'int', 'choices' => $FieldIgnoreErrorsChoices],
@@ -98,7 +229,7 @@ $CONF['AgentStat'] = [
   'columns' => [
     ['name' => 'agentStatId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'agentId', 'read_only' => True, 'protected' => True, 'type' => 'int', 'relation' => 'Agent'],
-    ['name' => 'statType', 'read_only' => True, 'protected' => True, 'type' => 'int'],
+    ['name' => 'statType', 'read_only' => True, 'protected' => True, 'type' => 'int', 'choices' => $FieldAgentStatTypeChoices],
     ['name' => 'time', 'read_only' => True, 'protected' => True, 'type' => 'int64'],
     ['name' => 'value', 'read_only' => True, 'protected' => True, 'type' => 'array', 'subtype' => 'int'],
   ],
@@ -148,7 +279,7 @@ $CONF['Chunk'] = [
     ['name' => 'solveTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'checkpoint', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'progress', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'state', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'state', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldHashcatStatusChoices],
     ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'speed', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ],
@@ -189,7 +320,7 @@ $CONF['File'] = [
     ['name' => 'filename', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'size', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'isSecret', 'read_only' => False, 'type' => 'bool'],
-    ['name' => 'fileType', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'fileType', 'read_only' => False, 'type' => 'int', 'choices' => $FieldFileTypeChoices],
     ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', 'relation' => 'AccessGroup'],
     ['name' => 'lineCount', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ],
@@ -206,7 +337,7 @@ $CONF['FileDownload'] = [
     ['name' => 'fileDownloadId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'fileId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'File'],
-    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldFileDownloadStatusChoices],
   ],
 ];
 $CONF['Hash'] = [
@@ -266,8 +397,8 @@ $CONF['HealthCheck'] = [
   'columns' => [
     ['name' => 'healthCheckId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'checkType', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldHealthCheckStatusChoices],
+    ['name' => 'checkType', 'read_only' => False, 'type' => 'int', 'choices' => $FieldHealthCheckModeChoices],
     ['name' => 'hashtypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'HashType'],
     ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinary'],
     ['name' => 'expectedCracks', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -279,7 +410,7 @@ $CONF['HealthCheckAgent'] = [
     ['name' => 'healthCheckAgentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'healthCheckId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'HealthCheck'],
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
-    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldHealthCheckAgentStatusChoices],
     ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'numGpus', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'start', 'read_only' => True, 'type' => 'int64', 'protected' => True],
@@ -299,9 +430,9 @@ $CONF['JwtApiKey'] = [
 $CONF['LogEntry'] = [
   'columns' => [
     ['name' => 'logEntryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'issuer', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
+    ['name' => 'issuer', 'read_only' => True, 'type' => 'str(50)', 'protected' => True, 'choices' => $FieldLogEntryIssuerChoices],
     ['name' => 'issuerId', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
-    ['name' => 'level', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
+    ['name' => 'level', 'read_only' => True, 'type' => 'str(50)', 'protected' => True, 'choices' => $FieldLogEntryLevelChoices],
     ['name' => 'message', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ],
@@ -309,9 +440,11 @@ $CONF['LogEntry'] = [
 $CONF['NotificationSetting'] = [
   'columns' => [
     ['name' => 'notificationSettingId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'action', 'read_only' => False, 'type' => 'str(50)'],
+    // 'action' names the event that triggers the notification, a DNotificationType value
+    ['name' => 'action', 'read_only' => False, 'type' => 'str(50)', 'choices' => $FieldNotificationTypeChoices],
     ['name' => 'objectId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'notification', 'read_only' => False, 'type' => 'str(50)'],
+    // 'notification' names the delivery method, a registered HashtopolisNotification
+    ['name' => 'notification', 'read_only' => False, 'type' => 'str(50)', 'choices' => $FieldNotificationDeliveryChoices],
     ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'User'],
     ['name' => 'receiver', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'isActive', 'read_only' => False, 'type' => 'bool'],
@@ -627,7 +760,8 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
     if ($COLUMN['choices'] !== null) {
       $choicesVal = '[';
       foreach ($COLUMN['choices'] as $CHOICE) {
-        $choicesVal .= $CHOICE['key'] . ' => "' . $CHOICE['label'] . '", ';
+        $key = is_string($CHOICE['key']) ? '"' . $CHOICE['key'] . '"' : $CHOICE['key'];
+        $choicesVal .= $key . ' => "' . $CHOICE['label'] . '", ';
       }
       $choicesVal .= ']';
       
