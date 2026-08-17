@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f79a8ed206218eeeefbc541ed3ff19a9",
+    "content-hash": "b82ca66ccd7cdec9315cd278f0ceafc6",
     "packages": [
         {
             "name": "composer/semver",
@@ -82,77 +82,6 @@
                 }
             ],
             "time": "2025-08-20T19:15:30+00:00"
-        },
-        {
-            "name": "crell/api-problem",
-            "version": "3.8.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Crell/ApiProblem.git",
-                "reference": "ddd6893a0aac8ecbebd6a6741b82eff974fc3b4b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Crell/ApiProblem/zipball/ddd6893a0aac8ecbebd6a6741b82eff974fc3b4b",
-                "reference": "ddd6893a0aac8ecbebd6a6741b82eff974fc3b4b",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^8.3"
-            },
-            "require-dev": {
-                "nyholm/psr7": "^1.8.2",
-                "phpstan/phpstan": "^2.1.33",
-                "phpunit/phpunit": "^7.0 || ^8.0 || ^9.6.31",
-                "psr/http-factory": "^1.1",
-                "psr/http-message": "^1.1"
-            },
-            "suggest": {
-                "psr/http-factory": "Common interfaces for PSR-7 HTTP message factories",
-                "psr/http-message": "Common interface for HTTP messages"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Crell\\ApiProblem\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Larry Garfield",
-                    "email": "larry@garfieldtech.com",
-                    "homepage": "http://www.garfieldtech.com/"
-                }
-            ],
-            "description": "PHP wrapper for the api-problem IETF specification",
-            "homepage": "https://github.com/Crell/ApiProblem",
-            "keywords": [
-                "api-problem",
-                "http",
-                "json",
-                "rest",
-                "xml"
-            ],
-            "support": {
-                "issues": "https://github.com/Crell/ApiProblem/issues",
-                "source": "https://github.com/Crell/ApiProblem/tree/3.8.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/Crell",
-                    "type": "github"
-                }
-            ],
-            "time": "2026-02-03T20:47:47+00:00"
         },
         {
             "name": "fig/http-message-util",

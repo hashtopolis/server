@@ -24,7 +24,6 @@
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "composer/semver": "^3.4",
-        "crell/api-problem": "^3.6",
         "firebase/php-jwt": "7.0.2",
         "jimtools/basic-auth": "^1.0",
         "jimtools/jwt-auth": "^3.0",
