@@ -4,6 +4,7 @@ namespace Hashtopolis\inc\apiv2\common;
 
 use Exception;
 use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\dba\NestedTransactionPDO;
 use Hashtopolis\dba\MassUpdateSet;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\error\ErrorHandler;
@@ -1228,6 +1229,20 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       }
       throw $exception;
     }
+
+    /**
+     * An operation that opened a transaction without closing it would turn the
+     * commit below into the release of a savepoint, leaving the outermost
+     * transaction to be rolled back at shutdown while the client is told the
+     * operations were applied. Refuse that rather than report a false success.
+     */
+    if ($db instanceof NestedTransactionPDO && $db->getTransactionDepth() !== 1) {
+      while ($db->inTransaction()) {
+        $db->rollBack();
+      }
+      throw new HttpError("Was not able to apply the atomic operations: an operation left a transaction open");
+    }
+
     if (!$db->commit()) {
       throw new HttpError("Was not able to apply the atomic operations");
     }
