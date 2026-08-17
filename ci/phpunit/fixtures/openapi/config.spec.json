@@ -1495,23 +1495,122 @@
                                 "const": "config"
                             },
                             "attributes": {
-                                "type": "object",
-                                "required": [
-                                    "configSectionId",
-                                    "item",
-                                    "value"
-                                ],
-                                "properties": {
-                                    "configSectionId": {
-                                        "type": "integer"
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "title": "ServerLogLevel",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string",
+                                                "const": "serverLogLevel"
+                                            },
+                                            "value": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "0",
+                                                        "title": "TRACE",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "10",
+                                                        "title": "DEBUG",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "20",
+                                                        "title": "INFO",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "30",
+                                                        "title": "WARNING",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "40",
+                                                        "title": "ERROR",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "50",
+                                                        "title": "FATAL",
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
                                     },
-                                    "item": {
-                                        "type": "string"
+                                    {
+                                        "type": "object",
+                                        "title": "NotificationsProxyType",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string",
+                                                "const": "notificationsProxyType"
+                                            },
+                                            "value": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "HTTP",
+                                                        "title": "HTTP",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "HTTPS",
+                                                        "title": "HTTPS",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "SOCKS4",
+                                                        "title": "SOCKS4",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "SOCKS5",
+                                                        "title": "SOCKS5",
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
                                     },
-                                    "value": {
-                                        "type": "string"
+                                    {
+                                        "type": "object",
+                                        "title": "ConfigGeneric",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
                                     }
-                                }
+                                ]
                             },
                             "links": {
                                 "type": "object",
@@ -1678,23 +1777,122 @@
                                 "const": "config"
                             },
                             "attributes": {
-                                "type": "object",
-                                "required": [
-                                    "configSectionId",
-                                    "item",
-                                    "value"
-                                ],
-                                "properties": {
-                                    "configSectionId": {
-                                        "type": "integer"
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "title": "ServerLogLevel",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string",
+                                                "const": "serverLogLevel"
+                                            },
+                                            "value": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "0",
+                                                        "title": "TRACE",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "10",
+                                                        "title": "DEBUG",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "20",
+                                                        "title": "INFO",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "30",
+                                                        "title": "WARNING",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "40",
+                                                        "title": "ERROR",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "50",
+                                                        "title": "FATAL",
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
                                     },
-                                    "item": {
-                                        "type": "string"
+                                    {
+                                        "type": "object",
+                                        "title": "NotificationsProxyType",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string",
+                                                "const": "notificationsProxyType"
+                                            },
+                                            "value": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "HTTP",
+                                                        "title": "HTTP",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "HTTPS",
+                                                        "title": "HTTPS",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "SOCKS4",
+                                                        "title": "SOCKS4",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "SOCKS5",
+                                                        "title": "SOCKS5",
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
                                     },
-                                    "value": {
-                                        "type": "string"
+                                    {
+                                        "type": "object",
+                                        "title": "ConfigGeneric",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
                                     }
-                                }
+                                ]
                             },
                             "links": {
                                 "type": "object",
@@ -1861,23 +2059,122 @@
                                 "const": "config"
                             },
                             "attributes": {
-                                "type": "object",
-                                "required": [
-                                    "configSectionId",
-                                    "item",
-                                    "value"
-                                ],
-                                "properties": {
-                                    "configSectionId": {
-                                        "type": "integer"
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "title": "ServerLogLevel",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string",
+                                                "const": "serverLogLevel"
+                                            },
+                                            "value": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "0",
+                                                        "title": "TRACE",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "10",
+                                                        "title": "DEBUG",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "20",
+                                                        "title": "INFO",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "30",
+                                                        "title": "WARNING",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "40",
+                                                        "title": "ERROR",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "50",
+                                                        "title": "FATAL",
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
                                     },
-                                    "item": {
-                                        "type": "string"
+                                    {
+                                        "type": "object",
+                                        "title": "NotificationsProxyType",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string",
+                                                "const": "notificationsProxyType"
+                                            },
+                                            "value": {
+                                                "oneOf": [
+                                                    {
+                                                        "const": "HTTP",
+                                                        "title": "HTTP",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "HTTPS",
+                                                        "title": "HTTPS",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "SOCKS4",
+                                                        "title": "SOCKS4",
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "const": "SOCKS5",
+                                                        "title": "SOCKS5",
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
                                     },
-                                    "value": {
-                                        "type": "string"
+                                    {
+                                        "type": "object",
+                                        "title": "ConfigGeneric",
+                                        "properties": {
+                                            "configSectionId": {
+                                                "type": "integer"
+                                            },
+                                            "item": {
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "configSectionId",
+                                            "item",
+                                            "value"
+                                        ]
                                     }
-                                }
+                                ]
                             },
                             "links": {
                                 "type": "object",
@@ -2095,23 +2392,122 @@
                                     "const": "config"
                                 },
                                 "attributes": {
-                                    "type": "object",
-                                    "required": [
-                                        "configSectionId",
-                                        "item",
-                                        "value"
-                                    ],
-                                    "properties": {
-                                        "configSectionId": {
-                                            "type": "integer"
+                                    "oneOf": [
+                                        {
+                                            "type": "object",
+                                            "title": "ServerLogLevel",
+                                            "properties": {
+                                                "configSectionId": {
+                                                    "type": "integer"
+                                                },
+                                                "item": {
+                                                    "type": "string",
+                                                    "const": "serverLogLevel"
+                                                },
+                                                "value": {
+                                                    "oneOf": [
+                                                        {
+                                                            "const": "0",
+                                                            "title": "TRACE",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "10",
+                                                            "title": "DEBUG",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "20",
+                                                            "title": "INFO",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "30",
+                                                            "title": "WARNING",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "40",
+                                                            "title": "ERROR",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "50",
+                                                            "title": "FATAL",
+                                                            "type": "string"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "configSectionId",
+                                                "item",
+                                                "value"
+                                            ]
                                         },
-                                        "item": {
-                                            "type": "string"
+                                        {
+                                            "type": "object",
+                                            "title": "NotificationsProxyType",
+                                            "properties": {
+                                                "configSectionId": {
+                                                    "type": "integer"
+                                                },
+                                                "item": {
+                                                    "type": "string",
+                                                    "const": "notificationsProxyType"
+                                                },
+                                                "value": {
+                                                    "oneOf": [
+                                                        {
+                                                            "const": "HTTP",
+                                                            "title": "HTTP",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "HTTPS",
+                                                            "title": "HTTPS",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "SOCKS4",
+                                                            "title": "SOCKS4",
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "const": "SOCKS5",
+                                                            "title": "SOCKS5",
+                                                            "type": "string"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "configSectionId",
+                                                "item",
+                                                "value"
+                                            ]
                                         },
-                                        "value": {
-                                            "type": "string"
+                                        {
+                                            "type": "object",
+                                            "title": "ConfigGeneric",
+                                            "properties": {
+                                                "configSectionId": {
+                                                    "type": "integer"
+                                                },
+                                                "item": {
+                                                    "type": "string"
+                                                },
+                                                "value": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "configSectionId",
+                                                "item",
+                                                "value"
+                                            ]
                                         }
-                                    }
+                                    ]
                                 },
                                 "links": {
                                     "type": "object",

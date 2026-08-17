@@ -212,6 +212,12 @@ final class FullSpecTest extends TestCase {
   public function testKnownShapeSpotChecks(): void {
     $schemas = self::$sanitized['components']['schemas'];
 
+    // Config attributes use the schema override (oneOf over config value types)
+    $this->assertArrayHasKey(
+      'oneOf',
+      $schemas['ConfigResponse']['properties']['data']['properties']['attributes']
+    );
+
     // Nullable integer field rendered as 3.1 type array
     $agentAttributes = $schemas['AgentResponse']['properties']['data']['properties']['attributes']['properties'];
     $this->assertSame(['integer', 'null'], $agentAttributes['userId']['type']);
