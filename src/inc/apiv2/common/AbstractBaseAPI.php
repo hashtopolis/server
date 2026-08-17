@@ -230,7 +230,45 @@ abstract class AbstractBaseAPI {
   public function getAggregateFieldsets(): array {
     return [];
   }
-  
+
+  /**
+   * Declare computed properties returned by aggregateData() for OpenAPI schema generation.
+   * Override in subclasses that implement aggregateData().
+   */
+  public static function getAggregateFeatures(): array {
+    return [];
+  }
+
+  /**
+   * Build the feature declaration of a single computed property returned by
+   * aggregateData(). Aggregates are derived on the fly rather than stored, so
+   * they are always read-only, never a primary key and never part of the dba
+   * mapping.
+   *
+   * A callback returning null contributes no key at all (see aggregateData()),
+   * so an optional aggregate is an absent property rather than a null one and
+   * does not need 'null' => true.
+   *
+   * @param string $type feature type, as used by the dba model features
+   * @param array<string, mixed> $overrides entries replacing the defaults, e.g. 'choices'
+   * @return array<string, mixed>
+   */
+  final protected static function aggregateFeature(string $type, string $alias, array $overrides = []): array {
+    return array_merge([
+      'type' => $type,
+      'alias' => $alias,
+      'pk' => false,
+      'private' => false,
+      'choices' => 'unset',
+      'null' => false,
+      'protected' => false,
+      'read_only' => true,
+      'subtype' => 'unset',
+      'public' => false,
+      'dba_mapping' => false,
+    ], $overrides);
+  }
+
   /**
    * Take all the dba features and converts them to a list.
    * It uses the data from the generator and replaces the keys with the aliases.
