@@ -220,7 +220,8 @@ $CONF['AgentError'] = [
     ['name' => 'agentErrorId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
     ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Task'],
-    ['name' => 'chunkId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Chunk'],
+    // an agent error is not necessarily tied to a chunk
+    ['name' => 'chunkId', 'read_only' => True, 'null' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Chunk'],
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'error', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
   ],
@@ -265,7 +266,7 @@ $CONF['Assignment'] = [
     ['name' => 'assignmentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'relation' => 'Task'],
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'relation' => 'Agent'],
-    ['name' => 'benchmark', 'read_only' => False, 'type' => 'str(50)', 'null' => True],
+    ['name' => 'benchmark', 'read_only' => False, 'type' => 'str(50)'],
   ],
 ];
 $CONF['Chunk'] = [
@@ -348,7 +349,7 @@ $CONF['Hash'] = [
     ['name' => 'salt', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'plaintext', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'timeCracked', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'chunkId', 'read_only' => False, 'type' => 'int', 'relation' => 'Chunk'],
+    ['name' => 'chunkId', 'read_only' => False, 'type' => 'int', 'null' => True, 'relation' => 'Chunk'],
     ['name' => 'isCracked', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'crackPos', 'read_only' => False, 'type' => 'int64'],
   ],
@@ -361,7 +362,7 @@ $CONF['HashBinary'] = [
     ['name' => 'hash', 'read_only' => False, 'type' => 'str(4294967295)'],
     ['name' => 'plaintext', 'read_only' => False, 'type' => 'str(1024)'],
     ['name' => 'timeCracked', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'chunkId', 'read_only' => False, 'type' => 'int', 'relation' => 'Chunk'],
+    ['name' => 'chunkId', 'read_only' => False, 'type' => 'int', 'null' => True, 'relation' => 'Chunk'],
     ['name' => 'isCracked', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'crackPos', 'read_only' => False, 'type' => 'int64'],
   ],
@@ -424,7 +425,7 @@ $CONF['JwtApiKey'] = [
     ['name' => 'startValid', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'endValid', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'userId', 'read_only' => True, 'null' => True, 'type' => 'int', 'relation' => 'User'],
-    ['name' => 'isRevoked', 'read_only' => False, 'null' => True, 'type' => 'bool'],
+    ['name' => 'isRevoked', 'read_only' => False, 'type' => 'bool'],
   ],
 ];
 $CONF['LogEntry'] = [
@@ -442,7 +443,8 @@ $CONF['NotificationSetting'] = [
     ['name' => 'notificationSettingId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     // 'action' names the event that triggers the notification, a DNotificationType value
     ['name' => 'action', 'read_only' => False, 'type' => 'str(50)', 'choices' => $FieldNotificationTypeChoices],
-    ['name' => 'objectId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    // notifications not tied to a specific object (e.g. agent-wide events) have no objectId
+    ['name' => 'objectId', 'read_only' => True, 'null' => True, 'type' => 'int', 'protected' => True],
     // 'notification' names the delivery method, a registered HashtopolisNotification
     ['name' => 'notification', 'read_only' => False, 'type' => 'str(50)', 'choices' => $FieldNotificationDeliveryChoices],
     ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'User'],
@@ -489,7 +491,7 @@ $CONF['RightGroup'] = [
   'columns' => [
     ['name' => 'rightGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'rightGroupId'],
     ['name' => 'groupName', 'read_only' => False, 'type' => 'str(50)', 'alias' => 'name'],
-    ['name' => 'permissions', 'read_only' => False, 'type' => 'dict', 'subtype' => 'bool', 'null' => True],
+    ['name' => 'permissions', 'read_only' => False, 'type' => 'dict', 'subtype' => 'bool'],
   ],
 ];
 $CONF['Session'] = [
@@ -613,7 +615,7 @@ $CONF['User'] = [
     ['name' => 'email', 'read_only' => False, 'type' => 'str(150)'],
     ['name' => 'passwordHash', 'read_only' => True, 'type' => 'str(256)', 'protected' => True, 'private' => True],
     ['name' => 'passwordSalt', 'read_only' => True, 'protected' => True, 'type' => 'str(256)', 'private' => True],
-    ['name' => 'isValid', 'read_only' => False, 'type' => 'bool', 'null' => true],
+    ['name' => 'isValid', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'isComputedPassword', 'read_only' => True, 'type' => 'bool', 'protected' => True,],
     ['name' => 'lastLoginDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'registeredSince', 'read_only' => True, 'type' => 'int64', 'protected' => True],

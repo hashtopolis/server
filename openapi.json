@@ -29289,10 +29289,7 @@
                                                     "type": "string"
                                                 },
                                                 "isValid": {
-                                                    "type": [
-                                                        "boolean",
-                                                        "null"
-                                                    ]
+                                                    "type": "boolean"
                                                 },
                                                 "isComputedPassword": {
                                                     "type": "boolean"
@@ -29687,10 +29684,7 @@
                                                     "type": "string"
                                                 },
                                                 "isValid": {
-                                                    "type": [
-                                                        "boolean",
-                                                        "null"
-                                                    ]
+                                                    "type": "boolean"
                                                 },
                                                 "isComputedPassword": {
                                                     "type": "boolean"
@@ -30085,10 +30079,7 @@
                                                     "type": "string"
                                                 },
                                                 "isValid": {
-                                                    "type": [
-                                                        "boolean",
-                                                        "null"
-                                                    ]
+                                                    "type": "boolean"
                                                 },
                                                 "isComputedPassword": {
                                                     "type": "boolean"
@@ -30535,10 +30526,7 @@
                                                     "type": "string"
                                                 },
                                                 "isValid": {
-                                                    "type": [
-                                                        "boolean",
-                                                        "null"
-                                                    ]
+                                                    "type": "boolean"
                                                 },
                                                 "isComputedPassword": {
                                                     "type": "boolean"
@@ -31582,10 +31570,7 @@
                                                     "type": "string"
                                                 },
                                                 "isValid": {
-                                                    "type": [
-                                                        "boolean",
-                                                        "null"
-                                                    ]
+                                                    "type": "boolean"
                                                 },
                                                 "isComputedPassword": {
                                                     "type": "boolean"
@@ -31746,7 +31731,10 @@
                                                     "type": "integer"
                                                 },
                                                 "chunkId": {
-                                                    "type": "integer"
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "time": {
                                                     "type": "integer",
@@ -32046,10 +32034,7 @@
                                                     "type": "integer"
                                                 },
                                                 "benchmark": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ]
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -32617,10 +32602,7 @@
                                                     "type": "string"
                                                 },
                                                 "isValid": {
-                                                    "type": [
-                                                        "boolean",
-                                                        "null"
-                                                    ]
+                                                    "type": "boolean"
                                                 },
                                                 "isComputedPassword": {
                                                     "type": "boolean"
@@ -32781,7 +32763,10 @@
                                                     "type": "integer"
                                                 },
                                                 "chunkId": {
-                                                    "type": "integer"
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "time": {
                                                     "type": "integer",
@@ -33081,10 +33066,7 @@
                                                     "type": "integer"
                                                 },
                                                 "benchmark": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ]
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -33704,10 +33686,7 @@
                                                     "type": "string"
                                                 },
                                                 "isValid": {
-                                                    "type": [
-                                                        "boolean",
-                                                        "null"
-                                                    ]
+                                                    "type": "boolean"
                                                 },
                                                 "isComputedPassword": {
                                                     "type": "boolean"
@@ -33868,7 +33847,10 @@
                                                     "type": "integer"
                                                 },
                                                 "chunkId": {
-                                                    "type": "integer"
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "time": {
                                                     "type": "integer",
@@ -34168,10 +34150,7 @@
                                                     "type": "integer"
                                                 },
                                                 "benchmark": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ]
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -34323,15 +34302,13 @@
                                         "type": "integer"
                                     },
                                     "benchmark": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
                                     "taskId",
-                                    "agentId"
+                                    "agentId",
+                                    "benchmark"
                                 ]
                             }
                         }
@@ -34359,10 +34336,7 @@
                                 "type": "object",
                                 "properties": {
                                     "benchmark": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
+                                        "type": "string"
                                     }
                                 }
                             }
@@ -34398,10 +34372,7 @@
                                     "type": "object",
                                     "properties": {
                                         "benchmark": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -34512,10 +34483,7 @@
                                         "type": "integer"
                                     },
                                     "benchmark": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
+                                        "type": "string"
                                     }
                                 }
                             },
@@ -34974,10 +34942,7 @@
                                         "type": "integer"
                                     },
                                     "benchmark": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
+                                        "type": "string"
                                     }
                                 }
                             },
@@ -35487,10 +35452,7 @@
                                             "type": "integer"
                                         },
                                         "benchmark": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
+                                            "type": "string"
                                         }
                                     }
                                 },
@@ -36673,7 +36635,10 @@
                                         "type": "integer"
                                     },
                                     "chunkId": {
-                                        "type": "integer"
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
                                     },
                                     "time": {
                                         "type": "integer",
@@ -37014,7 +36979,10 @@
                                             "type": "integer"
                                         },
                                         "chunkId": {
-                                            "type": "integer"
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
                                         },
                                         "time": {
                                             "type": "integer",
@@ -37744,16 +37712,14 @@
                                         ]
                                     },
                                     "isRevoked": {
-                                        "type": [
-                                            "boolean",
-                                            "null"
-                                        ]
+                                        "type": "boolean"
                                     }
                                 },
                                 "required": [
                                     "scopes",
                                     "startValid",
-                                    "endValid"
+                                    "endValid",
+                                    "isRevoked"
                                 ]
                             }
                         }
@@ -37781,10 +37747,7 @@
                                 "type": "object",
                                 "properties": {
                                     "isRevoked": {
-                                        "type": [
-                                            "boolean",
-                                            "null"
-                                        ]
+                                        "type": "boolean"
                                     }
                                 }
                             }
@@ -37820,10 +37783,7 @@
                                     "type": "object",
                                     "properties": {
                                         "isRevoked": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         }
                                     }
                                 }
@@ -37943,10 +37903,7 @@
                                         ]
                                     },
                                     "isRevoked": {
-                                        "type": [
-                                            "boolean",
-                                            "null"
-                                        ]
+                                        "type": "boolean"
                                     }
                                 }
                             },
@@ -38064,10 +38021,7 @@
                                             "type": "string"
                                         },
                                         "isValid": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         },
                                         "isComputedPassword": {
                                             "type": "boolean"
@@ -38191,10 +38145,7 @@
                                         ]
                                     },
                                     "isRevoked": {
-                                        "type": [
-                                            "boolean",
-                                            "null"
-                                        ]
+                                        "type": "boolean"
                                     }
                                 }
                             },
@@ -38312,10 +38263,7 @@
                                             "type": "string"
                                         },
                                         "isValid": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         },
                                         "isComputedPassword": {
                                             "type": "boolean"
@@ -38490,10 +38438,7 @@
                                             ]
                                         },
                                         "isRevoked": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         }
                                     }
                                 },
@@ -38612,10 +38557,7 @@
                                             "type": "string"
                                         },
                                         "isValid": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         },
                                         "isComputedPassword": {
                                             "type": "boolean"
@@ -45384,17 +45326,15 @@
                                         "type": "string"
                                     },
                                     "permissions": {
-                                        "type": [
-                                            "object",
-                                            "null"
-                                        ],
+                                        "type": "object",
                                         "additionalProperties": {
                                             "type": "boolean"
                                         }
                                     }
                                 },
                                 "required": [
-                                    "name"
+                                    "name",
+                                    "permissions"
                                 ]
                             }
                         }
@@ -45425,10 +45365,7 @@
                                         "type": "string"
                                     },
                                     "permissions": {
-                                        "type": [
-                                            "object",
-                                            "null"
-                                        ],
+                                        "type": "object",
                                         "additionalProperties": {
                                             "type": "boolean"
                                         }
@@ -45470,10 +45407,7 @@
                                             "type": "string"
                                         },
                                         "permissions": {
-                                            "type": [
-                                                "object",
-                                                "null"
-                                            ],
+                                            "type": "object",
                                             "additionalProperties": {
                                                 "type": "boolean"
                                             }
@@ -45583,10 +45517,7 @@
                                         "type": "string"
                                     },
                                     "permissions": {
-                                        "type": [
-                                            "object",
-                                            "null"
-                                        ],
+                                        "type": "object",
                                         "additionalProperties": {
                                             "type": "boolean"
                                         }
@@ -45703,10 +45634,7 @@
                                             "type": "string"
                                         },
                                         "isValid": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         },
                                         "isComputedPassword": {
                                             "type": "boolean"
@@ -45817,10 +45745,7 @@
                                         "type": "string"
                                     },
                                     "permissions": {
-                                        "type": [
-                                            "object",
-                                            "null"
-                                        ],
+                                        "type": "object",
                                         "additionalProperties": {
                                             "type": "boolean"
                                         }
@@ -45937,10 +45862,7 @@
                                             "type": "string"
                                         },
                                         "isValid": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         },
                                         "isComputedPassword": {
                                             "type": "boolean"
@@ -46051,10 +45973,7 @@
                                         "type": "string"
                                     },
                                     "permissions": {
-                                        "type": [
-                                            "object",
-                                            "null"
-                                        ],
+                                        "type": "object",
                                         "additionalProperties": {
                                             "type": "boolean"
                                         }
@@ -46171,10 +46090,7 @@
                                             "type": "string"
                                         },
                                         "isValid": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         },
                                         "isComputedPassword": {
                                             "type": "boolean"
@@ -46336,10 +46252,7 @@
                                             "type": "string"
                                         },
                                         "permissions": {
-                                            "type": [
-                                                "object",
-                                                "null"
-                                            ],
+                                            "type": "object",
                                             "additionalProperties": {
                                                 "type": "boolean"
                                             }
@@ -46457,10 +46370,7 @@
                                             "type": "string"
                                         },
                                         "isValid": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         },
                                         "isComputedPassword": {
                                             "type": "boolean"
@@ -46701,7 +46611,10 @@
                                         "format": "int64"
                                     },
                                     "chunkId": {
-                                        "type": "integer"
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
                                     },
                                     "isCracked": {
                                         "type": "boolean"
@@ -47168,7 +47081,10 @@
                                         "format": "int64"
                                     },
                                     "chunkId": {
-                                        "type": "integer"
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
                                     },
                                     "isCracked": {
                                         "type": "boolean"
@@ -47686,7 +47602,10 @@
                                             "format": "int64"
                                         },
                                         "chunkId": {
-                                            "type": "integer"
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
                                         },
                                         "isCracked": {
                                             "type": "boolean"
@@ -48926,7 +48845,10 @@
                                                     "format": "int64"
                                                 },
                                                 "chunkId": {
-                                                    "type": "integer"
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "isCracked": {
                                                     "type": "boolean"
@@ -49700,7 +49622,10 @@
                                                     "format": "int64"
                                                 },
                                                 "chunkId": {
-                                                    "type": "integer"
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "isCracked": {
                                                     "type": "boolean"
@@ -50474,7 +50399,10 @@
                                                     "format": "int64"
                                                 },
                                                 "chunkId": {
-                                                    "type": "integer"
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "isCracked": {
                                                     "type": "boolean"
@@ -51300,7 +51228,10 @@
                                                     "format": "int64"
                                                 },
                                                 "chunkId": {
-                                                    "type": "integer"
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "isCracked": {
                                                     "type": "boolean"
@@ -55993,7 +55924,10 @@
                                         ]
                                     },
                                     "objectId": {
-                                        "type": "integer"
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
                                     },
                                     "notification": {
                                         "oneOf": [
@@ -56154,10 +56088,7 @@
                                             "type": "string"
                                         },
                                         "isValid": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         },
                                         "isComputedPassword": {
                                             "type": "boolean"
@@ -56358,7 +56289,10 @@
                                         ]
                                     },
                                     "objectId": {
-                                        "type": "integer"
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
                                     },
                                     "notification": {
                                         "oneOf": [
@@ -56519,10 +56453,7 @@
                                             "type": "string"
                                         },
                                         "isValid": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         },
                                         "isComputedPassword": {
                                             "type": "boolean"
@@ -56774,7 +56705,10 @@
                                             ]
                                         },
                                         "objectId": {
-                                            "type": "integer"
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
                                         },
                                         "notification": {
                                             "oneOf": [
@@ -56936,10 +56870,7 @@
                                             "type": "string"
                                         },
                                         "isValid": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         },
                                         "isComputedPassword": {
                                             "type": "boolean"
@@ -69231,10 +69162,7 @@
                                         "type": "integer"
                                     },
                                     "isValid": {
-                                        "type": [
-                                            "boolean",
-                                            "null"
-                                        ]
+                                        "type": "boolean"
                                     },
                                     "sessionLifetime": {
                                         "type": "integer"
@@ -69279,10 +69207,7 @@
                                             "type": "integer"
                                         },
                                         "isValid": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         },
                                         "sessionLifetime": {
                                             "type": "integer"
@@ -69406,10 +69331,7 @@
                                         "type": "string"
                                     },
                                     "isValid": {
-                                        "type": [
-                                            "boolean",
-                                            "null"
-                                        ]
+                                        "type": "boolean"
                                     },
                                     "isComputedPassword": {
                                         "type": "boolean"
@@ -69593,10 +69515,7 @@
                                                     "type": "string"
                                                 },
                                                 "permissions": {
-                                                    "type": [
-                                                        "object",
-                                                        "null"
-                                                    ],
+                                                    "type": "object",
                                                     "additionalProperties": {
                                                         "type": "boolean"
                                                     }
@@ -69726,10 +69645,7 @@
                                         "type": "string"
                                     },
                                     "isValid": {
-                                        "type": [
-                                            "boolean",
-                                            "null"
-                                        ]
+                                        "type": "boolean"
                                     },
                                     "isComputedPassword": {
                                         "type": "boolean"
@@ -69913,10 +69829,7 @@
                                                     "type": "string"
                                                 },
                                                 "permissions": {
-                                                    "type": [
-                                                        "object",
-                                                        "null"
-                                                    ],
+                                                    "type": "object",
                                                     "additionalProperties": {
                                                         "type": "boolean"
                                                     }
@@ -70046,10 +69959,7 @@
                                         "type": "string"
                                     },
                                     "isValid": {
-                                        "type": [
-                                            "boolean",
-                                            "null"
-                                        ]
+                                        "type": "boolean"
                                     },
                                     "isComputedPassword": {
                                         "type": "boolean"
@@ -70233,10 +70143,7 @@
                                                     "type": "string"
                                                 },
                                                 "permissions": {
-                                                    "type": [
-                                                        "object",
-                                                        "null"
-                                                    ],
+                                                    "type": "object",
                                                     "additionalProperties": {
                                                         "type": "boolean"
                                                     }
@@ -70417,10 +70324,7 @@
                                             "type": "string"
                                         },
                                         "isValid": {
-                                            "type": [
-                                                "boolean",
-                                                "null"
-                                            ]
+                                            "type": "boolean"
                                         },
                                         "isComputedPassword": {
                                             "type": "boolean"
@@ -70605,10 +70509,7 @@
                                                     "type": "string"
                                                 },
                                                 "permissions": {
-                                                    "type": [
-                                                        "object",
-                                                        "null"
-                                                    ],
+                                                    "type": "object",
                                                     "additionalProperties": {
                                                         "type": "boolean"
                                                     }
