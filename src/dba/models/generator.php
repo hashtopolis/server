@@ -586,7 +586,19 @@ function getTypingType($str, $nullable = false): string {
 }
 
 foreach ($CONF as $NAME => $MODEL_CONF) {
-  $COLUMNS = $MODEL_CONF['columns'];
+  $MODEL_CONF = array_merge(["dba_mapping" => False], $MODEL_CONF);
+  $COLUMNS = array_map(fn(array $column): array => array_merge([
+    "null" => False,
+    "protected" => False,
+    "private" => False,
+    "public" => False,
+    "dba_mapping" => False,
+    "subtype" => "unset",
+    "choices" => null,
+    "alias" => $column["name"],
+    // an absent "null" key means the column is nullable, while "null" => False makes it non-nullable
+    "nullable" => !(array_key_exists("null", $column) && !$column["null"]),
+  ], $column), $MODEL_CONF['columns']);
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModel.template.txt");
   $class = str_replace("__MODEL_NAME__", $NAME, $class);
   $vars = array();
@@ -601,7 +613,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $crud_defines = array();
   foreach ($COLUMNS as $COLUMN) {
     $col = $COLUMN['name'];
-    $type = getTypingType($COLUMN['type'], !((isset($COLUMN['null']) && !$COLUMN['null'])));
+    $type = getTypingType($COLUMN['type'], $COLUMN['nullable']);
     if (sizeof($vars) > 0) {
       $getter = "function get" . strtoupper($col[0]) . substr($col, 1) . "(): $type {\n    return \$this->$col;\n  }";
       $setter = "function set" . strtoupper($col[0]) . substr($col, 1) . "($type \$$col): void {\n    \$this->$col = \$$col;\n  }";
@@ -612,7 +624,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
     $vars[] = "private $type \$$col;";
     $init[] = "\$this->$col = \$$col;";
     
-    if (array_key_exists("choices", $COLUMN)) {
+    if ($COLUMN['choices'] !== null) {
       $choicesVal = '[';
       foreach ($COLUMN['choices'] as $CHOICE) {
         $choicesVal .= $CHOICE['key'] . ' => "' . $CHOICE['label'] . '", ';
@@ -626,15 +638,15 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
     
     $features[] = "\$dict['$col'] = ['read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', ' .
       '"type" => "' . $COLUMN['type'] . '", ' .
-      '"subtype" => "' . (array_key_exists("subtype", $COLUMN) ? $COLUMN['subtype'] : 'unset') . '", ' .
+      '"subtype" => "' . $COLUMN['subtype'] . '", ' .
       '"choices" => ' . $choicesVal . ', ' .
-      '"null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . ', ' .
+      '"null" => ' . ($COLUMN['null'] ? 'True' : 'False') . ', ' .
       '"pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . ', ' .
-      '"protected" => ' . (array_key_exists("protected", $COLUMN) ? ($COLUMN['protected'] ? 'True' : 'False') : 'False') . ', ' .
-      '"private" => ' . (array_key_exists("private", $COLUMN) ? ($COLUMN['private'] ? 'True' : 'False') : 'False') . ', ' .
-      '"alias" => "' . (array_key_exists("alias", $COLUMN) ? $COLUMN['alias'] : $COLUMN['name']) . '", ' .
-      '"public" => ' . (array_key_exists("public", $COLUMN) ? ($COLUMN['public'] ? 'True' : 'False') : 'False') . ', ' .
-      '"dba_mapping" => ' . (array_key_exists("dba_mapping", $COLUMN) ? ($COLUMN['dba_mapping'] ? 'True' : 'False') : 'False') .
+      '"protected" => ' . ($COLUMN['protected'] ? 'True' : 'False') . ', ' .
+      '"private" => ' . ($COLUMN['private'] ? 'True' : 'False') . ', ' .
+      '"alias" => "' . $COLUMN['alias'] . '", ' .
+      '"public" => ' . ($COLUMN['public'] ? 'True' : 'False') . ', ' .
+      '"dba_mapping" => ' . ($COLUMN['dba_mapping'] ? 'True' : 'False') .
       '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
     $variables[] = "const " . makeConstant($col) . " = \"$col\";";
@@ -659,7 +671,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModelFactory.template.txt");
   $class = str_replace("__MODEL_NAME__", $NAME, $class);
-  $class = str_replace("__MODEL_DBA_MAPPING__", (array_key_exists("dba_mapping", $MODEL_CONF) ? ($MODEL_CONF['dba_mapping'] ? 'True' : 'False') : 'False'), $class);
+  $class = str_replace("__MODEL_DBA_MAPPING__", ($MODEL_CONF['dba_mapping'] ? 'True' : 'False'), $class);
   $dict = [];
   $dict2 = [];
   $mapping = [];
@@ -673,10 +685,10 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
     else {
       $dict[] = "null";
       $dict2[] = "\$dict['$col']";
-      if (array_key_exists("dba_mapping", $COLUMN) && $COLUMN['dba_mapping']) {
+      if ($COLUMN['dba_mapping']) {
         $mapping[] = "\$dict['$col'] = \$dict['htp_$col'];";
       }
-      if (array_key_exists("type", $COLUMN) && $COLUMN['type'] == 'binary') {
+      if ($COLUMN['type'] == 'binary') {
         $streaming[] = "if (is_resource(\$dict['$col'])) {\n      \$t = stream_get_contents(\$dict['$col']);\n      fclose(\$dict['$col']);\n      \$dict['$col'] = bin2hex(\$t);\n    }";
       }
     }
