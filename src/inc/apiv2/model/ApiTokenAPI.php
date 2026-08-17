@@ -75,6 +75,12 @@ class ApiTokenAPI extends AbstractModelAPI {
     ];
   }
   
+  public static function getAggregateFeatures(): array {
+    return [
+      'token' => self::aggregateFeature('str', 'token'),
+    ];
+  }
+
   /**
    * @throws HttpError
    * @throws ResourceNotFoundError

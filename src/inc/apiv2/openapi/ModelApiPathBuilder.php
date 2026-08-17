@@ -55,6 +55,9 @@ class ModelApiPathBuilder {
     if (!array_key_exists($name, $components)) {
       $responseFeatures = array_filter($class->getFeaturesWithoutFormfields(), fn($f) => !$f['private']);
       $responseAttributeProperties = $this->typeMapper->makeProperties($responseFeatures, true);
+      $aggregateFeatures = $class->getAggregateFeatures();
+      $aggregateAttributeProperties = $this->typeMapper->makeProperties($aggregateFeatures, true);
+      $allResponseProperties = array_merge($responseAttributeProperties, $aggregateAttributeProperties);
       $attributesOverride = $class->getOpenAPIAttributesSchemaOverride();
       if ($attributesOverride !== null) {
         $attributesSchema = $attributesOverride;
@@ -65,7 +68,7 @@ class ModelApiPathBuilder {
             fn($f) => $f['alias'],
             array_filter($responseFeatures, fn($f) => !$f['pk'])
           )),
-          "properties" => $responseAttributeProperties
+          "properties" => $allResponseProperties
         ];
       }
       /**

@@ -58,7 +58,13 @@ class PreTaskAPI extends AbstractModelAPI {
       ]
     ];
   }
-  
+
+  public static function getAggregateFeatures(): array {
+    return [
+      'auxiliaryKeyspace' => self::aggregateFeature('int', 'auxiliaryKeyspace'),
+    ];
+  }
+
   /**
    * @param Pretask $object
    * @return int
