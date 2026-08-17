@@ -29373,7 +29373,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -29755,7 +29771,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -30137,7 +30169,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -30571,7 +30619,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -30807,7 +30871,23 @@
                                         "type": "boolean"
                                     },
                                     "os": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "Linux",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Windows",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "macOS",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "uid": {
                                         "type": "string"
@@ -30886,7 +30966,23 @@
                                             "type": "boolean"
                                         },
                                         "os": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": 0,
+                                                    "title": "Linux",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "Windows",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 2,
+                                                    "title": "macOS",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         },
                                         "uid": {
                                             "type": "string"
@@ -31018,7 +31114,23 @@
                                         "type": "string"
                                     },
                                     "os": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "Linux",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Windows",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "macOS",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "devices": {
                                         "type": "string"
@@ -31569,7 +31681,23 @@
                                                     "type": "integer"
                                                 },
                                                 "statType": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 1,
+                                                            "title": "GPU temperature",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "GPU utilization",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 3,
+                                                            "title": "CPU utilization",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "time": {
                                                     "type": "integer",
@@ -31691,7 +31819,63 @@
                                                     "type": "integer"
                                                 },
                                                 "state": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Init",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Autotune",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "Running",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 3,
+                                                            "title": "Paused",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 4,
+                                                            "title": "Exhausted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 5,
+                                                            "title": "Cracked",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 6,
+                                                            "title": "Aborted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 7,
+                                                            "title": "Quit",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 8,
+                                                            "title": "Bypass",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 9,
+                                                            "title": "Aborted at checkpoint",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 10,
+                                                            "title": "Aborted at runtime",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "cracked": {
                                                     "type": "integer"
@@ -31965,7 +32149,23 @@
                                         "type": "string"
                                     },
                                     "os": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "Linux",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Windows",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "macOS",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "devices": {
                                         "type": "string"
@@ -32516,7 +32716,23 @@
                                                     "type": "integer"
                                                 },
                                                 "statType": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 1,
+                                                            "title": "GPU temperature",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "GPU utilization",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 3,
+                                                            "title": "CPU utilization",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "time": {
                                                     "type": "integer",
@@ -32638,7 +32854,63 @@
                                                     "type": "integer"
                                                 },
                                                 "state": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Init",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Autotune",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "Running",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 3,
+                                                            "title": "Paused",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 4,
+                                                            "title": "Exhausted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 5,
+                                                            "title": "Cracked",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 6,
+                                                            "title": "Aborted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 7,
+                                                            "title": "Quit",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 8,
+                                                            "title": "Bypass",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 9,
+                                                            "title": "Aborted at checkpoint",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 10,
+                                                            "title": "Aborted at runtime",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "cracked": {
                                                     "type": "integer"
@@ -32963,7 +33235,23 @@
                                             "type": "string"
                                         },
                                         "os": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": 0,
+                                                    "title": "Linux",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "Windows",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 2,
+                                                    "title": "macOS",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         },
                                         "devices": {
                                             "type": "string"
@@ -33515,7 +33803,23 @@
                                                     "type": "integer"
                                                 },
                                                 "statType": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 1,
+                                                            "title": "GPU temperature",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "GPU utilization",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 3,
+                                                            "title": "CPU utilization",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "time": {
                                                     "type": "integer",
@@ -33637,7 +33941,63 @@
                                                     "type": "integer"
                                                 },
                                                 "state": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Init",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Autotune",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "Running",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 3,
+                                                            "title": "Paused",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 4,
+                                                            "title": "Exhausted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 5,
+                                                            "title": "Cracked",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 6,
+                                                            "title": "Aborted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 7,
+                                                            "title": "Quit",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 8,
+                                                            "title": "Bypass",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 9,
+                                                            "title": "Aborted at checkpoint",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 10,
+                                                            "title": "Aborted at runtime",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "cracked": {
                                                     "type": "integer"
@@ -34327,7 +34687,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -34773,7 +35149,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -35271,7 +35663,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -37025,7 +37433,23 @@
                                         "type": "integer"
                                     },
                                     "statType": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 1,
+                                                "title": "GPU temperature",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "GPU utilization",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 3,
+                                                "title": "CPU utilization",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "time": {
                                         "type": "integer",
@@ -37177,7 +37601,23 @@
                                             "type": "integer"
                                         },
                                         "statType": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": 1,
+                                                    "title": "GPU temperature",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 2,
+                                                    "title": "GPU utilization",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 3,
+                                                    "title": "CPU utilization",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         },
                                         "time": {
                                             "type": "integer",
@@ -38424,7 +38864,63 @@
                                         "type": "integer"
                                     },
                                     "state": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "Init",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Autotune",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "Running",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 3,
+                                                "title": "Paused",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 4,
+                                                "title": "Exhausted",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 5,
+                                                "title": "Cracked",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 6,
+                                                "title": "Aborted",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 7,
+                                                "title": "Quit",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 8,
+                                                "title": "Bypass",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 9,
+                                                "title": "Aborted at checkpoint",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 10,
+                                                "title": "Aborted at runtime",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "cracked": {
                                         "type": "integer"
@@ -38603,7 +39099,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -38954,7 +39466,63 @@
                                             "type": "integer"
                                         },
                                         "state": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": 0,
+                                                    "title": "Init",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "Autotune",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 2,
+                                                    "title": "Running",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 3,
+                                                    "title": "Paused",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 4,
+                                                    "title": "Exhausted",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 5,
+                                                    "title": "Cracked",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 6,
+                                                    "title": "Aborted",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 7,
+                                                    "title": "Quit",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 8,
+                                                    "title": "Bypass",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 9,
+                                                    "title": "Aborted at checkpoint",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 10,
+                                                    "title": "Aborted at runtime",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         },
                                         "cracked": {
                                             "type": "integer"
@@ -39134,7 +39702,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -43553,7 +44137,28 @@
                                         "type": "boolean"
                                     },
                                     "fileType": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "Wordlist",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Rule",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "Other",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 100,
+                                                "title": "Temporary",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "accessGroupId": {
                                         "type": "integer"
@@ -43596,7 +44201,28 @@
                                         "type": "integer"
                                     },
                                     "fileType": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "Wordlist",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Rule",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "Other",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 100,
+                                                "title": "Temporary",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "filename": {
                                         "type": "string"
@@ -43641,7 +44267,28 @@
                                             "type": "integer"
                                         },
                                         "fileType": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": 0,
+                                                    "title": "Wordlist",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "Rule",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 2,
+                                                    "title": "Other",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 100,
+                                                    "title": "Temporary",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         },
                                         "filename": {
                                             "type": "string"
@@ -43765,7 +44412,28 @@
                                         "type": "boolean"
                                     },
                                     "fileType": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "Wordlist",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Rule",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "Other",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 100,
+                                                "title": "Temporary",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "accessGroupId": {
                                         "type": "integer"
@@ -43962,7 +44630,28 @@
                                         "type": "boolean"
                                     },
                                     "fileType": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "Wordlist",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Rule",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "Other",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 100,
+                                                "title": "Temporary",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "accessGroupId": {
                                         "type": "integer"
@@ -44159,7 +44848,28 @@
                                         "type": "boolean"
                                     },
                                     "fileType": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "Wordlist",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Rule",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "Other",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 100,
+                                                "title": "Temporary",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "accessGroupId": {
                                         "type": "integer"
@@ -44407,7 +45117,28 @@
                                             "type": "boolean"
                                         },
                                         "fileType": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": 0,
+                                                    "title": "Wordlist",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "Rule",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 2,
+                                                    "title": "Other",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 100,
+                                                    "title": "Temporary",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         },
                                         "accessGroupId": {
                                             "type": "integer"
@@ -46166,7 +46897,63 @@
                                                     "type": "integer"
                                                 },
                                                 "state": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Init",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Autotune",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "Running",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 3,
+                                                            "title": "Paused",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 4,
+                                                            "title": "Exhausted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 5,
+                                                            "title": "Cracked",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 6,
+                                                            "title": "Aborted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 7,
+                                                            "title": "Quit",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 8,
+                                                            "title": "Bypass",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 9,
+                                                            "title": "Aborted at checkpoint",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 10,
+                                                            "title": "Aborted at runtime",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "cracked": {
                                                     "type": "integer"
@@ -46577,7 +47364,63 @@
                                                     "type": "integer"
                                                 },
                                                 "state": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Init",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Autotune",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "Running",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 3,
+                                                            "title": "Paused",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 4,
+                                                            "title": "Exhausted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 5,
+                                                            "title": "Cracked",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 6,
+                                                            "title": "Aborted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 7,
+                                                            "title": "Quit",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 8,
+                                                            "title": "Bypass",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 9,
+                                                            "title": "Aborted at checkpoint",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 10,
+                                                            "title": "Aborted at runtime",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "cracked": {
                                                     "type": "integer"
@@ -47040,7 +47883,63 @@
                                                     "type": "integer"
                                                 },
                                                 "state": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Init",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Autotune",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "Running",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 3,
+                                                            "title": "Paused",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 4,
+                                                            "title": "Exhausted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 5,
+                                                            "title": "Cracked",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 6,
+                                                            "title": "Aborted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 7,
+                                                            "title": "Quit",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 8,
+                                                            "title": "Bypass",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 9,
+                                                            "title": "Aborted at checkpoint",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 10,
+                                                            "title": "Aborted at runtime",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "cracked": {
                                                     "type": "integer"
@@ -51380,7 +52279,23 @@
                                         "type": "integer"
                                     },
                                     "status": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": -1,
+                                                "title": "Failed",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 0,
+                                                "title": "Pending",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Completed",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "cracked": {
                                         "type": "integer"
@@ -51569,7 +52484,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -51664,10 +52595,37 @@
                                                     "format": "int64"
                                                 },
                                                 "status": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": -1,
+                                                            "title": "Aborted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Pending",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Completed",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "checkType": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "MD5",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 3200,
+                                                            "title": "Bcrypt",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "hashtypeId": {
                                                     "type": "integer"
@@ -51823,7 +52781,23 @@
                                             "type": "integer"
                                         },
                                         "status": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": -1,
+                                                    "title": "Failed",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 0,
+                                                    "title": "Pending",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "Completed",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         },
                                         "cracked": {
                                             "type": "integer"
@@ -52013,7 +52987,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -52108,10 +53098,37 @@
                                                     "format": "int64"
                                                 },
                                                 "status": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": -1,
+                                                            "title": "Aborted",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Pending",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Completed",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "checkType": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "MD5",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 3200,
+                                                            "title": "Bcrypt",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "hashtypeId": {
                                                     "type": "integer"
@@ -52263,7 +53280,18 @@
                                 "type": "object",
                                 "properties": {
                                     "checkType": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "MD5",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 3200,
+                                                "title": "Bcrypt",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "hashtypeId": {
                                         "type": "integer"
@@ -52303,7 +53331,18 @@
                                 "type": "object",
                                 "properties": {
                                     "checkType": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "MD5",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 3200,
+                                                "title": "Bcrypt",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     }
                                 }
                             }
@@ -52339,7 +53378,18 @@
                                     "type": "object",
                                     "properties": {
                                         "checkType": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": 0,
+                                                    "title": "MD5",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 3200,
+                                                    "title": "Bcrypt",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         }
                                     }
                                 }
@@ -52452,10 +53502,37 @@
                                         "format": "int64"
                                     },
                                     "status": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": -1,
+                                                "title": "Aborted",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 0,
+                                                "title": "Pending",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Completed",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "checkType": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "MD5",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 3200,
+                                                "title": "Bcrypt",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "hashtypeId": {
                                         "type": "integer"
@@ -52756,7 +53833,23 @@
                                                     "type": "integer"
                                                 },
                                                 "status": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": -1,
+                                                            "title": "Failed",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Pending",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Completed",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "cracked": {
                                                     "type": "integer"
@@ -52863,10 +53956,37 @@
                                         "format": "int64"
                                     },
                                     "status": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": -1,
+                                                "title": "Aborted",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 0,
+                                                "title": "Pending",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Completed",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "checkType": {
-                                        "type": "integer"
+                                        "oneOf": [
+                                            {
+                                                "const": 0,
+                                                "title": "MD5",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 3200,
+                                                "title": "Bcrypt",
+                                                "type": "integer"
+                                            }
+                                        ]
                                     },
                                     "hashtypeId": {
                                         "type": "integer"
@@ -53167,7 +54287,23 @@
                                                     "type": "integer"
                                                 },
                                                 "status": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": -1,
+                                                            "title": "Failed",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Pending",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Completed",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "cracked": {
                                                     "type": "integer"
@@ -53325,10 +54461,37 @@
                                             "format": "int64"
                                         },
                                         "status": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": -1,
+                                                    "title": "Aborted",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 0,
+                                                    "title": "Pending",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "Completed",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         },
                                         "checkType": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": 0,
+                                                    "title": "MD5",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 3200,
+                                                    "title": "Bcrypt",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         },
                                         "hashtypeId": {
                                             "type": "integer"
@@ -53630,7 +54793,23 @@
                                                     "type": "integer"
                                                 },
                                                 "status": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": -1,
+                                                            "title": "Failed",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Pending",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Completed",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "cracked": {
                                                     "type": "integer"
@@ -53841,13 +55020,45 @@
                                 ],
                                 "properties": {
                                     "issuer": {
-                                        "type": "string"
+                                        "oneOf": [
+                                            {
+                                                "const": "API",
+                                                "title": "API",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "User",
+                                                "title": "User",
+                                                "type": "string"
+                                            }
+                                        ]
                                     },
                                     "issuerId": {
                                         "type": "string"
                                     },
                                     "level": {
-                                        "type": "string"
+                                        "oneOf": [
+                                            {
+                                                "const": "warning",
+                                                "title": "Warning",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "error",
+                                                "title": "Error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "fatal error",
+                                                "title": "Fatal error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "information",
+                                                "title": "Information",
+                                                "type": "string"
+                                            }
+                                        ]
                                     },
                                     "message": {
                                         "type": "string"
@@ -53994,13 +55205,45 @@
                                     ],
                                     "properties": {
                                         "issuer": {
-                                            "type": "string"
+                                            "oneOf": [
+                                                {
+                                                    "const": "API",
+                                                    "title": "API",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "User",
+                                                    "title": "User",
+                                                    "type": "string"
+                                                }
+                                            ]
                                         },
                                         "issuerId": {
                                             "type": "string"
                                         },
                                         "level": {
-                                            "type": "string"
+                                            "oneOf": [
+                                                {
+                                                    "const": "warning",
+                                                    "title": "Warning",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "error",
+                                                    "title": "Error",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "fatal error",
+                                                    "title": "Fatal error",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "information",
+                                                    "title": "Information",
+                                                    "type": "string"
+                                                }
+                                            ]
                                         },
                                         "message": {
                                             "type": "string"
@@ -54107,10 +55350,127 @@
                                         "type": "string"
                                     },
                                     "action": {
-                                        "type": "string"
+                                        "oneOf": [
+                                            {
+                                                "const": "taskComplete",
+                                                "title": "Task completed",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "agentError",
+                                                "title": "Agent error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "ownAgentError",
+                                                "title": "Own agent error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "logError",
+                                                "title": "Log error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "newTask",
+                                                "title": "New task",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "newHashlist",
+                                                "title": "New hashlist",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "hashlistAllCracked",
+                                                "title": "Hashlist all cracked",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "hashlistCrackedHash",
+                                                "title": "Hashlist cracked hash",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "userCreated",
+                                                "title": "User created",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "userDeleted",
+                                                "title": "User deleted",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "userLoginFailed",
+                                                "title": "User login failed",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "logWarn",
+                                                "title": "Log warning",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "logFatal",
+                                                "title": "Log fatal",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "newAgent",
+                                                "title": "New agent",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "deleteTask",
+                                                "title": "Delete task",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "deleteHashlist",
+                                                "title": "Delete hashlist",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "deleteAgent",
+                                                "title": "Delete agent",
+                                                "type": "string"
+                                            }
+                                        ]
                                     },
                                     "notification": {
-                                        "type": "string"
+                                        "oneOf": [
+                                            {
+                                                "const": "ChatBot",
+                                                "title": "ChatBot",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Discord Webhook",
+                                                "title": "Discord Webhook",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Email",
+                                                "title": "Email",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Example",
+                                                "title": "Example",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Slack",
+                                                "title": "Slack",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Telegram",
+                                                "title": "Telegram",
+                                                "type": "string"
+                                            }
+                                        ]
                                     },
                                     "receiver": {
                                         "type": "string"
@@ -54148,13 +55508,130 @@
                                 "type": "object",
                                 "properties": {
                                     "action": {
-                                        "type": "string"
+                                        "oneOf": [
+                                            {
+                                                "const": "taskComplete",
+                                                "title": "Task completed",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "agentError",
+                                                "title": "Agent error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "ownAgentError",
+                                                "title": "Own agent error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "logError",
+                                                "title": "Log error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "newTask",
+                                                "title": "New task",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "newHashlist",
+                                                "title": "New hashlist",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "hashlistAllCracked",
+                                                "title": "Hashlist all cracked",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "hashlistCrackedHash",
+                                                "title": "Hashlist cracked hash",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "userCreated",
+                                                "title": "User created",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "userDeleted",
+                                                "title": "User deleted",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "userLoginFailed",
+                                                "title": "User login failed",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "logWarn",
+                                                "title": "Log warning",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "logFatal",
+                                                "title": "Log fatal",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "newAgent",
+                                                "title": "New agent",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "deleteTask",
+                                                "title": "Delete task",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "deleteHashlist",
+                                                "title": "Delete hashlist",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "deleteAgent",
+                                                "title": "Delete agent",
+                                                "type": "string"
+                                            }
+                                        ]
                                     },
                                     "isActive": {
                                         "type": "boolean"
                                     },
                                     "notification": {
-                                        "type": "string"
+                                        "oneOf": [
+                                            {
+                                                "const": "ChatBot",
+                                                "title": "ChatBot",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Discord Webhook",
+                                                "title": "Discord Webhook",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Email",
+                                                "title": "Email",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Example",
+                                                "title": "Example",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Slack",
+                                                "title": "Slack",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Telegram",
+                                                "title": "Telegram",
+                                                "type": "string"
+                                            }
+                                        ]
                                     },
                                     "receiver": {
                                         "type": "string"
@@ -54193,13 +55670,130 @@
                                     "type": "object",
                                     "properties": {
                                         "action": {
-                                            "type": "string"
+                                            "oneOf": [
+                                                {
+                                                    "const": "taskComplete",
+                                                    "title": "Task completed",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "agentError",
+                                                    "title": "Agent error",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "ownAgentError",
+                                                    "title": "Own agent error",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "logError",
+                                                    "title": "Log error",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "newTask",
+                                                    "title": "New task",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "newHashlist",
+                                                    "title": "New hashlist",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "hashlistAllCracked",
+                                                    "title": "Hashlist all cracked",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "hashlistCrackedHash",
+                                                    "title": "Hashlist cracked hash",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "userCreated",
+                                                    "title": "User created",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "userDeleted",
+                                                    "title": "User deleted",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "userLoginFailed",
+                                                    "title": "User login failed",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "logWarn",
+                                                    "title": "Log warning",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "logFatal",
+                                                    "title": "Log fatal",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "newAgent",
+                                                    "title": "New agent",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "deleteTask",
+                                                    "title": "Delete task",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "deleteHashlist",
+                                                    "title": "Delete hashlist",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "deleteAgent",
+                                                    "title": "Delete agent",
+                                                    "type": "string"
+                                                }
+                                            ]
                                         },
                                         "isActive": {
                                             "type": "boolean"
                                         },
                                         "notification": {
-                                            "type": "string"
+                                            "oneOf": [
+                                                {
+                                                    "const": "ChatBot",
+                                                    "title": "ChatBot",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "Discord Webhook",
+                                                    "title": "Discord Webhook",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "Email",
+                                                    "title": "Email",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "Example",
+                                                    "title": "Example",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "Slack",
+                                                    "title": "Slack",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "Telegram",
+                                                    "title": "Telegram",
+                                                    "type": "string"
+                                                }
+                                            ]
                                         },
                                         "receiver": {
                                             "type": "string"
@@ -54310,13 +55904,130 @@
                                 ],
                                 "properties": {
                                     "action": {
-                                        "type": "string"
+                                        "oneOf": [
+                                            {
+                                                "const": "taskComplete",
+                                                "title": "Task completed",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "agentError",
+                                                "title": "Agent error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "ownAgentError",
+                                                "title": "Own agent error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "logError",
+                                                "title": "Log error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "newTask",
+                                                "title": "New task",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "newHashlist",
+                                                "title": "New hashlist",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "hashlistAllCracked",
+                                                "title": "Hashlist all cracked",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "hashlistCrackedHash",
+                                                "title": "Hashlist cracked hash",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "userCreated",
+                                                "title": "User created",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "userDeleted",
+                                                "title": "User deleted",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "userLoginFailed",
+                                                "title": "User login failed",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "logWarn",
+                                                "title": "Log warning",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "logFatal",
+                                                "title": "Log fatal",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "newAgent",
+                                                "title": "New agent",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "deleteTask",
+                                                "title": "Delete task",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "deleteHashlist",
+                                                "title": "Delete hashlist",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "deleteAgent",
+                                                "title": "Delete agent",
+                                                "type": "string"
+                                            }
+                                        ]
                                     },
                                     "objectId": {
                                         "type": "integer"
                                     },
                                     "notification": {
-                                        "type": "string"
+                                        "oneOf": [
+                                            {
+                                                "const": "ChatBot",
+                                                "title": "ChatBot",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Discord Webhook",
+                                                "title": "Discord Webhook",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Email",
+                                                "title": "Email",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Example",
+                                                "title": "Example",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Slack",
+                                                "title": "Slack",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Telegram",
+                                                "title": "Telegram",
+                                                "type": "string"
+                                            }
+                                        ]
                                     },
                                     "userId": {
                                         "type": "integer"
@@ -54558,13 +56269,130 @@
                                 ],
                                 "properties": {
                                     "action": {
-                                        "type": "string"
+                                        "oneOf": [
+                                            {
+                                                "const": "taskComplete",
+                                                "title": "Task completed",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "agentError",
+                                                "title": "Agent error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "ownAgentError",
+                                                "title": "Own agent error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "logError",
+                                                "title": "Log error",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "newTask",
+                                                "title": "New task",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "newHashlist",
+                                                "title": "New hashlist",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "hashlistAllCracked",
+                                                "title": "Hashlist all cracked",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "hashlistCrackedHash",
+                                                "title": "Hashlist cracked hash",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "userCreated",
+                                                "title": "User created",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "userDeleted",
+                                                "title": "User deleted",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "userLoginFailed",
+                                                "title": "User login failed",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "logWarn",
+                                                "title": "Log warning",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "logFatal",
+                                                "title": "Log fatal",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "newAgent",
+                                                "title": "New agent",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "deleteTask",
+                                                "title": "Delete task",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "deleteHashlist",
+                                                "title": "Delete hashlist",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "deleteAgent",
+                                                "title": "Delete agent",
+                                                "type": "string"
+                                            }
+                                        ]
                                     },
                                     "objectId": {
                                         "type": "integer"
                                     },
                                     "notification": {
-                                        "type": "string"
+                                        "oneOf": [
+                                            {
+                                                "const": "ChatBot",
+                                                "title": "ChatBot",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Discord Webhook",
+                                                "title": "Discord Webhook",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Email",
+                                                "title": "Email",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Example",
+                                                "title": "Example",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Slack",
+                                                "title": "Slack",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "Telegram",
+                                                "title": "Telegram",
+                                                "type": "string"
+                                            }
+                                        ]
                                     },
                                     "userId": {
                                         "type": "integer"
@@ -54857,13 +56685,130 @@
                                     ],
                                     "properties": {
                                         "action": {
-                                            "type": "string"
+                                            "oneOf": [
+                                                {
+                                                    "const": "taskComplete",
+                                                    "title": "Task completed",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "agentError",
+                                                    "title": "Agent error",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "ownAgentError",
+                                                    "title": "Own agent error",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "logError",
+                                                    "title": "Log error",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "newTask",
+                                                    "title": "New task",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "newHashlist",
+                                                    "title": "New hashlist",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "hashlistAllCracked",
+                                                    "title": "Hashlist all cracked",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "hashlistCrackedHash",
+                                                    "title": "Hashlist cracked hash",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "userCreated",
+                                                    "title": "User created",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "userDeleted",
+                                                    "title": "User deleted",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "userLoginFailed",
+                                                    "title": "User login failed",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "logWarn",
+                                                    "title": "Log warning",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "logFatal",
+                                                    "title": "Log fatal",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "newAgent",
+                                                    "title": "New agent",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "deleteTask",
+                                                    "title": "Delete task",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "deleteHashlist",
+                                                    "title": "Delete hashlist",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "deleteAgent",
+                                                    "title": "Delete agent",
+                                                    "type": "string"
+                                                }
+                                            ]
                                         },
                                         "objectId": {
                                             "type": "integer"
                                         },
                                         "notification": {
-                                            "type": "string"
+                                            "oneOf": [
+                                                {
+                                                    "const": "ChatBot",
+                                                    "title": "ChatBot",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "Discord Webhook",
+                                                    "title": "Discord Webhook",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "Email",
+                                                    "title": "Email",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "Example",
+                                                    "title": "Example",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "Slack",
+                                                    "title": "Slack",
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "const": "Telegram",
+                                                    "title": "Telegram",
+                                                    "type": "string"
+                                                }
+                                            ]
                                         },
                                         "userId": {
                                             "type": "integer"
@@ -56202,7 +58147,28 @@
                                             "type": "boolean"
                                         },
                                         "fileType": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": 0,
+                                                    "title": "Wordlist",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "Rule",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 2,
+                                                    "title": "Other",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 100,
+                                                    "title": "Temporary",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         },
                                         "accessGroupId": {
                                             "type": "integer"
@@ -56439,7 +58405,28 @@
                                             "type": "boolean"
                                         },
                                         "fileType": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": 0,
+                                                    "title": "Wordlist",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "Rule",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 2,
+                                                    "title": "Other",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 100,
+                                                    "title": "Temporary",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         },
                                         "accessGroupId": {
                                             "type": "integer"
@@ -56728,7 +58715,28 @@
                                             "type": "boolean"
                                         },
                                         "fileType": {
-                                            "type": "integer"
+                                            "oneOf": [
+                                                {
+                                                    "const": 0,
+                                                    "title": "Wordlist",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "Rule",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 2,
+                                                    "title": "Other",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 100,
+                                                    "title": "Temporary",
+                                                    "type": "integer"
+                                                }
+                                            ]
                                         },
                                         "accessGroupId": {
                                             "type": "integer"
@@ -57107,7 +59115,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -57608,7 +59632,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -60057,7 +62097,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -60157,7 +62213,28 @@
                                                     "type": "boolean"
                                                 },
                                                 "fileType": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Wordlist",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Rule",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "Other",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 100,
+                                                            "title": "Temporary",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "accessGroupId": {
                                                     "type": "integer"
@@ -60927,7 +63004,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -61027,7 +63120,28 @@
                                                     "type": "boolean"
                                                 },
                                                 "fileType": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Wordlist",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Rule",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "Other",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 100,
+                                                            "title": "Temporary",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "accessGroupId": {
                                                     "type": "integer"
@@ -61797,7 +63911,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -61897,7 +64027,28 @@
                                                     "type": "boolean"
                                                 },
                                                 "fileType": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Wordlist",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Rule",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "Other",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 100,
+                                                            "title": "Temporary",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "accessGroupId": {
                                                     "type": "integer"
@@ -62719,7 +64870,23 @@
                                                     "type": "string"
                                                 },
                                                 "os": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Linux",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Windows",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "macOS",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "devices": {
                                                     "type": "string"
@@ -62819,7 +64986,28 @@
                                                     "type": "boolean"
                                                 },
                                                 "fileType": {
-                                                    "type": "integer"
+                                                    "oneOf": [
+                                                        {
+                                                            "const": 0,
+                                                            "title": "Wordlist",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 1,
+                                                            "title": "Rule",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 2,
+                                                            "title": "Other",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 100,
+                                                            "title": "Temporary",
+                                                            "type": "integer"
+                                                        }
+                                                    ]
                                                 },
                                                 "accessGroupId": {
                                                     "type": "integer"
