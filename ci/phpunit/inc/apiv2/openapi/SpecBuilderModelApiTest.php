@@ -41,8 +41,9 @@ final class SpecBuilderModelApiTest extends TestCase {
     );
   }
 
-  public function testConfigSpecWithToOneRelationship(): void {
-    // Closed pair: Config has a toOne relationship to ConfigSection.
+  public function testConfigSpecWithToOneRelationshipAndSchemaOverride(): void {
+    // Closed pair: Config has a toOne relationship to ConfigSection. ConfigAPI
+    // also overrides the attributes schema (oneOf over config value types).
     $spec = (new SpecBuilder())->buildForApiClasses([ConfigAPI::class, ConfigSectionAPI::class]);
 
     $this->assertMatchesJsonFixture($spec, 'config.spec.json');
@@ -51,11 +52,8 @@ final class SpecBuilderModelApiTest extends TestCase {
     $this->assertArrayHasKey('/api/v2/ui/configs/{id}/relationships/{relation}', $spec['paths']);
 
     $response = $spec['components']['schemas']['ConfigResponse'];
-    // The attributes object is derived from the features of the model
-    $this->assertSame(
-      ['configSectionId', 'item', 'value'],
-      array_keys($response['properties']['data']['properties']['attributes']['properties'])
-    );
+    // getOpenAPIAttributesSchemaOverride() replaces the default attributes object
+    $this->assertArrayHasKey('oneOf', $response['properties']['data']['properties']['attributes']);
 
     // toOne relationship linkage: resource identifier with const type, nullable
     $configSection = $response['properties']['data']['properties']['relationships']['properties']['configSection'];
