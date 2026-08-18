@@ -4,10 +4,38 @@ use Hashtopolis\inc\defines\DViewControl;
 use Hashtopolis\inc\templating\Template;
 use Hashtopolis\inc\UI;
 use Hashtopolis\inc\utils\AccessControl;
+use Hashtopolis\inc\Login;
+use Hashtopolis\inc\UI;
+use Hashtopolis\inc\Util;
 
 require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
+// SSO auto-redirect: if just logged in via SSO, redirect immediately
+if (\Hashtopolis\inc\Login::getInstance()->isLoggedin() && !isset($_COOKIE['session'])) {
+  $fw = isset($_GET['fw']) ? $_GET['fw'] : '';
+  if (strlen($fw) > 0) {
+    $fw = urldecode($fw);
+    $url = \Hashtopolis\inc\Util::buildServerUrl() . ((\Hashtopolis\inc\Util::startsWith($fw, '/')) ? "" : "/") . $fw;
+  } else {
+    $url = \Hashtopolis\inc\Util::buildServerUrl() . "/index.php";
+  }
+  header("Location: " . $url);
+  die();
+}
+
 AccessControl::getInstance()->checkPermission(DViewControl::INDEX_VIEW_PERM);
+
+// SSO error: behind reverse proxy but no Kerberos header
+if (!\Hashtopolis\inc\Login::getInstance()->isLoggedin() && !isset($_SERVER['HTTP_X_REMOTE_USER']) && !isset($_GET['err']) && !isset($_GET['logout'])) {
+  $proxyHeaders = ['HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED_PROTO'];
+  $behindProxy = false;
+  foreach ($proxyHeaders as $h) {
+    if (isset($_SERVER[$h])) { $behindProxy = true; break; }
+  }
+  if ($behindProxy) {
+    \Hashtopolis\inc\UI::addMessage(\Hashtopolis\inc\UI::ERROR, "No Kerberos authentication detected. Check your Kerberos config.");
+  }
+}
 
 Template::loadInstance("static/index");
 UI::add('pageTitle', "Welcome");
