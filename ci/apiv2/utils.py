@@ -111,7 +111,7 @@ def do_create_agent_with_task(gpu_temperatures=None, gpu_utilisations=None,
 
 
 def do_create_agentassignent(agent, task):
-    return AgentAssignment(agentId=agent.id, taskId=task.id).save()
+    return AgentAssignment(agentId=agent.id, taskId=task.id, benchmark='0').save()
 
 
 def do_create_agentbinary(**kwargs):

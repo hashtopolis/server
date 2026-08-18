@@ -98,7 +98,12 @@ class AgentAssignmentAPI extends AbstractModelAPI {
    * @throws HttpError
    */
   protected function createObject(array $data): int {
-    $assignment = AgentUtils::assign($data[Assignment::AGENT_ID], $data[Assignment::TASK_ID], $this->getCurrentUser());
+    $assignment = AgentUtils::assign(
+      $data[Assignment::AGENT_ID],
+      $data[Assignment::TASK_ID],
+      $this->getCurrentUser(),
+      $data[Assignment::BENCHMARK]
+    );
     
     assert($assignment !== null);
     
