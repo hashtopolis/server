@@ -122,13 +122,18 @@ else if (isset($_GET['id'])) {
   UI::add('tasks', $hashlistTasks);
 
   //load list of available preconfigured tasks
+  // Filter pretasks by crackerBinaryTypeId based on the hashlist's hash type
+  $hashTypeId = $list->getVal('hashlist')->getHashTypeId();
+  $queryFilters = array();
   if (SConfig::getInstance()->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
-    $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
-    UI::add('preTasks', Factory::getPretaskFactory()->filter([Factory::FILTER => $qF]));
+    $queryFilters[] = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
   }
-  else {
-    UI::add('preTasks', Factory::getPretaskFactory()->filter([]));
+  if ($hashTypeId == 55000) {
+    $queryFilters[] = new QueryFilter(Pretask::CRACKER_BINARY_TYPE_ID, 2, "=");
+  } else {
+    $queryFilters[] = new QueryFilter(Pretask::CRACKER_BINARY_TYPE_ID, 1, "=");
   }
+  UI::add('preTasks', Factory::getPretaskFactory()->filter([Factory::FILTER => $queryFilters]));
 
   // load list of available supertasks
   UI::add('superTasks', Factory::getSupertaskFactory()->filter([]));
