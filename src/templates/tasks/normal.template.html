@@ -21,7 +21,7 @@
       <br>PRINCE
     {{ENDIF}}
   </td>
-  <td>
+  <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="[[set.getVal('hashlistName')]]">
     {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
       <a href="hashlists.php?id=[[set.getVal('hashlistId')]]">[[set.getVal('hashlistName')]]</a>
     {{ELSE}}
