@@ -69517,6 +69517,12 @@
                                     "email": {
                                         "type": "string"
                                     },
+                                    "isValid": {
+                                        "type": "boolean"
+                                    },
+                                    "sessionLifetime": {
+                                        "type": "integer"
+                                    },
                                     "globalPermissionGroupId": {
                                         "type": "integer"
                                     }
@@ -69524,6 +69530,8 @@
                                 "required": [
                                     "name",
                                     "email",
+                                    "isValid",
+                                    "sessionLifetime",
                                     "globalPermissionGroupId"
                                 ]
                             }
