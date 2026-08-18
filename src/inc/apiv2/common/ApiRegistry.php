@@ -107,7 +107,7 @@ final class ApiRegistry {
     VoucherAPI::class,
   ];
 
-  /** @var list<class-string> */
+  /** @var list<class-string<AbstractHelperAPI>> */
   public const HELPER_API_CLASSES = [
     AbortChunkHelperAPI::class,
     AssignAgentHelperAPI::class,
