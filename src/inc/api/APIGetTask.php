@@ -176,11 +176,25 @@ class APIGetTask extends APIBasic {
     
     $brain = $hashlist->getBrainId() && !$task->getForcePipe() && !$task->getUsePreprocessor();
     
+    // Auto-detect if hashes contain usernames (format: username:hash)
+    $attackCmd = $task->getAttackCmd();
+    if (strpos($attackCmd, '--username') === false) {
+      $qF1 = new QueryFilter(\Hashtopolis\dba\models\Hash::HASHLIST_ID, $hashlist->getId(), "=");
+      $oF = new \Hashtopolis\dba\OrderFilter(\Hashtopolis\dba\models\Hash::HASH_ID, "ASC LIMIT 1");
+      $sample = Factory::getHashFactory()->filter([Factory::FILTER => $qF1, Factory::ORDER => $oF]);
+      if (sizeof($sample) > 0) {
+        $sampleHash = $sample[0]->getHash();
+        if (preg_match('/^[^:]+:\$[a-zA-Z0-9]/', $sampleHash) || preg_match('/^[^:]+:[0-9a-fA-F]{32}$/', $sampleHash)) {
+          $attackCmd .= ' --username';
+        }
+      }
+    }
+    
     $response = array(
       PResponse::ACTION => PActions::GET_TASK,
       PResponse::RESPONSE => PValues::SUCCESS,
       PResponseGetTask::TASK_ID => (int)$task->getId(),
-      PResponseGetTask::ATTACK_COMMAND => $task->getAttackCmd(),
+      PResponseGetTask::ATTACK_COMMAND => $attackCmd,
       PResponseGetTask::CMD_PARAMETERS => " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
       PResponseGetTask::HASHLIST_ID => (int)$taskWrapper->getHashlistId(),
       PResponseGetTask::BENCHMARK => (int)SConfig::getInstance()->getVal(DConfig::BENCHMARK_TIME),
