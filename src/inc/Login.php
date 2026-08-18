@@ -12,6 +12,7 @@ use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DLogEntryIssuer;
 use Hashtopolis\inc\defines\DNotificationType;
 use Hashtopolis\inc\defines\DPayloadKeys;
+use Hashtopolis\inc\UI;
 use Hashtopolis\inc\handlers\NotificationHandler;
 use function PHPUnit\Framework\assertNotNull;
 
@@ -71,6 +72,42 @@ class Login {
         setcookie("session", $session->getSessionKey(), time() + $this->user->getSessionLifetime(), "", "", false, true);
       }
     }
+    
+    // SSO: if no valid session, check X-Remote-User header from nginx Kerberos
+    if (!$this->valid && isset($_SERVER['HTTP_X_REMOTE_USER'])) {
+      $this->checkSSO($_SERVER['HTTP_X_REMOTE_USER']);
+    }
+  }
+  
+  private function checkSSO(string $username): void {
+    $username = trim($username);
+    if (strlen($username) == 0) return;
+    
+    $filter = new QueryFilter(User::USERNAME, $username, "=");
+    $check = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);
+    if ($check === null || sizeof($check) == 0) {
+      UI::addMessage(UI::ERROR, "SSO user '$username' is not registered. Contact an administrator.");
+      return;
+    }
+    $user = $check[0];
+    if ($user->getIsValid() != 1) {
+      UI::addMessage(UI::ERROR, "SSO user '$username' is disabled. Contact an administrator.");
+      return;
+    }
+    
+    $this->user = $user;
+    $startTime = time();
+    $session = new Session(null, $this->user->getId(), $startTime, $startTime, 1, $this->user->getSessionLifetime(), "");
+    $session = Factory::getSessionFactory()->save($session);
+    if ($session === null) return;
+    $sessionKey = Encryption::sessionHash($session->getId(), $startTime, $user->getEmail());
+    Factory::getSessionFactory()->set($session, Session::SESSION_KEY, $sessionKey);
+    $this->user = Factory::getUserFactory()->set($this->user, User::LAST_LOGIN_DATE, time());
+    
+    $this->valid = true;
+    $this->session = $session;
+    Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "SSO login via Kerberos (X-Remote-User).");
+    setcookie("session", "$sessionKey", time() + $this->user->getSessionLifetime(), "", "", false, true);
   }
   
   /**
