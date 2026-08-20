@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\common;
 
 use Hashtopolis\inc\apiv2\openapi\SpecBuilder;
+use Hashtopolis\inc\apiv2\openapi\SpecOverrides;
 use Hashtopolis\inc\apiv2\openapi\SpecSanitizer;
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -19,7 +20,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
   });
 
   $group->get('', function (Request $request, Response $response) use ($app): Response {
-    $result = (new SpecBuilder())->buildFromApp($app);
+    $result = (new SpecBuilder(SpecOverrides::defaults()))->buildFromApp($app);
     $result = (new SpecSanitizer())->sanitize($result);
 
     $body = $response->getBody();

@@ -10,11 +10,15 @@ use Psr\Container\ContainerInterface;
  * Builds the path and component entries for a model API route by
  * introspecting the API class and its DBA model features (attributes,
  * relationships, expandables, permissions).
+ *
+ * Where the features do not describe what a response carries, the SpecOverrides
+ * handed in correct the attribute schemas per model.
  */
 class ModelApiPathBuilder {
   public function __construct(
     private FeatureTypeMapper $typeMapper,
-    private JsonApiFragments $jsonApiFragments
+    private JsonApiFragments $jsonApiFragments,
+    private SpecOverrides $overrides = new SpecOverrides()
   ) {
   }
 
@@ -57,16 +61,26 @@ class ModelApiPathBuilder {
       $responseAttributeProperties = $this->typeMapper->makeProperties($responseFeatures, true);
       $attributesOverride = $class->getOpenAPIAttributesSchemaOverride();
       if ($attributesOverride !== null) {
+        /**
+         * A class that states its whole attributes schema leaves nothing for
+         * the per-attribute corrections to apply to, so configuring both would
+         * silently drop them.
+         */
+        if ($this->overrides->has($name)) {
+          throw new HttpErrorException(
+            "'$name' has both spec overrides and a getOpenAPIAttributesSchemaOverride(); state the corrections in the class override"
+          );
+        }
         $attributesSchema = $attributesOverride;
       } else {
-        $attributesSchema = [
+        $attributesSchema = $this->overrides->apply($name, [
           "type" => "object",
           "required" => array_values(array_map(
             fn($f) => $f['alias'],
             array_filter($responseFeatures, fn($f) => !$f['pk'])
           )),
           "properties" => $responseAttributeProperties
-        ];
+        ]);
       }
       /**
        * The resource object as AbstractBaseAPI::obj2Resource builds it: the
@@ -711,13 +725,21 @@ class ModelApiPathBuilder {
       $expandClass = $expandVal["relationType"];
       $expandApiClass = new ($container->get('classMapper')->get($expandClass))($container);
       $nameParts = explode('\\', get_class($expandApiClass));
-      $typeName = lcfirst(substr(end($nameParts), 0, -3));
+      $modelName = substr(end($nameParts), 0, -3);
+      $typeName = lcfirst($modelName);
       $features = array_filter($expandApiClass->getFeaturesWithoutFormfields(), fn($f) => !$f['private']);
       $attrProperties = $this->typeMapper->makeProperties($features, true);
       $requiredAttributes = array_values(array_map(
         fn($f) => $f['alias'],
         array_filter($features, fn($f) => !$f['pk'])
       ));
+      /* An included resource is built by the same obj2Resource, so the
+         corrections of its model apply to it as well */
+      $attributesSchema = $this->overrides->apply($modelName, [
+        "type" => "object",
+        "required" => $requiredAttributes,
+        "properties" => $attrProperties
+      ]);
       $properties[$typeName] = [
         "required" => ["id", "type", "attributes"],
         "properties" => [
@@ -726,11 +748,7 @@ class ModelApiPathBuilder {
             "type" => "string",
             "const" => $typeName
           ],
-          "attributes" => [
-            "type" => "object",
-            "required" => $requiredAttributes,
-            "properties" => $attrProperties
-          ]
+          "attributes" => $attributesSchema
         ]
       ];
     };

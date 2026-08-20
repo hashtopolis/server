@@ -2,12 +2,17 @@
 
 namespace Hashtopolis\inc\apiv2\openapi;
 
+use Hashtopolis\inc\apiv2\model\AccessGroupAPI;
+use Hashtopolis\inc\apiv2\model\ApiTokenAPI;
 use Hashtopolis\inc\apiv2\model\ConfigAPI;
 use Hashtopolis\inc\apiv2\model\ConfigSectionAPI;
 use Hashtopolis\inc\apiv2\model\CrackerBinaryAPI;
 use Hashtopolis\inc\apiv2\model\CrackerBinaryTypeAPI;
+use Hashtopolis\inc\apiv2\model\GlobalPermissionGroupAPI;
 use Hashtopolis\inc\apiv2\model\HashTypeAPI;
 use Hashtopolis\inc\apiv2\model\TaskAPI;
+use Hashtopolis\inc\apiv2\model\UserAPI;
+use Middlewares\Utils\HttpErrorException;
 use PHPUnit\Framework\TestCase;
 
 require_once(__DIR__ . '/SpecFixtureTrait.php');
@@ -91,5 +96,58 @@ final class SpecBuilderModelApiTest extends TestCase {
       ['crackerBinary', 'task'],
       array_map(fn($branch) => $branch['properties']['type']['const'], $included['oneOf'])
     );
+  }
+
+  /**
+   * User is the model the permission filter strips, so the configured
+   * corrections have to reach both places its attributes are described: the
+   * resource object of its own routes and the resource included in the
+   * response of a model expanding it.
+   */
+  public function testUserSpecAppliesTheConfiguredAttributeCorrections(): void {
+    $spec = (new SpecBuilder(SpecOverrides::defaults()))->buildForApiClasses(
+      [UserAPI::class, ApiTokenAPI::class],
+      [GlobalPermissionGroupAPI::class, AccessGroupAPI::class]
+    );
+
+    $attributes = $spec['components']['schemas']['UserResponse']['properties']['data']['properties']['attributes'];
+    /* Only the public attribute survives a caller without 'permUserRead' */
+    $this->assertSame(['name'], $attributes['required']);
+    /* The optional attributes stay described, and stay non-nullable */
+    $this->assertSame(['type' => 'string'], $attributes['properties']['email']);
+    $this->assertSame(['type' => 'boolean'], $attributes['properties']['isValid']);
+
+    $includedUser = $spec['components']['schemas']['ApiTokenResponse']['properties']['included']['items'];
+    $this->assertSame('user', $includedUser['properties']['type']['const']);
+    $this->assertSame(['name'], $includedUser['properties']['attributes']['required']);
+  }
+
+  /**
+   * Without the corrections the features speak for themselves, so the
+   * shortened list above is the configuration at work and not a rule baked
+   * into the generator.
+   */
+  public function testAttributeCorrectionsAreOptIn(): void {
+    $spec = (new SpecBuilder(new SpecOverrides()))->buildForApiClasses(
+      [UserAPI::class, ApiTokenAPI::class],
+      [GlobalPermissionGroupAPI::class, AccessGroupAPI::class]
+    );
+
+    $attributes = $spec['components']['schemas']['UserResponse']['properties']['data']['properties']['attributes'];
+    $this->assertContains('email', $attributes['required']);
+    $this->assertContains('sessionLifetime', $attributes['required']);
+  }
+
+  /**
+   * A class stating its whole attributes schema leaves the per-attribute
+   * corrections nothing to apply to, which must be said rather than ignored.
+   */
+  public function testCorrectingAModelThatStatesItsOwnAttributesSchemaIsRejected(): void {
+    $builder = new SpecBuilder(new SpecOverrides([
+      'Config' => [SpecOverrides::OPTIONAL_ATTRIBUTES => ['value']],
+    ]));
+
+    $this->expectException(HttpErrorException::class);
+    $builder->buildForApiClasses([ConfigAPI::class, ConfigSectionAPI::class]);
   }
 }

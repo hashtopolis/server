@@ -12,7 +12,8 @@ use Slim\Factory\AppFactory;
  * Generates the OpenAPI 3.1.0 document for the APIv2 by introspecting the
  * registered API classes. No database connection or HTTP server is required:
  * the only inputs are the API classes (and, through them, the static feature
- * definitions of the DBA models).
+ * definitions of the DBA models) plus the SpecOverrides handed to the
+ * constructor.
  *
  * Entry points:
  * - buildFromApp():        used by the HTTP routes with the fully built app.
@@ -25,12 +26,17 @@ class SpecBuilder {
   private ModelApiPathBuilder $modelApiPathBuilder;
   private StaticFragments $staticFragments;
 
-  public function __construct() {
+  /**
+   * @param SpecOverrides|null $overrides corrections to the attribute schemas
+   *   derived from the model features; the server's own corrections
+   *   (SpecOverrides::defaults()) are used when none are given
+   */
+  public function __construct(?SpecOverrides $overrides = null) {
     $typeMapper = new FeatureTypeMapper();
     $jsonApiFragments = new JsonApiFragments();
     $this->routeIntrospector = new RouteIntrospector();
     $this->helperApiPathBuilder = new HelperApiPathBuilder($typeMapper, $jsonApiFragments);
-    $this->modelApiPathBuilder = new ModelApiPathBuilder($typeMapper, $jsonApiFragments);
+    $this->modelApiPathBuilder = new ModelApiPathBuilder($typeMapper, $jsonApiFragments, $overrides ?? SpecOverrides::defaults());
     $this->staticFragments = new StaticFragments();
   }
 

@@ -15,9 +15,10 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 use Hashtopolis\inc\apiv2\common\ApiRegistry;
 use Hashtopolis\inc\apiv2\openapi\SpecBuilder;
+use Hashtopolis\inc\apiv2\openapi\SpecOverrides;
 use Hashtopolis\inc\apiv2\openapi\SpecSanitizer;
 
-$spec = (new SpecBuilder())->buildForApiClasses(ApiRegistry::allApiClasses());
+$spec = (new SpecBuilder(SpecOverrides::defaults()))->buildForApiClasses(ApiRegistry::allApiClasses());
 $spec = (new SpecSanitizer())->sanitize($spec);
 
 $flags = JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR;
