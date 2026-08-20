@@ -55766,38 +55766,7 @@
                                         ]
                                     },
                                     "notification": {
-                                        "oneOf": [
-                                            {
-                                                "const": "ChatBot",
-                                                "title": "ChatBot",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Discord Webhook",
-                                                "title": "Discord Webhook",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Email",
-                                                "title": "Email",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Example",
-                                                "title": "Example",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Slack",
-                                                "title": "Slack",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Telegram",
-                                                "title": "Telegram",
-                                                "type": "string"
-                                            }
-                                        ]
+                                        "type": "string"
                                     },
                                     "receiver": {
                                         "type": "string"
@@ -55927,38 +55896,7 @@
                                         "type": "boolean"
                                     },
                                     "notification": {
-                                        "oneOf": [
-                                            {
-                                                "const": "ChatBot",
-                                                "title": "ChatBot",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Discord Webhook",
-                                                "title": "Discord Webhook",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Email",
-                                                "title": "Email",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Example",
-                                                "title": "Example",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Slack",
-                                                "title": "Slack",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Telegram",
-                                                "title": "Telegram",
-                                                "type": "string"
-                                            }
-                                        ]
+                                        "type": "string"
                                     },
                                     "receiver": {
                                         "type": "string"
@@ -56089,38 +56027,7 @@
                                             "type": "boolean"
                                         },
                                         "notification": {
-                                            "oneOf": [
-                                                {
-                                                    "const": "ChatBot",
-                                                    "title": "ChatBot",
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "const": "Discord Webhook",
-                                                    "title": "Discord Webhook",
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "const": "Email",
-                                                    "title": "Email",
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "const": "Example",
-                                                    "title": "Example",
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "const": "Slack",
-                                                    "title": "Slack",
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "const": "Telegram",
-                                                    "title": "Telegram",
-                                                    "type": "string"
-                                                }
-                                            ]
+                                            "type": "string"
                                         },
                                         "receiver": {
                                             "type": "string"
@@ -56326,38 +56233,7 @@
                                         ]
                                     },
                                     "notification": {
-                                        "oneOf": [
-                                            {
-                                                "const": "ChatBot",
-                                                "title": "ChatBot",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Discord Webhook",
-                                                "title": "Discord Webhook",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Email",
-                                                "title": "Email",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Example",
-                                                "title": "Example",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Slack",
-                                                "title": "Slack",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Telegram",
-                                                "title": "Telegram",
-                                                "type": "string"
-                                            }
-                                        ]
+                                        "type": "string"
                                     },
                                     "userId": {
                                         "type": "integer"
@@ -56691,38 +56567,7 @@
                                         ]
                                     },
                                     "notification": {
-                                        "oneOf": [
-                                            {
-                                                "const": "ChatBot",
-                                                "title": "ChatBot",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Discord Webhook",
-                                                "title": "Discord Webhook",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Email",
-                                                "title": "Email",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Example",
-                                                "title": "Example",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Slack",
-                                                "title": "Slack",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "Telegram",
-                                                "title": "Telegram",
-                                                "type": "string"
-                                            }
-                                        ]
+                                        "type": "string"
                                     },
                                     "userId": {
                                         "type": "integer"
@@ -57107,38 +56952,7 @@
                                             ]
                                         },
                                         "notification": {
-                                            "oneOf": [
-                                                {
-                                                    "const": "ChatBot",
-                                                    "title": "ChatBot",
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "const": "Discord Webhook",
-                                                    "title": "Discord Webhook",
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "const": "Email",
-                                                    "title": "Email",
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "const": "Example",
-                                                    "title": "Example",
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "const": "Slack",
-                                                    "title": "Slack",
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "const": "Telegram",
-                                                    "title": "Telegram",
-                                                    "type": "string"
-                                                }
-                                            ]
+                                            "type": "string"
                                         },
                                         "userId": {
                                             "type": "integer"

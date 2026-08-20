@@ -15,7 +15,6 @@ use Hashtopolis\inc\defines\DNotificationType;
 use Hashtopolis\inc\defines\DOperatingSystem;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\defines\UQueryHashlist;
-use Hashtopolis\inc\notifications\HashtopolisNotification;
 
 $CONF = array();
 
@@ -35,15 +34,6 @@ require_once(dirname(__FILE__) . "/../../inc/defines/DOperatingSystem.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DTaskTypes.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/UQuery.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/UQueryHashlist.php");
-
-/* The delivery methods a notification setting can name are the registered notification instances */
-require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotification.php");
-require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotificationChatBot.php");
-require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotificationDiscordWebhook.php");
-require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotificationEmail.php");
-require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotificationExample.php");
-require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotificationSlack.php");
-require_once(dirname(__FILE__) . "/../../inc/notifications/HashtopolisNotificationTelegram.php");
 
 //
 // Field choice declarations
@@ -134,16 +124,6 @@ $FieldLogEntryLevelChoices = [
   ['key' => DLogEntry::FATAL, 'label' => 'Fatal error'],
   ['key' => DLogEntry::INFO, 'label' => 'Information'],
 ];
-
-/**
- * The delivery method of a notification setting, i.e. the name of the
- * HashtopolisNotification implementation that sends it. NotificationUtils
- * validates the column against exactly this registry.
- */
-$FieldNotificationDeliveryChoices = array_map(
-  fn(string $name) => ['key' => $name, 'label' => $name],
-  array_keys(HashtopolisNotification::getInstances())
-);
 
 $FieldNotificationTypeChoices = [
   ['key' => DNotificationType::TASK_COMPLETE, 'label' => 'Task completed'],
@@ -445,8 +425,11 @@ $CONF['NotificationSetting'] = [
     ['name' => 'action', 'read_only' => False, 'type' => 'str(50)', 'choices' => $FieldNotificationTypeChoices],
     // notifications not tied to a specific object (e.g. agent-wide events) have no objectId
     ['name' => 'objectId', 'read_only' => True, 'null' => True, 'type' => 'int', 'protected' => True],
-    // 'notification' names the delivery method, a registered HashtopolisNotification
-    ['name' => 'notification', 'read_only' => False, 'type' => 'str(50)', 'choices' => $FieldNotificationDeliveryChoices],
+    // 'notification' names the delivery method, the name of a registered HashtopolisNotification.
+    // That set is open - an installation can register notification classes of its own - so the
+    // column names no choices and NotificationUtils validates the value against the registry of
+    // the running server instead
+    ['name' => 'notification', 'read_only' => False, 'type' => 'str(50)'],
     ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'User'],
     ['name' => 'receiver', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'isActive', 'read_only' => False, 'type' => 'bool'],
