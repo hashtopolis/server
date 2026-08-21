@@ -98,7 +98,12 @@ class AgentAssignmentAPI extends AbstractModelAPI {
    * @throws HttpError
    */
   protected function createObject(array $data): int {
-    $assignment = AgentUtils::assign($data[Assignment::AGENT_ID], $data[Assignment::TASK_ID], $this->getCurrentUser());
+    $assignment = AgentUtils::assign(
+      $data[Assignment::AGENT_ID],
+      $data[Assignment::TASK_ID],
+      $this->getCurrentUser(),
+      $data[Assignment::BENCHMARK]
+    );
     
     assert($assignment !== null);
     
@@ -122,7 +127,18 @@ class AgentAssignmentAPI extends AbstractModelAPI {
       ]
     ];
   }
-  
+
+  public static function getAggregateFeatures(): array {
+    return [
+      'crackingTime' => self::aggregateFeature('int', 'crackingTime'),
+      'cracked' => self::aggregateFeature('int', 'cracked'),
+      'currentSpeed' => self::aggregateFeature('int', 'currentSpeed'),
+      /* No chunk in progress yields no key rather than a null one */
+      'currentChunkId' => self::aggregateFeature('int', 'currentChunkId'),
+      'searched' => self::aggregateFeature('int', 'searched'),
+    ];
+  }
+
   /**
    * @param Assignment $object
    * @return int

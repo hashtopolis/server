@@ -390,12 +390,13 @@ class AgentUtils {
    * @param int $agentId
    * @param int $taskId
    * @param User $user
+   * @param string $benchmark the benchmark to record for the assignment, empty when none is known yet
    * @return ?Assignment
    * @throws HTException
    * @throws HttpError
    * @throws Exception
    */
-  public static function assign(int $agentId, int $taskId, User $user): ?Assignment {
+  public static function assign(int $agentId, int $taskId, User $user, string $benchmark = ""): ?Assignment {
     $agent = AgentUtils::getAgent($agentId, $user);
     
     if ($taskId == 0) { // unassign
@@ -430,7 +431,6 @@ class AgentUtils {
     $qF = new QueryFilter(Agent::AGENT_ID, $agent->getId(), "=");
     $assignments = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
     
-    $benchmark = 0;
     if (sizeof($assignments) > 0) {
       if ($assignments[0]->getTaskId() === $taskId) {
         throw new HttpError("Agent is already assigned to this task");

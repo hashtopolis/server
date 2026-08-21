@@ -96,19 +96,11 @@ class UserAPI extends AbstractModelAPI {
       $data[User::EMAIL],
       $data[User::RIGHT_GROUP_ID],
       $this->getCurrentUser(),
-      $data[User::IS_VALID] ?? false,
-      $data[User::SESSION_LIFETIME] ?? 3600
+      $data[User::IS_VALID],
+      $data[User::SESSION_LIFETIME]
     );
     
     return $user->getId();
-  }
-  
-  function getAllPostParameters(array $features): array {
-    
-    $features = parent::getAllPostParameters($features);
-    unset($features[User::IS_VALID]);
-    unset($features[User::SESSION_LIFETIME]);
-    return $features;
   }
   
   /**

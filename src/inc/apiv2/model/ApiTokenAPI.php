@@ -75,6 +75,12 @@ class ApiTokenAPI extends AbstractModelAPI {
     ];
   }
   
+  public static function getAggregateFeatures(): array {
+    return [
+      'token' => self::aggregateFeature('str', 'token'),
+    ];
+  }
+
   /**
    * @throws HttpError
    * @throws ResourceNotFoundError
@@ -96,7 +102,7 @@ class ApiTokenAPI extends AbstractModelAPI {
     $secret = StartupConfig::getInstance()->getPepper(0);
     $iat = $data[JwtApiKey::START_VALID];
     $expires = $data[JwtApiKey::END_VALID];
-    $token = JwtTokenUtils::createKey($this->getCurrentUser()->getId(), $iat, $expires);
+    $token = JwtTokenUtils::createKey($this->getCurrentUser()->getId(), $iat, $expires, $data[JwtApiKey::IS_REVOKED]);
     $jti = $token->getId();
     
     $payload = [
