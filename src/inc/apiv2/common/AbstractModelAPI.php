@@ -922,7 +922,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   }
   
   /**
-   * Maps filters to the appropiate models based on their features.
+   * Maps filters to the appropriate models based on their features.
    *
    * Helper function to get valid filters for the models. This is usefull when multiple objects
    * have been included and the correct filters need to be mapped to the correct objects.
