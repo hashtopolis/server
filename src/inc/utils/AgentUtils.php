@@ -619,13 +619,16 @@ class AgentUtils {
     // In order to make sense of the diff, we need to make sure that both values solve time and dispatch time are set (i.e. > 0).
     // Since an agent can only work on one chunk at a time, there inherently are no overlapping time spans to consider.
     // We can therefore simply sum up the corresponding time spans in the database already.
-    $qF1 = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
-    $qF2 = $taskId !== null ? new QueryFilter(Chunk::TASK_ID, $taskId, "=") : null;
-    $qF3 = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
-    $qF4 = new QueryFilter(Chunk::DISPATCH_TIME, 0, ">");
+    $qFs = [];
+    $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
+    if ($taskId !== null) {
+      $qFs[] = new QueryFilter(Chunk::TASK_ID, $taskId, "=");
+    }
+    $qFs[] = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
+    $qFs[] = new QueryFilter(Chunk::DISPATCH_TIME, 0, ">");
     $agg1 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::SUM);
     $agg2 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::SUM);
-    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2, $qF3, $qF4])], [$agg1, $agg2]);
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qFs], [$agg1, $agg2]);
     return $results[$agg1->getName()] - $results[$agg2->getName()];
   }
   
@@ -639,10 +642,13 @@ class AgentUtils {
    * @throws Exception
    */
   public static function getAggregateCracked(int $agentId, ?int $taskId = null): int {
-    $qF1 = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
-    $qF2 = $taskId !== null ? new QueryFilter(Chunk::TASK_ID, $taskId, "=") : null;
+    $qFs = [];
+    $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
+    if ($taskId !== null) {
+      $qFs[] = new QueryFilter(Chunk::TASK_ID, $taskId, "=");
+    }
     $agg1 = new Aggregation(Chunk::CRACKED, Aggregation::SUM);
-    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2])], [$agg1]);
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qFs], [$agg1]);
     return (int)($results[$agg1->getName()] ?? 0);
   }
   
@@ -658,11 +664,13 @@ class AgentUtils {
   public static function getActiveChunk(int $agentId, ?int $taskId = null): ?Chunk {
     $qFs = [];
     $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
-    $qFs[] = $taskId !== null ? new QueryFilter(Chunk::TASK_ID, $taskId, "=") : null;
+    if ($taskId !== null) {
+      $qFs[] = new QueryFilter(Chunk::TASK_ID, $taskId, "=");
+    }
     $qFs[] = new QueryFilter(Chunk::STATE, DHashcatStatus::RUNNING, "=");
     $qFs[] = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
     $qFs[] = new QueryFilter(Chunk::PROGRESS, 10000, "<");
     $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
-    return Factory::getChunkFactory()->filter([Factory::FILTER => array_filter($qFs), Factory::ORDER => $oF], true);
+    return Factory::getChunkFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF], true);
   }
 }
