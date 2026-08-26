@@ -123,7 +123,7 @@ if (!$initialSetup) {
 }
 
 // run database migration on current generation to be fully up-to-date
-// MigrationUtils::runDatabaseMigration();
+MigrationUtils::runDatabaseMigration();
 
 if ($initialSetup === true) {
   // if peppers are not set, generate them and save them
