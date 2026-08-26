@@ -72,7 +72,7 @@ if (!$initialSetup) {
     exit(-1);
   }
   
-  identify the generation we are on
+  // identify the generation we are on
   $allGenerations = MigrationUtils::getAllGenerations(StartupConfig::getInstance()->getDatabaseType());
   $generation = -1;
   foreach ($allGenerations as $gen => $migrations) {
