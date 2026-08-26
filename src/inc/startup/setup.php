@@ -62,65 +62,65 @@ if (!$initialSetup && StartupConfig::getInstance()->getDatabaseType() == "mysql"
  * - if needed (because there are more generations available), run the previous step again
  */
 
-// if (!$initialSetup) {
-//   // retrieve the oldest migration
-//   $oF = new OrderFilter(_sqlx_migrations::VERSION, "ASC");
-//   $firstEntry = Factory::get_sqlx_migrationsFactory()->filter([Factory::ORDER => $oF], true);
+if (!$initialSetup) {
+  // retrieve the oldest migration
+  $oF = new OrderFilter(_sqlx_migrations::VERSION, "ASC");
+  $firstEntry = Factory::get_sqlx_migrationsFactory()->filter([Factory::ORDER => $oF], true);
   
-//   if ($firstEntry == null) {
-//     echo "Unable to identify migrations position!\n";
-//     exit(-1);
-//   }
+  if ($firstEntry == null) {
+    echo "Unable to identify migrations position!\n";
+    exit(-1);
+  }
   
-  // identify the generation we are on
-//   $allGenerations = MigrationUtils::getAllGenerations(StartupConfig::getInstance()->getDatabaseType());
-//   $generation = -1;
-//   foreach ($allGenerations as $gen => $migrations) {
-//     if (sizeof($migrations) == 0) {
-//       continue;
-//     }
-//     if (explode("_", $migrations[0])[0] == $firstEntry->getId()) {
-//       $generation = $gen;
-//       break;
-//     }
-//   }
+  identify the generation we are on
+  $allGenerations = MigrationUtils::getAllGenerations(StartupConfig::getInstance()->getDatabaseType());
+  $generation = -1;
+  foreach ($allGenerations as $gen => $migrations) {
+    if (sizeof($migrations) == 0) {
+      continue;
+    }
+    if (explode("_", $migrations[0])[0] == $firstEntry->getId()) {
+      $generation = $gen;
+      break;
+    }
+  }
   
-//   if ($generation == -1) {
-//     echo "Could not determine current migrations generation, aborting...\n";
-//     exit(-1);
-//   }
+  if ($generation == -1) {
+    echo "Could not determine current migrations generation, aborting...\n";
+    exit(-1);
+  }
   
-//   try {
-//     while ($generation > 0) {
-//       echo "Upgrading to a new sqlx migrations generation (current $generation)...\n";
+  try {
+    while ($generation > 0) {
+      echo "Upgrading to a new sqlx migrations generation (current $generation)...\n";
       
-//       // we are on an older generation branch, we need to migrate
-//       // make sure we are up-to-date on this generation
-//       echo "Running migration on current generation to be up-to-date...\n";
-//       MigrationUtils::runDatabaseMigration($generation);
+      // we are on an older generation branch, we need to migrate
+      // make sure we are up-to-date on this generation
+      echo "Running migration on current generation to be up-to-date...\n";
+      MigrationUtils::runDatabaseMigration($generation);
       
-//       // jump to next migration
-//       $generation--;
-//       $entry = MigrationUtils::getMigrationStartEntry($generation);
-//       if ($entry === null) {
-//         throw new Exception("Failed to retrieve initial migration information for generation $generation!");
-//       }
+      // jump to next migration
+      $generation--;
+      $entry = MigrationUtils::getMigrationStartEntry($generation);
+      if ($entry === null) {
+        throw new Exception("Failed to retrieve initial migration information for generation $generation!");
+      }
       
-//       // clear migration table
-//       echo "Clearing migration table...\n";
-//       Factory::get_sqlx_migrationsFactory()->massDeletion([]);
+      // clear migration table
+      echo "Clearing migration table...\n";
+      Factory::get_sqlx_migrationsFactory()->massDeletion([]);
       
-//       // add first entry
-//       echo "Add initial migration entry...\n";
-//       Factory::get_sqlx_migrationsFactory()->save($entry);
-//       echo "Generation switch from " . ($generation + 1) . " to $generation completed!\n";
-//     }
-//   }
-//   catch (Exception $e) {
-//     echo "Failed to run generation upgrade: $e\n";
-//     exit(-1);
-//   }
-// }
+      // add first entry
+      echo "Add initial migration entry...\n";
+      Factory::get_sqlx_migrationsFactory()->save($entry);
+      echo "Generation switch from " . ($generation + 1) . " to $generation completed!\n";
+    }
+  }
+  catch (Exception $e) {
+    echo "Failed to run generation upgrade: $e\n";
+    exit(-1);
+  }
+}
 
 // run database migration on current generation to be fully up-to-date
 // MigrationUtils::runDatabaseMigration();
