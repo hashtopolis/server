@@ -668,6 +668,8 @@ abstract class AbstractModelFactory {
    * Create a timeseries with counts per day for a given table.
    *
    * @param array $options can contain FILTER options to select which entries should match to be counted (e.g. also if the timeseries should only be over a certain amount of day)
+   *              and JOIN options to filter on a column of another table. As every counted row is one entry
+   *              of this factory, such joins must not multiply rows.
    * @param string $timeColumn table column which should be used to be use for the 'day' grouping
    * @return array list of [day => count] entries
    * @throws Exception
@@ -676,11 +678,17 @@ abstract class AbstractModelFactory {
     $dbType = StartupConfig::getInstance()->getDatabaseType();
     $to_timestamp = ($dbType == "postgres") ? "TO_TIMESTAMP" : "FROM_UNIXTIME";
     
-    $query = "SELECT DATE(" . $to_timestamp . "(" . self::getMappedModelKey($this->getNullObject(), $timeColumn) . ")) AS day, COUNT(*) AS total";
+    /* Prefixed with the table, the column name can also exist on a joined table */
+    $timeColumnRef = $this->getMappedModelTable() . "." . self::getMappedModelKey($this->getNullObject(), $timeColumn);
+    $query = "SELECT DATE(" . $to_timestamp . "(" . $timeColumnRef . ")) AS day, COUNT(*) AS total";
     
     $query .= " FROM " . $this->getMappedModelTable();
     
     $vals = array();
+    
+    if (array_key_exists(Factory::JOIN, $options)) {
+      $query .= $this->applyJoins($options[Factory::JOIN]);
+    }
     
     if (array_key_exists(Factory::FILTER, $options)) {
       $query .= $this->applyFilters($vals, $options[Factory::FILTER]);

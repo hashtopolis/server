@@ -6,10 +6,15 @@ use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\Hash;
+use Hashtopolis\dba\models\HashBinary;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessUtils;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use stdClass;
@@ -52,12 +57,23 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
-
+    
+    /*
+     * Cracks are only reported for hashlists within the access groups of the requesting user,
+     * the same restriction HashAPI applies to its listing.
+     */
+    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    
     $start = time() - 3600 * 24 * 365;
     $qF1 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
     $qF2 = new QueryFilter(Hash::TIME_CRACKED, $start, ">");
-    $counts = Factory::getHashFactory()->columnTimeseriesFilter([Factory::FILTER => [$qF1, $qF2]], Hash::TIME_CRACKED);
-    $counts2 = Factory::getHashBinaryFactory()->columnTimeseriesFilter([Factory::FILTER => [$qF1, $qF2]], Hash::TIME_CRACKED);
+    $qF3 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory());
+    
+    $hashJF = new JoinFilter(Factory::getHashlistFactory(), Hash::HASHLIST_ID, Hashlist::HASHLIST_ID);
+    $binaryJF = new JoinFilter(Factory::getHashlistFactory(), HashBinary::HASHLIST_ID, Hashlist::HASHLIST_ID);
+    
+    $counts = Factory::getHashFactory()->columnTimeseriesFilter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::JOIN => [$hashJF]], Hash::TIME_CRACKED);
+    $counts2 = Factory::getHashBinaryFactory()->columnTimeseriesFilter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::JOIN => [$binaryJF]], Hash::TIME_CRACKED);
     foreach ($counts2 as $key => $value) {
       $counts[$key] = ($counts[$key] ?? 0) + $value;
     }
