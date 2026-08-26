@@ -41,3 +41,4 @@ class AgentStatTest(BaseTest):
         stats = list(AgentStat.objects.filter(agentId=agent.id))
         self.assertGreater(len(stats), 0, "Expected agent stats to exist for ACL test")
         self._test_acl_list(stats[0], {'permAgentStatRead': True})
+        self._test_acl_count(stats[0], {'permAgentStatRead': True})

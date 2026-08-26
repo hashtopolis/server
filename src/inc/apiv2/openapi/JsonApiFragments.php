@@ -207,11 +207,11 @@ class JsonApiFragments {
             "properties" => [
               "count" => [
                 "type" => "integer",
-                "description" => "Number of objects matching the given filters"
+                "description" => "Number of objects accessible to the current user matching the given filters"
               ],
               "total_count" => [
                 "type" => "integer",
-                "description" => "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                "description" => "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
               ]
             ]
           ],

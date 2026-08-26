@@ -478,6 +478,10 @@ abstract class AbstractModelFactory {
   }
   
   /**
+   * $joinFilter is the join the aggregations are calculated over. Additional joins can be supplied
+   * as Factory::JOIN in $options, for example to filter on a table which is not aggregated over.
+   * As the result is grouped by the primary keys of this factory, such joins must not multiply rows.
+   *
    * @param array $options
    * @param JoinFilter $joinFilter
    * @param Aggregation[] $aggregations
@@ -496,6 +500,10 @@ abstract class AbstractModelFactory {
     $match1 = self::getMappedModelKey($this->getNullObject(), $joinFilter->getMatch1());
     $match2 = self::getMappedModelKey($joinFilter->getOtherFactory()->getNullObject(), $joinFilter->getMatch2());
     $query .= " " . $joinFilter->getJoinType() . " JOIN " . $joinFilter->getOtherFactory()->getMappedModelTable() . " ON " . $this->getMappedModelTable() . "." . $match1 . "=" . $joinFilter->getOtherFactory()->getMappedModelTable() . "." . $match2 . " ";
+    
+    if (array_key_exists(Factory::JOIN, $options)) {
+      $query .= $this->applyJoins($options[Factory::JOIN]);
+    }
     
     // Apply all normal filter to this query
     if (array_key_exists(Factory::FILTER, $options)) {

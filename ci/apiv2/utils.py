@@ -479,6 +479,25 @@ class BaseTest(unittest.TestCase):
         objs = list(self.model_class.objects.filter(id=model_obj.id))
         self.assertGreater(len(objs), 0, "Admin user should see this object in list results")
 
+    def _test_acl_count(self, model_obj, permissions):
+        """Test that a restricted user (with no access groups) does not see the object in count results.
+
+        The restricted user has no access group membership at all, so every ACL-restricted
+        model must report zero for them, both in `count` and in the unfiltered `total_count`.
+        """
+        auth = create_restricted_user(self, permissions)
+        conn = self.model_class.objects.get_conn()
+
+        restricted = conn.count(filter={}, extra_params={'include_total': 'true'}, auth=auth)
+        self.assertEqual(restricted['count'], 0,
+                         "Restricted user should not count objects outside their access groups")
+        self.assertEqual(restricted['total_count'], 0,
+                         "Restricted user's total_count should not include objects outside their access groups")
+
+        # NOTE: must run after the restricted call, this resets the connector back to the admin token
+        admin = conn.count(filter={})
+        self.assertGreater(admin['count'], 0, "Admin user should count this object")
+
     def _test_patch(self, model_obj, attr, new_attr_value=None):
         """ Generic test worker to PATCH object"""
         # Create new value

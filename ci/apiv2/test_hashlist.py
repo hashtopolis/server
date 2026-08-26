@@ -162,3 +162,4 @@ class HashlistTest(BaseTest):
     def test_acl(self):
         model_obj = self.create_test_object()
         self._test_acl_list(model_obj, {'permHashlistRead': True})
+        self._test_acl_count(model_obj, {'permHashlistRead': True})

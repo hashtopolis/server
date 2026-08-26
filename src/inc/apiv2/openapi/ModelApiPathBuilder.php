@@ -467,7 +467,7 @@ class ModelApiPathBuilder {
                 "type" => "boolean"
               ],
               "example" => true,
-              "description" => "Also report the number of objects without any filter applied, as `meta.total_count`"
+              "description" => "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
             ]
           ];
           return;

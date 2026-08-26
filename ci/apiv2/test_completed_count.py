@@ -1,4 +1,6 @@
-from utils import BaseTest, do_create_dummy_agent, do_create_agentassignent
+import requests
+
+from utils import BaseTest, create_restricted_user, do_create_dummy_agent, do_create_agentassignent
 
 from hashtopolis import Helper
 from hashtopolis import Task
@@ -164,3 +166,27 @@ class CompletedCountTest(BaseTest):
         result1 = Helper().get_completed_count()
         result2 = Helper().get_completed_count()
         self.assertEqual(result1, result2)
+
+    def test_acl_counts_are_scoped_to_access_groups(self):
+        """A user without access groups must not be told about completed tasks of other groups.
+
+        Reporting them makes the dashboard show more completed tasks than the user has tasks.
+        """
+        _create_completed_task(self)
+        completed_tasks, _ = self._get_counts()
+        self.assertGreater(completed_tasks, 0, "Expected a completed task to exist for the ACL test")
+
+        auth = create_restricted_user(self, {'permTaskWrapperRead': True, 'permTaskRead': True})
+
+        # get_completed_count() always authenticates as the config user, so request it directly
+        helper = Helper()
+        helper.authenticate(auth=auth)
+        response = requests.get(helper._api_endpoint + helper._model_uri + 'getCompletedCount',
+                                headers=helper._headers)
+        self.assertEqual(response.status_code, 200, response.text)
+
+        data = response.json()['data']
+        self.assertEqual(data['completedTasks'], 0,
+                         "Restricted user should not count completed tasks outside their access groups")
+        self.assertEqual(data['completedSupertasks'], 0,
+                         "Restricted user should not count completed supertasks outside their access groups")
