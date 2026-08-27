@@ -326,6 +326,7 @@ class TaskAPI extends AbstractModelAPI {
       Task::IS_CPU_TASK => fn($value) => TaskUtils::setCpuTask($id, $value, $current_user),
       Task::CHUNK_TIME => fn($value) => TaskUtils::changeChunkTime($id, $value, $current_user),
       Task::ATTACK_CMD => fn($value) => TaskUtils::changeAttackCmd($id, $value, $current_user),
+      Task::PREPROCESSOR_COMMAND => fn($value) => TaskUtils::changePreprocessorCmd($id, $value, $current_user)
     ];
   }
 }
