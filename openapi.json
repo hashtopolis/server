@@ -61599,6 +61599,9 @@
                                     "notes": {
                                         "type": "string"
                                     },
+                                    "preprocessorCommand": {
+                                        "type": "string"
+                                    },
                                     "priority": {
                                         "type": "integer"
                                     },
@@ -61666,6 +61669,9 @@
                                             "type": "integer"
                                         },
                                         "notes": {
+                                            "type": "string"
+                                        },
+                                        "preprocessorCommand": {
                                             "type": "string"
                                         },
                                         "priority": {
