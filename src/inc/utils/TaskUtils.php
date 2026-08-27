@@ -226,7 +226,7 @@ class TaskUtils {
 
   public static function changePreprocessorCmd(int $taskId, string $preprocessorCmd, User $user): void {
     $task = TaskUtils::getTask($taskId, $user);
-    if ($task->getPreprocessorCmd() == $preprocessorCmd) {
+    if ($task->getPreprocessorCommand() == $preprocessorCmd) {
       // no change required, we avoid all the overhead
       return;
     }
@@ -235,7 +235,7 @@ class TaskUtils {
     }
     TaskUtils::purgeTask($task->getId(), $user);
     $task = TaskUtils::getTask($taskId, $user); // reload task, otherwise we overwrite purge changes
-    Factory::getTaskFactory()->set($task, Task::PREPROCESSOR_CMD, $preprocessorCmd);
+    Factory::getTaskFactory()->set($task, Task::PREPROCESSOR_COMMAND, $preprocessorCmd);
   }
   
   /**
