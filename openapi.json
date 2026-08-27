@@ -446,7 +446,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count AccessGroups",
@@ -1541,7 +1541,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count Agents",
@@ -2712,7 +2712,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count AgentAssignments",
@@ -3671,7 +3671,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count AgentBinarys",
@@ -4203,7 +4203,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count AgentErrors",
@@ -4910,7 +4910,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count AgentStats",
@@ -5502,7 +5502,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count ApiTokens",
@@ -6243,7 +6243,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count Chunks",
@@ -6917,7 +6917,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count Configs",
@@ -7582,7 +7582,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count ConfigSections",
@@ -8108,7 +8108,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count CrackerBinarys",
@@ -9257,7 +9257,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count CrackerBinaryTypes",
@@ -10404,7 +10404,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count Files",
@@ -11367,7 +11367,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count GlobalPermissionGroups",
@@ -12290,7 +12290,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count Hashs",
@@ -13097,7 +13097,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count Hashlists",
@@ -14241,7 +14241,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count HashTypes",
@@ -14706,7 +14706,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count HealthCheckAgents",
@@ -15511,7 +15511,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count HealthChecks",
@@ -16429,7 +16429,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count LogEntrys",
@@ -16953,7 +16953,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count NotificationSettings",
@@ -17910,7 +17910,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count Preprocessors",
@@ -18614,7 +18614,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count PreTasks",
@@ -19537,7 +19537,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count Speeds",
@@ -20356,7 +20356,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count Supertasks",
@@ -21524,7 +21524,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count Tasks",
@@ -22604,7 +22604,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count TaskWrappers",
@@ -23547,7 +23547,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count TaskWrapperDisplays",
@@ -24531,7 +24531,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count Users",
@@ -25672,7 +25672,7 @@
                             "type": "boolean"
                         },
                         "example": true,
-                        "description": "Also report the number of objects without any filter applied, as `meta.total_count`"
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
                     }
                 ],
                 "summary": "Count Vouchers",
@@ -30682,11 +30682,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -34126,11 +34126,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -35845,11 +35845,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -36483,11 +36483,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -37204,11 +37204,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -37623,11 +37623,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -38578,11 +38578,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -39837,11 +39837,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -41494,11 +41494,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -41821,11 +41821,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -43200,11 +43200,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -44611,11 +44611,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -45873,11 +45873,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -47039,11 +47039,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -48612,11 +48612,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -52112,11 +52112,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -52704,11 +52704,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -53713,11 +53713,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -55399,11 +55399,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -55830,11 +55830,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -57317,11 +57317,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -57965,11 +57965,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -59098,11 +59098,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -60191,11 +60191,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -61353,11 +61353,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -65653,11 +65653,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -68678,11 +68678,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -69735,11 +69735,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -71266,11 +71266,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
@@ -71825,11 +71825,11 @@
                         "properties": {
                             "count": {
                                 "type": "integer",
-                                "description": "Number of objects matching the given filters"
+                                "description": "Number of objects accessible to the current user matching the given filters"
                             },
                             "total_count": {
                                 "type": "integer",
-                                "description": "Number of objects without any filter applied, only present when `include_total=true` was requested"
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
                             }
                         }
                     },
