@@ -6,7 +6,6 @@ use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
-use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\ExistsFilter;
 use Hashtopolis\dba\Factory;
@@ -18,7 +17,6 @@ use Hashtopolis\dba\models\AgentError;
 use Hashtopolis\dba\models\AgentStat;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Chunk;
-use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
@@ -101,15 +99,10 @@ class AgentAPI extends AbstractModelAPI {
    */
   function aggregateData(AbstractModel $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     $agentId = $object->getId();
-    $qFs = [];
-    $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
-    $qFs[] = new QueryFilter(Chunk::STATE, DHashcatStatus::RUNNING, "=");
-    
-    $active_chunk = Factory::getChunkFactory()->filter([Factory::FILTER => $qFs], true);
-    if ($active_chunk !== NULL) {
+    $active_chunk = AgentUtils::getActiveChunk($agentId);
+    if ($active_chunk !== null) {
       $includedData["chunks"][$agentId] = [$active_chunk];
     }
-    
     return parent::aggregateData($object, $includedData, $aggregateFieldsets);
   }
 
