@@ -20,6 +20,12 @@ final class MassUpdateSetTest extends TestBase {
     $this->assertEquals('key1', $set->getMatchValue());
   }
   
+  /** Verify getMatchValue returns the match int. */
+  public function testGetMatchValueInt(): void {
+    $set = new MassUpdateSet(42, 'val1');
+    $this->assertSame(42, $set->getMatchValue());
+  }
+  
   /** Verify getUpdateValue returns the update string. */
   public function testGetUpdateValueString(): void {
     $set = new MassUpdateSet('key1', 'val1');

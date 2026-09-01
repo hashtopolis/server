@@ -7,9 +7,9 @@ use Hashtopolis\dba\AbstractModel;
 class AgentZap extends AbstractModel {
   private ?int $agentZapId;
   private ?int $agentId;
-  private ?string $lastZapId;
+  private ?int $lastZapId;
   
-  function __construct(?int $agentZapId, ?int $agentId, ?string $lastZapId) {
+  function __construct(?int $agentZapId, ?int $agentId, ?int $lastZapId) {
     $this->agentZapId = $agentZapId;
     $this->agentId = $agentId;
     $this->lastZapId = $lastZapId;
@@ -28,7 +28,7 @@ class AgentZap extends AbstractModel {
     $dict = array();
     $dict['agentZapId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentZapId", "public" => False, "dba_mapping" => False];
     $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId", "public" => False, "dba_mapping" => False];
-    $dict['lastZapId'] = ['read_only' => True, "type" => "str(128)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastZapId", "public" => False, "dba_mapping" => False];
+    $dict['lastZapId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => True, "private" => False, "alias" => "lastZapId", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
@@ -65,11 +65,11 @@ class AgentZap extends AbstractModel {
     $this->agentId = $agentId;
   }
   
-  function getLastZapId(): ?string {
+  function getLastZapId(): ?int {
     return $this->lastZapId;
   }
   
-  function setLastZapId(?string $lastZapId): void {
+  function setLastZapId(?int $lastZapId): void {
     $this->lastZapId = $lastZapId;
   }
   
