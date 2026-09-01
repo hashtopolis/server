@@ -9,13 +9,40 @@ inputs:
     options:
       - "mysql"
       - "postgres"
+  test_dataset:
+    description: "Test dataset to initialize"
+    required: false
+    default: "synthetic"
+    options:
+      - "synthetic"
+      - "realworld"
 
 runs:
   using: "composite"
   steps:
     - name: Start application containers
+      if: ${{ inputs.test_dataset == 'synthetic' }}
       working-directory: .github
       run: docker compose -f docker-compose.${{ inputs.db_system }}.yml up -d
+      shell: bash
+    - name: Build application image for real-world dataset setup
+      if: ${{ inputs.test_dataset == 'realworld' }}
+      working-directory: .github
+      run: docker compose -f docker-compose.${{ inputs.db_system }}.yml build hashtopolis-server-dev
+      shell: bash
+    - name: Start database container for real-world dataset setup
+      if: ${{ inputs.test_dataset == 'realworld' }}
+      working-directory: .github
+      run: docker compose -f docker-compose.${{ inputs.db_system }}.yml up -d hashtopolis-db-dev
+      shell: bash
+    - name: Import real-world test dataset
+      if: ${{ inputs.test_dataset == 'realworld' }}
+      run: bash .github/scripts/import-testdata-dump.sh ${{ inputs.db_system }}
+      shell: bash
+    - name: Start application container after real-world import
+      if: ${{ inputs.test_dataset == 'realworld' }}
+      working-directory: .github
+      run: docker compose -f docker-compose.${{ inputs.db_system }}.yml up -d hashtopolis-server-dev
       shell: bash
 # should not be needed anymore as it is installed during build
 #    - name: Install composer dependencies packages

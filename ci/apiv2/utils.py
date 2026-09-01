@@ -40,6 +40,17 @@ class ApiToken(Model, uri="/ui/apiTokens"):
     def delete(obj):
         pass  # we override the delete function for the tests as tokens cannot be deleted, but the teardown always calls delete after a test
 
+
+def get_test_config():
+    load_order = (str(Path(__file__).parent.joinpath('{name}-defaults{suffix}')),) \
+                 + confidence.DEFAULT_LOAD_ORDER
+    return confidence.load_name('hashtopolis-test', load_order=load_order)
+
+
+def get_hashtopolis_uri():
+    return get_test_config()['hashtopolis_uri']
+
+
 def _do_create_obj_from_file(model_class, file_prefix, extra_payload={}, **kwargs):
     file_id = kwargs.get('file_id') or '001'
     p = Path(__file__).parent.joinpath(f'testfiles/{model_class.__name__.lower()}/{file_prefix}_{file_id}.json')
@@ -100,7 +111,7 @@ def do_create_agent_with_task(gpu_temperatures=None, gpu_utilisations=None,
 
 
 def do_create_agentassignent(agent, task):
-    return AgentAssignment(agentId=agent.id, taskId=task.id).save()
+    return AgentAssignment(agentId=agent.id, taskId=task.id, benchmark='0').save()
 
 
 def do_create_agentbinary(**kwargs):
@@ -112,7 +123,48 @@ def do_create_apitoken(extra_payload={}, **kwargs):
     extra_payload = dict(extra_payload or {})
     extra_payload.setdefault('startValid', now)
     extra_payload.setdefault('endValid', now + 3600)
+    extra_payload.setdefault('isRevoked', False)
     return _do_create_obj_from_file(ApiToken, 'create_apitoken', extra_payload, **kwargs)
+
+
+def create_apitoken_raw(test, auth, scopes):
+    """POST /ui/apiTokens as the given user and register the result for cleanup."""
+    connector = ApiToken.objects.get_conn()
+    connector.authenticate(auth=auth)
+    uri = connector._api_endpoint + '/ui/apiTokens'
+    headers = {**connector._headers, 'Content-Type': 'application/json'}
+    now = int(time.time())
+    payload = {
+        'data': {
+            'attributes': {
+                'scopes': scopes,
+                'startValid': now,
+                'endValid': now + 3600,
+                'isRevoked': False,
+            },
+            'type': 'ApiToken',
+        },
+    }
+    response = requests.post(uri, headers=headers, data=json.dumps(payload))
+    assert response.status_code == 201, f"Failed to create apitoken: status={response.status_code} body={response.text}"
+    token = ApiToken(**response.json()['data'])
+    test.delete_after_test(token)
+    return token
+
+
+def request_with_api_token(token, path, method='GET', payload=None, headers=None):
+    connector = ApiToken.objects.get_conn()
+    uri = connector._api_endpoint + path
+    final_headers = {
+        'Authorization': f'Bearer {token}',
+    }
+    if payload is not None:
+        final_headers['Content-Type'] = 'application/json'
+    if headers:
+        final_headers.update(headers)
+
+    data = json.dumps(payload) if payload is not None else None
+    return requests.request(method, uri, headers=final_headers, data=data)
 
 
 def do_create_accessgroup(**kwargs):
@@ -281,9 +333,7 @@ class TestBase(unittest.TestCase, abc.ABC):
     @classmethod
     def setUpClass(cls):
         # Request access TOKEN, used throughout the test
-        load_order = (str(Path(__file__).parent.joinpath('{name}-defaults.{extension}')),) \
-                     + confidence.DEFAULT_LOAD_ORDER
-        cls._cfg = confidence.load_name('hashtopolis-test', load_order=load_order)
+        cls._cfg = get_test_config()
         cls._api_endpoint = cls._cfg['hashtopolis_uri'] + '/api/v2'
         cls._uri = cls._api_endpoint + cls.getBaseURI(cls)
 

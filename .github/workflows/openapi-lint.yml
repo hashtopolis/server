@@ -34,12 +34,21 @@ jobs:
         run: npm install -g @stoplight/spectral-cli@6.15.1 @redocly/cli@2.24.0 --min-release-age=14
 
       # --- v2 API (JSON:API) ---
-      - name: Download v2 OpenAPI schema
-        run: wget -q http://localhost:8080/api/v2/openapi.json -O openapi-v2.json
-      - name: Lint v2 OpenAPI schema with Redocly
-        run: redocly lint openapi-v2.json
-      - name: Lint v2 OpenAPI schema with Spectral
-        run: spectral lint openapi-v2.json --ruleset .github/openapi/spectral-jsonapi.yml -D
+      - name: Download OpenAPI schema served by the backend
+        run: wget -q http://localhost:8080/api/v2/openapi.json -O openapi.served.json
+      - name: Confirm the committed OpenAPI schema matches the served one
+        run: |
+          jq -S . openapi.json > /tmp/openapi.committed.normalized.json
+          jq -S . openapi.served.json > /tmp/openapi.served.normalized.json
+          if ! diff -u /tmp/openapi.committed.normalized.json /tmp/openapi.served.normalized.json > /tmp/openapi.diff; then
+            echo "::error file=openapi.json::openapi.json is out of date: the backend serves a different spec. Regenerate it with 'php ci/tools/generate-openapi.php --pretty > openapi.json' and commit the result."
+            head -200 /tmp/openapi.diff
+            exit 1
+          fi
+      - name: Lint OpenAPI schema with Redocly
+        run: redocly lint openapi.json
+      - name: Lint OpenAPI schema with Spectral
+        run: spectral lint openapi.json --ruleset .github/openapi/spectral-hashtopolis.yml -D
 
       # --- Agent API (JSON, not JSON:API) ---
       - name: Download Agent API OpenAPI schema
@@ -48,3 +57,4 @@ jobs:
         run: redocly lint openapi-agent.json --config .github/openapi/redocly-agent-api.yaml
       - name: Lint Agent API OpenAPI schema with Spectral
         run: spectral lint openapi-agent.json --ruleset .github/openapi/spectral-agent-api.yml -D
+

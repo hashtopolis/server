@@ -1,0 +1,448 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Hashtopolis API",
+        "version": "v2",
+        "description": "Hashtopolis REST API",
+        "contact": {
+            "name": "Hashtopolis",
+            "url": "https://github.com/hashtopolis/server"
+        },
+        "license": {
+            "name": "GPL-3.0",
+            "url": "https://github.com/hashtopolis/server/blob/master/LICENSE.txt"
+        }
+    },
+    "servers": [
+        {
+            "url": "/"
+        }
+    ],
+    "paths": {
+        "/api/v2/helper/abortChunk": {
+            "post": {
+                "description": "Endpoint to stop a running chunk.",
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Hashtopolis\\inc\\apiv2\\helper\\AbortChunkHelperAPIResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "description": "ChunkID is the ID of the chunk that needs to be aborted.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Hashtopolis\\inc\\apiv2\\helper\\AbortChunkHelperAPI"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/auth/token": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Token"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/helper/importFile": {
+            "post": {
+                "parameters": [
+                    {
+                        "name": "Upload-Metadata",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^([a-zA-Z0-9]+ [A-Za-z0-9+/=]+)(,[a-zA-Z0-9]+ [A-Za-z0-9+/=]+)*$"
+                        },
+                        "example": "filename ZXhhbXBsZS50eHQ=",
+                        "description": " The Upload-Metadata header contains one or more comma-separated key-value pairs.\n            Each pair is formatted as `<key> <base64(value)>`, where:\n              - `key` is a string without spaces.\n              - `value` is base64-encoded"
+                    },
+                    {
+                        "name": "Upload-Length",
+                        "in": "header",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        "example": 10000,
+                        "description": "The total size of the upload in bytes. Must be a positive integer.\n          Required if `Upload-Defer-Length` is not set."
+                    },
+                    {
+                        "name": "Upload-Defer-Length",
+                        "in": "header",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1,
+                        "description": "Indicates that the upload length is not known at creation time.\n          Value must be `1`. If present, `Upload-Length` must be omitted."
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Upload created",
+                        "headers": {
+                            "Tus-Resumable": {
+                                "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
+                                "schema": {
+                                    "type": "string",
+                                    "enum": "enum: ['1.0.0']"
+                                }
+                            },
+                            "Location": {
+                                "description": "Location of the file where the user can push to.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/helper/importFile/{id}": {
+            "patch": {
+                "parameters": [
+                    {
+                        "name": "Upload-Offset",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 512,
+                        "description": " The Upload-Offset header's value MUST be equal to the current offset of the resource"
+                    },
+                    {
+                        "name": "Content-Type",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "application/offset+octet-stream"
+                            ]
+                        }
+                    }
+                ],
+                "requestBody": [
+                    {
+                        "required": "true",
+                        "description": "The binary data to push to the file",
+                        "content": {
+                            "application/offset+octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Chunk accepted",
+                        "headers": {
+                            "Tus-Resumable": {
+                                "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
+                                "schema": {
+                                    "type": "string",
+                                    "enum": "enum: ['1.0.0']"
+                                }
+                            },
+                            "Upload-Offset": {
+                                "description": "The new offset after the chunk is accepted. Indicates how many bytes were received so far.",
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "head": {
+                "responses": {
+                    "200": {
+                        "description": "successful request",
+                        "headers": {
+                            "Tus-Resumable": {
+                                "description": "Indicates the TUS version the server supports.\n        Must always be set to `1.0.0` in compliant servers.",
+                                "schema": {
+                                    "type": "string",
+                                    "enum": "enum: ['1.0.0']"
+                                }
+                            },
+                            "Upload-Offset": {
+                                "description": "Number of bytes already received",
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            },
+                            "Upload-Length": {
+                                "description": "Total upload length (if known)",
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            },
+                            "Upload-Defer-Length": {
+                                "description": "Indicates deferred upload length (if applicable)",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "Upload-Metadata": {
+                                "description": "Original metadata sent during creation",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ErrorResponse": {
+                "type": "object",
+                "required": [
+                    "status"
+                ],
+                "description": "RFC 7807 problem document",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "No access to this object!"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "about:blank"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": 400
+                    }
+                }
+            },
+            "Hashtopolis\\inc\\apiv2\\helper\\AbortChunkHelperAPI": {
+                "type": "object",
+                "properties": {
+                    "chunkId": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "Hashtopolis\\inc\\apiv2\\helper\\AbortChunkHelperAPIResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "meta",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "properties": {
+                            "Abort": {
+                                "type": "string",
+                                "default": "Success"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        },
+                        "maxItems": 0,
+                        "description": "Always empty: a helper answers with meta only."
+                    }
+                }
+            },
+            "Token": {
+                "type": "object",
+                "required": [
+                    "token",
+                    "expires"
+                ],
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    },
+                    "expires": {
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "TokenRequest": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "example": "role.all"
+                }
+            },
+            "ObjectRequest": {
+                "type": "object",
+                "properties": {
+                    "expand": {
+                        "type": "string"
+                    },
+                    "expires": {
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ObjectListRequest": {
+                "type": "object",
+                "properties": {
+                    "expand": {
+                        "type": "string"
+                    },
+                    "filter": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": ""
+                        }
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "JWT Authorization header using the Bearer scheme.",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "scopes": []
+            },
+            "basicAuth": {
+                "type": "http",
+                "description": "Basic Authorization header.",
+                "scheme": "basic"
+            }
+        }
+    }
+}

@@ -126,6 +126,19 @@ abstract class AbstractBaseAPI {
   public function getFormFields(): array {
     return [];
   }
+
+  /**
+   * Replace the OpenAPI "attributes" schema for the GET response. Return null
+   * (default) to let the generator derive the schema from features. Return a
+   * full JSON-schema object (e.g. ["oneOf" => [...]]) to substitute it.
+   *
+   * This replaces the feature-derived attributes only. The properties declared
+   * by getAggregateFeatures() are merged into the result either way, so an
+   * override cannot silently drop them.
+   */
+  public function getOpenAPIAttributesSchemaOverride(): ?array {
+    return null;
+  }
   
   /**
    * Get input field names valid for creation of object
@@ -161,6 +174,16 @@ abstract class AbstractBaseAPI {
   
   protected function getUpdateHandlers($id, $current_user): array {
     return [];
+  }
+
+  /**
+   * Overridable function to filter data in the object. Currently only used by agents
+   *
+   * @param array $object The object to filter data from.
+   * @return array Filtered data as key-value pairs.
+   */
+  protected function filterData(array $object): array {
+    return $object;
   }
   
   /**
@@ -210,6 +233,50 @@ abstract class AbstractBaseAPI {
    */
   public function getAggregateFieldsets(): array {
     return [];
+  }
+
+  /**
+   * Declare computed properties returned by aggregateData() for OpenAPI schema generation.
+   * Override in subclasses that implement aggregateData().
+   *
+   * Every field offered by getAggregateFieldsets() should be declared here, so
+   * that a client asking for `aggregate[<resource>]=<field>` finds the field in
+   * the response schema. Aggregates are only produced on request, so they end
+   * up in the "properties" of the attributes schema but never in its
+   * "required" list.
+   */
+  public static function getAggregateFeatures(): array {
+    return [];
+  }
+
+  /**
+   * Build the feature declaration of a single computed property returned by
+   * aggregateData(). Aggregates are derived on the fly rather than stored, so
+   * they are always read-only, never a primary key and never part of the dba
+   * mapping.
+   *
+   * A callback returning null contributes no key at all (see aggregateData()),
+   * so an optional aggregate is an absent property rather than a null one and
+   * does not need 'null' => true.
+   *
+   * @param string $type feature type, as used by the dba model features
+   * @param array<string, mixed> $overrides entries replacing the defaults, e.g. 'choices'
+   * @return array<string, mixed>
+   */
+  final protected static function aggregateFeature(string $type, string $alias, array $overrides = []): array {
+    return array_merge([
+      'type' => $type,
+      'alias' => $alias,
+      'pk' => false,
+      'private' => false,
+      'choices' => 'unset',
+      'null' => false,
+      'protected' => false,
+      'read_only' => true,
+      'subtype' => 'unset',
+      'public' => false,
+      'dba_mapping' => false,
+    ], $overrides);
   }
   
   /**
@@ -723,6 +790,8 @@ abstract class AbstractBaseAPI {
     
     $aggregatedData = $apiClassObject->aggregateData($obj, $expandResult, $aggregateFieldsets);
     $attributes = array_merge($attributes, $aggregatedData);
+
+    $attributes = $apiClassObject->filterData($attributes);
     
     /* Build JSON::API relationship resource */
     $toManyRelationships = $apiClass::getToManyRelationships();
@@ -1460,21 +1529,39 @@ abstract class AbstractBaseAPI {
     
     // Find if all permissions are matched
     $missing_permissions = array_diff($required_perms, $user_available_perms);
+    $reducedMissingPermissions = $missing_permissions;
     if (count($missing_permissions) > 0) {
       // When there are public attributes, only these will be returned when creating the get response and the non public
       // attributes are stripped away.
       if ($method === "GET" && $this instanceof AbstractModelAPI) {
+        $reducedMissingPermissions = [];
+        
         $features = $this->getFeatures();
-        foreach ($features as $arr) {
-          if ($arr['public'] ?? false) {
-            $this->addPublicAttributeClass($this->getDBAClass());
+        $perm = $this->getDBAclass()::PERM_READ;
+        if (in_array($perm, $missing_permissions, true)) {
+          $missingPermissionMatching = false;
+          foreach ($features as $arr) {
+            if ($arr['public'] ?? false) {
+              $this->addPublicAttributeClass($this->getDBAClass());
+              $missingPermissionMatching = true;
+            }
+          }
+          if (!$missingPermissionMatching) {
+            $reducedMissingPermissions[] = $perm;
+          }
+        }
+        foreach ($missing_permissions as $missing_permission) {
+          if ($missing_permission !== $perm && !array_key_exists($missing_permission, $permsExpandMatching)) {
+            $reducedMissingPermissions[] = $missing_permission;
           }
         }
         
-        $missingPermissionMatching = true;
         // if we also have permissions from expanded entries we need to check them as well
         if (count($permsExpandMatching)) {
           foreach ($missing_permissions as $missing_permission) {
+            if (!array_key_exists($missing_permission, $permsExpandMatching)) {
+              continue;
+            }
             $expands = $permsExpandMatching[$missing_permission];
             foreach ($expands as $expand) {
               $classType = null;
@@ -1495,8 +1582,7 @@ abstract class AbstractBaseAPI {
                 }
               }
               if (count($expandPublicAttributes) == 0) {
-                $missingPermissionMatching = false;
-                break;
+                $reducedMissingPermissions[] = $missing_permission;
               }
               else {
                 $this->addPublicAttributeClass($classType);
@@ -1504,18 +1590,15 @@ abstract class AbstractBaseAPI {
             }
           }
         }
-        if (!$missingPermissionMatching) {
-          $this->publicAttributeFilterClasses = [];
-        }
-        
-        if (count($this->publicAttributeFilterClasses) > 0) {
-          // if there are public attributes we don't return false, but the list of classes which needs to be filtered is saved in the attribteFilterClasses list
-          return TRUE;
-        }
       }
-      $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" . join(", ", $required_perms) . "', user_permissions='" . join(", ", $user_available_perms) . "']");
-      $this->missing_permissions = $missing_permissions;
-      return FALSE;
+      $reducedMissingPermissions = array_values(array_unique($reducedMissingPermissions));
+      
+      if (count($reducedMissingPermissions) > 0) {
+        $this->permissionErrors = array("No '" . join(",", $reducedMissingPermissions) . "' permission(s). [required_permissions='" . join(", ", $required_perms) . "', user_permissions='" . join(", ", $user_available_perms) . "']");
+        $this->missing_permissions = $reducedMissingPermissions;
+        return FALSE;
+      }
+      return TRUE;
     }
     else {
       $this->permissionErrors = array();

@@ -20,6 +20,7 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DTaskStatus;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
@@ -90,7 +91,24 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
       ]
     ];
   }
-  
+
+  /**
+   * Everything but the agent count is reported for normal tasks only, and a
+   * supertask wrapper simply omits those keys (see aggregateData()).
+   */
+  public static function getAggregateFeatures(): array {
+    return [
+      'totalAssignedAgents' => self::aggregateFeature('int', 'totalAssignedAgents'),
+      'dispatched' => self::aggregateFeature('str', 'dispatched'),
+      'searched' => self::aggregateFeature('str', 'searched'),
+      'status' => self::aggregateFeature('int', 'status', ['choices' => DTaskStatus::choices()]),
+      'currentSpeed' => self::aggregateFeature('int', 'currentSpeed'),
+      'estimatedTime' => self::aggregateFeature('int', 'estimatedTime'),
+      'cprogress' => self::aggregateFeature('int', 'cprogress'),
+      'timeSpent' => self::aggregateFeature('int', 'timeSpent'),
+    ];
+  }
+
   /**
    * @param TaskWrapperDisplay $object
    * @throws Exception
@@ -140,39 +158,39 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
     $tasks = TaskUtils::getTasksOfWrapper($object->getId());
     $completed = 0;
     $total = 0;
-    $status = 0;
+    $status = DTaskStatus::INIT;
     foreach ($tasks as $task) {
       $taskStatus = TaskUtils::getStatus($task);
       // if one task of the wrapper is running, it is running
-      if ($taskStatus === 1) {
-        $status = 1;
+      if ($taskStatus === DTaskStatus::RUNNING) {
+        $status = DTaskStatus::RUNNING;
         break;
       }
-      if ($taskStatus === 3) {
+      if ($taskStatus === DTaskStatus::COMPLETED) {
         $completed++;
       }
       $total++;
     }
-    if ($status !== 1) {
+    if ($status !== DTaskStatus::RUNNING) {
       if ($total > 0 && $completed === $total) {
-        $status = 3;
+        $status = DTaskStatus::COMPLETED;
       }
       else {
-        $status = 2;
+        $status = DTaskStatus::IDLE;
       }
     }
-    if ($status == 2 && $object->getTaskWrapperIsArchived() == 1) {
+    if ($status == DTaskStatus::IDLE && $object->getTaskWrapperIsArchived() == 1) {
       // if a task is archived, it should be skipped instead of idle
-      return 4;
+      return DTaskStatus::SKIPPED;
     }
-    if ($status !== 3) {
+    if ($status !== DTaskStatus::COMPLETED) {
       $hashlist = Factory::getHashlistFactory()->get($object->getHashlistId());
       if ($hashlist->getCracked() === $hashlist->getHashCount()) {
         if($object->getCracked() > 0) {
-          return 3;
+          return DTaskStatus::COMPLETED;
         } else {
           // If all hashes are cracked and this task has not found a crack, turn it to skipped state
-          return 4;
+          return DTaskStatus::SKIPPED;
         }
       }
     }

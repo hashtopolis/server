@@ -1,0 +1,8 @@
+# Generated OpenAPI spec snapshots. They are produced by running the PHPUnit
+# suite with UPDATE_OPENAPI_FIXTURES=1 and are never hand-edited, so collapse
+# them in code review and keep them out of the language statistics.
+ci/phpunit/fixtures/openapi/*.spec.json linguist-generated=true
+
+# The full spec at the repository root is produced by
+# `php ci/tools/generate-openapi.php --pretty` and is never hand-edited either.
+openapi.json linguist-generated=true

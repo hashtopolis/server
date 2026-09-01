@@ -27,6 +27,7 @@ use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DAgentStatsType;
 use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DLogEntryIssuer;
 use Hashtopolis\inc\defines\DNotificationObjectType;
@@ -390,12 +391,13 @@ class AgentUtils {
    * @param int $agentId
    * @param int $taskId
    * @param User $user
+   * @param string $benchmark the benchmark to record for the assignment, empty when none is known yet
    * @return ?Assignment
    * @throws HTException
    * @throws HttpError
    * @throws Exception
    */
-  public static function assign(int $agentId, int $taskId, User $user): ?Assignment {
+  public static function assign(int $agentId, int $taskId, User $user, string $benchmark = ""): ?Assignment {
     $agent = AgentUtils::getAgent($agentId, $user);
     
     if ($taskId == 0) { // unassign
@@ -430,7 +432,6 @@ class AgentUtils {
     $qF = new QueryFilter(Agent::AGENT_ID, $agent->getId(), "=");
     $assignments = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
     
-    $benchmark = 0;
     if (sizeof($assignments) > 0) {
       if ($assignments[0]->getTaskId() === $taskId) {
         throw new HttpError("Agent is already assigned to this task");
@@ -618,13 +619,16 @@ class AgentUtils {
     // In order to make sense of the diff, we need to make sure that both values solve time and dispatch time are set (i.e. > 0).
     // Since an agent can only work on one chunk at a time, there inherently are no overlapping time spans to consider.
     // We can therefore simply sum up the corresponding time spans in the database already.
-    $qF1 = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
-    $qF2 = $taskId !== null ? new QueryFilter(Chunk::TASK_ID, $taskId, "=") : null;
-    $qF3 = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
-    $qF4 = new QueryFilter(Chunk::DISPATCH_TIME, 0, ">");
+    $qFs = [];
+    $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
+    if ($taskId !== null) {
+      $qFs[] = new QueryFilter(Chunk::TASK_ID, $taskId, "=");
+    }
+    $qFs[] = new QueryFilter(Chunk::SOLVE_TIME, 0, ">");
+    $qFs[] = new QueryFilter(Chunk::DISPATCH_TIME, 0, ">");
     $agg1 = new Aggregation(Chunk::SOLVE_TIME, Aggregation::SUM);
     $agg2 = new Aggregation(Chunk::DISPATCH_TIME, Aggregation::SUM);
-    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2, $qF3, $qF4])], [$agg1, $agg2]);
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qFs], [$agg1, $agg2]);
     return $results[$agg1->getName()] - $results[$agg2->getName()];
   }
   
@@ -638,10 +642,35 @@ class AgentUtils {
    * @throws Exception
    */
   public static function getAggregateCracked(int $agentId, ?int $taskId = null): int {
-    $qF1 = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
-    $qF2 = $taskId !== null ? new QueryFilter(Chunk::TASK_ID, $taskId, "=") : null;
+    $qFs = [];
+    $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
+    if ($taskId !== null) {
+      $qFs[] = new QueryFilter(Chunk::TASK_ID, $taskId, "=");
+    }
     $agg1 = new Aggregation(Chunk::CRACKED, Aggregation::SUM);
-    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2])], [$agg1]);
+    $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => $qFs], [$agg1]);
     return (int)($results[$agg1->getName()] ?? 0);
+  }
+  
+  /**
+   * Get the active chunk being worked on by an agent or
+   *  (if task ID is specified) by an agent on a specific task.
+   *
+   * @param int $agentId
+   * @param int|null $taskId
+   * @return Chunk|null
+   * @throws Exception
+   */
+  public static function getActiveChunk(int $agentId, ?int $taskId = null): ?Chunk {
+    $qFs = [];
+    $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
+    if ($taskId !== null) {
+      $qFs[] = new QueryFilter(Chunk::TASK_ID, $taskId, "=");
+    }
+    $qFs[] = new QueryFilter(Chunk::STATE, DHashcatStatus::RUNNING, "=");
+    $qFs[] = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
+    $qFs[] = new QueryFilter(Chunk::PROGRESS, 10000, "<");
+    $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
+    return Factory::getChunkFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF], true);
   }
 }

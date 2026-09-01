@@ -8,6 +8,8 @@ use Hashtopolis\dba\models\Config;
 use Hashtopolis\dba\models\ConfigSection;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DConfigType;
 use Hashtopolis\inc\HTException;
 
 
@@ -65,5 +67,87 @@ class ConfigAPI extends AbstractModelAPI {
    */
   protected function updateObjects(array $objects): void {
     ConfigUtils::updateConfigs($objects);
+  }
+
+  public function getAggregateFieldsets(): array {
+    return [
+      'config' => [
+        'valueBoundaries' => [$this, 'getAggregateValueBoundaries'],
+      ]
+    ];
+  }
+
+  /**
+   * The bounds an item accepts depend on its config type, so which members are
+   * present varies per item (see ConfigUtils::getConfigValueBounds). The object
+   * is never empty: an item of unknown type is treated as a string input and
+   * reports at least its maximum length.
+   */
+  public static function getAggregateFeatures(): array {
+    return [
+      'valueBoundaries' => self::aggregateFeature('dict', 'valueBoundaries', [
+        'openapi_schema' => [
+          'type' => 'object',
+          'minProperties' => 1,
+          'properties' => [
+            'min' => ['type' => 'integer', 'description' => 'Smallest accepted value of a numeric item'],
+            'max' => ['type' => 'integer', 'description' => 'Largest accepted value of a numeric item'],
+            'maxLength' => ['type' => 'integer', 'description' => 'Longest accepted value of a textual item'],
+            'binaryValues' => [
+              'type' => 'array',
+              'items' => ['type' => 'string'],
+              'description' => 'The two values a tickbox item accepts',
+            ],
+          ],
+        ],
+      ]),
+    ];
+  }
+
+  protected function getAggregateValueBoundaries(AbstractModel $object): ?array {
+    if (!($object instanceof Config) || !is_string($object->getItem()) || $object->getItem() === '') {
+      return null;
+    }
+
+    return ConfigUtils::getConfigValueBounds($object->getItem());
+  }
+
+  public function getOpenAPIAttributesSchemaOverride(): ?array {
+    $branches = [];
+    foreach (DConfig::getConstants() as $item) {
+      if (DConfig::getConfigType($item) !== DConfigType::SELECT) {
+        continue;
+      }
+      $selection = DConfig::getSelection($item)->getAllValues();
+      $valueEnum = [];
+      foreach ($selection as $enumKey => $enumLabel) {
+        $valueEnum[] = [
+          'const' => (string)$enumKey,
+          'title' => (string)$enumLabel,
+          'type'  => 'string',
+        ];
+      }
+      $branches[] = [
+        'type'       => 'object',
+        'title'      => ucfirst($item),
+        'properties' => [
+          'configSectionId' => ['type' => 'integer'],
+          'item'            => ['type' => 'string', 'const' => $item],
+          'value'           => ['oneOf' => $valueEnum],
+        ],
+        'required'   => ['configSectionId', 'item', 'value'],
+      ];
+    }
+    $branches[] = [
+      'type'       => 'object',
+      'title'      => 'ConfigGeneric',
+      'properties' => [
+        'configSectionId' => ['type' => 'integer'],
+        'item'            => ['type' => 'string'],
+        'value'           => ['type' => 'string'],
+      ],
+      'required'   => ['configSectionId', 'item', 'value'],
+    ];
+    return ['oneOf' => $branches];
   }
 }

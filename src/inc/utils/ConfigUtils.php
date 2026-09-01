@@ -16,6 +16,7 @@ use Hashtopolis\dba\models\Config;
 use Hashtopolis\dba\models\ConfigSection;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DConfigType;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\defines\DLogEntry;
@@ -26,6 +27,112 @@ use Hashtopolis\inc\UI;
 use Hashtopolis\inc\Util;
 
 class ConfigUtils {
+  const DEFAULT_NUMBER_MIN = 0;
+  const DEFAULT_NUMBER_MAX = 999999999;
+  const DEFAULT_STRING_MAX_LENGTH = 65535;
+
+  /**
+   * @return array<string, mixed>
+   */
+  public static function getConfigValueBounds(string $item): array {
+    $type = DConfig::getConfigType($item);
+    $bounds = [];
+
+    if ($type === DConfigType::NUMBER_INPUT) {
+      $bounds = [
+        'min' => self::DEFAULT_NUMBER_MIN,
+        'max' => self::DEFAULT_NUMBER_MAX,
+      ];
+    }
+    else if ($type === DConfigType::TICKBOX) {
+      $bounds = [
+        'binaryValues' => ['0', '1'],
+      ];
+    }
+    else if ($type === DConfigType::STRING_INPUT || $type === DConfigType::EMAIL || $type === DConfigType::SELECT) {
+      $bounds = [
+        'maxLength' => self::DEFAULT_STRING_MAX_LENGTH,
+      ];
+    }
+
+    $itemBounds = match ($item) {
+      DConfig::HASHCAT_BRAIN_PORT,
+      DConfig::NOTIFICATIONS_PROXY_PORT => ['min' => 1, 'max' => 65535],
+      DConfig::DISP_TOLERANCE,
+      DConfig::AGENT_UTIL_THRESHOLD_1,
+      DConfig::AGENT_UTIL_THRESHOLD_2 => ['min' => 0, 'max' => 100],
+      DConfig::HASHES_PAGE_SIZE,
+      DConfig::HASHES_PER_PAGE,
+      DConfig::DEFAULT_PAGE_SIZE,
+      DConfig::MAX_PAGE_SIZE => ['min' => 1],
+      DConfig::EMAIL_SENDER,
+      DConfig::CONTACT_EMAIL => ['maxLength' => 320],
+      DConfig::FIELD_SEPARATOR => ['maxLength' => 1],
+      default => [],
+    };
+
+    return array_merge($bounds, $itemBounds);
+  }
+
+  /**
+   * @throws HTException
+   */
+  public static function validateAndNormalizeConfigValue(string $item, mixed $value): string {
+    if (is_null($value)) {
+      throw new HTException("No new config value provided");
+    }
+
+    $type = DConfig::getConfigType($item);
+    $bounds = self::getConfigValueBounds($item);
+
+    if ($type === DConfigType::TICKBOX) {
+      if (in_array($value, [true, 1, '1', 'true'], true)) {
+        return '1';
+      }
+      if (in_array($value, [false, 0, '0', 'false', ''], true)) {
+        return '0';
+      }
+      throw new HTException("Value most be boolean!");
+    }
+
+    if ($type === DConfigType::NUMBER_INPUT) {
+      if (!is_numeric($value)) {
+        throw new HTException("Value must be numeric!");
+      }
+
+      $numericValue = $value + 0;
+      if (isset($bounds['min']) && $numericValue < $bounds['min']) {
+        throw new HTException("Value must be at least " . $bounds['min'] . "!");
+      }
+      if (isset($bounds['max']) && $numericValue > $bounds['max']) {
+        throw new HTException("Value must be at most " . $bounds['max'] . "!");
+      }
+
+      return (string)$value;
+    }
+
+    if (!is_scalar($value)) {
+      throw new HTException("Value must be scalar!");
+    }
+    $normalizedValue = (string)$value;
+
+    if (isset($bounds['maxLength']) && strlen($normalizedValue) > $bounds['maxLength']) {
+      throw new HTException("Value length must be at most " . $bounds['maxLength'] . "!");
+    }
+
+    if ($type === DConfigType::EMAIL && !filter_var($normalizedValue, FILTER_VALIDATE_EMAIL)) {
+      throw new HTException("Value must be email!");
+    }
+
+    if ($type === DConfigType::SELECT) {
+      if (!in_array($normalizedValue, DConfig::getSelection($item)->getKeys(), true)) {
+        throw new HTException("Value is not in selection!");
+      }
+    }
+
+    return $normalizedValue;
+  }
+
   /**
    * @param Config $config
    * @param boolean $new
@@ -92,13 +199,10 @@ class ConfigUtils {
     if (is_null($currentConfig)) {
       throw new HTException("No config with this ID!");
     }
-    $newValue = $attributes[Config::VALUE] ?? null;
     $name = $currentConfig->getItem();
-    
-    if (is_null($newValue)) {
-      throw new HTException("No new config value provided");
-    }
-    if ($currentConfig->getValue() === $newValue) {
+
+    $newValue = self::validateAndNormalizeConfigValue($name, $attributes[Config::VALUE] ?? null);
+    if ((string)$currentConfig->getValue() === $newValue) {
       return; //The value was not changed so we don't need to update it.
     }
     
@@ -143,31 +247,32 @@ class ConfigUtils {
     foreach ($arr as $item => $val) {
       if (str_starts_with($item, "config_")) {
         $name = substr($item, 7);
-        if (SConfig::getInstance()->getVal($name) == $val) {
+        $newValue = self::validateAndNormalizeConfigValue($name, $val);
+        if ((string)SConfig::getInstance()->getVal($name) === $newValue) {
           continue; // the value was not changed, so we don't need to update it
         }
         
         $qF = new QueryFilter(Config::ITEM, $name, "=");
         $config = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
         if ($config == null) {
-          $config = new Config(null, self::DEFAULT_CONFIG_SECTION, $name, $val);
+          $config = new Config(null, self::DEFAULT_CONFIG_SECTION, $name, $newValue);
           Factory::getConfigFactory()->save($config);
         }
         else {
           if ($name == DConfig::HASH_MAX_LENGTH) {
-            $limit = intval($val);
+            $limit = intval($newValue);
             if (!Util::setMaxHashLength($limit)) {
               throw new HTException("Failed to update max hash length!");
             }
           }
           else if ($name == DConfig::PLAINTEXT_MAX_LENGTH) {
-            $limit = intval($val);
+            $limit = intval($newValue);
             if (!Util::setPlaintextMaxLength($limit)) {
               throw new HTException("Failed to update max plaintext length!");
             }
           }
-          SConfig::getInstance()->addValue($name, $val);
-          $config->setValue($val);
+          SConfig::getInstance()->addValue($name, $newValue);
+          $config->setValue($newValue);
           ConfigUtils::set($config, false);
         }
       }

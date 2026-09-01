@@ -9,6 +9,7 @@ use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\utils\ConfigUtils;
 use JsonException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -87,6 +88,15 @@ class GetGlobalConfigHelperAPI extends AbstractHelperAPI {
   
   public static function getResponse(): string {
     return "Config";
+  }
+
+  protected function filterData(array $object): array {
+    $item = $object['item'] ?? null;
+    if (!is_string($item) || $item === '') {
+      return $object;
+    }
+
+    return array_merge($object, ConfigUtils::getConfigValueBounds($item));
   }
 }
 
