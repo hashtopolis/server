@@ -8,6 +8,7 @@ use Hashtopolis\dba\Aggregation;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\Chunk;
+use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\TaskWrapperDisplay;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
@@ -15,6 +16,8 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessUtils;
 use JsonException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -68,15 +71,24 @@ class GetCompletedCountHelperAPI extends AbstractHelperAPI {
     $this->preCommon($request);
     $data = [];
     
+    /*
+     * Both counts are restricted to the access groups of the requesting user, the same way
+     * TaskWrapperDisplayAPI and TaskWrapperAPI restrict their listings. Without this the
+     * dashboard reports more completed tasks than there are tasks visible to the user.
+     */
+    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    
     // count of completed normal tasks
     $qF1 = new QueryFilter(TaskWrapperDisplay::TASK_TYPE, DTaskTypes::NORMAL, "=");
     $qF2 = new QueryFilter(TaskWrapperDisplay::TASK_IS_ARCHIVED, 0, "=");
+    $qF3 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory());
     
     $jF = new JoinFilter(Factory::getChunkFactory(), TaskWrapperDisplay::TASK_ID, Chunk::TASK_ID);
+    $aclJF = new JoinFilter(Factory::getHashlistFactory(), TaskWrapperDisplay::HASHLIST_ID, Hashlist::HASHLIST_ID);
     
     $agg1 = new Aggregation(Chunk::CHECKPOINT, Aggregation::SUM, Factory::getChunkFactory());
     $agg2 = new Aggregation(Chunk::SKIP, Aggregation::SUM, Factory::getChunkFactory());
-    $results = Factory::getTaskWrapperDisplayFactory()->joinAggregationFilter([Factory::FILTER => [$qF1, $qF2]], $jF, [$agg1, $agg2]);
+    $results = Factory::getTaskWrapperDisplayFactory()->joinAggregationFilter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::JOIN => [$aclJF]], $jF, [$agg1, $agg2]);
     
     $completed = 0;
     for ($i = 0; $i < sizeof($results[Factory::getTaskWrapperDisplayFactory()->getModelName()]); $i++) {
@@ -89,10 +101,12 @@ class GetCompletedCountHelperAPI extends AbstractHelperAPI {
     }
     $data["completedTasks"] = $completed;
     
-    // count of completed supertasks
+    // count of completed supertasks, the task query below inherits the ACL through $taskWrapperIds
     $qF1 = new QueryFilter(TaskWrapper::TASK_TYPE, DTaskTypes::SUPERTASK, "=");
     $qF2 = new QueryFilter(TaskWrapper::IS_ARCHIVED, 0, "=");
-    $taskWrapperIds = Factory::getTaskWrapperFactory()->columnFilter([Factory::FILTER => [$qF1, $qF2]], TaskWrapper::TASK_WRAPPER_ID);
+    $qF3 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroups, Factory::getHashlistFactory());
+    $aclJF = new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID);
+    $taskWrapperIds = Factory::getTaskWrapperFactory()->columnFilter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::JOIN => [$aclJF]], TaskWrapper::TASK_WRAPPER_ID);
     
     $qF = new ContainFilter(Task::TASK_WRAPPER_ID, $taskWrapperIds);
     $jF = new JoinFilter(Factory::getChunkFactory(), Task::TASK_ID, Chunk::TASK_ID, joinType: JoinFilter::LEFT);

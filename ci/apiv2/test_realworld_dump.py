@@ -21,10 +21,13 @@ class RealWorldDumpSmokeTest(BaseTest):
         return response.json()
 
     def test_known_dump_counts(self):
-        self.assertEqual(Hash.objects.count(hashId__lte=30129)['count'], 28957)
-        self.assertEqual(Hashlist.objects.count(hashlistId__lte=272)['count'], 267)
+        # Counts are scoped to the access groups of the requesting user, just like listing is.
+        # 'admin' is only a member of the default group, while hashlist 272 of the dump lives in
+        # access group 5, so that hashlist and its 5477 hashes and 10 tasks are not counted here.
+        self.assertEqual(Hash.objects.count(hashId__lte=30129)['count'], 23480)
+        self.assertEqual(Hashlist.objects.count(hashlistId__lte=272)['count'], 266)
         self.assertEqual(Agent.objects.count(agentId__lte=18)['count'], 7)
-        self.assertEqual(Task.objects.count(taskId__lte=1336)['count'], 304)
+        self.assertEqual(Task.objects.count(taskId__lte=1336)['count'], 294)
         self.assertEqual(Hash.objects.count(hashlistId=4)['count'], 10346)
         self.assertEqual(Task.objects.count(taskWrapperId=1004)['count'], 1)
 

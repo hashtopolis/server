@@ -32,6 +32,7 @@ class ApiTokenTest(BaseTest):
     def test_acl(self):
         model_obj = self.create_test_object()
         self._test_acl_list(model_obj, {'permJwtApiKeyRead': True})
+        self._test_acl_count(model_obj, {'permJwtApiKeyRead': True})
 
     def test_token_scope_admin_grants_requested(self):
         """Admin holds every legacy permission, so any requested scope must be granted in the JWT."""

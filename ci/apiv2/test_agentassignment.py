@@ -53,6 +53,7 @@ class AgentStatTest(BaseTest):
     def test_acl(self):
         model_obj = self.create_test_object()
         self._test_acl_list(model_obj, {'permAgentAssignmentRead': True})
+        self._test_acl_count(model_obj, {'permAgentAssignmentRead': True})
 
     def test_cracking_time_aggregation(self):
         dummy_agent, agent, _, task = self.create_agent_with_task().values()

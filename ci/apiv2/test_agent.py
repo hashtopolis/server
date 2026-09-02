@@ -111,6 +111,7 @@ class AgentTest(BaseTest):
     def test_acl(self):
         model_obj = self.create_test_object()
         self._test_acl_list(model_obj, {'permAgentRead': True})
+        self._test_acl_count(model_obj, {'permAgentRead': True})
 
     def test_active_chunk(self):
         dummy_agent, agent, _, task = self.create_agent_with_task().values()

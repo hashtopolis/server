@@ -922,7 +922,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   }
   
   /**
-   * Maps filters to the appropiate models based on their feautures.
+   * Maps filters to the appropriate models based on their features.
    *
    * Helper function to get valid filters for the models. This is usefull when multiple objects
    * have been included and the correct filters need to be mapped to the correct objects.
@@ -952,20 +952,34 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    */
   public function filterObjectMap(array $filters, array $models): array {
     $modelFilterMap = [];
+    /*
+     * Filter parameters address fields by their alias, not by their database column name,
+     * so the primary key has to be looked up by alias as well. Same expression as makeFilter().
+     */
+    $primaryKeyAlias = array_column($this->getAliasedFeatures(), 'alias', 'dbname')[$this->getPrimaryKey()];
     foreach ($filters as $filter => $value) {
-      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith)$/', $filter, $matches) == 0) {
+      /* Operator list has to stay in sync with makeFilter(), it resolves the filters mapped here */
+      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith|__in|__nin)$/', $filter, $matches) == 0) {
         throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid");
       }
       
+      $isMapped = false;
       foreach ($models as $model) {
-        $features = $model->getFeatures();
-        // Special filtering of _id to use for uniform access to model primary key
-        $cast_key = $matches['key'] == '_id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
+        /* Aliased features are keyed by alias, the raw DBA features are keyed by column name */
+        $features = $this->getAliasedFeaturesOther($model::class);
+        // Special filtering of id to use for uniform access to model primary key
+        $cast_key = $matches['key'] == 'id' ? $primaryKeyAlias : $matches['key'];
         if (!array_key_exists($cast_key, $features)) {
           continue; //not a valid filter for current model
         }
         $modelFilterMap[$model::class][$filter] = $value;
+        $isMapped = true;
         break; //filter has been found for current model, so break to go to next filter
+      }
+      
+      if (!$isMapped) {
+        /* Dropping the filter here would silently answer the request with an unfiltered result */
+        throw new HttpForbidden("Filter parameter '" . $filter . "' is not valid (key not valid field)");
       }
     }
     return $modelFilterMap;
@@ -1014,6 +1028,23 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       $qFs = array_merge($qFs, $current_qFs);
     }
     
+    /*
+     * Restrict the count to the objects the current user is allowed to see, exactly like
+     * getManyResources() does. Without this the endpoint leaks the existence of objects
+     * outside of the user's access groups.
+     */
+    $aFs_ACL = $this->getFilterACL();
+    if (isset($aFs_ACL[Factory::FILTER])) {
+      $qFs = array_merge($aFs_ACL[Factory::FILTER], $qFs);
+    }
+    if (isset($aFs_ACL[Factory::JOIN])) {
+      foreach ($aFs_ACL[Factory::JOIN] as $joinFilter) {
+        if (!$this::checkJoinExists($aFs[Factory::JOIN] ?? [], $joinFilter->getOtherFactory()->getModelName())) {
+          $aFs[Factory::JOIN][] = $joinFilter;
+        }
+      }
+    }
+    
     if (count($qFs) > 0) {
       $aFs[Factory::FILTER] = $qFs;
     }
@@ -1023,7 +1054,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     $include_total = $request->getQueryParams()['include_total'] ?? false;
     if ($include_total == "true") {
-      $meta["total_count"] = $factory->countFilter([]);
+      /* "Without any filter applied" means without the request's filters, but still within the user's ACL */
+      $meta["total_count"] = $factory->countFilter(array_intersect_key($aFs_ACL, [Factory::FILTER => 1, Factory::JOIN => 1]));
     }
     
     $ret = self::createJsonResponse(meta: $meta);
