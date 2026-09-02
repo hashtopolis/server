@@ -604,8 +604,12 @@ class HashlistUtils {
     $superHashlists = $joined[Factory::getHashlistFactory()->getModelName()];
     $toDelete = [];
     foreach ($superHashlists as $superHashlist) {
-      Factory::getHashlistFactory()->dec($superHashlist, Hashlist::HASH_COUNT, $hashlist->getHashCount());
-      Factory::getHashlistFactory()->dec($superHashlist, Hashlist::CRACKED, $hashlist->getCracked());
+      if ($hashlist->getHashCount() > 0) {
+        Factory::getHashlistFactory()->dec($superHashlist, Hashlist::HASH_COUNT, $hashlist->getHashCount());
+      }
+      if ($hashlist->getCracked() > 0) {
+        Factory::getHashlistFactory()->dec($superHashlist, Hashlist::CRACKED, $hashlist->getCracked());
+      }
       
       /** @var Hashlist $superHashlist */
       if ($superHashlist->getHashCount() <= 0) {

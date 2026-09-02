@@ -2,6 +2,7 @@ import test_task
 import test_user
 from hashtopolis import Agent, Config, Helper
 from hashtopolis import HashtopolisError
+from hashtopolis_agent import ProcessState
 
 from utils import BaseTest
 
@@ -111,3 +112,23 @@ class AgentTest(BaseTest):
         model_obj = self.create_test_object()
         self._test_acl_list(model_obj, {'permAgentRead': True})
         self._test_acl_count(model_obj, {'permAgentRead': True})
+
+    def test_active_chunk(self):
+        dummy_agent, agent, _, task = self.create_agent_with_task().values()
+        dummy_agent.get_chunk()
+        dummy_agent.send_process(progress=50, state=ProcessState.RUNNING)
+        agent_resp = Agent.objects.get(pk=agent.id)
+        chunks = agent_resp._Model__relationships['chunks'].get('data', [])
+        active_chunk_id = next(iter(chunks), {}).get('id', None)
+
+        self.assertEqual(dummy_agent.chunk['chunkId'], active_chunk_id, "Active chunk is reported incorrectly")
+
+        dummy_agent.get_chunk()
+        # To simulate a stop instruction (e.g. after a hashlist has been completed by other agents),
+        # report completeness on current chunk, but leave state as RUNNING.
+        dummy_agent.send_process(progress=100, state=ProcessState.RUNNING)
+        helper = Helper()
+        result = helper.unassign_agent(agent=agent)
+        agent_resp = Agent.objects.get(pk=agent.id)
+
+        self.assertNotIn('data', agent_resp._Model__relationships['chunks'], "Chunks of a completed hashlist should not be returned as active")

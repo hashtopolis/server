@@ -380,3 +380,24 @@ class TaskTest(BaseTest):
         obj = Task.objects.params(**{"aggregate[task]": "cracked"}).get(taskId=task.id)
         # Only the first chunk cracks hashes; the sum across all chunks is still 2
         self.assertEqual(obj.cracked, 2)
+
+    def test_task_update_preprocessor_command(self):
+        task = self.create_test_object()
+        original_cmd = task.preprocessorCommand
+        self.assertEqual(original_cmd, "this-is-prepressor")
+
+        new_cmd = "new-preprocessor-command"
+        task.preprocessorCommand = new_cmd
+        task.save()
+
+        obj = Task.objects.get(taskId=task.id)
+        self.assertEqual(new_cmd, obj.preprocessorCommand)
+
+    def test_task_update_preprocessor_command_blacklist_chars(self):
+        config = Config.objects.get(item='blacklistChars')
+        config.save()
+        model_obj = self.create_test_object()
+        with self.assertRaises(HashtopolisResponseError) as e:
+            model_obj.preprocessorCommand = config.value
+            model_obj.save()
+        self.assertEqual(e.exception.status_code, 500)
