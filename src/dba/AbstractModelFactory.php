@@ -667,9 +667,10 @@ abstract class AbstractModelFactory {
   /**
    * Create a timeseries with counts per day for a given table.
    *
-   * @param array $options can contain FILTER options to select which entries should match to be counted (e.g. also if the timeseries should only be over a certain amount of day)
-   *              and JOIN options to filter on a column of another table. As every counted row is one entry
-   *              of this factory, such joins must not multiply rows.
+   * @param array $options can contain FILTER options to select which entries should match to be counted 
+   * (e.g. also if the timeseries should only be over a certain amount of day)
+   * and JOIN options to filter on a column of another table. As every counted row is one entry of this factory,
+   * such joins must not multiply rows.
    * @param string $timeColumn table column which should be used to be use for the 'day' grouping
    * @return array list of [day => count] entries
    * @throws Exception
