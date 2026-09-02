@@ -6,7 +6,6 @@ use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
-use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\ExistsFilter;
 use Hashtopolis\dba\Factory;
@@ -18,7 +17,6 @@ use Hashtopolis\dba\models\AgentError;
 use Hashtopolis\dba\models\AgentStat;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Chunk;
-use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
@@ -27,21 +25,24 @@ use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
-use Psr\Container\ContainerInterface;
 
 
 /**
  * @extends AbstractModelAPI<Agent>
  */
 class AgentAPI extends AbstractModelAPI {
-  private bool $hideIpInfo;
+  private ?bool $hideIpInfo = null;
 
   /**
-   * @throws Exception
+   * Read once and cached, but only when data is actually filtered: the OpenAPI
+   * generator instantiates this class purely to introspect it and has no
+   * database connection.
    */
-  public function __construct(ContainerInterface $container) {
-    parent::__construct($container);
-    $this->hideIpInfo = SConfig::getInstance()->getVal(DConfig::HIDE_IP_INFO) === "1";
+  private function hideIpInfo(): bool {
+    if ($this->hideIpInfo === null) {
+      $this->hideIpInfo = SConfig::getInstance()->getVal(DConfig::HIDE_IP_INFO) === "1";
+    }
+    return $this->hideIpInfo;
   }
 
   public static function getBaseUri(): string {
@@ -70,7 +71,13 @@ class AgentAPI extends AbstractModelAPI {
       ]
     ];
   }
-  
+
+  public static function getAggregateFeatures(): array {
+    return [
+      'crackingTime' => self::aggregateFeature('int', 'crackingTime'),
+    ];
+  }
+
   /**
    * @param Agent $object
    * @return int
@@ -92,20 +99,15 @@ class AgentAPI extends AbstractModelAPI {
    */
   function aggregateData(AbstractModel $object, array &$includedData = [], ?array $aggregateFieldsets = null): array {
     $agentId = $object->getId();
-    $qFs = [];
-    $qFs[] = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
-    $qFs[] = new QueryFilter(Chunk::STATE, DHashcatStatus::RUNNING, "=");
-    
-    $active_chunk = Factory::getChunkFactory()->filter([Factory::FILTER => $qFs], true);
-    if ($active_chunk !== NULL) {
+    $active_chunk = AgentUtils::getActiveChunk($agentId);
+    if ($active_chunk !== null) {
       $includedData["chunks"][$agentId] = [$active_chunk];
     }
-    
     return parent::aggregateData($object, $includedData, $aggregateFieldsets);
   }
 
   protected function filterData(array $object): array {
-    if ($this->hideIpInfo && isset($object[Agent::LAST_IP])) {
+    if ($this->hideIpInfo() && isset($object[Agent::LAST_IP])) {
       $object[Agent::LAST_IP] = "Hidden";
     }
     return $object;

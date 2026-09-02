@@ -1,6 +1,7 @@
 parameters:
     paths:
         - src/inc/apiv2
+        - src/inc/agentapi
         - src/dba
         - src/inc
         - ci/phpunit

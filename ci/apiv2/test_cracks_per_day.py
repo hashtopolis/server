@@ -1,7 +1,9 @@
 from datetime import date
 
+import requests
+
 from hashtopolis import Hashlist, Helper
-from utils import BaseTest
+from utils import BaseTest, create_restricted_user
 
 
 class CracksPerDayTest(BaseTest):
@@ -49,3 +51,25 @@ class CracksPerDayTest(BaseTest):
         count_after = result_after.get(today, 0)
 
         self.assertEqual(count_after, count_before + 2)
+
+    def test_acl_cracks_are_scoped_to_access_groups(self):
+        """A user without access groups must not be told about cracks of other groups."""
+        hashlist = self.create_hashlist()
+        helper = Helper()
+        helper.import_cracked_hashes(hashlist, 'paste', 'cc03e747a6afbbcbf8be7668acfebee5:test123', ':', 0)
+
+        today = date.today().strftime('%Y-%m-%d')
+        self.assertGreaterEqual(helper.get_cracks_per_day().get(today, 0), 1,
+                                "Expected a crack today for the ACL test")
+
+        auth = create_restricted_user(self, {'permHashlistRead': True, 'permHashRead': True})
+
+        # get_cracks_per_day() always authenticates as the config user, so request it directly
+        restricted = Helper()
+        restricted.authenticate(auth=auth)
+        response = requests.get(restricted._api_endpoint + restricted._model_uri + 'getCracksPerDay',
+                                headers=restricted._headers)
+        self.assertEqual(response.status_code, 200, response.text)
+
+        self.assertEqual(response.json()['data'], {},
+                         "Restricted user should not see cracks outside their access groups")

@@ -150,6 +150,28 @@ class HashlistTest(BaseTest):
         obj = Hashlist.objects.prefetch_related('hashlists').get(pk=hashlist.id)
         self.assertListEqual(hashlists, obj.hashlists_set)
 
+    def test_delete_member_hashlist_with_zero_cracked_in_superhashlist(self):
+        member_to_delete = self.create_test_object(file_id='001', delete=False)
+        remaining_member = self.create_test_object(file_id='001')
+
+        helper = Helper()
+        superhashlist = helper.create_superhashlist(
+            name="Delete Regression Superhashlist",
+            hashlists=[member_to_delete, remaining_member],
+        )
+        self.delete_after_test(superhashlist)
+
+        # Regression check: deleting a member with zero cracked entries must not fail.
+        member_to_delete.delete()
+
+        with self.assertRaises(Hashlist.DoesNotExist):
+            _ = Hashlist.objects.get(pk=member_to_delete.id)
+
+        updated_superhashlist = Hashlist.objects.prefetch_related('hashlists').get(pk=superhashlist.id)
+        member_ids = [member.id for member in updated_superhashlist.hashlists_set]
+        self.assertNotIn(member_to_delete.id, member_ids)
+        self.assertIn(remaining_member.id, member_ids)
+
     def test_bulk_archive(self):
         hashlists = [self.create_test_object() for i in range(5)]
         active_attributes = [True for i in range(5)]
@@ -162,3 +184,4 @@ class HashlistTest(BaseTest):
     def test_acl(self):
         model_obj = self.create_test_object()
         self._test_acl_list(model_obj, {'permHashlistRead': True})
+        self._test_acl_count(model_obj, {'permHashlistRead': True})

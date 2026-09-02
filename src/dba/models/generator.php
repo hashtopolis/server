@@ -1,14 +1,36 @@
 <?php
 
 use Hashtopolis\inc\defines\DAgentIgnoreErrors;
+use Hashtopolis\inc\defines\DAgentStatsType;
+use Hashtopolis\inc\defines\DFileDownloadStatus;
+use Hashtopolis\inc\defines\DFileType;
+use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\inc\defines\DHashlistFormat;
+use Hashtopolis\inc\defines\DHealthCheckAgentStatus;
+use Hashtopolis\inc\defines\DHealthCheckMode;
+use Hashtopolis\inc\defines\DHealthCheckStatus;
+use Hashtopolis\inc\defines\DLogEntry;
+use Hashtopolis\inc\defines\DLogEntryIssuer;
+use Hashtopolis\inc\defines\DNotificationType;
+use Hashtopolis\inc\defines\DOperatingSystem;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\defines\UQueryHashlist;
 
 $CONF = array();
 
 require_once(dirname(__FILE__) . "/../../inc/defines/DAgentIgnoreErrors.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DAgentStatsType.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DFileDownloadStatus.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DFileType.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DHashcatStatus.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DHashlistFormat.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DHealthCheckAgentStatus.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DHealthCheckMode.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DHealthCheckStatus.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DLogEntry.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DLogEntryIssuer.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DNotificationType.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DOperatingSystem.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DTaskTypes.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/UQuery.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/UQueryHashlist.php");
@@ -32,6 +54,95 @@ $FieldHashlistFormatChoices = [
   ['key' => DHashlistFormat::WPA, 'label' => 'Hashlist format is WPA'],
   ['key' => DHashlistFormat::BINARY, 'label' => 'Hashlist format is BINARY'],
   ['key' => DHashlistFormat::SUPERHASHLIST, 'label' => 'Hashlist is SUPERHASHLIST'],
+];
+
+$FieldOperatingSystemChoices = [
+  ['key' => DOperatingSystem::LINUX, 'label' => 'Linux'],
+  ['key' => DOperatingSystem::WINDOWS, 'label' => 'Windows'],
+  ['key' => DOperatingSystem::OSX, 'label' => 'macOS'],
+];
+
+$FieldAgentStatTypeChoices = [
+  ['key' => DAgentStatsType::GPU_TEMP, 'label' => 'GPU temperature'],
+  ['key' => DAgentStatsType::GPU_UTIL, 'label' => 'GPU utilization'],
+  ['key' => DAgentStatsType::CPU_UTIL, 'label' => 'CPU utilization'],
+];
+
+$FieldHashcatStatusChoices = [
+  ['key' => DHashcatStatus::INIT, 'label' => 'Init'],
+  ['key' => DHashcatStatus::AUTOTUNE, 'label' => 'Autotune'],
+  ['key' => DHashcatStatus::RUNNING, 'label' => 'Running'],
+  ['key' => DHashcatStatus::PAUSED, 'label' => 'Paused'],
+  ['key' => DHashcatStatus::EXHAUSTED, 'label' => 'Exhausted'],
+  ['key' => DHashcatStatus::CRACKED, 'label' => 'Cracked'],
+  ['key' => DHashcatStatus::ABORTED, 'label' => 'Aborted'],
+  ['key' => DHashcatStatus::QUIT, 'label' => 'Quit'],
+  ['key' => DHashcatStatus::BYPASS, 'label' => 'Bypass'],
+  ['key' => DHashcatStatus::ABORTED_CHECKPOINT, 'label' => 'Aborted at checkpoint'],
+  ['key' => DHashcatStatus::STATUS_ABORTED_RUNTIME, 'label' => 'Aborted at runtime'],
+];
+
+$FieldFileTypeChoices = [
+  ['key' => DFileType::WORDLIST, 'label' => 'Wordlist'],
+  ['key' => DFileType::RULE, 'label' => 'Rule'],
+  ['key' => DFileType::OTHER, 'label' => 'Other'],
+  ['key' => DFileType::TEMPORARY, 'label' => 'Temporary'],
+];
+
+$FieldFileDownloadStatusChoices = [
+  ['key' => DFileDownloadStatus::DELETED, 'label' => 'Deleted'],
+  ['key' => DFileDownloadStatus::FAILED, 'label' => 'Failed'],
+  ['key' => DFileDownloadStatus::PENDING, 'label' => 'Pending'],
+  ['key' => DFileDownloadStatus::DONE, 'label' => 'Done'],
+];
+
+$FieldHealthCheckStatusChoices = [
+  ['key' => DHealthCheckStatus::ABORTED, 'label' => 'Aborted'],
+  ['key' => DHealthCheckStatus::PENDING, 'label' => 'Pending'],
+  ['key' => DHealthCheckStatus::COMPLETED, 'label' => 'Completed'],
+];
+
+$FieldHealthCheckModeChoices = [
+  ['key' => DHealthCheckMode::MD5, 'label' => 'MD5'],
+  ['key' => DHealthCheckMode::BCRYPT, 'label' => 'Bcrypt'],
+];
+
+$FieldHealthCheckAgentStatusChoices = [
+  ['key' => DHealthCheckAgentStatus::FAILED, 'label' => 'Failed'],
+  ['key' => DHealthCheckAgentStatus::PENDING, 'label' => 'Pending'],
+  ['key' => DHealthCheckAgentStatus::COMPLETED, 'label' => 'Completed'],
+];
+
+$FieldLogEntryIssuerChoices = [
+  ['key' => DLogEntryIssuer::API, 'label' => 'API'],
+  ['key' => DLogEntryIssuer::USER, 'label' => 'User'],
+];
+
+$FieldLogEntryLevelChoices = [
+  ['key' => DLogEntry::WARN, 'label' => 'Warning'],
+  ['key' => DLogEntry::ERROR, 'label' => 'Error'],
+  ['key' => DLogEntry::FATAL, 'label' => 'Fatal error'],
+  ['key' => DLogEntry::INFO, 'label' => 'Information'],
+];
+
+$FieldNotificationTypeChoices = [
+  ['key' => DNotificationType::TASK_COMPLETE, 'label' => 'Task completed'],
+  ['key' => DNotificationType::AGENT_ERROR, 'label' => 'Agent error'],
+  ['key' => DNotificationType::OWN_AGENT_ERROR, 'label' => 'Own agent error'],
+  ['key' => DNotificationType::LOG_ERROR, 'label' => 'Log error'],
+  ['key' => DNotificationType::NEW_TASK, 'label' => 'New task'],
+  ['key' => DNotificationType::NEW_HASHLIST, 'label' => 'New hashlist'],
+  ['key' => DNotificationType::HASHLIST_ALL_CRACKED, 'label' => 'Hashlist all cracked'],
+  ['key' => DNotificationType::HASHLIST_CRACKED_HASH, 'label' => 'Hashlist cracked hash'],
+  ['key' => DNotificationType::USER_CREATED, 'label' => 'User created'],
+  ['key' => DNotificationType::USER_DELETED, 'label' => 'User deleted'],
+  ['key' => DNotificationType::USER_LOGIN_FAILED, 'label' => 'User login failed'],
+  ['key' => DNotificationType::LOG_WARN, 'label' => 'Log warning'],
+  ['key' => DNotificationType::LOG_FATAL, 'label' => 'Log fatal'],
+  ['key' => DNotificationType::NEW_AGENT, 'label' => 'New agent'],
+  ['key' => DNotificationType::DELETE_TASK, 'label' => 'Delete task'],
+  ['key' => DNotificationType::DELETE_HASHLIST, 'label' => 'Delete hashlist'],
+  ['key' => DNotificationType::DELETE_AGENT, 'label' => 'Delete agent'],
 ];
 
 // Type: describes what kind of type the attribute is
@@ -58,7 +169,7 @@ $CONF['Agent'] = [
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'agentName', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'uid', 'read_only' => False, 'type' => 'str(100)'],
-    ['name' => 'os', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'os', 'read_only' => False, 'type' => 'int', 'choices' => $FieldOperatingSystemChoices],
     ['name' => 'devices', 'read_only' => True, 'type' => 'str(65535)'],
     ['name' => 'cmdPars', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'ignoreErrors', 'read_only' => False, 'type' => 'int', 'choices' => $FieldIgnoreErrorsChoices],
@@ -89,7 +200,8 @@ $CONF['AgentError'] = [
     ['name' => 'agentErrorId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
     ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Task'],
-    ['name' => 'chunkId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Chunk'],
+    // an agent error is not necessarily tied to a chunk
+    ['name' => 'chunkId', 'read_only' => True, 'null' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Chunk'],
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'error', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
   ],
@@ -98,7 +210,7 @@ $CONF['AgentStat'] = [
   'columns' => [
     ['name' => 'agentStatId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'agentId', 'read_only' => True, 'protected' => True, 'type' => 'int', 'relation' => 'Agent'],
-    ['name' => 'statType', 'read_only' => True, 'protected' => True, 'type' => 'int'],
+    ['name' => 'statType', 'read_only' => True, 'protected' => True, 'type' => 'int', 'choices' => $FieldAgentStatTypeChoices],
     ['name' => 'time', 'read_only' => True, 'protected' => True, 'type' => 'int64'],
     ['name' => 'value', 'read_only' => True, 'protected' => True, 'type' => 'array', 'subtype' => 'int'],
   ],
@@ -107,7 +219,7 @@ $CONF['AgentZap'] = [
   'columns' => [
     ['name' => 'agentZapId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
-    ['name' => 'lastZapId', 'read_only' => True, 'type' => 'str(128)', 'protected' => True],
+    ['name' => 'lastZapId', 'read_only' => True, 'type' => 'int', 'null' => True, 'protected' => True],
   ],
 ];
 $CONF['ApiKey'] = [
@@ -134,7 +246,7 @@ $CONF['Assignment'] = [
     ['name' => 'assignmentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'relation' => 'Task'],
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'relation' => 'Agent'],
-    ['name' => 'benchmark', 'read_only' => False, 'type' => 'str(50)', 'null' => True],
+    ['name' => 'benchmark', 'read_only' => False, 'type' => 'str(50)'],
   ],
 ];
 $CONF['Chunk'] = [
@@ -148,7 +260,7 @@ $CONF['Chunk'] = [
     ['name' => 'solveTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'checkpoint', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'progress', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'state', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'state', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldHashcatStatusChoices],
     ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'speed', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ],
@@ -189,7 +301,7 @@ $CONF['File'] = [
     ['name' => 'filename', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'size', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'isSecret', 'read_only' => False, 'type' => 'bool'],
-    ['name' => 'fileType', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'fileType', 'read_only' => False, 'type' => 'int', 'choices' => $FieldFileTypeChoices],
     ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', 'relation' => 'AccessGroup'],
     ['name' => 'lineCount', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ],
@@ -206,7 +318,7 @@ $CONF['FileDownload'] = [
     ['name' => 'fileDownloadId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'fileId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'File'],
-    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldFileDownloadStatusChoices],
   ],
 ];
 $CONF['Hash'] = [
@@ -217,7 +329,7 @@ $CONF['Hash'] = [
     ['name' => 'salt', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'plaintext', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'timeCracked', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'chunkId', 'read_only' => False, 'type' => 'int', 'relation' => 'Chunk'],
+    ['name' => 'chunkId', 'read_only' => False, 'type' => 'int', 'null' => True, 'relation' => 'Chunk'],
     ['name' => 'isCracked', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'crackPos', 'read_only' => False, 'type' => 'int64'],
   ],
@@ -230,7 +342,7 @@ $CONF['HashBinary'] = [
     ['name' => 'hash', 'read_only' => False, 'type' => 'str(4294967295)'],
     ['name' => 'plaintext', 'read_only' => False, 'type' => 'str(1024)'],
     ['name' => 'timeCracked', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'chunkId', 'read_only' => False, 'type' => 'int', 'relation' => 'Chunk'],
+    ['name' => 'chunkId', 'read_only' => False, 'type' => 'int', 'null' => True, 'relation' => 'Chunk'],
     ['name' => 'isCracked', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'crackPos', 'read_only' => False, 'type' => 'int64'],
   ],
@@ -266,8 +378,8 @@ $CONF['HealthCheck'] = [
   'columns' => [
     ['name' => 'healthCheckId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'checkType', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldHealthCheckStatusChoices],
+    ['name' => 'checkType', 'read_only' => False, 'type' => 'int', 'choices' => $FieldHealthCheckModeChoices],
     ['name' => 'hashtypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'HashType'],
     ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinary'],
     ['name' => 'expectedCracks', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -279,7 +391,7 @@ $CONF['HealthCheckAgent'] = [
     ['name' => 'healthCheckAgentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'healthCheckId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'HealthCheck'],
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
-    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldHealthCheckAgentStatusChoices],
     ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'numGpus', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'start', 'read_only' => True, 'type' => 'int64', 'protected' => True],
@@ -293,16 +405,16 @@ $CONF['JwtApiKey'] = [
     ['name' => 'startValid', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'endValid', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'userId', 'read_only' => True, 'null' => True, 'type' => 'int', 'relation' => 'User'],
-    ['name' => 'isRevoked', 'read_only' => False, 'null' => True, 'type' => 'bool'],
     ['name' => 'tokenName', 'read_only' => False, 'type' => 'str(100)'],
+    ['name' => 'isRevoked', 'read_only' => False, 'type' => 'bool'],
   ],
 ];
 $CONF['LogEntry'] = [
   'columns' => [
     ['name' => 'logEntryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'issuer', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
+    ['name' => 'issuer', 'read_only' => True, 'type' => 'str(50)', 'protected' => True, 'choices' => $FieldLogEntryIssuerChoices],
     ['name' => 'issuerId', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
-    ['name' => 'level', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
+    ['name' => 'level', 'read_only' => True, 'type' => 'str(50)', 'protected' => True, 'choices' => $FieldLogEntryLevelChoices],
     ['name' => 'message', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ],
@@ -310,8 +422,14 @@ $CONF['LogEntry'] = [
 $CONF['NotificationSetting'] = [
   'columns' => [
     ['name' => 'notificationSettingId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'action', 'read_only' => False, 'type' => 'str(50)'],
-    ['name' => 'objectId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    // 'action' names the event that triggers the notification, a DNotificationType value
+    ['name' => 'action', 'read_only' => False, 'type' => 'str(50)', 'choices' => $FieldNotificationTypeChoices],
+    // notifications not tied to a specific object (e.g. agent-wide events) have no objectId
+    ['name' => 'objectId', 'read_only' => True, 'null' => True, 'type' => 'int', 'protected' => True],
+    // 'notification' names the delivery method, the name of a registered HashtopolisNotification.
+    // That set is open - an installation can register notification classes of its own - so the
+    // column names no choices and NotificationUtils validates the value against the registry of
+    // the running server instead
     ['name' => 'notification', 'read_only' => False, 'type' => 'str(50)'],
     ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'User'],
     ['name' => 'receiver', 'read_only' => False, 'type' => 'str(256)'],
@@ -357,7 +475,7 @@ $CONF['RightGroup'] = [
   'columns' => [
     ['name' => 'rightGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'rightGroupId'],
     ['name' => 'groupName', 'read_only' => False, 'type' => 'str(50)', 'alias' => 'name'],
-    ['name' => 'permissions', 'read_only' => False, 'type' => 'dict', 'subtype' => 'bool', 'null' => True],
+    ['name' => 'permissions', 'read_only' => False, 'type' => 'dict', 'subtype' => 'bool'],
   ],
 ];
 $CONF['Session'] = [
@@ -481,7 +599,7 @@ $CONF['User'] = [
     ['name' => 'email', 'read_only' => False, 'type' => 'str(150)'],
     ['name' => 'passwordHash', 'read_only' => True, 'type' => 'str(256)', 'protected' => True, 'private' => True],
     ['name' => 'passwordSalt', 'read_only' => True, 'protected' => True, 'type' => 'str(256)', 'private' => True],
-    ['name' => 'isValid', 'read_only' => False, 'type' => 'bool', 'null' => true],
+    ['name' => 'isValid', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'isComputedPassword', 'read_only' => True, 'type' => 'bool', 'protected' => True,],
     ['name' => 'lastLoginDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'registeredSince', 'read_only' => True, 'type' => 'int64', 'protected' => True],
@@ -587,7 +705,19 @@ function getTypingType($str, $nullable = false): string {
 }
 
 foreach ($CONF as $NAME => $MODEL_CONF) {
-  $COLUMNS = $MODEL_CONF['columns'];
+  $MODEL_CONF = array_merge(["dba_mapping" => False], $MODEL_CONF);
+  $COLUMNS = array_map(fn(array $column): array => array_merge([
+    "null" => False,
+    "protected" => False,
+    "private" => False,
+    "public" => False,
+    "dba_mapping" => False,
+    "subtype" => "unset",
+    "choices" => null,
+    "alias" => $column["name"],
+    // an absent "null" key means the column is nullable, while "null" => False makes it non-nullable
+    "nullable" => !(array_key_exists("null", $column) && !$column["null"]),
+  ], $column), $MODEL_CONF['columns']);
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModel.template.txt");
   $class = str_replace("__MODEL_NAME__", $NAME, $class);
   $vars = array();
@@ -602,7 +732,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   $crud_defines = array();
   foreach ($COLUMNS as $COLUMN) {
     $col = $COLUMN['name'];
-    $type = getTypingType($COLUMN['type'], !((isset($COLUMN['null']) && !$COLUMN['null'])));
+    $type = getTypingType($COLUMN['type'], $COLUMN['nullable']);
     if (sizeof($vars) > 0) {
       $getter = "function get" . strtoupper($col[0]) . substr($col, 1) . "(): $type {\n    return \$this->$col;\n  }";
       $setter = "function set" . strtoupper($col[0]) . substr($col, 1) . "($type \$$col): void {\n    \$this->$col = \$$col;\n  }";
@@ -613,10 +743,11 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
     $vars[] = "private $type \$$col;";
     $init[] = "\$this->$col = \$$col;";
     
-    if (array_key_exists("choices", $COLUMN)) {
+    if ($COLUMN['choices'] !== null) {
       $choicesVal = '[';
       foreach ($COLUMN['choices'] as $CHOICE) {
-        $choicesVal .= $CHOICE['key'] . ' => "' . $CHOICE['label'] . '", ';
+        $key = is_string($CHOICE['key']) ? '"' . $CHOICE['key'] . '"' : $CHOICE['key'];
+        $choicesVal .= $key . ' => "' . $CHOICE['label'] . '", ';
       }
       $choicesVal .= ']';
       
@@ -627,15 +758,15 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
     
     $features[] = "\$dict['$col'] = ['read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', ' .
       '"type" => "' . $COLUMN['type'] . '", ' .
-      '"subtype" => "' . (array_key_exists("subtype", $COLUMN) ? $COLUMN['subtype'] : 'unset') . '", ' .
+      '"subtype" => "' . $COLUMN['subtype'] . '", ' .
       '"choices" => ' . $choicesVal . ', ' .
-      '"null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . ', ' .
+      '"null" => ' . ($COLUMN['null'] ? 'True' : 'False') . ', ' .
       '"pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . ', ' .
-      '"protected" => ' . (array_key_exists("protected", $COLUMN) ? ($COLUMN['protected'] ? 'True' : 'False') : 'False') . ', ' .
-      '"private" => ' . (array_key_exists("private", $COLUMN) ? ($COLUMN['private'] ? 'True' : 'False') : 'False') . ', ' .
-      '"alias" => "' . (array_key_exists("alias", $COLUMN) ? $COLUMN['alias'] : $COLUMN['name']) . '", ' .
-      '"public" => ' . (array_key_exists("public", $COLUMN) ? ($COLUMN['public'] ? 'True' : 'False') : 'False') . ', ' .
-      '"dba_mapping" => ' . (array_key_exists("dba_mapping", $COLUMN) ? ($COLUMN['dba_mapping'] ? 'True' : 'False') : 'False') .
+      '"protected" => ' . ($COLUMN['protected'] ? 'True' : 'False') . ', ' .
+      '"private" => ' . ($COLUMN['private'] ? 'True' : 'False') . ', ' .
+      '"alias" => "' . $COLUMN['alias'] . '", ' .
+      '"public" => ' . ($COLUMN['public'] ? 'True' : 'False') . ', ' .
+      '"dba_mapping" => ' . ($COLUMN['dba_mapping'] ? 'True' : 'False') .
       '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
     $variables[] = "const " . makeConstant($col) . " = \"$col\";";
@@ -660,7 +791,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
   
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModelFactory.template.txt");
   $class = str_replace("__MODEL_NAME__", $NAME, $class);
-  $class = str_replace("__MODEL_DBA_MAPPING__", (array_key_exists("dba_mapping", $MODEL_CONF) ? ($MODEL_CONF['dba_mapping'] ? 'True' : 'False') : 'False'), $class);
+  $class = str_replace("__MODEL_DBA_MAPPING__", ($MODEL_CONF['dba_mapping'] ? 'True' : 'False'), $class);
   $dict = [];
   $dict2 = [];
   $mapping = [];
@@ -674,10 +805,10 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
     else {
       $dict[] = "null";
       $dict2[] = "\$dict['$col']";
-      if (array_key_exists("dba_mapping", $COLUMN) && $COLUMN['dba_mapping']) {
+      if ($COLUMN['dba_mapping']) {
         $mapping[] = "\$dict['$col'] = \$dict['htp_$col'];";
       }
-      if (array_key_exists("type", $COLUMN) && $COLUMN['type'] == 'binary') {
+      if ($COLUMN['type'] == 'binary') {
         $streaming[] = "if (is_resource(\$dict['$col'])) {\n      \$t = stream_get_contents(\$dict['$col']);\n      fclose(\$dict['$col']);\n      \$dict['$col'] = bin2hex(\$t);\n    }";
       }
     }

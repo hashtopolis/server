@@ -40,7 +40,7 @@
         "phpstan/extension-installer": "^1.1.0",
         "phpstan/phpstan": "^2.2",
         "phpunit/phpunit": "^12.5.7",
-        "squizlabs/php_codesniffer": "^3.7"
+        "squizlabs/php_codesniffer": "^3.13.6"
     },
     "config": {
         "allow-plugins": {
@@ -64,6 +64,7 @@
     },
     "scripts": {
         "start": "php -S localhost:8080 -t src",
-        "test": "phpunit"
+        "test": "phpunit",
+        "openapi": "php ci/tools/generate-openapi.php"
     }
 }

@@ -478,6 +478,10 @@ abstract class AbstractModelFactory {
   }
   
   /**
+   * $joinFilter is the join the aggregations are calculated over. Additional joins can be supplied
+   * as Factory::JOIN in $options, for example to filter on a table which is not aggregated over.
+   * As the result is grouped by the primary keys of this factory, such joins must not multiply rows.
+   *
    * @param array $options
    * @param JoinFilter $joinFilter
    * @param Aggregation[] $aggregations
@@ -496,6 +500,10 @@ abstract class AbstractModelFactory {
     $match1 = self::getMappedModelKey($this->getNullObject(), $joinFilter->getMatch1());
     $match2 = self::getMappedModelKey($joinFilter->getOtherFactory()->getNullObject(), $joinFilter->getMatch2());
     $query .= " " . $joinFilter->getJoinType() . " JOIN " . $joinFilter->getOtherFactory()->getMappedModelTable() . " ON " . $this->getMappedModelTable() . "." . $match1 . "=" . $joinFilter->getOtherFactory()->getMappedModelTable() . "." . $match2 . " ";
+    
+    if (array_key_exists(Factory::JOIN, $options)) {
+      $query .= $this->applyJoins($options[Factory::JOIN]);
+    }
     
     // Apply all normal filter to this query
     if (array_key_exists(Factory::FILTER, $options)) {
@@ -659,7 +667,10 @@ abstract class AbstractModelFactory {
   /**
    * Create a timeseries with counts per day for a given table.
    *
-   * @param array $options can contain FILTER options to select which entries should match to be counted (e.g. also if the timeseries should only be over a certain amount of day)
+   * @param array $options can contain FILTER options to select which entries should match to be counted 
+   * (e.g. also if the timeseries should only be over a certain amount of day)
+   * and JOIN options to filter on a column of another table. As every counted row is one entry of this factory,
+   * such joins must not multiply rows.
    * @param string $timeColumn table column which should be used to be use for the 'day' grouping
    * @return array list of [day => count] entries
    * @throws Exception
@@ -668,11 +679,17 @@ abstract class AbstractModelFactory {
     $dbType = StartupConfig::getInstance()->getDatabaseType();
     $to_timestamp = ($dbType == "postgres") ? "TO_TIMESTAMP" : "FROM_UNIXTIME";
     
-    $query = "SELECT DATE(" . $to_timestamp . "(" . self::getMappedModelKey($this->getNullObject(), $timeColumn) . ")) AS day, COUNT(*) AS total";
+    /* Prefixed with the table, the column name can also exist on a joined table */
+    $timeColumnRef = $this->getMappedModelTable() . "." . self::getMappedModelKey($this->getNullObject(), $timeColumn);
+    $query = "SELECT DATE(" . $to_timestamp . "(" . $timeColumnRef . ")) AS day, COUNT(*) AS total";
     
     $query .= " FROM " . $this->getMappedModelTable();
     
     $vals = array();
+    
+    if (array_key_exists(Factory::JOIN, $options)) {
+      $query .= $this->applyJoins($options[Factory::JOIN]);
+    }
     
     if (array_key_exists(Factory::FILTER, $options)) {
       $query .= $this->applyFilters($vals, $options[Factory::FILTER]);

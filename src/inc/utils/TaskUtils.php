@@ -9,6 +9,7 @@ use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Chunk;
+use Hashtopolis\inc\defines\DTaskStatus;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\File;
@@ -132,43 +133,42 @@ class TaskUtils {
    * Function for taskwrapper api to determine based on the chunks if a task is running, idle or completed.
    *
    * @param Task $task
-   * @return int Status 1 is running, 2 is idle and 3 is completed.
+   * @return int one of the DTaskStatus values
    * @throws Exception
    */
   public static function getStatus(Task $task): int {
     $qF1 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $qF2 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
-    //status 1 is running, 2 is idle and 3 is completed.
-    $status = 2;
+    $status = DTaskStatus::IDLE;
     $keyspaceProgress = TaskUtils::getTaskProgress($task->getId());
     if ($keyspaceProgress >= $task->getKeyspace() && $keyspaceProgress > 0) {
-      $status = 3;
+      $status = DTaskStatus::COMPLETED;
     }
     else {
       $now = time();
       $chunkTimeOut = SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT);
-      
+
       foreach ($chunks as $chunk) {
         if ($now - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $chunkTimeOut) {
-          $status = 1;
+          $status = DTaskStatus::RUNNING;
           break;
         }
       }
     }
     $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
-    if ($status == 2 && ($task->getIsArchived() == 1 || $taskWrapper->getIsArchived() == 1)) {
+    if ($status == DTaskStatus::IDLE && ($task->getIsArchived() == 1 || $taskWrapper->getIsArchived() == 1)) {
       // if a task is archived, it should be skipped instead of idle
-      return 4;
+      return DTaskStatus::SKIPPED;
     }
-    if ($status !== 3) {
+    if ($status !== DTaskStatus::COMPLETED) {
       $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
       if ($hashlist->getCracked() === $hashlist->getHashCount()) {
         if($taskWrapper->getCracked() > 0) {
-          return 3;
+          return DTaskStatus::COMPLETED;
         } else {
           // If all hashes are cracked and this task has not found a crack, turn it to skipped state
-          return 4;
+          return DTaskStatus::SKIPPED;
         }
       }
     }
@@ -222,6 +222,20 @@ class TaskUtils {
     TaskUtils::purgeTask($task->getId(), $user);
     $task = TaskUtils::getTask($taskId, $user); // reload task, otherwise we overwrite purge changes
     Factory::getTaskFactory()->set($task, Task::ATTACK_CMD, $attackCmd);
+  }
+
+  public static function changePreprocessorCmd(int $taskId, string $preprocessorCmd, User $user): void {
+    $task = TaskUtils::getTask($taskId, $user);
+    if ($task->getPreprocessorCommand() == $preprocessorCmd) {
+      // no change required, we avoid all the overhead
+      return;
+    }
+    else if (Util::containsBlacklistedChars($preprocessorCmd)) {
+      throw new HTException("The preprocessor command must contain no blacklisted characters!");
+    }
+    TaskUtils::purgeTask($task->getId(), $user);
+    $task = TaskUtils::getTask($taskId, $user); // reload task, otherwise we overwrite purge changes
+    Factory::getTaskFactory()->set($task, Task::PREPROCESSOR_COMMAND, $preprocessorCmd);
   }
   
   /**
