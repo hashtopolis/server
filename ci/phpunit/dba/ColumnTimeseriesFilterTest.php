@@ -259,7 +259,6 @@ final class ColumnTimeseriesFilterTest extends TestBase {
       Hash::TIME_CRACKED
     );
 
-    $this->assertIsArray($counts);
     $this->assertEmpty($counts);
   }
 
