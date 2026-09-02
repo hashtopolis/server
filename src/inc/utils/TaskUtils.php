@@ -223,6 +223,20 @@ class TaskUtils {
     $task = TaskUtils::getTask($taskId, $user); // reload task, otherwise we overwrite purge changes
     Factory::getTaskFactory()->set($task, Task::ATTACK_CMD, $attackCmd);
   }
+
+  public static function changePreprocessorCmd(int $taskId, string $preprocessorCmd, User $user): void {
+    $task = TaskUtils::getTask($taskId, $user);
+    if ($task->getPreprocessorCommand() == $preprocessorCmd) {
+      // no change required, we avoid all the overhead
+      return;
+    }
+    else if (Util::containsBlacklistedChars($preprocessorCmd)) {
+      throw new HTException("The preprocessor command must contain no blacklisted characters!");
+    }
+    TaskUtils::purgeTask($task->getId(), $user);
+    $task = TaskUtils::getTask($taskId, $user); // reload task, otherwise we overwrite purge changes
+    Factory::getTaskFactory()->set($task, Task::PREPROCESSOR_COMMAND, $preprocessorCmd);
+  }
   
   /**
    * @param int $supertaskId

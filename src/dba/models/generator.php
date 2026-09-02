@@ -219,7 +219,7 @@ $CONF['AgentZap'] = [
   'columns' => [
     ['name' => 'agentZapId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
-    ['name' => 'lastZapId', 'read_only' => True, 'type' => 'str(128)', 'protected' => True],
+    ['name' => 'lastZapId', 'read_only' => True, 'type' => 'int', 'null' => True, 'protected' => True],
   ],
 ];
 $CONF['ApiKey'] = [

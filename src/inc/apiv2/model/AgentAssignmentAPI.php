@@ -4,10 +4,6 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
 use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\dba\models\Chunk;
-use Hashtopolis\dba\QueryFilter;
-use Hashtopolis\inc\defines\DConfig;
-use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\AgentUtils;
 use Hashtopolis\inc\utils\AssignmentUtils;
@@ -171,12 +167,8 @@ class AgentAssignmentAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getAggregateCurrentChunkId(AbstractModel $object): ?int {
-    $qF1 = new QueryFilter(Chunk::TASK_ID, $object->getTaskId(), "=");
-    $qF2 = new QueryFilter(Chunk::AGENT_ID, $object->getAgentId(), "=");
-    $qF3 = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT), ">");
-    $qF4 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
-    $chunk = Factory::getChunkFactory()->filter([Factory::FILTER => array_filter([$qF1, $qF2, $qF3, $qF4])], true);
-    return $chunk?->getId();
+    $active_chunk = AgentUtils::getActiveChunk($object->getAgentId(), $object->getTaskId());
+    return $active_chunk?->getId();
   }
   
   /**

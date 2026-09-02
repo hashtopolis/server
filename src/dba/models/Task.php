@@ -112,7 +112,7 @@ class Task extends AbstractModel {
     $dict['chunkSize'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "chunkSize", "public" => False, "dba_mapping" => False];
     $dict['forcePipe'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "forcePipe", "public" => False, "dba_mapping" => False];
     $dict['usePreprocessor'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "preprocessorId", "public" => False, "dba_mapping" => False];
-    $dict['preprocessorCommand'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "preprocessorCommand", "public" => False, "dba_mapping" => False];
+    $dict['preprocessorCommand'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "preprocessorCommand", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }

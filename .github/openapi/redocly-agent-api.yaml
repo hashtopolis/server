@@ -1,0 +1,18 @@
+extends:
+  - recommended
+
+rules:
+  # The agent API is a single-endpoint API (POST /api/server.php) that
+  # dispatches on the "action" field in the body. These rules are relaxed
+  # because they don't apply to this non-REST, non-JSON:API design.
+  info-license: off
+  info-contact: off
+  operation-tag-defined: off
+  security-defined: off
+  # The agent API always returns HTTP 200 — errors are in the JSON body
+  # (response:"ERROR" + message). No 4XX/5XX HTTP status codes are used.
+  operation-4xx-response: off
+  # No servers section (the spec is served at the same host as the API)
+  no-empty-servers: off
+  # The agent API uses application/json, not application/vnd.api+json
+  no-server-example.com: off
