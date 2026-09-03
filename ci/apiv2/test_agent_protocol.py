@@ -16,12 +16,14 @@ paths, where `DummyAgent._do_request` would raise on non-SUCCESS responses).
 import json
 import re
 import unittest
+import urllib.parse
 
 import requests
 
-from hashtopolis import Agent, Config, HealthCheck, Voucher
+from hashtopolis import Agent, Config, Cracker, HealthCheck, Voucher
 from hashtopolis_agent import DummyAgent
-from utils import BaseTest, do_create_agentassignent, do_create_dummy_agent, do_create_voucher, get_hashtopolis_uri
+from utils import (BaseTest, SEVEN_ZIP_MAGIC, do_create_agentassignent, do_create_dummy_agent,
+                   do_create_voucher, get_hashtopolis_uri)
 
 
 AGENT_ENDPOINT = '/api/server.php'
@@ -532,6 +534,69 @@ class TestDownloadBinary(AgentProtocolBase):
         })
         assert_error_envelope(self, body, "downloadBinary")
         self.assertEqual(parse_envelope(body)['message'], "Invalid cracker binary type id!")
+
+    def test_download_cracker_local_binary(self):
+        """A locally stored cracker binary is served by the server itself: the
+        downloadBinary action returns the url of the download endpoint with the
+        requesting agent's token appended, so the archive can directly be fetched."""
+        dummy = self._dummy()
+        content = SEVEN_ZIP_MAGIC + b'local-binary-download-test'
+        cracker = self.create_local_cracker(content=content, extra_payload={'version': '7.2.7'})
+
+        code, body = agent_request({
+            "action": "downloadBinary",
+            "token": dummy.token,
+            "type": "cracker",
+            "binaryVersionId": cracker.id,
+        })
+        self.assertEqual(code, 200)
+        resp = parse_envelope(body)
+        self.assertEqual(resp['response'], "SUCCESS")
+        url = resp['url']
+        url_parts = urllib.parse.urlparse(url)
+        self.assertEqual(f'/api/download.php/crackerBinary/{cracker.id}', url_parts.path)
+        self.assertIn(f'token={dummy.token}', url_parts.query)
+
+        # the agent can fetch the archive with the returned url
+        r = requests.get(url)
+        self.assertEqual(200, r.status_code)
+        self.assertEqual(content, r.content)
+
+    def test_download_cracker_local_binary_wrong_token_denied(self):
+        """The download url of a local binary only works with the agent token it
+        was issued for."""
+        dummy = self._dummy()
+        cracker = self.create_local_cracker()
+
+        code, body = agent_request({
+            "action": "downloadBinary",
+            "token": dummy.token,
+            "type": "cracker",
+            "binaryVersionId": cracker.id,
+        })
+        url = parse_envelope(body)['url']
+
+        r = requests.get(url.replace(f'token={dummy.token}', 'token=wrong-token'))
+        self.assertEqual(401, r.status_code)
+
+    def test_download_cracker_local_binary_external_unchanged(self):
+        """Cracker binaries referenced with an external url are answered with the
+        stored url, no token is appended."""
+        dummy = self._dummy()
+        external_binaries = [c for c in Cracker.objects.filter() if not c.filename]
+        self.assertTrue(external_binaries, 'no externally referenced cracker binary found')
+        cracker = external_binaries[0]
+
+        code, body = agent_request({
+            "action": "downloadBinary",
+            "token": dummy.token,
+            "type": "cracker",
+            "binaryVersionId": cracker.id,
+        })
+        resp = parse_envelope(body)
+        self.assertEqual(resp['response'], "SUCCESS")
+        self.assertEqual(cracker.downloadUrl, resp['url'])
+        self.assertNotIn('token=', resp['url'])
 
 
 # ---------------------------------------------------------------------------
