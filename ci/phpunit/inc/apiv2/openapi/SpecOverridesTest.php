@@ -142,12 +142,79 @@ final class SpecOverridesTest extends TestCase {
   }
 
   /**
-   * Only User carries 'public' features, so nothing else is corrected.
+   * Only User carries 'public' features, so it is the only model whose
+   * responses arrive attribute-filtered and need optional corrections.
+   * CrackerBinary only carries creation documentation.
    */
-  public function testUserIsTheOnlyModelWithDefaults(): void {
+  public function testTheDefaultsContainTheExpectedModels(): void {
     $this->assertTrue(SpecOverrides::defaults()->has('User'));
+    $this->assertTrue(SpecOverrides::defaults()->has('CrackerBinary'));
     foreach (['Agent', 'Task', 'Hashlist', 'Config', 'ApiToken'] as $model) {
       $this->assertFalse(SpecOverrides::defaults()->has($model), $model);
     }
+  }
+
+  public function testAttributeDescriptionsAreAdded(): void {
+    $overrides = new SpecOverrides([
+      'Foo' => [SpecOverrides::ATTRIBUTE_DESCRIPTIONS => [
+        'email' => 'The email address',
+        'state' => 'On or off',
+      ]],
+    ]);
+    $result = $overrides->apply('Foo', $this->attributesSchema());
+
+    $this->assertSame('The email address', $result['properties']['email']['description']);
+    $this->assertSame('On or off', $result['properties']['state']['description']);
+    /* purely additive, the required list and the types stay as they were */
+    $this->assertSame(["name", "email", "isValid", "state"], $result['required']);
+    $this->assertSame(["type" => "string"], ['type' => $result['properties']['email']['type']]);
+  }
+
+  /**
+   * Unlike the optional/nullable corrections, a description for an attribute
+   * which is not part of the schema shape is simply skipped: the same
+   * description set is applied to responses and requests, and creation-only
+   * form fields for example are not part of a response.
+   */
+  public function testAttributeDescriptionsSkipAbsentProperties(): void {
+    $overrides = new SpecOverrides([
+      'Foo' => [SpecOverrides::ATTRIBUTE_DESCRIPTIONS => ['sourceType' => 'Upload source']],
+    ]);
+    $result = $overrides->apply('Foo', $this->attributesSchema());
+
+    $this->assertSame($this->attributesSchema(), $result);
+  }
+
+  /**
+   * applyDescriptions() serves the create request schema: descriptions are
+   * added, but the response oriented optional/nullable corrections must not
+   * be applied to it.
+   */
+  public function testApplyDescriptionsIgnoresTheOtherCorrections(): void {
+    $overrides = new SpecOverrides([
+      'Foo' => [
+        SpecOverrides::OPTIONAL_ATTRIBUTES => ['email'],
+        SpecOverrides::NULLABLE_ATTRIBUTES => ['isValid'],
+        SpecOverrides::ATTRIBUTE_DESCRIPTIONS => ['email' => 'The email address'],
+      ],
+    ]);
+    $result = $overrides->applyDescriptions('Foo', $this->attributesSchema());
+
+    $this->assertSame('The email address', $result['properties']['email']['description']);
+    $this->assertSame(["name", "email", "isValid", "state"], $result['required']);
+    $this->assertSame('string', $result['properties']['email']['type']);
+    $this->assertSame('boolean', $result['properties']['isValid']['type']);
+  }
+
+  public function testDescriptionsMustMapToNonEmptyStrings(): void {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage("must map attribute names to non-empty descriptions");
+    new SpecOverrides(['Foo' => [SpecOverrides::ATTRIBUTE_DESCRIPTIONS => ['email' => '']]]);
+  }
+
+  public function testDescriptionsMustNameAttributes(): void {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage("must map attribute names to non-empty descriptions");
+    new SpecOverrides(['Foo' => [SpecOverrides::ATTRIBUTE_DESCRIPTIONS => [42 => 'desc']]]);
   }
 }

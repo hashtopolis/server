@@ -181,6 +181,12 @@ class ModelApiPathBuilder {
         array_filter($createFeatures, fn($f) => !$f['null'])
       ));
       $properties_create = $this->jsonApiFragments->buildPatchPost($this->typeMapper->makeProperties($createFeatures), $typeName, null, $requiredCreateAttributes);
+      /* Descriptions document the creation, the response corrections do not
+         apply to a request schema */
+      $properties_create["data"]["properties"]["attributes"] = $this->overrides->applyDescriptions(
+        $name,
+        $properties_create["data"]["properties"]["attributes"]
+      );
       $properties_patch = $this->jsonApiFragments->buildPatchPost($this->typeMapper->makeProperties($class->getPatchValidFeatures(), true), $typeName);
 
       $components[$name . "Create"] =
