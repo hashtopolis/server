@@ -56,7 +56,7 @@ final class DownloadAppTest extends TestBase {
     $importName = 'download-test-' . uniqid() . '.7z';
     $this->archiveContent = self::SEVEN_ZIP_MAGIC . 'download-test-content';
     file_put_contents(self::getImportPath() . $importName, $this->archiveContent);
-    $this->localBinary = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $importName);
+    $this->localBinary = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $importName, 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $this->localBinary);
 
     if (isset($_SERVER['HTTP_RANGE'])) {
