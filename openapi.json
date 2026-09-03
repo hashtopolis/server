@@ -41859,6 +41859,34 @@
                             "attributes": {
                                 "type": "object",
                                 "properties": {
+                                    "sourceType": {
+                                        "oneOf": [
+                                            {
+                                                "const": "inline",
+                                                "title": "Archive provided as base64 data in sourceData",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "import",
+                                                "title": "Archive taken from the import directory, sourceData is the filename",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "url",
+                                                "title": "Archive fetched from an http(s) url given in sourceData",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ]
+                                    },
+                                    "sourceData": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
                                     "crackerBinaryTypeId": {
                                         "type": "integer"
                                     },
