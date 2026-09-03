@@ -8,11 +8,13 @@ class CrackerBinaryType extends AbstractModel {
   private ?int $crackerBinaryTypeId;
   private ?string $typeName;
   private ?int $isChunkingAvailable;
+  private ?int $accessGroupId;
   
-  function __construct(?int $crackerBinaryTypeId, ?string $typeName, ?int $isChunkingAvailable) {
+  function __construct(?int $crackerBinaryTypeId, ?string $typeName, ?int $isChunkingAvailable, ?int $accessGroupId) {
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
     $this->typeName = $typeName;
     $this->isChunkingAvailable = $isChunkingAvailable;
+    $this->accessGroupId = $accessGroupId;
   }
   
   function getKeyValueDict(): array {
@@ -20,6 +22,7 @@ class CrackerBinaryType extends AbstractModel {
     $dict['crackerBinaryTypeId'] = $this->crackerBinaryTypeId;
     $dict['typeName'] = $this->typeName;
     $dict['isChunkingAvailable'] = $this->isChunkingAvailable;
+    $dict['accessGroupId'] = $this->accessGroupId;
     
     return $dict;
   }
@@ -29,6 +32,7 @@ class CrackerBinaryType extends AbstractModel {
     $dict['crackerBinaryTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "crackerBinaryTypeId", "public" => False, "dba_mapping" => False];
     $dict['typeName'] = ['read_only' => False, "type" => "str(30)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "typeName", "public" => False, "dba_mapping" => False];
     $dict['isChunkingAvailable'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "isChunkingAvailable", "public" => False, "dba_mapping" => False];
+    $dict['accessGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "accessGroupId", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
@@ -73,9 +77,18 @@ class CrackerBinaryType extends AbstractModel {
     $this->isChunkingAvailable = $isChunkingAvailable;
   }
   
+  function getAccessGroupId(): ?int {
+    return $this->accessGroupId;
+  }
+  
+  function setAccessGroupId(?int $accessGroupId): void {
+    $this->accessGroupId = $accessGroupId;
+  }
+  
   const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
   const TYPE_NAME = "typeName";
   const IS_CHUNKING_AVAILABLE = "isChunkingAvailable";
+  const ACCESS_GROUP_ID = "accessGroupId";
 
   const PERM_CREATE = "permCrackerBinaryTypeCreate";
   const PERM_READ = "permCrackerBinaryTypeRead";

@@ -288,6 +288,9 @@ $CONF['CrackerBinary'] = [
     ['name' => 'binaryName', 'read_only' => False, 'type' => 'str(50)'],
     // archive filename of a server-hosted binary; NULL means the binary is downloaded from downloadUrl
     ['name' => 'filename', 'read_only' => True, 'null' => True, 'type' => 'str(100)', 'protected' => True],
+    // access group of the binary, must match the access group of its cracker binary type
+    // (read only until the type group move including all its binaries is implemented)
+    ['name' => 'accessGroupId', 'read_only' => True, 'type' => 'int', 'relation' => 'AccessGroup'],
   ],
 ];
 $CONF['CrackerBinaryType'] = [
@@ -295,6 +298,9 @@ $CONF['CrackerBinaryType'] = [
     ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'typeName', 'read_only' => False, 'type' => 'str(30)'],
     ['name' => 'isChunkingAvailable', 'read_only' => False, 'null' => True, 'type' => 'bool'],
+    // access group of the type, all its binaries are always in the same group
+    // (read only until the group move including all binaries is implemented)
+    ['name' => 'accessGroupId', 'read_only' => True, 'type' => 'int', 'relation' => 'AccessGroup'],
   ],
 ];
 $CONF['File'] = [

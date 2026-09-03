@@ -83,7 +83,8 @@ class CrackerBinaryAPI extends AbstractModelAPI {
         $data[CrackerBinary::BINARY_NAME],
         $data[CrackerBinary::CRACKER_BINARY_TYPE_ID],
         $data["sourceType"],
-        $data["sourceData"]
+        $data["sourceData"],
+        $data[CrackerBinary::ACCESS_GROUP_ID] ?? null
       );
       return $binary->getId();
     }
@@ -94,7 +95,8 @@ class CrackerBinaryAPI extends AbstractModelAPI {
       $data[CrackerBinary::VERSION],
       $data[CrackerBinary::BINARY_NAME],
       $data[CrackerBinary::DOWNLOAD_URL],
-      $data[CrackerBinary::CRACKER_BINARY_TYPE_ID]
+      $data[CrackerBinary::CRACKER_BINARY_TYPE_ID],
+      $data[CrackerBinary::ACCESS_GROUP_ID] ?? null
     );
     return $binary->getId();
   }

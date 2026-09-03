@@ -41904,12 +41904,16 @@
                                     },
                                     "binaryName": {
                                         "type": "string"
+                                    },
+                                    "accessGroupId": {
+                                        "type": "integer"
                                     }
                                 },
                                 "required": [
                                     "crackerBinaryTypeId",
                                     "version",
-                                    "binaryName"
+                                    "binaryName",
+                                    "accessGroupId"
                                 ]
                             }
                         }
@@ -42094,7 +42098,8 @@
                                     "version",
                                     "downloadUrl",
                                     "binaryName",
-                                    "filename"
+                                    "filename",
+                                    "accessGroupId"
                                 ],
                                 "properties": {
                                     "crackerBinaryTypeId": {
@@ -42119,6 +42124,9 @@
                                             "null"
                                         ],
                                         "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                    },
+                                    "accessGroupId": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -42263,7 +42271,8 @@
                                             "type": "object",
                                             "required": [
                                                 "typeName",
-                                                "isChunkingAvailable"
+                                                "isChunkingAvailable",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "typeName": {
@@ -42274,6 +42283,9 @@
                                                         "boolean",
                                                         "null"
                                                     ]
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -42480,7 +42492,8 @@
                                     "version",
                                     "downloadUrl",
                                     "binaryName",
-                                    "filename"
+                                    "filename",
+                                    "accessGroupId"
                                 ],
                                 "properties": {
                                     "crackerBinaryTypeId": {
@@ -42505,6 +42518,9 @@
                                             "null"
                                         ],
                                         "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                    },
+                                    "accessGroupId": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -42649,7 +42665,8 @@
                                             "type": "object",
                                             "required": [
                                                 "typeName",
-                                                "isChunkingAvailable"
+                                                "isChunkingAvailable",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "typeName": {
@@ -42660,6 +42677,9 @@
                                                         "boolean",
                                                         "null"
                                                     ]
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -42917,7 +42937,8 @@
                                         "version",
                                         "downloadUrl",
                                         "binaryName",
-                                        "filename"
+                                        "filename",
+                                        "accessGroupId"
                                     ],
                                     "properties": {
                                         "crackerBinaryTypeId": {
@@ -42942,6 +42963,9 @@
                                                 "null"
                                             ],
                                             "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                        },
+                                        "accessGroupId": {
+                                            "type": "integer"
                                         }
                                     }
                                 },
@@ -43087,7 +43111,8 @@
                                             "type": "object",
                                             "required": [
                                                 "typeName",
-                                                "isChunkingAvailable"
+                                                "isChunkingAvailable",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "typeName": {
@@ -43098,6 +43123,9 @@
                                                         "boolean",
                                                         "null"
                                                     ]
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -43371,10 +43399,14 @@
                                 "properties": {
                                     "typeName": {
                                         "type": "string"
+                                    },
+                                    "accessGroupId": {
+                                        "type": "integer"
                                     }
                                 },
                                 "required": [
-                                    "typeName"
+                                    "typeName",
+                                    "accessGroupId"
                                 ]
                             }
                         }
@@ -43550,7 +43582,8 @@
                                 "type": "object",
                                 "required": [
                                     "typeName",
-                                    "isChunkingAvailable"
+                                    "isChunkingAvailable",
+                                    "accessGroupId"
                                 ],
                                 "properties": {
                                     "typeName": {
@@ -43561,6 +43594,9 @@
                                             "boolean",
                                             "null"
                                         ]
+                                    },
+                                    "accessGroupId": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -43704,7 +43740,8 @@
                                                 "version",
                                                 "downloadUrl",
                                                 "binaryName",
-                                                "filename"
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -43729,6 +43766,9 @@
                                                         "null"
                                                     ],
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -43932,7 +43972,8 @@
                                 "type": "object",
                                 "required": [
                                     "typeName",
-                                    "isChunkingAvailable"
+                                    "isChunkingAvailable",
+                                    "accessGroupId"
                                 ],
                                 "properties": {
                                     "typeName": {
@@ -43943,6 +43984,9 @@
                                             "boolean",
                                             "null"
                                         ]
+                                    },
+                                    "accessGroupId": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -44086,7 +44130,8 @@
                                                 "version",
                                                 "downloadUrl",
                                                 "binaryName",
-                                                "filename"
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -44111,6 +44156,9 @@
                                                         "null"
                                                     ],
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -44365,7 +44413,8 @@
                                     "type": "object",
                                     "required": [
                                         "typeName",
-                                        "isChunkingAvailable"
+                                        "isChunkingAvailable",
+                                        "accessGroupId"
                                     ],
                                     "properties": {
                                         "typeName": {
@@ -44376,6 +44425,9 @@
                                                 "boolean",
                                                 "null"
                                             ]
+                                        },
+                                        "accessGroupId": {
+                                            "type": "integer"
                                         }
                                     }
                                 },
@@ -44520,7 +44572,8 @@
                                                 "version",
                                                 "downloadUrl",
                                                 "binaryName",
-                                                "filename"
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -44545,6 +44598,9 @@
                                                         "null"
                                                     ],
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -54375,7 +54431,8 @@
                                                 "version",
                                                 "downloadUrl",
                                                 "binaryName",
-                                                "filename"
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -54400,6 +54457,9 @@
                                                         "null"
                                                     ],
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -54841,7 +54901,8 @@
                                                 "version",
                                                 "downloadUrl",
                                                 "binaryName",
-                                                "filename"
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -54866,6 +54927,9 @@
                                                         "null"
                                                     ],
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -55359,7 +55423,8 @@
                                                 "version",
                                                 "downloadUrl",
                                                 "binaryName",
-                                                "filename"
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -55384,6 +55449,9 @@
                                                         "null"
                                                     ],
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -62425,7 +62493,8 @@
                                                 "version",
                                                 "downloadUrl",
                                                 "binaryName",
-                                                "filename"
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -62450,6 +62519,9 @@
                                                         "null"
                                                     ],
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -62475,7 +62547,8 @@
                                             "type": "object",
                                             "required": [
                                                 "typeName",
-                                                "isChunkingAvailable"
+                                                "isChunkingAvailable",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "typeName": {
@@ -62486,6 +62559,9 @@
                                                         "boolean",
                                                         "null"
                                                     ]
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -63400,7 +63476,8 @@
                                                 "version",
                                                 "downloadUrl",
                                                 "binaryName",
-                                                "filename"
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -63425,6 +63502,9 @@
                                                         "null"
                                                     ],
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -63450,7 +63530,8 @@
                                             "type": "object",
                                             "required": [
                                                 "typeName",
-                                                "isChunkingAvailable"
+                                                "isChunkingAvailable",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "typeName": {
@@ -63461,6 +63542,9 @@
                                                         "boolean",
                                                         "null"
                                                     ]
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -64375,7 +64459,8 @@
                                                 "version",
                                                 "downloadUrl",
                                                 "binaryName",
-                                                "filename"
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -64400,6 +64485,9 @@
                                                         "null"
                                                     ],
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -64425,7 +64513,8 @@
                                             "type": "object",
                                             "required": [
                                                 "typeName",
-                                                "isChunkingAvailable"
+                                                "isChunkingAvailable",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "typeName": {
@@ -64436,6 +64525,9 @@
                                                         "boolean",
                                                         "null"
                                                     ]
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -65402,7 +65494,8 @@
                                                 "version",
                                                 "downloadUrl",
                                                 "binaryName",
-                                                "filename"
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -65427,6 +65520,9 @@
                                                         "null"
                                                     ],
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -65452,7 +65548,8 @@
                                             "type": "object",
                                             "required": [
                                                 "typeName",
-                                                "isChunkingAvailable"
+                                                "isChunkingAvailable",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "typeName": {
@@ -65463,6 +65560,9 @@
                                                         "boolean",
                                                         "null"
                                                     ]
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer"
                                                 }
                                             }
                                         }

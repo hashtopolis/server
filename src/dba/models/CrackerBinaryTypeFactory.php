@@ -32,7 +32,7 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
    * @return CrackerBinaryType
    */
   function getNullObject(): CrackerBinaryType {
-    return new CrackerBinaryType(-1, null, null);
+    return new CrackerBinaryType(-1, null, null, null);
   }
   
   /**
@@ -45,6 +45,6 @@ class CrackerBinaryTypeFactory extends AbstractModelFactory {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
-    return new CrackerBinaryType($dict['crackerbinarytypeid'], $dict['typename'], $dict['ischunkingavailable']);
+    return new CrackerBinaryType($dict['crackerbinarytypeid'], $dict['typename'], $dict['ischunkingavailable'], $dict['accessgroupid']);
   }
 }

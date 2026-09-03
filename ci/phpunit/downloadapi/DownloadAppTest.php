@@ -39,11 +39,11 @@ final class DownloadAppTest extends TestBase {
 
     $this->type = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
-      new CrackerBinaryType(null, 'download-test-type', 1)
+      new CrackerBinaryType(null, 'download-test-type', 1, 1)
     );
     $this->externalBinary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com/hc.7z', 'testcracker', null)
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com/hc.7z', 'testcracker', null, 1)
     );
 
     // create a locally stored binary through the import source

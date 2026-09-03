@@ -416,14 +416,16 @@
       "version" : "7.1.2",
       "downloadUrl" : "https://hashcat.net/files/hashcat-7.1.2.7z",
       "binaryName" : "hashcat",
-      "filename" : null
+      "filename" : null,
+      "accessGroupId" : 1
     }
   ],
   "CrackerBinaryType" : [
     {
       "crackerBinaryTypeId" : 1,
       "typeName" : "hashcat",
-      "isChunkingAvailable" : 1
+      "isChunkingAvailable" : 1,
+      "accessGroupId" : 1
     }
   ],
   "Preprocessor" : [
