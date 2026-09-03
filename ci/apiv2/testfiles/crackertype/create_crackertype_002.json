@@ -1,4 +1,5 @@
 {
             "typeName": true,
-            "isChunkingAvailable": true
+            "isChunkingAvailable": true,
+            "accessGroupId": 1
  }

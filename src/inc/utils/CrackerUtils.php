@@ -37,12 +37,13 @@ class CrackerUtils {
   
   /**
    * @param string $typeName
+   * @param int|null $accessGroupId falls back to the default access group if not given
    * @return CrackerBinaryType
    * @throws HttpConflict
    * @throws HttpError
    * @throws Exception
    */
-  public static function createBinaryType(string $typeName): CrackerBinaryType {
+  public static function createBinaryType(string $typeName, ?int $accessGroupId = null): CrackerBinaryType {
     $qF = new QueryFilter(CrackerBinaryType::TYPE_NAME, $typeName, "=");
     $check = Factory::getCrackerBinaryTypeFactory()->filter([Factory::FILTER => $qF], true);
     if ($check !== null) {
@@ -51,7 +52,13 @@ class CrackerUtils {
     else if (strlen($typeName) == 0) {
       throw new HttpError("Cracker name cannot be empty!");
     }
-    $binaryType = new CrackerBinaryType(null, $typeName, 1);
+    if ($accessGroupId === null) {
+      $accessGroupId = AccessUtils::getOrCreateDefaultAccessGroup()->getId();
+    }
+    else if (Factory::getAccessGroupFactory()->get($accessGroupId) === null) {
+      throw new HttpError("Invalid access group selected!");
+    }
+    $binaryType = new CrackerBinaryType(null, $typeName, 1, $accessGroupId);
     return Factory::getCrackerBinaryTypeFactory()->save($binaryType);
   }
   
@@ -60,17 +67,20 @@ class CrackerUtils {
    * @param string $name
    * @param string $url
    * @param int $binaryTypeId
+   * @param int|null $accessGroupId must match the access group of the cracker binary type,
+   *   falls back to the group of the type if not given
    * @return CrackerBinary
    * @throws HttpError
    * @throws HTException
    * @throws Exception
    */
-  public static function createBinary(string $version, string $name, string $url, int $binaryTypeId): CrackerBinary {
+  public static function createBinary(string $version, string $name, string $url, int $binaryTypeId, ?int $accessGroupId = null): CrackerBinary {
     $binaryType = CrackerUtils::getBinaryType($binaryTypeId);
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
       throw new HttpError("Please provide all information!");
     }
-    $binary = new CrackerBinary(null, $binaryType->getId(), $version, $url, $name, null);
+    CrackerUtils::checkAccessGroupMatchesType($binaryType, $accessGroupId);
+    $binary = new CrackerBinary(null, $binaryType->getId(), $version, $url, $name, null, $binaryType->getAccessGroupId());
     return Factory::getCrackerBinaryFactory()->save($binary);
   }
   
@@ -84,16 +94,19 @@ class CrackerUtils {
    * @param int $binaryTypeId
    * @param string $sourceType choices inline, import, url
    * @param string $sourceData base64 data, filename in the import directory or download url
+   * @param int|null $accessGroupId must match the access group of the cracker binary type,
+   *   falls back to the group of the type if not given
    * @return CrackerBinary
    * @throws HttpError
    * @throws HTException
    * @throws Exception
    */
-  public static function createBinaryFromUpload(string $version, string $name, int $binaryTypeId, string $sourceType, string $sourceData): CrackerBinary {
+  public static function createBinaryFromUpload(string $version, string $name, int $binaryTypeId, string $sourceType, string $sourceData, ?int $accessGroupId = null): CrackerBinary {
     $binaryType = CrackerUtils::getBinaryType($binaryTypeId);
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($sourceData) == 0) {
       throw new HttpError("Please provide all information!");
     }
+    CrackerUtils::checkAccessGroupMatchesType($binaryType, $accessGroupId);
     
     // determine the source of the archive and validate it
     switch ($sourceType) {
@@ -130,7 +143,7 @@ class CrackerUtils {
     // create the entry first with a placeholder download url, the final one
     // contains the id and can only be set once it is known
     $binary = Factory::getCrackerBinaryFactory()->save(
-      new CrackerBinary(null, $binaryType->getId(), $version, "", $name, null)
+      new CrackerBinary(null, $binaryType->getId(), $version, "", $name, null, $binaryType->getAccessGroupId())
     );
     
     $target = CrackerUtils::getCrackersPath() . $binary->getId() . '_' . $filename;
@@ -286,6 +299,18 @@ class CrackerUtils {
     return Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
   }
   
+  /**
+   * Ensures a cracker binary is created in the access group of its type, all binaries
+   * of a type are always in the same group.
+   *
+   * @throws HttpError
+   */
+  private static function checkAccessGroupMatchesType(CrackerBinaryType $binaryType, ?int $accessGroupId): void {
+    if ($accessGroupId !== null && $accessGroupId != $binaryType->getAccessGroupId()) {
+      throw new HttpError("The access group must match the access group of the cracker binary type!");
+    }
+  }
+
   /**
    * @param int $binaryTypeId
    * @return CrackerBinaryType

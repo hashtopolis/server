@@ -27,7 +27,7 @@ final class CrackerBinaryUtilsTest extends TestBase {
     parent::setUp();
     $this->type = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
-      new CrackerBinaryType(null, 'test-crackerbinaryutils-type', 1)
+      new CrackerBinaryType(null, 'test-crackerbinaryutils-type', 1, 1)
     );
   }
 
@@ -36,7 +36,7 @@ final class CrackerBinaryUtilsTest extends TestBase {
   private function addBinary(string $version): AbstractModel {
     return $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $this->type->getId(), $version, 'http://example.com', 'testcracker', null)
+      new CrackerBinary(null, $this->type->getId(), $version, 'http://example.com', 'testcracker', null, 1)
     );
   }
 

@@ -35,11 +35,11 @@ final class CrackerUtilsTest extends TestBase {
     parent::setUp();
     $this->type = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
-      new CrackerBinaryType(null, 'test-crackerutils-type', 1)
+      new CrackerBinaryType(null, 'test-crackerutils-type', 1, 1)
     );
     $this->binary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com', 'testcracker', null)
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com', 'testcracker', null, 1)
     );
   }
 
@@ -155,7 +155,7 @@ final class CrackerUtilsTest extends TestBase {
   public function testCreateBinaryFromUploadSanitizesFilename(): void {
     $type = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
-      new CrackerBinaryType(null, 'weird cracker name!', 1)
+      new CrackerBinaryType(null, 'weird cracker name!', 1, 1)
     );
     $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC));
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
@@ -252,7 +252,7 @@ final class CrackerUtilsTest extends TestBase {
   public function testDeleteBinaryTypeRemovesLocalArchives(): void {
     $type = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
-      new CrackerBinaryType(null, 'type2-' . uniqid(), 1)
+      new CrackerBinaryType(null, 'type2-' . uniqid(), 1, 1)
     );
     $name = 'test-archive-' . uniqid() . '.7z';
     file_put_contents($this->getImportPath() . $name, self::SEVEN_ZIP_MAGIC . 'to-be-deleted');

@@ -949,7 +949,7 @@ final class UtilTest extends TestBase {
    */
   public function testCheckOrCreateInitialObjectCrackerBinaryType(): void {
     $id = 9007;
-    $data = ['crackerBinaryTypeId' => $id, 'typeName' => 'testHashcat', 'isChunkingAvailable' => 1];
+    $data = ['crackerBinaryTypeId' => $id, 'typeName' => 'testHashcat', 'isChunkingAvailable' => 1, 'accessGroupId' => 1];
     Util::checkOrCreateInitialObject(Factory::getCrackerBinaryTypeFactory(), $data);
     $obj = Factory::getCrackerBinaryTypeFactory()->get($id);
     $this->assertNotNull($obj);
@@ -965,7 +965,7 @@ final class UtilTest extends TestBase {
    */
   public function testCheckOrCreateInitialObjectCrackerBinary(): void {
     $typeId = 9008;
-    $typeData = ['crackerBinaryTypeId' => $typeId, 'typeName' => 'binType', 'isChunkingAvailable' => 0];
+    $typeData = ['crackerBinaryTypeId' => $typeId, 'typeName' => 'binType', 'isChunkingAvailable' => 0, 'accessGroupId' => 1];
     Util::checkOrCreateInitialObject(Factory::getCrackerBinaryTypeFactory(), $typeData);
 
     $id = 9009;
@@ -974,7 +974,8 @@ final class UtilTest extends TestBase {
       'crackerBinaryTypeId' => $typeId,
       'version' => '7.0.0',
       'downloadUrl' => 'https://example.com/test.7z',
-      'binaryName' => 'testHashcat'
+      'binaryName' => 'testHashcat',
+      'accessGroupId' => 1
     ];
     Util::checkOrCreateInitialObject(Factory::getCrackerBinaryFactory(), $data);
     $obj = Factory::getCrackerBinaryFactory()->get($id);

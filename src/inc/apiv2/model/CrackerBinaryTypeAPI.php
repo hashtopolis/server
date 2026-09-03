@@ -60,7 +60,7 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
    * @throws HttpError
    */
   protected function createObject(array $data): int {
-    $binaryType = CrackerUtils::createBinaryType($data[CrackerBinaryType::TYPE_NAME]);
+    $binaryType = CrackerUtils::createBinaryType($data[CrackerBinaryType::TYPE_NAME], $data[CrackerBinaryType::ACCESS_GROUP_ID] ?? null);
     return $binaryType->getId();
   }
   
