@@ -4,8 +4,11 @@ namespace Tests\Utils;
 
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\inc\Util;
+use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
@@ -95,5 +98,216 @@ final class CrackerUtilsTest extends TestBase {
     $b = CrackerUtils::createBinary('9.9.9', 'newcracker', 'http://example.com/dl', $this->type->getId());
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
     $this->assertSame('9.9.9', $b->getVersion());
+  }
+
+  private const SEVEN_ZIP_MAGIC = "\x37\x7A\xBC\xAF\x27\x1C";
+
+  private function getImportPath(): string {
+    return Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . '/';
+  }
+
+  private function countBinariesOfType(int $typeId): int {
+    $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $typeId, '=');
+    return sizeof(Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]));
+  }
+
+  // Verifies the full happy path: createBinaryFromUpload() with sourceType 'import'
+  // moves the archive from the import directory to the crackers directory, composes
+  // the server-side filename and sets the download url to the download endpoint.
+  public function testCreateBinaryFromUploadImportSource(): void {
+    $name = 'test-archive-' . uniqid() . '.7z';
+    $content = self::SEVEN_ZIP_MAGIC . 'test-content';
+    file_put_contents($this->getImportPath() . $name, $content);
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
+
+    $this->assertEquals('test-crackerutils-type-7.2.7.7z', $b->getFilename());
+    $this->assertEquals(
+      Util::buildBackendBaseUrl() . '/api/download.php/crackerBinary/' . $b->getId(),
+      $b->getDownloadUrl()
+    );
+    $archive = CrackerUtils::getCrackersPath() . $b->getId() . '_' . $b->getFilename();
+    $this->assertFileExists($archive);
+    $this->assertEquals($content, file_get_contents($archive));
+    $this->assertFileDoesNotExist($this->getImportPath() . $name);
+
+    unlink($archive);
+  }
+
+  // Verifies the full happy path: createBinaryFromUpload() with sourceType 'inline'
+  // stores the base64 decoded archive in the crackers directory.
+  public function testCreateBinaryFromUploadInlineSource(): void {
+    $content = self::SEVEN_ZIP_MAGIC . 'inline-content';
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', base64_encode($content));
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
+
+    $this->assertEquals('test-crackerutils-type-7.2.7.7z', $b->getFilename());
+    $this->assertStringEndsWith('/api/download.php/crackerBinary/' . $b->getId(), $b->getDownloadUrl());
+    $archive = CrackerUtils::getCrackersPath() . $b->getId() . '_' . $b->getFilename();
+    $this->assertFileExists($archive);
+    $this->assertEquals($content, file_get_contents($archive));
+
+    unlink($archive);
+  }
+
+  // Verifies that the composed archive filename sanitizes all characters which are
+  // problematic in file names.
+  public function testCreateBinaryFromUploadSanitizesFilename(): void {
+    $type = $this->createDatabaseObject(
+      Factory::getCrackerBinaryTypeFactory(),
+      new CrackerBinaryType(null, 'weird cracker name!', 1)
+    );
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC));
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
+
+    $this->assertEquals('weird-cracker-name--7.2.7.7z', $b->getFilename());
+    unlink(CrackerUtils::getCrackersPath() . $b->getId() . '_' . $b->getFilename());
+  }
+
+  // Verifies that createBinaryFromUpload() rejects an unsupported sourceType.
+  public function testCreateBinaryFromUploadInvalidSourceTypeThrowsHttpError(): void {
+    $this->expectException(HttpError::class);
+    CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'bogus', 'data');
+  }
+
+  // Verifies that createBinaryFromUpload() rejects an empty version.
+  public function testCreateBinaryFromUploadEmptyVersionThrowsHttpError(): void {
+    $this->expectException(HttpError::class);
+    CrackerUtils::createBinaryFromUpload('', 'testcracker', $this->type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC));
+  }
+
+  // Verifies that createBinaryFromUpload() rejects missing sourceData.
+  public function testCreateBinaryFromUploadEmptySourceDataThrowsHttpError(): void {
+    $this->expectException(HttpError::class);
+    CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', '');
+  }
+
+  // Verifies that createBinaryFromUpload() rejects sourceData which is not valid base64.
+  public function testCreateBinaryFromUploadInvalidBase64ThrowsHttpError(): void {
+    $this->expectException(HttpError::class);
+    CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', '!!!no-base64!!!');
+  }
+
+  // Verifies that createBinaryFromUpload() only allows http and https urls, so no
+  // local files or stream wrappers can be fetched by the server.
+  public function testCreateBinaryFromUploadUrlSchemeThrowsHttpError(): void {
+    $this->expectException(HttpError::class);
+    CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'url', 'file:///etc/passwd');
+  }
+
+  // Verifies that a non-7z archive is rejected and the import file is restored and
+  // no leftover binary or archive remains.
+  public function testCreateBinaryFromUploadImportNot7zRollsBack(): void {
+    $name = 'test-archive-' . uniqid() . '.txt';
+    file_put_contents($this->getImportPath() . $name, 'not-a-7z-archive');
+    $countBefore = $this->countBinariesOfType($this->type->getId());
+
+    try {
+      CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name);
+      $this->fail('Expected HttpError for a non-7z archive');
+    }
+    catch (HttpError $e) {
+      // expected
+    }
+
+    $this->assertEquals($countBefore, $this->countBinariesOfType($this->type->getId()));
+    $this->assertFileExists($this->getImportPath() . $name);
+    $this->assertEmpty(glob(CrackerUtils::getCrackersPath() . '*_test-crackerutils-type-7.2.7.7z'));
+
+    unlink($this->getImportPath() . $name);
+  }
+
+  // Verifies that a missing import file results in an error and no leftover binary.
+  public function testCreateBinaryFromUploadImportFileMissingRollsBack(): void {
+    $countBefore = $this->countBinariesOfType($this->type->getId());
+
+    try {
+      CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', 'does-not-exist-' . uniqid() . '.7z');
+      $this->fail('Expected HttpError for a missing import file');
+    }
+    catch (HttpError $e) {
+      // expected
+    }
+
+    $this->assertEquals($countBefore, $this->countBinariesOfType($this->type->getId()));
+  }
+
+  // Verifies that deleteBinary() removes the locally stored archive of the binary.
+  public function testDeleteBinaryRemovesLocalArchive(): void {
+    $name = 'test-archive-' . uniqid() . '.7z';
+    file_put_contents($this->getImportPath() . $name, self::SEVEN_ZIP_MAGIC . 'to-be-deleted');
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
+    $archive = CrackerUtils::getCrackersPath() . $b->getId() . '_' . $b->getFilename();
+    $this->assertFileExists($archive);
+
+    CrackerUtils::deleteBinary($b->getId());
+
+    $this->assertFileDoesNotExist($archive);
+    $this->assertNull(Factory::getCrackerBinaryFactory()->get($b->getId()));
+  }
+
+  // Verifies that deleteBinaryType() removes the archives of all locally stored
+  // binaries of the type.
+  public function testDeleteBinaryTypeRemovesLocalArchives(): void {
+    $type = $this->createDatabaseObject(
+      Factory::getCrackerBinaryTypeFactory(),
+      new CrackerBinaryType(null, 'type2-' . uniqid(), 1)
+    );
+    $name = 'test-archive-' . uniqid() . '.7z';
+    file_put_contents($this->getImportPath() . $name, self::SEVEN_ZIP_MAGIC . 'to-be-deleted');
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $type->getId(), 'import', $name);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
+    $archive = CrackerUtils::getCrackersPath() . $b->getId() . '_' . $b->getFilename();
+    $this->assertFileExists($archive);
+
+    CrackerUtils::deleteBinaryType($type->getId());
+
+    $this->assertFileDoesNotExist($archive);
+    $this->assertEquals(0, $this->countBinariesOfType($type->getId()));
+  }
+
+  // Verifies that the download url of a locally stored binary cannot be changed.
+  public function testUpdateBinaryRejectsUrlChangeForLocalBinary(): void {
+    $name = 'test-archive-' . uniqid() . '.7z';
+    file_put_contents($this->getImportPath() . $name, self::SEVEN_ZIP_MAGIC . 'local');
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
+
+    try {
+      CrackerUtils::updateBinary('8.0.0', 'testcracker', 'http://other.example.com/hc.7z', $b->getId());
+      $this->fail('Expected HTException when changing the url of a local binary');
+    }
+    catch (HTException $e) {
+      $this->assertStringContainsString('locally stored', $e->getMessage());
+    }
+
+    $reloaded = Factory::getCrackerBinaryFactory()->get($b->getId());
+    $this->assertEquals($b->getDownloadUrl(), $reloaded->getDownloadUrl());
+    CrackerUtils::deleteBinary($b->getId());
+  }
+
+  // Verifies that a locally stored binary can still be updated as long as the
+  // download url is not changed.
+  public function testUpdateBinaryAllowsUnchangedUrlForLocalBinary(): void {
+    $name = 'test-archive-' . uniqid() . '.7z';
+    file_put_contents($this->getImportPath() . $name, self::SEVEN_ZIP_MAGIC . 'local');
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
+
+    CrackerUtils::updateBinary('8.0.0', 'testcracker', $b->getDownloadUrl(), $b->getId());
+
+    $reloaded = Factory::getCrackerBinaryFactory()->get($b->getId());
+    $this->assertEquals('8.0.0', $reloaded->getVersion());
+    $this->assertEquals($b->getDownloadUrl(), $reloaded->getDownloadUrl());
+    CrackerUtils::deleteBinary($b->getId());
+  }
+
+  // Verifies that the download url of a regular binary can still be changed.
+  public function testUpdateBinaryChangesUrlForExternalBinary(): void {
+    CrackerUtils::updateBinary('2.0.0', 'testcracker', 'http://changed.example.com/hc.7z', $this->binary->getId());
+    $reloaded = Factory::getCrackerBinaryFactory()->get($this->binary->getId());
+    $this->assertEquals('http://changed.example.com/hc.7z', $reloaded->getDownloadUrl());
+    $this->assertEquals('2.0.0', $reloaded->getVersion());
   }
 }
