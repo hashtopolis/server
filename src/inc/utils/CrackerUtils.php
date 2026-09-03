@@ -61,21 +61,19 @@ class CrackerUtils {
    * @param string $name
    * @param string $url
    * @param int $binaryTypeId
-   * @param int|null $accessGroupId required on creation, falls back to the first access
-   *   group of the user (or the default group) if not given
+   * @param int $accessGroupId access group the binary belongs to
    * @param User|null $user if given, the user must be a member of the access group
    * @return CrackerBinary
    * @throws HttpError
    * @throws HTException
    * @throws Exception
    */
-  public static function createBinary(string $version, string $name, string $url, int $binaryTypeId, ?int $accessGroupId = null, ?User $user = null): CrackerBinary {
+  public static function createBinary(string $version, string $name, string $url, int $binaryTypeId, int $accessGroupId, ?User $user = null): CrackerBinary {
     $binaryType = CrackerUtils::getBinaryType($binaryTypeId);
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
       throw new HttpError("Please provide all information!");
     }
-    $accessGroupId = CrackerUtils::resolveAccessGroupId($accessGroupId, $user);
-    CrackerUtils::checkUserGroupMembership($user, $accessGroupId);
+    CrackerUtils::checkAccessGroup($accessGroupId, $user);
     $binary = new CrackerBinary(null, $binaryType->getId(), $version, $url, $name, null, $accessGroupId);
     return Factory::getCrackerBinaryFactory()->save($binary);
   }
@@ -90,21 +88,19 @@ class CrackerUtils {
    * @param int $binaryTypeId
    * @param string $sourceType choices inline, import, url
    * @param string $sourceData base64 data, filename in the import directory or download url
-   * @param int|null $accessGroupId required on creation, falls back to the first access
-   *   group of the user (or the default group) if not given
+   * @param int $accessGroupId access group the binary belongs to
    * @param User|null $user if given, the user must be a member of the access group
    * @return CrackerBinary
    * @throws HttpError
    * @throws HTException
    * @throws Exception
    */
-  public static function createBinaryFromUpload(string $version, string $name, int $binaryTypeId, string $sourceType, string $sourceData, ?int $accessGroupId = null, ?User $user = null): CrackerBinary {
+  public static function createBinaryFromUpload(string $version, string $name, int $binaryTypeId, string $sourceType, string $sourceData, int $accessGroupId, ?User $user = null): CrackerBinary {
     $binaryType = CrackerUtils::getBinaryType($binaryTypeId);
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($sourceData) == 0) {
       throw new HttpError("Please provide all information!");
     }
-    $accessGroupId = CrackerUtils::resolveAccessGroupId($accessGroupId, $user);
-    CrackerUtils::checkUserGroupMembership($user, $accessGroupId);
+    CrackerUtils::checkAccessGroup($accessGroupId, $user);
     
     // determine the source of the archive and validate it
     switch ($sourceType) {
@@ -298,39 +294,20 @@ class CrackerUtils {
   }
   
   /**
-   * Resolves the access group of a cracker binary to be created. When no group is
-   * given (legacy UI or user api callers without group input), the first access
-   * group of the creating user is used, or the default group as a last resort.
+   * Ensures the access group exists and the user is a member of it, so binaries
+   * can only be created by members of the group they are created in. Callers
+   * without a group input (legacy UI or user api) use the default access group.
    *
    * @throws HttpError
    * @throws Exception
    */
-  private static function resolveAccessGroupId(?int $accessGroupId, ?User $user): int {
-    if ($accessGroupId !== null) {
-      if (Factory::getAccessGroupFactory()->get($accessGroupId) === null) {
-        throw new HttpError("Invalid access group selected!");
-      }
-      return $accessGroupId;
+  private static function checkAccessGroup(int $accessGroupId, ?User $user): void {
+    $accessGroup = Factory::getAccessGroupFactory()->get($accessGroupId);
+    if ($accessGroup === null) {
+      throw new HttpError("Invalid access group selected!");
     }
-    if ($user !== null) {
-      $groups = AccessUtils::getAccessGroupsOfUser($user);
-      if (sizeof($groups) > 0) {
-        return $groups[0]->getId();
-      }
-    }
-    return AccessUtils::getOrCreateDefaultAccessGroup()->getId();
-  }
-
-  /**
-   * Ensures the user is a member of the access group, so binaries can only be
-   * created by members of the group they are created in.
-   *
-   * @throws HttpError
-   * @throws Exception
-   */
-  private static function checkUserGroupMembership(?User $user, int $accessGroupId): void {
     if ($user !== null && sizeof(AccessUtils::intersection(
-        array(Factory::getAccessGroupFactory()->get($accessGroupId)), AccessUtils::getAccessGroupsOfUser($user))) == 0) {
+        array($accessGroup), AccessUtils::getAccessGroupsOfUser($user))) == 0) {
       throw new HttpError("Access group with no rights selected!");
     }
   }
