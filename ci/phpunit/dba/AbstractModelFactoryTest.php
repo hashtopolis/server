@@ -1678,7 +1678,7 @@ final class AbstractModelFactoryTest extends TestBase {
     $hashType = new HashType(null, 'placeholder', 0, 0);
     $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), $hashType);
     
-    $crackerBinaryType = new CrackerBinaryType(null, '', 0, 1);
+    $crackerBinaryType = new CrackerBinaryType(null, '', 0);
     $crackerBinaryType = $this->createDatabaseObject(Factory::getCrackerBinaryTypeFactory(), $crackerBinaryType);
     
     $crackerBinary = new CrackerBinary(null, $crackerBinaryType->getId(), '', '', '', null, 1);

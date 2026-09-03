@@ -8,6 +8,7 @@ use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\models\Task;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
@@ -84,7 +85,8 @@ class CrackerBinaryAPI extends AbstractModelAPI {
         $data[CrackerBinary::CRACKER_BINARY_TYPE_ID],
         $data["sourceType"],
         $data["sourceData"],
-        $data[CrackerBinary::ACCESS_GROUP_ID] ?? null
+        $data[CrackerBinary::ACCESS_GROUP_ID] ?? null,
+        $this->getCurrentUser()
       );
       return $binary->getId();
     }
@@ -96,7 +98,8 @@ class CrackerBinaryAPI extends AbstractModelAPI {
       $data[CrackerBinary::BINARY_NAME],
       $data[CrackerBinary::DOWNLOAD_URL],
       $data[CrackerBinary::CRACKER_BINARY_TYPE_ID],
-      $data[CrackerBinary::ACCESS_GROUP_ID] ?? null
+      $data[CrackerBinary::ACCESS_GROUP_ID] ?? null,
+      $this->getCurrentUser()
     );
     return $binary->getId();
   }
@@ -107,6 +110,19 @@ class CrackerBinaryAPI extends AbstractModelAPI {
    */
   protected function deleteObject(AbstractModel $object): void {
     CrackerUtils::deleteBinary($object->getId());
+  }
+
+  /**
+   * The access group of a binary can be changed, but only to a group the user is
+   * also a member of (and only from a group the user has access to).
+   *
+   * @param int $id
+   * @param User $current_user
+   */
+  protected function getUpdateHandlers($id, $current_user): array {
+    return [
+      CrackerBinary::ACCESS_GROUP_ID => fn($value) => CrackerUtils::changeAccessGroup($id, $value, $current_user)
+    ];
   }
 
   /**

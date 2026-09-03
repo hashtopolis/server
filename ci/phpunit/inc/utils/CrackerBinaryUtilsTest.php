@@ -6,8 +6,12 @@ use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\utils\AccessGroupUtils;
+use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\CrackerBinaryUtils;
+use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\TestBase;
 
 
@@ -27,7 +31,7 @@ final class CrackerBinaryUtilsTest extends TestBase {
     parent::setUp();
     $this->type = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
-      new CrackerBinaryType(null, 'test-crackerbinaryutils-type', 1, 1)
+      new CrackerBinaryType(null, 'test-crackerbinaryutils-type', 1)
     );
   }
 
@@ -74,5 +78,40 @@ final class CrackerBinaryUtilsTest extends TestBase {
     $this->addBinary('2.0.0');
     $result = CrackerBinaryUtils::getNewestVersion($this->type->getId());
     $this->assertSame($newest->getId(), $result->getId());
+  }
+
+  // Verifies that getNewestVersion() only considers binaries of access groups the
+  // user is a member of — binaries of one type can be in different groups.
+  public function testGetNewestVersionRespectsUserGroups(): void {
+    $group = $this->createAccessGroup('ag-newestversion');
+    $user = $this->createUser('newestversion-user');
+
+    // 2.0.0 is in the default group, 1.0.0 in the group of the user
+    $highVersion = $this->addBinary('2.0.0');
+    $lowVersion = CrackerUtils::createBinary('1.0.0', 'testcracker', 'http://example.com', $this->type->getId(), $group->getId());
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $lowVersion);
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group->getId(), $user->getId())
+    );
+    // createUser made the user a member of the default group too, remove it so
+    // only the binary in the test group is accessible
+    AccessGroupUtils::removeUser($user->getId(), AccessUtils::getOrCreateDefaultAccessGroup()->getId());
+
+    // without a user all binaries are considered
+    $this->assertSame($highVersion->getId(), CrackerBinaryUtils::getNewestVersion($this->type->getId())->getId());
+    // the user can only access 1.0.0, so it is picked over the newer 2.0.0
+    $this->assertSame($lowVersion->getId(), CrackerBinaryUtils::getNewestVersion($this->type->getId(), $user)->getId());
+
+    // a user without access to any binary of the type gets no version
+    $otherUser = $this->createUser('newestversion-other-user');
+    AccessGroupUtils::removeUser($otherUser->getId(), AccessUtils::getOrCreateDefaultAccessGroup()->getId());
+    try {
+      CrackerBinaryUtils::getNewestVersion($this->type->getId(), $otherUser);
+      $this->fail('Expected HTException when the user has no accessible binary');
+    }
+    catch (HTException $e) {
+      $this->assertStringContainsString('No binary versions available', $e->getMessage());
+    }
   }
 }

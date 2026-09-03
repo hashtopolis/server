@@ -1366,14 +1366,10 @@
                                 "properties": {
                                     "typeName": {
                                         "type": "string"
-                                    },
-                                    "accessGroupId": {
-                                        "type": "integer"
                                     }
                                 },
                                 "required": [
-                                    "typeName",
-                                    "accessGroupId"
+                                    "typeName"
                                 ]
                             }
                         }
@@ -1549,8 +1545,7 @@
                                 "type": "object",
                                 "required": [
                                     "typeName",
-                                    "isChunkingAvailable",
-                                    "accessGroupId"
+                                    "isChunkingAvailable"
                                 ],
                                 "properties": {
                                     "typeName": {
@@ -1561,9 +1556,6 @@
                                             "boolean",
                                             "null"
                                         ]
-                                    },
-                                    "accessGroupId": {
-                                        "type": "integer"
                                     }
                                 }
                             },
@@ -1939,8 +1931,7 @@
                                 "type": "object",
                                 "required": [
                                     "typeName",
-                                    "isChunkingAvailable",
-                                    "accessGroupId"
+                                    "isChunkingAvailable"
                                 ],
                                 "properties": {
                                     "typeName": {
@@ -1951,9 +1942,6 @@
                                             "boolean",
                                             "null"
                                         ]
-                                    },
-                                    "accessGroupId": {
-                                        "type": "integer"
                                     }
                                 }
                             },
@@ -2329,8 +2317,7 @@
                                 "type": "object",
                                 "required": [
                                     "typeName",
-                                    "isChunkingAvailable",
-                                    "accessGroupId"
+                                    "isChunkingAvailable"
                                 ],
                                 "properties": {
                                     "typeName": {
@@ -2341,9 +2328,6 @@
                                             "boolean",
                                             "null"
                                         ]
-                                    },
-                                    "accessGroupId": {
-                                        "type": "integer"
                                     }
                                 }
                             },
@@ -2770,8 +2754,7 @@
                                     "type": "object",
                                     "required": [
                                         "typeName",
-                                        "isChunkingAvailable",
-                                        "accessGroupId"
+                                        "isChunkingAvailable"
                                     ],
                                     "properties": {
                                         "typeName": {
@@ -2782,9 +2765,6 @@
                                                 "boolean",
                                                 "null"
                                             ]
-                                        },
-                                        "accessGroupId": {
-                                            "type": "integer"
                                         }
                                     }
                                 },

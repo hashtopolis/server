@@ -1,5 +1,4 @@
 {
             "typeName": "generic2",
-            "isChunkingAvailable": true,
-            "accessGroupId": 1
+            "isChunkingAvailable": true
  }
