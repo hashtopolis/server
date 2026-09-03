@@ -204,7 +204,7 @@
             // Ideally the opt-parser itself works for '-a3' instead of requiring a space as in '-a 3' to parse attackType
             args = cmd.replace('hashcat', '');
             args = args.replace(/(-a)(\d)(\s)/,"-a $2 "); // ensures that "-a3" becomes a valid attack mode: the opt-parser does not approve it (yet)
-            args = args.replace(/(-\d)(\S+)(\s)/,"$1 $2 "); // ensures that "-1?l?d" becomes a valid customCharset: the opt-parser does not approve it (yet)
+            args = args.replace(/(-\d)(\S+)(\s)/g,"$1 $2 "); // ensures that "-1?l?d" becomes a valid customCharset: the opt-parser does not approve it (yet)
             args = args.replace(/\s+/g, ' '); // ensures that multiple consecutive spaces are reduced to a single space
             args = args.trim();
             args = args.split(/ |=/g);
@@ -252,6 +252,18 @@
                 if (options.customCharset4 !== "")
                     {
                         keyspaceCustomMask = keyspaceCustomMask * Math.pow(customCharsetToOptions(options.customCharset4), (mask.match(/\?4/g) || []).length);}
+                if (options.customCharset5 !== "")
+                    {
+                        keyspaceCustomMask = keyspaceCustomMask * Math.pow(customCharsetToOptions(options.customCharset5), (mask.match(/\?5/g) || []).length);}
+                if (options.customCharset6 !== "")
+                    {
+                        keyspaceCustomMask = keyspaceCustomMask * Math.pow(customCharsetToOptions(options.customCharset6), (mask.match(/\?6/g) || []).length);}
+                if (options.customCharset7 !== "")
+                    {
+                        keyspaceCustomMask = keyspaceCustomMask * Math.pow(customCharsetToOptions(options.customCharset7), (mask.match(/\?7/g) || []).length);}
+                if (options.customCharset8 !== "")
+                    {
+                        keyspaceCustomMask = keyspaceCustomMask * Math.pow(customCharsetToOptions(options.customCharset8), (mask.match(/\?8/g) || []).length);}
 
                 var keyspaceRegularMask = 1;
 

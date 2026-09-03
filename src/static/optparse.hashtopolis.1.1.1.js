@@ -107,6 +107,10 @@ let switches = [
 	['-2', '--custom-charset2 MESSAGE', "User-defined charset ?2"], // TODO: Check Charset
 	['-3', '--custom-charset3 MESSAGE', "User-defined charset ?3"], // TODO: Check Charset
 	['-4', '--custom-charset4 MESSAGE', "User-defined charset ?4"], // TODO: Check Charset
+	['-5', '--custom-charset5 MESSAGE', "User-defined charset ?5"],
+	['-6', '--custom-charset6 MESSAGE', "User-defined charset ?6"],
+	['-7', '--custom-charset7 MESSAGE', "User-defined charset ?7"],
+	['-8', '--custom-charset8 MESSAGE', "User-defined charset ?8"],
 	['-i', '--increment', "Enable mask increment mode"],
 	['--increment-min NUMBER', "Start mask incrementing at X"],
 	['--increment-max NUMBER', "Stop mask incrementing at X"], // TODO: Compare MIN and MAX values
@@ -131,6 +135,10 @@ let defaultOptions = {
 	customCharset2: '',
 	customCharset3: '',
 	customCharset4: '',
+	customCharset5: '',
+	customCharset6: '',
+	customCharset7: '',
+	customCharset8: '',
 	unrecognizedFlag: []
 };
 var options = defaultOptions;
@@ -210,6 +218,22 @@ parser.on('custom-charset3', function(name, value) {
 parser.on('custom-charset4', function(name, value) {
 	// console.log('Custom Charset 4: ' + value);
 	options.customCharset4 = value;
+});
+parser.on('custom-charset5', function(name, value) {
+	// console.log('Custom Charset 5: ' + value);
+	options.customCharset5 = value;
+});
+parser.on('custom-charset6', function(name, value) {
+	// console.log('Custom Charset 6: ' + value);
+	options.customCharset6 = value;
+});
+parser.on('custom-charset7', function(name, value) {
+	// console.log('Custom Charset 7: ' + value);
+	options.customCharset7 = value;
+});
+parser.on('custom-charset8', function(name, value) {
+	// console.log('Custom Charset 8: ' + value);
+	options.customCharset8 = value;
 });
 parser.on('print', function(value) {
 	// console.log('PRINT: ' + value);
@@ -326,6 +350,26 @@ function validateHashcatCommand(opt) {
 			if(opt.customCharset4 != '') {
 				if(opt.posArgs[1].indexOf('?4') !== -1) {
 					return {"result": true, "reason": "Bruteforce Attack with Character Set 4"};
+				}
+			}
+			if(opt.customCharset5 != '') {
+				if(opt.posArgs[1].indexOf('?5') !== -1) {
+					return {"result": true, "reason": "Bruteforce Attack with Character Set 5"};
+				}
+			}
+			if(opt.customCharset6 != '') {
+				if(opt.posArgs[1].indexOf('?6') !== -1) {
+					return {"result": true, "reason": "Bruteforce Attack with Character Set 6"};
+				}
+			}
+			if(opt.customCharset7 != '') {
+				if(opt.posArgs[1].indexOf('?7') !== -1) {
+					return {"result": true, "reason": "Bruteforce Attack with Character Set 7"};
+				}
+			}
+			if(opt.customCharset8 != '') {
+				if(opt.posArgs[1].indexOf('?8') !== -1) {
+					return {"result": true, "reason": "Bruteforce Attack with Character Set 8"};
 				}
 			}
 			
