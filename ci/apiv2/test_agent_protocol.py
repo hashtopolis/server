@@ -34,6 +34,19 @@ def _uri():
     return get_hashtopolis_uri()
 
 
+def fetch_via_test_config(url, **kwargs):
+    """GET a server-generated url through the configured test server uri.
+
+    The realworld dataset configures baseHost with a url that is only reachable
+    from outside the container, so server-generated absolute urls cannot be
+    fetched from within the tests. The authority is rewritten to the uri the
+    tests run against, path and query (which carry the agent token) are kept.
+    """
+    parts = urllib.parse.urlparse(url)
+    base = urllib.parse.urlparse(_uri())
+    return requests.get(base._replace(path=parts.path, query=parts.query).geturl(), **kwargs)
+
+
 def agent_request(payload):
     """POST a raw JSON payload to the agent API and return (status_code, body_text).
 
@@ -558,7 +571,7 @@ class TestDownloadBinary(AgentProtocolBase):
         self.assertIn(f'token={dummy.token}', url_parts.query)
 
         # the agent can fetch the archive with the returned url
-        r = requests.get(url)
+        r = fetch_via_test_config(url)
         self.assertEqual(200, r.status_code)
         self.assertEqual(content, r.content)
 
@@ -576,7 +589,7 @@ class TestDownloadBinary(AgentProtocolBase):
         })
         url = parse_envelope(body)['url']
 
-        r = requests.get(url.replace(f'token={dummy.token}', 'token=wrong-token'))
+        r = fetch_via_test_config(url.replace(f'token={dummy.token}', 'token=wrong-token'))
         self.assertEqual(401, r.status_code)
 
     def test_download_cracker_local_binary_external_unchanged(self):
