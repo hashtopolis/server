@@ -213,3 +213,4 @@ Util::checkDataDirectory(DDirectories::IMPORT, StartupConfig::getInstance()->get
 Util::checkDataDirectory(DDirectories::LOG, StartupConfig::getInstance()->getDirectoryLog());
 Util::checkDataDirectory(DDirectories::CONFIG, StartupConfig::getInstance()->getDirectoryConfig());
 Util::checkDataDirectory(DDirectories::TUS, StartupConfig::getInstance()->getDirectoryTus());
+Util::checkDataDirectory(DDirectories::CRACKERS, StartupConfig::getInstance()->getDirectoryCrackers());
