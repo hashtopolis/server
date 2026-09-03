@@ -427,6 +427,14 @@ class SupertaskUtils {
       $pattern = $mask[sizeof($mask) - 1];
       $cmd = "";
       switch (sizeof($mask)) {
+        case 9:
+          $cmd = " -8 " . $mask[7] . $cmd;
+        case 8:
+          $cmd = " -7 " . $mask[6] . $cmd;
+        case 7:
+          $cmd = " -6 " . $mask[5] . $cmd;
+        case 6:
+          $cmd = " -5 " . $mask[4] . $cmd;
         case 5:
           $cmd = " -4 " . $mask[3] . $cmd;
         case 4:
@@ -484,7 +492,7 @@ class SupertaskUtils {
         $mask = substr($mask, 0, strpos($mask, "#"));
       }
       $mask = explode(",", $mask);
-      if (sizeof($mask) > 5) {
+      if (sizeof($mask) > 9) {
         unset($masks[$i]);
         continue;
       }
