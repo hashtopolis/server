@@ -1290,6 +1290,33 @@ class Util {
   }
   
   /**
+   * Determines the base URL of the backend as it is reachable from the outside.
+   * If HASHTOPOLIS_BACKEND_URL is set in the environment, scheme, host and port are
+   * taken from it and any path is stripped (e.g. "http://localhost:8080/api/v2"
+   * results in "http://localhost:8080"). If the variable is not set or malformed,
+   * this falls back to the server URL derived from the current request together
+   * with the configured base URL, respecting the baseHost config override.
+   * Used to generate agent reachable URLs for locally hosted files, e.g. the
+   * download URL of an uploaded cracker binary archive.
+   * @return string backend base url without trailing slash
+   * @throws Exception
+   */
+  public static function buildBackendBaseUrl(): string {
+    $backendUrl = getenv('HASHTOPOLIS_BACKEND_URL');
+    if ($backendUrl !== false && strlen($backendUrl) > 0) {
+      $parts = parse_url($backendUrl);
+      if ($parts !== false && isset($parts['scheme'], $parts['host'])) {
+        $url = $parts['scheme'] . '://' . $parts['host'];
+        if (isset($parts['port'])) {
+          $url .= ':' . $parts['port'];
+        }
+        return rtrim($url, '/');
+      }
+    }
+    return rtrim(Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL), '/');
+  }
+  
+  /**
    * Round to a specific amount of decimal points
    * @param $num Number
    * @param $dec Number of decimals
