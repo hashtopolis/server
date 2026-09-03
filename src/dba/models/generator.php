@@ -284,8 +284,10 @@ $CONF['CrackerBinary'] = [
     ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinaryType'],
     ['name' => 'version', 'read_only' => False, 'type' => 'str(20)'],
-    ['name' => 'downloadUrl', 'read_only' => False, 'type' => 'str(150)'],
+    ['name' => 'downloadUrl', 'read_only' => False, 'null' => True, 'type' => 'str(255)'],
     ['name' => 'binaryName', 'read_only' => False, 'type' => 'str(50)'],
+    // archive filename of a server-hosted binary; NULL means the binary is downloaded from downloadUrl
+    ['name' => 'filename', 'read_only' => True, 'null' => True, 'type' => 'str(100)', 'protected' => True],
   ],
 ];
 $CONF['CrackerBinaryType'] = [

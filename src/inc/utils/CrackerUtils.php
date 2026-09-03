@@ -69,7 +69,7 @@ class CrackerUtils {
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
       throw new HttpError("Please provide all information!");
     }
-    $binary = new CrackerBinary(null, $binaryType->getId(), $version, $url, $name);
+    $binary = new CrackerBinary(null, $binaryType->getId(), $version, $url, $name, null);
     return Factory::getCrackerBinaryFactory()->save($binary);
   }
   

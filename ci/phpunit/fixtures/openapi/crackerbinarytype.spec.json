@@ -1698,7 +1698,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -1708,10 +1709,19 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 }
                                             }
                                         }
@@ -2068,7 +2078,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -2078,10 +2089,19 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 }
                                             }
                                         }
@@ -2438,7 +2458,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -2448,10 +2469,19 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 }
                                             }
                                         }
@@ -2860,7 +2890,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -2870,10 +2901,19 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 }
                                             }
                                         }

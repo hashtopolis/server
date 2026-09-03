@@ -36,7 +36,7 @@ final class CrackerUtilsTest extends TestBase {
     );
     $this->binary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com', 'testcracker')
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com', 'testcracker', null)
     );
   }
 
