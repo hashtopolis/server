@@ -39,7 +39,7 @@ final class DownloadAppTest extends TestBase {
 
     $this->type = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
-      new CrackerBinaryType(null, 'download-test-type', 1, 1)
+      new CrackerBinaryType(null, 'download-test-type', 1)
     );
     $this->externalBinary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),

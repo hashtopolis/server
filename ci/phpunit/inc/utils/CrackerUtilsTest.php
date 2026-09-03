@@ -7,11 +7,14 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\inc\Util;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\utils\AccessGroupUtils;
+use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\TestBase;
 
@@ -35,7 +38,7 @@ final class CrackerUtilsTest extends TestBase {
     parent::setUp();
     $this->type = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
-      new CrackerBinaryType(null, 'test-crackerutils-type', 1, 1)
+      new CrackerBinaryType(null, 'test-crackerutils-type', 1)
     );
     $this->binary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
@@ -155,7 +158,7 @@ final class CrackerUtilsTest extends TestBase {
   public function testCreateBinaryFromUploadSanitizesFilename(): void {
     $type = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
-      new CrackerBinaryType(null, 'weird cracker name!', 1, 1)
+      new CrackerBinaryType(null, 'weird cracker name!', 1)
     );
     $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC));
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
@@ -252,7 +255,7 @@ final class CrackerUtilsTest extends TestBase {
   public function testDeleteBinaryTypeRemovesLocalArchives(): void {
     $type = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
-      new CrackerBinaryType(null, 'type2-' . uniqid(), 1, 1)
+      new CrackerBinaryType(null, 'type2-' . uniqid(), 1)
     );
     $name = 'test-archive-' . uniqid() . '.7z';
     file_put_contents($this->getImportPath() . $name, self::SEVEN_ZIP_MAGIC . 'to-be-deleted');
@@ -309,5 +312,143 @@ final class CrackerUtilsTest extends TestBase {
     $reloaded = Factory::getCrackerBinaryFactory()->get($this->binary->getId());
     $this->assertEquals('http://changed.example.com/hc.7z', $reloaded->getDownloadUrl());
     $this->assertEquals('2.0.0', $reloaded->getVersion());
+  }
+
+  // Verifies that binaries can only be created in access groups the user is a
+  // member of.
+  public function testCreateBinaryRequiresGroupMembership(): void {
+    $group = $this->createAccessGroup('ag-crackerutils-member');
+    $user = $this->createUser('crackerutils-member-user');
+
+    try {
+      CrackerUtils::createBinary('1.0.0', 'testcracker', 'http://example.com/hc.7z', $this->type->getId(), $group->getId(), $user);
+      $this->fail('Expected HttpError when the user is not a member of the access group');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('no rights', $e->getMessage());
+    }
+
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group->getId(), $user->getId())
+    );
+    $binary = CrackerUtils::createBinary('1.0.0', 'testcracker', 'http://example.com/hc.7z', $this->type->getId(), $group->getId(), $user);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+    $this->assertEquals($group->getId(), $binary->getAccessGroupId());
+  }
+
+  // Verifies that creation without an access group falls back to the first
+  // access group of the creating user (legacy UI and user api have no group input).
+  public function testCreateBinaryFallsBackToUsersFirstGroup(): void {
+    $group = $this->createAccessGroup('ag-crackerutils-fallback');
+    $user = $this->createUser('crackerutils-fallback-user');
+    // createUser already made the user a member of the default group
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group->getId(), $user->getId())
+    );
+    AccessGroupUtils::removeUser($user->getId(), AccessUtils::getOrCreateDefaultAccessGroup()->getId());
+
+    $binary = CrackerUtils::createBinary('1.0.0', 'testcracker', 'http://example.com/hc.7z', $this->type->getId(), null, $user);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+    $this->assertEquals($group->getId(), $binary->getAccessGroupId());
+  }
+
+  // Verifies that uploads can only be created in access groups the user is a
+  // member of.
+  public function testCreateBinaryFromUploadRequiresGroupMembership(): void {
+    $group = $this->createAccessGroup('ag-crackerutils-upload');
+    $user = $this->createUser('crackerutils-upload-user');
+
+    try {
+      CrackerUtils::createBinaryFromUpload('1.0.0', 'testcracker', $this->type->getId(), 'inline',
+        base64_encode(self::SEVEN_ZIP_MAGIC . 'content'), $group->getId(), $user);
+      $this->fail('Expected HttpError when the user is not a member of the access group');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('no rights', $e->getMessage());
+    }
+    $this->assertEmpty(glob(CrackerUtils::getCrackersPath() . '*_test-crackerutils-type-1.0.0.7z'));
+
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group->getId(), $user->getId())
+    );
+    $binary = CrackerUtils::createBinaryFromUpload('1.0.0', 'testcracker', $this->type->getId(), 'inline',
+      base64_encode(self::SEVEN_ZIP_MAGIC . 'content'), $group->getId(), $user);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+    $this->assertEquals($group->getId(), $binary->getAccessGroupId());
+    unlink(CrackerUtils::getCrackersPath() . $binary->getId() . '_' . $binary->getFilename());
+  }
+
+  // Verifies that creation with a group that does not exist is rejected.
+  public function testCreateBinaryRejectsInvalidGroup(): void {
+    try {
+      CrackerUtils::createBinary('1.0.0', 'testcracker', 'http://example.com/hc.7z', $this->type->getId(), 99999999, $this->adminUser);
+      $this->fail('Expected HttpError for a non existing access group');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('Invalid access group', $e->getMessage());
+    }
+  }
+
+  // Verifies that moving a binary to another group requires membership of the
+  // current and of the new group.
+  public function testChangeAccessGroupRequiresMembershipOfBothGroups(): void {
+    $group1 = $this->createAccessGroup('ag-crackerutils-move-1');
+    $group2 = $this->createAccessGroup('ag-crackerutils-move-2');
+    $user = $this->createUser('crackerutils-move-user');
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group1->getId(), $user->getId())
+    );
+    $binary = CrackerUtils::createBinary('1.0.0', 'testcracker', 'http://example.com/hc.7z', $this->type->getId(), $group1->getId());
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+
+    // the user is not a member of the new group
+    try {
+      CrackerUtils::changeAccessGroup($binary->getId(), $group2->getId(), $user);
+      $this->fail('Expected HttpError when the user is not a member of the new group');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('No access to this group', $e->getMessage());
+    }
+
+    $otherUser = $this->createUser('crackerutils-move-user-2');
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group2->getId(), $otherUser->getId())
+    );
+    // the other user is not a member of the current group of the binary
+    try {
+      CrackerUtils::changeAccessGroup($binary->getId(), $group2->getId(), $otherUser);
+      $this->fail('Expected HttpError when the user is not a member of the current group');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('No access to this group', $e->getMessage());
+    }
+
+    $this->assertEquals($group1->getId(), Factory::getCrackerBinaryFactory()->get($binary->getId())->getAccessGroupId());
+  }
+
+  // Verifies that a binary can be moved to another group the user is a member of.
+  public function testChangeAccessGroupMovesBinary(): void {
+    $group1 = $this->createAccessGroup('ag-crackerutils-move-ok-1');
+    $group2 = $this->createAccessGroup('ag-crackerutils-move-ok-2');
+    $user = $this->createUser('crackerutils-move-ok-user');
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group1->getId(), $user->getId())
+    );
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group2->getId(), $user->getId())
+    );
+    $binary = CrackerUtils::createBinary('1.0.0', 'testcracker', 'http://example.com/hc.7z', $this->type->getId(), $group1->getId());
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+
+    CrackerUtils::changeAccessGroup($binary->getId(), $group2->getId(), $user);
+
+    $this->assertEquals($group2->getId(), Factory::getCrackerBinaryFactory()->get($binary->getId())->getAccessGroupId());
   }
 }

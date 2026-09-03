@@ -424,8 +424,7 @@
     {
       "crackerBinaryTypeId" : 1,
       "typeName" : "hashcat",
-      "isChunkingAvailable" : 1,
-      "accessGroupId" : 1
+      "isChunkingAvailable" : 1
     }
   ],
   "Preprocessor" : [

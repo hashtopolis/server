@@ -68,7 +68,7 @@ class UserAPICracker extends UserAPIBasic {
       throw new HTException("Invalid query!");
     }
     $cracker = CrackerUtils::getBinaryType($QUERY[UQueryCracker::CRACKER_ID]);
-    CrackerUtils::createBinary($QUERY[UQueryCracker::BINARY_VERSION], $QUERY[UQueryCracker::BINARY_NAME], $QUERY[UQueryCracker::BINARY_URL], $cracker->getId());
+    CrackerUtils::createBinary($QUERY[UQueryCracker::BINARY_VERSION], $QUERY[UQueryCracker::BINARY_NAME], $QUERY[UQueryCracker::BINARY_URL], $cracker->getId(), null, $this->user);
     $this->sendSuccessResponse($QUERY);
   }
   
