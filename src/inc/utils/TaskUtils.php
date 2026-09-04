@@ -897,6 +897,9 @@ class TaskUtils {
     if ($cracker == null) {
       throw new HttpError("Invalid cracker ID!");
     }
+    else if (!AccessUtils::userCanAccessCrackerBinary($cracker, $user)) {
+      throw new HttpForbidden("You have no access to this cracker binary!");
+    }
     else if (!str_contains($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS))) {
       throw new HttpError("Attack command does not contain hashlist alias!");
     }
@@ -1102,6 +1105,10 @@ class TaskUtils {
         else if (!in_array($file->getAccessGroupId(), $accessGroups)) {
           $permitted = false;
         }
+      }
+      $crackerBinary = Factory::getCrackerBinaryFactory()->get($task->getCrackerBinaryId());
+      if ($crackerBinary === null || !in_array($crackerBinary->getAccessGroupId(), $accessGroups)) {
+        continue;
       }
       if (!$permitted) {
         continue; // at least one of the files required for this task is secret and the agent not, so this task cannot be used

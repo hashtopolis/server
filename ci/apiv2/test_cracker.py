@@ -136,7 +136,7 @@ class TestCrackerUpload(BaseTest):
 
     def test_create_with_missing_source_data_rejects(self):
         obj = Cracker(crackerBinaryTypeId=1, version='7.2.7', binaryName='cracker',
-                      sourceType='inline')
+                      sourceType='inline', accessGroupId=1)
         with self.assertRaises(HashtopolisError) as e:
             obj.save()
         self.assertEqual(400, e.exception.status_code)

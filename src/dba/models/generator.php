@@ -288,6 +288,9 @@ $CONF['CrackerBinary'] = [
     ['name' => 'binaryName', 'read_only' => False, 'type' => 'str(50)'],
     // archive filename of a server-hosted binary; NULL means the binary is downloaded from downloadUrl
     ['name' => 'filename', 'read_only' => True, 'null' => True, 'type' => 'str(100)', 'protected' => True],
+    // access group the binary belongs to, required on creation and patchable with
+    // membership validation of the current and the new group
+    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', 'relation' => 'AccessGroup'],
   ],
 ];
 $CONF['CrackerBinaryType'] = [

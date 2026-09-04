@@ -10,6 +10,7 @@ use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Pretask;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -60,17 +61,20 @@ class CrackerUtils {
    * @param string $name
    * @param string $url
    * @param int $binaryTypeId
+   * @param int $accessGroupId access group the binary belongs to
+   * @param User|null $user if given, the user must be a member of the access group
    * @return CrackerBinary
    * @throws HttpError
    * @throws HTException
    * @throws Exception
    */
-  public static function createBinary(string $version, string $name, string $url, int $binaryTypeId): CrackerBinary {
+  public static function createBinary(string $version, string $name, string $url, int $binaryTypeId, int $accessGroupId, ?User $user = null): CrackerBinary {
     $binaryType = CrackerUtils::getBinaryType($binaryTypeId);
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
       throw new HttpError("Please provide all information!");
     }
-    $binary = new CrackerBinary(null, $binaryType->getId(), $version, $url, $name, null);
+    CrackerUtils::checkAccessGroup($accessGroupId, $user);
+    $binary = new CrackerBinary(null, $binaryType->getId(), $version, $url, $name, null, $accessGroupId);
     return Factory::getCrackerBinaryFactory()->save($binary);
   }
   
@@ -84,16 +88,19 @@ class CrackerUtils {
    * @param int $binaryTypeId
    * @param string $sourceType choices inline, import, url
    * @param string $sourceData base64 data, filename in the import directory or download url
+   * @param int $accessGroupId access group the binary belongs to
+   * @param User|null $user if given, the user must be a member of the access group
    * @return CrackerBinary
    * @throws HttpError
    * @throws HTException
    * @throws Exception
    */
-  public static function createBinaryFromUpload(string $version, string $name, int $binaryTypeId, string $sourceType, string $sourceData): CrackerBinary {
+  public static function createBinaryFromUpload(string $version, string $name, int $binaryTypeId, string $sourceType, string $sourceData, int $accessGroupId, ?User $user = null): CrackerBinary {
     $binaryType = CrackerUtils::getBinaryType($binaryTypeId);
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($sourceData) == 0) {
       throw new HttpError("Please provide all information!");
     }
+    CrackerUtils::checkAccessGroup($accessGroupId, $user);
     
     // determine the source of the archive and validate it
     switch ($sourceType) {
@@ -130,7 +137,7 @@ class CrackerUtils {
     // create the entry first with a placeholder download url, the final one
     // contains the id and can only be set once it is known
     $binary = Factory::getCrackerBinaryFactory()->save(
-      new CrackerBinary(null, $binaryType->getId(), $version, "", $name, null)
+      new CrackerBinary(null, $binaryType->getId(), $version, "", $name, null, $accessGroupId)
     );
     
     $target = CrackerUtils::getCrackersPath() . $binary->getId() . '_' . $filename;
@@ -286,6 +293,51 @@ class CrackerUtils {
     return Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
   }
   
+  /**
+   * Ensures the access group exists and the user is a member of it, so binaries
+   * can only be created by members of the group they are created in. Callers
+   * without a group input (legacy UI or user api) use the default access group.
+   *
+   * @throws HttpError
+   * @throws Exception
+   */
+  private static function checkAccessGroup(int $accessGroupId, ?User $user): void {
+    $accessGroup = Factory::getAccessGroupFactory()->get($accessGroupId);
+    if ($accessGroup === null) {
+      throw new HttpError("Invalid access group selected!");
+    }
+    if ($user !== null && sizeof(AccessUtils::intersection(
+        array($accessGroup), AccessUtils::getAccessGroupsOfUser($user))) == 0) {
+      throw new HttpError("Access group with no rights selected!");
+    }
+  }
+
+  /**
+   * Moves a cracker binary to another access group. The user must be a member of
+   * the current and of the new access group.
+   *
+   * @param int $binaryId
+   * @param int $accessGroupId
+   * @param User $user
+   * @throws HttpError
+   * @throws HTException
+   * @throws Exception
+   */
+  public static function changeAccessGroup(int $binaryId, int $accessGroupId, User $user): void {
+    $binary = CrackerUtils::getBinary($binaryId);
+    if (Factory::getAccessGroupFactory()->get($accessGroupId) === null) {
+      throw new HttpError("Invalid access group selected!");
+    }
+    $userAccessGroupIds = Util::getAccessGroupIds($user->getId());
+    if (!in_array($accessGroupId, $userAccessGroupIds) || !in_array($binary->getAccessGroupId(), $userAccessGroupIds)) {
+      throw new HttpError("No access to this group!");
+    }
+    if ($binary->getAccessGroupId() == $accessGroupId) {
+      return;
+    }
+    Factory::getCrackerBinaryFactory()->set($binary, CrackerBinary::ACCESS_GROUP_ID, $accessGroupId);
+  }
+
   /**
    * @param int $binaryTypeId
    * @return CrackerBinaryType

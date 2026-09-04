@@ -124,6 +124,7 @@ class SpecOverrides {
       ],
       'CrackerBinary' => [
         self::ATTRIBUTE_DESCRIPTIONS => [
+          'accessGroupId' => 'Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups.',
           'downloadUrl' => 'External url where the agent downloads the binary archive from. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards.',
           'filename' => 'Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided.',
           'sourceType' => 'Source the 7z archive is uploaded from: inline (base64 archive data in sourceData), import (filename of a file in the import directory as sourceData) or url (http/https url in sourceData, fetched by the server). Mutually exclusive with downloadUrl.',

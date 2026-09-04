@@ -1681,7 +1681,7 @@ final class AbstractModelFactoryTest extends TestBase {
     $crackerBinaryType = new CrackerBinaryType(null, '', 0);
     $crackerBinaryType = $this->createDatabaseObject(Factory::getCrackerBinaryTypeFactory(), $crackerBinaryType);
     
-    $crackerBinary = new CrackerBinary(null, $crackerBinaryType->getId(), '', '', '', null);
+    $crackerBinary = new CrackerBinary(null, $crackerBinaryType->getId(), '', '', '', null, 1);
     $crackerBinary = $this->createDatabaseObject(Factory::getCrackerBinaryFactory(), $crackerBinary);
     
     $healthCheck = new HealthCheck(null, 0, 0, 0, $hashType->getId(), $crackerBinary->getId(), 0, '');
