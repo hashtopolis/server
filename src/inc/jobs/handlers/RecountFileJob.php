@@ -1,11 +1,14 @@
 <?php
 
-namespace Hashtopolis\inc\jobs;
+namespace Hashtopolis\inc\jobs\handlers;
 
+use Exception;
 use Hashtopolis\dba\models\BackgroundJob;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\inc\defines\DBackgroundJobType;
 use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\jobs\BackgroundJobHandler;
+use Hashtopolis\inc\jobs\BackgroundJobResult;
 use Hashtopolis\inc\utils\FileUtils;
 
 class RecountFileJob implements BackgroundJobHandler {
@@ -16,7 +19,10 @@ class RecountFileJob implements BackgroundJobHandler {
   public function getMaxRuntime(): int {
     return 7200;
   }
-
+  
+  /**
+   * @throws Exception
+   */
   public function execute(BackgroundJob $job, array $payload): BackgroundJobResult {
     if (!isset($payload[File::FILE_ID]) || !is_int($payload[File::FILE_ID])) {
       return new BackgroundJobResult(-1, "Missing or invalid '" . File::FILE_ID . "' in payload.");
