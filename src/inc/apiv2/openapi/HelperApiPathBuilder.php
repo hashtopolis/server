@@ -65,8 +65,13 @@ class HelperApiPathBuilder {
       $paths[$path][$method]["parameters"] = $class->getParamsSwagger();
     }
     $request_response = $class->getResponse();
+    $metaResponseSchema = $class::getMetaResponseSchema();
     $ref = null;
-    if (is_array($request_response)) {
+    if ($metaResponseSchema !== null) {
+      $components[$name . "Response"] = $this->jsonApiFragments->buildMetaSchemaResponse($metaResponseSchema);
+      $ref = "#/components/schemas/" . $name . "Response";
+    }
+    else if (is_array($request_response)) {
       $components[$name . "Response"] = $this->jsonApiFragments->buildMetaResponse(
         $this->typeMapper->mapToProperties($request_response)
       );

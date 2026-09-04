@@ -2137,21 +2137,26 @@ class PermissionsTest(BaseTest):
         response = request_with_api_token(token.token, '/helper/getCompletedCount', method='GET')
         self.assertEqual(response.status_code, 200, response.text)
         body = response.json()
-        self.assertIn('completedTasks', body['data'])
-        self.assertIn('completedSupertasks', body['data'])
+        # Counts are not resource objects, so the helper reports them under meta
+        self.assertIn('completedTasks', body['meta'])
+        self.assertIn('completedSupertasks', body['meta'])
+        self.assertEqual(body['data'], [])
 
     def test_api_token_get_cracks_per_day_helper_allowed_with_hash_read_scopes(self):
         """getCracksPerDay helper succeeds with hashlist/hash read scopes.
 
         The helper exposes aggregate crack history. The missing-permission matrix verifies
         both read scopes are required; this allowed branch verifies the exact scopes can
-        call the endpoint and receive a JSON:API data member.
+        call the endpoint and receive the counts under the meta member.
         """
         token = self.create_apitoken(extra_payload={'scopes': ['permHashlistRead', 'permHashRead']})
 
         response = request_with_api_token(token.token, '/helper/getCracksPerDay', method='GET')
         self.assertEqual(response.status_code, 200, response.text)
-        self.assertIn('data', response.json())
+        body = response.json()
+        # Counts are not resource objects, so the helper reports them under meta
+        self.assertIn('meta', body)
+        self.assertEqual(body['data'], [])
 
     def test_api_token_get_cracks_of_task_helper_allowed_with_hashlist_hash_and_task_read_scopes(self):
         """getCracksOfTask helper succeeds with hashlist, hash, and task read scopes.

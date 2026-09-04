@@ -265,16 +265,25 @@ class JsonApiFragments {
    * leaves data empty.
    */
   public function buildMetaResponse(array $metaProperties): array {
+    return $this->buildMetaSchemaResponse([
+      "type" => "object",
+      "properties" => $metaProperties
+    ]);
+  }
+
+  /**
+   * The meta-only helper document with the meta member described by a full
+   * schema instead of a property map, for helpers whose meta carries dynamic
+   * member names that no sample map can enumerate.
+   */
+  public function buildMetaSchemaResponse(array $metaSchema): array {
     return [
       "type" => "object",
       "required" => ["jsonapi", "meta", "data"],
       "properties" => array_merge(
         $this->makeJsonApiHeader(),
         [
-          "meta" => [
-            "type" => "object",
-            "properties" => $metaProperties
-          ],
+          "meta" => $metaSchema,
           "data" => [
             "type" => "array",
             "items" => [

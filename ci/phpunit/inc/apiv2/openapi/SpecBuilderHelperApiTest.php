@@ -53,14 +53,23 @@ final class SpecBuilderHelperApiTest extends TestCase {
   }
 
   public function testGetCracksPerDaySpec(): void {
-    // GET helper with a custom register() (array callable to handleGet) and
-    // getResponse(): null, which yields a contentless 200 response.
+    // GET helper with a custom register() (array callable to handleGet) whose
+    // meta member carries dynamic names, so it states the meta schema itself
+    // through getMetaResponseSchema().
     $spec = (new SpecBuilder())->buildForApiClasses([GetCracksPerDayHelperAPI::class]);
 
     $get = $spec['paths']['/api/v2/helper/getCracksPerDay']['get'];
     $this->assertStringStartsWith('Returns a map of date -> crack count', $get['description']);
     $this->assertSame([], $get['parameters']);
-    $this->assertSame(['description' => 'successful operation'], $get['responses']['200']);
+    $this->assertSame(
+      ['$ref' => '#/components/schemas/' . GetCracksPerDayHelperAPI::class . 'Response'],
+      $get['responses']['200']['content']['application/vnd.api+json']['schema']
+    );
+
+    $responseSchema = $spec['components']['schemas'][GetCracksPerDayHelperAPI::class . 'Response'];
+    $this->assertSame(['jsonapi', 'meta', 'data'], $responseSchema['required']);
+    $this->assertSame(['type' => 'integer'], $responseSchema['properties']['meta']['additionalProperties']);
+    $this->assertSame(0, $responseSchema['properties']['data']['maxItems']);
   }
 
   public function testGetBestTasksAgentSpec(): void {

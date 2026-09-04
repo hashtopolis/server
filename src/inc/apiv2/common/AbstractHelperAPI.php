@@ -23,10 +23,20 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
   /**
    * Function in order to create swagger documentation. Should return either a map of strings that
    * describes the output ex: ["assign" => "success"] or if the endpoint returns an object it should return
-   * the string representation of that object ex: File.
+   * the string representation of that object ex: File. A helper answering with a list of resource
+   * objects appends "[]" to the model name ex: Task[].
    */
   abstract public static function getResponse(): array|string|null;
-  
+
+  /**
+   * A helper whose meta member carries dynamic member names that no getResponse() sample map can
+   * enumerate states the full OpenAPI schema of its meta member here; null (the default) keeps the
+   * getResponse() based description.
+   */
+  public static function getMetaResponseSchema(): ?array {
+    return null;
+  }
+
   public function getParamsSwagger(): array {
     return [];
   }
