@@ -17,10 +17,7 @@ class BackgroundJobRunner {
   /**
    * Processes all pending background jobs, one after another. If another run is still
    * active, this call returns immediately without doing anything.
-<<<<<<< HEAD
    * @throws Exception
-=======
->>>>>>> 996cc140 (introducing background jobs)
    */
   public static function run(): void {
     if (!LockUtils::tryGet(Lock::BACKGROUND_JOBS)) {
@@ -46,18 +43,11 @@ class BackgroundJobRunner {
       LockUtils::release(Lock::BACKGROUND_JOBS);
     }
   }
-<<<<<<< HEAD
   
   /**
    * Atomically transitions a pending job into the running state. Returns false if the
    * job was claimed by another runner instance in the meantime.
    * @throws Exception
-=======
-
-  /**
-   * Atomically transitions a pending job into the running state. Returns false if the
-   * job was claimed by another runner instance in the meantime.
->>>>>>> 996cc140 (introducing background jobs)
    */
   private static function claim(BackgroundJob $job): bool {
     $factory = Factory::getBackgroundJobFactory();
@@ -67,18 +57,11 @@ class BackgroundJobRunner {
     $stmt->execute([DBackgroundJobStatus::RUNNING, time(), $job->getId(), DBackgroundJobStatus::PENDING]);
     return $stmt->rowCount() > 0;
   }
-<<<<<<< HEAD
   
   /**
    * Marks running jobs as failed which were left behind by a crashed or killed runner,
    * which exceeded their maximum runtime, or which no longer have a registered handler.
    * @throws Exception
-=======
-
-  /**
-   * Marks running jobs as failed which were left behind by a crashed or killed runner,
-   * which exceeded their maximum runtime, or which no longer have a registered handler.
->>>>>>> 996cc140 (introducing background jobs)
    */
   private static function recoverStale(): void {
     $factory = Factory::getBackgroundJobFactory();
@@ -99,18 +82,11 @@ class BackgroundJobRunner {
       }
     }
   }
-<<<<<<< HEAD
   
   /**
    * Executes a single claimed job and records its result, exit code and message. Any
    * uncaught throwable is caught and recorded as a failed execution.
    * @throws Exception
-=======
-
-  /**
-   * Executes a single claimed job and records its result, exit code and message. Any
-   * uncaught throwable is caught and recorded as a failed execution.
->>>>>>> 996cc140 (introducing background jobs)
    */
   private static function executeJob(BackgroundJob $job): void {
     $factory = Factory::getBackgroundJobFactory();
@@ -133,11 +109,7 @@ class BackgroundJobRunner {
       ]);
       DServerLog::log(DServerLog::INFO, "Background job " . $job->getId() . " (" . $job->getJobType() . ") finished with exit code " . $result->getExitCode());
     }
-<<<<<<< HEAD
     catch (Throwable $t) {
-=======
-    catch (\Throwable $t) {
->>>>>>> 996cc140 (introducing background jobs)
       $message = substr($t->getMessage(), 0, 1024);
       $factory->mset($job, [
         BackgroundJob::STATUS => DBackgroundJobStatus::FAILED,
