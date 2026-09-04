@@ -1,0 +1,36 @@
+name: DBA Generator
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+permissions:
+  contents: read
+
+jobs:
+  dba-generator:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+
+      - name: Re-generate the DBA models
+        run: php src/dba/models/generator.php
+
+      - name: Confirm the committed DBA models match the generated ones
+        run: |
+          git diff --exit-code -- src/dba \
+            ':(exclude)src/dba/models/generator.php' \
+            ':(exclude)src/dba/models/*.template.txt' \
+            || (echo "::error file=src/dba/models/generator.php::The generated DBA models are out of date. Run 'php src/dba/models/generator.php' and commit the result." && exit 1)
