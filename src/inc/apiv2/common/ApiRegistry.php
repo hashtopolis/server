@@ -41,6 +41,7 @@ use Hashtopolis\inc\apiv2\model\AgentBinaryAPI;
 use Hashtopolis\inc\apiv2\model\AgentErrorAPI;
 use Hashtopolis\inc\apiv2\model\AgentStatAPI;
 use Hashtopolis\inc\apiv2\model\ApiTokenAPI;
+use Hashtopolis\inc\apiv2\model\BackgroundJobAPI;
 use Hashtopolis\inc\apiv2\model\ChunkAPI;
 use Hashtopolis\inc\apiv2\model\ConfigAPI;
 use Hashtopolis\inc\apiv2\model\ConfigSectionAPI;
@@ -82,6 +83,7 @@ final class ApiRegistry {
     AgentErrorAPI::class,
     AgentStatAPI::class,
     ApiTokenAPI::class,
+    BackgroundJobAPI::class,
     ChunkAPI::class,
     ConfigAPI::class,
     ConfigSectionAPI::class,

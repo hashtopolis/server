@@ -9,6 +9,7 @@ use Hashtopolis\dba\UpdateSet;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\AccessGroupUser;
+use Hashtopolis\dba\models\BackgroundJob;
 use Hashtopolis\dba\models\Session;
 use Hashtopolis\dba\models\NotificationSetting;
 use Hashtopolis\dba\models\Agent;
@@ -73,6 +74,9 @@ class UserUtils {
     
     // Revoke all of the API keys of the user
     Factory::getJwtApiKeyFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => [$uS1, $uS2]]);
+    $qF = new QueryFilter(BackgroundJob::USER_ID, $user->getId(), "=");
+    $uS = new UpdateSet(BackgroundJob::USER_ID, null);
+    Factory::getBackgroundJobFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
     Factory::getUserFactory()->delete($user);
   }
   
