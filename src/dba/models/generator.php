@@ -534,7 +534,7 @@ $CONF['Task'] = [
     ['name' => 'chunkSize', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'forcePipe', 'read_only' => True, 'type' => 'bool'],
     ['name' => 'usePreprocessor', 'read_only' => True, 'type' => 'int', 'alias' => 'preprocessorId'],
-    ['name' => 'preprocessorCommand', 'read_only' => True, 'type' => 'str(256)'],
+    ['name' => 'preprocessorCommand', 'read_only' => False, 'type' => 'str(256)'],
   ],
 ];
 $CONF['TaskDebugOutput'] = [
