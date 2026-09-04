@@ -237,7 +237,7 @@ class TestBase extends TestCase {
   protected function createJwtApiKey(User $user, ?int $startValid = null, ?int $endValid = null, int $isRevoked = 0, string $tokenName = "test-token"): JwtApiKey {
     $key = $this->createDatabaseObject(
       Factory::getJwtApiKeyFactory(),
-      new JwtApiKey(null, $startValid ?? time(), $endValid ?? time() + 3600, $user->getId(), $isRevoked, $tokenName)
+      new JwtApiKey(null, $startValid ?? time(), $endValid ?? time() + 3600, $user->getId(), $tokenName, $isRevoked)
     );
     $this->assertTrue($key instanceof JwtApiKey);
     return $key;

@@ -27,7 +27,7 @@ class JwtTokenUtils {
       throw new HttpError("Invalid user ID");
     }
 
-    $key = new JwtApiKey(null, $startValid, $endValid, $userId, $isRevoked ? 1 : 0, $tokenName);
+    $key = new JwtApiKey(null, $startValid, $endValid, $userId, $tokenName, $isRevoked ? 1 : 0);
     Factory::getJwtApiKeyFactory()->save($key);
     return $key;
   }

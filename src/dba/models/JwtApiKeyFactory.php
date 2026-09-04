@@ -45,6 +45,6 @@ class JwtApiKeyFactory extends AbstractModelFactory {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
-    return new JwtApiKey($dict['jwtapikeyid'], $dict['startvalid'], $dict['endvalid'], $dict['userid'], $dict['isrevoked'], $dict['tokenname']);
+    return new JwtApiKey($dict['jwtapikeyid'], $dict['startvalid'], $dict['endvalid'], $dict['userid'], $dict['tokenname'], $dict['isrevoked']);
   }
 }
