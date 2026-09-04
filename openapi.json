@@ -6040,6 +6040,719 @@
                 "operationId": "deleteApiTokensById"
             }
         },
+        "/api/v2/ui/backgroundJobs": {
+            "get": {
+                "tags": [
+                    "BackgroundJobs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BackgroundJobListResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "GET many request to retrieve multiple objects.",
+                "parameters": [
+                    {
+                        "name": "page[after]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        },
+                        "example": "eyJwcmltYXJ5Ijp7ImJhY2tncm91bmRKb2JJZCI6IDEyM319",
+                        "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"backgroundJobId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImJhY2tncm91bmRKb2JJZCI6IDEyM319`"
+                    },
+                    {
+                        "name": "page[before]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        },
+                        "example": "eyJwcmltYXJ5Ijp7ImJhY2tncm91bmRKb2JJZCI6IDEyM319",
+                        "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"backgroundJobId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImJhY2tncm91bmRKb2JJZCI6IDEyM319`"
+                    },
+                    {
+                        "name": "page[size]",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        },
+                        "example": 100,
+                        "description": "Amout of data to retrieve inside a single page"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "description": "Filters results using a query. Every key is an attribute name optionally suffixed with a comparison operator, e.g. `filter[backgroundJobId__gt]=200`.",
+                        "example": {
+                            "backgroundJobId__gt": "200"
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "user"
+                                ]
+                            }
+                        },
+                        "description": "Relationships to include in the response, comma seperated. Possible options: user",
+                        "example": [
+                            "user"
+                        ]
+                    }
+                ],
+                "summary": "List BackgroundJobs",
+                "operationId": "getBackgroundJobs"
+            },
+            "delete": {
+                "tags": [
+                    "BackgroundJobs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "successfully deleted"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Delete BackgroundJobs",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BackgroundJobDeleteMultiple"
+                            }
+                        }
+                    }
+                },
+                "parameters": [],
+                "summary": "Delete BackgroundJobs",
+                "operationId": "deleteBackgroundJobs"
+            }
+        },
+        "/api/v2/ui/backgroundJobs/count": {
+            "get": {
+                "tags": [
+                    "BackgroundJobs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BackgroundJobCountResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "GET many request to retrieve multiple objects.",
+                "parameters": [
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "description": "Filters results using a query. Every key is an attribute name optionally suffixed with a comparison operator, e.g. `filter[backgroundJobId__gt]=200`.",
+                        "example": {
+                            "backgroundJobId__gt": "200"
+                        }
+                    },
+                    {
+                        "name": "include_total",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "example": true,
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
+                    }
+                ],
+                "summary": "Count BackgroundJobs",
+                "operationId": "getBackgroundJobsCount"
+            }
+        },
+        "/api/v2/ui/backgroundJobs/{id}/{relation}": {
+            "get": {
+                "tags": [
+                    "BackgroundJobs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BackgroundJobRelationUserGetResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "GET request to retrieve a single object.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "relation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "summary": "Get BackgroundJobs",
+                "operationId": "getBackgroundJobsByIdByRelation"
+            }
+        },
+        "/api/v2/ui/backgroundJobs/{id}/relationships/{relation}": {
+            "get": {
+                "tags": [
+                    "BackgroundJobs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BackgroundJobResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "GET request for  for a to-one relationship link. Returns the resource record of the object that is part of the specified relation.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "relation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "summary": "Get BackgroundJobs",
+                "operationId": "getBackgroundJobsByIdRelationshipsByRelation"
+            },
+            "patch": {
+                "tags": [
+                    "BackgroundJobs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "Successfull operation"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "PATCH request to update a to one relationship.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BackgroundJobRelationUser"
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "relation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "summary": "Update BackgroundJobs",
+                "operationId": "patchBackgroundJobsByIdRelationshipsByRelation"
+            }
+        },
+        "/api/v2/ui/backgroundJobs/{id}": {
+            "get": {
+                "tags": [
+                    "BackgroundJobs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BackgroundJobResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "GET request to retrieve a single object.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "user"
+                                ]
+                            }
+                        },
+                        "description": "Relationships to include in the response, comma seperated. Possible options: user",
+                        "example": [
+                            "user"
+                        ]
+                    }
+                ],
+                "summary": "Get BackgroundJobs",
+                "operationId": "getBackgroundJobsById"
+            },
+            "delete": {
+                "tags": [
+                    "BackgroundJobs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "successfully deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Delete BackgroundJobs",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "summary": "Delete BackgroundJobs",
+                "operationId": "deleteBackgroundJobsById"
+            }
+        },
         "/api/v2/ui/chunks": {
             "get": {
                 "tags": [
@@ -28312,7 +29025,7 @@
         },
         "/api/v2/helper/recountFileLines": {
             "post": {
-                "description": "Endpoint to recount files for when there is size mismatch",
+                "description": "Endpoint to enqueue the recounting of files for when there is size mismatch. The line count is<br />calculated asynchronously by the background job runner.",
                 "responses": {
                     "400": {
                         "description": "Invalid request",
@@ -38646,6 +39359,759 @@
                 }
             },
             "ApiTokenRelationUserGetResponse": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "id"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "user"
+                            },
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            }
+                        }
+                    }
+                }
+            },
+            "BackgroundJobDeleteMultiple": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "backgroundJob"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "BackgroundJobResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "links",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "object",
+                        "required": [
+                            "self"
+                        ],
+                        "properties": {
+                            "self": {
+                                "type": "string",
+                                "default": "/api/v2/ui/backgroundJobs/1"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "type",
+                            "attributes",
+                            "links",
+                            "relationships"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "type": {
+                                "type": "string",
+                                "const": "backgroundJob"
+                            },
+                            "attributes": {
+                                "type": "object",
+                                "required": [
+                                    "jobType",
+                                    "payload",
+                                    "status",
+                                    "userId",
+                                    "createdAt",
+                                    "startedAt",
+                                    "finishedAt",
+                                    "exitCode",
+                                    "resultMessage"
+                                ],
+                                "properties": {
+                                    "jobType": {
+                                        "type": "string"
+                                    },
+                                    "payload": {
+                                        "type": "object"
+                                    },
+                                    "status": {
+                                        "oneOf": [
+                                            {
+                                                "const": -1,
+                                                "title": "Failed",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 0,
+                                                "title": "Pending",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 1,
+                                                "title": "Running",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 2,
+                                                "title": "Done",
+                                                "type": "integer"
+                                            }
+                                        ]
+                                    },
+                                    "userId": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "createdAt": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    },
+                                    "startedAt": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ],
+                                        "format": "int64"
+                                    },
+                                    "finishedAt": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ],
+                                        "format": "int64"
+                                    },
+                                    "exitCode": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "resultMessage": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                }
+                            },
+                            "links": {
+                                "type": "object",
+                                "required": [
+                                    "self"
+                                ],
+                                "properties": {
+                                    "self": {
+                                        "type": "string",
+                                        "default": "/api/v2/ui/backgroundJobs/1"
+                                    }
+                                }
+                            },
+                            "relationships": {
+                                "type": "object",
+                                "required": [
+                                    "user"
+                                ],
+                                "properties": {
+                                    "user": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/backgroundJobs/relationships/user"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/backgroundJobs/user"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "oneOf": [
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "type",
+                                                            "id"
+                                                        ],
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "const": "user"
+                                                            },
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "included": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "user"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        },
+                                        "isValid": {
+                                            "type": "boolean"
+                                        },
+                                        "isComputedPassword": {
+                                            "type": "boolean"
+                                        },
+                                        "lastLoginDate": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "registeredSince": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "sessionLifetime": {
+                                            "type": "integer"
+                                        },
+                                        "globalPermissionGroupId": {
+                                            "type": "integer"
+                                        },
+                                        "yubikey": {
+                                            "type": "string"
+                                        },
+                                        "otp1": {
+                                            "type": "string"
+                                        },
+                                        "otp2": {
+                                            "type": "string"
+                                        },
+                                        "otp3": {
+                                            "type": "string"
+                                        },
+                                        "otp4": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "BackgroundJobListResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "links",
+                    "meta",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "object",
+                        "required": [
+                            "self",
+                            "first",
+                            "last",
+                            "next",
+                            "prev"
+                        ],
+                        "properties": {
+                            "self": {
+                                "type": "string",
+                                "default": "/api/v2/ui/backgroundJobs?page[size]=25"
+                            },
+                            "first": {
+                                "type": "string",
+                                "default": "/api/v2/ui/backgroundJobs?page[size]=25"
+                            },
+                            "last": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/backgroundJobs?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            },
+                            "next": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/backgroundJobs?page[size]=25&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            },
+                            "prev": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/backgroundJobs?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "required": [
+                            "page"
+                        ],
+                        "properties": {
+                            "page": {
+                                "type": "object",
+                                "required": [
+                                    "total_elements"
+                                ],
+                                "properties": {
+                                    "total_elements": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes",
+                                "links",
+                                "relationships"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "backgroundJob"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "required": [
+                                        "jobType",
+                                        "payload",
+                                        "status",
+                                        "userId",
+                                        "createdAt",
+                                        "startedAt",
+                                        "finishedAt",
+                                        "exitCode",
+                                        "resultMessage"
+                                    ],
+                                    "properties": {
+                                        "jobType": {
+                                            "type": "string"
+                                        },
+                                        "payload": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "oneOf": [
+                                                {
+                                                    "const": -1,
+                                                    "title": "Failed",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 0,
+                                                    "title": "Pending",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 1,
+                                                    "title": "Running",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 2,
+                                                    "title": "Done",
+                                                    "type": "integer"
+                                                }
+                                            ]
+                                        },
+                                        "userId": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "createdAt": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "startedAt": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ],
+                                            "format": "int64"
+                                        },
+                                        "finishedAt": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ],
+                                            "format": "int64"
+                                        },
+                                        "exitCode": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "resultMessage": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "links": {
+                                    "type": "object",
+                                    "required": [
+                                        "self"
+                                    ],
+                                    "properties": {
+                                        "self": {
+                                            "type": "string",
+                                            "default": "/api/v2/ui/backgroundJobs/1"
+                                        }
+                                    }
+                                },
+                                "relationships": {
+                                    "type": "object",
+                                    "required": [
+                                        "user"
+                                    ],
+                                    "properties": {
+                                        "user": {
+                                            "type": "object",
+                                            "required": [
+                                                "links"
+                                            ],
+                                            "properties": {
+                                                "links": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "self",
+                                                        "related"
+                                                    ],
+                                                    "properties": {
+                                                        "self": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/backgroundJobs/relationships/user"
+                                                        },
+                                                        "related": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/backgroundJobs/user"
+                                                        }
+                                                    }
+                                                },
+                                                "data": {
+                                                    "oneOf": [
+                                                        {
+                                                            "type": "object",
+                                                            "required": [
+                                                                "type",
+                                                                "id"
+                                                            ],
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "const": "user"
+                                                                },
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "type": "null"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "included": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "user"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        },
+                                        "isValid": {
+                                            "type": "boolean"
+                                        },
+                                        "isComputedPassword": {
+                                            "type": "boolean"
+                                        },
+                                        "lastLoginDate": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "registeredSince": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "sessionLifetime": {
+                                            "type": "integer"
+                                        },
+                                        "globalPermissionGroupId": {
+                                            "type": "integer"
+                                        },
+                                        "yubikey": {
+                                            "type": "string"
+                                        },
+                                        "otp1": {
+                                            "type": "string"
+                                        },
+                                        "otp2": {
+                                            "type": "string"
+                                        },
+                                        "otp3": {
+                                            "type": "string"
+                                        },
+                                        "otp4": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "BackgroundJobCountResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "meta",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "required": [
+                            "count"
+                        ],
+                        "properties": {
+                            "count": {
+                                "type": "integer",
+                                "description": "Number of objects accessible to the current user matching the given filters"
+                            },
+                            "total_count": {
+                                "type": "integer",
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        },
+                        "maxItems": 0,
+                        "description": "Always empty: the count is reported under meta."
+                    }
+                }
+            },
+            "BackgroundJobRelationUser": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "id"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "user"
+                            },
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            }
+                        }
+                    }
+                }
+            },
+            "BackgroundJobRelationUserGetResponse": {
                 "type": "object",
                 "required": [
                     "data"
@@ -73425,6 +74891,10 @@
         {
             "name": "ApiTokens",
             "description": "Reading and writing the resources served under `/api/v2/ui/apiTokens`."
+        },
+        {
+            "name": "BackgroundJobs",
+            "description": "Reading and writing the resources served under `/api/v2/ui/backgroundJobs`."
         },
         {
             "name": "Chunks",
