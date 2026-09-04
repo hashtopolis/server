@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\jobs;
 
+use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\BackgroundJob;
 use Hashtopolis\dba\QueryFilter;
@@ -10,11 +11,13 @@ use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\Lock;
 use Hashtopolis\inc\utils\LockUtils;
+use Throwable;
 
 class BackgroundJobRunner {
   /**
    * Processes all pending background jobs, one after another. If another run is still
    * active, this call returns immediately without doing anything.
+   * @throws Exception
    */
   public static function run(): void {
     if (!LockUtils::tryGet(Lock::BACKGROUND_JOBS)) {
@@ -40,10 +43,11 @@ class BackgroundJobRunner {
       LockUtils::release(Lock::BACKGROUND_JOBS);
     }
   }
-
+  
   /**
    * Atomically transitions a pending job into the running state. Returns false if the
    * job was claimed by another runner instance in the meantime.
+   * @throws Exception
    */
   private static function claim(BackgroundJob $job): bool {
     $factory = Factory::getBackgroundJobFactory();
@@ -53,10 +57,11 @@ class BackgroundJobRunner {
     $stmt->execute([DBackgroundJobStatus::RUNNING, time(), $job->getId(), DBackgroundJobStatus::PENDING]);
     return $stmt->rowCount() > 0;
   }
-
+  
   /**
    * Marks running jobs as failed which were left behind by a crashed or killed runner,
    * which exceeded their maximum runtime, or which no longer have a registered handler.
+   * @throws Exception
    */
   private static function recoverStale(): void {
     $factory = Factory::getBackgroundJobFactory();
@@ -77,10 +82,11 @@ class BackgroundJobRunner {
       }
     }
   }
-
+  
   /**
    * Executes a single claimed job and records its result, exit code and message. Any
    * uncaught throwable is caught and recorded as a failed execution.
+   * @throws Exception
    */
   private static function executeJob(BackgroundJob $job): void {
     $factory = Factory::getBackgroundJobFactory();
@@ -103,7 +109,7 @@ class BackgroundJobRunner {
       ]);
       DServerLog::log(DServerLog::INFO, "Background job " . $job->getId() . " (" . $job->getJobType() . ") finished with exit code " . $result->getExitCode());
     }
-    catch (\Throwable $t) {
+    catch (Throwable $t) {
       $message = substr($t->getMessage(), 0, 1024);
       $factory->mset($job, [
         BackgroundJob::STATUS => DBackgroundJobStatus::FAILED,
