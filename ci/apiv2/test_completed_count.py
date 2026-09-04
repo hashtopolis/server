@@ -74,11 +74,17 @@ def _create_completed_task(base_test, **extra_payload):
 
 class CompletedCountTest(BaseTest):
     def _get_counts(self):
-        result = Helper().get_completed_count()
-        self.assertIsInstance(result, dict)
-        self.assertIn('completedTasks', result)
-        self.assertIn('completedSupertasks', result)
-        return result['completedTasks'], result['completedSupertasks']
+        # The client reads the response data member, but the counts are reported
+        # under meta, so request the helper directly and read meta.
+        helper = Helper()
+        helper.authenticate()
+        response = requests.get(helper._api_endpoint + helper._model_uri + 'getCompletedCount',
+                                headers=helper._headers)
+        self.assertEqual(response.status_code, 200, response.text)
+        meta = response.json()['meta']
+        self.assertIn('completedTasks', meta)
+        self.assertIn('completedSupertasks', meta)
+        return meta['completedTasks'], meta['completedSupertasks']
 
     def test_returns_dict_with_keys(self):
         completed_tasks, completed_supertasks = self._get_counts()
@@ -163,9 +169,7 @@ class CompletedCountTest(BaseTest):
         self.assertEqual(after, before)
 
     def test_counts_are_consistent_across_calls(self):
-        result1 = Helper().get_completed_count()
-        result2 = Helper().get_completed_count()
-        self.assertEqual(result1, result2)
+        self.assertEqual(self._get_counts(), self._get_counts())
 
     def test_acl_counts_are_scoped_to_access_groups(self):
         """A user without access groups must not be told about completed tasks of other groups.
@@ -185,8 +189,8 @@ class CompletedCountTest(BaseTest):
                                 headers=helper._headers)
         self.assertEqual(response.status_code, 200, response.text)
 
-        data = response.json()['data']
-        self.assertEqual(data['completedTasks'], 0,
+        meta = response.json()['meta']
+        self.assertEqual(meta['completedTasks'], 0,
                          "Restricted user should not count completed tasks outside their access groups")
-        self.assertEqual(data['completedSupertasks'], 0,
+        self.assertEqual(meta['completedSupertasks'], 0,
                          "Restricted user should not count completed supertasks outside their access groups")
