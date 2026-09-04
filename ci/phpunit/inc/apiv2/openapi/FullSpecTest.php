@@ -250,10 +250,24 @@ final class FullSpecTest extends TestCase {
       $schemas['AgentResponse']['properties']['included']['items']['discriminator']
     );
 
-    // Helper responses reference the schema of the model API they return
+    // A GET helper answers with the resource objects of the model it returns
+    // inside the slim helper envelope: jsonapi and data, no links and no meta
     $this->assertSame(
-      '#/components/schemas/GlobalPermissionGroupSingleResponse',
+      '#/components/schemas/GetUserPermissionHelperAPIResponse',
       self::$sanitized['paths']['/api/v2/helper/getUserPermission']['get']['responses']['200']['content']['application/vnd.api+json']['schema']['$ref']
+    );
+    $userPermissionResponse = $schemas['GetUserPermissionHelperAPIResponse'];
+    $this->assertSame(['jsonapi', 'data'], $userPermissionResponse['required']);
+    $this->assertSame(
+      ['$ref' => '#/components/schemas/GlobalPermissionGroupResourceObject'],
+      $userPermissionResponse['properties']['data']
+    );
+
+    // A write helper answers through getOneResource, so it keeps the model
+    // routes' single resource document
+    $this->assertSame(
+      '#/components/schemas/UserSingleResponse',
+      self::$sanitized['paths']['/api/v2/helper/currentUser']['patch']['responses']['200']['content']['application/vnd.api+json']['schema']['$ref']
     );
   }
 

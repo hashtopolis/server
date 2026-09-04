@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\openapi;
 
 use Hashtopolis\inc\apiv2\helper\AbortChunkHelperAPI;
+use Hashtopolis\inc\apiv2\helper\GetBestTasksAgent;
 use Hashtopolis\inc\apiv2\helper\GetCracksPerDayHelperAPI;
 use PHPUnit\Framework\TestCase;
 
@@ -60,5 +61,26 @@ final class SpecBuilderHelperApiTest extends TestCase {
     $this->assertStringStartsWith('Returns a map of date -> crack count', $get['description']);
     $this->assertSame([], $get['parameters']);
     $this->assertSame(['description' => 'successful operation'], $get['responses']['200']);
+  }
+
+  public function testGetBestTasksAgentSpec(): void {
+    // GET helper declared as "Task[]": it answers with resource objects under
+    // data inside the slim helper envelope (jsonapi and data, no links and no
+    // meta), referencing the resource object component of the model routes.
+    $spec = (new SpecBuilder())->buildForApiClasses([GetBestTasksAgent::class]);
+
+    $get = $spec['paths']['/api/v2/helper/getBestTasksAgent']['get'];
+    $this->assertSame(
+      ['$ref' => '#/components/schemas/' . GetBestTasksAgent::class . 'Response'],
+      $get['responses']['200']['content']['application/vnd.api+json']['schema']
+    );
+
+    $responseSchema = $spec['components']['schemas'][GetBestTasksAgent::class . 'Response'];
+    $this->assertSame(['jsonapi', 'data'], $responseSchema['required']);
+    $this->assertSame('array', $responseSchema['properties']['data']['type']);
+    $this->assertSame(
+      ['$ref' => '#/components/schemas/TaskResourceObject'],
+      $responseSchema['properties']['data']['items']
+    );
   }
 }

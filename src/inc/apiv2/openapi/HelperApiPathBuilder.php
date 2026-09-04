@@ -73,7 +73,25 @@ class HelperApiPathBuilder {
       $ref = "#/components/schemas/" . $name . "Response";
     }
     else if (is_string($request_response)) {
-      $ref = "#/components/schemas/" . $request_response . "SingleResponse";
+      /**
+       * A "Model[]" declaration marks a helper that answers with a list of
+       * resource objects. GET helpers hand-assemble their document (jsonapi
+       * and data only), while the write helpers answer through
+       * AbstractBaseAPI::getOneResource and so share the model routes' single
+       * resource document.
+       */
+      $isList = str_ends_with($request_response, '[]');
+      $model = $isList ? substr($request_response, 0, -2) : $request_response;
+      if ($method == "get") {
+        $components[$name . "Response"] = $this->jsonApiFragments->buildHelperResourceResponse(
+          "#/components/schemas/" . $model . "ResourceObject",
+          $isList
+        );
+        $ref = "#/components/schemas/" . $name . "Response";
+      }
+      else {
+        $ref = "#/components/schemas/" . $model . "SingleResponse";
+      }
     }
     else if ($name == "ImportFileHelperAPI") {
       //ImportFileHelperAPI is hardcoded, because its different than other helpers.

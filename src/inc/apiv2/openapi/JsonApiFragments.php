@@ -289,6 +289,26 @@ class JsonApiFragments {
   }
 
   /**
+   * The document a GET helper answers with when it returns resource objects:
+   * it hand-assembles its envelope out of the jsonapi member and the data
+   * alone, without the links and meta members the model routes carry (see
+   * e.g. GetAccessGroupsHelperAPI::handleGet).
+   */
+  public function buildHelperResourceResponse(string $resourceObjectRef, bool $isList): array {
+    $data = $isList
+      ? ["type" => "array", "items" => ['$ref' => $resourceObjectRef]]
+      : ['$ref' => $resourceObjectRef];
+    return [
+      "type" => "object",
+      "required" => ["jsonapi", "data"],
+      "properties" => array_merge(
+        $this->makeJsonApiHeader(),
+        ["data" => $data]
+      )
+    ];
+  }
+
+  /**
    * The write envelope of the collection level patch and delete routes. Unlike
    * the single object routes these carry a list of resource records as data,
    * each identified by its own id. Attributes are only part of a patch, a

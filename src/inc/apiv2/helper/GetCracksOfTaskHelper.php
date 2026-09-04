@@ -38,7 +38,7 @@ class GetCracksOfTaskHelper extends AbstractHelperAPI {
   }
   
   public static function getResponse(): string {
-    return "Hash";
+    return "Hash[]";
   }
   
   
