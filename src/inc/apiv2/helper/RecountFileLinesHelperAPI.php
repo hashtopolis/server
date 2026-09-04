@@ -3,8 +3,10 @@
 namespace Hashtopolis\inc\apiv2\helper;
 
 use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\inc\utils\BackgroundJobUtils;
 use Hashtopolis\inc\utils\FileUtils;
 use Hashtopolis\dba\models\File;
+use Hashtopolis\inc\defines\DBackgroundJobType;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\HTException;
 use Psr\Container\ContainerExceptionInterface;
@@ -37,7 +39,8 @@ class RecountFileLinesHelperAPI extends AbstractHelperAPI {
   }
   
   /**
-   * Endpoint to recount files for when there is size mismatch
+   * Endpoint to enqueue the recounting of files for when there is size mismatch. The line count is
+   * calculated asynchronously by the background job runner.
    * @param $data
    * @return AbstractModel|array|null
    * @throws HTException
@@ -45,10 +48,10 @@ class RecountFileLinesHelperAPI extends AbstractHelperAPI {
    * @throws NotFoundExceptionInterface
    */
   public function actionPost($data): AbstractModel|array|null {
-    // first retrieve the file, as fileCountLines does not check any permissions, therefore to be sure call getFile() first, even if it is not required technically
+    // first retrieve the file, as this checks the access permissions, which enqueueing the job does not do
     FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser());
     
-    FileUtils::fileCountLines($data[File::FILE_ID]);
+    BackgroundJobUtils::enqueue(DBackgroundJobType::RECOUNT_FILE, [File::FILE_ID => $data[File::FILE_ID]], $this->getCurrentUser());
     
     return $this->object2Array(FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser()));
   }

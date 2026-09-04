@@ -352,12 +352,16 @@ class FileUtils {
   }
   
   /**
-   * @param $fileId
+   * @param int $fileId
+   * @return int the recounted number of lines of the file
    * @throws HTException
    * @throws Exception
    */
-  public static function fileCountLines($fileId): void {
+  public static function fileCountLines(int $fileId): int {
     $file = Factory::getFileFactory()->get($fileId);
+    if ($file === null) {
+      throw new HTException("No such file!");
+    }
     $fileName = $file->getFilename();
     $filePath = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $fileName;
     if (!file_exists($filePath)) {
@@ -373,8 +377,7 @@ class FileUtils {
     if ($count == -1) {
       throw new HTException("Could not determine line count.");
     }
-    else {
-      Factory::getFileFactory()->set($file, File::LINE_COUNT, $count);
-    }
+    Factory::getFileFactory()->set($file, File::LINE_COUNT, $count);
+    return $count;
   }
 }

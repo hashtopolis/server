@@ -41,6 +41,10 @@ class ApiToken(Model, uri="/ui/apiTokens"):
         pass  # we override the delete function for the tests as tokens cannot be deleted, but the teardown always calls delete after a test
 
 
+class BackgroundJob(Model, uri="/ui/backgroundJobs"):
+    pass  # background jobs are read-only via API, but queued or finished jobs can be deleted
+
+
 def get_test_config():
     load_order = (str(Path(__file__).parent.joinpath('{name}-defaults{suffix}')),) \
                  + confidence.DEFAULT_LOAD_ORDER
@@ -306,6 +310,7 @@ def find_stale_test_objects():
     test_objs.extend(Pretask.objects.all())
     test_objs.extend(Hashlist.objects.all())
     test_objs.extend(File.objects.all())
+    test_objs.extend(BackgroundJob.objects.all())
     test_objs.extend(User.objects.filter(id__gt=1))
     test_objs.extend(GlobalPermissionGroup.objects.filter(id__gt=1))
     test_objs.extend(Cracker.objects.filter(id__gt=1))
