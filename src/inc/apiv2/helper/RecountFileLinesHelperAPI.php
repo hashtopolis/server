@@ -49,7 +49,9 @@ class RecountFileLinesHelperAPI extends AbstractHelperAPI {
     FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser());
     
     FileUtils::fileCountLines($data[File::FILE_ID]);
-    
-    return $this->object2Array(FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser()));
+
+    /* Return the File itself: a resource object under data, matching the "File"
+       response declaration, instead of a flat map under meta. */
+    return FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser());
   }
 }

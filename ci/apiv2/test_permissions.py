@@ -1590,7 +1590,10 @@ class PermissionsTest(BaseTest):
             payload={'fileId': file_obj.id},
         )
         self.assertEqual(response.status_code, 200, response.text)
-        self.assertEqual(response.json()['meta']['fileId'], file_obj.id)
+        # The recounted file is returned as a resource object under data
+        body = response.json()
+        self.assertEqual(body['data']['type'], 'file')
+        self.assertEqual(body['data']['id'], file_obj.id)
 
     def test_api_token_abort_chunk_helper_allowed_with_chunk_update_scope(self):
         """abortChunk helper succeeds with permChunkUpdate.
