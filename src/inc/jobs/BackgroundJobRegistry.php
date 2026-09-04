@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\jobs;
 
 use Hashtopolis\inc\defines\DBackgroundJobType;
+use Hashtopolis\inc\jobs\handlers\RecountFileJob;
 
 class BackgroundJobRegistry {
   /** @var array<string, class-string<BackgroundJobHandler>> */
