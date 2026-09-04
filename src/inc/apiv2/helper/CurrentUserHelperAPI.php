@@ -94,4 +94,9 @@ class CurrentUserHelperAPI extends AbstractHelperAPI {
   public static function getResponse(): array|string|null {
     return "User";
   }
+
+  /* actionPatch answers 204 No Content, so the PATCH route has no response body. */
+  public static function getNoContentMethods(): array {
+    return ["PATCH"];
+  }
 }

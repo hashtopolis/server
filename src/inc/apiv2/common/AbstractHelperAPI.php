@@ -37,6 +37,15 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     return null;
   }
 
+  /**
+   * HTTP methods (e.g. "PATCH") whose handler answers 204 No Content instead of
+   * a document. For these the spec describes a 204 response and omits the 200
+   * body, matching e.g. CurrentUserHelperAPI::actionPatch.
+   */
+  public static function getNoContentMethods(): array {
+    return [];
+  }
+
   public function getParamsSwagger(): array {
     return [];
   }

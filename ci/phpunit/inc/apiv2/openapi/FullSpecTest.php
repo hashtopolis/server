@@ -263,11 +263,14 @@ final class FullSpecTest extends TestCase {
       $userPermissionResponse['properties']['data']
     );
 
-    // A write helper answers through getOneResource, so it keeps the model
-    // routes' single resource document
+    // currentUser PATCH answers 204 No Content, so it has no 200 body
     $this->assertSame(
-      '#/components/schemas/UserSingleResponse',
-      self::$sanitized['paths']['/api/v2/helper/currentUser']['patch']['responses']['200']['content']['application/vnd.api+json']['schema']['$ref']
+      ['description' => 'No content'],
+      self::$sanitized['paths']['/api/v2/helper/currentUser']['patch']['responses']['204']
+    );
+    $this->assertArrayNotHasKey(
+      '200',
+      self::$sanitized['paths']['/api/v2/helper/currentUser']['patch']['responses']
     );
   }
 

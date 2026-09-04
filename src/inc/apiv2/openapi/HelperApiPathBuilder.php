@@ -64,6 +64,14 @@ class HelperApiPathBuilder {
     elseif ($method == "get") {
       $paths[$path][$method]["parameters"] = $class->getParamsSwagger();
     }
+
+    /* A method that answers 204 No Content has no response body to describe. */
+    $noContentMethods = array_map('strtolower', $class::getNoContentMethods());
+    if (in_array($method, $noContentMethods, true)) {
+      $paths[$path][$method]["responses"]["204"] = ["description" => "No content"];
+      return;
+    }
+
     $request_response = $class->getResponse();
     $metaResponseSchema = $class::getMetaResponseSchema();
     $ref = null;
