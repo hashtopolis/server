@@ -37681,19 +37681,19 @@
                                             "null"
                                         ]
                                     },
-                                    "isRevoked": {
-                                        "type": "boolean"
-                                    },
                                     "tokenName": {
                                         "type": "string"
+                                    },
+                                    "isRevoked": {
+                                        "type": "boolean"
                                     }
                                 },
                                 "required": [
                                     "scopes",
                                     "startValid",
                                     "endValid",
-                                    "isRevoked",
-                                    "tokenName"
+                                    "tokenName",
+                                    "isRevoked"
                                 ]
                             }
                         }
@@ -37865,8 +37865,8 @@
                                     "startValid",
                                     "endValid",
                                     "userId",
-                                    "isRevoked",
-                                    "tokenName"
+                                    "tokenName",
+                                    "isRevoked"
                                 ],
                                 "properties": {
                                     "startValid": {
@@ -37883,11 +37883,11 @@
                                             "null"
                                         ]
                                     },
-                                    "isRevoked": {
-                                        "type": "boolean"
-                                    },
                                     "tokenName": {
                                         "type": "string"
+                                    },
+                                    "isRevoked": {
+                                        "type": "boolean"
                                     },
                                     "token": {
                                         "type": "string"
@@ -38102,8 +38102,8 @@
                                     "startValid",
                                     "endValid",
                                     "userId",
-                                    "isRevoked",
-                                    "tokenName"
+                                    "tokenName",
+                                    "isRevoked"
                                 ],
                                 "properties": {
                                     "startValid": {
@@ -38120,11 +38120,11 @@
                                             "null"
                                         ]
                                     },
-                                    "isRevoked": {
-                                        "type": "boolean"
-                                    },
                                     "tokenName": {
                                         "type": "string"
+                                    },
+                                    "isRevoked": {
+                                        "type": "boolean"
                                     },
                                     "token": {
                                         "type": "string"
@@ -38390,8 +38390,8 @@
                                         "startValid",
                                         "endValid",
                                         "userId",
-                                        "isRevoked",
-                                        "tokenName"
+                                        "tokenName",
+                                        "isRevoked"
                                     ],
                                     "properties": {
                                         "startValid": {
@@ -38408,11 +38408,11 @@
                                                 "null"
                                             ]
                                         },
-                                        "isRevoked": {
-                                            "type": "boolean"
-                                        },
                                         "tokenName": {
                                             "type": "string"
+                                        },
+                                        "isRevoked": {
+                                            "type": "boolean"
                                         },
                                         "token": {
                                             "type": "string"
