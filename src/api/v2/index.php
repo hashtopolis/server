@@ -17,6 +17,7 @@ error_reporting(E_ALL ^ E_DEPRECATED);
 // });
 
 use Hashtopolis\inc\apiv2\auth\HashtopolisAuthenticator;
+use Hashtopolis\inc\apiv2\auth\JwtAuthenticationFactory;
 use Hashtopolis\inc\apiv2\auth\JWTBeforeHandler;
 use Hashtopolis\inc\apiv2\common\ClassMapper;
 use Hashtopolis\inc\apiv2\error\ErrorHandler;
@@ -34,18 +35,11 @@ use Slim\Exception\HttpMethodNotAllowedException;
 
 use Tuupola\Middleware\HttpBasicAuthentication;
 
-use JimTools\JwtAuth\Decoder\FirebaseDecoder;
-use JimTools\JwtAuth\Middleware\JwtAuthentication;
-use JimTools\JwtAuth\Options;
-use JimTools\JwtAuth\Secret;
 use JimTools\JwtAuth\Exceptions\AuthorizationException;
 
 use Middlewares\DeflateEncoder;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
-
-use JimTools\JwtAuth\Rules\RequestMethodRule;
-use JimTools\JwtAuth\Rules\RequestPathRule;
 
 require_once(__DIR__ . "/../../../vendor/autoload.php");
 require_once(__DIR__ . "/../../inc/startup/include.php");
@@ -74,21 +68,12 @@ $container->set("classMapper", function () {
 
 /* API token validation */
 $container->set("JwtAuthentication", function (ContainerInterface $container) {
-  $decoder = new FirebaseDecoder(
-    new Secret(StartupConfig::getInstance()->getPepper(0), 'HS256', hash("sha256", StartupConfig::getInstance()->getPepper(0)))
-  );
-
-  $options = new Options(
-    isSecure: false,
-    attribute: null,
-    before: new JWTBeforeHandler
-  );
-
-  $rules = [
-    new RequestPathRule(ignore: ["/api/v2/auth/token", "/api/v2/auth/oauth-token", "/api/v2/helper/resetUserPassword", "/api/v2/openapi.json"]),
-    new RequestMethodRule(ignore: ["OPTIONS"])
-  ];
-  return new JwtAuthentication($options, $decoder, $rules);
+  return JwtAuthenticationFactory::create([
+    "/api/v2/auth/token",
+    "/api/v2/auth/oauth-token",
+    "/api/v2/helper/resetUserPassword",
+    "/api/v2/openapi.json"
+  ]);
 });
 
 /* 
