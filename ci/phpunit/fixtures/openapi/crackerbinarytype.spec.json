@@ -1727,7 +1727,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -2113,7 +2114,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -2499,7 +2501,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -2937,7 +2940,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }

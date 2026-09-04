@@ -14,6 +14,7 @@ use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\File;
+use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\inc\apiv2\common\AbstractBaseAPI;
 use Hashtopolis\inc\Util;
@@ -119,6 +120,13 @@ class AccessUtils {
     }
     return true;
   }
+
+  /**
+   * @throws Exception
+   */
+  public static function userCanAccessCrackerBinary(CrackerBinary $binary, User $user): bool {
+    return in_array($binary->getAccessGroupId(), Util::getAccessGroupIds($user->getId()));
+  }
   
   /**
    * @param $accessGroupsAgent AccessGroup[]
@@ -196,6 +204,11 @@ class AccessUtils {
     $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if (!in_array($taskWrapper->getAccessGroupId(), $accessGroupsIds)) {
       return false; // task is in an access group which agent is not allowed to access
+    }
+
+    $crackerBinary = Factory::getCrackerBinaryFactory()->get($task->getCrackerBinaryId());
+    if ($crackerBinary === null || !in_array($crackerBinary->getAccessGroupId(), $accessGroupsIds)) {
+      return false;
     }
     
     $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get($taskWrapper->getHashlistId()));

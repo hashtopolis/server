@@ -4,6 +4,7 @@ namespace Hashtopolis\downloadapi;
 
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\inc\defines\DDirectories;
@@ -48,9 +49,13 @@ final class DownloadAppTest extends TestBase {
 
     // create a locally stored binary through the import source
     $this->agentToken = 'dl-test-' . uniqid();
-    $this->createDatabaseObject(
+    $agent = $this->createDatabaseObject(
       Factory::getAgentFactory(),
       new Agent(null, 'download-test-agent', '', 0, '', '', 0, 0, 0, $this->agentToken, '', 0, '', null, 0, '')
+    );
+    $this->createDatabaseObject(
+      Factory::getAccessGroupAgentFactory(),
+      new AccessGroupAgent(null, 1, $agent->getId())
     );
 
     $importName = 'download-test-' . uniqid() . '.7z';
