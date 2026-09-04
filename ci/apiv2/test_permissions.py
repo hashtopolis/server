@@ -1592,6 +1592,23 @@ class PermissionsTest(BaseTest):
         self.assertEqual(response.status_code, 200, response.text)
         self.assertEqual(response.json()['meta']['fileId'], file_obj.id)
 
+        # The recounting is enqueued as a background job, remove it again with the admin
+        # session as the API token scope does not allow background job deletion.
+        connector = File.objects.get_conn()
+        connector.authenticate()
+        response = requests.get(
+            connector._api_endpoint + '/ui/backgroundJobs',
+            headers=connector._headers,
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        jobs = [job for job in response.json()['data'] if job['attributes']['payload'].get('fileId') == file_obj.id]
+        self.assertEqual(len(jobs), 1)
+        response = requests.delete(
+            connector._api_endpoint + f"/ui/backgroundJobs/{jobs[0]['id']}",
+            headers=connector._headers,
+        )
+        self.assertEqual(response.status_code, 204, response.text)
+
     def test_api_token_abort_chunk_helper_allowed_with_chunk_update_scope(self):
         """abortChunk helper succeeds with permChunkUpdate.
 

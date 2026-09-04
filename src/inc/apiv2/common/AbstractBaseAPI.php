@@ -30,6 +30,7 @@ use Hashtopolis\dba\models\AgentBinary;
 use Hashtopolis\dba\models\AgentError;
 use Hashtopolis\dba\models\AgentStat;
 use Hashtopolis\dba\models\Assignment;
+use Hashtopolis\dba\models\BackgroundJob;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\ComparisonFilter;
 use Hashtopolis\dba\models\Config;
@@ -346,6 +347,8 @@ abstract class AbstractBaseAPI {
         return Factory::getAgentErrorFactory();
       case AgentStat::class:
         return Factory::getAgentStatFactory();
+      case BackgroundJob::class:
+        return Factory::getBackgroundJobFactory();
       case Assignment::class:
         return Factory::getAssignmentFactory();
       case Chunk::class:
@@ -632,7 +635,9 @@ abstract class AbstractBaseAPI {
                                                   HealthCheck::PERM_CREATE, HealthCheck::PERM_READ, HealthCheck::PERM_UPDATE, HealthCheck::PERM_DELETE,
                                                   HealthCheckAgent::PERM_CREATE, HealthCheckAgent::PERM_READ, HealthCheckAgent::PERM_UPDATE, HealthCheckAgent::PERM_DELETE,
                                                   // src/inc/defines/hashlists.php
-                                                  HashType::PERM_CREATE, HashType::PERM_READ, HashType::PERM_UPDATE, HashType::PERM_DELETE
+                                                  HashType::PERM_CREATE, HashType::PERM_READ, HashType::PERM_UPDATE, HashType::PERM_DELETE,
+                                                  // src/dba/models/BackgroundJob.php
+                                                  BackgroundJob::PERM_CREATE, BackgroundJob::PERM_READ, BackgroundJob::PERM_UPDATE, BackgroundJob::PERM_DELETE
     ),
     
     DAccessControl::USER_CONFIG_ACCESS => array(User::PERM_CREATE, User::PERM_READ, User::PERM_UPDATE, User::PERM_DELETE, RightGroup::PERM_CREATE, RightGroup::PERM_READ, RightGroup::PERM_UPDATE, RightGroup::PERM_DELETE),
@@ -660,6 +665,12 @@ abstract class AbstractBaseAPI {
       // An empty array is something different in json and in python.
       // The following code casts the empty array to an empty 'object'
       // which will be interpreted by python and json correctly as dict or object.
+      if (empty($obj)) {
+        $obj = (object)[];
+      }
+    }
+    elseif ($feature['type'] == 'json') {
+      $obj = json_decode($val, true, 512, JSON_OBJECT_AS_ARRAY);
       if (empty($obj)) {
         $obj = (object)[];
       }
@@ -698,6 +709,9 @@ abstract class AbstractBaseAPI {
     }
     elseif ($feature['type'] == 'dict' && $feature['subtype'] == 'bool') {
       $val = serialize($obj);
+    }
+    elseif ($feature['type'] == 'json') {
+      $val = json_encode($obj);
     }
     else {
       $val = strval($obj);
@@ -1080,6 +1094,12 @@ abstract class AbstractBaseAPI {
           if (in_array(false, array_map('is_bool', $value))) {
             throw new HttpError("Key '$key' dict contains non-boolean values");
           }
+        }
+        // Json
+      }
+      elseif (str_starts_with($features[$key]['type'], 'json')) {
+        if (!is_array($value)) {
+          throw new HttpError("Key '$key' is not of type json (object)");
         }
       }
       else {

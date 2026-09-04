@@ -1,7 +1,7 @@
 import pytest
 
 from hashtopolis import File, Helper
-from utils import BaseTest
+from utils import BaseTest, BackgroundJob
 
 
 class FileTest(BaseTest):
@@ -32,15 +32,20 @@ class FileTest(BaseTest):
         self._test_create(model_obj)
 
     def test_recount_wordlist(self):
-        # Note: After the object creation, the line count is already updated, but afterward it is immutable on the API.
-        #       There the test just check that the API function is callable and returns the file, but the count is
-        #       already the same beforehand.
+        # Note: The recounting is enqueued as background job, but it was already done on the object creation,
+        #       the file is returned with its immutable line count.
         model_obj = self.create_test_object()
 
         helper = Helper()
         file = helper.recount_file_lines(file=model_obj)
 
         self.assertEqual(file.lineCount, 3)
+
+        # The enqueued background job must be removed again, the runner processing is
+        # covered by test_backgroundjob.py
+        jobs = [job for job in BackgroundJob.objects.all() if job.payload.get('fileId') == model_obj.id]
+        self.assertEqual(len(jobs), 1)
+        jobs[0].delete()
 
     def test_helper_get_file(self):
         model_obj = self.create_test_object()

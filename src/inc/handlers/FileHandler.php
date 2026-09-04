@@ -4,7 +4,9 @@ namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
 use Throwable;
+use Hashtopolis\inc\utils\BackgroundJobUtils;
 use Hashtopolis\inc\utils\FileUtils;
+use Hashtopolis\inc\defines\DBackgroundJobType;
 use Hashtopolis\inc\defines\DFileAction;
 use Hashtopolis\inc\UI;
 
@@ -37,8 +39,8 @@ class FileHandler implements Handler {
           break;
         case DFileAction::COUNT_FILE_LINES:
           AccessControl::getInstance()->checkPermission(DFileAction::COUNT_FILE_LINES_PERM);
-          FileUtils::fileCountLines($_POST['file']);
-          UI::addMessage(UI::SUCCESS, "Line count has been successfully calculated!");
+          BackgroundJobUtils::enqueue(DBackgroundJobType::RECOUNT_FILE, ['fileId' => intval($_POST['file'])], AccessControl::getInstance()->getUser());
+          UI::addMessage(UI::SUCCESS, "Line count calculation was enqueued as background job!");
           break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");

@@ -15,6 +15,9 @@ services:
       HASHTOPOLIS_DB_HOST: hashtopolis-db-dev
       HASHTOPOLIS_DB_DATABASE: hashtopolis
       HASHTOPOLIS_APIV2_ENABLE: 1
+      # The background job runner is invoked explicitly by the test suite for deterministic
+      # results, therefore the entrypoint scheduler loop is disabled in the test container.
+      HASHTOPOLIS_CRON_ENABLE: 0
     depends_on:
       - hashtopolis-db-dev
     ports:

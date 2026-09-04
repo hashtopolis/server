@@ -33,6 +33,9 @@ class FeatureTypeMapper {
         $sub_type = $this->typeLookup(['type' => $feature['subtype'], 'choices' => 'unset'])['type'];
       }
     }
+    elseif ($feature['type'] == 'json') {
+      $type = "object";
+    }
     elseif ($feature['type'] == 'array') {
       $type = "array";
       $sub_type = "integer"; //TODO: subtype is hardcoded because we only have int arrays
