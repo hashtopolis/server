@@ -7792,14 +7792,15 @@
                                 "type": "string",
                                 "enum": [
                                     "crackerBinaryType",
+                                    "accessGroup",
                                     "tasks"
                                 ]
                             }
                         },
-                        "description": "Relationships to include in the response, comma seperated. Possible options: crackerBinaryType, tasks",
+                        "description": "Relationships to include in the response, comma seperated. Possible options: crackerBinaryType, accessGroup, tasks",
                         "example": [
                             "crackerBinaryType",
-                            "tasks"
+                            "accessGroup"
                         ]
                     }
                 ],
@@ -8652,14 +8653,15 @@
                                 "type": "string",
                                 "enum": [
                                     "crackerBinaryType",
+                                    "accessGroup",
                                     "tasks"
                                 ]
                             }
                         },
-                        "description": "Relationships to include in the response, comma seperated. Possible options: crackerBinaryType, tasks",
+                        "description": "Relationships to include in the response, comma seperated. Possible options: crackerBinaryType, accessGroup, tasks",
                         "example": [
                             "crackerBinaryType",
-                            "tasks"
+                            "accessGroup"
                         ]
                     }
                 ],
@@ -41906,7 +41908,8 @@
                                         "type": "string"
                                     },
                                     "accessGroupId": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                     }
                                 },
                                 "required": [
@@ -42132,7 +42135,8 @@
                                         "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                     },
                                     "accessGroupId": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                     }
                                 }
                             },
@@ -42151,10 +42155,60 @@
                             "relationships": {
                                 "type": "object",
                                 "required": [
+                                    "accessGroup",
                                     "crackerBinaryType",
                                     "tasks"
                                 ],
                                 "properties": {
+                                    "accessGroup": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/relationships/accessGroup"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/accessGroup"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "oneOf": [
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "type",
+                                                            "id"
+                                                        ],
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "const": "accessGroup"
+                                                            },
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
                                     "crackerBinaryType": {
                                         "type": "object",
                                         "required": [
@@ -42288,6 +42342,35 @@
                                                         "boolean",
                                                         "null"
                                                     ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "accessGroup"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "groupName"
+                                            ],
+                                            "properties": {
+                                                "groupName": {
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -42522,7 +42605,8 @@
                                         "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                     },
                                     "accessGroupId": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                     }
                                 }
                             },
@@ -42541,10 +42625,60 @@
                             "relationships": {
                                 "type": "object",
                                 "required": [
+                                    "accessGroup",
                                     "crackerBinaryType",
                                     "tasks"
                                 ],
                                 "properties": {
+                                    "accessGroup": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/relationships/accessGroup"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/accessGroup"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "oneOf": [
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "type",
+                                                            "id"
+                                                        ],
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "const": "accessGroup"
+                                                            },
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
                                     "crackerBinaryType": {
                                         "type": "object",
                                         "required": [
@@ -42678,6 +42812,35 @@
                                                         "boolean",
                                                         "null"
                                                     ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "accessGroup"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "groupName"
+                                            ],
+                                            "properties": {
+                                                "groupName": {
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -42963,7 +43126,8 @@
                                             "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                         },
                                         "accessGroupId": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                         }
                                     }
                                 },
@@ -42982,10 +43146,60 @@
                                 "relationships": {
                                     "type": "object",
                                     "required": [
+                                        "accessGroup",
                                         "crackerBinaryType",
                                         "tasks"
                                     ],
                                     "properties": {
+                                        "accessGroup": {
+                                            "type": "object",
+                                            "required": [
+                                                "links"
+                                            ],
+                                            "properties": {
+                                                "links": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "self",
+                                                        "related"
+                                                    ],
+                                                    "properties": {
+                                                        "self": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/crackers/relationships/accessGroup"
+                                                        },
+                                                        "related": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/crackers/accessGroup"
+                                                        }
+                                                    }
+                                                },
+                                                "data": {
+                                                    "oneOf": [
+                                                        {
+                                                            "type": "object",
+                                                            "required": [
+                                                                "type",
+                                                                "id"
+                                                            ],
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "const": "accessGroup"
+                                                                },
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "type": "null"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
                                         "crackerBinaryType": {
                                             "type": "object",
                                             "required": [
@@ -43120,6 +43334,35 @@
                                                         "boolean",
                                                         "null"
                                                     ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "accessGroup"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "groupName"
+                                            ],
+                                            "properties": {
+                                                "groupName": {
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -43754,7 +43997,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -44140,7 +44384,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -44578,7 +44823,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -54437,7 +54683,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -54907,7 +55154,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -55429,7 +55677,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -62499,7 +62748,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -63478,7 +63728,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -64457,7 +64708,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -65488,7 +65740,8 @@
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }

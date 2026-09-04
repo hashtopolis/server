@@ -2,10 +2,15 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
 use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\dba\ContainFilter;
+use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\utils\CrackerUtils;
+use Hashtopolis\inc\utils\AccessUtils;
 
 use Hashtopolis\dba\models\CrackerBinary;
+use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\User;
@@ -14,6 +19,7 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\Util;
 
 
 /**
@@ -26,6 +32,31 @@ class CrackerBinaryAPI extends AbstractModelAPI {
 
   public static function getDBAclass(): string {
     return CrackerBinary::class;
+  }
+
+  /**
+   * @param CrackerBinary $object
+   * @throws Exception
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
+    return in_array(
+      $object->getAccessGroupId(),
+      Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user))
+    );
+  }
+
+  /**
+   * @throws Exception
+   */
+  protected function getFilterACL(): array {
+    return [
+      Factory::FILTER => [
+        new ContainFilter(
+          CrackerBinary::ACCESS_GROUP_ID,
+          Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()))
+        )
+      ]
+    ];
   }
 
   /**
@@ -52,6 +83,12 @@ class CrackerBinaryAPI extends AbstractModelAPI {
         
         'relationType' => CrackerBinaryType::class,
         'relationKey' => CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
+      ],
+      'accessGroup' => [
+        'key' => CrackerBinary::ACCESS_GROUP_ID,
+
+        'relationType' => AccessGroup::class,
+        'relationKey' => AccessGroup::ACCESS_GROUP_ID,
       ],
     ];
   }
