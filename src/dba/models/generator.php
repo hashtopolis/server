@@ -419,7 +419,6 @@ $CONF['JwtApiKey'] = [
     ['name' => 'startValid', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'endValid', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'userId', 'read_only' => True, 'null' => True, 'type' => 'int', 'relation' => 'User'],
-    ['name' => 'tokenName', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'isRevoked', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'tokenName', 'read_only' => False, 'type' => 'str(100)'],
   ],
