@@ -2,6 +2,7 @@
 
 use Hashtopolis\inc\defines\DAgentIgnoreErrors;
 use Hashtopolis\inc\defines\DAgentStatsType;
+use Hashtopolis\inc\defines\DBackgroundJobStatus;
 use Hashtopolis\inc\defines\DFileDownloadStatus;
 use Hashtopolis\inc\defines\DFileType;
 use Hashtopolis\inc\defines\DHashcatStatus;
@@ -20,6 +21,7 @@ $CONF = array();
 
 require_once(dirname(__FILE__) . "/../../inc/defines/DAgentIgnoreErrors.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DAgentStatsType.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DBackgroundJobStatus.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DFileDownloadStatus.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DFileType.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DHashcatStatus.php");
@@ -111,6 +113,13 @@ $FieldHealthCheckAgentStatusChoices = [
   ['key' => DHealthCheckAgentStatus::FAILED, 'label' => 'Failed'],
   ['key' => DHealthCheckAgentStatus::PENDING, 'label' => 'Pending'],
   ['key' => DHealthCheckAgentStatus::COMPLETED, 'label' => 'Completed'],
+];
+
+$FieldBackgroundJobStatusChoices = [
+  ['key' => DBackgroundJobStatus::FAILED, 'label' => 'Failed'],
+  ['key' => DBackgroundJobStatus::PENDING, 'label' => 'Pending'],
+  ['key' => DBackgroundJobStatus::RUNNING, 'label' => 'Running'],
+  ['key' => DBackgroundJobStatus::DONE, 'label' => 'Done'],
 ];
 
 $FieldLogEntryIssuerChoices = [
@@ -411,6 +420,7 @@ $CONF['JwtApiKey'] = [
     ['name' => 'endValid', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'userId', 'read_only' => True, 'null' => True, 'type' => 'int', 'relation' => 'User'],
     ['name' => 'isRevoked', 'read_only' => False, 'type' => 'bool'],
+    ['name' => 'tokenName', 'read_only' => False, 'type' => 'str(100)'],
   ],
 ];
 $CONF['LogEntry'] = [
@@ -672,6 +682,21 @@ $CONF['HashlistHashlist'] = [
   ],
 ];
 
+$CONF['BackgroundJob'] = [
+  'columns' => [
+    ['name' => 'backgroundJobId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'jobType', 'read_only' => True, 'type' => 'str(100)', 'protected' => True],
+    ['name' => 'payload', 'read_only' => True, 'type' => 'json', 'protected' => True],
+    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldBackgroundJobStatusChoices],
+    ['name' => 'userId', 'read_only' => True, 'protected' => True, 'type' => 'int', 'relation' => 'User', 'null' => True],
+    ['name' => 'createdAt', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'startedAt', 'read_only' => True, 'type' => 'int64', 'protected' => True, 'null' => True],
+    ['name' => 'finishedAt', 'read_only' => True, 'type' => 'int64', 'protected' => True, 'null' => True],
+    ['name' => 'exitCode', 'read_only' => True, 'type' => 'int', 'protected' => True, 'null' => True],
+    ['name' => 'resultMessage', 'read_only' => True, 'type' => 'str(1024)', 'protected' => True, 'null' => True],
+  ],
+];
+
 $CONF['_sqlx_migrations'] = [
   'columns' => [
     ['name' => 'version', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
@@ -703,6 +728,9 @@ function getTypingType($str, $nullable = false): string {
     return ($nullable ? '?' : '') . 'string';
   }
   if ($str == 'binary') {
+    return ($nullable ? '?' : '') . 'string';
+  }
+  if ($str == 'json') {
     return ($nullable ? '?' : '') . 'string';
   }
   throw new Exception("Cannot convert type " . $str);
