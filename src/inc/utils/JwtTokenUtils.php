@@ -14,7 +14,8 @@ class JwtTokenUtils {
    * @param int $userId
    * @param int $startValid
    * @param int $endValid
-   * @param string $tokenName @param bool $isRevoked whether the key is revoked from the moment it is created
+   * @param string $tokenName
+   * @param bool $isRevoked whether the key is revoked from the moment it is created
    * @return JwtApiKey
    * @throws HttpError
    * @throws Exception
@@ -25,7 +26,7 @@ class JwtTokenUtils {
       throw new HttpError("Invalid user ID");
     }
 
-    $key = new JwtApiKey(null, $startValid, $endValid, $userId, $isRevoked, $tokenName);
+    $key = new JwtApiKey(null, $startValid, $endValid, $userId, $isRevoked ? 1 : 0, $tokenName);
     Factory::getJwtApiKeyFactory()->save($key);
     return $key;
   }
