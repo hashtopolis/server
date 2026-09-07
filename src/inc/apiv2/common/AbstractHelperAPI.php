@@ -94,7 +94,11 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     /* Successful executed action of create */
     if (is_object($newObject)) {
       $apiClass = new ($this->container->get('classMapper')->get($newObject::class))($this->container);
-      return self::getOneResource($apiClass, $newObject, $request, $response);
+      /* The helper already authorized this action under its own permissions in preCommon()
+         above; skip the model route's method-derived authorization while serializing, as a
+         POST helper (e.g. recountFileLines requiring permFileUpdate) must not demand the
+         model's create permission just to render the resource it returned. */
+      return self::getOneResource($apiClass, $newObject, $request, $response, 200, true);
       /* A meta response of a helper function */
     }
     elseif (is_array($newObject)) {

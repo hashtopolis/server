@@ -1621,7 +1621,7 @@ abstract class AbstractBaseAPI {
    * @throws HttpForbidden
    * @throws Exception
    */
-  protected function preCommon(Request $request): void {
+  protected function preCommon(Request $request, bool $skipPermissionCheck = false): void {
     $userId = $request->getAttribute(('userId'));
     $user = UserUtils::getUser($userId);
     if ($user->getIsValid() != 1) {
@@ -1634,14 +1634,22 @@ abstract class AbstractBaseAPI {
     # request an object on which authentication takes place.
     #
     # At some point we might want to remove this strange behaviour always pass the $user object
-    # to the AccessControl class when requested. 
+    # to the AccessControl class when requested.
     AccessControl::getInstance($this->user);
-    
+
     $routeContext = RouteContext::fromRequest($request);
     $this->routeParser = $routeContext->getRouteParser();
-    
+
+    /* When a helper serializes a resource object it already returned, the caller
+       has authorized the action under the helper's own permissions. Re-running the
+       model route's method-derived authorization here would demand e.g. permFileCreate
+       for a POST helper that only requires permFileUpdate, so allow it to be skipped. */
+    if ($skipPermissionCheck) {
+      return;
+    }
+
     $required_perms = $this->getRequiredPermissions($request->getMethod());
-    
+
     if ($this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $request->getAttribute("aud")) === FALSE) {
       throw new HttpForbidden(join('||', $this->permissionErrors));
     }
@@ -1751,8 +1759,8 @@ abstract class AbstractBaseAPI {
    * @throws JsonException
    * @throws NotFoundExceptionInterface
    */
-  protected static function getOneResource(AbstractModelAPI $apiClass, AbstractModel $object, Request $request, Response $response, int $statusCode = 200): Response {
-    $apiClass->preCommon($request);
+  protected static function getOneResource(AbstractModelAPI $apiClass, AbstractModel $object, Request $request, Response $response, int $statusCode = 200, bool $skipPermissionCheck = false): Response {
+    $apiClass->preCommon($request, $skipPermissionCheck);
     $validExpandables = $apiClass->getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);
     
