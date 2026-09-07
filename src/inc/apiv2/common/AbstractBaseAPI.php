@@ -1621,7 +1621,13 @@ abstract class AbstractBaseAPI {
    * @throws HttpForbidden
    * @throws Exception
    */
-  protected function preCommon(Request $request, bool $skipPermissionCheck = false): void {
+  /**
+   * Prepare the request: look up the user, set up AccessControl and grab the route parser.
+   * This does not check any permissions. The serializers (getOneResource/getManyResources)
+   * call it because they need this context to render, but they leave the permission check
+   * to whoever called them. See authorize() for that part.
+   */
+  protected function bootRequest(Request $request): void {
     $userId = $request->getAttribute(('userId'));
     $user = UserUtils::getUser($userId);
     if ($user->getIsValid() != 1) {
@@ -1639,20 +1645,27 @@ abstract class AbstractBaseAPI {
 
     $routeContext = RouteContext::fromRequest($request);
     $this->routeParser = $routeContext->getRouteParser();
+  }
 
-    /* When a helper serializes a resource object it already returned, the caller
-       has authorized the action under the helper's own permissions. Re-running the
-       model route's method-derived authorization here would demand e.g. permFileCreate
-       for a POST helper that only requires permFileUpdate, so allow it to be skipped. */
-    if ($skipPermissionCheck) {
-      return;
-    }
-
-    $required_perms = $this->getRequiredPermissions($request->getMethod());
-
-    if ($this->validatePermissions($request->getAttribute("scope"), $required_perms, $request->getMethod(), $request->getAttribute("aud")) === FALSE) {
+  /**
+   * Check that the request has the given permissions, otherwise throw HttpForbidden.
+   * The caller says which permissions the operation needs, so the check no longer
+   * happens as a side effect of serializing a response.
+   */
+  protected function authorize(Request $request, array $requiredPerms): void {
+    if ($this->validatePermissions($request->getAttribute("scope"), $requiredPerms, $request->getMethod(), $request->getAttribute("aud")) === FALSE) {
       throw new HttpForbidden(join('||', $this->permissionErrors));
     }
+  }
+
+  /**
+   * Shortcut for action entry points: prepare the request and check the default
+   * permissions for the HTTP method. Serializers should not call this, they only
+   * need bootRequest(). The action that invokes them is responsible for the check.
+   */
+  protected function preCommon(Request $request): void {
+    $this->bootRequest($request);
+    $this->authorize($request, $this->getRequiredPermissions($request->getMethod()));
   }
   
   /* 
@@ -1759,8 +1772,10 @@ abstract class AbstractBaseAPI {
    * @throws JsonException
    * @throws NotFoundExceptionInterface
    */
-  protected static function getOneResource(AbstractModelAPI $apiClass, AbstractModel $object, Request $request, Response $response, int $statusCode = 200, bool $skipPermissionCheck = false): Response {
-    $apiClass->preCommon($request, $skipPermissionCheck);
+  protected static function getOneResource(AbstractModelAPI $apiClass, AbstractModel $object, Request $request, Response $response, int $statusCode = 200): Response {
+    /* Only prepare the request here, no permission check. The action that
+       called us has already done that. */
+    $apiClass->bootRequest($request);
     $validExpandables = $apiClass->getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);
     

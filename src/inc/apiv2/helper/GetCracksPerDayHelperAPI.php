@@ -37,8 +37,8 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
   }
 
   /**
-   * The dates the counts are keyed by are dynamic, so no getResponse() sample
-   * map can describe this document.
+   * The keys are dates, so a fixed getResponse() example cannot describe this.
+   * Describe the meta member with a schema instead.
    */
   public static function getMetaResponseSchema(): ?array {
     return [
@@ -92,8 +92,8 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
       $counts[$key] = ($counts[$key] ?? 0) + $value;
     }
     
-    /* Counts are not resource objects, so they belong under meta; an empty
-       map must still render as {} rather than be dropped from the document */
+    /* These are just counts, not resource objects, so they go into meta. An empty
+       result still has to come out as {} instead of meta being left out entirely. */
     $ret = self::createJsonResponse(meta: $counts);
     if (empty($counts)) {
       $ret["meta"] = new stdClass();

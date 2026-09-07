@@ -9,18 +9,9 @@ from utils import BaseTest, create_restricted_user
 class CracksPerDayTest(BaseTest):
     model_class = Hashlist
 
-    def _get_cracks_per_day(self, helper):
-        # The client reads the response data member, but the counts are reported
-        # under meta, so request the helper directly and read meta.
-        helper.authenticate()
-        response = requests.get(helper._api_endpoint + helper._model_uri + 'getCracksPerDay',
-                                headers=helper._headers)
-        self.assertEqual(response.status_code, 200, response.text)
-        return response.json()['meta']
-
     def test_returns_dict(self):
         helper = Helper()
-        result = self._get_cracks_per_day(helper)
+        result = helper.get_cracks_per_day()
         self.assertIsInstance(result, dict)
 
     def test_keys_are_current_year(self):
@@ -28,7 +19,7 @@ class CracksPerDayTest(BaseTest):
         helper = Helper()
         helper.import_cracked_hashes(hashlist, 'paste', 'cc03e747a6afbbcbf8be7668acfebee5:test123', ':', 0)
 
-        result = self._get_cracks_per_day(helper)
+        result = helper.get_cracks_per_day()
         current_year = str(date.today().year)
         for key in result.keys():
             self.assertRegex(key, r'^\d{4}-\d{2}-\d{2}$', f"Key '{key}' is not in YYYY-MM-DD format")
@@ -39,7 +30,7 @@ class CracksPerDayTest(BaseTest):
         helper = Helper()
         helper.import_cracked_hashes(hashlist, 'paste', 'cc03e747a6afbbcbf8be7668acfebee5:test123', ':', 0)
 
-        result = self._get_cracks_per_day(helper)
+        result = helper.get_cracks_per_day()
         today = date.today().strftime('%Y-%m-%d')
         self.assertIn(today, result, f"Today's date '{today}' not found in result")
         self.assertGreaterEqual(result[today], 1)
@@ -49,14 +40,14 @@ class CracksPerDayTest(BaseTest):
         hashlist2 = self.create_hashlist()
         helper = Helper()
 
-        result_before = self._get_cracks_per_day(helper)
+        result_before = helper.get_cracks_per_day()
         today = date.today().strftime('%Y-%m-%d')
         count_before = result_before.get(today, 0)
 
         helper.import_cracked_hashes(hashlist1, 'paste', 'cc03e747a6afbbcbf8be7668acfebee5:test123', ':', 0)
         helper.import_cracked_hashes(hashlist2, 'paste', 'cc03e747a6afbbcbf8be7668acfebee5:test123', ':', 0)
 
-        result_after = self._get_cracks_per_day(helper)
+        result_after = helper.get_cracks_per_day()
         count_after = result_after.get(today, 0)
 
         self.assertEqual(count_after, count_before + 2)
@@ -68,7 +59,7 @@ class CracksPerDayTest(BaseTest):
         helper.import_cracked_hashes(hashlist, 'paste', 'cc03e747a6afbbcbf8be7668acfebee5:test123', ':', 0)
 
         today = date.today().strftime('%Y-%m-%d')
-        self.assertGreaterEqual(self._get_cracks_per_day(helper).get(today, 0), 1,
+        self.assertGreaterEqual(helper.get_cracks_per_day().get(today, 0), 1,
                                 "Expected a crack today for the ACL test")
 
         auth = create_restricted_user(self, {'permHashlistRead': True, 'permHashRead': True})

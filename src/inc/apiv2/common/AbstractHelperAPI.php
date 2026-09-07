@@ -23,24 +23,24 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
   /**
    * Function in order to create swagger documentation. Should return either a map of strings that
    * describes the output ex: ["assign" => "success"] or if the endpoint returns an object it should return
-   * the string representation of that object ex: File. A helper answering with a list of resource
-   * objects appends "[]" to the model name ex: Task[].
+   * the string representation of that object ex: File. If the endpoint returns a list of objects,
+   * add "[]" to the name ex: Task[].
    */
   abstract public static function getResponse(): array|string|null;
 
   /**
-   * A helper whose meta member carries dynamic member names that no getResponse() sample map can
-   * enumerate states the full OpenAPI schema of its meta member here; null (the default) keeps the
-   * getResponse() based description.
+   * Override this when the keys in the meta member are dynamic (dates, ids, ...) and a
+   * getResponse() example cannot describe them. Return the OpenAPI schema for meta here.
+   * The default null means the spec is derived from getResponse() as usual.
    */
   public static function getMetaResponseSchema(): ?array {
     return null;
   }
 
   /**
-   * HTTP methods (e.g. "PATCH") whose handler answers 204 No Content instead of
-   * a document. For these the spec describes a 204 response and omits the 200
-   * body, matching e.g. CurrentUserHelperAPI::actionPatch.
+   * HTTP methods (e.g. "PATCH") for which this helper answers 204 No Content instead of a
+   * document. The spec then documents a 204 without a body for them, see for example
+   * CurrentUserHelperAPI::actionPatch.
    */
   public static function getNoContentMethods(): array {
     return [];
@@ -94,11 +94,10 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     /* Successful executed action of create */
     if (is_object($newObject)) {
       $apiClass = new ($this->container->get('classMapper')->get($newObject::class))($this->container);
-      /* The helper already authorized this action under its own permissions in preCommon()
-         above; skip the model route's method-derived authorization while serializing, as a
-         POST helper (e.g. recountFileLines requiring permFileUpdate) must not demand the
-         model's create permission just to render the resource it returned. */
-      return self::getOneResource($apiClass, $newObject, $request, $response, 200, true);
+      /* Permissions were already checked in preCommon() above, using the helper's own
+         requirements. getOneResource() does not check again, which is what we want: a
+         POST helper should not need the create permission of the model route. */
+      return self::getOneResource($apiClass, $newObject, $request, $response);
       /* A meta response of a helper function */
     }
     elseif (is_array($newObject)) {

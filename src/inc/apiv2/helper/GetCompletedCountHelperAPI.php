@@ -131,7 +131,7 @@ class GetCompletedCountHelperAPI extends AbstractHelperAPI {
     
     $data["completedSupertasks"] = array_sum($completed);
 
-    /* Counts are not resource objects, so they belong under meta */
+    /* These are just counts, not resource objects, so they go into meta */
     return self::getMetaResponse($data, $request, $response);
   }
   

@@ -95,7 +95,7 @@ class CurrentUserHelperAPI extends AbstractHelperAPI {
     return "User";
   }
 
-  /* actionPatch answers 204 No Content, so the PATCH route has no response body. */
+  /* actionPatch returns 204 No Content, so there is no response body to document for PATCH. */
   public static function getNoContentMethods(): array {
     return ["PATCH"];
   }

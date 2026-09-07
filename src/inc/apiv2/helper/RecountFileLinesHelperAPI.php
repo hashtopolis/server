@@ -50,8 +50,9 @@ class RecountFileLinesHelperAPI extends AbstractHelperAPI {
     
     FileUtils::fileCountLines($data[File::FILE_ID]);
 
-    /* Return the File itself: a resource object under data, matching the "File"
-       response declaration, instead of a flat map under meta. */
+    /* Return the File itself so it comes back as a resource object under data.
+       Only the helper's own permission (File update) is checked; the serializer
+       no longer demands the model route's create permission. */
     return FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser());
   }
 }
