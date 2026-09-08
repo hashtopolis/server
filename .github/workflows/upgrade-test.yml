@@ -177,6 +177,24 @@ jobs:
         if: always()
         run: docker logs backend
 
+      - name: Verify python agent version matches bundled hashtopolis.zip
+        run: |
+          python3 -m venv /tmp/agent-check-venv
+          /tmp/agent-check-venv/bin/pip install --disable-pip-version-check --quiet psutil==7.2.2 requests==2.34.2
+          AGENT_VERSION="$(/tmp/agent-check-venv/bin/python src/bin/hashtopolis.zip --version --number-only)"
+          echo "Version reported by bundled src/bin/hashtopolis.zip: ${AGENT_VERSION}"
+          if [ "${{ matrix.db-type }}" = "postgres" ]; then
+            DB_VERSION="$(docker exec db psql -t -A -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} -c "SELECT version FROM agentbinary WHERE binarytype = 'python';")"
+          else
+            DB_VERSION="$(docker exec db mysql -N -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} -e "SELECT version FROM AgentBinary WHERE binaryType = 'python';")"
+          fi
+          echo "Python agent version stored in upgraded DB: ${DB_VERSION}"
+          if [ "${AGENT_VERSION}" != "${DB_VERSION}" ]; then
+            echo "::error::Python agent version mismatch: upgraded DB has '${DB_VERSION}', but src/bin/hashtopolis.zip reports '${AGENT_VERSION}'"
+            exit 1
+          fi
+          echo "Python agent version matches bundled hashtopolis.zip."
+
       - name: Show migration state
         if: always()
         run: |
