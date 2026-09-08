@@ -316,7 +316,7 @@ final class SendProgressAction implements AgentAction {
         }
 
         switch ($state) {
-            case DHashcatStatus::EXHAUSTED: # TODO
+            case DHashcatStatus::EXHAUSTED:
                 $chunk = Factory::getChunkFactory()->mset($chunk, [Chunk::SPEED => 0, Chunk::PROGRESS => 10000, Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength()]);
                 DServerLog::log(DServerLog::TRACE, 'Chunk is exhausted (cracker status)', [$agent, $chunk]);
 
