@@ -4,7 +4,10 @@ namespace Hashtopolis\inc\utils;
 
 use Exception;
 use Hashtopolis\dba\models\CrackerBinary;
+use Hashtopolis\dba\models\CrackerBinaryHashtype;
 use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\models\HashType;
+use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\ContainFilter;
@@ -75,7 +78,12 @@ class CrackerUtils {
     }
     CrackerUtils::checkAccessGroup($accessGroupId, $user);
     $binary = new CrackerBinary(null, $binaryType->getId(), $version, $url, $name, null, $accessGroupId);
-    return Factory::getCrackerBinaryFactory()->save($binary);
+    $binary = Factory::getCrackerBinaryFactory()->save($binary);
+    // as long as the supported hashtypes cannot be determined from the binary
+    // itself, a new binary is associated with all existing hashtypes, the user
+    // can correct the associations later
+    CrackerUtils::associateAllHashtypes($binary);
+    return $binary;
   }
   
   /**
@@ -159,10 +167,15 @@ class CrackerUtils {
       throw new HttpError("The provided archive is not a valid 7z archive!");
     }
     
-    return Factory::getCrackerBinaryFactory()->mset($binary, [
+    $binary = Factory::getCrackerBinaryFactory()->mset($binary, [
       CrackerBinary::DOWNLOAD_URL => Util::buildBackendBaseUrl() . '/api/download.php/crackerBinary/' . $binary->getId(),
       CrackerBinary::FILENAME => $filename
     ]);
+    // as long as the supported hashtypes cannot be determined from the binary
+    // itself, a new binary is associated with all existing hashtypes, the user
+    // can correct the associations later
+    CrackerUtils::associateAllHashtypes($binary);
+    return $binary;
   }
   
   /**
@@ -225,6 +238,9 @@ class CrackerUtils {
     if (sizeof($check) > 0) {
       throw new HTException("There are tasks which use this binary!");
     }
+    // remove the hashtype associations of this binary
+    $qF = new QueryFilter(CrackerBinaryHashtype::CRACKER_BINARY_ID, $binary->getId(), "=");
+    Factory::getCrackerBinaryHashtypeFactory()->massDeletion([Factory::FILTER => $qF]);
     // remove a locally stored archive if there is one
     CrackerUtils::deleteLocalArchive($binary);
     Factory::getCrackerBinaryFactory()->delete($binary);
@@ -259,6 +275,12 @@ class CrackerUtils {
     // remove the archives of locally stored binaries
     foreach ($binaries as $binary) {
       CrackerUtils::deleteLocalArchive($binary);
+    }
+    
+    // remove the hashtype associations of the binaries of this type
+    if (sizeof($versionIds) > 0) {
+      $qF3 = new ContainFilter(CrackerBinaryHashtype::CRACKER_BINARY_ID, $versionIds);
+      Factory::getCrackerBinaryHashtypeFactory()->massDeletion([Factory::FILTER => $qF3]);
     }
     
     // delete
@@ -364,5 +386,126 @@ class CrackerUtils {
       throw new HTException("Invalid cracker binary!");
     }
     return $binary;
+  }
+  
+  /**
+   * Returns the hashtypes which are associated with the given cracker binary,
+   * i.e. the hashtypes the binary is assumed to support.
+   *
+   * @param int $binaryId
+   * @return HashType[]
+   * @throws HTException
+   * @throws Exception
+   */
+  public static function getHashtypesOfBinary(int $binaryId): array {
+    $binary = CrackerUtils::getBinary($binaryId);
+    $qF = new QueryFilter(CrackerBinaryHashtype::CRACKER_BINARY_ID, $binary->getId(), "=", Factory::getCrackerBinaryHashtypeFactory());
+    $jF = new JoinFilter(Factory::getCrackerBinaryHashtypeFactory(), HashType::HASH_TYPE_ID, CrackerBinaryHashtype::HASH_TYPE_ID);
+    $joined = Factory::getHashTypeFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    return $joined[Factory::getHashTypeFactory()->getModelName()];
+  }
+  
+  /**
+   * Associates a hashtype with a cracker binary.
+   *
+   * @param int $binaryId
+   * @param int $hashtypeId
+   * @throws HttpConflict
+   * @throws HTException
+   * @throws Exception
+   */
+  public static function addHashtypeToBinary(int $binaryId, int $hashtypeId): void {
+    $binary = CrackerUtils::getBinary($binaryId);
+    if (Factory::getHashTypeFactory()->get($hashtypeId) === null) {
+      throw new HTException("Invalid hashtype!");
+    }
+    $qF1 = new QueryFilter(CrackerBinaryHashtype::CRACKER_BINARY_ID, $binary->getId(), "=");
+    $qF2 = new QueryFilter(CrackerBinaryHashtype::HASH_TYPE_ID, $hashtypeId, "=");
+    $existing = Factory::getCrackerBinaryHashtypeFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
+    if ($existing !== null) {
+      throw new HttpConflict("The hashtype is already associated with this cracker binary!");
+    }
+    Factory::getCrackerBinaryHashtypeFactory()->save(new CrackerBinaryHashtype(null, $binary->getId(), $hashtypeId));
+  }
+  
+  /**
+   * Removes the association of a hashtype with a cracker binary.
+   *
+   * @param int $binaryId
+   * @param int $hashtypeId
+   * @throws HTException
+   * @throws Exception
+   */
+  public static function removeHashtypeFromBinary(int $binaryId, int $hashtypeId): void {
+    $binary = CrackerUtils::getBinary($binaryId);
+    $qF1 = new QueryFilter(CrackerBinaryHashtype::CRACKER_BINARY_ID, $binary->getId(), "=");
+    $qF2 = new QueryFilter(CrackerBinaryHashtype::HASH_TYPE_ID, $hashtypeId, "=");
+    $existing = Factory::getCrackerBinaryHashtypeFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
+    if ($existing === null) {
+      throw new HTException("The hashtype is not associated with this cracker binary!");
+    }
+    Factory::getCrackerBinaryHashtypeFactory()->delete($existing);
+  }
+  
+  /**
+   * Associates a cracker binary with all existing hashtypes. Associations which
+   * already exist are kept, so it is safe to call this multiple times.
+   *
+   * @param CrackerBinary $binary
+   * @throws HttpError
+   * @throws Exception
+   */
+  public static function associateAllHashtypes(CrackerBinary $binary): void {
+    $qF = new QueryFilter(CrackerBinaryHashtype::CRACKER_BINARY_ID, $binary->getId(), "=");
+    $currentIds = [];
+    foreach (Factory::getCrackerBinaryHashtypeFactory()->filter([Factory::FILTER => $qF]) as $association) {
+      $currentIds[] = $association->getHashTypeId();
+    }
+    $factory = Factory::getCrackerBinaryHashtypeFactory();
+    $factory->getDB()->beginTransaction(); //start transaction to be able roll back
+    foreach (Factory::getHashTypeFactory()->filter([]) as $hashtype) {
+      if (!in_array($hashtype->getId(), $currentIds)) {
+        $factory->save(new CrackerBinaryHashtype(null, $binary->getId(), $hashtype->getId()));
+      }
+    }
+    if (!$factory->getDB()->commit()) {
+      throw new HttpError("Was not able to associate the hashtypes with the cracker binary!");
+    }
+  }
+  
+  /**
+   * Triggers an update of a cracker binary. If the binary is only referenced by
+   * an url, the archive is downloaded again. For now, the binary is then just
+   * associated with all existing hashtypes again, as long as the supported
+   * hashtypes cannot be determined from the binary automatically. This helper
+   * is meant to be re-used later to re-read the supported hashtypes from the
+   * downloaded archive.
+   *
+   * @param int $binaryId
+   * @throws HTException
+   * @throws Exception
+   */
+  public static function checkCrackerBinary(int $binaryId): void {
+    $binary = CrackerUtils::getBinary($binaryId);
+    // locally stored binaries don't need to be downloaded, their archive is
+    // already on the server
+    if ($binary->getFilename() === null) {
+      $target = tempnam(sys_get_temp_dir(), 'HTP_CHECK_');
+      unlink($target); // Util::uploadFile only downloads if the target does not exist yet
+      [$success, $msg] = Util::uploadFile($target, "url", $binary->getDownloadUrl());
+      if (!$success) {
+        if (file_exists($target)) {
+          unlink($target);
+        }
+        throw new HTException("Failed to download the archive of the cracker binary: " . $msg);
+      }
+      // the archive is only needed for download for now, in a later step it
+      // will be used to determine the hashtypes supported by the binary
+      if (file_exists($target)) {
+        unlink($target);
+      }
+    }
+    // for now we assume that the binary supports all hashtypes
+    CrackerUtils::associateAllHashtypes($binary);
   }
 }

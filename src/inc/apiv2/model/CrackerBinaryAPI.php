@@ -10,8 +10,10 @@ use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\inc\utils\AccessUtils;
 
 use Hashtopolis\dba\models\CrackerBinary;
+use Hashtopolis\dba\models\CrackerBinaryHashtype;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
@@ -20,6 +22,7 @@ use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 
 /**
@@ -97,9 +100,19 @@ class CrackerBinaryAPI extends AbstractModelAPI {
     return [
       'tasks' => [
         'key' => CrackerBinary::CRACKER_BINARY_ID,
-        
+
         'relationType' => Task::class,
         'relationKey' => Task::CRACKER_BINARY_ID,
+      ],
+      'hashtypes' => [
+        'key' => CrackerBinary::CRACKER_BINARY_ID,
+
+        'junctionTableType' => CrackerBinaryHashtype::class,
+        'junctionTableFilterField' => CrackerBinaryHashtype::CRACKER_BINARY_ID,
+        'junctionTableJoinField' => CrackerBinaryHashtype::HASH_TYPE_ID,
+
+        'relationType' => HashType::class,
+        'relationKey' => HashType::HASH_TYPE_ID,
       ],
     ];
   }
@@ -181,5 +194,60 @@ class CrackerBinaryAPI extends AbstractModelAPI {
       }
     }
     parent::updateObject($objectId, $data);
+  }
+
+  /**
+   * Replaces the hashtypes which are associated with the cracker binary with
+   * the given list, i.e. hashtypes given in the list but not associated yet
+   * are added and associations which are not in the list are removed.
+   *
+   * @param Request $request
+   * @param array $data
+   * @param array $args
+   * @throws HttpError
+   * @throws HTException
+   * @throws Exception
+   */
+  public function updateToManyRelationship(Request $request, array $data, array $args): void {
+    if ($args['relation'] != 'hashtypes') {
+      parent::updateToManyRelationship($request, $data, $args);
+      return;
+    }
+    $id = $args['id'];
+    $wantedHashtypes = [];
+    foreach ($data as $hashtype) {
+      if (!$this->validateResourceRecord($hashtype)) {
+        $encoded_hashtype = json_encode($hashtype);
+        throw new HttpError('Invalid resource record given in list! invalid resource record: ' . $encoded_hashtype);
+      }
+      if (Factory::getHashTypeFactory()->get($hashtype["id"]) === null) {
+        throw new ResourceNotFoundError("Hashtype with id " . $hashtype["id"] . " does not exist!");
+      }
+      $wantedHashtypes[] = $hashtype["id"];
+    }
+
+    // Find out which associations to add and remove
+    $currentHashtypes = CrackerUtils::getHashtypesOfBinary($id);
+    $currentIds = [];
+    foreach ($currentHashtypes as $hashtype) {
+      $currentIds[] = $hashtype->getId();
+    }
+
+    $toAddHashtypes = array_diff($wantedHashtypes, $currentIds);
+    $toRemoveHashtypes = array_diff($currentIds, $wantedHashtypes);
+
+    $factory = $this->getFactory();
+    $factory->getDB()->beginTransaction(); //start transaction to be able roll back
+
+    foreach ($toAddHashtypes as $hashtypeId) {
+      CrackerUtils::addHashtypeToBinary($id, $hashtypeId);
+    }
+    foreach ($toRemoveHashtypes as $hashtypeId) {
+      CrackerUtils::removeHashtypeFromBinary($id, $hashtypeId);
+    }
+
+    if (!$factory->getDB()->commit()) {
+      throw new HttpError("Was not able to update to many relationship");
+    }
   }
 }
