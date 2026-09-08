@@ -244,7 +244,7 @@ class UserUtils {
     $newPass = Util::randomString(10);
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPass, $newSalt);
-    $user = new User(null, $username, $email, $newHash, $newSalt, $isValid ? 1 : 0, 1, 0, time(), $session_lifetime, $group->getId(), 0, "", "", "", "");
+    $user = new User(null, $username, $email, $newHash, $newSalt, $isValid ? 1 : 0, 1, 0, time(), $session_lifetime, $group->getId());
     Factory::getUserFactory()->save($user);
     
     // add user to default group

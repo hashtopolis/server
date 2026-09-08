@@ -16,13 +16,8 @@ class User extends AbstractModel {
   private ?int $registeredSince;
   private ?int $sessionLifetime;
   private ?int $rightGroupId;
-  private ?string $yubikey;
-  private ?string $otp1;
-  private ?string $otp2;
-  private ?string $otp3;
-  private ?string $otp4;
-  
-  function __construct(?int $userId, ?string $username, ?string $email, ?string $passwordHash, ?string $passwordSalt, ?int $isValid, ?int $isComputedPassword, ?int $lastLoginDate, ?int $registeredSince, ?int $sessionLifetime, ?int $rightGroupId, ?string $yubikey, ?string $otp1, ?string $otp2, ?string $otp3, ?string $otp4) {
+
+  function __construct(?int $userId, ?string $username, ?string $email, ?string $passwordHash, ?string $passwordSalt, ?int $isValid, ?int $isComputedPassword, ?int $lastLoginDate, ?int $registeredSince, ?int $sessionLifetime, ?int $rightGroupId) {
     $this->userId = $userId;
     $this->username = $username;
     $this->email = $email;
@@ -34,11 +29,6 @@ class User extends AbstractModel {
     $this->registeredSince = $registeredSince;
     $this->sessionLifetime = $sessionLifetime;
     $this->rightGroupId = $rightGroupId;
-    $this->yubikey = $yubikey;
-    $this->otp1 = $otp1;
-    $this->otp2 = $otp2;
-    $this->otp3 = $otp3;
-    $this->otp4 = $otp4;
   }
   
   function getKeyValueDict(): array {
@@ -54,12 +44,7 @@ class User extends AbstractModel {
     $dict['registeredSince'] = $this->registeredSince;
     $dict['sessionLifetime'] = $this->sessionLifetime;
     $dict['rightGroupId'] = $this->rightGroupId;
-    $dict['yubikey'] = $this->yubikey;
-    $dict['otp1'] = $this->otp1;
-    $dict['otp2'] = $this->otp2;
-    $dict['otp3'] = $this->otp3;
-    $dict['otp4'] = $this->otp4;
-    
+
     return $dict;
   }
   
@@ -76,11 +61,6 @@ class User extends AbstractModel {
     $dict['registeredSince'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "registeredSince", "public" => False, "dba_mapping" => False];
     $dict['sessionLifetime'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "sessionLifetime", "public" => False, "dba_mapping" => False];
     $dict['rightGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "globalPermissionGroupId", "public" => False, "dba_mapping" => False];
-    $dict['yubikey'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "yubikey", "public" => False, "dba_mapping" => False];
-    $dict['otp1'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "otp1", "public" => False, "dba_mapping" => False];
-    $dict['otp2'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "otp2", "public" => False, "dba_mapping" => False];
-    $dict['otp3'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "otp3", "public" => False, "dba_mapping" => False];
-    $dict['otp4'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "otp4", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
@@ -184,51 +164,11 @@ class User extends AbstractModel {
   function getRightGroupId(): ?int {
     return $this->rightGroupId;
   }
-  
+
   function setRightGroupId(?int $rightGroupId): void {
     $this->rightGroupId = $rightGroupId;
   }
-  
-  function getYubikey(): ?string {
-    return $this->yubikey;
-  }
-  
-  function setYubikey(?string $yubikey): void {
-    $this->yubikey = $yubikey;
-  }
-  
-  function getOtp1(): ?string {
-    return $this->otp1;
-  }
-  
-  function setOtp1(?string $otp1): void {
-    $this->otp1 = $otp1;
-  }
-  
-  function getOtp2(): ?string {
-    return $this->otp2;
-  }
-  
-  function setOtp2(?string $otp2): void {
-    $this->otp2 = $otp2;
-  }
-  
-  function getOtp3(): ?string {
-    return $this->otp3;
-  }
-  
-  function setOtp3(?string $otp3): void {
-    $this->otp3 = $otp3;
-  }
-  
-  function getOtp4(): ?string {
-    return $this->otp4;
-  }
-  
-  function setOtp4(?string $otp4): void {
-    $this->otp4 = $otp4;
-  }
-  
+
   const USER_ID = "userId";
   const USERNAME = "username";
   const EMAIL = "email";
@@ -240,11 +180,6 @@ class User extends AbstractModel {
   const REGISTERED_SINCE = "registeredSince";
   const SESSION_LIFETIME = "sessionLifetime";
   const RIGHT_GROUP_ID = "rightGroupId";
-  const YUBIKEY = "yubikey";
-  const OTP1 = "otp1";
-  const OTP2 = "otp2";
-  const OTP3 = "otp3";
-  const OTP4 = "otp4";
 
   const PERM_CREATE = "permUserCreate";
   const PERM_READ = "permUserRead";

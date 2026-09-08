@@ -32,7 +32,7 @@ class UserFactory extends AbstractModelFactory {
    * @return User
    */
   function getNullObject(): User {
-    return new User(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    return new User(-1, null, null, null, null, null, null, null, null, null, null);
   }
   
   /**
@@ -45,6 +45,6 @@ class UserFactory extends AbstractModelFactory {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
-    return new User($dict['userid'], $dict['username'], $dict['email'], $dict['passwordhash'], $dict['passwordsalt'], $dict['isvalid'], $dict['iscomputedpassword'], $dict['lastlogindate'], $dict['registeredsince'], $dict['sessionlifetime'], $dict['rightgroupid'], $dict['yubikey'], $dict['otp1'], $dict['otp2'], $dict['otp3'], $dict['otp4']);
+    return new User($dict['userid'], $dict['username'], $dict['email'], $dict['passwordhash'], $dict['passwordsalt'], $dict['isvalid'], $dict['iscomputedpassword'], $dict['lastlogindate'], $dict['registeredsince'], $dict['sessionlifetime'], $dict['rightgroupid']);
   }
 }

@@ -17,8 +17,6 @@ if (!isset($_POST['username']) || !isset($_POST['password'])) {
 $username = $_POST['username'];
 $password = $_POST['password'];
 
-// isYubikeyEnabled() ?
-$otp = (isset($_POST['otp'])) ? $_POST['otp'] : "";
 $fw = (isset($_POST['fw'])) ? $_POST['fw'] : "";
 
 if (strlen($username) == 0 || strlen($password) == 0) {
@@ -26,7 +24,7 @@ if (strlen($username) == 0 || strlen($password) == 0) {
   die();
 }
 
-Login::getInstance()->login($username, $password, $otp);
+Login::getInstance()->login($username, $password);
 
 if (Login::getInstance()->isLoggedin()) {
   if (strlen($fw) > 0) {
