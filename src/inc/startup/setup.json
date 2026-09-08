@@ -415,7 +415,8 @@
       "crackerBinaryTypeId" : 1,
       "version" : "7.1.2",
       "downloadUrl" : "https://hashcat.net/files/hashcat-7.1.2.7z",
-      "binaryName" : "hashcat"
+      "binaryName" : "hashcat",
+      "filename" : null
     }
   ],
   "CrackerBinaryType" : [

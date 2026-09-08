@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc;
 
 use Exception;
+use Override;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\StoredValue;
 use Hashtopolis\TestBase;
@@ -16,10 +17,44 @@ use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\models\Preprocessor;
 use Hashtopolis\dba\models\RightGroup;
 use Hashtopolis\dba\models\HashType;
+use Hashtopolis\inc\defines\DConfig;
 
 require_once(dirname(__FILE__) . '/../TestBase.php');
 
 final class UtilTest extends TestBase {
+  private string|false $savedBackendUrl = false;
+  private array $savedServer = [];
+  
+  #[Override]
+  protected function setUp(): void {
+    parent::setUp();
+    $this->savedBackendUrl = getenv('HASHTOPOLIS_BACKEND_URL');
+    $this->savedServer = [
+      'HTTP_HOST' => $_SERVER['HTTP_HOST'] ?? null,
+      'SERVER_PORT' => $_SERVER['SERVER_PORT'] ?? null,
+      'HTTPS' => $_SERVER['HTTPS'] ?? null,
+    ];
+  }
+  
+  #[Override]
+  protected function tearDown(): void {
+    if ($this->savedBackendUrl === false) {
+      putenv('HASHTOPOLIS_BACKEND_URL');
+    }
+    else {
+      putenv('HASHTOPOLIS_BACKEND_URL=' . $this->savedBackendUrl);
+    }
+    foreach ($this->savedServer as $key => $value) {
+      if ($value === null) {
+        unset($_SERVER[$key]);
+      }
+      else {
+        $_SERVER[$key] = $value;
+      }
+    }
+    parent::tearDown();
+  }
+
   /**
    * extractFileExtension returns empty string when no dot is present.
    */
@@ -1033,5 +1068,108 @@ final class UtilTest extends TestBase {
       $obj = Factory::getConfigFactory()->get($id);
       $this->assertNotNull($obj, "Config entry $id should exist");
     }
+  }
+
+  /**
+   * Expected fallback result when HASHTOPOLIS_BACKEND_URL is not usable:
+   * the server URL derived from the current request plus the configured base URL.
+   *
+   * @throws Exception
+   */
+  private function expectedFallbackUrl(): string {
+    return rtrim(Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL), '/');
+  }
+
+  /**
+   * buildBackendBaseUrl takes scheme, host and port from HASHTOPOLIS_BACKEND_URL
+   * and strips any path it may contain.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlFromEnv(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=http://localhost:8080/api/v2');
+    $this->assertEquals('http://localhost:8080', Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * buildBackendBaseUrl handles a HASHTOPOLIS_BACKEND_URL without path and port.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlFromEnvNoPath(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=http://hashtopolis.example.com');
+    $this->assertEquals('http://hashtopolis.example.com', Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * buildBackendBaseUrl keeps https scheme and non-default ports.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlFromEnvHttpsPort(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=https://hashtopolis.example.com:8443/hashtopolis/api/v2');
+    $this->assertEquals('https://hashtopolis.example.com:8443', Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * buildBackendBaseUrl keeps IPv6 hosts from HASHTOPOLIS_BACKEND_URL.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlFromEnvIpv6(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=http://[::1]:8080/api/v2');
+    $this->assertEquals('http://[::1]:8080', Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * buildBackendBaseUrl strips a trailing slash of the env value.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlFromEnvTrailingSlash(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=http://localhost:8080/');
+    $this->assertEquals('http://localhost:8080', Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * buildBackendBaseUrl falls back to the server URL for a malformed env value
+   * (missing scheme), instead of returning a broken URL.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlEnvMalformedFallsBack(): void {
+    $_SERVER['HTTP_HOST'] = 'fallbackhost:1234';
+    $_SERVER['SERVER_PORT'] = '1234';
+    unset($_SERVER['HTTPS']);
+    putenv('HASHTOPOLIS_BACKEND_URL=localhost:8080');
+    $this->assertEquals($this->expectedFallbackUrl(), Util::buildBackendBaseUrl());
+    $this->assertEquals('http://fallbackhost:1234' . SConfig::getInstance()->getVal(DConfig::BASE_URL), Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * buildBackendBaseUrl falls back to the server URL when HASHTOPOLIS_BACKEND_URL is unset.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlEnvUnsetFallsBack(): void {
+    $_SERVER['HTTP_HOST'] = 'fallbackhost:1234';
+    $_SERVER['SERVER_PORT'] = '1234';
+    unset($_SERVER['HTTPS']);
+    putenv('HASHTOPOLIS_BACKEND_URL');
+    $this->assertEquals($this->expectedFallbackUrl(), Util::buildBackendBaseUrl());
+    $this->assertEquals('http://fallbackhost:1234' . SConfig::getInstance()->getVal(DConfig::BASE_URL), Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * buildBackendBaseUrl falls back to the server URL for an empty env value.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlEnvEmptyFallsBack(): void {
+    $_SERVER['HTTP_HOST'] = 'fallbackhost:1234';
+    $_SERVER['SERVER_PORT'] = '1234';
+    unset($_SERVER['HTTPS']);
+    putenv('HASHTOPOLIS_BACKEND_URL=');
+    $this->assertEquals($this->expectedFallbackUrl(), Util::buildBackendBaseUrl());
   }
 }

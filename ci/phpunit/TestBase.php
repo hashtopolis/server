@@ -213,7 +213,7 @@ class TestBase extends TestCase {
   protected function createCrackerBinary(CrackerBinaryType $crackerBinaryType): CrackerBinary {
     $crackerBinary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $crackerBinaryType->getId(), '1.0.' . uniqid(), 'https://example.invalid/' . uniqid(), 'binary_' . uniqid())
+      new CrackerBinary(null, $crackerBinaryType->getId(), '1.0.' . uniqid(), 'https://example.invalid/' . uniqid(), 'binary_' . uniqid(), null)
     );
     $this->assertTrue($crackerBinary instanceof CrackerBinary);
     return $crackerBinary;

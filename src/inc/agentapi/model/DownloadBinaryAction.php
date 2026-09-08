@@ -69,8 +69,14 @@ final class DownloadBinaryAction implements AgentAction {
                 $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinary->getCrackerBinaryTypeId());
                 DServerLog::log(DServerLog::TRACE, 'Agent ' . $agent->getId() . ' downloaded cracker binary ' . $crackerBinary->getId());
                 $ext = Util::getFileExtension($agent->getOs());
+                $url = $crackerBinary->getDownloadUrl();
+                // locally stored binaries are downloaded from this server, the download
+                // endpoint requires the token of the requesting agent as authentication
+                if ($crackerBinary->getFilename() !== null) {
+                    $url .= '?token=' . $agent->getToken();
+                }
                 return $this->success($response, PActions::DOWNLOAD_BINARY, [
-                    PResponseBinaryDownload::URL         => $crackerBinary->getDownloadUrl(),
+                    PResponseBinaryDownload::URL         => $url,
                     PResponseBinaryDownload::NAME        => $crackerBinaryType->getTypeName(),
                     PResponseBinaryDownload::EXECUTABLE  => $crackerBinary->getBinaryName() . $ext,
                 ]);
