@@ -3,7 +3,7 @@
     {
       "agentBinaryId" : 1,
       "binaryType" : "python",
-      "version" : "0.7.5",
+      "version" : "0.7.6",
       "operatingSystems" : "Windows, Linux, OS X",
       "filename" : "hashtopolis.zip",
       "updateTrack" : "stable",
