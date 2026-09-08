@@ -56,6 +56,12 @@ class CrackerUtils {
   }
   
   /**
+   * Creates a new cracker binary which is referenced by an external download url.
+   * The server downloads a local copy of the archive into the crackers directory,
+   * so it has it available for later analysis. The agents still download the
+   * archive from the external download url. If the download fails or the archive
+   * is not a valid 7z archive, nothing is added.
+   *
    * @param string $version
    * @param string $name
    * @param string $url
@@ -70,8 +76,31 @@ class CrackerUtils {
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
       throw new HttpError("Please provide all information!");
     }
-    $binary = new CrackerBinary(null, $binaryType->getId(), $version, $url, $name, null);
-    return Factory::getCrackerBinaryFactory()->save($binary);
+    $scheme = parse_url($url, PHP_URL_SCHEME);
+    if ($scheme != "http" && $scheme != "https") {
+      throw new HttpError("Only http and https download urls are supported!");
+    }
+    $crackersPath = CrackerUtils::getCrackersPath();
+    $filename = CrackerUtils::buildArchiveFilename($binaryType, $version);
+    // create the entry first, the id is needed for the filename of the local copy
+    $binary = Factory::getCrackerBinaryFactory()->save(
+      new CrackerBinary(null, $binaryType->getId(), $version, $url, $name, null)
+    );
+    $target = $crackersPath . $binary->getId() . '_' . $filename;
+    [$success, $msg] = Util::uploadFile($target, "url", $url);
+    if (!$success) {
+      if (file_exists($target)) {
+        unlink($target);
+      }
+      Factory::getCrackerBinaryFactory()->delete($binary);
+      throw new HttpError("Failed to download the archive from the download url: " . $msg);
+    }
+    if (!CrackerUtils::isSevenZipArchive($target)) {
+      unlink($target);
+      Factory::getCrackerBinaryFactory()->delete($binary);
+      throw new HttpError("The archive at the download url is not a valid 7z archive!");
+    }
+    return $binary;
   }
   
   /**
@@ -193,13 +222,13 @@ class CrackerUtils {
   }
   
   /**
-   * Removes the locally stored archive of a cracker binary if there is one.
+   * Removes the locally stored archive and any downloaded local copy of a
+   * cracker binary, all of them are prefixed with the id of the binary.
    *
    * @throws Exception
    */
   private static function deleteLocalArchive(CrackerBinary $binary): void {
-    if ($binary->getFilename() !== null) {
-      $path = CrackerUtils::getCrackersPath() . $binary->getId() . '_' . $binary->getFilename();
+    foreach (glob(CrackerUtils::getCrackersPath() . $binary->getId() . '_*') ?: [] as $path) {
       if (file_exists($path)) {
         unlink($path);
       }

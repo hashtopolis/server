@@ -1215,11 +1215,23 @@ class Util {
           break;
         
         case "url":
-          $furl = fopen($sourcedata, "rb");
+          error_clear_last();
+          $furl = @fopen($sourcedata, "rb");
           if (!$furl) {
             $msg = "Could not open url at source data!";
+            $lastError = error_get_last();
+            if ($lastError !== null) {
+              $msg .= " (" . $lastError['message'] . ")";
+            }
           }
           else {
+            $contentLength = null;
+            $meta = stream_get_meta_data($furl);
+            foreach ($meta['wrapper_data'] ?? [] as $header) {
+              if (preg_match('/^Content-Length:\s*(\d+)\s*$/i', $header, $matches)) {
+                $contentLength = (int)$matches[1];
+              }
+            }
             $fileLocation = fopen($target, "w");
             if (!$fileLocation) {
               $msg = "Could not open target file!";
@@ -1227,18 +1239,41 @@ class Util {
             else {
               $buffersize = 131072;
               $last_logged = time();
+              $failed = false;
+              $received = 0;
               while (!feof($furl)) {
-                if (!$data = fread($furl, $buffersize)) {
+                $data = fread($furl, $buffersize);
+                if ($data === false) {
                   $msg = "READ ERROR on download";
+                  $failed = true;
                   break;
                 }
-                fwrite($fileLocation, $data);
+                if ($data === '') {
+                  break;
+                }
+                if (fwrite($fileLocation, $data) !== strlen($data)) {
+                  $msg = "Failed to write downloaded data to the target file!";
+                  $failed = true;
+                  break;
+                }
+                $received += strlen($data);
                 if ($last_logged < time() - 10) {
                   $last_logged = time();
                 }
               }
               fclose($fileLocation);
-              $success = true;
+              if (!$failed && $contentLength !== null && $received !== $contentLength) {
+                $msg = "Download incomplete, received " . $received . " of " . $contentLength . " bytes!";
+                $failed = true;
+              }
+              if ($failed) {
+                if (file_exists($target)) {
+                  unlink($target);
+                }
+              }
+              else {
+                $success = true;
+              }
             }
             fclose($furl);
           }
