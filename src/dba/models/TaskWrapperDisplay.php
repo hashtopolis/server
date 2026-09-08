@@ -32,11 +32,12 @@ class TaskWrapperDisplay extends AbstractModel {
   private ?string $hashlistName;
   private ?int $hashCount;
   private ?int $hashlistCracked;
+  private ?int $hashlistIsSecret;
   private ?int $hashTypeId;
   private ?string $hashTypeDescription;
   private ?string $groupName;
   
-  function __construct(?int $taskWrapperId, ?int $taskWrapperPriority, ?int $taskWrapperMaxAgents, ?int $taskType, ?int $hashlistId, ?int $accessGroupId, ?string $taskWrapperName, ?string $displayName, ?int $taskWrapperIsArchived, ?int $cracked, ?int $taskId, ?string $taskName, ?string $color, ?string $attackCmd, ?int $chunkTime, ?int $statusTimer, ?int $keyspace, ?int $keyspaceProgress, ?int $taskPriority, ?int $taskMaxAgents, ?int $isSmall, ?int $isCpuTask, ?int $taskIsArchived, ?int $taskUsePreprocessor, ?string $hashlistName, ?int $hashCount, ?int $hashlistCracked, ?int $hashTypeId, ?string $hashTypeDescription, ?string $groupName) {
+  function __construct(?int $taskWrapperId, ?int $taskWrapperPriority, ?int $taskWrapperMaxAgents, ?int $taskType, ?int $hashlistId, ?int $accessGroupId, ?string $taskWrapperName, ?string $displayName, ?int $taskWrapperIsArchived, ?int $cracked, ?int $taskId, ?string $taskName, ?string $color, ?string $attackCmd, ?int $chunkTime, ?int $statusTimer, ?int $keyspace, ?int $keyspaceProgress, ?int $taskPriority, ?int $taskMaxAgents, ?int $isSmall, ?int $isCpuTask, ?int $taskIsArchived, ?int $taskUsePreprocessor, ?string $hashlistName, ?int $hashCount, ?int $hashlistCracked, ?int $hashlistIsSecret, ?int $hashTypeId, ?string $hashTypeDescription, ?string $groupName) {
     $this->taskWrapperId = $taskWrapperId;
     $this->taskWrapperPriority = $taskWrapperPriority;
     $this->taskWrapperMaxAgents = $taskWrapperMaxAgents;
@@ -64,6 +65,7 @@ class TaskWrapperDisplay extends AbstractModel {
     $this->hashlistName = $hashlistName;
     $this->hashCount = $hashCount;
     $this->hashlistCracked = $hashlistCracked;
+    $this->hashlistIsSecret = $hashlistIsSecret;
     $this->hashTypeId = $hashTypeId;
     $this->hashTypeDescription = $hashTypeDescription;
     $this->groupName = $groupName;
@@ -98,6 +100,7 @@ class TaskWrapperDisplay extends AbstractModel {
     $dict['hashlistName'] = $this->hashlistName;
     $dict['hashCount'] = $this->hashCount;
     $dict['hashlistCracked'] = $this->hashlistCracked;
+    $dict['hashlistIsSecret'] = $this->hashlistIsSecret;
     $dict['hashTypeId'] = $this->hashTypeId;
     $dict['hashTypeDescription'] = $this->hashTypeDescription;
     $dict['groupName'] = $this->groupName;
@@ -134,6 +137,7 @@ class TaskWrapperDisplay extends AbstractModel {
     $dict['hashlistName'] = ['read_only' => True, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "hashlistName", "public" => False, "dba_mapping" => False];
     $dict['hashCount'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "hashCount", "public" => False, "dba_mapping" => False];
     $dict['hashlistCracked'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "hashlistCracked", "public" => False, "dba_mapping" => False];
+    $dict['hashlistIsSecret'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashlistIsSecret", "public" => False, "dba_mapping" => False];
     $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "hashTypeId", "public" => False, "dba_mapping" => False];
     $dict['hashTypeDescription'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "hashTypeDescription", "public" => False, "dba_mapping" => False];
     $dict['groupName'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "groupName", "public" => False, "dba_mapping" => False];
@@ -373,6 +377,14 @@ class TaskWrapperDisplay extends AbstractModel {
     $this->hashlistCracked = $hashlistCracked;
   }
   
+  function getHashlistIsSecret(): ?int {
+    return $this->hashlistIsSecret;
+  }
+  
+  function setHashlistIsSecret(?int $hashlistIsSecret): void {
+    $this->hashlistIsSecret = $hashlistIsSecret;
+  }
+  
   function getHashTypeId(): ?int {
     return $this->hashTypeId;
   }
@@ -424,6 +436,7 @@ class TaskWrapperDisplay extends AbstractModel {
   const HASHLIST_NAME = "hashlistName";
   const HASH_COUNT = "hashCount";
   const HASHLIST_CRACKED = "hashlistCracked";
+  const HASHLIST_IS_SECRET = "hashlistIsSecret";
   const HASH_TYPE_ID = "hashTypeId";
   const HASH_TYPE_DESCRIPTION = "hashTypeDescription";
   const GROUP_NAME = "groupName";
