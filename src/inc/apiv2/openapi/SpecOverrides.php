@@ -124,7 +124,7 @@ class SpecOverrides {
       ],
       'CrackerBinary' => [
         self::ATTRIBUTE_DESCRIPTIONS => [
-          'downloadUrl' => 'External url where the agent downloads the binary archive from. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards.',
+          'downloadUrl' => 'External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards.',
           'filename' => 'Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided.',
           'sourceType' => 'Source the 7z archive is uploaded from: inline (base64 archive data in sourceData), import (filename of a file in the import directory as sourceData) or url (http/https url in sourceData, fetched by the server). Mutually exclusive with downloadUrl.',
           'sourceData' => 'Source of the archive upload, depending on sourceType: base64 encoded archive data, filename of a file in the import directory or a http/https url to fetch the archive from.',

@@ -1,6 +1,6 @@
 from hashtopolis import Helper, HashtopolisError, TaskWrapper
 from hashtopolis import Cracker
-from utils import BaseTest
+from utils import BaseTest, get_cracker_archive_url
 
 
 class TaskWrapperTest(BaseTest):
@@ -59,7 +59,7 @@ class TaskWrapperTest(BaseTest):
         cracker = Cracker(
             crackerBinaryTypeId=crackertype.id,
             version='1.2.3',
-            downloadUrl='https://example.org/generic-1.2.3.gz',
+            downloadUrl=get_cracker_archive_url(),
             binaryName='generic-x64')
         cracker.save()
         self.delete_after_test(cracker)

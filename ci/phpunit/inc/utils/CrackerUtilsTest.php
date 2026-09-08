@@ -92,12 +92,27 @@ final class CrackerUtilsTest extends TestBase {
     CrackerUtils::createBinary('', 'testcracker', 'http://example.com', $this->type->getId());
   }
 
-  // Verifies the full happy path: createBinary() creates and returns a new
-  // CrackerBinary when all fields are valid.
-  public function testCreateBinaryValidInputCreatesBinary(): void {
-    $b = CrackerUtils::createBinary('9.9.9', 'newcracker', 'http://example.com/dl', $this->type->getId());
-    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
-    $this->assertSame('9.9.9', $b->getVersion());
+  // Verifies that createBinary() rejects a download url the server cannot
+  // fetch, and that the failed creation leaves no binary and no partial
+  // archive behind.
+  public function testCreateBinaryUnreachableUrlRollsBack(): void {
+    $countBefore = $this->countBinariesOfType($this->type->getId());
+    try {
+      CrackerUtils::createBinary('9.9.9', 'testcracker', 'http://127.0.0.1:1/cracker.7z', $this->type->getId());
+      $this->fail('Expected HttpError for an unreachable download url');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('Failed to download the archive from the download url', $e->getMessage());
+    }
+    $this->assertEquals($countBefore, $this->countBinariesOfType($this->type->getId()));
+    $this->assertEmpty(glob(CrackerUtils::getCrackersPath() . '*_test-crackerutils-type-9.9.9.7z'));
+  }
+
+  // Verifies that createBinary() only accepts http and https download urls,
+  // so the server cannot be pointed at local files or stream wrappers.
+  public function testCreateBinaryInvalidSchemeThrowsHttpError(): void {
+    $this->expectException(HttpError::class);
+    CrackerUtils::createBinary('9.9.9', 'testcracker', 'file:///etc/passwd', $this->type->getId());
   }
 
   private const SEVEN_ZIP_MAGIC = "\x37\x7A\xBC\xAF\x27\x1C";
@@ -247,6 +262,22 @@ final class CrackerUtilsTest extends TestBase {
     $this->assertNull(Factory::getCrackerBinaryFactory()->get($b->getId()));
   }
 
+  // Verifies that deleteBinary() also removes the local copy which was
+  // downloaded from the download url of an externally referenced binary.
+  public function testDeleteBinaryRemovesDownloadedLocalCopy(): void {
+    $binary = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
+      new CrackerBinary(null, $this->type->getId(), '3.0.0', 'http://example.com/cracker.7z', 'testcracker', null)
+    );
+    $copy = CrackerUtils::getCrackersPath() . $binary->getId() . '_test-crackerutils-type-3.0.0.7z';
+    file_put_contents($copy, self::SEVEN_ZIP_MAGIC . 'downloaded-local-copy');
+    $this->assertFileExists($copy);
+
+    CrackerUtils::deleteBinary($binary->getId());
+
+    $this->assertFileDoesNotExist($copy);
+  }
+
   // Verifies that deleteBinaryType() removes the archives of all locally stored
   // binaries of the type.
   public function testDeleteBinaryTypeRemovesLocalArchives(): void {
@@ -303,11 +334,68 @@ final class CrackerUtilsTest extends TestBase {
     CrackerUtils::deleteBinary($b->getId());
   }
 
-  // Verifies that the download url of a regular binary can still be changed.
-  public function testUpdateBinaryChangesUrlForExternalBinary(): void {
-    CrackerUtils::updateBinary('2.0.0', 'testcracker', 'http://changed.example.com/hc.7z', $this->binary->getId());
+  // Verifies that changing the download url of an externally referenced binary
+  // re-downloads the local copy from it, and that a failed download rolls the
+  // update back so nothing is changed and the previous copy is kept.
+  public function testUpdateBinaryUrlChangeRollsBackOnFailedDownload(): void {
+    $binary = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://127.0.0.1:1/original.7z', 'testcracker', null)
+    );
+    $copy = CrackerUtils::getCrackersPath() . $binary->getId() . '_test-crackerutils-type-1.0.0.7z';
+    file_put_contents($copy, self::SEVEN_ZIP_MAGIC . 'previous-local-copy');
+
+    try {
+      CrackerUtils::updateBinary('2.0.0', 'newcracker', 'http://127.0.0.1:1/changed.7z', $binary->getId());
+      $this->fail('Expected HttpError for a failed download from the changed url');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('Failed to download the archive from the download url', $e->getMessage());
+    }
+
+    // the update was rolled back
+    $reloaded = Factory::getCrackerBinaryFactory()->get($binary->getId());
+    $this->assertEquals('1.0.0', $reloaded->getVersion());
+    $this->assertEquals('http://127.0.0.1:1/original.7z', $reloaded->getDownloadUrl());
+    $this->assertEquals('testcracker', $reloaded->getBinaryName());
+    // the previous local copy is still there, unchanged
+    $this->assertFileExists($copy);
+    $this->assertEquals(self::SEVEN_ZIP_MAGIC . 'previous-local-copy', file_get_contents($copy));
+  }
+
+  // Verifies that a changed download url of a url-referenced binary has to be
+  // an http or https url.
+  public function testUpdateBinaryUrlChangeInvalidSchemeThrowsHttpError(): void {
+    try {
+      CrackerUtils::updateBinary('2.0.0', 'testcracker', 'file:///etc/passwd', $this->binary->getId());
+      $this->fail('Expected HttpError for an invalid download url scheme');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('Only http and https download urls are supported!', $e->getMessage());
+    }
+    // nothing was changed
     $reloaded = Factory::getCrackerBinaryFactory()->get($this->binary->getId());
-    $this->assertEquals('http://changed.example.com/hc.7z', $reloaded->getDownloadUrl());
+    $this->assertEquals('http://example.com', $reloaded->getDownloadUrl());
+  }
+
+  // Verifies that updating a binary without changing its download url does
+  // not re-download the local copy, the copy tracks the download url.
+  public function testUpdateBinaryUnchangedUrlKeepsLocalCopy(): void {
+    $binary = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://127.0.0.1:1/unreachable.7z', 'testcracker', null)
+    );
+    $copy = CrackerUtils::getCrackersPath() . $binary->getId() . '_test-crackerutils-type-1.0.0.7z';
+    file_put_contents($copy, self::SEVEN_ZIP_MAGIC . 'kept-local-copy');
+
+    // the url is not changed, so no download happens even though it is unreachable
+    CrackerUtils::updateBinary('2.0.0', 'newcracker', 'http://127.0.0.1:1/unreachable.7z', $binary->getId());
+
+    $reloaded = Factory::getCrackerBinaryFactory()->get($binary->getId());
     $this->assertEquals('2.0.0', $reloaded->getVersion());
+    $this->assertEquals('newcracker', $reloaded->getBinaryName());
+    // the local copy is untouched, still under the filename of its version
+    $this->assertFileExists($copy);
+    $this->assertEquals(self::SEVEN_ZIP_MAGIC . 'kept-local-copy', file_get_contents($copy));
   }
 }

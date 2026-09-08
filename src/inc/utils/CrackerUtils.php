@@ -76,29 +76,17 @@ class CrackerUtils {
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
       throw new HttpError("Please provide all information!");
     }
-    $scheme = parse_url($url, PHP_URL_SCHEME);
-    if ($scheme != "http" && $scheme != "https") {
-      throw new HttpError("Only http and https download urls are supported!");
-    }
-    $crackersPath = CrackerUtils::getCrackersPath();
-    $filename = CrackerUtils::buildArchiveFilename($binaryType, $version);
+    CrackerUtils::validateDownloadUrl($url);
     // create the entry first, the id is needed for the filename of the local copy
     $binary = Factory::getCrackerBinaryFactory()->save(
       new CrackerBinary(null, $binaryType->getId(), $version, $url, $name, null)
     );
-    $target = $crackersPath . $binary->getId() . '_' . $filename;
-    [$success, $msg] = Util::uploadFile($target, "url", $url);
-    if (!$success) {
-      if (file_exists($target)) {
-        unlink($target);
-      }
-      Factory::getCrackerBinaryFactory()->delete($binary);
-      throw new HttpError("Failed to download the archive from the download url: " . $msg);
+    try {
+      CrackerUtils::storeLocalCopy($binary);
     }
-    if (!CrackerUtils::isSevenZipArchive($target)) {
-      unlink($target);
+    catch (HttpError $e) {
       Factory::getCrackerBinaryFactory()->delete($binary);
-      throw new HttpError("The archive at the download url is not a valid 7z archive!");
+      throw $e;
     }
     return $binary;
   }
@@ -222,6 +210,86 @@ class CrackerUtils {
   }
   
   /**
+   * Validates that the server is allowed to fetch the given url as the
+   * download url of a cracker binary archive.
+   *
+   * @param string $url
+   * @throws HttpError
+   */
+  public static function validateDownloadUrl(string $url): void {
+    $scheme = parse_url($url, PHP_URL_SCHEME);
+    if ($scheme != "http" && $scheme != "https") {
+      throw new HttpError("Only http and https download urls are supported!");
+    }
+  }
+  
+  /**
+   * Downloads a local copy of the archive of a url-referenced cracker binary
+   * from its download url into the crackers directory. The archive is
+   * downloaded to a temporary file first, so a failed download cannot destroy
+   * a previously stored local copy, and only moved into place after it was
+   * validated as a 7z archive. Local copies of previous versions or urls of
+   * the binary are removed.
+   *
+   * @param CrackerBinary $binary the binary to download the archive for
+   * @throws HttpError
+   * @throws HTException
+   * @throws Exception
+   */
+  private static function storeLocalCopy(CrackerBinary $binary): void {
+    $binaryType = CrackerUtils::getBinaryType($binary->getCrackerBinaryTypeId());
+    $crackersPath = CrackerUtils::getCrackersPath();
+    $filename = CrackerUtils::buildArchiveFilename($binaryType, $binary->getVersion());
+    $target = $crackersPath . $binary->getId() . '_' . $filename;
+    $temporary = $target . '.part';
+    if (file_exists($temporary)) {
+      unlink($temporary);
+    }
+    [$success, $msg] = Util::uploadFile($temporary, "url", $binary->getDownloadUrl());
+    if (!$success) {
+      if (file_exists($temporary)) {
+        unlink($temporary);
+      }
+      throw new HttpError("Failed to download the archive from the download url: " . $msg);
+    }
+    if (!CrackerUtils::isSevenZipArchive($temporary)) {
+      unlink($temporary);
+      throw new HttpError("The archive at the download url is not a valid 7z archive!");
+    }
+    rename($temporary, $target);
+    // remove local copies of previous versions or urls of this binary
+    foreach (glob($crackersPath . $binary->getId() . '_*') ?: [] as $path) {
+      if ($path != $target) {
+        unlink($path);
+      }
+    }
+  }
+  
+  /**
+   * Refreshes the local copy of the archive of a url-referenced cracker binary
+   * from its download url, to be called after the binary was updated in the
+   * database. If the download fails, the update is rolled back by restoring
+   * the given previous values before the error is rethrown, so nothing of
+   * the update remains.
+   *
+   * @param int $binaryId
+   * @param array $previousValues previous values of the updated fields, keyed by the CrackerBinary feature constants
+   * @throws HttpError
+   * @throws HTException
+   * @throws Exception
+   */
+  public static function refreshLocalCopy(int $binaryId, array $previousValues): void {
+    $binary = CrackerUtils::getBinary($binaryId);
+    try {
+      CrackerUtils::storeLocalCopy($binary);
+    }
+    catch (HttpError $e) {
+      Factory::getCrackerBinaryFactory()->mset($binary, $previousValues);
+      throw $e;
+    }
+  }
+  
+  /**
    * Removes the locally stored archive and any downloaded local copy of a
    * cracker binary, all of them are prefixed with the id of the binary.
    *
@@ -289,11 +357,17 @@ class CrackerUtils {
   }
   
   /**
+   * Updates a cracker binary. When the download url of a binary which is
+   * referenced by an external url is changed, the server downloads a new local
+   * copy of the archive from it; if that download fails, the update is rolled
+   * back so nothing is changed.
+   *
    * @param string $version
    * @param string $name
    * @param string $url
    * @param int $binaryId
    * @return CrackerBinaryType
+   * @throws HttpError
    * @throws HTException
    * @throws Exception
    */
@@ -306,12 +380,26 @@ class CrackerUtils {
     if ($binary->getFilename() !== null && $url != $binary->getDownloadUrl()) {
       throw new HTException("The download url of a locally stored cracker binary cannot be changed!");
     }
+    // a changed download url of a url-referenced binary requires the server to
+    // download a new local copy of the archive from it
+    $refreshLocalCopy = $binary->getFilename() === null && $url != $binary->getDownloadUrl();
+    if ($refreshLocalCopy) {
+      CrackerUtils::validateDownloadUrl($url);
+    }
+    $previousValues = [
+      CrackerBinary::VERSION => $binary->getVersion(),
+      CrackerBinary::DOWNLOAD_URL => $binary->getDownloadUrl(),
+      CrackerBinary::BINARY_NAME => $binary->getBinaryName()
+    ];
     $binary = Factory::getCrackerBinaryFactory()->mset($binary, [
         CrackerBinary::BINARY_NAME => htmlentities($name, ENT_QUOTES, "UTF-8"),
         CrackerBinary::DOWNLOAD_URL => $url,
         CrackerBinary::VERSION => $version
       ]
     );
+    if ($refreshLocalCopy) {
+      CrackerUtils::refreshLocalCopy($binary->getId(), $previousValues);
+    }
     return Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
   }
   

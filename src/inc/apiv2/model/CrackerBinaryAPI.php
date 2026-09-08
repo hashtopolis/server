@@ -109,7 +109,10 @@ class CrackerBinaryAPI extends AbstractModelAPI {
 
   /**
    * The download url of locally stored binaries is owned by the server, so it
-   * cannot be overwritten with a patch.
+   * cannot be overwritten with a patch. When the download url of a binary which
+   * is referenced by an external url is changed, the server downloads a new
+   * local copy of the archive from it; if that download fails, the update is
+   * rolled back so nothing is changed.
    *
    * @param int $objectId
    * @param array $data
@@ -119,12 +122,26 @@ class CrackerBinaryAPI extends AbstractModelAPI {
    * @throws HTException
    */
   protected function updateObject(int $objectId, array $data): void {
+    $binary = CrackerUtils::getBinary($objectId);
     if (array_key_exists(CrackerBinary::DOWNLOAD_URL, $data)) {
-      $binary = CrackerUtils::getBinary($objectId);
       if ($binary->getFilename() !== null) {
         throw new HttpError("The download url of a locally stored cracker binary cannot be changed!");
       }
     }
+    $refreshLocalCopy = $binary->getFilename() === null
+      && ($data[CrackerBinary::DOWNLOAD_URL] ?? null) !== null
+      && $data[CrackerBinary::DOWNLOAD_URL] != $binary->getDownloadUrl();
+    if ($refreshLocalCopy) {
+      CrackerUtils::validateDownloadUrl($data[CrackerBinary::DOWNLOAD_URL]);
+    }
+    $previousValues = [
+      CrackerBinary::VERSION => $binary->getVersion(),
+      CrackerBinary::DOWNLOAD_URL => $binary->getDownloadUrl(),
+      CrackerBinary::BINARY_NAME => $binary->getBinaryName()
+    ];
     parent::updateObject($objectId, $data);
+    if ($refreshLocalCopy) {
+      CrackerUtils::refreshLocalCopy($objectId, $previousValues);
+    }
   }
 }

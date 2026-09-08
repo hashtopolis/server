@@ -1,11 +1,13 @@
 import abc
 import base64
 import datetime
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from io import BytesIO
 import json
 from pathlib import Path
 import requests
 import tempfile
+import threading
 import time
 import unittest
 import zipfile
@@ -62,6 +64,42 @@ def get_bearer_token():
 
 # magic bytes every valid 7z archive starts with
 SEVEN_ZIP_MAGIC = b'\x37\x7A\xBC\xAF\x27\x1C'
+
+# archive content served by the shared test server for download-url cracker
+# creations, the server downloads a local copy of it on creation
+CRACKER_URL_ARCHIVE_CONTENT = SEVEN_ZIP_MAGIC + b'cracker-download-url-archive'
+
+
+class _CrackerArchiveHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/x-7z-compressed')
+        self.send_header('Content-Length', str(len(CRACKER_URL_ARCHIVE_CONTENT)))
+        self.end_headers()
+        self.wfile.write(CRACKER_URL_ARCHIVE_CONTENT)
+
+    def log_message(self, format, *args):
+        pass
+
+
+_cracker_archive_server = None
+
+
+def get_cracker_archive_url():
+    """Url of a shared local http server which serves a valid 7z archive.
+
+    Cracker binaries created with a download url need a url which really
+    serves an archive, the server downloads a local copy from it on creation.
+    The server is started lazily and kept alive for the whole test run, the
+    hashtopolis server can reach it because the tests run in the same
+    container/network namespace.
+    """
+    global _cracker_archive_server
+    if _cracker_archive_server is None:
+        server = HTTPServer(('127.0.0.1', 0), _CrackerArchiveHandler)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        _cracker_archive_server = server
+    return f'http://127.0.0.1:{_cracker_archive_server.server_address[1]}/cracker.7z'
 
 
 def _do_create_obj_from_file(model_class, file_prefix, extra_payload={}, **kwargs):
@@ -185,7 +223,11 @@ def do_create_accessgroup(**kwargs):
 
 
 def do_create_cracker(**kwargs):
-    return _do_create_obj_from_file(Cracker, 'create_cracker', **kwargs)
+    extra_payload = dict(kwargs.pop('extra_payload', None) or {})
+    # the server downloads a local copy of the archive on creation, so the
+    # download url has to serve a real archive unless the test provides its own
+    extra_payload.setdefault('downloadUrl', get_cracker_archive_url())
+    return _do_create_obj_from_file(Cracker, 'create_cracker', extra_payload, **kwargs)
 
 
 def do_create_local_cracker(source_type='inline', source_data=None,
