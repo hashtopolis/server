@@ -8,6 +8,7 @@ use Hashtopolis\dba\models\Pretask;
 use Hashtopolis\dba\models\FilePretask;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\Task;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\SupertaskPretask;
@@ -237,7 +238,7 @@ class PretaskUtils {
    * @throws HTException
    * @throws Exception
    */
-  public static function runPretask(int $pretaskId, int $hashlistId, string $name, int $crackerBinaryId): void {
+  public static function runPretask(int $pretaskId, int $hashlistId, string $name, int $crackerBinaryId, User $user): void {
     $pretask = Factory::getPretaskFactory()->get($pretaskId);
     if ($pretask == null) {
       throw new HTException("Invalid preconfigured task ID!");
@@ -256,6 +257,9 @@ class PretaskUtils {
     }
     else if ($pretask->getCrackerBinaryTypeId() != $cracker->getCrackerBinaryTypeId()) {
       throw new HTException("Provided cracker does not match the type of the pretask!");
+    }
+    else if (!AccessUtils::userCanAccessCrackerBinary($cracker, $user)) {
+      throw new HTException("You have no access to this cracker binary!");
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
@@ -378,4 +382,3 @@ class PretaskUtils {
     return $pretask;
   }
 }
-

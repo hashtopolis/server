@@ -4,6 +4,7 @@ namespace Hashtopolis\downloadapi;
 
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\inc\defines\DDirectories;
@@ -43,20 +44,24 @@ final class DownloadAppTest extends TestBase {
     );
     $this->externalBinary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com/hc.7z', 'testcracker', null)
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com/hc.7z', 'testcracker', null, 1)
     );
 
     // create a locally stored binary through the import source
     $this->agentToken = 'dl-test-' . uniqid();
-    $this->createDatabaseObject(
+    $agent = $this->createDatabaseObject(
       Factory::getAgentFactory(),
       new Agent(null, 'download-test-agent', '', 0, '', '', 0, 0, 0, $this->agentToken, '', 0, '', null, 0, '')
+    );
+    $this->createDatabaseObject(
+      Factory::getAccessGroupAgentFactory(),
+      new AccessGroupAgent(null, 1, $agent->getId())
     );
 
     $importName = 'download-test-' . uniqid() . '.7z';
     $this->archiveContent = self::SEVEN_ZIP_MAGIC . 'download-test-content';
     file_put_contents(self::getImportPath() . $importName, $this->archiveContent);
-    $this->localBinary = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $importName);
+    $this->localBinary = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $importName, 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $this->localBinary);
 
     if (isset($_SERVER['HTTP_RANGE'])) {
