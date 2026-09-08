@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\openapi;
 
+use stdClass as stdClassAlias;
+
 /**
  * Post-processes the raw generated spec for strict OpenAPI 3.1.0 compliance.
  */
@@ -316,7 +318,7 @@ class SpecSanitizer {
       if ($key === 'properties' && is_array($value)) {
         if (empty($value)) {
           // Empty array -> stdClass so json_encode outputs {} not []
-          $value = new \stdClass();
+          $value = new stdClassAlias();
           continue;
         }
         if (isset($value[0])) {
