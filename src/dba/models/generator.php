@@ -255,7 +255,7 @@ $CONF['Chunk'] = [
     ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Task'],
     ['name' => 'skip', 'read_only' => True, 'type' => 'uint64', 'protected' => True],
     ['name' => 'length', 'read_only' => True, 'type' => 'uint64', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent', 'null' => True],
     ['name' => 'dispatchTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'solveTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'checkpoint', 'read_only' => True, 'type' => 'int64', 'protected' => True],
@@ -618,7 +618,7 @@ $CONF['Zap'] = [
     ['name' => 'zapId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'hash', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
     ['name' => 'solveTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent', 'null' => True],
     ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Hashlist'],
   ],
 ];

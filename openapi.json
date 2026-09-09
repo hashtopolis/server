@@ -31491,7 +31491,10 @@
                                                     "type": "integer"
                                                 },
                                                 "agentId": {
-                                                    "type": "integer"
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "dispatchTime": {
                                                     "type": "integer",
@@ -32514,7 +32517,10 @@
                                                     "type": "integer"
                                                 },
                                                 "agentId": {
-                                                    "type": "integer"
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "dispatchTime": {
                                                     "type": "integer",
@@ -33589,7 +33595,10 @@
                                                     "type": "integer"
                                                 },
                                                 "agentId": {
-                                                    "type": "integer"
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "dispatchTime": {
                                                     "type": "integer",
@@ -38512,7 +38521,10 @@
                                         "type": "integer"
                                     },
                                     "agentId": {
-                                        "type": "integer"
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
                                     },
                                     "dispatchTime": {
                                         "type": "integer",
@@ -39114,7 +39126,10 @@
                                             "type": "integer"
                                         },
                                         "agentId": {
-                                            "type": "integer"
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
                                         },
                                         "dispatchTime": {
                                             "type": "integer",
@@ -47159,7 +47174,10 @@
                                                     "type": "integer"
                                                 },
                                                 "agentId": {
-                                                    "type": "integer"
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "dispatchTime": {
                                                     "type": "integer",
@@ -47681,7 +47699,10 @@
                                                     "type": "integer"
                                                 },
                                                 "agentId": {
-                                                    "type": "integer"
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
                                                 },
                                                 "dispatchTime": {
                                                     "type": "integer",
