@@ -67725,10 +67725,16 @@
                                         "type": "integer"
                                     },
                                     "taskId": {
-                                        "type": "integer"
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
                                     },
                                     "taskName": {
-                                        "type": "string"
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     },
                                     "color": {
                                         "type": [
@@ -67737,27 +67743,48 @@
                                         ]
                                     },
                                     "attackCmd": {
-                                        "type": "string"
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     },
                                     "chunkTime": {
-                                        "type": "integer"
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
                                     },
                                     "statusTimer": {
-                                        "type": "integer"
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
                                     },
                                     "keyspace": {
-                                        "type": "integer",
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ],
                                         "format": "int64"
                                     },
                                     "keyspaceProgress": {
-                                        "type": "integer",
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ],
                                         "format": "int64"
                                     },
                                     "taskPriority": {
-                                        "type": "integer"
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
                                     },
                                     "taskMaxAgents": {
-                                        "type": "integer"
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
                                     },
                                     "isSmall": {
                                         "type": "boolean"
@@ -67769,7 +67796,10 @@
                                         "type": "boolean"
                                     },
                                     "preprocessorId": {
-                                        "type": "integer"
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
                                     },
                                     "hashlistName": {
                                         "type": "string"
@@ -68223,10 +68253,16 @@
                                             "type": "integer"
                                         },
                                         "taskId": {
-                                            "type": "integer"
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
                                         },
                                         "taskName": {
-                                            "type": "string"
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
                                         },
                                         "color": {
                                             "type": [
@@ -68235,27 +68271,48 @@
                                             ]
                                         },
                                         "attackCmd": {
-                                            "type": "string"
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
                                         },
                                         "chunkTime": {
-                                            "type": "integer"
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
                                         },
                                         "statusTimer": {
-                                            "type": "integer"
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
                                         },
                                         "keyspace": {
-                                            "type": "integer",
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ],
                                             "format": "int64"
                                         },
                                         "keyspaceProgress": {
-                                            "type": "integer",
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ],
                                             "format": "int64"
                                         },
                                         "taskPriority": {
-                                            "type": "integer"
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
                                         },
                                         "taskMaxAgents": {
-                                            "type": "integer"
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
                                         },
                                         "isSmall": {
                                             "type": "boolean"
@@ -68267,7 +68324,10 @@
                                             "type": "boolean"
                                         },
                                         "preprocessorId": {
-                                            "type": "integer"
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
                                         },
                                         "hashlistName": {
                                             "type": "string"
