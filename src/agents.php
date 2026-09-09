@@ -31,6 +31,15 @@ use Hashtopolis\inc\utils\TaskUtils;
 
 require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
+// Support a filename-terminated download URL (agents.php/download/<id>/<filename>)
+// so clients like wget name the saved file correctly.
+if (!isset($_GET['download'])) {
+  $downloadId = Util::getAgentDownloadId($_SERVER['PATH_INFO'] ?? null);
+  if ($downloadId !== null) {
+    $_GET['download'] = $downloadId;
+  }
+}
+
 if (isset($_GET['download'])) {
   $agentHandler = new AgentHandler();
   try {
@@ -151,7 +160,7 @@ else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAcc
   $url = explode("/", $_SERVER['PHP_SELF']);
   unset($url[sizeof($url) - 1]);
   UI::add('apiUrl', Util::buildServerUrl() . implode("/", $url) . "/api/server.php");
-  UI::add('agentUrl', Util::buildServerUrl() . implode("/", $url) . "/agents.php?download=");
+  UI::add('agentUrl', Util::buildServerUrl() . implode("/", $url) . "/agents.php/download/");
 }
 else {
   UI::add('pageTitle', "Agents");
