@@ -16,7 +16,7 @@ class User extends AbstractModel {
   private ?int $registeredSince;
   private ?int $sessionLifetime;
   private ?int $rightGroupId;
-
+  
   function __construct(?int $userId, ?string $username, ?string $email, ?string $passwordHash, ?string $passwordSalt, ?int $isValid, ?int $isComputedPassword, ?int $lastLoginDate, ?int $registeredSince, ?int $sessionLifetime, ?int $rightGroupId) {
     $this->userId = $userId;
     $this->username = $username;
@@ -44,7 +44,7 @@ class User extends AbstractModel {
     $dict['registeredSince'] = $this->registeredSince;
     $dict['sessionLifetime'] = $this->sessionLifetime;
     $dict['rightGroupId'] = $this->rightGroupId;
-
+    
     return $dict;
   }
   
@@ -164,11 +164,11 @@ class User extends AbstractModel {
   function getRightGroupId(): ?int {
     return $this->rightGroupId;
   }
-
+  
   function setRightGroupId(?int $rightGroupId): void {
     $this->rightGroupId = $rightGroupId;
   }
-
+  
   const USER_ID = "userId";
   const USERNAME = "username";
   const EMAIL = "email";
