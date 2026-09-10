@@ -8,9 +8,8 @@ CREATE OR REPLACE VIEW TaskWrapperDisplay AS SELECT
     t.isSmall AS isSmall, t.isCpuTask AS isCpuTask, t.usePreprocessor AS taskUsePreprocessor,
     CASE WHEN tw.taskType = 0 THEN t.taskName ELSE tw.taskWrapperName END AS displayName,
     h.hashlistName AS hashlistName, h.hashCount AS hashCount, h.cracked as hashlistCracked,
-    h.isSecret AS hashlistIsSecret,
     ht.hashTypeId AS hashTypeId, ht.description AS hashTypeDescription, ag.groupName AS groupName,
-    t.color AS color
+    t.color AS color, h.isSecret AS hashlistIsSecret
 FROM TaskWrapper tw
     LEFT JOIN Task t ON tw.taskType = 0 AND t.taskWrapperId = tw.taskWrapperId
     INNER JOIN Hashlist h ON tw.hashlistId = h.hashlistId
