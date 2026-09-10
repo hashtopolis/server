@@ -9,6 +9,7 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\AgentBinary;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
@@ -314,6 +315,19 @@ class TestBase extends TestCase {
     );
     $this->assertTrue($agent instanceof Agent);
     return $agent;
+  }
+
+  /**
+   * @throws Exception
+   */
+  protected function createAgentBinary(string $binaryType, string $version, string $os,
+    string $filename, string $updateTrack, string $updateAvailable): AgentBinary {
+    $agentBinary = $this->createDatabaseObject(
+      Factory::getAgentBinaryFactory(),
+      new AgentBinary(null, $binaryType, $version, $os, $filename, $updateTrack, $updateAvailable)
+    );
+    $this->assertTrue($agentBinary instanceof AgentBinary);
+    return $agentBinary;
   }
   
   public function createTaskHelper(): array {

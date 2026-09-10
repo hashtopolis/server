@@ -64,3 +64,13 @@ namespace Hashtopolis\inc {
     }
   }
 }
+
+namespace Hashtopolis\inc\utils {
+  if (!function_exists(__NAMESPACE__ . '\\file_exists')) {
+    function file_exists($path) {
+      return \hashtopolis_invoke_test_mock(__FUNCTION__, [$path], static function ($path) {
+        return \file_exists($path);
+      });
+    }
+  }
+}
