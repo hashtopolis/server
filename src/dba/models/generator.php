@@ -586,6 +586,7 @@ $CONF['TaskWrapperDisplay'] = [
     ['name' => 'hashlistName', 'read_only' => True, 'type' => 'str(100)', 'protected' => True],
     ['name' => 'hashCount', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'hashlistCracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'hashlistIsSecret', 'read_only' => True, 'type' => 'bool'],
     ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'hashTypeDescription', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
     ['name' => 'groupName', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
