@@ -11,6 +11,7 @@
     "vscode": {
       "extensions": [
         "xdebug.php-debug",
+        "recca0120.vscode-phpunit",
         "bmewburn.vscode-intelephense-client",
         "editorconfig.editorconfig",
         "eamodio.gitlens",

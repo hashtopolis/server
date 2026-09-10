@@ -11,6 +11,10 @@
     "python.testing.pytestArgs": [
         "ci"
     ],
+    "phpunit.phpunit": "${workspaceFolder}/vendor/bin/phpunit",
+    "phpunit.debuggerConfig": "Listen for Xdebug",
+    "phpunit.output.preset": "collision",
+    "testing.openTesting": "openOnTestFailure",
     "intelephense.environment.includePaths": [
         "../vendor"
     ],
@@ -32,4 +36,5 @@
     "wordlist",
     "wordlists"
 ],
+"testing.automaticallyOpenTestResults": "openOnTestFailure",
 }
