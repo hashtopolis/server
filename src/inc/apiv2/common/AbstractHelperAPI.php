@@ -23,10 +23,29 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
   /**
    * Function in order to create swagger documentation. Should return either a map of strings that
    * describes the output ex: ["assign" => "success"] or if the endpoint returns an object it should return
-   * the string representation of that object ex: File.
+   * the string representation of that object ex: File. If the endpoint returns a list of objects,
+   * add "[]" to the name ex: Task[].
    */
   abstract public static function getResponse(): array|string|null;
-  
+
+  /**
+   * Override this when the keys in the meta member are dynamic (dates, ids, ...) and a
+   * getResponse() example cannot describe them. Return the OpenAPI schema for meta here.
+   * The default null means the spec is derived from getResponse() as usual.
+   */
+  public static function getMetaResponseSchema(): ?array {
+    return null;
+  }
+
+  /**
+   * HTTP methods (e.g. "PATCH") for which this helper answers 204 No Content instead of a
+   * document. The spec then documents a 204 without a body for them, see for example
+   * CurrentUserHelperAPI::actionPatch.
+   */
+  public static function getNoContentMethods(): array {
+    return [];
+  }
+
   public function getParamsSwagger(): array {
     return [];
   }
@@ -75,6 +94,9 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     /* Successful executed action of create */
     if (is_object($newObject)) {
       $apiClass = new ($this->container->get('classMapper')->get($newObject::class))($this->container);
+      /* Permissions were already checked in preCommon() above, using the helper's own
+         requirements. getOneResource() does not check again, which is what we want: a
+         POST helper should not need the create permission of the model route. */
       return self::getOneResource($apiClass, $newObject, $request, $response);
       /* A meta response of a helper function */
     }
