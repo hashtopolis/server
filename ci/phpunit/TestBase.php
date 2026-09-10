@@ -56,7 +56,7 @@ class TestBase extends TestCase {
     
     $this->databaseObjects = [];
     $this->savedDbType = (string)getenv('HASHTOPOLIS_DB_TYPE');
-    $this->adminUser = new User(1, 'admin', 'admin@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, 1, '', '', '', '', '');
+    $this->adminUser = new User(1, 'admin', 'admin@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, 1);
     
     // Avoid test warnings
     $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] ?? 'localhost';
