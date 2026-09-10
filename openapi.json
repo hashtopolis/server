@@ -68846,6 +68846,7 @@
                                     "hashlistName",
                                     "hashCount",
                                     "hashlistCracked",
+                                    "hashlistIsSecret",
                                     "hashTypeId",
                                     "hashTypeDescription",
                                     "groupName"
@@ -68944,6 +68945,9 @@
                                     },
                                     "hashlistCracked": {
                                         "type": "integer"
+                                    },
+                                    "hashlistIsSecret": {
+                                        "type": "boolean"
                                     },
                                     "hashTypeId": {
                                         "type": "integer"
@@ -69344,6 +69348,7 @@
                                         "hashlistName",
                                         "hashCount",
                                         "hashlistCracked",
+                                        "hashlistIsSecret",
                                         "hashTypeId",
                                         "hashTypeDescription",
                                         "groupName"
@@ -69442,6 +69447,9 @@
                                         },
                                         "hashlistCracked": {
                                             "type": "integer"
+                                        },
+                                        "hashlistIsSecret": {
+                                            "type": "boolean"
                                         },
                                         "hashTypeId": {
                                             "type": "integer"
