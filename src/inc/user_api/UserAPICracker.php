@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\user_api;
 
+use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\CrackerUtils;
 use Throwable;
 use Hashtopolis\inc\defines\UQuery;
@@ -68,7 +69,7 @@ class UserAPICracker extends UserAPIBasic {
       throw new HTException("Invalid query!");
     }
     $cracker = CrackerUtils::getBinaryType($QUERY[UQueryCracker::CRACKER_ID]);
-    CrackerUtils::createBinary($QUERY[UQueryCracker::BINARY_VERSION], $QUERY[UQueryCracker::BINARY_NAME], $QUERY[UQueryCracker::BINARY_URL], $cracker->getId());
+    CrackerUtils::createBinary($QUERY[UQueryCracker::BINARY_VERSION], $QUERY[UQueryCracker::BINARY_NAME], $QUERY[UQueryCracker::BINARY_URL], $cracker->getId(), AccessUtils::getOrCreateDefaultAccessGroup()->getId(), $this->user);
     $this->sendSuccessResponse($QUERY);
   }
   

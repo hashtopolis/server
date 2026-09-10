@@ -7,6 +7,7 @@ use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\Hashlist;
@@ -18,6 +19,7 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\inc\defines\DLimits;
 use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\TestBase;
 use Override;
 
@@ -262,12 +264,15 @@ final class AccessGroupUtilsTest extends TestBase {
     $hashlist = $this->createHashlist($groupToDelete, $hashType);
     $taskWrapper = $this->createTaskWrapper($groupToDelete, $hashlist);
     $file = $this->createFile($groupToDelete);
+    $crackerBinary = CrackerUtils::createBinary('1.0.0', 'delgroup-cracker', 'http://example.com/hc.7z', 1, $groupToDelete->getId());
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $crackerBinary);
 
     AccessGroupUtils::deleteGroup($groupToDelete->getId());
 
     $updatedHashlist = Factory::getHashlistFactory()->get($hashlist->getId());
     $updatedTaskWrapper = Factory::getTaskWrapperFactory()->get($taskWrapper->getId());
     $updatedFile = Factory::getFileFactory()->get($file->getId());
+    $updatedCrackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinary->getId());
     $deletedGroup = Factory::getAccessGroupFactory()->get($groupToDelete->getId());
     $remainingUsers = AccessGroupUtils::getUsers($groupToDelete->getId());
     $remainingAgents = AccessGroupUtils::getAgents($groupToDelete->getId());
@@ -278,6 +283,8 @@ final class AccessGroupUtilsTest extends TestBase {
     $this->assertSame($defaultGroup->getId(), $updatedTaskWrapper->getAccessGroupId());
     $this->assertInstanceOf(File::class, $updatedFile);
     $this->assertSame($defaultGroup->getId(), $updatedFile->getAccessGroupId());
+    $this->assertInstanceOf(CrackerBinary::class, $updatedCrackerBinary);
+    $this->assertSame($defaultGroup->getId(), $updatedCrackerBinary->getAccessGroupId());
     $this->assertNull($deletedGroup);
     $this->assertSame([], $remainingUsers);
     $this->assertSame([], $remainingAgents);
