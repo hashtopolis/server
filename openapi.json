@@ -37681,6 +37681,9 @@
                                             "null"
                                         ]
                                     },
+                                    "tokenName": {
+                                        "type": "string"
+                                    },
                                     "isRevoked": {
                                         "type": "boolean"
                                     }
@@ -37689,6 +37692,7 @@
                                     "scopes",
                                     "startValid",
                                     "endValid",
+                                    "tokenName",
                                     "isRevoked"
                                 ]
                             }
@@ -37718,6 +37722,9 @@
                                 "properties": {
                                     "isRevoked": {
                                         "type": "boolean"
+                                    },
+                                    "tokenName": {
+                                        "type": "string"
                                     }
                                 }
                             }
@@ -37754,6 +37761,9 @@
                                     "properties": {
                                         "isRevoked": {
                                             "type": "boolean"
+                                        },
+                                        "tokenName": {
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -37855,6 +37865,7 @@
                                     "startValid",
                                     "endValid",
                                     "userId",
+                                    "tokenName",
                                     "isRevoked"
                                 ],
                                 "properties": {
@@ -37871,6 +37882,9 @@
                                             "integer",
                                             "null"
                                         ]
+                                    },
+                                    "tokenName": {
+                                        "type": "string"
                                     },
                                     "isRevoked": {
                                         "type": "boolean"
@@ -38088,6 +38102,7 @@
                                     "startValid",
                                     "endValid",
                                     "userId",
+                                    "tokenName",
                                     "isRevoked"
                                 ],
                                 "properties": {
@@ -38104,6 +38119,9 @@
                                             "integer",
                                             "null"
                                         ]
+                                    },
+                                    "tokenName": {
+                                        "type": "string"
                                     },
                                     "isRevoked": {
                                         "type": "boolean"
@@ -38372,6 +38390,7 @@
                                         "startValid",
                                         "endValid",
                                         "userId",
+                                        "tokenName",
                                         "isRevoked"
                                     ],
                                     "properties": {
@@ -38388,6 +38407,9 @@
                                                 "integer",
                                                 "null"
                                             ]
+                                        },
+                                        "tokenName": {
+                                            "type": "string"
                                         },
                                         "isRevoked": {
                                             "type": "boolean"
