@@ -1545,8 +1545,9 @@ class TaskUtils {
    */
   public static function tuneChunkDuration(Chunk $chunk, Task $task, Agent $agent): void {
     $timeTaken = $chunk->getSolveTime() - $chunk->getDispatchTime();
-    if($timeTaken < 0) return; // prevent math & logic errors
-
+    if($timeTaken < 0) {
+      return; // prevent math & logic errors
+    }
     $differenceToChunk = $task->getChunkTime() / $timeTaken;
 
     // If the difference between the configured chunk duration time and the actual time taken
@@ -1554,7 +1555,9 @@ class TaskUtils {
     // adjustments that would result in a smaller chunk size (anything < 1.0), since we do not want to perform
     // automatic reductions in chunk size.
     $MIN_CHUNK_DIFFERENCE = 1.2;
-    if ($differenceToChunk < $MIN_CHUNK_DIFFERENCE) return;
+    if ($differenceToChunk < $MIN_CHUNK_DIFFERENCE) {
+      return;
+    }
     
     // Limit the multiplier used to adjust the benchmark score this prevents overshooting the time
     // an agent should work on a chunk. This value could be increased (to allow for faster ramping up),
@@ -1570,7 +1573,9 @@ class TaskUtils {
 
     $benchmark = $assignment->getBenchmark();
     $benchmarkParts = explode(":", $benchmark);
-    if($benchmarkParts[0] == 0 || count($benchmarkParts) != 2) return;
+    if($benchmarkParts[0] == 0 || count($benchmarkParts) != 2){
+      return;
+    }
     $newBenchmark = $differenceToChunk * $benchmarkParts[0];
     $assignment->setBenchmark(round($newBenchmark).":".round($benchmarkParts[1]));
     DServerLog::log(DServerLog::INFO, "{$timeTaken}---{$task->getChunkTime()}", [$agent, $assignment]);
