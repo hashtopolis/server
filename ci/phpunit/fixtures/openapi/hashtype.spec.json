@@ -933,6 +933,56 @@
                     }
                 }
             },
+            "HashTypeResourceObject": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "type",
+                    "attributes",
+                    "links"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "type": {
+                        "type": "string",
+                        "const": "hashType"
+                    },
+                    "attributes": {
+                        "type": "object",
+                        "required": [
+                            "description",
+                            "isSalted",
+                            "isSlowHash"
+                        ],
+                        "properties": {
+                            "description": {
+                                "type": "string"
+                            },
+                            "isSalted": {
+                                "type": "boolean"
+                            },
+                            "isSlowHash": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "object",
+                        "required": [
+                            "self"
+                        ],
+                        "properties": {
+                            "self": {
+                                "type": "string",
+                                "default": "/api/v2/ui/hashtypes/1"
+                            }
+                        }
+                    }
+                }
+            },
             "HashTypeCreate": {
                 "type": "object",
                 "required": [

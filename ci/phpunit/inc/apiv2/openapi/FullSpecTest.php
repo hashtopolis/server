@@ -250,10 +250,27 @@ final class FullSpecTest extends TestCase {
       $schemas['AgentResponse']['properties']['included']['items']['discriminator']
     );
 
-    // Helper responses reference the schema of the model API they return
+    // A GET helper answers with the resource objects of the model it returns
+    // inside the slim helper envelope: jsonapi and data, no links and no meta
     $this->assertSame(
-      '#/components/schemas/GlobalPermissionGroupSingleResponse',
+      '#/components/schemas/GetUserPermissionHelperAPIResponse',
       self::$sanitized['paths']['/api/v2/helper/getUserPermission']['get']['responses']['200']['content']['application/vnd.api+json']['schema']['$ref']
+    );
+    $userPermissionResponse = $schemas['GetUserPermissionHelperAPIResponse'];
+    $this->assertSame(['jsonapi', 'data'], $userPermissionResponse['required']);
+    $this->assertSame(
+      ['$ref' => '#/components/schemas/GlobalPermissionGroupResourceObject'],
+      $userPermissionResponse['properties']['data']
+    );
+
+    // currentUser PATCH answers 204 No Content, so it has no 200 body
+    $this->assertSame(
+      ['description' => 'No content'],
+      self::$sanitized['paths']['/api/v2/helper/currentUser']['patch']['responses']['204']
+    );
+    $this->assertArrayNotHasKey(
+      '200',
+      self::$sanitized['paths']['/api/v2/helper/currentUser']['patch']['responses']
     );
   }
 
