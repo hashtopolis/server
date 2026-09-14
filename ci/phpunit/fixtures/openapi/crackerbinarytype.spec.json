@@ -1344,6 +1344,155 @@
                     }
                 }
             },
+            "CrackerBinaryTypeResourceObject": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "type",
+                    "attributes",
+                    "links",
+                    "relationships"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "type": {
+                        "type": "string",
+                        "const": "crackerBinaryType"
+                    },
+                    "attributes": {
+                        "type": "object",
+                        "required": [
+                            "typeName",
+                            "isChunkingAvailable"
+                        ],
+                        "properties": {
+                            "typeName": {
+                                "type": "string"
+                            },
+                            "isChunkingAvailable": {
+                                "type": [
+                                    "boolean",
+                                    "null"
+                                ]
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "object",
+                        "required": [
+                            "self"
+                        ],
+                        "properties": {
+                            "self": {
+                                "type": "string",
+                                "default": "/api/v2/ui/crackertypes/1"
+                            }
+                        }
+                    },
+                    "relationships": {
+                        "type": "object",
+                        "required": [
+                            "crackerVersions",
+                            "tasks"
+                        ],
+                        "properties": {
+                            "crackerVersions": {
+                                "type": "object",
+                                "required": [
+                                    "links"
+                                ],
+                                "properties": {
+                                    "links": {
+                                        "type": "object",
+                                        "required": [
+                                            "self",
+                                            "related"
+                                        ],
+                                        "properties": {
+                                            "self": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
+                                            },
+                                            "related": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/crackertypes/crackerVersions"
+                                            }
+                                        }
+                                    },
+                                    "data": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ],
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "crackerBinary"
+                                                },
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "tasks": {
+                                "type": "object",
+                                "required": [
+                                    "links"
+                                ],
+                                "properties": {
+                                    "links": {
+                                        "type": "object",
+                                        "required": [
+                                            "self",
+                                            "related"
+                                        ],
+                                        "properties": {
+                                            "self": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                            },
+                                            "related": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/crackertypes/tasks"
+                                            }
+                                        }
+                                    },
+                                    "data": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ],
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "task"
+                                                },
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "CrackerBinaryTypeCreate": {
                 "type": "object",
                 "required": [

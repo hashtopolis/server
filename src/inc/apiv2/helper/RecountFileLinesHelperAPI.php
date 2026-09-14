@@ -49,7 +49,10 @@ class RecountFileLinesHelperAPI extends AbstractHelperAPI {
     FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser());
     
     FileUtils::fileCountLines($data[File::FILE_ID]);
-    
-    return $this->object2Array(FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser()));
+
+    /* Return the File itself so it comes back as a resource object under data.
+       Only the helper's own permission (File update) is checked; the serializer
+       no longer demands the model route's create permission. */
+    return FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser());
   }
 }

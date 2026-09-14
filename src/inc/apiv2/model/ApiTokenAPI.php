@@ -102,7 +102,8 @@ class ApiTokenAPI extends AbstractModelAPI {
     $secret = StartupConfig::getInstance()->getPepper(0);
     $iat = $data[JwtApiKey::START_VALID];
     $expires = $data[JwtApiKey::END_VALID];
-    $token = JwtTokenUtils::createKey($this->getCurrentUser()->getId(), $iat, $expires, $data[JwtApiKey::IS_REVOKED]);
+    $tokenName = $data[JwtApiKey::TOKEN_NAME];
+    $token = JwtTokenUtils::createKey($this->getCurrentUser()->getId(), $iat, $expires, $tokenName, $data[JwtApiKey::IS_REVOKED]);
     $jti = $token->getId();
     
     $payload = [

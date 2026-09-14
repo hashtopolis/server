@@ -33,7 +33,7 @@ class GetBestTasksAgent extends AbstractHelperAPI {
   }
   
   public static function getResponse(): string {
-    return "Task";
+    return "Task[]";
   }
   
   
