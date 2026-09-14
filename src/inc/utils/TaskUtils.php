@@ -1545,7 +1545,7 @@ class TaskUtils {
    */
   public static function tuneChunkDuration(Chunk $chunk, Task $task, Agent $agent): void {
     $timeTaken = $chunk->getSolveTime() - $chunk->getDispatchTime();
-    if($timeTaken < 0) {
+    if($timeTaken <= 0) {
       return; // prevent math & logic errors
     }
     $differenceToChunk = $task->getChunkTime() / $timeTaken;
