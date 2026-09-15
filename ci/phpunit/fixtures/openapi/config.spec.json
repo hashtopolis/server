@@ -1114,6 +1114,97 @@
                 ]
             }
         },
+        "/api/v2/auth/refresh": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "summary": "Exchange the refresh token cookie for a new access token",
+                "description": "Reads the refreshToken cookie set by /api/v2/auth/token, rotates it and answers\n          with a new access token. Needs no Authorization header, so it keeps working once the previous\n          access token has expired. The rotated cookie is returned in Set-Cookie; the token itself is\n          never part of the body.",
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "headers": {
+                            "Set-Cookie": {
+                                "description": "The rotated refresh token, scoped to /api/v2/auth/refresh and marked HttpOnly.",
+                                "schema": {
+                                    "type": "string",
+                                    "example": "refreshToken=abc123; Path=/api/v2/auth/refresh; Max-Age=1209600; HttpOnly; SameSite=Strict"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Token"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "The refresh token is missing, expired, revoked or already used",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user has been deactivated",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "refreshCookie": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Login"
+                ],
+                "summary": "Log out",
+                "description": "Revokes the session the refreshToken cookie belongs to and clears the cookie.\n          Sessions on other devices are left alone. Logging out without a cookie is not an error.",
+                "responses": {
+                    "204": {
+                        "description": "Success",
+                        "headers": {
+                            "Set-Cookie": {
+                                "description": "The rotated refresh token, scoped to /api/v2/auth/refresh and marked HttpOnly.",
+                                "schema": {
+                                    "type": "string",
+                                    "example": "refreshToken=abc123; Path=/api/v2/auth/refresh; Max-Age=1209600; HttpOnly; SameSite=Strict"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The request origin is not allowed to send credentials",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "refreshCookie": []
+                    }
+                ]
+            }
+        },
         "/api/v2/helper/importFile": {
             "post": {
                 "parameters": [
@@ -3661,6 +3752,12 @@
                 "type": "http",
                 "description": "Basic Authorization header.",
                 "scheme": "basic"
+            },
+            "refreshCookie": {
+                "type": "apiKey",
+                "description": "HttpOnly cookie holding the refresh token, set by /api/v2/auth/token and scoped to /api/v2/auth/refresh.",
+                "in": "cookie",
+                "name": "refreshToken"
             }
         }
     }

@@ -34,9 +34,6 @@ class CorsHackMiddleware implements MiddlewareInterface {
 
     $response = CorsHackMiddleware::CheckCORS($request, $response);
     
-    // Optional: Allow Ajax CORS requests with Authorization header
-    // $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
-    
     $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
     return $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
   }
@@ -68,7 +65,7 @@ class CorsHackMiddleware implements MiddlewareInterface {
           $envBackendPort = substr($envBackend, strrpos($envBackend, ":") + 1);
           
           if ($requestHttpOriginPort === $envFrontendPort || $requestHttpOriginPort === $envBackendPort) {
-            $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'));
+            $response = CorsHackMiddleware::allowOrigin($request, $response);
           }
           else {
             throw new HttpForbidden("CORS error: Allow-Origin port doesn't match: the value from the request is $requestHttpOriginPort but expected $envFrontendPort or $envBackendPort. Try switching the frontend port back to the default value (4200) in the docker-compose.");
@@ -76,7 +73,7 @@ class CorsHackMiddleware implements MiddlewareInterface {
         }
         else {
           //No port given in the request origin, all checks passed
-          $response = $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'));
+          $response = CorsHackMiddleware::allowOrigin($request, $response);
         }
       }
       else {
@@ -84,10 +81,22 @@ class CorsHackMiddleware implements MiddlewareInterface {
       }
     }
     else {
-      //No backend URL given in .env file or no origin supplied in the request, switch to default allow all
+      /* No backend URL given in .env file or no origin supplied in the request, switch to default allow all.
+         A wildcard origin rules out credentialed requests, so the refresh token cookie is not sent
+         cross-origin in this configuration; set HASHTOPOLIS_BACKEND_URL to enable it. */
       $response = $response->withHeader('Access-Control-Allow-Origin', '*');
     }
 
     return $response;
+  }
+  
+  /**
+   * Echoes back a single, verified origin and allows the browser to send credentials along with it.
+   * Without Allow-Credentials the refresh token cookie would never reach /api/v2/auth/refresh from a
+   * frontend served on another origin, and the header is only accepted next to a concrete origin.
+   */
+  private static function allowOrigin(Request $request, Response $response): Response {
+    return $response->withHeader('Access-Control-Allow-Origin', $request->getHeaderLine('HTTP_ORIGIN'))
+      ->withHeader('Access-Control-Allow-Credentials', 'true');
   }
 }

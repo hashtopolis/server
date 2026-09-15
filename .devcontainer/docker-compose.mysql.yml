@@ -14,6 +14,11 @@ services:
       HASHTOPOLIS_DB_HOST: hashtopolis-db-dev
       HASHTOPOLIS_DB_DATABASE: hashtopolis
       HASHTOPOLIS_APIV2_ENABLE: 1
+      # The refresh token cookie is only sent cross-origin when the API names a concrete allowed
+      # origin instead of a wildcard, so the dev frontend on :4200 needs both of these set.
+      # Set them together: naming only the backend rejects the frontend's origin outright.
+      HASHTOPOLIS_BACKEND_URL: http://localhost:8080
+      HASHTOPOLIS_FRONTEND_PORT: 4200
     depends_on:
       - hashtopolis-db-dev
     ports:

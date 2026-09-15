@@ -81,6 +81,80 @@ class StaticFragments {
   }
 
   /**
+   * The refresh endpoint trades the refresh token cookie for a new access token
+   * without asking for credentials again, and its DELETE ends the session the
+   * cookie belongs to (see token.routes.php).
+   */
+  public function authRefreshPath(): array {
+    return [
+      "post" => [
+        "tags" => [
+          "Login"
+        ],
+        "summary" => "Exchange the refresh token cookie for a new access token",
+        "description" => "Reads the refreshToken cookie set by /api/v2/auth/token, rotates it and answers
+          with a new access token. Needs no Authorization header, so it keeps working once the previous
+          access token has expired. The rotated cookie is returned in Set-Cookie; the token itself is
+          never part of the body.",
+        "responses" => [
+          "201" => [
+            "description" => "Success",
+            "headers" => [
+              "Set-Cookie" => $this->refreshCookieHeader()
+            ],
+            "content" => [
+              "application/json" => [
+                "schema" => [
+                  '$ref' => "#/components/schemas/Token"
+                ]
+              ]
+            ]
+          ],
+          "401" => $this->problemResponse("The refresh token is missing, expired, revoked or already used"),
+          "403" => $this->problemResponse("The user has been deactivated")
+        ],
+        "security" => [
+          [
+            "refreshCookie" => []
+          ]
+        ]
+      ],
+      "delete" => [
+        "tags" => [
+          "Login"
+        ],
+        "summary" => "Log out",
+        "description" => "Revokes the session the refreshToken cookie belongs to and clears the cookie.
+          Sessions on other devices are left alone. Logging out without a cookie is not an error.",
+        "responses" => [
+          "204" => [
+            "description" => "Success",
+            "headers" => [
+              "Set-Cookie" => $this->refreshCookieHeader()
+            ]
+          ],
+          "403" => $this->problemResponse("The request origin is not allowed to send credentials")
+        ],
+        "security" => [
+          [
+            "refreshCookie" => []
+          ]
+        ]
+      ]
+    ];
+  }
+
+  private function refreshCookieHeader(): array {
+    return [
+      "description" => "The rotated refresh token, scoped to /api/v2/auth/refresh and marked HttpOnly.",
+      "schema" => [
+        "type" => "string",
+        "example" => "refreshToken=abc123; Path=/api/v2/auth/refresh; Max-Age=1209600; HttpOnly; SameSite=Strict"
+      ]
+    ];
+  }
+
+  /**
    * Errors are rendered as RFC 7807 problem documents by
    * ErrorHandler::errorResponse, on every APIv2 route.
    */
