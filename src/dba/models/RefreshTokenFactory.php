@@ -15,7 +15,7 @@ class RefreshTokenFactory extends AbstractModelFactory {
   function getModelTable(): string {
     return "RefreshToken";
   }
-  
+
   function isMapping(): bool {
     return False;
   }

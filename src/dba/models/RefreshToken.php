@@ -4,17 +4,6 @@ namespace Hashtopolis\dba\models;
 
 use Hashtopolis\dba\AbstractModel;
 
-/**
- * A single refresh token, used to obtain a new short-lived access token without re-authenticating.
- *
- * Tokens are never stored in plaintext; only the SHA-256 hash of the token string is kept, so a
- * database leak does not hand out usable tokens.
- *
- * Tokens rotate: every successful refresh consumes the presented token (sets usedAt) and issues a
- * new one carrying the same familyId. A family therefore represents one login session across all of
- * its rotations. Presenting an already consumed token means the token leaked, and the whole family
- * is revoked.
- */
 class RefreshToken extends AbstractModel {
   private ?int $refreshTokenId;
   private ?int $userId;
@@ -60,10 +49,10 @@ class RefreshToken extends AbstractModel {
     $dict['endValid'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "endValid", "public" => False, "dba_mapping" => False];
     $dict['usedAt'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "usedAt", "public" => False, "dba_mapping" => False];
     $dict['isRevoked'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isRevoked", "public" => False, "dba_mapping" => False];
-    
+
     return $dict;
   }
-  
+
   function getPrimaryKey(): string {
     return "refreshTokenId";
   }
@@ -152,4 +141,9 @@ class RefreshToken extends AbstractModel {
   const END_VALID = "endValid";
   const USED_AT = "usedAt";
   const IS_REVOKED = "isRevoked";
+
+  const PERM_CREATE = "permRefreshTokenCreate";
+  const PERM_READ = "permRefreshTokenRead";
+  const PERM_UPDATE = "permRefreshTokenUpdate";
+  const PERM_DELETE = "permRefreshTokenDelete";
 }
