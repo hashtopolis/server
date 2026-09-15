@@ -128,7 +128,15 @@ $customErrorHandler = function (
   bool $logErrorDetails) use ($app) {
   
   $response = $app->getResponseFactory()->createResponse();
-  $response = CorsHackMiddleware::addCORSheaders($request, $response);
+  /* An unrecognised Origin is itself reported by throwing, so decorating the error response can throw
+     a second time. Answering the original error without CORS headers is the right outcome: the browser
+     withholds the response from the caller, which is what a rejected origin should get. */
+  try {
+    $response = CorsHackMiddleware::addCORSheaders($request, $response);
+  }
+  catch (Throwable $corsException) {
+    error_log($corsException->getMessage());
+  }
   
   //Quirk to handle HTExceptions without status code, this can be removed when all HTExceptions have been migrated
   error_log($exception->getMessage());
