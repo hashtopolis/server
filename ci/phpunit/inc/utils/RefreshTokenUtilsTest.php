@@ -114,6 +114,49 @@ final class RefreshTokenUtilsTest extends TestBase {
     RefreshTokenUtils::rotate($rotated['token']);
   }
   
+  public function testConsumingATokenIsAnAtomicTestAndSet(): void {
+    /* The mechanism replay detection rests on: consuming a token has to be the same statement that
+       checks it is unconsumed, so that concurrent requests cannot both find it unused. Running the
+       claim twice stands in for two requests arriving together; only one may report having made the
+       transition. */
+    $plain = RefreshTokenUtils::issue($this->user->getId());
+    $token = $this->findToken($plain);
+    
+    $claim = fn(): bool => Factory::getRefreshTokenFactory()->compareAndSet(
+      $token,
+      [RefreshToken::USED_AT => null, RefreshToken::IS_REVOKED => 0],
+      [RefreshToken::USED_AT => time()]
+    );
+    
+    $this->assertTrue($claim(), 'the first caller should win the token');
+    $this->assertFalse($claim(), 'a second caller must not also win the same token');
+  }
+  
+  public function testLosingTheClaimLeavesTheWinnersTimestampAlone(): void {
+    $plain = RefreshTokenUtils::issue($this->user->getId());
+    $token = $this->findToken($plain);
+    
+    // Stand in for a request that already consumed the token a moment ago
+    $consumedAt = time() - 1;
+    Factory::getRefreshTokenFactory()->set($token, RefreshToken::USED_AT, $consumedAt);
+    
+    RefreshTokenUtils::rotate($plain);
+    
+    $this->assertSame($consumedAt, (int)$this->findToken($plain)->getUsedAt());
+  }
+  
+  public function testARevokedTokenCannotBeClaimed(): void {
+    $plain = RefreshTokenUtils::issue($this->user->getId());
+    RefreshTokenUtils::revoke($plain);
+    
+    try {
+      RefreshTokenUtils::rotate($plain);
+      $this->fail('A revoked refresh token should not be exchangeable');
+    } catch (HttpUnauthorized $e) {
+      $this->assertNull($this->findToken($plain)->getUsedAt(), 'a revoked token should not be consumed');
+    }
+  }
+  
   public function testConcurrentRotationWithinTheGraceWindowIsNotTreatedAsReplay(): void {
     $plain = RefreshTokenUtils::issue($this->user->getId());
     

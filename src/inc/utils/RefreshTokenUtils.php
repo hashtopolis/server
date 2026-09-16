@@ -101,26 +101,14 @@ class RefreshTokenUtils {
       throw new HttpUnauthorized("Refresh token is not valid");
     }
     
-    if ($token->getIsRevoked() == 1) {
-      throw new HttpUnauthorized("Refresh token has been revoked");
-    }
-    
     $now = time();
-    if ($token->getUsedAt() !== null && $token->getUsedAt() < $now - self::REPLAY_GRACE_SECONDS) {
-      /* The token was already exchanged a while ago, so somebody else is holding a copy of it. There
-         is no way to tell the legitimate holder from the attacker, so the whole session goes. */
-      self::revokeFamily($token->getFamilyId());
-      Util::createLogEntry(
-        DLogEntryIssuer::USER,
-        (string)$token->getUserId(),
-        DLogEntry::WARN,
-        "Refresh token replay detected, all sessions of this login have been revoked!"
-      );
-      throw new HttpUnauthorized("Refresh token has already been used");
-    }
-    
     if ($token->getEndValid() < $now) {
       throw new HttpUnauthorized("Refresh token has expired");
+    }
+    
+    if (!self::claim($token, $now)) {
+      // Somebody else consumed the token first; that decides whether this is a race or a replay
+      self::resolveLostClaim($plain, $now);
     }
     
     $user = Factory::getUserFactory()->get($token->getUserId());
@@ -133,14 +121,66 @@ class RefreshTokenUtils {
       throw new HttpForbidden("Cannot log in. Please contact your administrator for further information");
     }
     
-    if ($token->getUsedAt() === null) {
-      Factory::getRefreshTokenFactory()->set($token, RefreshToken::USED_AT, $now);
-    }
-    
     return [
       "user" => $user,
       "token" => self::issue($token->getUserId(), $token->getFamilyId()),
     ];
+  }
+  
+  /**
+   * Marks a token as consumed, but only while it is still unused and unrevoked.
+   *
+   * The condition lives in the UPDATE rather than in a preceding read, so the database elects exactly
+   * one winner when requests arrive together. Reading usedAt first would let two requests both see
+   * null and both go on to issue a successor, which is precisely the case replay detection exists to
+   * catch: a stolen token racing a legitimate request would never be seen as a second use.
+   *
+   * @param RefreshToken $token
+   * @param int $now
+   * @return bool whether this caller is the one that consumed the token
+   * @throws Exception
+   */
+  private static function claim(RefreshToken $token, int $now): bool {
+    return Factory::getRefreshTokenFactory()->compareAndSet(
+      $token,
+      [RefreshToken::USED_AT => null, RefreshToken::IS_REVOKED => 0],
+      [RefreshToken::USED_AT => $now]
+    );
+  }
+  
+  /**
+   * Decides what losing the claim means, from the state the winner left behind.
+   *
+   * Returning means the loss was a client firing two refreshes at once and the caller may carry on;
+   * every other reading is a token being used twice and ends the session.
+   *
+   * @param string $plain the token string as presented by the client
+   * @param int $now
+   * @throws HttpUnauthorized unless the token was consumed moments ago by a racing request
+   * @throws Exception
+   */
+  private static function resolveLostClaim(string $plain, int $now): void {
+    $current = self::findByPlain($plain);
+    if ($current === null || $current->getIsRevoked() == 1) {
+      throw new HttpUnauthorized("Refresh token has been revoked");
+    }
+    
+    $usedAt = $current->getUsedAt();
+    if ($usedAt !== null && $usedAt >= $now - self::REPLAY_GRACE_SECONDS) {
+      // A racing request from the same client got there first, which is not worth ending a session over
+      return;
+    }
+    
+    /* The token was already exchanged, so somebody else is holding a copy of it. There is no way to
+       tell the legitimate holder from the attacker, so the whole session goes. */
+    self::revokeFamily($current->getFamilyId());
+    Util::createLogEntry(
+      DLogEntryIssuer::USER,
+      (string)$current->getUserId(),
+      DLogEntry::WARN,
+      "Refresh token replay detected, all sessions of this login have been revoked!"
+    );
+    throw new HttpUnauthorized("Refresh token has already been used");
   }
   
   /**
