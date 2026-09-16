@@ -126,11 +126,20 @@ class RefreshTokenTest(BaseTest):
         kept, _ = _login()
         ended, _ = _login()
 
+        # Capture while it is still live: the logout response expires the cookie, so reading it from
+        # the jar afterwards yields None and the rejection below would prove nothing but its absence
+        revoked = _refresh_token_of(ended)
+        self.assertIsNotNone(revoked)
+
         response = ended.delete(REFRESH_URI)
         self.assertEqual(response.status_code, 204, msg=response.text)
         self.assertIn('Max-Age=0', response.headers['Set-Cookie'])
+        self.assertIsNone(_refresh_token_of(ended), 'logout should also drop the cookie client-side')
 
-        self.assertEqual(requests.post(REFRESH_URI, cookies={COOKIE_NAME: _refresh_token_of(ended)}).status_code, 401)
+        # The token the client actually held is now refused by the server, not merely forgotten
+        replay = requests.post(REFRESH_URI, cookies={COOKIE_NAME: revoked})
+        self.assertEqual(replay.status_code, 401, msg=replay.text)
+
         self.assertEqual(kept.post(REFRESH_URI).status_code, 201)
 
     def test_logout_without_cookie_is_not_an_error(self):
