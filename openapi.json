@@ -28999,7 +28999,8 @@
                 "security": [
                     {
                         "refreshCookie": []
-                    }
+                    },
+                    {}
                 ],
                 "operationId": "deleteRefresh"
             }

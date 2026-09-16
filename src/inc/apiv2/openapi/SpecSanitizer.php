@@ -49,6 +49,11 @@ class SpecSanitizer {
         // Fix: Security requirement - bearerAuth should have empty scopes array for HTTP bearer
         if (isset($operation['security'])) {
           foreach ($operation['security'] as &$secReq) {
+            // An empty requirement is the OpenAPI spelling of "this operation may be called
+            // unauthenticated", and is an object rather than a map of schemes to scopes
+            if (!is_array($secReq)) {
+              continue;
+            }
             if (isset($secReq['bearerAuth'])) {
               $secReq['bearerAuth'] = [];
             }

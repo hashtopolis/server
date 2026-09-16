@@ -1250,7 +1250,8 @@
                 "security": [
                     {
                         "refreshCookie": []
-                    }
+                    },
+                    {}
                 ]
             }
         },

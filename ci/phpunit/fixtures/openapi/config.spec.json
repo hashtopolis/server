@@ -1201,7 +1201,8 @@
                 "security": [
                     {
                         "refreshCookie": []
-                    }
+                    },
+                    {}
                 ]
             }
         },

@@ -135,10 +135,14 @@ class StaticFragments {
           ],
           "403" => $this->problemResponse("The request origin is not allowed to send credentials")
         ],
+        /* Logging out without a cookie is a successful no-op, so the cookie cannot be a hard
+           requirement here: the empty alternative is how OpenAPI spells "optional", and without it a
+           generated client would refuse to make a call the server answers with 204. */
         "security" => [
           [
             "refreshCookie" => []
-          ]
+          ],
+          new \stdClass()
         ]
       ]
     ];
