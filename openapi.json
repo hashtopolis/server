@@ -28923,10 +28923,10 @@
                         "description": "Success",
                         "headers": {
                             "Set-Cookie": {
-                                "description": "The rotated refresh token, scoped to /api/v2/auth/refresh and marked HttpOnly.",
+                                "description": "The rotated refresh token, scoped to /api/v2/auth/refresh and marked HttpOnly.\n        Replaces the cookie sent with the request, which is consumed by this call.",
                                 "schema": {
                                     "type": "string",
-                                    "example": "refreshToken=abc123; Path=/api/v2/auth/refresh; Max-Age=1209600; HttpOnly; SameSite=Strict"
+                                    "example": "refreshToken=4fa1371293a112224bc930cf9fecd0fd; Path=/api/v2/auth/refresh; Max-Age=1209600; Expires=Wed, 30 Sep 2026 07:02:31 GMT; HttpOnly; SameSite=Strict"
                                 }
                             }
                         },
@@ -28977,10 +28977,10 @@
                         "description": "Success",
                         "headers": {
                             "Set-Cookie": {
-                                "description": "The rotated refresh token, scoped to /api/v2/auth/refresh and marked HttpOnly.",
+                                "description": "The refresh token cookie, emptied and expired so the client drops it. Carries\n        the same attributes it was set with, which is what makes a browser replace rather than keep it.",
                                 "schema": {
                                     "type": "string",
-                                    "example": "refreshToken=abc123; Path=/api/v2/auth/refresh; Max-Age=1209600; HttpOnly; SameSite=Strict"
+                                    "example": "refreshToken=; Path=/api/v2/auth/refresh; Max-Age=0; Expires=Wed, 16 Sep 2026 07:02:31 GMT; HttpOnly; SameSite=Strict"
                                 }
                             }
                         }

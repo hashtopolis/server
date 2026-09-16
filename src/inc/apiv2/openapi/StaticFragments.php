@@ -100,7 +100,7 @@ class StaticFragments {
           "201" => [
             "description" => "Success",
             "headers" => [
-              "Set-Cookie" => $this->refreshCookieHeader()
+              "Set-Cookie" => $this->rotatedCookieHeader()
             ],
             "content" => [
               "application/json" => [
@@ -130,7 +130,7 @@ class StaticFragments {
           "204" => [
             "description" => "Success",
             "headers" => [
-              "Set-Cookie" => $this->refreshCookieHeader()
+              "Set-Cookie" => $this->clearedCookieHeader()
             ]
           ],
           "403" => $this->problemResponse("The request origin is not allowed to send credentials")
@@ -148,12 +148,32 @@ class StaticFragments {
     ];
   }
 
-  private function refreshCookieHeader(): array {
+  /**
+   * The cookie handed out on a successful exchange. Its lifetime follows the deployment's configured
+   * refresh token lifetime, so the Max-Age in the example is the default rather than a fixed value.
+   */
+  private function rotatedCookieHeader(): array {
     return [
-      "description" => "The rotated refresh token, scoped to /api/v2/auth/refresh and marked HttpOnly.",
+      "description" => "The rotated refresh token, scoped to /api/v2/auth/refresh and marked HttpOnly.
+        Replaces the cookie sent with the request, which is consumed by this call.",
       "schema" => [
         "type" => "string",
-        "example" => "refreshToken=abc123; Path=/api/v2/auth/refresh; Max-Age=1209600; HttpOnly; SameSite=Strict"
+        "example" => "refreshToken=4fa1371293a112224bc930cf9fecd0fd; Path=/api/v2/auth/refresh; Max-Age=1209600; Expires=Wed, 30 Sep 2026 07:02:31 GMT; HttpOnly; SameSite=Strict"
+      ]
+    ];
+  }
+
+  /**
+   * Logging out sends the same cookie back empty and already expired, which is how a client is told
+   * to drop it. Describing it as the rotated cookie would document the opposite of what happens.
+   */
+  private function clearedCookieHeader(): array {
+    return [
+      "description" => "The refresh token cookie, emptied and expired so the client drops it. Carries
+        the same attributes it was set with, which is what makes a browser replace rather than keep it.",
+      "schema" => [
+        "type" => "string",
+        "example" => "refreshToken=; Path=/api/v2/auth/refresh; Max-Age=0; Expires=Wed, 16 Sep 2026 07:02:31 GMT; HttpOnly; SameSite=Strict"
       ]
     ];
   }
