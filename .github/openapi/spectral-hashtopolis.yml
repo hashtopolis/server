@@ -265,3 +265,13 @@ overrides:
       content-type: off
       400-response-code: off
       403-response-code: off
+
+  # /api/v2/auth/refresh trades the refresh token cookie for a new access token and, on DELETE, ends
+  # the session behind it. Like the token endpoint it is not a JSON:API resource route and answers a
+  # plain application/json body (see token.routes.php). It does document 403, so unlike the token
+  # endpoint the 403 rule still holds and stays on.
+  - files:
+      - "**#/paths/~1api~1v2~1auth~1refresh"
+    rules:
+      content-type: off
+      400-response-code: off
