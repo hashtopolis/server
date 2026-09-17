@@ -21,6 +21,7 @@ class StartupConfig {
   private const DIRECTORY_LOG    = "log";
   private const DIRECTORY_CONFIG = "config";
   private const DIRECTORY_TUS    = "tus";
+  private const DIRECTORY_CRACKERS = "crackers";
   
   private const DB_PROPERTY_TYPE   = "type";
   private const DB_PROPERTY_USER   = "user";
@@ -55,6 +56,7 @@ class StartupConfig {
       "log" => "/usr/local/share/hashtopolis/log",
       "config" => "/usr/local/share/hashtopolis/config",
       "tus" => "/var/tmp/tus/",
+      "crackers" => "/usr/local/share/hashtopolis/crackers",
     ];
     
     $this->db_properties = [
@@ -134,6 +136,9 @@ class StartupConfig {
     if (getenv('HASHTOPOLIS_TUS_PATH') !== false) {
       $this->directories[self::DIRECTORY_TUS] = getenv('HASHTOPOLIS_TUS_PATH');
     }
+    if (getenv('HASHTOPOLIS_CRACKERS_PATH') !== false) {
+      $this->directories[self::DIRECTORY_CRACKERS] = getenv('HASHTOPOLIS_CRACKERS_PATH');
+    }
   }
   
   /**
@@ -159,10 +164,14 @@ class StartupConfig {
         "log" => dirname(__FILE__) . "/../log/",
         "config" => dirname(__FILE__) . "/../config/",
         "tus" => "/var/tmp/tus/",
+        "crackers" => dirname(__FILE__) . "/../crackers/",
       ];
     }
     else {
       $this->directories = $DIRECTORIES;
+      if (!array_key_exists(self::DIRECTORY_CRACKERS, $this->directories)) {
+        $this->directories[self::DIRECTORY_CRACKERS] = dirname(__FILE__) . "/../crackers/";
+      }
     }
     
     // extract old database settings format
@@ -201,6 +210,10 @@ class StartupConfig {
   
   public function getDirectoryTus(): string {
     return $this->directories[self::DIRECTORY_TUS];
+  }
+  
+  public function getDirectoryCrackers(): string {
+    return $this->directories[self::DIRECTORY_CRACKERS];
   }
   
   public function getDatabaseType(): string {
