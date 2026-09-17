@@ -57,6 +57,7 @@ class AgentBinaryUtils {
    * @throws Exception
    */
   public static function editBinary(int $binaryId, string $type, string $os, string $filename, string $version, string $updateTrack, User $user): void {
+    // TODO: Align exception type with what is in newBinary fun, or the other way.
     if (strlen($version) == 0) {
       throw new HTException("Version cannot be empty!");
     }
@@ -88,10 +89,13 @@ class AgentBinaryUtils {
   }
   
   /**
+   * @param int $binaryId
+   * @param string $updateTracker
+   * @param User $user
    * @throws HTException
    * @throws Exception
    */
-  public static function editUpdateTracker($binaryId, $updateTracker, $user): void {
+  public static function editUpdateTracker(int $binaryId, string $updateTracker, User $user): void {
     $binary = AgentBinaryUtils::getBinary($binaryId);
     if ($updateTracker != $binary->getUpdateTrack()) {
       $binary = Factory::getAgentBinaryFactory()->mset($binary, [
@@ -107,10 +111,13 @@ class AgentBinaryUtils {
   }
   
   /**
+   * @param int $binaryId
+   * @param string $filename
+   * @param User $user
    * @throws HTException
    * @throws Exception
    */
-  public static function editName($binaryId, $filename, $user): void {
+  public static function editName(int $binaryId, string $filename, User $user): void {
     if (!file_exists(dirname(__FILE__) . "/../../bin/" . basename($filename))) {
       throw new HTException("Provided filename does not exist!");
     }
@@ -120,10 +127,13 @@ class AgentBinaryUtils {
   }
   
   /**
+   * @param int $binaryId
+   * @param string type
+   * @param User $user
    * @throws HTException
    * @throws Exception
    */
-  public static function editType($binaryId, $type, $user): void {
+  public static function editType(int $binaryId, string $type, User $user): void {
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     
     $qF1 = new QueryFilter(AgentBinary::BINARY_TYPE, $type, "=");

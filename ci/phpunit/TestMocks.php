@@ -67,9 +67,17 @@ namespace Hashtopolis\inc {
 
 namespace Hashtopolis\inc\utils {
   if (!function_exists(__NAMESPACE__ . '\\file_exists')) {
-    function file_exists($path) {
-      return \hashtopolis_invoke_test_mock(__FUNCTION__, [$path], static function ($path) {
+    function file_exists(string $path) {
+      return \hashtopolis_invoke_test_mock(__FUNCTION__, [$path], static function (string $path) {
         return \file_exists($path);
+      });
+    }
+  }
+
+  if (!function_exists(__NAMESPACE__ . '\\unlink')) {
+    function unlink(string $path) {
+      return \hashtopolis_invoke_test_mock(__FUNCTION__, [$path], static function (string $path) {
+        return \unlink($path);
       });
     }
   }
