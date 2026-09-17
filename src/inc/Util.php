@@ -279,27 +279,6 @@ class Util {
   }
   
   /**
-   * @return boolean
-   * @throws Exception
-   * @deprecated
-   */
-  public static function isYubikeyEnabled(): bool {
-    $clientId = SConfig::getInstance()->getVal(DConfig::YUBIKEY_ID);
-    if (!is_numeric($clientId) || $clientId <= 0) {
-      return false;
-    }
-    $secretKey = SConfig::getInstance()->getVal(DConfig::YUBIKEY_KEY);
-    if (!base64_decode($secretKey)) {
-      return false;
-    }
-    $apiUrl = SConfig::getInstance()->getVal(DConfig::YUBIKEY_URL);
-    if (filter_var($apiUrl, FILTER_VALIDATE_URL) === false) {
-      return false;
-    }
-    return true;
-  }
-  
-  /**
    * @param $issuer string API or User
    * @param $issuerId string either the ID of the user or the token of the client
    * @param $level string

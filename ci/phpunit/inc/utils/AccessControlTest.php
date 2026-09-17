@@ -68,7 +68,7 @@ final class AccessControlTest extends TestBase {
 
     $user = $this->createDatabaseObject(
       Factory::getUserFactory(),
-      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $group->getId(), '', '', '', '', '')
+      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $group->getId())
     );
 
     $accessControl = AccessControl::getInstance($user);
@@ -141,7 +141,7 @@ final class AccessControlTest extends TestBase {
 
     $user = $this->createDatabaseObject(
       Factory::getUserFactory(),
-      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $group->getId(), '', '', '', '', '')
+      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $group->getId())
     );
 
     $accessControl = AccessControl::getInstance($user);
@@ -156,7 +156,7 @@ final class AccessControlTest extends TestBase {
 
     $user = $this->createDatabaseObject(
       Factory::getUserFactory(),
-      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $group->getId(), '', '', '', '', '')
+      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $group->getId())
     );
 
     $accessControl = AccessControl::getInstance($user);

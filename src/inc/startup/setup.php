@@ -176,7 +176,7 @@ if ($initialSetup === true) {
   $options = array('cost' => 12);
   $newHash = password_hash($CIPHER, PASSWORD_BCRYPT, $options);
   
-  $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
+  $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId());
   $user = Factory::getUserFactory()->save($user);
   
   // create default access group and associate admin user to it

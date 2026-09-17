@@ -26,12 +26,7 @@ class DConfig {
   const HASHCAT_BRAIN_PASS     = "hashcatBrainPass";
   const HASHLIST_IMPORT_CHECK  = "hashlistImportCheck";
   const HC_ERROR_IGNORE        = "hcErrorIgnore";
-  
-  // Section: Yubikey
-  const YUBIKEY_ID  = "yubikey_id";
-  const YUBIKEY_KEY = "yubikey_key";
-  const YUBIKEY_URL = "yubikey_url";
-  
+
   // Section: Finetuning
   const HASHES_PAGE_SIZE           = "pagingSize";
   const NUMBER_LOGENTRIES          = "numLogEntries";
@@ -202,9 +197,6 @@ class DConfig {
       DConfig::BASE_URL => "Base url for the webpage (this does not include hostname and is normally determined automatically on the installation).",
       DConfig::DISP_TOLERANCE => "Allowable deviation in the final chunk of a task in percent.<br>(avoids issuing small chunks when the remaining part of a task is slightly bigger than the normal chunk size).",
       DConfig::BATCH_SIZE => "Batch size of SQL query when hashlist is sent to the agent.",
-      DConfig::YUBIKEY_ID => "Yubikey Client ID.",
-      DConfig::YUBIKEY_KEY => "Yubikey Secret Key.",
-      DConfig::YUBIKEY_URL => "Yubikey API URL.",
       DConfig::BASE_HOST => "Base hostname/port/protocol to use. Only fill this in to override the auto-determined value.",
       DConfig::DONATE_OFF => "Hide donation information.",
       DConfig::PLAINTEXT_MAX_LENGTH => "Max length of a plaintext. (WARNING: This change may take a long time depending on DB size!)",

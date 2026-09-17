@@ -29437,21 +29437,6 @@
                                                 },
                                                 "globalPermissionGroupId": {
                                                     "type": "integer"
-                                                },
-                                                "yubikey": {
-                                                    "type": "string"
-                                                },
-                                                "otp1": {
-                                                    "type": "string"
-                                                },
-                                                "otp2": {
-                                                    "type": "string"
-                                                },
-                                                "otp3": {
-                                                    "type": "string"
-                                                },
-                                                "otp4": {
-                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -29820,21 +29805,6 @@
                                                 },
                                                 "globalPermissionGroupId": {
                                                     "type": "integer"
-                                                },
-                                                "yubikey": {
-                                                    "type": "string"
-                                                },
-                                                "otp1": {
-                                                    "type": "string"
-                                                },
-                                                "otp2": {
-                                                    "type": "string"
-                                                },
-                                                "otp3": {
-                                                    "type": "string"
-                                                },
-                                                "otp4": {
-                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -30255,21 +30225,6 @@
                                                 },
                                                 "globalPermissionGroupId": {
                                                     "type": "integer"
-                                                },
-                                                "yubikey": {
-                                                    "type": "string"
-                                                },
-                                                "otp1": {
-                                                    "type": "string"
-                                                },
-                                                "otp2": {
-                                                    "type": "string"
-                                                },
-                                                "otp3": {
-                                                    "type": "string"
-                                                },
-                                                "otp4": {
-                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -31290,21 +31245,6 @@
                                                 },
                                                 "globalPermissionGroupId": {
                                                     "type": "integer"
-                                                },
-                                                "yubikey": {
-                                                    "type": "string"
-                                                },
-                                                "otp1": {
-                                                    "type": "string"
-                                                },
-                                                "otp2": {
-                                                    "type": "string"
-                                                },
-                                                "otp3": {
-                                                    "type": "string"
-                                                },
-                                                "otp4": {
-                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -32316,21 +32256,6 @@
                                                 },
                                                 "globalPermissionGroupId": {
                                                     "type": "integer"
-                                                },
-                                                "yubikey": {
-                                                    "type": "string"
-                                                },
-                                                "otp1": {
-                                                    "type": "string"
-                                                },
-                                                "otp2": {
-                                                    "type": "string"
-                                                },
-                                                "otp3": {
-                                                    "type": "string"
-                                                },
-                                                "otp4": {
-                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -33394,21 +33319,6 @@
                                                 },
                                                 "globalPermissionGroupId": {
                                                     "type": "integer"
-                                                },
-                                                "yubikey": {
-                                                    "type": "string"
-                                                },
-                                                "otp1": {
-                                                    "type": "string"
-                                                },
-                                                "otp2": {
-                                                    "type": "string"
-                                                },
-                                                "otp3": {
-                                                    "type": "string"
-                                                },
-                                                "otp4": {
-                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -37782,21 +37692,6 @@
                                         },
                                         "globalPermissionGroupId": {
                                             "type": "integer"
-                                        },
-                                        "yubikey": {
-                                            "type": "string"
-                                        },
-                                        "otp1": {
-                                            "type": "string"
-                                        },
-                                        "otp2": {
-                                            "type": "string"
-                                        },
-                                        "otp3": {
-                                            "type": "string"
-                                        },
-                                        "otp4": {
-                                            "type": "string"
                                         }
                                     }
                                 }
@@ -38019,21 +37914,6 @@
                                         },
                                         "globalPermissionGroupId": {
                                             "type": "integer"
-                                        },
-                                        "yubikey": {
-                                            "type": "string"
-                                        },
-                                        "otp1": {
-                                            "type": "string"
-                                        },
-                                        "otp2": {
-                                            "type": "string"
-                                        },
-                                        "otp3": {
-                                            "type": "string"
-                                        },
-                                        "otp4": {
-                                            "type": "string"
                                         }
                                     }
                                 }
@@ -38308,21 +38188,6 @@
                                         },
                                         "globalPermissionGroupId": {
                                             "type": "integer"
-                                        },
-                                        "yubikey": {
-                                            "type": "string"
-                                        },
-                                        "otp1": {
-                                            "type": "string"
-                                        },
-                                        "otp2": {
-                                            "type": "string"
-                                        },
-                                        "otp3": {
-                                            "type": "string"
-                                        },
-                                        "otp4": {
-                                            "type": "string"
                                         }
                                     }
                                 }
@@ -46103,21 +45968,6 @@
                                         },
                                         "globalPermissionGroupId": {
                                             "type": "integer"
-                                        },
-                                        "yubikey": {
-                                            "type": "string"
-                                        },
-                                        "otp1": {
-                                            "type": "string"
-                                        },
-                                        "otp2": {
-                                            "type": "string"
-                                        },
-                                        "otp3": {
-                                            "type": "string"
-                                        },
-                                        "otp4": {
-                                            "type": "string"
                                         }
                                     }
                                 }
@@ -46319,21 +46169,6 @@
                                         },
                                         "globalPermissionGroupId": {
                                             "type": "integer"
-                                        },
-                                        "yubikey": {
-                                            "type": "string"
-                                        },
-                                        "otp1": {
-                                            "type": "string"
-                                        },
-                                        "otp2": {
-                                            "type": "string"
-                                        },
-                                        "otp3": {
-                                            "type": "string"
-                                        },
-                                        "otp4": {
-                                            "type": "string"
                                         }
                                     }
                                 }
@@ -46587,21 +46422,6 @@
                                         },
                                         "globalPermissionGroupId": {
                                             "type": "integer"
-                                        },
-                                        "yubikey": {
-                                            "type": "string"
-                                        },
-                                        "otp1": {
-                                            "type": "string"
-                                        },
-                                        "otp2": {
-                                            "type": "string"
-                                        },
-                                        "otp3": {
-                                            "type": "string"
-                                        },
-                                        "otp4": {
-                                            "type": "string"
                                         }
                                     }
                                 }
@@ -55888,21 +55708,6 @@
                                         },
                                         "globalPermissionGroupId": {
                                             "type": "integer"
-                                        },
-                                        "yubikey": {
-                                            "type": "string"
-                                        },
-                                        "otp1": {
-                                            "type": "string"
-                                        },
-                                        "otp2": {
-                                            "type": "string"
-                                        },
-                                        "otp3": {
-                                            "type": "string"
-                                        },
-                                        "otp4": {
-                                            "type": "string"
                                         }
                                     }
                                 }
@@ -56210,21 +56015,6 @@
                                         },
                                         "globalPermissionGroupId": {
                                             "type": "integer"
-                                        },
-                                        "yubikey": {
-                                            "type": "string"
-                                        },
-                                        "otp1": {
-                                            "type": "string"
-                                        },
-                                        "otp2": {
-                                            "type": "string"
-                                        },
-                                        "otp3": {
-                                            "type": "string"
-                                        },
-                                        "otp4": {
-                                            "type": "string"
                                         }
                                     }
                                 }
@@ -56584,21 +56374,6 @@
                                         },
                                         "globalPermissionGroupId": {
                                             "type": "integer"
-                                        },
-                                        "yubikey": {
-                                            "type": "string"
-                                        },
-                                        "otp1": {
-                                            "type": "string"
-                                        },
-                                        "otp2": {
-                                            "type": "string"
-                                        },
-                                        "otp3": {
-                                            "type": "string"
-                                        },
-                                        "otp4": {
-                                            "type": "string"
                                         }
                                     }
                                 }
@@ -68780,21 +68555,6 @@
                             },
                             "globalPermissionGroupId": {
                                 "type": "integer"
-                            },
-                            "yubikey": {
-                                "type": "string"
-                            },
-                            "otp1": {
-                                "type": "string"
-                            },
-                            "otp2": {
-                                "type": "string"
-                            },
-                            "otp3": {
-                                "type": "string"
-                            },
-                            "otp4": {
-                                "type": "string"
                             }
                         }
                     },
@@ -69165,21 +68925,6 @@
                                     },
                                     "globalPermissionGroupId": {
                                         "type": "integer"
-                                    },
-                                    "yubikey": {
-                                        "type": "string"
-                                    },
-                                    "otp1": {
-                                        "type": "string"
-                                    },
-                                    "otp2": {
-                                        "type": "string"
-                                    },
-                                    "otp3": {
-                                        "type": "string"
-                                    },
-                                    "otp4": {
-                                        "type": "string"
                                     }
                                 }
                             },
@@ -69467,21 +69212,6 @@
                                     },
                                     "globalPermissionGroupId": {
                                         "type": "integer"
-                                    },
-                                    "yubikey": {
-                                        "type": "string"
-                                    },
-                                    "otp1": {
-                                        "type": "string"
-                                    },
-                                    "otp2": {
-                                        "type": "string"
-                                    },
-                                    "otp3": {
-                                        "type": "string"
-                                    },
-                                    "otp4": {
-                                        "type": "string"
                                     }
                                 }
                             },
@@ -69820,21 +69550,6 @@
                                         },
                                         "globalPermissionGroupId": {
                                             "type": "integer"
-                                        },
-                                        "yubikey": {
-                                            "type": "string"
-                                        },
-                                        "otp1": {
-                                            "type": "string"
-                                        },
-                                        "otp2": {
-                                            "type": "string"
-                                        },
-                                        "otp3": {
-                                            "type": "string"
-                                        },
-                                        "otp4": {
-                                            "type": "string"
                                         }
                                     }
                                 },

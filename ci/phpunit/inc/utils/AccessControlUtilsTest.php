@@ -49,17 +49,17 @@ final class AccessControlUtilsTest extends TestBase {
   public function testGetMembersOfGroupReturnsOnlyMembersOfGroup(): void {
     $firstMember = $this->createDatabaseObject(
       Factory::getUserFactory(),
-      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $this->group->getId(), '', '', '', '', '')
+      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $this->group->getId())
     );
 
     $secondMember = $this->createDatabaseObject(
       Factory::getUserFactory(),
-      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $this->group->getId(), '', '', '', '', '')
+      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $this->group->getId())
     );
 
     $otherMember = $this->createDatabaseObject(
       Factory::getUserFactory(),
-      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $this->otherGroup->getId(), '', '', '', '', '')
+      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $this->otherGroup->getId())
     );
 
     $members = AccessControlUtils::getMembers($this->group->getId());
@@ -249,7 +249,7 @@ final class AccessControlUtilsTest extends TestBase {
   public function testDeleteGroupThrowsWhenGroupHasUsers(): void {
     $this->createDatabaseObject(
       Factory::getUserFactory(),
-      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $this->group->getId(), '', '', '', '', '')
+      new User(null, 'phpunit_' . uniqid(), 'phpunit_' . uniqid() . '@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, $this->group->getId())
     );
 
     $this->expectException(HttpError::class);

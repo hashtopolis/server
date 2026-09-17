@@ -24,7 +24,7 @@ if (isset($_GET['err'])) {
         UI::addMessage(UI::ERROR, "You need to fill in both fields!");
         break;
       case '3':
-        UI::addMessage(UI::ERROR, "Wrong username/password/OTP!");
+        UI::addMessage(UI::ERROR, "Wrong username/password!");
         break;
       case '4':
         UI::addMessage(UI::ERROR, "You need to be logged in to view this! Please log in again.");
