@@ -7,6 +7,7 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\inc\Util;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
@@ -15,6 +16,7 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\TestBase;
 use Override;
+use RuntimeException;
 
 require_once(dirname(__FILE__) . '/../../TestBase.php');
 require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
@@ -43,7 +45,7 @@ final class CrackerUtilsTest extends TestBase {
     );
     $this->binary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com', 'testcracker', null)
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com', 'testcracker', null, 1)
     );
   }
 
@@ -108,7 +110,7 @@ final class CrackerUtilsTest extends TestBase {
   // empty. Uses a valid type ID so the method reaches the field validation.
   public function testCreateBinaryEmptyVersionThrowsHttpError(): void {
     $this->expectException(HttpError::class);
-    CrackerUtils::createBinary('', 'testcracker', 'http://example.com', $this->type->getId());
+    CrackerUtils::createBinary('', 'testcracker', 'http://example.com', $this->type->getId(), 1);
   }
 
   // Verifies that createBinary() rejects a download url the server cannot
@@ -117,7 +119,7 @@ final class CrackerUtilsTest extends TestBase {
   public function testCreateBinaryUnreachableUrlRollsBack(): void {
     $countBefore = $this->countBinariesOfType($this->type->getId());
     try {
-      CrackerUtils::createBinary('9.9.9', 'testcracker', 'http://127.0.0.1:1/cracker.7z', $this->type->getId());
+      CrackerUtils::createBinary('9.9.9', 'testcracker', 'http://127.0.0.1:1/cracker.7z', $this->type->getId(), 1);
       $this->fail('Expected HttpError for an unreachable download url');
     }
     catch (HttpError $e) {
@@ -131,7 +133,22 @@ final class CrackerUtilsTest extends TestBase {
   // so the server cannot be pointed at local files or stream wrappers.
   public function testCreateBinaryInvalidSchemeThrowsHttpError(): void {
     $this->expectException(HttpError::class);
-    CrackerUtils::createBinary('9.9.9', 'testcracker', 'file:///etc/passwd', $this->type->getId());
+    CrackerUtils::createBinary('9.9.9', 'testcracker', 'file:///etc/passwd', $this->type->getId(), 1);
+  }
+
+  // Verifies the full happy path: createBinary() creates and returns a new
+  // CrackerBinary when all fields are valid, and downloads a local copy of the
+  // archive from the download url.
+  public function testCreateBinaryValidInputCreatesBinary(): void {
+    $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'downloaded-content');
+    $b = CrackerUtils::createBinary('9.9.9', 'newcracker', $url, $this->type->getId(), 1);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
+    $this->assertSame('9.9.9', $b->getVersion());
+    // the server downloaded and stored a local copy of the archive
+    $copy = CrackerUtils::getCrackersPath() . $b->getId() . '_test-crackerutils-type-9.9.9.7z';
+    $this->assertFileExists($copy);
+    $this->assertEquals(self::SEVEN_ZIP_MAGIC . 'downloaded-content', file_get_contents($copy));
+    CrackerUtils::deleteBinary($b->getId());
   }
 
   private const SEVEN_ZIP_MAGIC = "\x37\x7A\xBC\xAF\x27\x1C";
@@ -152,7 +169,7 @@ final class CrackerUtilsTest extends TestBase {
     $name = 'test-archive-' . uniqid() . '.7z';
     $content = self::SEVEN_ZIP_MAGIC . 'test-content';
     file_put_contents($this->getImportPath() . $name, $content);
-    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name);
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name, 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
 
     $this->assertEquals('test-crackerutils-type-7.2.7.7z', $b->getFilename());
@@ -172,7 +189,7 @@ final class CrackerUtilsTest extends TestBase {
   // stores the base64 decoded archive in the crackers directory.
   public function testCreateBinaryFromUploadInlineSource(): void {
     $content = self::SEVEN_ZIP_MAGIC . 'inline-content';
-    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', base64_encode($content));
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', base64_encode($content), 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
 
     $this->assertEquals('test-crackerutils-type-7.2.7.7z', $b->getFilename());
@@ -219,7 +236,7 @@ final class CrackerUtilsTest extends TestBase {
       Factory::getCrackerBinaryTypeFactory(),
       new CrackerBinaryType(null, 'weird cracker name!', 1)
     );
-    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC));
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC), 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
 
     $this->assertEquals('weird-cracker-name--7.2.7.7z', $b->getFilename());
@@ -229,25 +246,25 @@ final class CrackerUtilsTest extends TestBase {
   // Verifies that createBinaryFromUpload() rejects an unsupported sourceType.
   public function testCreateBinaryFromUploadInvalidSourceTypeThrowsHttpError(): void {
     $this->expectException(HttpError::class);
-    CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'bogus', 'data');
+    CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'bogus', 'data', 1);
   }
 
   // Verifies that createBinaryFromUpload() rejects an empty version.
   public function testCreateBinaryFromUploadEmptyVersionThrowsHttpError(): void {
     $this->expectException(HttpError::class);
-    CrackerUtils::createBinaryFromUpload('', 'testcracker', $this->type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC));
+    CrackerUtils::createBinaryFromUpload('', 'testcracker', $this->type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC), 1);
   }
 
   // Verifies that createBinaryFromUpload() rejects missing sourceData.
   public function testCreateBinaryFromUploadEmptySourceDataThrowsHttpError(): void {
     $this->expectException(HttpError::class);
-    CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', '');
+    CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', '', 1);
   }
 
   // Verifies that createBinaryFromUpload() rejects sourceData which is not valid base64.
   public function testCreateBinaryFromUploadInvalidBase64ThrowsHttpError(): void {
     $this->expectException(HttpError::class);
-    CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', '!!!no-base64!!!');
+    CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', '!!!no-base64!!!', 1);
   }
 
   // Verifies that an inline archive which cannot be decoded with sufficient
@@ -279,7 +296,7 @@ final class CrackerUtilsTest extends TestBase {
   // local files or stream wrappers can be fetched by the server.
   public function testCreateBinaryFromUploadUrlSchemeThrowsHttpError(): void {
     $this->expectException(HttpError::class);
-    CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'url', 'file:///etc/passwd');
+    CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'url', 'file:///etc/passwd', 1);
   }
 
   // Verifies that a non-7z archive is rejected and the import file is restored and
@@ -290,7 +307,7 @@ final class CrackerUtilsTest extends TestBase {
     $countBefore = $this->countBinariesOfType($this->type->getId());
 
     try {
-      CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name);
+      CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name, 1);
       $this->fail('Expected HttpError for a non-7z archive');
     }
     catch (HttpError $e) {
@@ -309,7 +326,7 @@ final class CrackerUtilsTest extends TestBase {
     $countBefore = $this->countBinariesOfType($this->type->getId());
 
     try {
-      CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', 'does-not-exist-' . uniqid() . '.7z');
+      CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', 'does-not-exist-' . uniqid() . '.7z', 1);
       $this->fail('Expected HttpError for a missing import file');
     }
     catch (HttpError $e) {
@@ -323,7 +340,7 @@ final class CrackerUtilsTest extends TestBase {
   public function testDeleteBinaryRemovesLocalArchive(): void {
     $name = 'test-archive-' . uniqid() . '.7z';
     file_put_contents($this->getImportPath() . $name, self::SEVEN_ZIP_MAGIC . 'to-be-deleted');
-    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name);
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name, 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
     $archive = CrackerUtils::getCrackersPath() . $b->getId() . '_' . $b->getFilename();
     $this->assertFileExists($archive);
@@ -339,7 +356,7 @@ final class CrackerUtilsTest extends TestBase {
   public function testDeleteBinaryRemovesDownloadedLocalCopy(): void {
     $binary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $this->type->getId(), '3.0.0', 'http://example.com/cracker.7z', 'testcracker', null)
+      new CrackerBinary(null, $this->type->getId(), '3.0.0', 'http://example.com/cracker.7z', 'testcracker', null, 1)
     );
     $copy = CrackerUtils::getCrackersPath() . $binary->getId() . '_test-crackerutils-type-3.0.0.7z';
     file_put_contents($copy, self::SEVEN_ZIP_MAGIC . 'downloaded-local-copy');
@@ -359,7 +376,7 @@ final class CrackerUtilsTest extends TestBase {
     );
     $name = 'test-archive-' . uniqid() . '.7z';
     file_put_contents($this->getImportPath() . $name, self::SEVEN_ZIP_MAGIC . 'to-be-deleted');
-    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $type->getId(), 'import', $name);
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $type->getId(), 'import', $name, 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
     $archive = CrackerUtils::getCrackersPath() . $b->getId() . '_' . $b->getFilename();
     $this->assertFileExists($archive);
@@ -374,7 +391,7 @@ final class CrackerUtilsTest extends TestBase {
   public function testUpdateBinaryRejectsUrlChangeForLocalBinary(): void {
     $name = 'test-archive-' . uniqid() . '.7z';
     file_put_contents($this->getImportPath() . $name, self::SEVEN_ZIP_MAGIC . 'local');
-    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name);
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name, 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
 
     try {
@@ -395,7 +412,7 @@ final class CrackerUtilsTest extends TestBase {
   public function testUpdateBinaryAllowsUnchangedUrlForLocalBinary(): void {
     $name = 'test-archive-' . uniqid() . '.7z';
     file_put_contents($this->getImportPath() . $name, self::SEVEN_ZIP_MAGIC . 'local');
-    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name);
+    $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name, 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
 
     CrackerUtils::updateBinary('8.0.0', 'testcracker', $b->getDownloadUrl(), $b->getId());
@@ -412,7 +429,7 @@ final class CrackerUtilsTest extends TestBase {
   public function testUpdateBinaryUrlChangeRollsBackOnFailedDownload(): void {
     $binary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://127.0.0.1:1/original.7z', 'testcracker', null)
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://127.0.0.1:1/original.7z', 'testcracker', null, 1)
     );
     $copy = CrackerUtils::getCrackersPath() . $binary->getId() . '_test-crackerutils-type-1.0.0.7z';
     file_put_contents($copy, self::SEVEN_ZIP_MAGIC . 'previous-local-copy');
@@ -433,6 +450,7 @@ final class CrackerUtilsTest extends TestBase {
     // the previous local copy is still there, unchanged
     $this->assertFileExists($copy);
     $this->assertEquals(self::SEVEN_ZIP_MAGIC . 'previous-local-copy', file_get_contents($copy));
+    CrackerUtils::deleteBinary($binary->getId());
   }
 
   // Verifies that a changed download url of a url-referenced binary has to be
@@ -455,7 +473,7 @@ final class CrackerUtilsTest extends TestBase {
   public function testUpdateBinaryUnchangedUrlKeepsLocalCopy(): void {
     $binary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://127.0.0.1:1/unreachable.7z', 'testcracker', null)
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://127.0.0.1:1/unreachable.7z', 'testcracker', null, 1)
     );
     $copy = CrackerUtils::getCrackersPath() . $binary->getId() . '_test-crackerutils-type-1.0.0.7z';
     file_put_contents($copy, self::SEVEN_ZIP_MAGIC . 'kept-local-copy');
@@ -469,5 +487,181 @@ final class CrackerUtilsTest extends TestBase {
     // the local copy is untouched, still under the filename of its version
     $this->assertFileExists($copy);
     $this->assertEquals(self::SEVEN_ZIP_MAGIC . 'kept-local-copy', file_get_contents($copy));
+    CrackerUtils::deleteBinary($binary->getId());
+  }
+
+  // Verifies that binaries can only be created in access groups the user is a
+  // member of.
+  public function testCreateBinaryRequiresGroupMembership(): void {
+    $group = $this->createAccessGroup('ag-crackerutils-member');
+    $user = $this->createUser('crackerutils-member-user');
+    $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'content');
+
+    try {
+      CrackerUtils::createBinary('1.0.0', 'testcracker', $url, $this->type->getId(), $group->getId(), $user);
+      $this->fail('Expected HttpError when the user is not a member of the access group');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('no rights', $e->getMessage());
+    }
+
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group->getId(), $user->getId())
+    );
+    $binary = CrackerUtils::createBinary('1.0.0', 'testcracker', $url, $this->type->getId(), $group->getId(), $user);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+    $this->assertEquals($group->getId(), $binary->getAccessGroupId());
+    // also removes the downloaded local copy of the archive
+    CrackerUtils::deleteBinary($binary->getId());
+  }
+
+  // Verifies that uploads can only be created in access groups the user is a
+  // member of.
+  public function testCreateBinaryFromUploadRequiresGroupMembership(): void {
+    $group = $this->createAccessGroup('ag-crackerutils-upload');
+    $user = $this->createUser('crackerutils-upload-user');
+
+    try {
+      CrackerUtils::createBinaryFromUpload('1.0.0', 'testcracker', $this->type->getId(), 'inline',
+        base64_encode(self::SEVEN_ZIP_MAGIC . 'content'), $group->getId(), $user);
+      $this->fail('Expected HttpError when the user is not a member of the access group');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('no rights', $e->getMessage());
+    }
+    $this->assertEmpty(glob(CrackerUtils::getCrackersPath() . '*_test-crackerutils-type-1.0.0.7z'));
+
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group->getId(), $user->getId())
+    );
+    $binary = CrackerUtils::createBinaryFromUpload('1.0.0', 'testcracker', $this->type->getId(), 'inline',
+      base64_encode(self::SEVEN_ZIP_MAGIC . 'content'), $group->getId(), $user);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+    $this->assertEquals($group->getId(), $binary->getAccessGroupId());
+    unlink(CrackerUtils::getCrackersPath() . $binary->getId() . '_' . $binary->getFilename());
+  }
+
+  // Verifies that creation with a group that does not exist is rejected.
+  public function testCreateBinaryRejectsInvalidGroup(): void {
+    try {
+      CrackerUtils::createBinary('1.0.0', 'testcracker', 'http://example.com/hc.7z', $this->type->getId(), 99999999, $this->adminUser);
+      $this->fail('Expected HttpError for a non existing access group');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('Invalid access group', $e->getMessage());
+    }
+  }
+
+  // Verifies that moving a binary to another group requires membership of the
+  // current and of the new group.
+  public function testChangeAccessGroupRequiresMembershipOfBothGroups(): void {
+    $group1 = $this->createAccessGroup('ag-crackerutils-move-1');
+    $group2 = $this->createAccessGroup('ag-crackerutils-move-2');
+    $user = $this->createUser('crackerutils-move-user');
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group1->getId(), $user->getId())
+    );
+    $binary = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com/hc.7z', 'testcracker', null, $group1->getId())
+    );
+
+    // the user is not a member of the new group
+    try {
+      CrackerUtils::changeAccessGroup($binary->getId(), $group2->getId(), $user);
+      $this->fail('Expected HttpError when the user is not a member of the new group');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('No access to this group', $e->getMessage());
+    }
+
+    $otherUser = $this->createUser('crackerutils-move-user-2');
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group2->getId(), $otherUser->getId())
+    );
+    // the other user is not a member of the current group of the binary
+    try {
+      CrackerUtils::changeAccessGroup($binary->getId(), $group2->getId(), $otherUser);
+      $this->fail('Expected HttpError when the user is not a member of the current group');
+    }
+    catch (HttpError $e) {
+      $this->assertStringContainsString('No access to this group', $e->getMessage());
+    }
+
+    $this->assertEquals($group1->getId(), Factory::getCrackerBinaryFactory()->get($binary->getId())->getAccessGroupId());
+  }
+
+  // Verifies that a binary can be moved to another group the user is a member of.
+  public function testChangeAccessGroupMovesBinary(): void {
+    $group1 = $this->createAccessGroup('ag-crackerutils-move-ok-1');
+    $group2 = $this->createAccessGroup('ag-crackerutils-move-ok-2');
+    $user = $this->createUser('crackerutils-move-ok-user');
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group1->getId(), $user->getId())
+    );
+    $this->createDatabaseObject(
+      Factory::getAccessGroupUserFactory(),
+      new AccessGroupUser(null, $group2->getId(), $user->getId())
+    );
+    $binary = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com/hc.7z', 'testcracker', null, $group1->getId())
+    );
+
+    CrackerUtils::changeAccessGroup($binary->getId(), $group2->getId(), $user);
+
+    $this->assertEquals($group2->getId(), Factory::getCrackerBinaryFactory()->get($binary->getId())->getAccessGroupId());
+  }
+
+  private array $httpFileServers = [];
+
+  /**
+   * Serves a file with the given content through a local HTTP server, so tests
+   * can use a working download url without external network access. The server
+   * runs until tearDown() shuts it down.
+   */
+  private function serveHttpFile(string $filename, string $content): string {
+    // pick a free port
+    $socket = stream_socket_server('tcp://127.0.0.1:0', $errno, $errstr);
+    $address = stream_socket_get_name($socket, false);
+    fclose($socket);
+    $docroot = sys_get_temp_dir() . '/hashtopolis-http-' . uniqid();
+    mkdir($docroot);
+    file_put_contents($docroot . '/' . $filename, $content);
+    $proc = proc_open(
+      ['php', '-S', $address, '-t', $docroot],
+      [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']],
+      $pipes
+    );
+    // wait until the server responds
+    $deadline = microtime(true) + 10;
+    while (microtime(true) < $deadline) {
+      $conn = @fsockopen('127.0.0.1', parse_url('http://' . $address, PHP_URL_PORT), $errno, $errstr, 0.2);
+      if ($conn !== false) {
+        fclose($conn);
+        $this->httpFileServers[] = ['proc' => $proc, 'docroot' => $docroot];
+        return 'http://' . $address . '/' . $filename;
+      }
+      usleep(50000);
+    }
+    throw new RuntimeException('Local HTTP file server did not come up in time');
+  }
+
+  protected function tearDown(): void {
+    foreach ($this->httpFileServers as $server) {
+      proc_terminate($server['proc']);
+      proc_close($server['proc']);
+      foreach (glob($server['docroot'] . '/*') ?: [] as $path) {
+        unlink($path);
+      }
+      rmdir($server['docroot']);
+    }
+    $this->httpFileServers = [];
+    parent::tearDown();
   }
 }

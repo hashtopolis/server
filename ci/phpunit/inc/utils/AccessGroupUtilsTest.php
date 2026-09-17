@@ -7,6 +7,7 @@ use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\Hashlist;
@@ -262,12 +263,17 @@ final class AccessGroupUtilsTest extends TestBase {
     $hashlist = $this->createHashlist($groupToDelete, $hashType);
     $taskWrapper = $this->createTaskWrapper($groupToDelete, $hashlist);
     $file = $this->createFile($groupToDelete);
+    $crackerBinary = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
+      new CrackerBinary(null, 1, '1.0.0', 'http://example.com/hc.7z', 'delgroup-cracker', null, $groupToDelete->getId())
+    );
 
     AccessGroupUtils::deleteGroup($groupToDelete->getId());
 
     $updatedHashlist = Factory::getHashlistFactory()->get($hashlist->getId());
     $updatedTaskWrapper = Factory::getTaskWrapperFactory()->get($taskWrapper->getId());
     $updatedFile = Factory::getFileFactory()->get($file->getId());
+    $updatedCrackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinary->getId());
     $deletedGroup = Factory::getAccessGroupFactory()->get($groupToDelete->getId());
     $remainingUsers = AccessGroupUtils::getUsers($groupToDelete->getId());
     $remainingAgents = AccessGroupUtils::getAgents($groupToDelete->getId());
@@ -278,6 +284,8 @@ final class AccessGroupUtilsTest extends TestBase {
     $this->assertSame($defaultGroup->getId(), $updatedTaskWrapper->getAccessGroupId());
     $this->assertInstanceOf(File::class, $updatedFile);
     $this->assertSame($defaultGroup->getId(), $updatedFile->getAccessGroupId());
+    $this->assertInstanceOf(CrackerBinary::class, $updatedCrackerBinary);
+    $this->assertSame($defaultGroup->getId(), $updatedCrackerBinary->getAccessGroupId());
     $this->assertNull($deletedGroup);
     $this->assertSame([], $remainingUsers);
     $this->assertSame([], $remainingAgents);

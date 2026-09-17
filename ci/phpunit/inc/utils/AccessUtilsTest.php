@@ -414,7 +414,7 @@ final class AccessUtilsTest extends TestBase {
     $hashlist = $this->createHashlist($group, $hashType);
     $taskWrapper = $this->createTaskWrapper($group, $hashlist);
     $crackerBinaryType = $this->createCrackerBinaryType();
-    $crackerBinary = $this->createCrackerBinary($crackerBinaryType);
+    $crackerBinary = $this->createCrackerBinary($crackerBinaryType, $group->getId());
     $task = $this->createTask($taskWrapper, $crackerBinary, $crackerBinaryType);
     $file = $this->createFile($group);
 
