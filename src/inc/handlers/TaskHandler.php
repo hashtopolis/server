@@ -4,6 +4,7 @@ namespace Hashtopolis\inc\handlers;
 
 use Exception;
 use Hashtopolis\inc\utils\AccessControl;
+use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\DataSet;
 use Throwable;
 use Hashtopolis\inc\utils\FileDownloadUtils;
@@ -235,6 +236,10 @@ class TaskHandler implements Handler {
     }
     else if ($crackerBinary->getCrackerBinaryTypeId() != $crackerBinaryType->getId()) {
       UI::addMessage(UI::ERROR, "Non-matching cracker binary selection!");
+      return;
+    }
+    else if (!AccessUtils::userCanAccessCrackerBinary($crackerBinary, Login::getInstance()->getUser())) {
+      UI::addMessage(UI::ERROR, "No access to this cracker binary!");
       return;
     }
     else if ($chunk < 0 || $status < 0 || $chunk < $status) {
