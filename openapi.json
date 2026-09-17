@@ -41539,6 +41539,36 @@
                             "attributes": {
                                 "type": "object",
                                 "properties": {
+                                    "sourceType": {
+                                        "oneOf": [
+                                            {
+                                                "const": "inline",
+                                                "title": "Archive provided as base64 data in sourceData",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "import",
+                                                "title": "Archive taken from the import directory, sourceData is the filename",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "url",
+                                                "title": "Archive fetched from an http(s) url given in sourceData",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ],
+                                        "description": "Source the 7z archive is uploaded from: inline (base64 archive data in sourceData), import (filename of a file in the import directory as sourceData) or url (http/https url in sourceData, fetched by the server). Mutually exclusive with downloadUrl."
+                                    },
+                                    "sourceData": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Source of the archive upload, depending on sourceType: base64 encoded archive data, filename of a file in the import directory or a http/https url to fetch the archive from."
+                                    },
                                     "crackerBinaryTypeId": {
                                         "type": "integer"
                                     },
@@ -41546,7 +41576,11 @@
                                         "type": "string"
                                     },
                                     "downloadUrl": {
-                                        "type": "string"
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                     },
                                     "binaryName": {
                                         "type": "string"
@@ -41555,7 +41589,6 @@
                                 "required": [
                                     "crackerBinaryTypeId",
                                     "version",
-                                    "downloadUrl",
                                     "binaryName"
                                 ]
                             }
@@ -41587,7 +41620,10 @@
                                         "type": "string"
                                     },
                                     "downloadUrl": {
-                                        "type": "string"
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     },
                                     "version": {
                                         "type": "string"
@@ -41629,7 +41665,10 @@
                                             "type": "string"
                                         },
                                         "downloadUrl": {
-                                            "type": "string"
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
                                         },
                                         "version": {
                                             "type": "string"
@@ -41734,7 +41773,8 @@
                                     "crackerBinaryTypeId",
                                     "version",
                                     "downloadUrl",
-                                    "binaryName"
+                                    "binaryName",
+                                    "filename"
                                 ],
                                 "properties": {
                                     "crackerBinaryTypeId": {
@@ -41744,10 +41784,21 @@
                                         "type": "string"
                                     },
                                     "downloadUrl": {
-                                        "type": "string"
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                     },
                                     "binaryName": {
                                         "type": "string"
+                                    },
+                                    "filename": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                     }
                                 }
                             },
@@ -42108,7 +42159,8 @@
                                     "crackerBinaryTypeId",
                                     "version",
                                     "downloadUrl",
-                                    "binaryName"
+                                    "binaryName",
+                                    "filename"
                                 ],
                                 "properties": {
                                     "crackerBinaryTypeId": {
@@ -42118,10 +42170,21 @@
                                         "type": "string"
                                     },
                                     "downloadUrl": {
-                                        "type": "string"
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                     },
                                     "binaryName": {
                                         "type": "string"
+                                    },
+                                    "filename": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                     }
                                 }
                             },
@@ -42533,7 +42596,8 @@
                                         "crackerBinaryTypeId",
                                         "version",
                                         "downloadUrl",
-                                        "binaryName"
+                                        "binaryName",
+                                        "filename"
                                     ],
                                     "properties": {
                                         "crackerBinaryTypeId": {
@@ -42543,10 +42607,21 @@
                                             "type": "string"
                                         },
                                         "downloadUrl": {
-                                            "type": "string"
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                         },
                                         "binaryName": {
                                             "type": "string"
+                                        },
+                                        "filename": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                         }
                                     }
                                 },
@@ -43308,7 +43383,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -43318,10 +43394,21 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 }
                                             }
                                         }
@@ -43678,7 +43765,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -43688,10 +43776,21 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 }
                                             }
                                         }
@@ -44100,7 +44199,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -44110,10 +44210,21 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 }
                                             }
                                         }
@@ -53504,7 +53615,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -53514,10 +53626,21 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 }
                                             }
                                         }
@@ -53958,7 +54081,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -53968,10 +54092,21 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 }
                                             }
                                         }
@@ -54464,7 +54599,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -54474,10 +54610,21 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 }
                                             }
                                         }
@@ -61965,7 +62112,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -61975,10 +62123,21 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 }
                                             }
                                         }
@@ -62928,7 +63087,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -62938,10 +63098,21 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 }
                                             }
                                         }
@@ -63943,7 +64114,8 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -63953,10 +64125,21 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 }
                                             }
                                         }
