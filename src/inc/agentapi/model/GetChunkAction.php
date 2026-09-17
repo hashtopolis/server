@@ -88,7 +88,7 @@ final class GetChunkAction implements AgentAction {
             ]);
         }
 
-        if ($assignment->getBenchmark() == 0 && $task->getIsSmall() == 0 && $task->getStaticChunks() == DTaskStaticChunking::NORMAL) {
+        if (($assignment->getBenchmark() == '0' || $assignment->getBenchmark() == '') && $task->getIsSmall() == 0 && $task->getStaticChunks() == DTaskStaticChunking::NORMAL) {
             DServerLog::log(DServerLog::TRACE, 'Need to run a benchmark!', [$agent, $task]);
             return $this->success($response, PActions::GET_CHUNK, [
                 PResponseGetChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED,

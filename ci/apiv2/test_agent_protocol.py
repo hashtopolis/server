@@ -108,11 +108,13 @@ class AgentProtocolBase(BaseTest):
         self.delete_after_test(agent)
         return dummy, agent
 
-    def _setup_assigned_agent(self, hashlist=None, task_extra=None):
+    def _setup_assigned_agent(self, hashlist=None, task_extra=None, benchmark='0'):
         """Create agent + hashlist + task + assignment; return (dummy, agent, task, hashlist).
 
         The task uses ``staticChunks=0`` (NORMAL) by default so the benchmark
         step is exercised. Pass ``task_extra`` to override task fields.
+        The assignment is created with the given ``benchmark`` value ('0' or ''
+        both occur in production, e.g. assignments created without a benchmark).
         """
         dummy, agent = self._dummy_with_agent()
         if hashlist is None:
@@ -121,7 +123,7 @@ class AgentProtocolBase(BaseTest):
         if task_extra:
             extra.update(task_extra)
         task = self.create_task(hashlist, extra_payload=extra)
-        assignment = do_create_agentassignent(agent, task)
+        assignment = do_create_agentassignent(agent, task, benchmark)
         self.delete_after_test(assignment)
         return dummy, agent, task, hashlist
 
@@ -936,6 +938,31 @@ class TestGetChunk(AgentProtocolBase):
     def test_get_chunk_benchmark_required(self):
         """After keyspace is set but before benchmark returns status='benchmark'."""
         dummy, agent, task, _ = self._setup_assigned_agent()
+        agent_request({
+            "action": "sendKeyspace",
+            "token": dummy.token,
+            "taskId": task.id,
+            "keyspace": 56800,
+        })
+        code, body = agent_request({
+            "action": "getChunk",
+            "token": dummy.token,
+            "taskId": task.id,
+        })
+        self.assertEqual(code, 200)
+        resp = parse_envelope(body)
+        self.assertEqual(resp['action'], "getChunk")
+        self.assertEqual(resp['response'], "SUCCESS")
+        self.assertEqual(resp['status'], "benchmark")
+
+    def test_get_chunk_benchmark_required_empty_benchmark(self):
+        """An assignment with empty-string benchmark ('') is treated like '0'.
+
+        Assignments created without a benchmark get '' server-side (e.g. via
+        AgentUtils::assign default), which must also trigger status='benchmark'
+        and never fall through to chunk dispatching with an unknown speed.
+        """
+        dummy, agent, task, _ = self._setup_assigned_agent(benchmark='')
         agent_request({
             "action": "sendKeyspace",
             "token": dummy.token,
