@@ -22,6 +22,7 @@ class StartupConfig {
   private const DIRECTORY_LOG    = "log";
   private const DIRECTORY_CONFIG = "config";
   private const DIRECTORY_TUS    = "tus";
+  private const DIRECTORY_CRACKERS = "crackers";
   
   private const REFRESH_TOKEN_COOKIE_SECURE  = "cookieSecure";
   private const REFRESH_TOKEN_COOKIE_SAMESITE = "cookieSameSite";
@@ -59,6 +60,7 @@ class StartupConfig {
       "log" => "/usr/local/share/hashtopolis/log",
       "config" => "/usr/local/share/hashtopolis/config",
       "tus" => "/var/tmp/tus/",
+      "crackers" => "/usr/local/share/hashtopolis/crackers",
     ];
     
     $this->db_properties = [
@@ -151,6 +153,9 @@ class StartupConfig {
     if (getenv('HASHTOPOLIS_TUS_PATH') !== false) {
       $this->directories[self::DIRECTORY_TUS] = getenv('HASHTOPOLIS_TUS_PATH');
     }
+    if (getenv('HASHTOPOLIS_CRACKERS_PATH') !== false) {
+      $this->directories[self::DIRECTORY_CRACKERS] = getenv('HASHTOPOLIS_CRACKERS_PATH');
+    }
     
     /* Only needed to overrule the automatic detection, for instance behind a proxy which terminates TLS
        without announcing it through X-Forwarded-Proto. */
@@ -162,7 +167,7 @@ class StartupConfig {
       $this->refresh_token[self::REFRESH_TOKEN_COOKIE_SAMESITE] = self::readOptionalEnv('HASHTOPOLIS_REFRESH_COOKIE_SAMESITE');
     }
   }
-
+  
   /**
    * Reads an optional setting, treating a variable that is present but empty as one that was never
    * set.
@@ -182,7 +187,7 @@ class StartupConfig {
       return null;
     }
     $value = trim($value);
-
+    
     return $value === "" ? null : $value;
   }
   
@@ -209,10 +214,14 @@ class StartupConfig {
         "log" => dirname(__FILE__) . "/../log/",
         "config" => dirname(__FILE__) . "/../config/",
         "tus" => "/var/tmp/tus/",
+        "crackers" => dirname(__FILE__) . "/../crackers/",
       ];
     }
     else {
       $this->directories = $DIRECTORIES;
+      if (!array_key_exists(self::DIRECTORY_CRACKERS, $this->directories)) {
+        $this->directories[self::DIRECTORY_CRACKERS] = dirname(__FILE__) . "/../crackers/";
+      }
     }
     
     // extract old database settings format
@@ -251,6 +260,10 @@ class StartupConfig {
   
   public function getDirectoryTus(): string {
     return $this->directories[self::DIRECTORY_TUS];
+  }
+  
+  public function getDirectoryCrackers(): string {
+    return $this->directories[self::DIRECTORY_CRACKERS];
   }
   
   public function getDatabaseType(): string {

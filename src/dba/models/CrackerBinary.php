@@ -10,13 +10,15 @@ class CrackerBinary extends AbstractModel {
   private ?string $version;
   private ?string $downloadUrl;
   private ?string $binaryName;
+  private ?string $filename;
   
-  function __construct(?int $crackerBinaryId, ?int $crackerBinaryTypeId, ?string $version, ?string $downloadUrl, ?string $binaryName) {
+  function __construct(?int $crackerBinaryId, ?int $crackerBinaryTypeId, ?string $version, ?string $downloadUrl, ?string $binaryName, ?string $filename) {
     $this->crackerBinaryId = $crackerBinaryId;
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
     $this->version = $version;
     $this->downloadUrl = $downloadUrl;
     $this->binaryName = $binaryName;
+    $this->filename = $filename;
   }
   
   function getKeyValueDict(): array {
@@ -26,6 +28,7 @@ class CrackerBinary extends AbstractModel {
     $dict['version'] = $this->version;
     $dict['downloadUrl'] = $this->downloadUrl;
     $dict['binaryName'] = $this->binaryName;
+    $dict['filename'] = $this->filename;
     
     return $dict;
   }
@@ -35,8 +38,9 @@ class CrackerBinary extends AbstractModel {
     $dict['crackerBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "crackerBinaryId", "public" => False, "dba_mapping" => False];
     $dict['crackerBinaryTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "crackerBinaryTypeId", "public" => False, "dba_mapping" => False];
     $dict['version'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "version", "public" => False, "dba_mapping" => False];
-    $dict['downloadUrl'] = ['read_only' => False, "type" => "str(150)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "downloadUrl", "public" => False, "dba_mapping" => False];
+    $dict['downloadUrl'] = ['read_only' => False, "type" => "str(255)", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "downloadUrl", "public" => False, "dba_mapping" => False];
     $dict['binaryName'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "binaryName", "public" => False, "dba_mapping" => False];
+    $dict['filename'] = ['read_only' => True, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => True, "private" => False, "alias" => "filename", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
@@ -97,11 +101,20 @@ class CrackerBinary extends AbstractModel {
     $this->binaryName = $binaryName;
   }
   
+  function getFilename(): ?string {
+    return $this->filename;
+  }
+  
+  function setFilename(?string $filename): void {
+    $this->filename = $filename;
+  }
+  
   const CRACKER_BINARY_ID = "crackerBinaryId";
   const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
   const VERSION = "version";
   const DOWNLOAD_URL = "downloadUrl";
   const BINARY_NAME = "binaryName";
+  const FILENAME = "filename";
 
   const PERM_CREATE = "permCrackerBinaryCreate";
   const PERM_READ = "permCrackerBinaryRead";
