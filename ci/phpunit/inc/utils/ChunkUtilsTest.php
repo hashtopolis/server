@@ -64,10 +64,19 @@ final class ChunkUtilsTest extends TestBase {
     ];
   }
 
-  // Verifies the old benchmark special case: benchmark=0 means the agent
-  // reported no speed, so the entire keyspace is returned as one chunk.
-  public function testOldBenchmarkZeroValueReturnsFullKeyspace(): void {
-    $this->assertSame(500, ChunkUtils::calculateChunkSize(500, '0', 60));
+  // Verifies the old benchmark special case: benchmark=0 or benchmark=''
+  // means the agent reported no speed, so the entire keyspace is returned
+  // as one chunk. Both values must be treated identically.
+  #[DataProvider('oldBenchmarkEmptyCases')]
+  public function testOldBenchmarkZeroOrEmptyValueReturnsFullKeyspace(string $benchmark): void {
+    $this->assertSame(500, ChunkUtils::calculateChunkSize(500, $benchmark, 60));
+  }
+
+  public static function oldBenchmarkEmptyCases(): array {
+    return [
+      'zero benchmark'  => ['0'],
+      'empty benchmark' => [''],
+    ];
   }
 
   // Verifies the old benchmark formula: floor(keyspace * benchmark * chunkTime / 100).
