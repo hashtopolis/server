@@ -4,10 +4,13 @@ namespace Hashtopolis\inc\downloadapi;
 
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\agentapi\common\AgentAction;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\inc\utils\DownloadUtils;
+use Hashtopolis\inc\utils\AccessUtils;
+use Hashtopolis\inc\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -28,9 +31,16 @@ final class CrackerBinaryDownloadHandler {
 
     $agent = $request->getAttribute(AgentAction::AGENT_ATTRIBUTE);
     if ($agent instanceof Agent) {
+      if (!in_array($binary->getAccessGroupId(), Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent)))) {
+        return $response->withStatus(403);
+      }
       DServerLog::log(DServerLog::TRACE, 'Agent ' . $agent->getId() . ' downloaded the archive of cracker binary ' . $binary->getId());
     }
     else {
+      $user = Factory::getUserFactory()->get((int)$request->getAttribute('userId'));
+      if (!$user instanceof User || !AccessUtils::userCanAccessCrackerBinary($binary, $user)) {
+        return $response->withStatus(403);
+      }
       DServerLog::log(DServerLog::TRACE, 'User ' . ($request->getAttribute('userId') ?? 'unknown') .
         ' downloaded the archive of cracker binary ' . $binary->getId());
     }
