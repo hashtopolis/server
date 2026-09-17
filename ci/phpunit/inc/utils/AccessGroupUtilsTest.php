@@ -19,6 +19,7 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\inc\defines\DLimits;
 use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\TestBase;
 use Override;
 
@@ -263,10 +264,8 @@ final class AccessGroupUtilsTest extends TestBase {
     $hashlist = $this->createHashlist($groupToDelete, $hashType);
     $taskWrapper = $this->createTaskWrapper($groupToDelete, $hashlist);
     $file = $this->createFile($groupToDelete);
-    $crackerBinary = $this->createDatabaseObject(
-      Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, 1, '1.0.0', 'http://example.com/hc.7z', 'delgroup-cracker', null, $groupToDelete->getId())
-    );
+    $crackerBinary = CrackerUtils::createBinary('1.0.0', 'delgroup-cracker', 'http://example.com/hc.7z', 1, $groupToDelete->getId());
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $crackerBinary);
 
     AccessGroupUtils::deleteGroup($groupToDelete->getId());
 
