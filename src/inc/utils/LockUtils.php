@@ -31,6 +31,28 @@ class LockUtils {
   }
   
   /**
+   * Tries to acquire the given lock without blocking.
+   *
+   * @param string $lockFile
+   * @return bool true if the lock was acquired, false if it is currently held elsewhere
+   */
+  public static function tryGet(string $lockFile): bool {
+    if (isset(self::$locks[$lockFile])) {
+      $lock = self::$locks[$lockFile];
+    }
+    else {
+      try {
+        $lock = new Lock($lockFile);
+      }
+      catch (Exception $e) {
+        return false;
+      }
+      self::$locks[$lockFile] = $lock;
+    }
+    return $lock->tryGetLock();
+  }
+  
+  /**
    * @param string $lockFile
    */
   public static function release(string $lockFile): void {
