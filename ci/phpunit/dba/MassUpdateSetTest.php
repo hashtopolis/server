@@ -159,7 +159,7 @@ final class MassUpdateSetTest extends TestBase {
     $agent = $this->createDatabaseObject(Factory::getAgentFactory(), new Agent(null, '', '', 0, '', '', 0, 0, 0, '', '', 0, '', null, 0, ''));
     $hashType = $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, $prefix . '_ht', 0, 0));
     $cbt = $this->createDatabaseObject(Factory::getCrackerBinaryTypeFactory(), new CrackerBinaryType(null, '', 0));
-    $cb = $this->createDatabaseObject(Factory::getCrackerBinaryFactory(), new CrackerBinary(null, $cbt->getId(), '', '', ''));
+    $cb = $this->createDatabaseObject(Factory::getCrackerBinaryFactory(), new CrackerBinary(null, $cbt->getId(), '', '', '', null));
     $healthCheck = $this->createDatabaseObject(Factory::getHealthCheckFactory(), new HealthCheck(null, 0, 0, 0, $hashType->getId(), $cb->getId(), 0, ''));
     
     $hca1 = $this->createDatabaseObject(Factory::getHealthCheckAgentFactory(), new HealthCheckAgent(null, $healthCheck->getId(), $agent->getId(), 0, 0, 0, 0, 100, ''));
