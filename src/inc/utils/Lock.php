@@ -5,8 +5,9 @@ namespace Hashtopolis\inc\utils;
 use Exception;
 
 class Lock {
-  const CHUNKING = "chunking.lock";
-  const LOG      = "log.lock";
+  const CHUNKING       = "chunking.lock";
+  const LOG            = "log.lock";
+  const BACKGROUND_JOBS = "background-jobs.lock";
   
   private string $lockFile;
   private        $lock;
@@ -35,6 +36,14 @@ class Lock {
     if ($ret === false) {
       throw new Exception("Could not get lock on lockfile '" . $this->lockFile . "'!");
     }
+  }
+  
+  /**
+   * @return bool true if the lock was acquired, false if it is currently held elsewhere
+   */
+  public function tryGetLock(): bool {
+    $ret = flock($this->lock, LOCK_EX | LOCK_NB);
+    return $ret === true;
   }
   
   /**
