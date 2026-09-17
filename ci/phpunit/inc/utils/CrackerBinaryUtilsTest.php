@@ -11,7 +11,6 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\AccessGroupUtils;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\CrackerBinaryUtils;
-use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\TestBase;
 
 
@@ -88,8 +87,10 @@ final class CrackerBinaryUtilsTest extends TestBase {
 
     // 2.0.0 is in the default group, 1.0.0 in the group of the user
     $highVersion = $this->addBinary('2.0.0');
-    $lowVersion = CrackerUtils::createBinary('1.0.0', 'testcracker', 'http://example.com', $this->type->getId(), $group->getId());
-    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $lowVersion);
+    $lowVersion = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com', 'testcracker', null, $group->getId())
+    );
     $this->createDatabaseObject(
       Factory::getAccessGroupUserFactory(),
       new AccessGroupUser(null, $group->getId(), $user->getId())
