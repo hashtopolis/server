@@ -62,13 +62,8 @@ class CrackerUtils {
     if (!CrackerUtils::isHashcatBinary($binary)) {
       return;
     }
-    $qF = new QueryFilter(BackgroundJob::JOB_TYPE, DBackgroundJobType::SCAN_CRACKER, "=");
-    foreach (Factory::getBackgroundJobFactory()->filter([Factory::FILTER => $qF]) as $job) {
-      if ($job->getStatus() != DBackgroundJobStatus::PENDING) {
-        continue;
-      }
-      $payload = json_decode($job->getPayload() ?? "{}", true);
-      if (($payload[CrackerBinary::CRACKER_BINARY_ID] ?? null) === $binary->getId()) {
+    foreach (CrackerUtils::getScanJobs($binary->getId()) as $job) {
+      if ($job->getStatus() == DBackgroundJobStatus::PENDING) {
         // the pending scan already covers the current state of the binary
         return;
       }
@@ -78,6 +73,36 @@ class CrackerUtils {
       [CrackerBinary::CRACKER_BINARY_ID => $binary->getId()],
       $user
     );
+  }
+
+  /**
+   * Deletes the scan jobs of the given cracker binary, e.g. when the binary
+   * is deleted: its queued scan is cancelled with it and jobs of the deleted
+   * binary would fail anyway.
+   *
+   * @param int $binaryId
+   * @throws Exception
+   */
+  public static function deleteScanJobs(int $binaryId): void {
+    foreach (CrackerUtils::getScanJobs($binaryId) as $job) {
+      Factory::getBackgroundJobFactory()->delete($job);
+    }
+  }
+
+  /**
+   * @return BackgroundJob[] all scan jobs of the given cracker binary
+   * @throws Exception
+   */
+  private static function getScanJobs(int $binaryId): array {
+    $jobs = [];
+    $qF = new QueryFilter(BackgroundJob::JOB_TYPE, DBackgroundJobType::SCAN_CRACKER, "=");
+    foreach (Factory::getBackgroundJobFactory()->filter([Factory::FILTER => $qF]) as $job) {
+      $payload = json_decode($job->getPayload() ?? "{}", true);
+      if (($payload[CrackerBinary::CRACKER_BINARY_ID] ?? null) === $binaryId) {
+        $jobs[] = $job;
+      }
+    }
+    return $jobs;
   }
 
   /**
@@ -394,6 +419,8 @@ class CrackerUtils {
     // remove the hashtype associations of this binary
     $qF = new QueryFilter(CrackerBinaryHashtype::CRACKER_BINARY_ID, $binary->getId(), "=");
     Factory::getCrackerBinaryHashtypeFactory()->massDeletion([Factory::FILTER => $qF]);
+    // remove the scan jobs of this binary, the queued scan is cancelled with it
+    CrackerUtils::deleteScanJobs($binary->getId());
     // remove a locally stored archive if there is one
     CrackerUtils::deleteLocalArchive($binary);
     Factory::getCrackerBinaryFactory()->delete($binary);
@@ -425,9 +452,11 @@ class CrackerUtils {
       throw new HTException("There are pretasks which use this cracker type!");
     }
     
-    // remove the archives of locally stored binaries
+    // remove the archives of locally stored binaries and their scan jobs,
+    // the queued scans are cancelled with their binaries
     foreach ($binaries as $binary) {
       CrackerUtils::deleteLocalArchive($binary);
+      CrackerUtils::deleteScanJobs($binary->getId());
     }
     
     // remove the hashtype associations of the binaries of this type
