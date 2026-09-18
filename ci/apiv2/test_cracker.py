@@ -554,8 +554,10 @@ class TestDownloadEndpoint(BaseTest):
 class TestCrackerHashtypes(BaseTest):
     """The n-m association between cracker binaries and hashtypes.
 
-    As transition, a new binary is associated with all existing hashtypes,
-    but the association can be corrected via the relationship endpoints.
+    Hashcat binaries are associated with all existing hashtypes (hashcat
+    supports all of them), binaries of other types start without any
+    association, the supported hashtypes have to be associated manually via
+    the relationship endpoints.
     """
 
     def hashtype_ids_of(self, obj):
@@ -577,11 +579,37 @@ class TestCrackerHashtypes(BaseTest):
                                  headers=headers, json={'data': data})
 
     def test_create_associates_all_hashtypes(self):
-        """As transition, a new binary is associated with all existing hashtypes."""
+        """A new hashcat binary is associated with all existing hashtypes."""
         obj = self.create_cracker()
 
         all_ids = sorted(ht.id for ht in HashType.objects.all())
         self.assertListEqual(all_ids, self.hashtype_ids_of(obj))
+
+    def test_create_non_hashcat_type_associates_no_hashtypes(self):
+        """A binary of a non-hashcat type is created without any hashtype associations."""
+        stamp = int(time.time() * 1000)
+        cracker_type = self.create_crackertype(extra_payload={'typeName': f'generic-cracker-{stamp}'})
+        obj = self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+
+        self.assertListEqual([], self.hashtype_ids_of(obj))
+
+    def test_user_associates_hashtype_with_generic_cracker(self):
+        """A user can create a hashtype and associate it with his generic cracker binary."""
+        stamp = int(time.time() * 1000)
+        cracker_type = self.create_crackertype(extra_payload={'typeName': f'generic-cracker-{stamp}'})
+        obj = self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+        hashtype = self.create_unique_hashtype()
+
+        # the generic binary starts without associations, the new hashtype is
+        # not associated with it automatically either
+        self.assertListEqual([], self.hashtype_ids_of(obj))
+        hashtype_obj = HashType.objects.prefetch_related('crackerBinaries').get(pk=hashtype.id)
+        self.assertNotIn(obj.id, sorted(cracker.id for cracker in hashtype_obj.crackerBinaries_set))
+
+        # the user associates his hashtype with the generic binary manually
+        r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': hashtype.id}])
+        self.assertEqual(204, r.status_code, f'Patching failed: {r.text}')
+        self.assertListEqual([hashtype.id], self.hashtype_ids_of(obj))
 
     def test_patch_hashtypes_replaces_set(self):
         """Patching the relationship replaces the associated hashtypes with the given list."""
