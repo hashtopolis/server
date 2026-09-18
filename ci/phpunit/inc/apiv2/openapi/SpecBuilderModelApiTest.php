@@ -25,8 +25,10 @@ final class SpecBuilderModelApiTest extends TestCase {
   use SpecFixtureTrait;
 
   public function testHashTypeSpec(): void {
-    // Simplest case: full CRUD model API without any relationships.
-    $spec = (new SpecBuilder())->buildForApiClasses([HashTypeAPI::class]);
+    // Simple case: full CRUD model API with one readonly toMany relationship
+    // (crackerBinaries), whose target is seeded on the class mapper only, so
+    // its own routes are not part of the spec.
+    $spec = (new SpecBuilder())->buildForApiClasses([HashTypeAPI::class], [CrackerBinaryAPI::class]);
 
     $this->assertMatchesJsonFixture($spec, 'hashtype.spec.json');
 
