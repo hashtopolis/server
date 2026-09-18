@@ -538,13 +538,18 @@ final class CrackerUtilsTest extends TestBase {
       Factory::getAccessGroupUserFactory(),
       new AccessGroupUser(null, $group2->getId(), $user->getId())
     );
-    $binary = CrackerUtils::createBinary('1.0.0', 'testcracker', 'http://example.com/hc.7z', $this->type->getId(), $group1->getId());
+    $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'move-content');
+    $binary = CrackerUtils::createBinary('1.0.0', 'testcracker', $url, $this->type->getId(), $group1->getId());
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
 
     CrackerUtils::changeAccessGroup($binary->getId(), $group2->getId(), $user);
 
     $this->assertEquals($group2->getId(), Factory::getCrackerBinaryFactory()->get($binary->getId())->getAccessGroupId());
+    // also removes the downloaded local copy of the archive
+    CrackerUtils::deleteBinary($binary->getId());
   }
+
+  private array $httpFileServers = [];
 
   private function allHashtypeIds(): array {
     $ids = [];
@@ -572,10 +577,13 @@ final class CrackerUtilsTest extends TestBase {
   // Verifies that a newly created binary is associated with all existing
   // hashtypes, as it cannot be determined which hashtypes it supports.
   public function testCreateBinaryAssociatesAllHashtypes(): void {
-    $binary = CrackerUtils::createBinary('9.9.9', 'newcracker', 'http://example.com/dl', $this->type->getId(), 1);
+    $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'hashtype-content');
+    $binary = CrackerUtils::createBinary('9.9.9', 'newcracker', $url, $this->type->getId(), 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
 
     $this->assertEquals($this->allHashtypeIds(), $this->associatedHashtypeIds($binary->getId()));
+    // also removes the downloaded local copy of the archive
+    CrackerUtils::deleteBinary($binary->getId());
   }
 
   // Verifies that an uploaded binary is also associated with all existing
@@ -655,17 +663,16 @@ final class CrackerUtilsTest extends TestBase {
   // Verifies that checkCrackerBinary() downloads the archive of a binary which
   // is only referenced by an url and then associates it with all hashtypes.
   public function testCheckCrackerBinaryUrlBinaryDownloadsAndAssociatesAll(): void {
-    $archive = tempnam(sys_get_temp_dir(), 'htp-check-test-');
-    file_put_contents($archive, self::SEVEN_ZIP_MAGIC . 'checked-content');
+    $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'checked-content');
     // binaries of the test are registered for cleanup on tearDown
     $binary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com/hc.7z', 'testcracker', null, $group1->getId())
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', $url, 'testcracker', null, 1)
     );
 
-    CrackerUtils::changeAccessGroup($binary->getId(), $group2->getId(), $user);
+    CrackerUtils::checkCrackerBinary($binary->getId());
 
-    $this->assertEquals($group2->getId(), Factory::getCrackerBinaryFactory()->get($binary->getId())->getAccessGroupId());
+    $this->assertEquals($this->allHashtypeIds(), $this->associatedHashtypeIds($binary->getId()));
   }
 
   // Verifies that checkCrackerBinary() of a locally stored binary does not
