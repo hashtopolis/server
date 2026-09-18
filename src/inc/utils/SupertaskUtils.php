@@ -259,7 +259,7 @@ class SupertaskUtils {
    * @throws HTException
    * @throws Exception
    */
-  public static function runSupertask(int $supertaskId, int $hashlistId, int $crackerId): void {
+  public static function runSupertask(int $supertaskId, int $hashlistId, int $crackerId, User $user): void {
     $supertask = Factory::getSupertaskFactory()->get($supertaskId);
     if ($supertask == null) {
       throw new HTException("Invalid supertask ID!");
@@ -274,6 +274,9 @@ class SupertaskUtils {
     $cracker = Factory::getCrackerBinaryFactory()->get($crackerId);
     if ($cracker == null) {
       throw new HTException("Invalid cracker ID!");
+    }
+    else if (!AccessUtils::userCanAccessCrackerBinary($cracker, $user)) {
+      throw new HTException("You have no access to this cracker binary!");
     }
     $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertask->getId(), "=", Factory::getSupertaskPretaskFactory());
     $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
@@ -297,7 +300,7 @@ class SupertaskUtils {
     foreach ($pretasks as $pretask) {
       $crackerBinaryId = $cracker->getId();
       if ($cracker->getCrackerBinaryTypeId() != $pretask->getCrackerBinaryTypeId()) {
-        $crackerBinaryId = CrackerBinaryUtils::getNewestVersion($pretask->getCrackerBinaryTypeId())->getId();
+        $crackerBinaryId = CrackerBinaryUtils::getNewestVersion($pretask->getCrackerBinaryTypeId(), $user)->getId();
       }
       
       $task = new Task(

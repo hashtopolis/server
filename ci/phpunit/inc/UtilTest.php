@@ -964,7 +964,9 @@ final class UtilTest extends TestBase {
       'crackerBinaryTypeId' => $typeId,
       'version' => '7.0.0',
       'downloadUrl' => 'https://example.com/test.7z',
-      'binaryName' => 'testHashcat'
+      'binaryName' => 'testHashcat',
+      'filename' => null,
+      'accessGroupId' => 1
     ];
     Util::checkOrCreateInitialObject(Factory::getCrackerBinaryFactory(), $data);
     $obj = Factory::getCrackerBinaryFactory()->get($id);
