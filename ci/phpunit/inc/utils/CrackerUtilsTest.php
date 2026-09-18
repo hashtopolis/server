@@ -639,6 +639,20 @@ final class CrackerUtilsTest extends TestBase {
 
   private array $httpFileServers = [];
 
+  // Returns the hashcat cracker binary type (which is blanket-associated with
+  // all hashtypes), creating it first when the initial data does not contain it.
+  private function hashcatType(): CrackerBinaryType {
+    $qF = new QueryFilter(CrackerBinaryType::TYPE_NAME, CrackerUtils::HASHCAT_BINARY_TYPE, "=");
+    $type = Factory::getCrackerBinaryTypeFactory()->filter([Factory::FILTER => $qF], true);
+    if ($type === null) {
+      $type = $this->createDatabaseObject(
+        Factory::getCrackerBinaryTypeFactory(),
+        new CrackerBinaryType(null, CrackerUtils::HASHCAT_BINARY_TYPE, 1)
+      );
+    }
+    return $type;
+  }
+
   private function allHashtypeIds(): array {
     $ids = [];
     foreach (Factory::getHashTypeFactory()->filter([]) as $hashtype) {
@@ -662,11 +676,11 @@ final class CrackerUtilsTest extends TestBase {
     return Factory::getCrackerBinaryHashtypeFactory()->countFilter([Factory::FILTER => $qF]);
   }
 
-  // Verifies that a newly created binary is associated with all existing
-  // hashtypes, as it cannot be determined which hashtypes it supports.
+  // Verifies that a newly created hashcat binary is associated with all
+  // existing hashtypes, as hashcat supports all of them.
   public function testCreateBinaryAssociatesAllHashtypes(): void {
     $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'hashtype-content');
-    $binary = CrackerUtils::createBinary('9.9.9', 'newcracker', $url, $this->type->getId(), 1);
+    $binary = CrackerUtils::createBinary('9.9.9', 'newcracker', $url, $this->hashcatType()->getId(), 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
 
     $this->assertEquals($this->allHashtypeIds(), $this->associatedHashtypeIds($binary->getId()));
@@ -674,14 +688,41 @@ final class CrackerUtilsTest extends TestBase {
     CrackerUtils::deleteBinary($binary->getId());
   }
 
-  // Verifies that an uploaded binary is also associated with all existing
-  // hashtypes on creation.
+  // Verifies that a binary of a non-hashcat type is created without any
+  // hashtype associations, its supported hashtypes have to be associated
+  // manually.
+  public function testCreateBinaryNonHashcatTypeAssociatesNoHashtypes(): void {
+    $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'generic-content');
+    $binary = CrackerUtils::createBinary('9.9.9', 'newcracker', $url, $this->type->getId(), 1);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+
+    $this->assertEquals([], $this->associatedHashtypeIds($binary->getId()));
+    // the user can then associate hashtypes with the generic binary manually
+    $hashtype = $this->createHashType();
+    CrackerUtils::addHashtypeToBinary($binary->getId(), $hashtype->getId());
+    $this->assertEquals([$hashtype->getId()], $this->associatedHashtypeIds($binary->getId()));
+    CrackerUtils::deleteBinary($binary->getId());
+  }
+
+  // Verifies that an uploaded hashcat binary is also associated with all
+  // existing hashtypes on creation.
   public function testCreateBinaryFromUploadAssociatesAllHashtypes(): void {
     $content = self::SEVEN_ZIP_MAGIC . 'hashtype-content';
-    $binary = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', base64_encode($content), 1);
+    $binary = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->hashcatType()->getId(), 'inline', base64_encode($content), 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
 
     $this->assertEquals($this->allHashtypeIds(), $this->associatedHashtypeIds($binary->getId()));
+    unlink(CrackerUtils::getCrackersPath() . $binary->getId() . '_' . $binary->getFilename());
+  }
+
+  // Verifies that an uploaded binary of a non-hashcat type is created without
+  // any hashtype associations.
+  public function testCreateBinaryFromUploadNonHashcatTypeAssociatesNoHashtypes(): void {
+    $content = self::SEVEN_ZIP_MAGIC . 'generic-content';
+    $binary = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', base64_encode($content), 1);
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+
+    $this->assertEquals([], $this->associatedHashtypeIds($binary->getId()));
     unlink(CrackerUtils::getCrackersPath() . $binary->getId() . '_' . $binary->getFilename());
   }
 
@@ -748,14 +789,15 @@ final class CrackerUtilsTest extends TestBase {
     $this->assertEquals($count, $this->countAssociations($this->binary->getId()));
   }
 
-  // Verifies that checkCrackerBinary() downloads the archive of a binary which
-  // is only referenced by an url and then associates it with all hashtypes.
+  // Verifies that checkCrackerBinary() downloads the archive of a hashcat
+  // binary which is only referenced by an url and then associates it with all
+  // hashtypes.
   public function testCheckCrackerBinaryUrlBinaryDownloadsAndAssociatesAll(): void {
     $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'checked-content');
     // binaries of the test are registered for cleanup on tearDown
     $binary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $this->type->getId(), '1.0.0', $url, 'testcracker', null, 1)
+      new CrackerBinary(null, $this->hashcatType()->getId(), '1.0.0', $url, 'testcracker', null, 1)
     );
 
     CrackerUtils::checkCrackerBinary($binary->getId());
@@ -763,11 +805,27 @@ final class CrackerUtilsTest extends TestBase {
     $this->assertEquals($this->allHashtypeIds(), $this->associatedHashtypeIds($binary->getId()));
   }
 
-  // Verifies that checkCrackerBinary() of a locally stored binary does not
-  // download anything and just associates it with all hashtypes.
+  // Verifies that checkCrackerBinary() of a non-hashcat binary does not touch
+  // its manually associated hashtypes.
+  public function testCheckCrackerBinaryNonHashcatKeepsAssociations(): void {
+    $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'checked-content');
+    $binary = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
+      new CrackerBinary(null, $this->type->getId(), '1.0.0', $url, 'testcracker', null, 1)
+    );
+    $hashtype = $this->createHashType();
+    CrackerUtils::addHashtypeToBinary($binary->getId(), $hashtype->getId());
+
+    CrackerUtils::checkCrackerBinary($binary->getId());
+
+    $this->assertEquals([$hashtype->getId()], $this->associatedHashtypeIds($binary->getId()));
+  }
+
+  // Verifies that checkCrackerBinary() of a locally stored hashcat binary
+  // does not download anything and just associates it with all hashtypes.
   public function testCheckCrackerBinaryLocalBinaryAssociatesAll(): void {
     $content = self::SEVEN_ZIP_MAGIC . 'checked-local-content';
-    $binary = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', base64_encode($content), 1);
+    $binary = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->hashcatType()->getId(), 'inline', base64_encode($content), 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
     CrackerUtils::removeHashtypeFromBinary($binary->getId(), $this->allHashtypeIds()[0]);
 
