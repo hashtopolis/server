@@ -38,7 +38,7 @@ class CrackerHandler implements Handler {
           die();
         case DCrackerBinaryAction::EDIT_BINARY:
           AccessControl::getInstance()->checkPermission(DCrackerBinaryAction::EDIT_BINARY_PERM);
-          $binaryType = CrackerUtils::updateBinary($_POST['version'], $_POST['name'], $_POST['url'], $_POST['binaryId']);
+          $binaryType = CrackerUtils::updateBinary($_POST['version'], $_POST['name'], $_POST['url'], $_POST['binaryId'], AccessControl::getInstance()->getUser());
           header("Location: crackers.php?id=" . $binaryType->getId());
           die();
         default:

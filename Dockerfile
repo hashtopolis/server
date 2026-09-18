@@ -46,6 +46,8 @@ RUN apt-get update \
     \
     # Install git, procps, lsb-release (useful for CLI installs) \
     && apt-get -y install git iproute2 procps lsb-release \
+    # 7z is needed to unpack cracker binary archives for the background scan \
+    && apt-get -y install p7zip-full \
     && apt-get -y install mariadb-client postgresql-client libpq-dev \
     && apt-get -y install libpng-dev \
     && apt-get -y install ssmtp \
