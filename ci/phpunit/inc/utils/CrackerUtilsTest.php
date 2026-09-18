@@ -638,8 +638,9 @@ final class CrackerUtilsTest extends TestBase {
     CrackerUtils::deleteBinary($binary->getId());
   }
 
-  // Returns the hashcat cracker binary type (which is blanket-associated with
-  // all hashtypes), creating it first when the initial data does not contain it.
+  // Returns the hashcat cracker binary type (whose hashtypes are populated by
+  // a scan of the binary), creating it first when the initial data does not
+  // contain it.
   private function hashcatType(): CrackerBinaryType {
     $qF = new QueryFilter(CrackerBinaryType::TYPE_NAME, CrackerUtils::HASHCAT_BINARY_TYPE, "=");
     $type = Factory::getCrackerBinaryTypeFactory()->filter([Factory::FILTER => $qF], true);
@@ -652,13 +653,33 @@ final class CrackerUtilsTest extends TestBase {
     return $type;
   }
 
-  private function allHashtypeIds(): array {
-    $ids = [];
-    foreach (Factory::getHashTypeFactory()->filter([]) as $hashtype) {
-      $ids[] = $hashtype->getId();
+  /**
+   * @return int number of pending scan jobs of the given binary
+   */
+  private function pendingScanJobCount(int $binaryId): int {
+    $count = 0;
+    foreach (Factory::getBackgroundJobFactory()->filter([Factory::FILTER => new QueryFilter(
+      \Hashtopolis\dba\models\BackgroundJob::JOB_TYPE, 'scan_cracker', "=")]) as $job) {
+      $payload = json_decode($job->getPayload() ?? "{}", true);
+      if (($payload[CrackerBinary::CRACKER_BINARY_ID] ?? null) === $binaryId && $job->getStatus() == 0) {
+        $count++;
+      }
     }
-    sort($ids);
-    return $ids;
+    return $count;
+  }
+
+  /**
+   * Deletes the scan jobs of the given binary, so no pending job of the test
+   * binaries is left behind.
+   */
+  private function cleanupScanJobs(int $binaryId): void {
+    foreach (Factory::getBackgroundJobFactory()->filter([Factory::FILTER => new QueryFilter(
+      \Hashtopolis\dba\models\BackgroundJob::JOB_TYPE, 'scan_cracker', "=")]) as $job) {
+      $payload = json_decode($job->getPayload() ?? "{}", true);
+      if (($payload[CrackerBinary::CRACKER_BINARY_ID] ?? null) === $binaryId) {
+        Factory::getBackgroundJobFactory()->delete($job);
+      }
+    }
   }
 
   private function associatedHashtypeIds(int $binaryId): array {
@@ -670,32 +691,31 @@ final class CrackerUtilsTest extends TestBase {
     return $ids;
   }
 
-  private function countAssociations(int $binaryId): int {
-    $qF = new QueryFilter(CrackerBinaryHashtype::CRACKER_BINARY_ID, $binaryId, "=");
-    return Factory::getCrackerBinaryHashtypeFactory()->countFilter([Factory::FILTER => $qF]);
-  }
-
-  // Verifies that a newly created hashcat binary is associated with all
-  // existing hashtypes, as hashcat supports all of them.
-  public function testCreateBinaryAssociatesAllHashtypes(): void {
+  // Verifies that a newly created hashcat binary starts without hashtype
+  // associations and gets a scan of its supported hash-modes queued, which
+  // is the only way its associations are populated.
+  public function testCreateBinaryHashcatTypeEnqueuesScan(): void {
     $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'hashtype-content');
     $binary = CrackerUtils::createBinary('9.9.9', 'newcracker', $url, $this->hashcatType()->getId(), 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
 
-    $this->assertEquals($this->allHashtypeIds(), $this->associatedHashtypeIds($binary->getId()));
+    $this->assertEquals([], $this->associatedHashtypeIds($binary->getId()));
+    $this->assertSame(1, $this->pendingScanJobCount($binary->getId()));
     // also removes the downloaded local copy of the archive
     CrackerUtils::deleteBinary($binary->getId());
+    $this->cleanupScanJobs($binary->getId());
   }
 
   // Verifies that a binary of a non-hashcat type is created without any
-  // hashtype associations, its supported hashtypes have to be associated
-  // manually.
+  // hashtype associations and without a queued scan, its supported hashtypes
+  // have to be associated manually.
   public function testCreateBinaryNonHashcatTypeAssociatesNoHashtypes(): void {
     $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'generic-content');
     $binary = CrackerUtils::createBinary('9.9.9', 'newcracker', $url, $this->type->getId(), 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
 
     $this->assertEquals([], $this->associatedHashtypeIds($binary->getId()));
+    $this->assertSame(0, $this->pendingScanJobCount($binary->getId()));
     // the user can then associate hashtypes with the generic binary manually
     $hashtype = $this->createHashType();
     CrackerUtils::addHashtypeToBinary($binary->getId(), $hashtype->getId());
@@ -703,15 +723,17 @@ final class CrackerUtilsTest extends TestBase {
     CrackerUtils::deleteBinary($binary->getId());
   }
 
-  // Verifies that an uploaded hashcat binary is also associated with all
-  // existing hashtypes on creation.
-  public function testCreateBinaryFromUploadAssociatesAllHashtypes(): void {
+  // Verifies that an uploaded hashcat binary also starts without hashtype
+  // associations and gets a scan queued.
+  public function testCreateBinaryFromUploadHashcatTypeEnqueuesScan(): void {
     $content = self::SEVEN_ZIP_MAGIC . 'hashtype-content';
     $binary = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->hashcatType()->getId(), 'inline', base64_encode($content), 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
 
-    $this->assertEquals($this->allHashtypeIds(), $this->associatedHashtypeIds($binary->getId()));
-    unlink(CrackerUtils::getCrackersPath() . $binary->getId() . '_' . $binary->getFilename());
+    $this->assertEquals([], $this->associatedHashtypeIds($binary->getId()));
+    $this->assertSame(1, $this->pendingScanJobCount($binary->getId()));
+    CrackerUtils::deleteBinary($binary->getId());
+    $this->cleanupScanJobs($binary->getId());
   }
 
   // Verifies that an uploaded binary of a non-hashcat type is created without
@@ -787,24 +809,43 @@ final class CrackerUtilsTest extends TestBase {
     $this->assertEquals([$hashtype2->getId()], $this->associatedHashtypeIds($this->binary->getId()));
   }
 
-  // Verifies that associateAllHashtypes() adds all missing hashtypes, keeps
-  // already existing associations and is safe to call multiple times.
-  public function testAssociateAllHashtypesIsIdempotent(): void {
-    $hashtype = $this->createHashType();
-    CrackerUtils::addHashtypeToBinary($this->binary->getId(), $hashtype->getId());
+  // Verifies that setHashtypesOfBinary() adds the missing associations,
+  // removes the ones which are not in the given list and keeps the rest as
+  // they are, all within one call.
+  public function testSetHashtypesOfBinaryAppliesTheDifference(): void {
+    $keep = $this->createHashType();
+    $drop = $this->createHashType();
+    $add = $this->createHashType();
+    CrackerUtils::addHashtypeToBinary($this->binary->getId(), $keep->getId());
+    CrackerUtils::addHashtypeToBinary($this->binary->getId(), $drop->getId());
 
-    CrackerUtils::associateAllHashtypes($this->binary);
-    $count = $this->countAssociations($this->binary->getId());
-    CrackerUtils::associateAllHashtypes($this->binary);
+    [$added, $removed] = CrackerUtils::setHashtypesOfBinary($this->binary->getId(), [$keep->getId(), $add->getId()]);
 
-    $this->assertEquals($this->allHashtypeIds(), $this->associatedHashtypeIds($this->binary->getId()));
-    $this->assertEquals($count, $this->countAssociations($this->binary->getId()));
+    $this->assertSame(1, $added);
+    $this->assertSame(1, $removed);
+    $this->assertEquals([$keep->getId(), $add->getId()], $this->associatedHashtypeIds($this->binary->getId()));
   }
 
-  // Verifies that checkCrackerBinary() downloads the archive of a hashcat
-  // binary which is only referenced by an url and then associates it with all
-  // hashtypes.
-  public function testCheckCrackerBinaryUrlBinaryDownloadsAndAssociatesAll(): void {
+  // Verifies that setHashtypesOfBinary() reports nothing to do when the
+  // associations already match the wanted list.
+  public function testSetHashtypesOfBinaryIsANoOpForMatchingList(): void {
+    $hashtype1 = $this->createHashType();
+    $hashtype2 = $this->createHashType();
+    CrackerUtils::addHashtypeToBinary($this->binary->getId(), $hashtype1->getId());
+    CrackerUtils::addHashtypeToBinary($this->binary->getId(), $hashtype2->getId());
+
+    [$added, $removed] = CrackerUtils::setHashtypesOfBinary(
+      $this->binary->getId(), [$hashtype1->getId(), $hashtype2->getId()]
+    );
+
+    $this->assertSame(0, $added);
+    $this->assertSame(0, $removed);
+  }
+
+  // Verifies that checkCrackerBinary() of a hashcat binary which is only
+  // referenced by an url downloads the archive and queues a scan of the
+  // binary instead of associating anything directly.
+  public function testCheckCrackerBinaryUrlBinaryDownloadsAndEnqueuesScan(): void {
     $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'checked-content');
     // binaries of the test are registered for cleanup on tearDown
     $binary = $this->createDatabaseObject(
@@ -814,11 +855,13 @@ final class CrackerUtilsTest extends TestBase {
 
     CrackerUtils::checkCrackerBinary($binary->getId());
 
-    $this->assertEquals($this->allHashtypeIds(), $this->associatedHashtypeIds($binary->getId()));
+    $this->assertEquals([], $this->associatedHashtypeIds($binary->getId()));
+    $this->assertSame(1, $this->pendingScanJobCount($binary->getId()));
+    $this->cleanupScanJobs($binary->getId());
   }
 
   // Verifies that checkCrackerBinary() of a non-hashcat binary does not touch
-  // its manually associated hashtypes.
+  // its manually associated hashtypes and does not queue a scan.
   public function testCheckCrackerBinaryNonHashcatKeepsAssociations(): void {
     $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'checked-content');
     $binary = $this->createDatabaseObject(
@@ -831,20 +874,22 @@ final class CrackerUtilsTest extends TestBase {
     CrackerUtils::checkCrackerBinary($binary->getId());
 
     $this->assertEquals([$hashtype->getId()], $this->associatedHashtypeIds($binary->getId()));
+    $this->assertSame(0, $this->pendingScanJobCount($binary->getId()));
   }
 
   // Verifies that checkCrackerBinary() of a locally stored hashcat binary
-  // does not download anything and just associates it with all hashtypes.
-  public function testCheckCrackerBinaryLocalBinaryAssociatesAll(): void {
+  // does not download anything and queues a scan of the binary.
+  public function testCheckCrackerBinaryLocalBinaryEnqueuesScan(): void {
     $content = self::SEVEN_ZIP_MAGIC . 'checked-local-content';
     $binary = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->hashcatType()->getId(), 'inline', base64_encode($content), 1);
     $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
-    CrackerUtils::removeHashtypeFromBinary($binary->getId(), $this->allHashtypeIds()[0]);
 
     CrackerUtils::checkCrackerBinary($binary->getId());
 
-    $this->assertEquals($this->allHashtypeIds(), $this->associatedHashtypeIds($binary->getId()));
-    unlink(CrackerUtils::getCrackersPath() . $binary->getId() . '_' . $binary->getFilename());
+    $this->assertEquals([], $this->associatedHashtypeIds($binary->getId()));
+    $this->assertSame(1, $this->pendingScanJobCount($binary->getId()));
+    CrackerUtils::deleteBinary($binary->getId());
+    $this->cleanupScanJobs($binary->getId());
   }
 
   /**
