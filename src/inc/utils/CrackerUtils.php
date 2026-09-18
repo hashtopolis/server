@@ -24,6 +24,27 @@ class CrackerUtils {
   private const INLINE_MEMORY_RESERVE = 16 * 1024 * 1024;
 
   /**
+   * Name of the cracker binary type of the hashcat binaries. Hashcat binaries
+   * are assumed to support every hashtype (they follow the hashcat mode
+   * numbering), so they are the only ones automatically associated with all
+   * hashtypes. Binaries of every other type start without any association,
+   * the supported hashtypes have to be associated manually.
+   */
+  public const HASHCAT_BINARY_TYPE = 'hashcat';
+
+  /**
+   * Whether the given cracker binary is of the hashcat cracker binary type,
+   * i.e. one of the binaries which are automatically associated with all
+   * hashtypes.
+   *
+   * @throws Exception
+   */
+  public static function isHashcatBinary(CrackerBinary $binary): bool {
+    $binaryType = Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
+    return $binaryType !== null && $binaryType->getTypeName() == CrackerUtils::HASHCAT_BINARY_TYPE;
+  }
+
+  /**
    * @param CrackerBinaryType $cracker
    * @return CrackerBinary[]
    * @throws Exception
@@ -92,10 +113,12 @@ class CrackerUtils {
     );
     try {
       CrackerUtils::storeLocalCopy($binary);
-      // as long as the supported hashtypes cannot be determined from the binary
-      // itself, a new binary is associated with all existing hashtypes, the user
-      // can correct the associations later
-      CrackerUtils::associateAllHashtypes($binary);
+      // hashcat binaries support all hashtypes, binaries of other types start
+      // without any association, their supported hashtypes have to be
+      // associated manually
+      if ($binaryType->getTypeName() == CrackerUtils::HASHCAT_BINARY_TYPE) {
+        CrackerUtils::associateAllHashtypes($binary);
+      }
     }
     catch (HttpError $e) {
       Factory::getCrackerBinaryFactory()->delete($binary);
@@ -189,10 +212,12 @@ class CrackerUtils {
       CrackerBinary::DOWNLOAD_URL => $backendBaseUrl . '/api/download.php/crackerBinary/' . $binary->getId(),
       CrackerBinary::FILENAME => $filename
     ]);
-    // as long as the supported hashtypes cannot be determined from the binary
-    // itself, a new binary is associated with all existing hashtypes, the user
-    // can correct the associations later
-    CrackerUtils::associateAllHashtypes($binary);
+    // hashcat binaries support all hashtypes, binaries of other types start
+    // without any association, their supported hashtypes have to be
+    // associated manually
+    if ($binaryType->getTypeName() == CrackerUtils::HASHCAT_BINARY_TYPE) {
+      CrackerUtils::associateAllHashtypes($binary);
+    }
     return $binary;
   }
   
@@ -622,11 +647,10 @@ class CrackerUtils {
   
   /**
    * Triggers an update of a cracker binary. If the binary is only referenced by
-   * an url, the archive is downloaded again. For now, the binary is then just
-   * associated with all existing hashtypes again, as long as the supported
-   * hashtypes cannot be determined from the binary automatically. This helper
-   * is meant to be re-used later to re-read the supported hashtypes from the
-   * downloaded archive.
+   * an url, the archive is downloaded again. Hashcat binaries are then
+   * associated with all existing hashtypes again, binaries of other types keep
+   * their manually associated hashtypes. This helper is meant to be re-used
+   * later to re-read the supported hashtypes from the downloaded archive.
    *
    * @param int $binaryId
    * @throws HTException
@@ -652,7 +676,9 @@ class CrackerUtils {
         unlink($target);
       }
     }
-    // for now we assume that the binary supports all hashtypes
-    CrackerUtils::associateAllHashtypes($binary);
+    // only hashcat binaries are blanket-associated with all hashtypes
+    if (CrackerUtils::isHashcatBinary($binary)) {
+      CrackerUtils::associateAllHashtypes($binary);
+    }
   }
 }

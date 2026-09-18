@@ -13,6 +13,7 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\CrackerUtils;
 
 class HashtypeUtils {
   /**
@@ -73,11 +74,13 @@ class HashtypeUtils {
     if ($hashtype == null) {
       throw new HttpError("Failed to add new hash type!");
     }
-    // as long as it cannot be determined which cracker binaries support the
-    // hashtype, it is associated with all of them, the user can correct the
-    // associations later
+    // a new hashtype is associated with all hashcat binaries, which support
+    // every hashtype; binaries of other types keep their manually associated
+    // hashtypes
     foreach (Factory::getCrackerBinaryFactory()->filter([]) as $binary) {
-      Factory::getCrackerBinaryHashtypeFactory()->save(new CrackerBinaryHashtype(null, $binary->getId(), $hashtype->getId()));
+      if (CrackerUtils::isHashcatBinary($binary)) {
+        Factory::getCrackerBinaryHashtypeFactory()->save(new CrackerBinaryHashtype(null, $binary->getId(), $hashtype->getId()));
+      }
     }
     Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashtype added: " . $hashtype->getDescription());
     return $hashtype;
