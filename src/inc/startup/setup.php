@@ -206,15 +206,13 @@ if ($initialSetup === true) {
   }
   
   Factory::getAgentFactory()->getDB()->commit();
-  
+
   // The hashtypes of hashtypes.json which are not present in the initial migration
-  // were just created after the cracker binary hashtype associations of the
-  // migration were already backfilled. Only hashcat binaries are associated
-  // with all hashtypes, binaries of other types start without any association.
+  // were just created after the initial seed. Hashcat binaries are queued for a
+  // scan of their supported hash-modes, which then populates their hashtype
+  // associations. Binaries of other types start without any association.
   foreach (Factory::getCrackerBinaryFactory()->filter([]) as $binary) {
-    if (CrackerUtils::isHashcatBinary($binary)) {
-      CrackerUtils::associateAllHashtypes($binary);
-    }
+    CrackerUtils::enqueueScan($binary, null);
   }
 }
 
