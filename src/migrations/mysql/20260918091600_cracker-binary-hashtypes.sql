@@ -11,8 +11,12 @@ CREATE TABLE `CrackerBinaryHashtype` (
   CONSTRAINT `CrackerBinaryHashtype_ibfk_2` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`)
 ) ENGINE=InnoDB;
 
--- Transition for existing binaries: it is not known which hashtypes are
--- supported exactly, so every binary is linked to all existing hashtypes.
--- The user can correct the associations later.
+-- Transition for existing binaries: hashcat binaries support every hashtype
+-- (they follow the hashcat mode numbering), so they are linked to all existing
+-- hashtypes. Binaries of other types start without any association, their
+-- supported hashtypes have to be associated manually.
 INSERT INTO `CrackerBinaryHashtype` (`crackerBinaryId`, `hashTypeId`)
-  SELECT b.`crackerBinaryId`, h.`hashTypeId` FROM `CrackerBinary` b CROSS JOIN `HashType` h;
+  SELECT b.`crackerBinaryId`, h.`hashTypeId`
+  FROM `CrackerBinary` b
+  JOIN `CrackerBinaryType` t ON b.`crackerBinaryTypeId` = t.`crackerBinaryTypeId` AND t.`typeName` = 'hashcat'
+  CROSS JOIN `HashType` h;

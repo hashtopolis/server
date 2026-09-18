@@ -209,11 +209,12 @@ if ($initialSetup === true) {
   
   // The hashtypes of hashtypes.json which are not present in the initial migration
   // were just created after the cracker binary hashtype associations of the
-  // migration were already backfilled. As long as the supported hashtypes cannot
-  // be determined from the binaries themselves, associate every binary with all
-  // hashtypes, the user can correct the associations later.
+  // migration were already backfilled. Only hashcat binaries are associated
+  // with all hashtypes, binaries of other types start without any association.
   foreach (Factory::getCrackerBinaryFactory()->filter([]) as $binary) {
-    CrackerUtils::associateAllHashtypes($binary);
+    if (CrackerUtils::isHashcatBinary($binary)) {
+      CrackerUtils::associateAllHashtypes($binary);
+    }
   }
 }
 
