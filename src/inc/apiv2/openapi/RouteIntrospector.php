@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\apiv2\openapi;
 
+use ReflectionException;
+use ReflectionObject;
 use Slim\App;
 
 /**
@@ -13,13 +15,14 @@ use Slim\App;
 class RouteIntrospector {
   /**
    * @return list<RouteTarget>
+   * @throws ReflectionException
    */
   public function introspect(App $app): array {
     $targets = [];
     $routes = $app->getRouteCollector()->getRoutes();
     foreach ($routes as $route) {
       /* Quirk to receive className, since it is hidden in a protected variable */
-      $reflectionOfRoute = new \ReflectionObject($route);
+      $reflectionOfRoute = new ReflectionObject($route);
       $protectedCallable = $reflectionOfRoute->getProperty('callable');
       $reflectionCallable = ($protectedCallable->getValue($route));
 
