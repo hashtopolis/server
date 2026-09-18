@@ -309,6 +309,15 @@ $CONF['CrackerBinaryType'] = [
     ['name' => 'isChunkingAvailable', 'read_only' => False, 'null' => True, 'type' => 'bool'],
   ],
 ];
+// n-m association between cracker binaries and hashtypes: a binary only
+// supports the hashtypes it is linked to
+$CONF['CrackerBinaryHashtype'] = [
+  'columns' => [
+    ['name' => 'crackerBinaryHashtypeId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinary'],
+    ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'HashType'],
+  ],
+];
 $CONF['File'] = [
   'columns' => [
     ['name' => 'fileId', 'read_only' => True, 'type' => 'int', 'protected' => True],
