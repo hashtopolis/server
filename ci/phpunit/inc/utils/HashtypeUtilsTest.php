@@ -3,6 +3,8 @@
 namespace Hashtopolis\inc\utils;
 
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
@@ -51,32 +53,42 @@ final class HashtypeUtilsTest extends TestBase {
     HashtypeUtils::addHashtype(-1, 'desc', 0, false, $this->user);
   }
 
-  // Verifies that a newly added hashtype is associated with all cracker
-  // binaries, as it cannot be determined which binaries support it.
+  // Verifies that a newly added hashtype is associated with the hashcat
+  // cracker binaries, which support all hashtypes, but not with binaries of
+  // other types, which keep their manually associated hashtypes.
   public function testAddHashtypeAssociatesAllBinaries(): void {
-    $binaryType = $this->createCrackerBinaryType();
-    $binary1 = $this->createCrackerBinary($binaryType);
-    $binary2 = $this->createCrackerBinary($binaryType);
+    $hashcatBinary = $this->createCrackerBinary($this->hashcatBinaryType());
+    $genericBinary = $this->createCrackerBinary($this->createCrackerBinaryType());
     $hashtypeId = 999004;
 
     $hashtype = HashtypeUtils::addHashtype($hashtypeId, 'assoc_desc', 0, false, $this->user);
 
-    $associated1 = false;
-    $associated2 = false;
-    foreach (CrackerUtils::getHashtypesOfBinary($binary1->getId()) as $hashtypeObj) {
+    $associatedHashcat = false;
+    foreach (CrackerUtils::getHashtypesOfBinary($hashcatBinary->getId()) as $hashtypeObj) {
       if ($hashtypeObj->getId() == $hashtype->getId()) {
-        $associated1 = true;
+        $associatedHashcat = true;
       }
     }
-    foreach (CrackerUtils::getHashtypesOfBinary($binary2->getId()) as $hashtypeObj) {
-      if ($hashtypeObj->getId() == $hashtype->getId()) {
-        $associated2 = true;
-      }
+    $this->assertTrue($associatedHashcat, "Hashtype was not associated with the hashcat binary");
+    foreach (CrackerUtils::getHashtypesOfBinary($genericBinary->getId()) as $hashtypeObj) {
+      $this->assertNotEquals($hashtype->getId(), $hashtypeObj->getId(), "Hashtype must not be associated with the generic binary");
     }
-    $this->assertTrue($associated1, "Hashtype was not associated with the first binary");
-    $this->assertTrue($associated2, "Hashtype was not associated with the second binary");
 
     HashtypeUtils::deleteHashtype($hashtype->getId());
+  }
+
+  // Returns the hashcat cracker binary type, creating it first when the
+  // initial data does not contain it.
+  private function hashcatBinaryType(): CrackerBinaryType {
+    $qF = new QueryFilter(CrackerBinaryType::TYPE_NAME, CrackerUtils::HASHCAT_BINARY_TYPE, "=");
+    $type = Factory::getCrackerBinaryTypeFactory()->filter([Factory::FILTER => $qF], true);
+    if ($type === null) {
+      $type = $this->createDatabaseObject(
+        Factory::getCrackerBinaryTypeFactory(),
+        new CrackerBinaryType(null, CrackerUtils::HASHCAT_BINARY_TYPE, 1)
+      );
+    }
+    return $type;
   }
   
   public function testDeleteHashtypeRemovesHashtype(): void {
