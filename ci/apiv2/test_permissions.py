@@ -1590,7 +1590,7 @@ class PermissionsTest(BaseTest):
             payload={'fileId': file_obj.id},
         )
         self.assertEqual(response.status_code, 200, response.text)
-        self.assertEqual(response.json()['meta']['fileId'], file_obj.id)
+        self.assertEqual(response.json()['meta']['id'], file_obj.id)
 
         # The recounting is enqueued as a background job, remove it again with the admin
         # session as the API token scope does not allow background job deletion.
