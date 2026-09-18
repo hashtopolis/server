@@ -19,3 +19,8 @@ class HashTypeTest(BaseTest):
     def test_delete(self):
         model_obj = self.create_test_object(delete=False)
         self._test_delete(model_obj)
+
+    def test_expandables(self):
+        model_obj = self.create_test_object()
+        expandables = ['crackerBinaries']
+        self._test_expandables(model_obj, expandables)
