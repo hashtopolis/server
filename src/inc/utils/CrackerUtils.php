@@ -15,34 +15,72 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Pretask;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\defines\DDirectories;
+use Hashtopolis\inc\defines\DBackgroundJobStatus;
+use Hashtopolis\inc\defines\DBackgroundJobType;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
 use PDOException;
+use Hashtopolis\dba\models\BackgroundJob;
 
 class CrackerUtils {
   private const INLINE_MEMORY_RESERVE = 16 * 1024 * 1024;
 
   /**
-   * Name of the cracker binary type of the hashcat binaries. Hashcat binaries
-   * are assumed to support every hashtype (they follow the hashcat mode
-   * numbering), so they are the only ones automatically associated with all
-   * hashtypes. Binaries of every other type start without any association,
-   * the supported hashtypes have to be associated manually.
+   * Name of the cracker binary type of the hashcat binaries. The hash-modes
+   * supported by a hashcat binary are determined by a scan of the binary
+   * (the background job unpacks the archive and reads the supported modes
+   * from the binary). Binaries of every other type start without any
+   * association, the supported hashtypes have to be associated manually.
    */
   public const HASHCAT_BINARY_TYPE = 'hashcat';
 
   /**
    * Whether the given cracker binary is of the hashcat cracker binary type,
-   * i.e. one of the binaries which are automatically associated with all
-   * hashtypes.
+   * i.e. one of the binaries whose supported hashtypes are determined by a
+   * scan of the binary.
    *
    * @throws Exception
    */
   public static function isHashcatBinary(CrackerBinary $binary): bool {
     $binaryType = Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
     return $binaryType !== null && $binaryType->getTypeName() == CrackerUtils::HASHCAT_BINARY_TYPE;
+  }
+
+  /**
+   * Enqueues the background job scanning the given cracker binary for its
+   * supported hash-modes. Only hashcat binaries are scannable, for them the
+   * scan is the only way the hashtype associations are populated, manual
+   * changes are not allowed. Binaries of other types are not scanned at all,
+   * their hashtypes are associated manually. A binary which already has a
+   * pending scan is not enqueued again.
+   *
+   * @param CrackerBinary $binary the binary which was created or updated
+   * @param User|null $user the user triggering the scan, null if it was triggered by the system
+   * @throws HTException
+   * @throws Exception
+   */
+  public static function enqueueScan(CrackerBinary $binary, ?User $user): void {
+    if (!CrackerUtils::isHashcatBinary($binary)) {
+      return;
+    }
+    $qF = new QueryFilter(BackgroundJob::JOB_TYPE, DBackgroundJobType::SCAN_CRACKER, "=");
+    foreach (Factory::getBackgroundJobFactory()->filter([Factory::FILTER => $qF]) as $job) {
+      if ($job->getStatus() != DBackgroundJobStatus::PENDING) {
+        continue;
+      }
+      $payload = json_decode($job->getPayload() ?? "{}", true);
+      if (($payload[CrackerBinary::CRACKER_BINARY_ID] ?? null) === $binary->getId()) {
+        // the pending scan already covers the current state of the binary
+        return;
+      }
+    }
+    BackgroundJobUtils::enqueue(
+      DBackgroundJobType::SCAN_CRACKER,
+      [CrackerBinary::CRACKER_BINARY_ID => $binary->getId()],
+      $user
+    );
   }
 
   /**
@@ -114,17 +152,12 @@ class CrackerUtils {
     );
     try {
       CrackerUtils::storeLocalCopy($binary);
-      // hashcat binaries support all hashtypes, binaries of other types start
-      // without any association, their supported hashtypes have to be
-      // associated manually
-      if ($binaryType->getTypeName() == CrackerUtils::HASHCAT_BINARY_TYPE) {
-        CrackerUtils::associateAllHashtypes($binary);
-      }
     }
     catch (HttpError $e) {
       Factory::getCrackerBinaryFactory()->delete($binary);
       throw $e;
     }
+    CrackerUtils::enqueueScan($binary, $user);
     return $binary;
   }
   
@@ -213,12 +246,7 @@ class CrackerUtils {
       CrackerBinary::DOWNLOAD_URL => $backendBaseUrl . '/api/download.php/crackerBinary/' . $binary->getId(),
       CrackerBinary::FILENAME => $filename
     ]);
-    // hashcat binaries support all hashtypes, binaries of other types start
-    // without any association, their supported hashtypes have to be
-    // associated manually
-    if ($binaryType->getTypeName() == CrackerUtils::HASHCAT_BINARY_TYPE) {
-      CrackerUtils::associateAllHashtypes($binary);
-    }
+    CrackerUtils::enqueueScan($binary, $user);
     return $binary;
   }
   
@@ -240,7 +268,7 @@ class CrackerUtils {
    * Composed server-side archive filename for a locally stored cracker binary,
    * the '.7z' extension is enforced by construction.
    */
-  private static function buildArchiveFilename(CrackerBinaryType $binaryType, string $version): string {
+  public static function buildArchiveFilename(CrackerBinaryType $binaryType, string $version): string {
     $sanitized = preg_replace('/[^A-Za-z0-9._-]/', '-', $binaryType->getTypeName() . '-' . $version) ?? '';
     return $sanitized . '.7z';
   }
@@ -346,15 +374,18 @@ class CrackerUtils {
    * from its download url, to be called after the binary was updated in the
    * database. If the download fails, the update is rolled back by restoring
    * the given previous values before the error is rethrown, so nothing of
-   * the update remains.
+   * the update remains. Hashcat binaries are queued for a scan of their
+   * supported hash-modes, the new archive can support other modes than the
+   * previous one.
    *
    * @param int $binaryId
    * @param array $previousValues previous values of the updated fields, keyed by the CrackerBinary feature constants
+   * @param User|null $user the user triggering the refresh, null if it was triggered by the system
    * @throws HttpError
    * @throws HTException
    * @throws Exception
    */
-  public static function refreshLocalCopy(int $binaryId, array $previousValues): void {
+  public static function refreshLocalCopy(int $binaryId, array $previousValues, ?User $user = null): void {
     $binary = CrackerUtils::getBinary($binaryId);
     try {
       CrackerUtils::storeLocalCopy($binary);
@@ -363,6 +394,7 @@ class CrackerUtils {
       Factory::getCrackerBinaryFactory()->mset($binary, $previousValues);
       throw $e;
     }
+    CrackerUtils::enqueueScan($binary, $user);
   }
   
   /**
@@ -451,12 +483,13 @@ class CrackerUtils {
    * @param string $name
    * @param string $url
    * @param int $binaryId
+   * @param User|null $user the user triggering the update, null if it was triggered by the system
    * @return CrackerBinaryType
    * @throws HttpError
    * @throws HTException
    * @throws Exception
    */
-  public static function updateBinary(string $version, string $name, string $url, int $binaryId): CrackerBinaryType {
+  public static function updateBinary(string $version, string $name, string $url, int $binaryId, ?User $user = null): CrackerBinaryType {
     $binary = CrackerUtils::getBinary($binaryId);
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
       throw new HTException("Please provide all information!");
@@ -483,7 +516,7 @@ class CrackerUtils {
       ]
     );
     if ($refreshLocalCopy) {
-      CrackerUtils::refreshLocalCopy($binary->getId(), $previousValues);
+      CrackerUtils::refreshLocalCopy($binary->getId(), $previousValues, $user);
     }
     return Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
   }
@@ -631,52 +664,53 @@ class CrackerUtils {
   }
   
   /**
-   * Associates a cracker binary with all existing hashtypes. Associations which
-   * already exist are kept, so it is safe to call this multiple times.
+   * Adjusts the hashtype associations of a cracker binary to exactly the given
+   * list of hashtypes. Only the difference is applied: hashtypes which are
+   * not associated yet are added and associations which are not in the list
+   * are removed, everything in common is kept as it is. The whole update is
+   * done in a single transaction.
    *
-   * @param CrackerBinary $binary
+   * @param int $binaryId
+   * @param int[] $hashtypeIds ids of the hashtypes the binary should be associated with
+   * @return int[] number of added and of removed associations
    * @throws HttpError
    * @throws Exception
    */
-  public static function associateAllHashtypes(CrackerBinary $binary): void {
-    $qF = new QueryFilter(CrackerBinaryHashtype::CRACKER_BINARY_ID, $binary->getId(), "=");
+  public static function setHashtypesOfBinary(int $binaryId, array $hashtypeIds): array {
     $currentIds = [];
-    foreach (Factory::getCrackerBinaryHashtypeFactory()->filter([Factory::FILTER => $qF]) as $association) {
-      $currentIds[] = $association->getHashTypeId();
+    foreach (CrackerUtils::getHashtypesOfBinary($binaryId) as $hashtype) {
+      $currentIds[] = $hashtype->getId();
     }
+
+    $toAdd = array_values(array_diff($hashtypeIds, $currentIds));
+    $toRemove = array_values(array_diff($currentIds, $hashtypeIds));
+
     $factory = Factory::getCrackerBinaryHashtypeFactory();
-    $factory->getDB()->beginTransaction(); //start transaction to be able roll back
-    foreach (Factory::getHashTypeFactory()->filter([]) as $hashtype) {
-      if (!in_array($hashtype->getId(), $currentIds)) {
-        try {
-          $factory->save(new CrackerBinaryHashtype(null, $binary->getId(), $hashtype->getId()));
-        }
-        catch (PDOException $e) {
-          /* A concurrent request created the association in between. Skipping
-             it keeps this function idempotent as documented. */
-          if (!in_array($e->getCode(), ['23000', '23505'])) {
-            throw $e;
-          }
-        }
-      }
+    $factory->getDB()->beginTransaction(); //start transaction to be able to roll back
+    foreach ($toAdd as $hashtypeId) {
+      CrackerUtils::addHashtypeToBinary($binaryId, $hashtypeId);
+    }
+    foreach ($toRemove as $hashtypeId) {
+      CrackerUtils::removeHashtypeFromBinary($binaryId, $hashtypeId);
     }
     if (!$factory->getDB()->commit()) {
-      throw new HttpError("Was not able to associate the hashtypes with the cracker binary!");
+      throw new HttpError("Was not able to update the hashtype associations of the cracker binary!");
     }
+    return [sizeof($toAdd), sizeof($toRemove)];
   }
-  
+
   /**
-   * Triggers an update of a cracker binary. If the binary is only referenced by
-   * an url, the archive is downloaded again. Hashcat binaries are then
-   * associated with all existing hashtypes again, binaries of other types keep
-   * their manually associated hashtypes. This helper is meant to be re-used
-   * later to re-read the supported hashtypes from the downloaded archive.
+   * Triggers an update of a cracker binary: the archive is downloaded again
+   * if the binary is only referenced by an url, and hashcat binaries are
+   * queued for a scan of their supported hash-modes. Binaries of other types
+   * keep their manually associated hashtypes.
    *
    * @param int $binaryId
+   * @param User|null $user the user triggering the update, null if it was triggered by the system
    * @throws HTException
    * @throws Exception
    */
-  public static function checkCrackerBinary(int $binaryId): void {
+  public static function checkCrackerBinary(int $binaryId, ?User $user = null): void {
     $binary = CrackerUtils::getBinary($binaryId);
     // locally stored binaries don't need to be downloaded, their archive is
     // already on the server
@@ -690,15 +724,10 @@ class CrackerUtils {
         }
         throw new HTException("Failed to download the archive of the cracker binary: " . $msg);
       }
-      // the archive is only needed for download for now, in a later step it
-      // will be used to determine the hashtypes supported by the binary
       if (file_exists($target)) {
         unlink($target);
       }
     }
-    // only hashcat binaries are blanket-associated with all hashtypes
-    if (CrackerUtils::isHashcatBinary($binary)) {
-      CrackerUtils::associateAllHashtypes($binary);
-    }
+    CrackerUtils::enqueueScan($binary, $user);
   }
 }
