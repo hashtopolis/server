@@ -13,12 +13,15 @@ CREATE INDEX IF NOT EXISTS crackerbinaryhashtype_hashtypeid_idx ON CrackerBinary
 ALTER TABLE ONLY CrackerBinaryHashtype ADD CONSTRAINT crackerbinaryhashtype_ibfk_1 FOREIGN KEY (crackerBinaryId) REFERENCES CrackerBinary(crackerBinaryId);
 ALTER TABLE ONLY CrackerBinaryHashtype ADD CONSTRAINT crackerbinaryhashtype_ibfk_2 FOREIGN KEY (hashTypeId) REFERENCES HashType(hashTypeId);
 
--- Transition for existing binaries: hashcat binaries support every hashtype
--- (they follow the hashcat mode numbering), so they are linked to all existing
--- hashtypes. Binaries of other types start without any association, their
+-- Transition for existing binaries: hashcat binaries get their hashtype
+-- associations populated by a scan of the binary, which reads the supported
+-- hash-modes from the unpacked archive. A pending scan job is enqueued for
+-- each of them here, the next run of the background job runner executes the
+-- scans. Binaries of other types start without any association, their
 -- supported hashtypes have to be associated manually.
-INSERT INTO CrackerBinaryHashtype (crackerBinaryId, hashTypeId)
-  SELECT b.crackerBinaryId, h.hashTypeId
+INSERT INTO BackgroundJob (jobType, payload, status, "userId", createdAt)
+  SELECT 'scan_cracker',
+         json_build_object('crackerBinaryId', b.crackerBinaryId),
+         0, NULL, extract(epoch from now())
   FROM CrackerBinary b
-  JOIN CrackerBinaryType t ON b.crackerBinaryTypeId = t.crackerBinaryTypeId AND t.typeName = 'hashcat'
-  CROSS JOIN HashType h;
+  JOIN CrackerBinaryType t ON b.crackerBinaryTypeId = t.crackerBinaryTypeId AND t.typeName = 'hashcat';

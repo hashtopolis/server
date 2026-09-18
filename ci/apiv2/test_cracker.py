@@ -1,16 +1,21 @@
+import base64
 import datetime
 import glob
 import io
 import os
+import subprocess
+import tempfile
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
 
 import requests
 
 from hashtopolis import Cracker, CrackerType, FileImport, HashType, HashtopolisError
-from utils import (BaseTest, SEVEN_ZIP_MAGIC, do_create_agent, do_create_local_cracker,
+from utils import (BackgroundJob, BaseTest, SEVEN_ZIP_MAGIC, do_create_agent, do_create_local_cracker,
                    get_bearer_token, get_hashtopolis_uri)
+from test_backgroundjob import run_background_job_runner
 
 
 CRACKERS_DIR = os.environ.get('HASHTOPOLIS_CRACKERS_PATH', '/usr/local/share/hashtopolis/crackers')
@@ -532,11 +537,22 @@ class TestDownloadEndpoint(BaseTest):
 class TestCrackerHashtypes(BaseTest):
     """The n-m association between cracker binaries and hashtypes.
 
-    Hashcat binaries are associated with all existing hashtypes (hashcat
-    supports all of them), binaries of other types start without any
-    association, the supported hashtypes have to be associated manually via
-    the relationship endpoints.
+    Hashcat binaries start without any association, a scan of the binary
+    (unpacking the archive and reading the supported hash-modes from the
+    binary) populates them. Binaries of other types are never scanned, their
+    supported hashtypes have to be associated manually via the relationship
+    endpoints.
     """
+
+    # canned '--example-hashes --machine-readable' report echoed by the fake
+    # cracker binary
+    FAKE_MODES_OUTPUT = (
+        'hashcat (v9.9.9) starting in autodetect mode\n'
+        '\n'
+        '{"0": { "name": "MD5", "slow_hash": false, "is_salted": false, "salt_type": null },'
+        ' "880001": { "name": "Fake Mode One", "slow_hash": false, "is_salted": false, "salt_type": null },'
+        ' "880002": { "name": "Fake Salted Mode", "slow_hash": true, "is_salted": true, "salt_type": "generic" }}\n'
+    )
 
     def hashtype_ids_of(self, obj):
         obj = Cracker.objects.prefetch_related('hashtypes').get(pk=obj.id)
@@ -549,6 +565,20 @@ class TestCrackerHashtypes(BaseTest):
         return self.create_hashtype(extra_payload={'hashTypeId': 100001 + stamp % 99999,
                                                     'description': f'cracker-relation-hashtype-{stamp}'})
 
+    def create_generic_cracker(self, **kwargs):
+        """Creates a binary of a non-hashcat type, which is never scanned."""
+        stamp = int(time.time() * 1000)
+        cracker_type = self.create_crackertype(extra_payload={'typeName': f'generic-cracker-{stamp}'})
+        return self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id}, **kwargs)
+
+    def scan_jobs_of(self, obj):
+        return [job for job in BackgroundJob.objects.all()
+                if job.payload.get('crackerBinaryId') == obj.id]
+
+    def delete_scan_jobs(self, obj):
+        for job in self.scan_jobs_of(obj):
+            job.delete()
+
     def relationship_request(self, obj, method, data, model='crackers', relation='hashtypes'):
         headers = {'Authorization': f'Bearer {get_bearer_token()}',
                     'Content-Type': 'application/json'}
@@ -556,26 +586,25 @@ class TestCrackerHashtypes(BaseTest):
                                  f'{APIV2}/ui/{model}/{obj.id}/relationships/{relation}',
                                  headers=headers, json={'data': data})
 
-    def test_create_associates_all_hashtypes(self):
-        """A new hashcat binary is associated with all existing hashtypes."""
+    def test_create_hashcat_binary_enqueues_scan(self):
+        """A new hashcat binary starts without associations and gets a scan queued."""
         obj = self.create_cracker()
 
-        all_ids = sorted(ht.id for ht in HashType.objects.all())
-        self.assertListEqual(all_ids, self.hashtype_ids_of(obj))
+        self.assertListEqual([], self.hashtype_ids_of(obj))
+        self.assertEqual(1, len([job for job in self.scan_jobs_of(obj) if job.status == 0]),
+                         'Expected exactly one pending scan job')
+        self.delete_scan_jobs(obj)
 
     def test_create_non_hashcat_type_associates_no_hashtypes(self):
-        """A binary of a non-hashcat type is created without any hashtype associations."""
-        stamp = int(time.time() * 1000)
-        cracker_type = self.create_crackertype(extra_payload={'typeName': f'generic-cracker-{stamp}'})
-        obj = self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+        """A binary of a non-hashcat type is created without any hashtype associations and no scan."""
+        obj = self.create_generic_cracker()
 
         self.assertListEqual([], self.hashtype_ids_of(obj))
+        self.assertListEqual([], self.scan_jobs_of(obj))
 
     def test_user_associates_hashtype_with_generic_cracker(self):
         """A user can create a hashtype and associate it with his generic cracker binary."""
-        stamp = int(time.time() * 1000)
-        cracker_type = self.create_crackertype(extra_payload={'typeName': f'generic-cracker-{stamp}'})
-        obj = self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+        obj = self.create_generic_cracker()
         hashtype = self.create_unique_hashtype()
 
         # the generic binary starts without associations, the new hashtype is
@@ -589,9 +618,78 @@ class TestCrackerHashtypes(BaseTest):
         self.assertEqual(204, r.status_code, f'Patching failed: {r.text}')
         self.assertListEqual([hashtype.id], self.hashtype_ids_of(obj))
 
+    def test_hashcat_hashtypes_are_not_manually_editable(self):
+        """The hashtypes of a hashcat binary are determined by the scan alone."""
+        obj = self.create_cracker()
+        hashtype = self.create_unique_hashtype()
+
+        r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': hashtype.id}])
+        self.assertEqual(403, r.status_code, f'Patching should be rejected: {r.text}')
+
+        r = self.relationship_request(obj, 'POST', [{'type': 'hashType', 'id': hashtype.id}])
+        self.assertEqual(403, r.status_code, f'Adding should be rejected: {r.text}')
+
+        r = self.relationship_request(obj, 'DELETE', [{'type': 'hashType', 'id': hashtype.id}])
+        self.assertEqual(403, r.status_code, f'Deleting should be rejected: {r.text}')
+
+        self.assertListEqual([], self.hashtype_ids_of(obj))
+        self.delete_scan_jobs(obj)
+
+    def test_scan_populates_associations_and_creates_hashtypes(self):
+        """The scan of a hashcat binary populates its associations and creates missing hashtypes."""
+        # fake cracker archive: a shell script 'cracker.bin' which echoes a
+        # canned '--example-hashes --machine-readable' report, packed with 7z
+        with tempfile.TemporaryDirectory() as tmpdir:
+            binary_dir = Path(tmpdir) / 'fake-hashcat'
+            binary_dir.mkdir()
+            (binary_dir / 'cracker.bin').write_text(
+                '#!/bin/sh\n'
+                "if [ \"$1\" = '--example-hashes' ] && [ \"$2\" = '--machine-readable' ]; then\n"
+                f"cat <<'HTP_EOF'\n{self.FAKE_MODES_OUTPUT}HTP_EOF\n"
+                'exit 0\n'
+                'fi\n'
+                'exit 1\n'
+            )
+            (binary_dir / 'cracker.bin').chmod(0o755)
+            archive = Path(tmpdir) / 'fake-hashcat.7z'
+            result = subprocess.run(['7z', 'a', str(archive), str(binary_dir)],
+                                     capture_output=True, text=True)
+            self.assertEqual(0, result.returncode, f'Packing the fake archive failed: {result.stderr}')
+            source_data = base64.b64encode(archive.read_bytes()).decode()
+
+        obj = self.create_local_cracker(source_data=source_data)
+        try:
+            # until the scan ran, the binary has no associations, but the scan is queued
+            self.assertListEqual([], self.hashtype_ids_of(obj))
+            self.assertEqual(1, len([job for job in self.scan_jobs_of(obj) if job.status == 0]))
+
+            run_background_job_runner()
+
+            # mode 0 exists already, the two fake modes were created with the
+            # description and flags of the mode report
+            self.assertListEqual([0, 880001, 880002], self.hashtype_ids_of(obj))
+            created = HashType.objects.get(pk=880001)
+            self.assertEqual('Fake Mode One', created.description)
+            self.assertFalse(created.isSalted)
+            self.assertFalse(created.isSlowHash)
+            salted = HashType.objects.get(pk=880002)
+            self.assertEqual('Fake Salted Mode', salted.description)
+            # only a generic salt counts as salted, the slow-hash flag is
+            # taken over from the report
+            self.assertTrue(salted.isSalted)
+            self.assertTrue(salted.isSlowHash)
+        finally:
+            # clean up, the scan jobs and hashtypes are not covered by the
+            # regular test object teardown
+            self.delete_scan_jobs(obj)
+            for hashtype_id in (880001, 880002):
+                r = requests.delete(f'{APIV2}/ui/hashtypes/{hashtype_id}',
+                                    headers={'Authorization': f'Bearer {get_bearer_token()}'})
+                self.assertIn(r.status_code, [204, 404], f'Deleting hashtype {hashtype_id} failed: {r.text}')
+
     def test_patch_hashtypes_replaces_set(self):
         """Patching the relationship replaces the associated hashtypes with the given list."""
-        obj = self.create_cracker()
+        obj = self.create_generic_cracker()
         hashtype1 = self.create_unique_hashtype()
         hashtype2 = self.create_unique_hashtype()
 
@@ -603,7 +701,7 @@ class TestCrackerHashtypes(BaseTest):
 
     def test_add_hashtype_with_relationship_post(self):
         """Single hashtypes can be added to the association of a binary."""
-        obj = self.create_cracker()
+        obj = self.create_generic_cracker()
         hashtype1 = self.create_unique_hashtype()
         hashtype2 = self.create_unique_hashtype()
 
@@ -623,7 +721,7 @@ class TestCrackerHashtypes(BaseTest):
 
     def test_remove_hashtype_with_relationship_delete(self):
         """Single hashtypes can be removed from the association of a binary."""
-        obj = self.create_cracker()
+        obj = self.create_generic_cracker()
         hashtype = self.create_unique_hashtype()
 
         # replace the set of the new binary with two hashtypes
@@ -641,7 +739,11 @@ class TestCrackerHashtypes(BaseTest):
     def test_association_is_readonly_from_hashtype_side(self):
         """The association can only be edited from the cracker binary side."""
         hashtype = self.create_unique_hashtype()
-        obj = self.create_cracker()
+        obj = self.create_generic_cracker()
+
+        # associate the hashtype with the binary from the cracker binary side
+        r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': hashtype.id}])
+        self.assertEqual(204, r.status_code, f'Patching failed: {r.text}')
 
         # the hashtype is visible from the hashtype side
         hashtype_obj = HashType.objects.prefetch_related('crackerBinaries').get(pk=hashtype.id)
@@ -665,8 +767,11 @@ class TestCrackerHashtypes(BaseTest):
 
     def test_delete_binary_removes_associations(self):
         """Deleting a binary also removes its hashtype associations."""
-        obj = self.create_cracker(delete=False)
+        obj = self.create_generic_cracker(delete=False)
         hashtype = self.create_unique_hashtype()
+
+        r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': hashtype.id}])
+        self.assertEqual(204, r.status_code, f'Patching failed: {r.text}')
         self.assertIn(hashtype.id, self.hashtype_ids_of(obj))
         hashtype_obj = HashType.objects.prefetch_related('crackerBinaries').get(pk=hashtype.id)
         self.assertIn(obj.id, sorted(cracker.id for cracker in hashtype_obj.crackerBinaries_set))
