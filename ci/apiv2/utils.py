@@ -387,7 +387,10 @@ def find_stale_test_objects():
     test_objs.extend(Pretask.objects.all())
     test_objs.extend(Hashlist.objects.all())
     test_objs.extend(File.objects.all())
-    test_objs.extend(BackgroundJob.objects.all())
+    # Background jobs enqueued by the system (e.g. the scan of the seeded hashcat
+    # binary which the migration queues) are server data, only jobs triggered by
+    # a user are test objects which the tests have to clean up
+    test_objs.extend(job for job in BackgroundJob.objects.all() if job.userId is not None)
     test_objs.extend(User.objects.filter(id__gt=1))
     test_objs.extend(GlobalPermissionGroup.objects.filter(id__gt=1))
     test_objs.extend(Cracker.objects.filter(id__gt=1))
