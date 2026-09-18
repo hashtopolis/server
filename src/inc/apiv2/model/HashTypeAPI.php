@@ -3,6 +3,8 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\dba\models\CrackerBinary;
+use Hashtopolis\dba\models\CrackerBinaryHashtype;
 use Hashtopolis\dba\models\HashType;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -20,6 +22,25 @@ class HashTypeAPI extends AbstractModelAPI {
   
   public static function getDBAclass(): string {
     return HashType::class;
+  }
+  
+  public static function getToManyRelationships(): array {
+    return [
+      'crackerBinaries' => [
+        'key' => HashType::HASH_TYPE_ID,
+
+        'junctionTableType' => CrackerBinaryHashtype::class,
+        'junctionTableFilterField' => CrackerBinaryHashtype::HASH_TYPE_ID,
+        'junctionTableJoinField' => CrackerBinaryHashtype::CRACKER_BINARY_ID,
+
+        'relationType' => CrackerBinary::class,
+        'relationKey' => CrackerBinary::CRACKER_BINARY_ID,
+
+        // the association is edited from the cracker binary side, from the
+        // hashtype side it is only visible
+        'readonly' => true,
+      ],
+    ];
   }
   
   /**

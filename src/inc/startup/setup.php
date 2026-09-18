@@ -16,6 +16,7 @@ use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\Util;
 use Hashtopolis\inc\utils\AccessUtils;
+use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\inc\utils\MigrationUtils;
 
 session_start();
@@ -205,6 +206,16 @@ if ($initialSetup === true) {
   }
   
   Factory::getAgentFactory()->getDB()->commit();
+  
+  // The hashtypes of hashtypes.json which are not present in the initial migration
+  // were just created after the cracker binary hashtype associations of the
+  // migration were already backfilled. Only hashcat binaries are associated
+  // with all hashtypes, binaries of other types start without any association.
+  foreach (Factory::getCrackerBinaryFactory()->filter([]) as $binary) {
+    if (CrackerUtils::isHashcatBinary($binary)) {
+      CrackerUtils::associateAllHashtypes($binary);
+    }
+  }
 }
 
 // check if directories are saved in config
