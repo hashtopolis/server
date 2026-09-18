@@ -127,17 +127,20 @@ if (isset($_GET['id'])) {
   UI::add('currentSpeed', $currentSpeed);
   
   $agentsBench = new DataSet();
+  $agentsProgress = new DataSet();
+  $agentsSpent = new DataSet();
+  $agentsCracked = new DataSet();
   $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
   $assignments = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
   foreach ($assignments as $assignment) {
     $agentsBench->addValue($assignment->getAgentId(), $assignment->getBenchmark());
+    $agentsProgress->addValue($assignment->getAgentId(), 0);
+    $agentsSpent->addValue($assignment->getAgentId(), 0);
+    $agentsCracked->addValue($assignment->getAgentId(), 0);
   }
   
   $cProgress = 0;
   $chunkIntervals = [];
-  $agentsProgress = new DataSet();
-  $agentsSpent = new DataSet();
-  $agentsCracked = new DataSet();
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
   $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
   foreach ($chunks as $chunk) {
