@@ -19,7 +19,7 @@ ALTER TABLE ONLY CrackerBinaryHashtype ADD CONSTRAINT crackerbinaryhashtype_ibfk
 -- each of them here, the next run of the background job runner executes the
 -- scans. Binaries of other types start without any association, their
 -- supported hashtypes have to be associated manually.
-INSERT INTO BackgroundJob (jobType, payload, status, "userId", createdAt)
+INSERT INTO BackgroundJob (jobType, payload, status, userId, createdAt)
   SELECT 'scan_cracker',
          json_build_object('crackerBinaryId', b.crackerBinaryId),
          0, NULL, extract(epoch from now())
