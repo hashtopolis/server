@@ -56,25 +56,32 @@ final class CorsHackMiddlewareTest extends TestCase {
 
     $request->setHeaderLine("http://[::1]:8080");
     CorsHackMiddleware::CheckCORS($request, $response);
+  }
 
-    //Test the same but with https:
-    $request->setHeaderLine("https://127.0.0.1:4200");
-    CorsHackMiddleware::CheckCORS($request, $response);
+  /**
+   * The same localhost variations over https, against an https backend.
+   *
+   * @return void
+   * @throws HttpForbidden
+   */
+  public function testValidLocalhostVariationsOverHttps(): void {
+    $this->expectNotToPerformAssertions();
 
-    $request->setHeaderLine("https://localhost:4200");
-    CorsHackMiddleware::CheckCORS($request, $response);
+    putenv("HASHTOPOLIS_BACKEND_URL=https://localhost:8080/api/v2");
+    putenv("HASHTOPOLIS_FRONTEND_PORT=4200");
 
-    $request->setHeaderLine("https://[::1]:4200");
-    CorsHackMiddleware::CheckCORS($request, $response);
+    $app = AppFactory::create();
 
-    $request->setHeaderLine("https://127.0.0.1:8080");
-    CorsHackMiddleware::CheckCORS($request, $response);
+    $request = new DummyRequest();
 
-    $request->setHeaderLine("https://localhost:8080");
-    CorsHackMiddleware::CheckCORS($request, $response);
+    $response = $app->getResponseFactory()->createResponse();
 
-    $request->setHeaderLine("https://[::1]:8080");
-    CorsHackMiddleware::CheckCORS($request, $response);
+    foreach (["127.0.0.1", "localhost", "[::1]"] as $host) {
+      foreach ([4200, 8080] as $port) {
+        $request->setHeaderLine("https://$host:$port");
+        CorsHackMiddleware::CheckCORS($request, $response);
+      }
+    }
   }
 
   /**
@@ -207,13 +214,16 @@ final class CorsHackMiddlewareTest extends TestCase {
   }
   
   /**
-   * Tests a valid https-domain with port as origin but configured http-backend-url.
-   * The http:// or https:// are not part of the CORS checks.
+   * Tests an https origin against an http backend URL.
+   *
+   * The scheme is part of the comparison: http and https are different origins, and treating them
+   * as one would let a plain-http page read responses meant for the https deployment. A deployment
+   * that moved behind TLS has to say so in HASHTOPOLIS_BACKEND_URL.
    *
    * @throws HttpForbidden
    */
-  public function testValidHttpsDomainWithPortWithHttpConfig(): void {
-    $this->expectNotToPerformAssertions();
+  public function testSchemeMismatchIsRejected(): void {
+    $this->expectException(HttpForbidden::class);
 
     putenv("HASHTOPOLIS_BACKEND_URL=http://hashtopolis-cluster.com:8080/api/v2");
     putenv("HASHTOPOLIS_FRONTEND_PORT=4200");
@@ -245,7 +255,122 @@ final class CorsHackMiddlewareTest extends TestCase {
 
     $response = $app->getResponseFactory()->createResponse();
 
-    $request->setHeaderLine("https://hashtopolis-cluster.com:5000");
+    $request->setHeaderLine("http://hashtopolis-cluster.com:5000");
     CorsHackMiddleware::CheckCORS($request, $response);
+  }
+
+  /**
+   * Regression: a portless origin must not match a portless HASHTOPOLIS_BACKEND_URL.
+   *
+   * Slicing each URL at its last colon turned both a portless origin and a portless backend URL into
+   * an empty host, which compared equal. Any site could therefore be echoed back as an allowed
+   * origin, and since these responses also carry Allow-Credentials, read authenticated replies. The
+   * configuration that triggered it is the ordinary one for TLS: a backend URL with no explicit port.
+   *
+   * @throws HttpForbidden
+   */
+  public function testPortlessEvilOriginDoesNotMatchPortlessBackendUrl(): void {
+    $this->expectException(HttpForbidden::class);
+
+    putenv("HASHTOPOLIS_BACKEND_URL=https://hashtopolis-cluster.com/api/v2");
+    putenv("HASHTOPOLIS_FRONTEND_PORT=4200");
+
+    $app = AppFactory::create();
+
+    $request = new DummyRequest();
+
+    $response = $app->getResponseFactory()->createResponse();
+
+    $request->setHeaderLine("https://evil.com");
+    CorsHackMiddleware::CheckCORS($request, $response);
+  }
+
+  /**
+   * A subdomain is a different origin, even though it shares a suffix with the configured host.
+   *
+   * @throws HttpForbidden
+   */
+  public function testSubdomainOfConfiguredHostIsRejected(): void {
+    $this->expectException(HttpForbidden::class);
+
+    putenv("HASHTOPOLIS_BACKEND_URL=https://hashtopolis-cluster.com/api/v2");
+    putenv("HASHTOPOLIS_FRONTEND_PORT=4200");
+
+    $app = AppFactory::create();
+
+    $request = new DummyRequest();
+
+    $response = $app->getResponseFactory()->createResponse();
+
+    $request->setHeaderLine("https://evil.hashtopolis-cluster.com");
+    CorsHackMiddleware::CheckCORS($request, $response);
+  }
+
+  /**
+   * The port a scheme implies is filled in, so the two spellings of the same origin agree.
+   *
+   * @throws HttpForbidden
+   */
+  public function testExplicitDefaultPortMatchesPortlessBackendUrl(): void {
+    putenv("HASHTOPOLIS_BACKEND_URL=https://hashtopolis-cluster.com/api/v2");
+    putenv("HASHTOPOLIS_FRONTEND_PORT=4200");
+
+    $app = AppFactory::create();
+
+    $request = new DummyRequest();
+
+    $response = $app->getResponseFactory()->createResponse();
+
+    $request->setHeaderLine("https://hashtopolis-cluster.com:443");
+    $response = CorsHackMiddleware::CheckCORS($request, $response);
+
+    $this->assertSame("https://hashtopolis-cluster.com:443", $response->getHeaderLine("Access-Control-Allow-Origin"));
+  }
+
+  /**
+   * A verified origin is the only thing credentials are granted to, and the response says it varies
+   * by origin so a cache cannot hand one origin's headers to another.
+   *
+   * @throws HttpForbidden
+   */
+  public function testVerifiedOriginGetsCredentialsAndVaries(): void {
+    putenv("HASHTOPOLIS_BACKEND_URL=http://localhost:8080/api/v2");
+    putenv("HASHTOPOLIS_FRONTEND_PORT=4200");
+
+    $app = AppFactory::create();
+
+    $request = new DummyRequest();
+
+    $response = $app->getResponseFactory()->createResponse();
+
+    $request->setHeaderLine("http://localhost:4200");
+    $response = CorsHackMiddleware::CheckCORS($request, $response);
+
+    $this->assertSame("http://localhost:4200", $response->getHeaderLine("Access-Control-Allow-Origin"));
+    $this->assertSame("true", $response->getHeaderLine("Access-Control-Allow-Credentials"));
+    $this->assertStringContainsString("Origin", $response->getHeaderLine("Vary"));
+  }
+
+  /**
+   * Without a configured backend URL there is nothing to verify an origin against, so the API stays
+   * open but never grants credentials: browsers refuse them next to a wildcard.
+   *
+   * @throws HttpForbidden
+   */
+  public function testWithoutBackendUrlTheWildcardCarriesNoCredentials(): void {
+    putenv("HASHTOPOLIS_BACKEND_URL");
+    putenv("HASHTOPOLIS_FRONTEND_PORT");
+
+    $app = AppFactory::create();
+
+    $request = new DummyRequest();
+
+    $response = $app->getResponseFactory()->createResponse();
+
+    $request->setHeaderLine("https://evil.com");
+    $response = CorsHackMiddleware::CheckCORS($request, $response);
+
+    $this->assertSame("*", $response->getHeaderLine("Access-Control-Allow-Origin"));
+    $this->assertSame("", $response->getHeaderLine("Access-Control-Allow-Credentials"));
   }
 }

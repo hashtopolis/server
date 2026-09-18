@@ -67,6 +67,7 @@ class SpecBuilder {
      * Build static entries
      */
     $paths["/api/v2/auth/token"] = $this->staticFragments->authTokenPath();
+    $paths["/api/v2/auth/refresh"] = $this->staticFragments->authRefreshPath();
 
     foreach ($this->staticFragments->tokenComponents() as $key => $schema) {
       $components[$key] = $schema;
@@ -115,6 +116,12 @@ class SpecBuilder {
             "type" => "http",
             "description" => "Basic Authorization header.",
             "scheme" => "basic"
+          ],
+          "refreshCookie" => [
+            "type" => "apiKey",
+            "description" => "HttpOnly cookie holding the refresh token, set by /api/v2/auth/token and scoped to /api/v2/auth/refresh.",
+            "in" => "cookie",
+            "name" => "refreshToken"
           ]
         ]
       ],
