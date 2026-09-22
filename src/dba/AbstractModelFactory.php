@@ -1114,10 +1114,10 @@ abstract class AbstractModelFactory {
   
   /**
    * @param $options
-   * @return bool
+   * @return PDOStatement
    * @throws Exception
    */
-  public function massUpdate($options): bool {
+  public function massUpdate($options): PDOStatement {
     $query = "UPDATE " . $this->getMappedModelTable();
     
     $vals = [];
@@ -1150,7 +1150,8 @@ abstract class AbstractModelFactory {
     
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
-    return $stmt->execute($vals);
+    $stmt->execute($vals);
+    return $stmt;
   }
   
   /**
@@ -1209,4 +1210,3 @@ abstract class AbstractModelFactory {
     }
   }
 }
-
