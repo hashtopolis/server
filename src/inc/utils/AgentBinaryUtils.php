@@ -128,7 +128,7 @@ class AgentBinaryUtils {
   
   /**
    * @param int $binaryId
-   * @param string type
+   * @param string $type
    * @param User $user
    * @throws HTException
    * @throws Exception
@@ -248,14 +248,14 @@ class AgentBinaryUtils {
   }
   
   /**
-   * @param string $agent
+   * @param string $binaryType
    * @param string $track
    * @return boolean|string
    * @throws HTException
    * @throws Exception
    */
-  public static function getAgentUpdate(string $agent, string $track): bool|string {
-    $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $agent, "=");
+  public static function getAgentUpdate(string $binaryType, string $track): bool|string {
+    $qF = new QueryFilter(AgentBinary::BINARY_TYPE, $binaryType, "=");
     $agent = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($agent == null) {
       throw new HTException("Invalid agent binary type!");
