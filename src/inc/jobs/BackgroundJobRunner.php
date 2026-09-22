@@ -6,6 +6,7 @@ use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\BackgroundJob;
 use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\UpdateSet;
 use Hashtopolis\inc\defines\DBackgroundJobStatus;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\HTException;
@@ -51,10 +52,16 @@ class BackgroundJobRunner {
    */
   private static function claim(BackgroundJob $job): bool {
     $factory = Factory::getBackgroundJobFactory();
-    $query = "UPDATE " . $factory->getMappedModelTable() . " SET " . BackgroundJob::STATUS . "=?, " . BackgroundJob::STARTED_AT .
-      "=? WHERE " . BackgroundJob::BACKGROUND_JOB_ID . "=? AND " . BackgroundJob::STATUS . "=?";
-    $stmt = $factory->getDB()->prepare($query);
-    $stmt->execute([DBackgroundJobStatus::RUNNING, time(), $job->getId(), DBackgroundJobStatus::PENDING]);
+    $stmt = $factory->massUpdate([
+      Factory::UPDATE => [
+        new UpdateSet(BackgroundJob::STATUS, DBackgroundJobStatus::RUNNING),
+        new UpdateSet(BackgroundJob::STARTED_AT, time()),
+      ],
+      Factory::FILTER => [
+        new QueryFilter(BackgroundJob::BACKGROUND_JOB_ID, $job->getId(), "="),
+        new QueryFilter(BackgroundJob::STATUS, DBackgroundJobStatus::PENDING, "="),
+      ],
+    ]);
     return $stmt->rowCount() > 0;
   }
   
