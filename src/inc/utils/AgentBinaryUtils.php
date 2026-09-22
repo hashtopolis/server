@@ -226,16 +226,16 @@ class AgentBinaryUtils {
   /**
    * Retrieves the latest version number for the according agent type and track.
    *
-   * @param string $agent
+   * @param string $binaryType
    * @param string $track
    * @return string
    * @throws HTException
    */
-  public static function getLatestVersion(string $agent, string $track): string {
+  public static function getLatestVersion(string $binaryType, string $track): string {
     $curl = curl_init();
     curl_setopt_array($curl, array(
         CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_URL => HTP_AGENT_ARCHIVE . $agent . '/' . $track . '/HEAD',
+        CURLOPT_URL => HTP_AGENT_ARCHIVE . $binaryType . '/' . $track . '/HEAD',
       )
     );
     $resp = curl_exec($curl);
@@ -243,6 +243,7 @@ class AgentBinaryUtils {
     if ($http_code != 200) {
       throw new HTException("Invalid HTTP status code: $http_code");
     }
+    //TODO: Should close in finally on exception?
     curl_close($curl);
     return trim($resp);
   }
