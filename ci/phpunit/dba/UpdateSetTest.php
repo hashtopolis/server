@@ -70,12 +70,12 @@ final class UpdateSetTest extends TestBase {
     $scope = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
     $update = new UpdateSet(HashType::IS_SALTED, 99);
     
-    $result = Factory::getHashTypeFactory()->massUpdate([
+    $stmt = Factory::getHashTypeFactory()->massUpdate([
       Factory::UPDATE => $update,
       Factory::FILTER => $scope,
     ]);
     
-    $this->assertTrue($result);
+    $this->assertSame(3, $stmt->rowCount());
     
     $results = Factory::getHashTypeFactory()->filter([Factory::FILTER => $scope]);
     $this->assertCount(3, $results);
@@ -101,12 +101,12 @@ final class UpdateSetTest extends TestBase {
       new UpdateSet(HashType::IS_SLOW_HASH, 88),
     ];
     
-    $result = Factory::getHashTypeFactory()->massUpdate([
+    $stmt = Factory::getHashTypeFactory()->massUpdate([
       Factory::UPDATE => $updates,
       Factory::FILTER => $scope,
     ]);
     
-    $this->assertTrue($result);
+    $this->assertSame(2, $stmt->rowCount());
     
     $results = Factory::getHashTypeFactory()->filter([Factory::FILTER => $scope]);
     $this->assertCount(2, $results);

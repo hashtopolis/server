@@ -1206,16 +1206,17 @@ abstract class AbstractModelFactory {
   
   /**
    * @param $options
-   * @return bool
+   * @return PDOStatement
    * @throws Exception
    */
-  public function massUpdate($options): bool {
+  public function massUpdate($options): PDOStatement {
     $vals = [];
     $query = $this->buildMassUpdateQuery($options, $vals);
     
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
-    return $stmt->execute($vals);
+    $stmt->execute($vals);
+    return $stmt;
   }
   
   /**
@@ -1314,4 +1315,3 @@ abstract class AbstractModelFactory {
     }
   }
 }
-
