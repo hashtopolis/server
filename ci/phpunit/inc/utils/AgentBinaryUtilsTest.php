@@ -13,7 +13,10 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\TestBase;
 use Override;
 
+use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertNotNull;
+
+require_once(dirname(__FILE__) . '/../../../../src/inc/defines/DAgentBinaryAction.php');
 
 final class AgentBinaryUtilsTest extends TestBase {
 
@@ -244,6 +247,185 @@ final class AgentBinaryUtilsTest extends TestBase {
 
     $this->assertNull($this->getAgentBinaryById($agentBinary->getId()));
     $this->assertTrue($unlinkedBinaryFile);
+  }
+
+  function testGetBinaryThrowsOnUnknownId(): void {
+    $this->expectException(HTException::class);
+    $this->expectExceptionMessage("Binary does not exist!");
+
+    AgentBinaryUtils::getBinary(999);
+  }
+
+  function testGetBinary(): void {
+    $agentBinary = $this->createAgentBinary("python", "1.0.0", "hurd", "py-agent.tar.gz", "stable", '');
+
+    $fetchedAgentBinary = $this->getAgentBinaryById($agentBinary->getId());
+    $this->assertNotNull($fetchedAgentBinary);
+
+    $this->assertEquals($agentBinary->getId(), $fetchedAgentBinary->getId());
+  }
+
+  function testExecuteUpgradeChecksUpdateAvailable() {
+    $this->mockCurl("1.0.0", 200);
+    $this->mockDownloadFromUrl();
+    $agentBinary = $this->createAgentBinary("binarytype", "1.0.0", "hurd", "py-agent.tar.gz", "stable", '');
+
+    $this->expectException(HTException::class);
+    $this->expectExceptionMessage("No update available!");
+
+    AgentBinaryUtils::executeUpgrade($agentBinary->getId());
+  }
+
+  function testExecuteUpgradeFailsOnChecksumError(): void {
+    $this->mockCurl("1.0.1", 200);
+    $this->mockDownloadFromUrl();
+    $this->mockRename();
+    $this->mockChecksum(["sum"], ["different-checksum"]);
+    $agentBinary = $this->createAgentBinary("binarytype", "1.0.0", "hurd", "py-agent.tar.gz", "stable", '');
+
+    $this->expectException(HTException::class);
+    $this->expectExceptionMessage("Checksum check for updated agent failed!");
+
+    AgentBinaryUtils::executeUpgrade($agentBinary->getId());
+  }
+
+  function testExecuteUpgradeFailsOnChecksumErrorFinalFile(): void {
+    $this->mockCurl("1.0.1", 200);
+    $this->mockDownloadFromUrl();
+    $this->mockRename();
+    $this->mockChecksum(["sum", "other"], ["sum"]);
+    $agentBinary = $this->createAgentBinary("binarytype", "1.0.0", "hurd", "py-agent.tar.gz", "stable", '');
+
+    $this->expectException(HTException::class);
+    $this->expectExceptionMessage("Failed to move new agent to right location!");
+
+    AgentBinaryUtils::executeUpgrade($agentBinary->getId());
+  }
+
+  function testExecuteUpgradeResetsUpdateAvailableAfterSuccess(): void {
+    $this->mockCurl("1.0.1", 200);
+    $this->mockDownloadFromUrl();
+    $this->mockRename();
+    $this->mockChecksum(["sum", "sum"], ["sum"]);
+    $agentBinary = $this->createAgentBinary("binarytype", "1.0.0", "hurd", "py-agent.tar.gz", "stable", '');
+
+    AgentBinaryUtils::executeUpgrade($agentBinary->getId());
+
+    $updated = $this->getAgentBinaryById($agentBinary->getId());
+    $this->assertNotNull($updated);
+    $this->assertEmpty($updated->getUpdateAvailable());
+  }
+
+  function testCheckUpdateSetsAvailableVersion(): void {
+    $this->mockCurl("1.2.3", 200);
+    $agentBinary = $this->createAgentBinary("binarytype", "1.0.0", "hurd", "py-agent.tar.gz", "stable", '');
+
+    $update = AgentBinaryUtils::checkUpdate($agentBinary->getId());
+    $this->assertSame('1.2.3', $update);
+
+    $updatedAgentBinary = $this->getAgentBinaryById($agentBinary->getId());
+    $this->assertNotNull($updatedAgentBinary);
+    $this->assertSame('1.2.3', $updatedAgentBinary->getUpdateAvailable());
+  }
+
+  function testGetLatestVersionFailsOnNotOk(): void {
+    $http_code = 404;
+    $this->mockCurl("1.0.0", 404);
+    
+    $this->expectException(HTException::class);
+    $this->expectExceptionMessage("Invalid HTTP status code: $http_code");
+
+    AgentBinaryUtils::getLatestVersion("python", "stable");
+  }
+
+  function testGetLatestVersion(): void {
+    $latestVersion = "1.0.0";
+    $this->mockCurl($latestVersion, 200);
+
+    $this->assertEquals($latestVersion, AgentBinaryUtils::getLatestVersion("binaryType", "stable"));
+  }
+
+  function testGetAgentUpdateFailsOnMissingBinaryType(): void {
+    $this->expectException(HTException::class);
+    $this->expectExceptionMessage("Invalid agent binary type!");
+
+    AgentBinaryUtils::getAgentUpdate("missing", "stable");
+  }
+
+  function testGetAgentUpdateFailsWhenNoVersion() {
+    $this->mockCurl("", 200);
+    $agentBinary = $this->createAgentBinary("binarytype", "1.0.0", "hurd", "py-agent.tar.gz", "stable", '');
+
+    $this->expectException(HTException::class);
+    $this->expectExceptionMessage("Failed to retrieve latest version!");
+
+    AgentBinaryUtils::getAgentUpdate($agentBinary->getBinaryType(), $agentBinary->getUpdateTrack());
+  }
+
+  function testGetAgentUpdateIsFalseWhenVersionIsOlder() {
+    $this->mockCurl("0.0.9", 200);
+    $agentBinary = $this->createAgentBinary("binarytype", "1.0.0", "hurd", "py-agent.tar.gz", "stable", '');
+
+    $this->assertFalse(AgentBinaryUtils::getAgentUpdate($agentBinary->getBinaryType(), $agentBinary->getUpdateTrack()));
+  }
+
+  function testGetAgentUpdate(): void {
+    $binaryVersion = "1.0.0";
+    $this->mockCurl($binaryVersion, 200);
+    $agentBinary = $this->createAgentBinary("binarytype", "0.0.9", "hurd", "py-agent.tar.gz", "stable", '');
+
+    $this->assertEquals($binaryVersion, AgentBinaryUtils::getAgentUpdate($agentBinary->getBinaryType(), $agentBinary->getUpdateTrack()));
+  }
+
+  private function mockDownloadFromUrl(): void {
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\fopen', static function (string $filename, string $mode) {
+      return (object) ['filename' => $filename, 'mode' => $mode];
+    });
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\feof', static function ($stream): bool {
+      return true;
+    });
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\fclose', static function ($stream): bool {
+      return true;
+    });
+  }
+
+  private function mockRename(): void {
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\utils\\rename', static function (string $from, string $to): bool {
+      return true;
+    });
+  }
+
+  /**
+   * @param string[] $sum
+   * @param string[] $check
+   */
+  private function mockChecksum(array $sum, array $check): void {
+    $sumQueue = array_values($sum);
+    $checkQueue = array_values($check);
+
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\utils\\hash_file', static function (string $algo, string $filename, bool $binary = false) use (&$sumQueue) {
+      return array_shift($sumQueue);
+    });
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\utils\\file_get_contents', static function (string $filename, bool $use_include_path = false, $context = null, int $offset = 0, ?int $length = null) use (&$checkQueue) {
+      return array_shift($checkQueue);
+    });
+  }
+
+  private function mockCurl(string $version, int $returnCode): void {
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\utils\\curl_init', static function (?string $url = null) {
+      return 'curl-handle';
+    });
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\utils\\curl_setopt_array', static function ($handle, array $options): bool {
+      return true;
+    });
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\utils\\curl_exec', static function ($handle) use (&$version) {
+      return $version;
+    });
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\utils\\curl_getinfo', static function ($handle, int $opt = 0) use (&$returnCode) {
+      return $returnCode;
+    });
+    \hashtopolis_set_test_mock('Hashtopolis\\inc\\utils\\curl_close', static function ($handle): void {
+    });
   }
 
   private function getAgentBinaryById(int $id): ?AgentBinary {
