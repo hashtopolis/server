@@ -1152,7 +1152,7 @@ final class AbstractModelFactoryTest extends TestBase {
    */
   public function testMassUpdateSuccess(): void {
     $testId = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 0, 0));
     $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
     $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
