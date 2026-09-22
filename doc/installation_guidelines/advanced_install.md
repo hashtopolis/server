@@ -257,6 +257,86 @@ docker compose up
 
 Finally, copy the data back into the appropriate folders after recreating the containers.
 
+## Serving the frontend on another origin
+
+The browser treats `https://hashtopolis.example.com` and `https://app.example.com:4200` as different
+*origins*. When the frontend is served from a different origin than the API, the API has to say which
+origins it trusts, otherwise the browser refuses to hand the frontend the response.
+
+This matters beyond the odd console error: the login session lives in a cookie the API sets, and a
+browser will not send that cookie cross-origin unless the API names the frontend's origin
+specifically. Get it wrong and the symptom is not an error at all — people log in fine and are
+silently logged out a couple of hours later, when the short-lived access token expires and the
+session cannot be renewed.
+
+### Both served from one origin: nothing to configure
+
+If a reverse proxy serves the frontend at `/` and the API under `/api` on the same hostname (see
+[SSL/TLS Setup](tls.md)), the browser sees a single origin, none of this applies, and you can leave
+all of the settings below unset. This is the simplest deployment and the one to prefer.
+
+### Frontend on a different origin
+
+Set these on the **backend** container:
+
+| Variable | Meaning |
+| --- | --- |
+| `HASHTOPOLIS_BACKEND_URL` | the API's own URL, for example `https://hashtopolis.example.com/api/v2`. The API always trusts its own origin. |
+| `HASHTOPOLIS_FRONTEND_URLS` | extra origins to trust, comma separated. Use this when the frontend is on a different **host**. |
+| `HASHTOPOLIS_FRONTEND_PORT` | shorthand for "the API's own host and scheme, on this port". Enough when the frontend differs only by **port**, which is what the bundled `docker-compose.yml` does with port 4200. |
+
+An origin is trusted when it matches one of these exactly — scheme, host and port all three. There
+are no wildcards: `https://*.example.com` is not a pattern, and `https://app.example.com` does not
+admit `https://app.example.com.somewhere-else.test`. A trusted origin is handed the session cookie,
+so list only origins you control.
+
+A frontend at `https://app.example.com` talking to an API at `https://hashtopolis.example.com`:
+
+```
+HASHTOPOLIS_BACKEND_URL=https://hashtopolis.example.com/api/v2
+HASHTOPOLIS_FRONTEND_URLS=https://app.example.com
+```
+
+Entries may carry a path, which is ignored — only the origin part is compared. `localhost`,
+`127.0.0.1` and `[::1]` are treated as the same host, so a development setup can mix them freely.
+
+If you have enumerated every origin in `HASHTOPOLIS_FRONTEND_URLS` and do not want the bundled
+`HASHTOPOLIS_FRONTEND_PORT: 4200` adding one more, set it to an empty string to switch it off.
+
+> [!WARNING]
+> Set `HASHTOPOLIS_BACKEND_URL` together with one of the other two, or set none of them. On its own
+> it tells the API to trust exactly one origin — its own — and every request from the frontend is
+> then rejected with a CORS error.
+
+### When the frontend is on a different domain entirely
+
+`app.example.com` and `hashtopolis.example.com` are different origins but the same *site*, and the
+session cookie works across them with no further configuration.
+
+A frontend on a genuinely different domain — `app.example.net` against an API at
+`hashtopolis.example.com` — is a different case. Naming it in `HASHTOPOLIS_FRONTEND_URLS` gets the
+requests through, but the browser still refuses to send the session cookie, because the cookie
+defaults to `SameSite=Strict`. Such a deployment additionally needs
+`HASHTOPOLIS_REFRESH_COOKIE_SAMESITE=None` on the backend container, which browsers only honour over
+HTTPS end to end.
+
+### Upgrading from an older version
+
+`HASHTOPOLIS_FRONTEND_URLS` existed in earlier releases, stopped being read for a while, and is read
+again from this release on. Its meaning has changed: it used to be the entire policy, and it now
+*adds to* the origins named by `HASHTOPOLIS_BACKEND_URL` and `HASHTOPOLIS_FRONTEND_PORT`.
+
+If your `.env` still carries a value from back then, review it before upgrading. Anything listed is
+trusted with the session cookie, and a hostname you no longer control should not be on that list.
+
+### When it does not work
+
+The API logs the origin it rejected and the full list it would have accepted. Look there first:
+
+```
+docker logs hashtopolis-backend
+```
+
 ## Backup and Restore
 
 The best way to back up and restore your Hashtopolis instance depends heavily on the way the instance is set up and what configurations are made.

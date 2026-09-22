@@ -6,6 +6,9 @@ use PHPUnit\Framework\TestCase;
 
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 
+use Override;
+use PHPUnit\Framework\Attributes\DataProvider;
+
 use Slim\Factory\AppFactory;
 
 class DummyRequest {
@@ -21,6 +24,28 @@ class DummyRequest {
 }
 
 final class CorsHackMiddlewareTest extends TestCase {
+  /**
+   * Each test sets only the variables it exercises, so anything left behind by the previous test
+   * would silently take part in the next one and make results depend on execution order.
+   */
+  #[Override]
+  protected function setUp(): void {
+    parent::setUp();
+
+    putenv("HASHTOPOLIS_BACKEND_URL");
+    putenv("HASHTOPOLIS_FRONTEND_PORT");
+    putenv("HASHTOPOLIS_FRONTEND_URLS");
+  }
+
+  #[Override]
+  protected function tearDown(): void {
+    putenv("HASHTOPOLIS_BACKEND_URL");
+    putenv("HASHTOPOLIS_FRONTEND_PORT");
+    putenv("HASHTOPOLIS_FRONTEND_URLS");
+
+    parent::tearDown();
+  }
+
   /**
    * Tests all possible valid localhost variations with different ports.
    *
@@ -257,6 +282,196 @@ final class CorsHackMiddlewareTest extends TestCase {
 
     $request->setHeaderLine("http://hashtopolis-cluster.com:5000");
     CorsHackMiddleware::CheckCORS($request, $response);
+  }
+
+  /**
+   * Applies the three settings and answers what the middleware decided, so a case reads as one line
+   * rather than fifteen of setup.
+   *
+   * @return string the echoed origin, "*" for the wildcard, or "REJECTED"
+   */
+  private function decide(?string $backendUrl, ?string $frontendUrls, ?string $frontendPort, string $origin): string {
+    foreach ([
+      "HASHTOPOLIS_BACKEND_URL" => $backendUrl,
+      "HASHTOPOLIS_FRONTEND_URLS" => $frontendUrls,
+      "HASHTOPOLIS_FRONTEND_PORT" => $frontendPort
+    ] as $name => $value) {
+      putenv($value === null ? $name : "$name=$value");
+    }
+
+    $request = new DummyRequest();
+    $request->setHeaderLine($origin);
+
+    try {
+      $response = CorsHackMiddleware::CheckCORS($request, AppFactory::create()->getResponseFactory()->createResponse());
+    } catch (HttpForbidden) {
+      return "REJECTED";
+    }
+
+    return $response->getHeaderLine("Access-Control-Allow-Origin");
+  }
+
+  public static function allowedOriginProvider(): array {
+    $api = "https://api.example.com";
+    $app = "https://app.example.com";
+
+    return [
+      // A frontend on an entirely different host is the case the list exists for
+      "different host, listed" => [$api, $app, null, $app, $app],
+      "different host, not listed" => [$api, "https://other.example.com", null, $app, "REJECTED"],
+      "different scheme and port, listed" => [$api, "http://app.example.com:8081", null, "http://app.example.com:8081", "http://app.example.com:8081"],
+
+      // The union: every source still contributes while a list is set
+      "backend own origin survives a list" => [$api, $app, null, $api, $api],
+      "legacy frontend port survives a list" => [$api, $app, "4200", "https://api.example.com:4200", "https://api.example.com:4200"],
+
+      // The list alone is a complete policy
+      "list without backend url allows" => [null, $app, null, $app, $app],
+      "list without backend url rejects others" => [null, $app, null, "https://evil.example", "REJECTED"],
+      "lonely frontend port allows nothing" => [null, $app, "4200", "https://elsewhere.example:4200", "REJECTED"],
+
+      // Empty is the same as unset, which is what Docker Compose produces for a missing variable
+      "empty backend url with a list" => ["", $app, null, $app, $app],
+      "empty backend url alone" => ["", null, null, $app, "*"],
+      "empty list behaves as unset" => [$api, "", "4200", "https://api.example.com:4200", "https://api.example.com:4200"],
+      "empty frontend port is ignored" => [$api, $app, "", "https://api.example.com:4200", "REJECTED"],
+
+      // Tolerated shapes
+      "whitespace around entries" => [$api, "  $app ,  https://b.example.com  ", null, $app, $app],
+      "trailing and doubled commas" => [$api, "$app,,", null, $app, $app],
+      "entry carrying a path" => [$api, "$app/ui", null, $app, $app],
+      "entry with a trailing slash" => [$api, "$app/", null, $app, $app],
+      "mixed case entry" => [$api, "HTTPS://APP.Example.COM", null, $app, $app],
+      "second entry of several" => [$api, "https://a.example.com,$app", null, $app, $app],
+
+      // Nothing about a list may loosen the matching rule
+      "suffix of a listed host" => [$api, $app, null, "https://app.example.com.evil.test", "REJECTED"],
+      "substring of a listed host" => [$api, "https://example.com", null, "https://evil-example.com", "REJECTED"],
+      "subdomain of a listed host" => [$api, "https://example.com", null, "https://sub.example.com", "REJECTED"],
+      "listed host on another port" => [$api, $app, null, "https://app.example.com:8443", "REJECTED"],
+      "listed host on its implied port" => [$api, $app, null, "https://app.example.com:443", "https://app.example.com:443"],
+      "listed host over another scheme" => [$api, $app, null, "http://app.example.com:443", "REJECTED"],
+      "literal null origin" => [$api, "$app,null", null, "null", "REJECTED"],
+      "two origins in one header" => [$api, "https://a.example.com,https://b.example.com", null, "https://a.example.com https://b.example.com", "REJECTED"],
+
+      // The loopback spellings name one machine, per entry
+      "loopback synonym of an entry" => [null, "http://localhost:4200", null, "http://127.0.0.1:4200", "http://127.0.0.1:4200"],
+      "ipv6 loopback entry" => [null, "http://[::1]:4200", null, "http://[::1]:4200", "http://[::1]:4200"],
+      "a non loopback address is not a synonym" => [null, "http://127.0.0.2:4200", null, "http://localhost:4200", "REJECTED"],
+    ];
+  }
+
+  /**
+   * @throws HttpForbidden
+   */
+  #[DataProvider('allowedOriginProvider')]
+  public function testOriginDecisions(?string $backendUrl, ?string $frontendUrls, ?string $frontendPort, string $origin, string $expected): void {
+    $this->assertSame($expected, $this->decide($backendUrl, $frontendUrls, $frontendPort, $origin));
+  }
+
+  /**
+   * A listed origin is trusted with credentials; the wildcard never is.
+   *
+   * @throws HttpForbidden
+   */
+  public function testListedOriginIsTrustedWithCredentials(): void {
+    putenv("HASHTOPOLIS_FRONTEND_URLS=https://app.example.com");
+
+    $request = new DummyRequest();
+    $request->setHeaderLine("https://app.example.com");
+
+    $response = CorsHackMiddleware::CheckCORS($request, AppFactory::create()->getResponseFactory()->createResponse());
+
+    $this->assertSame("https://app.example.com", $response->getHeaderLine("Access-Control-Allow-Origin"));
+    $this->assertSame("true", $response->getHeaderLine("Access-Control-Allow-Credentials"));
+    $this->assertStringContainsString("Origin", $response->getHeaderLine("Vary"));
+  }
+
+  /**
+   * A duplicated entry must not produce a comma joined header, which no browser accepts.
+   *
+   * @throws HttpForbidden
+   */
+  public function testDuplicateEntriesEchoASingleOrigin(): void {
+    $this->assertSame(
+      "https://app.example.com",
+      $this->decide(null, "https://app.example.com,https://app.example.com", null, "https://app.example.com")
+    );
+  }
+
+  /**
+   * A list that is set but matches nothing must never fall back to the wildcard: that is the
+   * fail-open direction, and it would handing out a permissive policy exactly when one was refused.
+   *
+   * @throws HttpForbidden
+   */
+  public function testAnUnmatchedListNeverFallsBackToTheWildcard(): void {
+    $this->assertNotSame("*", $this->decide(null, "https://app.example.com", null, "https://evil.example"));
+  }
+
+  #[DataProvider('malformedEntryProvider')]
+  public function testMalformedListEntryIsReported(string $entry): void {
+    putenv("HASHTOPOLIS_FRONTEND_URLS=$entry");
+
+    $request = new DummyRequest();
+    $request->setHeaderLine("https://app.example.com");
+
+    try {
+      CorsHackMiddleware::CheckCORS($request, AppFactory::create()->getResponseFactory()->createResponse());
+      $this->fail("A malformed HASHTOPOLIS_FRONTEND_URLS entry should be reported, not ignored");
+    } catch (HttpForbidden $e) {
+      $this->assertStringContainsString($entry, $e->getMessage(), "the message should name the offending entry");
+    }
+  }
+
+  public static function malformedEntryProvider(): array {
+    return [
+      "bare host" => ["app.example.com"],
+      "bare host and port" => ["app.example.com:4200"],
+      "bare port" => ["4200"],
+      "scheme relative" => ["//app.example.com"],
+      "ftp" => ["ftp://app.example.com"],
+      "file" => ["file:///etc/passwd"],
+      "javascript" => ["javascript:alert(1)"],
+      "the word null" => ["null"],
+    ];
+  }
+
+  /**
+   * One bad entry invalidates the whole list, including for an origin that matches a good entry
+   * before it. Otherwise whether a typo is noticed depends on the order of the list.
+   */
+  public function testAMalformedEntryInvalidatesTheWholeList(): void {
+    $this->expectException(HttpForbidden::class);
+
+    putenv("HASHTOPOLIS_FRONTEND_URLS=https://app.example.com,not-an-origin");
+
+    $request = new DummyRequest();
+    $request->setHeaderLine("https://app.example.com");
+
+    CorsHackMiddleware::CheckCORS($request, AppFactory::create()->getResponseFactory()->createResponse());
+  }
+
+  /**
+   * A CR/LF bearing origin must not match and must not reach the response headers.
+   *
+   * @throws HttpForbidden
+   */
+  public function testOriginWithControlCharactersIsRejected(): void {
+    putenv("HASHTOPOLIS_FRONTEND_URLS=https://app.example.com");
+
+    $request = new DummyRequest();
+    $request->setHeaderLine("https://app.example.com\r\nX-Evil: 1");
+
+    $response = AppFactory::create()->getResponseFactory()->createResponse();
+
+    try {
+      $response = CorsHackMiddleware::CheckCORS($request, $response);
+    } catch (HttpForbidden) {
+      $this->addToAssertionCount(1);
+    }
+
+    $this->assertFalse($response->hasHeader("X-Evil"));
   }
 
   /**
