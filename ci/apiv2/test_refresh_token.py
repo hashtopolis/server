@@ -1,3 +1,5 @@
+import base64
+import json
 import time
 
 import requests
@@ -25,6 +27,13 @@ def _login(session=None):
 
 def _refresh_token_of(session):
     return session.cookies.get(COOKIE_NAME, path=COOKIE_PATH)
+
+
+def _jwt_payload(token):
+    """Decode a JWT payload without verifying it; the server already vouched for the signature."""
+    payload_b64 = token.split('.')[1]
+    payload_b64 += '=' * (-len(payload_b64) % 4)
+    return json.loads(base64.urlsafe_b64decode(payload_b64))
 
 
 class RefreshTokenTest(BaseTest):
@@ -58,6 +67,15 @@ class RefreshTokenTest(BaseTest):
         self.assertIn('expires', body)
         self.assertNotIn('refreshToken', body)
         self.assertNotIn(_refresh_token_of(session), response.text)
+
+    def test_issued_tokens_declare_themselves_as_access_tokens(self):
+        """Every token is signed with the same key, so only the claim says what it may be spent on."""
+        _, login = _login()
+        self.assertEqual(_jwt_payload(login.json()['token'])['type'], 'access')
+
+        session, _ = _login()
+        refreshed = session.post(REFRESH_URI)
+        self.assertEqual(_jwt_payload(refreshed.json()['token'])['type'], 'access')
 
     def test_refresh_returns_a_usable_access_token(self):
         session, login = _login()

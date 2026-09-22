@@ -4,6 +4,7 @@ use Firebase\JWT\JWT;
 
 use Hashtopolis\inc\apiv2\auth\RefreshTokenCookie;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\defines\DTokenType;
 use Hashtopolis\inc\apiv2\error\HttpUnauthorized;
 use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\utils\RefreshTokenUtils;
@@ -61,7 +62,9 @@ function generateAccessToken(User $user, int $expires): string {
     "scope" => $group->getPermissions(),
     "iss" => "Hashtopolis",
     "kid" => hash("sha256", $secret),
-    "aud" => USER_AUD
+    "aud" => USER_AUD,
+    // Says what this token authorises, so it cannot be presented where a different type is expected
+    "type" => DTokenType::ACCESS
   ];
   
   return JWT::encode($payload, $secret, "HS256");

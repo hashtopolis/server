@@ -53,7 +53,7 @@ class CorsHackMiddleware implements MiddlewareInterface {
    * @throws HttpForbidden when an origin is supplied that the deployment does not recognise
    */
   public static function CheckCORS($request, $response): Response {
-    $requestHttpOrigin = $request->getHeaderLine('HTTP_ORIGIN');
+    $requestHttpOrigin = $request->getHeaderLine('Origin');
 
     $allowed = self::allowedOrigins();
 
