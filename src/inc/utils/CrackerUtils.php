@@ -17,6 +17,8 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
 
 class CrackerUtils {
+  private const INLINE_MEMORY_RESERVE = 16 * 1024 * 1024;
+
   /**
    * @param CrackerBinaryType $cracker
    * @return CrackerBinary[]
@@ -115,12 +117,8 @@ class CrackerUtils {
     // determine the source of the archive and validate it
     switch ($sourceType) {
       case "inline":
-        $archiveData = base64_decode($sourceData, true);
-        if ($archiveData === false) {
-          throw new HttpError("sourceData not valid base64 encoding");
-        }
         $uploadType = "paste";
-        $uploadData = $archiveData;
+        $uploadData = CrackerUtils::decodeInlineArchive($sourceData);
         break;
       case "import":
         $realname = str_replace(" ", "_", htmlentities(basename($sourceData), ENT_QUOTES, "UTF-8"));
@@ -211,6 +209,35 @@ class CrackerUtils {
     $header = fread($fp, strlen($magic));
     fclose($fp);
     return $header === $magic;
+  }
+
+  /**
+   * Decodes an inline archive while leaving sufficient PHP memory for the
+   * decoded data and subsequent request processing.
+   *
+   * @throws HttpError
+   */
+  private static function decodeInlineArchive(string $sourceData): string {
+    $memoryLimit = ini_parse_quantity((string)ini_get('memory_limit'));
+    if ($memoryLimit != -1) {
+      $sourceLength = strlen($sourceData);
+      $decodedSize = intdiv($sourceLength, 4) * 3;
+      if ($sourceLength % 4 != 0) {
+        $decodedSize += 3;
+      }
+
+      $reserve = max(self::INLINE_MEMORY_RESERVE, intdiv($memoryLimit, 4));
+      $available = $memoryLimit - memory_get_usage(true) - $reserve;
+      if ($available <= 0 || $decodedSize > intdiv($available, 2)) {
+        throw new HttpError("The inline archive is too large for this server. Upload it through TUS and use sourceType 'import'.");
+      }
+    }
+
+    $archiveData = base64_decode($sourceData, true);
+    if ($archiveData === false) {
+      throw new HttpError("sourceData not valid base64 encoding");
+    }
+    return $archiveData;
   }
   
   /**

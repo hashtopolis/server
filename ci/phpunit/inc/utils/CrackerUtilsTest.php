@@ -250,6 +250,31 @@ final class CrackerUtilsTest extends TestBase {
     CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'inline', '!!!no-base64!!!');
   }
 
+  // Verifies that an inline archive which cannot be decoded with sufficient
+  // memory headroom is rejected before a database row or file is created.
+  public function testCreateBinaryFromUploadInlineTooLargeHasNoSideEffects(): void {
+    $memoryLimit = ini_get('memory_limit');
+    $countBefore = $this->countBinariesOfType($this->type->getId());
+    $testLimit = memory_get_usage(true) + 16 * 1024 * 1024;
+    try {
+      if (ini_set('memory_limit', (string)$testLimit) === false) {
+        $this->markTestSkipped('memory_limit cannot be changed in this environment');
+      }
+      try {
+        CrackerUtils::createBinaryFromUpload('8.8.8', 'testcracker', $this->type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC));
+        $this->fail('Expected the inline archive to exceed the safe memory allowance');
+      }
+      catch (HttpError $e) {
+        $this->assertStringContainsString('inline archive is too large', $e->getMessage());
+      }
+      $this->assertEquals($countBefore, $this->countBinariesOfType($this->type->getId()));
+      $this->assertEmpty(glob(CrackerUtils::getCrackersPath() . '*_test-crackerutils-type-8.8.8.7z'));
+    }
+    finally {
+      ini_set('memory_limit', (string)$memoryLimit);
+    }
+  }
+
   // Verifies that createBinaryFromUpload() only allows http and https urls, so no
   // local files or stream wrappers can be fetched by the server.
   public function testCreateBinaryFromUploadUrlSchemeThrowsHttpError(): void {
