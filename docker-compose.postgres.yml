@@ -16,6 +16,12 @@ services:
       HASHTOPOLIS_ADMIN_USER: $HASHTOPOLIS_ADMIN_USER
       HASHTOPOLIS_ADMIN_PASSWORD: $HASHTOPOLIS_ADMIN_PASSWORD
       HASHTOPOLIS_BACKEND_URL: $HASHTOPOLIS_BACKEND_URL
+      # Origins the API shares authenticated responses with, beyond its own. Needed when the frontend
+      # is served from a different host; see env.*.example. Same-origin setups need neither this nor
+      # HASHTOPOLIS_FRONTEND_PORT.
+      HASHTOPOLIS_FRONTEND_URLS: $HASHTOPOLIS_FRONTEND_URLS
+      # Shorthand for "the backend's own host and scheme, on this port". Set it to "" to switch it
+      # off and let HASHTOPOLIS_FRONTEND_URLS be the whole story.
       HASHTOPOLIS_FRONTEND_PORT: 4200
     depends_on:
       - db

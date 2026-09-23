@@ -464,6 +464,18 @@ $CONF['Pretask'] = [
     ['name' => 'crackerBinaryTypeId', 'read_only' => False, 'type' => 'int'],
   ],
 ];
+$CONF['RefreshToken'] = [
+  'columns' => [
+    ['name' => 'refreshTokenId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'relation' => 'User'],
+    ['name' => 'tokenHash', 'read_only' => True, 'type' => 'str(64)', 'protected' => True, 'private' => True],
+    ['name' => 'familyId', 'read_only' => True, 'type' => 'str(32)', 'protected' => True, 'private' => True],
+    ['name' => 'issuedAt', 'read_only' => True, 'type' => 'int64'],
+    ['name' => 'endValid', 'read_only' => True, 'type' => 'int64'],
+    ['name' => 'usedAt', 'read_only' => True, 'null' => True, 'type' => 'int64'],
+    ['name' => 'isRevoked', 'read_only' => True, 'type' => 'bool'],
+  ],
+];
 $CONF['RegVoucher'] = [
   'columns' => [
     ['name' => 'regVoucherId', 'read_only' => True, 'type' => 'int', 'protected' => True],

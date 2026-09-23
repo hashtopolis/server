@@ -7,6 +7,7 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\model\ApiTokenAPI;
+use Hashtopolis\inc\defines\DTokenType;
 use JimTools\JwtAuth\Handlers\BeforeHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,6 +19,16 @@ class JWTBeforeHandler implements BeforeHandlerInterface {
    * @throws Exception
    */
   public function __invoke(ServerRequestInterface $request, array $arguments): ServerRequestInterface {
+    /* Every token this deployment issues is signed with the same key, so a valid signature says only
+       that we minted it, not what we minted it for. Refuse anything whose declared purpose is not
+       authorising a resource request, so a credential issued for some other endpoint cannot be spent
+       here. Tokens issued before the claim existed carry no type and are still accepted; they age
+       out on their own. */
+    $type = $arguments["decoded"]["type"] ?? DTokenType::ACCESS;
+    if ($type !== DTokenType::ACCESS) {
+      throw new HttpForbidden("This endpoint needs an access token, but a token of type '$type' was supplied.");
+    }
+
     if (isset ($arguments["decoded"]["aud"]) && $arguments["decoded"]["aud"] == ApiTokenAPI::API_AUD) {
       $apiTokenId = $arguments["decoded"]["jti"];
       $token = Factory::getJwtApiKeyFactory()->get($apiTokenId);

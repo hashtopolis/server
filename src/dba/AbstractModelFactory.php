@@ -331,6 +331,69 @@ abstract class AbstractModelFactory {
   }
   
   /**
+   * Updates one row, but only while the columns named in $expected still hold the values given.
+   *
+   * The test and the write are a single statement, so callers arriving together cannot all read the
+   * old state and all act on it: the database applies exactly one of them, and the return value says
+   * which caller that was. Reach for this wherever a transition has to happen at most once - a token
+   * being consumed, a queued job being picked up, a one-shot flag being flipped. A plain
+   * "UPDATE ... WHERE id = ?" does not do this: without the expected state in the WHERE clause every
+   * caller matches the row and every caller wins.
+   *
+   * The update has to genuinely change the row. MySQL counts changed rows rather than matched ones,
+   * so writing a value a column already holds looks identical to not matching at all, and the same
+   * call would answer differently on PostgreSQL. A transition that writes back what it expected is
+   * rejected outright rather than being left to differ between the two.
+   *
+   * @param TModel $model the row to update, addressed by its primary key
+   * @param array<string, mixed> $expected column => the value the row must still hold, null for IS NULL
+   * @param array<string, mixed> $updates column => the value to write, at least one of them new
+   * @return bool true when this caller made the transition, false when the row no longer matched
+   * @throws Exception
+   */
+  public function compareAndSet(AbstractModel $model, array $expected, array $updates): bool {
+    if (count($updates) == 0) {
+      throw new Exception("Cannot compare-and-set without any column to update!");
+    }
+    
+    $changes = array_filter($updates, fn($value, $key) => !array_key_exists($key, $expected) || $expected[$key] !== $value, ARRAY_FILTER_USE_BOTH);
+    if (count($changes) == 0) {
+      throw new Exception("Cannot compare-and-set a row to the values it is expected to already hold; the update would change nothing and the result would differ between database types!");
+    }
+    
+    $values = [];
+    $assignments = [];
+    foreach ($updates as $key => $value) {
+      $assignments[] = self::getMappedModelKey($model, $key) . "=" . self::binaryPlaceholder($model, $key);
+      $values[] = $value;
+    }
+    
+    // Addressing the row by its primary key is what keeps this a single-row operation
+    $conditions = [self::getMappedModelKey($model, $model->getPrimaryKey()) . "=?"];
+    $values[] = $model->getPrimaryKeyValue();
+    
+    foreach ($expected as $key => $value) {
+      $column = self::getMappedModelKey($model, $key);
+      if ($value === null) {
+        // A parameter compared with = never matches NULL, so the condition has to be spelled out
+        $conditions[] = $column . " IS NULL";
+        continue;
+      }
+      $conditions[] = $column . "=" . self::binaryPlaceholder($model, $key);
+      $values[] = $value;
+    }
+    
+    $query = "UPDATE " . $this->getMappedModelTable() .
+      " SET " . implode(", ", $assignments) .
+      " WHERE " . implode(" AND ", $conditions);
+    
+    $stmt = $this->getDB()->prepare($query);
+    $stmt->execute($values);
+    
+    return $stmt->rowCount() === 1;
+  }
+  
+  /**
    * Increments the given key of this model by the given value atomically
    *
    * Returns the return of PDO::execute()
