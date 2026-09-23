@@ -17,6 +17,7 @@ use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\AccessUtils;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response;
@@ -65,6 +66,12 @@ final class DownloadBinaryAction implements AgentAction {
                 $crackerBinary = Factory::getCrackerBinaryFactory()->get($body[PQueryDownloadBinary::BINARY_VERSION_ID]);
                 if ($crackerBinary === null) {
                     return $this->error($response, PActions::DOWNLOAD_BINARY, 'Invalid cracker binary type id!');
+                }
+                if (!in_array(
+                    $crackerBinary->getAccessGroupId(),
+                    Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent))
+                )) {
+                    return $this->error($response, PActions::DOWNLOAD_BINARY, 'No access to this cracker binary!');
                 }
                 $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinary->getCrackerBinaryTypeId());
                 DServerLog::log(DServerLog::TRACE, 'Agent ' . $agent->getId() . ' downloaded cracker binary ' . $crackerBinary->getId());

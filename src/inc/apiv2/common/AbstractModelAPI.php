@@ -61,7 +61,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @throws HttpError
    * @throws Exception
    */
-  protected static function fetchExpandObjects(array $objects, string $expand): array {
+  protected static function fetchExpandObjects(array $objects, string $expand, array $relationFilters = []): array {
     //disabled the check because with intermediate objects its possible to fetch a different model
     /* Ensure we receive the proper type */
     // $baseModel = static::getDBAClass();
@@ -90,6 +90,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $toOneRelationships[$expand]['key'],
         $relationFactory,
         $toOneRelationships[$expand]['relationKey'],
+        $relationFilters,
       );
     }
     
@@ -115,10 +116,33 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $toManyRelationships[$expand]['key'],
         $relationFactory,
         $toManyRelationships[$expand]['relationKey'],
+        $relationFilters,
       );
     }
     
     throw new InternalError("Internal error: Expansion '$expand' not implemented!");
+  }
+
+  /**
+   * Fetch related objects, optionally applying the related API's list ACL.
+   *
+   * @throws ContainerExceptionInterface
+   * @throws NotFoundExceptionInterface
+   * @throws HttpError
+   * @throws Exception
+   */
+  final protected function fetchVisibleExpandObjects(array $objects, string $expand): array {
+    $relationships = array_merge(static::getToOneRelationships(), static::getToManyRelationships());
+    $relationship = $relationships[$expand];
+    $relationFilters = [];
+    if ($relationship['filterACL'] ?? false) {
+      $relationClass = $relationship['relationType'];
+      $relationApiClass = new ($this->container->get('classMapper')->get($relationClass))($this->container);
+      $relationApiClass->setCurrentUser($this->getCurrentUser());
+      $relationFilters = $relationApiClass->getFilterACL();
+    }
+
+    return static::fetchExpandObjects($objects, $expand, $relationFilters);
   }
   
   
@@ -244,7 +268,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     array $objects,
     string $objectField,
     AbstractModelFactory $factory,
-    string $filterField
+    string $filterField,
+    array $relationFilters = [],
   ): array {
     $retval = array();
     
@@ -255,7 +280,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       $objectIds[] = $kv[$objectField];
     }
     $qF = new ContainFilter($filterField, $objectIds, $factory);
-    $hO = $factory->filter([Factory::FILTER => $qF]);
+    $relationFilters[Factory::FILTER] = array_merge(
+      [$qF],
+      $relationFilters[Factory::FILTER] ?? []
+    );
+    $hO = $factory->filter($relationFilters);
+    if (isset($relationFilters[Factory::JOIN])) {
+      $hO = $hO[$factory->getModelName()];
+    }
     
     /* Objects are uniquely identified by fields, create mapping to speed-up further processing */
     $f2o = [];
@@ -289,7 +321,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     array $objects,
     string $objectField,
     object $factory,
-    string $filterField
+    string $filterField,
+    array $relationFilters = [],
   ): array {
     assert($factory instanceof AbstractModelFactory);
     $retval = array();
@@ -301,7 +334,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       $objectIds[] = $kv[$objectField];
     }
     $qF = new ContainFilter($filterField, $objectIds, $factory);
-    $hO = $factory->filter([Factory::FILTER => $qF]);
+    $relationFilters[Factory::FILTER] = array_merge(
+      [$qF],
+      $relationFilters[Factory::FILTER] ?? []
+    );
+    $hO = $factory->filter($relationFilters);
+    if (isset($relationFilters[Factory::JOIN])) {
+      $hO = $hO[$factory->getModelName()];
+    }
     
     /* Map (multiple) objects to base objects */
     foreach ($hO as $relationObject) {
@@ -802,7 +842,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $expandResult = [];
     foreach ($expands as $expand) {
       // mapping from $objectId -> result objects in
-      $expandResult[$expand] = $apiClass->fetchExpandObjects($objects, $expand);
+      $expandResult[$expand] = $apiClass->fetchVisibleExpandObjects($objects, $expand);
     }
     
     /* Convert objects to JSON:API */
@@ -1357,7 +1397,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     
     // Relation object
-    $relationObjects = $this->fetchExpandObjects([$object], $relation);
+    $relationObjects = $this->fetchVisibleExpandObjects([$object], $relation);
+    if (!array_key_exists($id, $relationObjects)) {
+      throw new HttpForbidden("No access to this object!", 403);
+    }
     $relationObject = $relationObjects[$id];
     
     $relationClass = $relationMapper['relationType'];
@@ -1584,7 +1627,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
     // Base object -> Relationship objects
     $object = $this->doFetch($args['id']);
-    $expandObjects = $this->fetchExpandObjects([$object], $args['relation']);
+    $expandObjects = $this->fetchVisibleExpandObjects([$object], $args['relation']);
     
     $dataResources = [];
     if (array_key_exists($object->getId(), $expandObjects)) {
