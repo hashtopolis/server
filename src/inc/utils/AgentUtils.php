@@ -52,16 +52,16 @@ class AgentUtils {
       }
       return "#CCCCCC";
     }
-    $deviceUtil = $deviceUtil->getValue();
-    $deviceUtil = explode(",", $deviceUtil);
+    $deviceUtilVal = $deviceUtil->getValue();
+    $deviceUtilValues = explode(",", $deviceUtilVal);
     $sum = 0;
-    foreach ($deviceUtil as $u) {
+    foreach ($deviceUtilValues as $u) {
       $sum += intval($u);
     }
     if ($sum == 0) {
       return "#FF0000"; // either util 0 for all or an error occurred
     }
-    $avg = $sum / sizeof($deviceUtil);
+    $avg = $sum / sizeof($deviceUtilValues);
     if ($avg > SConfig::getInstance()->getVal(DConfig::AGENT_UTIL_THRESHOLD_1)) {
       return "#009933";
     }
@@ -326,6 +326,7 @@ class AgentUtils {
   public static function delete(int $agentId, ?User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
     
+    //TODO: Transaction management in try/finally?
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $name = $agent->getAgentName();
     

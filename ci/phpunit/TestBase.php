@@ -7,6 +7,7 @@ use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\AccessGroup;
+use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\AgentBinary;
@@ -121,6 +122,18 @@ class TestBase extends TestCase {
     );
     $this->assertTrue($group instanceof AccessGroup);
     return $group;
+  }
+
+  /**
+   * @throws Exception
+   */
+  protected function createAccessGroupAgent(Agent $agent, AccessGroup $accessGroup): AccessGroupAgent {
+    $relation = $this->createDatabaseObject(
+      Factory::getAccessGroupAgentFactory(),
+      new AccessGroupAgent(null, $accessGroup->getId(), $agent->getId())
+    );
+    $this->assertTrue($relation instanceof AccessGroupAgent);
+    return $relation;
   }
   
   /**

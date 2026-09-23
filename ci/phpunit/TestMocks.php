@@ -110,6 +110,14 @@ namespace Hashtopolis\inc {
 }
 
 namespace Hashtopolis\inc\utils {
+  if (!function_exists(__NAMESPACE__ . '\\time')) {
+    function time(): int {
+      return \hashtopolis_invoke_test_mock(__FUNCTION__, [], static function (): int {
+        return \time();
+      });
+    }
+  }
+
   if (!function_exists(__NAMESPACE__ . '\\file_exists')) {
     function file_exists(string $path) {
       return \hashtopolis_invoke_test_mock(__FUNCTION__, [$path], static function (string $path) {
@@ -177,7 +185,7 @@ namespace Hashtopolis\inc\utils {
   if (!function_exists(__NAMESPACE__ . '\\curl_close')) {
     function curl_close($handle) {
       return \hashtopolis_invoke_test_mock(__FUNCTION__, [$handle], static function ($handle) {
-        return \curl_close($handle);
+        \curl_close($handle);
       });
     }
   }
