@@ -14,6 +14,7 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\TestBase;
+use Override;
 
 require_once(dirname(__FILE__) . '/../../TestBase.php');
 require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
@@ -27,12 +28,15 @@ final class CrackerUtilsTest extends TestBase {
 
   private ?AbstractModel $type = null;
   private ?AbstractModel $binary = null;
+  private string|false $savedBackendUrl = false;
 
   // Creates a CrackerBinaryType and one CrackerBinary before each test.
   // These records provide valid IDs for the "happy path" tests and a known
   // duplicate name for the conflict test.
   protected function setUp(): void {
     parent::setUp();
+    $this->savedBackendUrl = getenv('HASHTOPOLIS_BACKEND_URL');
+    putenv('HASHTOPOLIS_BACKEND_URL=http://localhost:8080/api/v2');
     $this->type = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
       new CrackerBinaryType(null, 'test-crackerutils-type', 1)
@@ -41,6 +45,21 @@ final class CrackerUtilsTest extends TestBase {
       Factory::getCrackerBinaryFactory(),
       new CrackerBinary(null, $this->type->getId(), '1.0.0', 'http://example.com', 'testcracker', null)
     );
+  }
+
+  #[Override]
+  protected function tearDown(): void {
+    try {
+      parent::tearDown();
+    }
+    finally {
+      if ($this->savedBackendUrl === false) {
+        putenv('HASHTOPOLIS_BACKEND_URL');
+      }
+      else {
+        putenv('HASHTOPOLIS_BACKEND_URL=' . $this->savedBackendUrl);
+      }
+    }
   }
 
   // Verifies that getBinary() throws HTException when the ID does not match
@@ -163,6 +182,34 @@ final class CrackerUtilsTest extends TestBase {
     $this->assertEquals($content, file_get_contents($archive));
 
     unlink($archive);
+  }
+
+  // A missing or invalid public backend URL is detected before the archive or
+  // database record is stored, and a request Host header cannot replace it.
+  public function testCreateBinaryFromUploadInvalidBackendUrlHasNoSideEffects(): void {
+    $savedBackendUrl = getenv('HASHTOPOLIS_BACKEND_URL');
+    $countBefore = $this->countBinariesOfType($this->type->getId());
+    $_SERVER['HTTP_HOST'] = 'attacker.example';
+    putenv('HASHTOPOLIS_BACKEND_URL=ftp://configured.example/api/v2');
+    try {
+      try {
+        CrackerUtils::createBinaryFromUpload('8.8.8', 'testcracker', $this->type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC));
+        $this->fail('Expected invalid backend URL configuration to reject the upload');
+      }
+      catch (\Exception $e) {
+        $this->assertStringContainsString('configured backend URL is invalid', $e->getMessage());
+      }
+      $this->assertEquals($countBefore, $this->countBinariesOfType($this->type->getId()));
+      $this->assertEmpty(glob(CrackerUtils::getCrackersPath() . '*_test-crackerutils-type-8.8.8.7z'));
+    }
+    finally {
+      if ($savedBackendUrl === false) {
+        putenv('HASHTOPOLIS_BACKEND_URL');
+      }
+      else {
+        putenv('HASHTOPOLIS_BACKEND_URL=' . $savedBackendUrl);
+      }
+    }
   }
 
   // Verifies that the composed archive filename sanitizes all characters which are
