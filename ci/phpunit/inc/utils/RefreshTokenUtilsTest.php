@@ -92,14 +92,6 @@ final class RefreshTokenUtilsTest extends TestBase {
     $plain = RefreshTokenUtils::issue($this->user->getId());
     $rotated = RefreshTokenUtils::rotate($plain);
     
-    // Age the consumed token past the window in which a second exchange counts as a client-side race
-    $consumed = $this->findToken($plain);
-    Factory::getRefreshTokenFactory()->set(
-      $consumed,
-      RefreshToken::USED_AT,
-      time() - RefreshTokenUtils::REPLAY_GRACE_SECONDS - 1
-    );
-    
     try {
       RefreshTokenUtils::rotate($plain);
       $this->fail('Replaying a consumed refresh token should not hand out a new one');
@@ -140,9 +132,14 @@ final class RefreshTokenUtilsTest extends TestBase {
     $consumedAt = time() - 1;
     Factory::getRefreshTokenFactory()->set($token, RefreshToken::USED_AT, $consumedAt);
     
-    RefreshTokenUtils::rotate($plain);
-    
-    $this->assertSame($consumedAt, (int)$this->findToken($plain)->getUsedAt());
+    try {
+      RefreshTokenUtils::rotate($plain);
+      $this->fail('A consumed token should not be exchangeable');
+    } catch (HttpUnauthorized) {
+      // The conditional update has to leave a row it did not match untouched, so the record of when
+      // the token was really consumed survives for anyone investigating the replay
+      $this->assertSame($consumedAt, (int)$this->findToken($plain)->getUsedAt());
+    }
   }
   
   public function testARevokedTokenCannotBeClaimed(): void {
@@ -157,15 +154,25 @@ final class RefreshTokenUtilsTest extends TestBase {
     }
   }
   
-  public function testConcurrentRotationWithinTheGraceWindowIsNotTreatedAsReplay(): void {
+  /**
+   * A token is single use with no window of forgiveness. An immediate second exchange is exactly what
+   * a copied cookie looks like, and it cannot be told apart from a client that asked twice, so it is
+   * treated as the leak it might be. Clients avoid this by serialising their own refreshes.
+   */
+  public function testASecondExchangeIsAReplayEvenImmediately(): void {
     $plain = RefreshTokenUtils::issue($this->user->getId());
     
     $first = RefreshTokenUtils::rotate($plain);
-    $second = RefreshTokenUtils::rotate($plain);
     
-    $this->assertNotSame($first['token'], $second['token']);
-    $this->assertEquals(0, $this->findToken($first['token'])->getIsRevoked());
-    $this->assertEquals(0, $this->findToken($second['token'])->getIsRevoked());
+    try {
+      RefreshTokenUtils::rotate($plain);
+      $this->fail('A refresh token must not be exchangeable twice, however quickly the second use arrives');
+    } catch (HttpUnauthorized $e) {
+      $this->assertStringContainsString('already been used', $e->getMessage());
+    }
+    
+    // ... and the successor the first exchange handed out goes with it
+    $this->assertEquals(1, $this->findToken($first['token'])->getIsRevoked());
   }
   
   public function testRotateRefusesADeactivatedUser(): void {

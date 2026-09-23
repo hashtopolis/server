@@ -1,6 +1,5 @@
 import base64
 import json
-import time
 
 import requests
 
@@ -124,8 +123,7 @@ class RefreshTokenTest(BaseTest):
         self.assertEqual(session.post(REFRESH_URI).status_code, 201)
         successor = _refresh_token_of(session)
 
-        # Outside the grace window a second exchange of the same token means it leaked
-        time.sleep(11)
+        # A second exchange of the same token means two parties hold it, however soon it arrives
         replay = requests.post(REFRESH_URI, cookies={COOKIE_NAME: stolen})
         self.assertEqual(replay.status_code, 401, msg=replay.text)
 

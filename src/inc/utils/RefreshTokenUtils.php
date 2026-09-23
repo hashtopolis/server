@@ -30,20 +30,14 @@ use Random\RandomException;
  * which is only possible if it leaked, so the entire family is revoked and the user has to log in
  * again.
  *
- * The one exception is REPLAY_GRACE_SECONDS: browsers routinely fire several requests in parallel
- * and can therefore exchange the same token twice within the same moment. Re-using a token that was
- * consumed less than that many seconds ago is treated as such a race and simply issues another
- * token in the family instead of tearing the session down.
+ * There is no window in which a second use is forgiven. A stolen cookie is byte for byte the token
+ * the legitimate holder has, presented over a request that looks the same, so any allowance made for
+ * a client that asked twice is an allowance made for the thief as well. Clients that might otherwise
+ * race are expected to serialise their own refreshes; the frontend holds a cross-tab lock for this.
  */
 class RefreshTokenUtils {
   /** Number of random bytes in a token; the token string is this hex-encoded, so twice as long. */
   const TOKEN_BYTES = 32;
-  
-  /**
-   * Window in which re-using a consumed token counts as a client-side race rather than a replay.
-   * Keep this as small as tolerable: within it, a leaked token is still usable.
-   */
-  const REPLAY_GRACE_SECONDS = 10;
   
   /**
    * @param string $plain the token string as presented by the client
@@ -107,8 +101,8 @@ class RefreshTokenUtils {
     }
     
     if (!self::claim($token, $now)) {
-      // Somebody else consumed the token first; that decides whether this is a race or a replay
-      self::resolveLostClaim($plain, $now);
+      // Somebody else consumed the token first, so this is the second use of a single-use token
+      self::resolveLostClaim($plain);
     }
     
     $user = Factory::getUserFactory()->get($token->getUserId());
@@ -152,23 +146,17 @@ class RefreshTokenUtils {
    * Decides what losing the claim means, from the state the winner left behind.
    *
    * Returning means the loss was a client firing two refreshes at once and the caller may carry on;
-   * every other reading is a token being used twice and ends the session.
+   * Losing it always ends the session: either the token was revoked, or it has already been
+   * exchanged, and a token exchanged twice is a token two parties hold.
    *
    * @param string $plain the token string as presented by the client
-   * @param int $now
-   * @throws HttpUnauthorized unless the token was consumed moments ago by a racing request
+   * @throws HttpUnauthorized always; which error it is depends on what the winner left behind
    * @throws Exception
    */
-  private static function resolveLostClaim(string $plain, int $now): void {
+  private static function resolveLostClaim(string $plain): void {
     $current = self::findByPlain($plain);
     if ($current === null || $current->getIsRevoked() == 1) {
       throw new HttpUnauthorized("Refresh token has been revoked");
-    }
-    
-    $usedAt = $current->getUsedAt();
-    if ($usedAt !== null && $usedAt >= $now - self::REPLAY_GRACE_SECONDS) {
-      // A racing request from the same client got there first, which is not worth ending a session over
-      return;
     }
     
     /* The token was already exchanged, so somebody else is holding a copy of it. There is no way to
