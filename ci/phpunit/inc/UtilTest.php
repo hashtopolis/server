@@ -13,12 +13,14 @@ require_once(dirname(__FILE__) . '/../TestBase.php');
 
 final class UtilTest extends TestBase {
   private string|false $savedBackendUrl = false;
+  private mixed $savedBaseHost = null;
   private array $savedServer = [];
   
   #[Override]
   protected function setUp(): void {
     parent::setUp();
     $this->savedBackendUrl = getenv('HASHTOPOLIS_BACKEND_URL');
+    $this->savedBaseHost = SConfig::getInstance()->getVal(DConfig::BASE_HOST);
     $this->savedServer = [
       'HTTP_HOST' => $_SERVER['HTTP_HOST'] ?? null,
       'SERVER_PORT' => $_SERVER['SERVER_PORT'] ?? null,
@@ -34,6 +36,7 @@ final class UtilTest extends TestBase {
     else {
       putenv('HASHTOPOLIS_BACKEND_URL=' . $this->savedBackendUrl);
     }
+    SConfig::getInstance()->addValue(DConfig::BASE_HOST, $this->savedBaseHost);
     foreach ($this->savedServer as $key => $value) {
       if ($value === null) {
         unset($_SERVER[$key]);
@@ -1061,22 +1064,13 @@ final class UtilTest extends TestBase {
   }
 
   /**
-   * Expected fallback result when HASHTOPOLIS_BACKEND_URL is not usable:
-   * the server URL derived from the current request plus the configured base URL.
-   *
-   * @throws Exception
-   */
-  private function expectedFallbackUrl(): string {
-    return rtrim(Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL), '/');
-  }
-
-  /**
    * buildBackendBaseUrl takes scheme, host and port from HASHTOPOLIS_BACKEND_URL
    * and strips any path it may contain.
    *
    * @throws Exception
    */
   public function testBuildBackendBaseUrlFromEnv(): void {
+    $_SERVER['HTTP_HOST'] = 'attacker.example';
     putenv('HASHTOPOLIS_BACKEND_URL=http://localhost:8080/api/v2');
     $this->assertEquals('http://localhost:8080', Util::buildBackendBaseUrl());
   }
@@ -1122,44 +1116,53 @@ final class UtilTest extends TestBase {
   }
 
   /**
-   * buildBackendBaseUrl falls back to the server URL for a malformed env value
-   * (missing scheme), instead of returning a broken URL.
+   * A malformed environment value is rejected instead of falling back to another
+   * host and hiding the configuration error.
    *
    * @throws Exception
    */
-  public function testBuildBackendBaseUrlEnvMalformedFallsBack(): void {
-    $_SERVER['HTTP_HOST'] = 'fallbackhost:1234';
-    $_SERVER['SERVER_PORT'] = '1234';
-    unset($_SERVER['HTTPS']);
+  public function testBuildBackendBaseUrlEnvMalformedThrows(): void {
+    SConfig::getInstance()->addValue(DConfig::BASE_HOST, 'https://configured.example');
     putenv('HASHTOPOLIS_BACKEND_URL=localhost:8080');
-    $this->assertEquals($this->expectedFallbackUrl(), Util::buildBackendBaseUrl());
-    $this->assertEquals('http://fallbackhost:1234' . SConfig::getInstance()->getVal(DConfig::BASE_URL), Util::buildBackendBaseUrl());
+    $this->expectException(Exception::class);
+    Util::buildBackendBaseUrl();
   }
 
   /**
-   * buildBackendBaseUrl falls back to the server URL when HASHTOPOLIS_BACKEND_URL is unset.
+   * buildBackendBaseUrl uses the explicitly configured baseHost for installations
+   * which do not provide HASHTOPOLIS_BACKEND_URL.
    *
    * @throws Exception
    */
-  public function testBuildBackendBaseUrlEnvUnsetFallsBack(): void {
-    $_SERVER['HTTP_HOST'] = 'fallbackhost:1234';
-    $_SERVER['SERVER_PORT'] = '1234';
-    unset($_SERVER['HTTPS']);
+  public function testBuildBackendBaseUrlFromConfiguredBaseHost(): void {
+    $_SERVER['HTTP_HOST'] = 'attacker.example';
+    SConfig::getInstance()->addValue(DConfig::BASE_HOST, 'https://configured.example:8443');
     putenv('HASHTOPOLIS_BACKEND_URL');
-    $this->assertEquals($this->expectedFallbackUrl(), Util::buildBackendBaseUrl());
-    $this->assertEquals('http://fallbackhost:1234' . SConfig::getInstance()->getVal(DConfig::BASE_URL), Util::buildBackendBaseUrl());
+    $expected = 'https://configured.example:8443/' . ltrim((string)SConfig::getInstance()->getVal(DConfig::BASE_URL), '/');
+    $this->assertEquals(rtrim($expected, '/'), Util::buildBackendBaseUrl());
   }
 
   /**
-   * buildBackendBaseUrl falls back to the server URL for an empty env value.
+   * An unconfigured backend URL fails closed and never uses the request Host header.
    *
    * @throws Exception
    */
-  public function testBuildBackendBaseUrlEnvEmptyFallsBack(): void {
-    $_SERVER['HTTP_HOST'] = 'fallbackhost:1234';
-    $_SERVER['SERVER_PORT'] = '1234';
-    unset($_SERVER['HTTPS']);
-    putenv('HASHTOPOLIS_BACKEND_URL=');
-    $this->assertEquals($this->expectedFallbackUrl(), Util::buildBackendBaseUrl());
+  public function testBuildBackendBaseUrlUnconfiguredDoesNotUseRequestHost(): void {
+    $_SERVER['HTTP_HOST'] = 'attacker.example';
+    SConfig::getInstance()->addValue(DConfig::BASE_HOST, '');
+    putenv('HASHTOPOLIS_BACKEND_URL');
+    $this->expectException(Exception::class);
+    Util::buildBackendBaseUrl();
+  }
+
+  /**
+   * Only HTTP and HTTPS backend URLs can be persisted for agents.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlRejectsInvalidScheme(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=ftp://configured.example/api/v2');
+    $this->expectException(Exception::class);
+    Util::buildBackendBaseUrl();
   }
 }

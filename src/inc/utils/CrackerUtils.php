@@ -141,6 +141,10 @@ class CrackerUtils {
       default:
         throw new HttpError("sourceType value '" . $sourceType . "' is not supported (choices inline, import, url");
     }
+
+    // Resolve this before storing anything so invalid server configuration cannot
+    // leave a partial archive or database record behind.
+    $backendBaseUrl = Util::buildBackendBaseUrl();
     
     $filename = CrackerUtils::buildArchiveFilename($binaryType, $version);
     
@@ -170,7 +174,7 @@ class CrackerUtils {
     }
     
     return Factory::getCrackerBinaryFactory()->mset($binary, [
-      CrackerBinary::DOWNLOAD_URL => Util::buildBackendBaseUrl() . '/api/download.php/crackerBinary/' . $binary->getId(),
+      CrackerBinary::DOWNLOAD_URL => $backendBaseUrl . '/api/download.php/crackerBinary/' . $binary->getId(),
       CrackerBinary::FILENAME => $filename
     ]);
   }
