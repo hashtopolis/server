@@ -5,6 +5,8 @@ namespace Hashtopolis\inc\utils;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\BackgroundJob;
 use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\defines\DBackgroundJobStatus;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\HTException;
@@ -48,7 +50,18 @@ class BackgroundJobUtils {
     return $job;
   }
 
+  /**
+   * @throws HttpConflict
+   */
   public static function deleteJob(BackgroundJob $job): void {
-    Factory::getBackgroundJobFactory()->delete($job);
+    $stmt = Factory::getBackgroundJobFactory()->massDeletion([
+      Factory::FILTER => [
+        new QueryFilter(BackgroundJob::BACKGROUND_JOB_ID, $job->getId(), "="),
+        new QueryFilter(BackgroundJob::STATUS, DBackgroundJobStatus::RUNNING, "<>"),
+      ],
+    ]);
+    if ($stmt->rowCount() === 0) {
+      throw new HttpConflict("Background job is currently running and cannot be deleted!");
+    }
   }
 }
