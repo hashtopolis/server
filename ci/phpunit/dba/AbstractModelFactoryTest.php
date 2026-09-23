@@ -1152,13 +1152,14 @@ final class AbstractModelFactoryTest extends TestBase {
    */
   public function testMassUpdateSuccess(): void {
     $testId = uniqid();
-    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 1, 0));
+    $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype1' . $testId, 0, 0));
     $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype2' . $testId, 125, 0));
     $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'hashtype3' . $testId, 72, 0));
     
     $uS = new UpdateSet(HashType::IS_SALTED, 1);
     $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
-    Factory::getHashTypeFactory()->massUpdate([Factory::UPDATE => $uS, Factory::FILTER => $qF]);
+    $stmt = Factory::getHashTypeFactory()->massUpdate([Factory::UPDATE => $uS, Factory::FILTER => $qF]);
+    $this->assertSame(3, $stmt->rowCount());
     
     $sum = Factory::getHashTypeFactory()->sumFilter([Factory::FILTER => $qF], HashType::IS_SALTED);
     $this->assertEquals(3, $sum);
@@ -1177,7 +1178,8 @@ final class AbstractModelFactoryTest extends TestBase {
     
     $uS = new UpdateSet(HashType::IS_SALTED, 1);
     $qF = new LikeFilter(HashType::DESCRIPTION, "%aaaa" . $testId);
-    Factory::getHashTypeFactory()->massUpdate([Factory::UPDATE => $uS, Factory::FILTER => $qF]);
+    $stmt = Factory::getHashTypeFactory()->massUpdate([Factory::UPDATE => $uS, Factory::FILTER => $qF]);
+    $this->assertSame(0, $stmt->rowCount());
     
     $qF = new LikeFilter(HashType::DESCRIPTION, "%" . $testId);
     $sum = Factory::getHashTypeFactory()->sumFilter([Factory::FILTER => $qF], HashType::IS_SALTED);
