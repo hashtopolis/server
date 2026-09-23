@@ -30,6 +30,7 @@ final class DownloadAppTest extends TestBase {
   private CrackerBinary $externalBinary;
   private string $agentToken;
   private string $archiveContent;
+  private string|false $savedBackendUrl = false;
   private bool $savedHttpRange = false;
   private string|false $savedHttpRangeValue = false;
 
@@ -37,9 +38,14 @@ final class DownloadAppTest extends TestBase {
   protected function setUp(): void {
     parent::setUp();
 
+    $this->savedBackendUrl = getenv('HASHTOPOLIS_BACKEND_URL');
+    putenv('HASHTOPOLIS_BACKEND_URL=http://localhost/api/v2');
+
+    $suffix = uniqid();
+
     $this->type = $this->createDatabaseObject(
       Factory::getCrackerBinaryTypeFactory(),
-      new CrackerBinaryType(null, 'download-test-type', 1)
+      new CrackerBinaryType(null, 'dl-' . $suffix, 1)
     );
     $this->externalBinary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
@@ -50,7 +56,7 @@ final class DownloadAppTest extends TestBase {
     $this->agentToken = 'dl-test-' . uniqid();
     $this->createDatabaseObject(
       Factory::getAgentFactory(),
-      new Agent(null, 'download-test-agent', '', 0, '', '', 0, 0, 0, $this->agentToken, '', 0, '', null, 0, '')
+      new Agent(null, 'download-test-agent-' . $suffix, '', 0, '', '', 0, 0, 0, $this->agentToken, '', 0, '', null, 0, '')
     );
 
     $importName = 'download-test-' . uniqid() . '.7z';
@@ -67,18 +73,28 @@ final class DownloadAppTest extends TestBase {
 
   #[Override]
   protected function tearDown(): void {
-    // remove the archive in case a test failed before it could clean up
-    $archive = CrackerUtils::getCrackersPath() . $this->localBinary->getId() . '_' . $this->localBinary->getFilename();
-    if (file_exists($archive)) {
-      unlink($archive);
+    try {
+      // remove the archive in case a test failed before it could clean up
+      $archive = CrackerUtils::getCrackersPath() . $this->localBinary->getId() . '_' . $this->localBinary->getFilename();
+      if (file_exists($archive)) {
+        unlink($archive);
+      }
+      parent::tearDown();
     }
-    if ($this->savedHttpRange) {
-      $_SERVER['HTTP_RANGE'] = $this->savedHttpRangeValue;
+    finally {
+      if ($this->savedBackendUrl === false) {
+        putenv('HASHTOPOLIS_BACKEND_URL');
+      }
+      else {
+        putenv('HASHTOPOLIS_BACKEND_URL=' . $this->savedBackendUrl);
+      }
+      if ($this->savedHttpRange) {
+        $_SERVER['HTTP_RANGE'] = $this->savedHttpRangeValue;
+      }
+      else {
+        unset($_SERVER['HTTP_RANGE']);
+      }
     }
-    else {
-      unset($_SERVER['HTTP_RANGE']);
-    }
-    parent::tearDown();
   }
 
   private static function getImportPath(): string {
