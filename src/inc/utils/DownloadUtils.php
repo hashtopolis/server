@@ -36,17 +36,27 @@ class DownloadUtils {
     if (str_contains($range, ',')) {
       return false;
     }
-    if ($range == '-') {
-      $c_start = $size - (int)substr($range, 1);
+    $range = explode('-', $range, 2);
+    if ($range[0] === '') {
+      if (!isset($range[1]) || !ctype_digit($range[1]) || (int)$range[1] == 0) {
+        return false;
+      }
+      $c_start = max(0, $size - (int)$range[1]);
+      $c_end = $size - 1;
     }
     else {
-      $range = explode('-', $range);
+      if (!ctype_digit($range[0])) {
+        return false;
+      }
       $c_start = (int)$range[0];
-      if ((isset($range[1]) && is_numeric($range[1]))) {
+      if (isset($range[1]) && $range[1] !== '' && ctype_digit($range[1])) {
         $c_end = (int)$range[1];
       }
+      else if (isset($range[1]) && $range[1] === '') {
+        $c_end = $size - 1;
+      }
       else {
-        $c_end = $size;
+        return false;
       }
     }
     if ($c_end > $end) {
