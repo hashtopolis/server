@@ -31,6 +31,7 @@ final class CrackerUtilsTest extends TestBase {
   private ?AbstractModel $type = null;
   private ?AbstractModel $binary = null;
   private string|false $savedBackendUrl = false;
+  private array $httpFileServers = [];
 
   // Creates a CrackerBinaryType and one CrackerBinary before each test.
   // These records provide valid IDs for the "happy path" tests and a known
@@ -52,14 +53,27 @@ final class CrackerUtilsTest extends TestBase {
   #[Override]
   protected function tearDown(): void {
     try {
-      parent::tearDown();
+      foreach ($this->httpFileServers as $server) {
+        proc_terminate($server['proc']);
+        proc_close($server['proc']);
+        foreach (glob($server['docroot'] . '/*') ?: [] as $path) {
+          unlink($path);
+        }
+        rmdir($server['docroot']);
+      }
+      $this->httpFileServers = [];
     }
     finally {
-      if ($this->savedBackendUrl === false) {
-        putenv('HASHTOPOLIS_BACKEND_URL');
+      try {
+        parent::tearDown();
       }
-      else {
-        putenv('HASHTOPOLIS_BACKEND_URL=' . $this->savedBackendUrl);
+      finally {
+        if ($this->savedBackendUrl === false) {
+          putenv('HASHTOPOLIS_BACKEND_URL');
+        }
+        else {
+          putenv('HASHTOPOLIS_BACKEND_URL=' . $this->savedBackendUrl);
+        }
       }
     }
   }
@@ -210,7 +224,7 @@ final class CrackerUtilsTest extends TestBase {
     putenv('HASHTOPOLIS_BACKEND_URL=ftp://configured.example/api/v2');
     try {
       try {
-        CrackerUtils::createBinaryFromUpload('8.8.8', 'testcracker', $this->type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC));
+        CrackerUtils::createBinaryFromUpload('8.8.8', 'testcracker', $this->type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC), 1);
         $this->fail('Expected invalid backend URL configuration to reject the upload');
       }
       catch (\Exception $e) {
@@ -278,7 +292,7 @@ final class CrackerUtilsTest extends TestBase {
         $this->markTestSkipped('memory_limit cannot be changed in this environment');
       }
       try {
-        CrackerUtils::createBinaryFromUpload('8.8.8', 'testcracker', $this->type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC));
+        CrackerUtils::createBinaryFromUpload('8.8.8', 'testcracker', $this->type->getId(), 'inline', base64_encode(self::SEVEN_ZIP_MAGIC), 1);
         $this->fail('Expected the inline archive to exceed the safe memory allowance');
       }
       catch (HttpError $e) {
@@ -521,6 +535,8 @@ final class CrackerUtilsTest extends TestBase {
   public function testCreateBinaryFromUploadRequiresGroupMembership(): void {
     $group = $this->createAccessGroup('ag-crackerutils-upload');
     $user = $this->createUser('crackerutils-upload-user');
+    $archivePattern = CrackerUtils::getCrackersPath() . '*_test-crackerutils-type-1.0.0.7z';
+    $archivesBefore = glob($archivePattern) ?: [];
 
     try {
       CrackerUtils::createBinaryFromUpload('1.0.0', 'testcracker', $this->type->getId(), 'inline',
@@ -530,7 +546,7 @@ final class CrackerUtilsTest extends TestBase {
     catch (HttpError $e) {
       $this->assertStringContainsString('no rights', $e->getMessage());
     }
-    $this->assertEmpty(glob(CrackerUtils::getCrackersPath() . '*_test-crackerutils-type-1.0.0.7z'));
+    $this->assertSame($archivesBefore, glob($archivePattern) ?: []);
 
     $this->createDatabaseObject(
       Factory::getAccessGroupUserFactory(),
@@ -618,8 +634,6 @@ final class CrackerUtilsTest extends TestBase {
     $this->assertEquals($group2->getId(), Factory::getCrackerBinaryFactory()->get($binary->getId())->getAccessGroupId());
   }
 
-  private array $httpFileServers = [];
-
   /**
    * Serves a file with the given content through a local HTTP server, so tests
    * can use a working download url without external network access. The server
@@ -652,16 +666,4 @@ final class CrackerUtilsTest extends TestBase {
     throw new RuntimeException('Local HTTP file server did not come up in time');
   }
 
-  protected function tearDown(): void {
-    foreach ($this->httpFileServers as $server) {
-      proc_terminate($server['proc']);
-      proc_close($server['proc']);
-      foreach (glob($server['docroot'] . '/*') ?: [] as $path) {
-        unlink($path);
-      }
-      rmdir($server['docroot']);
-    }
-    $this->httpFileServers = [];
-    parent::tearDown();
-  }
 }
