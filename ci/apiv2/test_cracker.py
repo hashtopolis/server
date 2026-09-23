@@ -374,6 +374,28 @@ class TestCrackerUrlCopy(BaseTest):
             server_a.shutdown()
             server_b.shutdown()
 
+    def test_patch_download_url_to_null_rejects(self):
+        """A nullable create field cannot be set to null by PATCH."""
+        server, url = self._serve_archive(SEVEN_ZIP_MAGIC + b'url-patch-null')
+        obj = None
+        try:
+            obj = self.create_cracker(extra_payload={'downloadUrl': url}, delete=False)
+            headers = {'Authorization': f'Bearer {get_bearer_token()}',
+                       'Content-Type': 'application/json'}
+            response = requests.patch(
+                f'{APIV2}/ui/crackers/{obj.id}',
+                headers=headers,
+                json={'data': {'type': 'crackerBinary', 'id': str(obj.id),
+                               'attributes': {'downloadUrl': None}}})
+
+            self.assertEqual(400, response.status_code)
+            self.assertIn('downloadUrl cannot be null', response.text)
+            self.assertEqual(url, Cracker.objects.get(pk=obj.id).downloadUrl)
+        finally:
+            if obj is not None:
+                obj.delete()
+            server.shutdown()
+
     def test_patch_download_url_with_version_stores_new_copy(self):
         """Changing the download url together with the version stores the
         refreshed local copy under the new archive filename and removes the

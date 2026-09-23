@@ -124,6 +124,9 @@ class CrackerBinaryAPI extends AbstractModelAPI {
   protected function updateObject(int $objectId, array $data): void {
     $binary = CrackerUtils::getBinary($objectId);
     if (array_key_exists(CrackerBinary::DOWNLOAD_URL, $data)) {
+      if ($data[CrackerBinary::DOWNLOAD_URL] === null) {
+        throw new HttpError("downloadUrl cannot be null!");
+      }
       if ($binary->getFilename() !== null) {
         throw new HttpError("The download url of a locally stored cracker binary cannot be changed!");
       }
