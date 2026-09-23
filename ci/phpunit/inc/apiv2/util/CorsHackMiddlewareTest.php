@@ -13,6 +13,7 @@ use Slim\Factory\AppFactory;
 
 class DummyRequest {
   private string $http_origin;
+  private string $host = 'hashtopolis.example.com';
 
   public function setHeaderLine($headerLine): void {
     $this->http_origin = $headerLine;
@@ -20,6 +21,21 @@ class DummyRequest {
   
   public function getHeaderLine($headerLine): string {
     return $this->http_origin;
+  }
+
+  public function setHost(string $host): void {
+    $this->host = $host;
+  }
+
+  /** Enough of a PSR-7 URI for the cross-site guard, which only asks for the host. */
+  public function getUri(): object {
+    return new class($this->host) {
+      public function __construct(private string $host) {}
+
+      public function getHost(): string {
+        return $this->host;
+      }
+    };
   }
 }
 
@@ -472,6 +488,80 @@ final class CorsHackMiddlewareTest extends TestCase {
     }
 
     $this->assertFalse($response->hasHeader("X-Evil"));
+  }
+
+  /**
+   * The cross-site guard protects endpoints that authenticate from a cookie. A browser attaches the
+   * cookie to whatever request a page makes, so without this a page elsewhere could have a visitor's
+   * browser spend their refresh token or end their session.
+   *
+   * @throws HttpForbidden
+   */
+  public function testCrossSiteGuardAcceptsAConfiguredOrigin(): void {
+    putenv("HASHTOPOLIS_BACKEND_URL=https://hashtopolis.example.com");
+    putenv("HASHTOPOLIS_FRONTEND_URLS=https://app.example.com");
+
+    $request = new DummyRequest();
+    $request->setHeaderLine("https://app.example.com");
+
+    CorsHackMiddleware::assertNotCrossSite($request);
+    $this->addToAssertionCount(1);
+  }
+
+  public function testCrossSiteGuardRefusesAnUnconfiguredOrigin(): void {
+    putenv("HASHTOPOLIS_BACKEND_URL=https://hashtopolis.example.com");
+    putenv("HASHTOPOLIS_FRONTEND_URLS=https://app.example.com");
+
+    $request = new DummyRequest();
+    $request->setHeaderLine("https://evil.example");
+
+    $this->expectException(HttpForbidden::class);
+    CorsHackMiddleware::assertNotCrossSite($request);
+  }
+
+  /**
+   * A client that sends no origin is not a browser, so it holds no ambient cookie to be abused and
+   * must keep working: this is how curl and the python client call the API.
+   *
+   * @throws HttpForbidden
+   */
+  public function testCrossSiteGuardAllowsARequestWithoutAnOrigin(): void {
+    putenv("HASHTOPOLIS_BACKEND_URL=https://hashtopolis.example.com");
+
+    $request = new DummyRequest();
+    $request->setHeaderLine("");
+
+    CorsHackMiddleware::assertNotCrossSite($request);
+    $this->addToAssertionCount(1);
+  }
+
+  /**
+   * With no allow-list there is nothing to compare an origin against, and the CORS layer answers the
+   * wildcard. A cookie endpoint cannot rely on that, so the guard falls back to the host the request
+   * was addressed to.
+   *
+   * @throws HttpForbidden
+   */
+  public function testCrossSiteGuardFallsBackToTheRequestHost(): void {
+    $request = new DummyRequest();
+    $request->setHost("hashtopolis.example.com");
+    $request->setHeaderLine("https://hashtopolis.example.com");
+
+    CorsHackMiddleware::assertNotCrossSite($request);
+    $this->addToAssertionCount(1);
+  }
+
+  /**
+   * The case SameSite=Strict does not cover: a neighbouring host is same-site, so the browser sends
+   * the cookie, but it is a different origin and has no business acting for the user.
+   */
+  public function testCrossSiteGuardRefusesANeighbouringHostWithNoAllowList(): void {
+    $request = new DummyRequest();
+    $request->setHost("hashtopolis.example.com");
+    $request->setHeaderLine("https://evil.hashtopolis.example.com");
+
+    $this->expectException(HttpForbidden::class);
+    CorsHackMiddleware::assertNotCrossSite($request);
   }
 
   /**

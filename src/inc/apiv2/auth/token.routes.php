@@ -20,6 +20,7 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
 use Firebase\JWT\JWK;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
+use Hashtopolis\inc\apiv2\util\CorsHackMiddleware;
 
 require_once(dirname(__FILE__) . "/../../startup/include.php");
 
@@ -196,6 +197,12 @@ $app->group("/api/v2/auth/refresh", function (RouteCollectorProxy $group) {
   });
   
   $group->post('', function (Request $request, Response $response, array $args): Response {
+    /* This handler acts on the cookie alone, so a page on another origin could otherwise have a
+       visitor's browser spend their refresh token. The attacker never gets to read the reply, but
+       spending the token is enough: the victim's next renewal looks like a replay and ends every
+       session of that login. */
+    CorsHackMiddleware::assertNotCrossSite($request);
+
     $presented = RefreshTokenCookie::read($request);
     if ($presented === null) {
       throw new HttpUnauthorized("No refresh token supplied");
@@ -211,6 +218,9 @@ $app->group("/api/v2/auth/refresh", function (RouteCollectorProxy $group) {
   
   /* Logout: ends the session the cookie belongs to and drops the cookie. */
   $group->delete('', function (Request $request, Response $response, array $args): Response {
+    // Likewise: ending somebody's session on their behalf is a forced logout
+    CorsHackMiddleware::assertNotCrossSite($request);
+
     $presented = RefreshTokenCookie::read($request);
     if ($presented !== null) {
       RefreshTokenUtils::revoke($presented);

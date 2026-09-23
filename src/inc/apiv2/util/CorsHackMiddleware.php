@@ -17,6 +17,12 @@ class CorsHackMiddleware implements MiddlewareInterface {
    * @throws HttpForbidden
    */
   public function process(Request $request, RequestHandler $handler): Response {
+    /* Decide about the origin before handing the request on. This check used to run on the way back
+       out, which meant a forged cross-site request reached its handler and took effect - a refresh
+       token spent, a session ended - and only then collected its 403. Refusing after the fact still
+       denies the attacker the reply, but by then the damage is done. */
+    self::resolveAllowedOrigin($request);
+
     $response = $handler->handle($request);
     
     return CorsHackMiddleware::addCORSHeaders($request, $response);
@@ -53,6 +59,21 @@ class CorsHackMiddleware implements MiddlewareInterface {
    * @throws HttpForbidden when an origin is supplied that the deployment does not recognise
    */
   public static function CheckCORS($request, $response): Response {
+    $allowedOrigin = self::resolveAllowedOrigin($request);
+
+    return $allowedOrigin === null
+      ? $response->withHeader('Access-Control-Allow-Origin', '*')
+      : self::allowOrigin($allowedOrigin, $response);
+  }
+
+  /**
+   * Makes the same decision without needing the response in hand, so it can be made before a handler
+   * runs as well as after.
+   *
+   * @return string|null the origin to name in the response, or null when the answer is the wildcard
+   * @throws HttpForbidden when an origin is supplied that the deployment does not recognise
+   */
+  private static function resolveAllowedOrigin($request): ?string {
     $requestHttpOrigin = $request->getHeaderLine('Origin');
 
     $allowed = self::allowedOrigins();
@@ -61,7 +82,7 @@ class CorsHackMiddleware implements MiddlewareInterface {
        from anywhere but never on a credentialed request: browsers reject credentials next to a
        wildcard, which is also why the refresh token cookie needs one of the settings below. */
     if (count($allowed) === 0 || $requestHttpOrigin === "") {
-      return $response->withHeader('Access-Control-Allow-Origin', '*');
+      return null;
     }
 
     $origin = self::parseOrigin($requestHttpOrigin);
@@ -71,12 +92,47 @@ class CorsHackMiddleware implements MiddlewareInterface {
 
     foreach ($allowed as $candidate) {
       if (self::originsMatch($origin, $candidate)) {
-        return self::allowOrigin($requestHttpOrigin, $response);
+        return $requestHttpOrigin;
       }
     }
 
     $expected = implode(', ', array_map(self::describeOrigin(...), $allowed));
     throw new HttpForbidden("CORS error: the request Origin '$requestHttpOrigin' does not match this deployment. Allowed origins are: $expected. Check HASHTOPOLIS_BACKEND_URL, HASHTOPOLIS_FRONTEND_URLS and HASHTOPOLIS_FRONTEND_PORT.");
+  }
+
+  /**
+   * Refuses a request that a browser made from an origin other than this deployment's.
+   *
+   * Endpoints authenticating from a cookie need this and endpoints authenticating from a bearer token
+   * do not: a cookie rides along on whatever request a page chooses to make, so a page elsewhere can
+   * have a visitor's browser act as them. The check above already refuses unknown origins, but only
+   * once an allow-list exists; with none configured it answers the wildcard, which is right for a
+   * token API and wrong for a cookie one.
+   *
+   * @throws HttpForbidden when the request came from another origin
+   */
+  public static function assertNotCrossSite($request): void {
+    $requestHttpOrigin = trim($request->getHeaderLine('Origin'));
+
+    // A client sending no origin is not a browser, so it carries no ambient cookie to be abused
+    if ($requestHttpOrigin === "") {
+      return;
+    }
+
+    if (count(self::allowedOrigins()) > 0) {
+      self::resolveAllowedOrigin($request);
+      return;
+    }
+
+    /* Nothing is configured to compare against, so fall back to the host the request was addressed
+       to. A page on a neighbouring host is a different origin and is refused here, which is exactly
+       the case SameSite=Strict on the cookie does not cover. */
+    $origin = self::parseOrigin($requestHttpOrigin);
+    if ($origin !== null && self::isSameHost($origin['host'], strtolower($request->getUri()->getHost()))) {
+      return;
+    }
+
+    throw new HttpForbidden("This endpoint cannot be called from another origin. The request came from '$requestHttpOrigin'.");
   }
 
   /**

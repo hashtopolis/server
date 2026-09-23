@@ -158,5 +158,38 @@ class RefreshTokenTest(BaseTest):
 
         self.assertEqual(kept.post(REFRESH_URI).status_code, 201)
 
+    def test_a_cross_site_refresh_cannot_spend_the_token(self):
+        """A forged cross-site request must be refused before it takes effect.
+
+        The refusal alone is not enough: these handlers authenticate from the cookie, so a page
+        elsewhere can have the browser make the call. The attacker never reads the reply, but if the
+        token is spent first, the victim's next renewal looks like a replay and ends every session of
+        that login. So the test is not that the attacker gets a 403 - it is that the victim's token
+        still works afterwards.
+        """
+        session, _ = _login()
+        victims_token = _refresh_token_of(session)
+
+        forged = requests.post(REFRESH_URI,
+                               headers={'Origin': 'https://evil.example'},
+                               cookies={COOKIE_NAME: victims_token})
+        self.assertEqual(forged.status_code, 403, msg=forged.text)
+
+        still_valid = requests.post(REFRESH_URI, cookies={COOKIE_NAME: victims_token})
+        self.assertEqual(still_valid.status_code, 201,
+                         msg='the forged request spent the victim token before being refused')
+
+    def test_a_cross_site_logout_cannot_end_the_session(self):
+        session, _ = _login()
+        victims_token = _refresh_token_of(session)
+
+        forged = requests.delete(REFRESH_URI,
+                                 headers={'Origin': 'https://evil.example'},
+                                 cookies={COOKIE_NAME: victims_token})
+        self.assertEqual(forged.status_code, 403, msg=forged.text)
+
+        still_valid = requests.post(REFRESH_URI, cookies={COOKIE_NAME: victims_token})
+        self.assertEqual(still_valid.status_code, 201, msg='the forged request revoked the session')
+
     def test_logout_without_cookie_is_not_an_error(self):
         self.assertEqual(requests.delete(REFRESH_URI).status_code, 204)
