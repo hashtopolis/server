@@ -1307,9 +1307,9 @@ class Util {
    * Determines the base URL of the backend as it is reachable from the outside.
    * If HASHTOPOLIS_BACKEND_URL is set in the environment, scheme, host and port are
    * taken from it and any path is stripped (e.g. "http://localhost:8080/api/v2"
-   * results in "http://localhost:8080"). If the variable is not set or malformed,
-   * this falls back to the server URL derived from the current request together
-   * with the configured base URL, respecting the baseHost config override.
+   * results in "http://localhost:8080"). Otherwise, the explicitly configured
+   * baseHost and baseUrl are used. Request headers are never used because this URL
+   * may be persisted and later receive agent credentials.
    * Used to generate agent reachable URLs for locally hosted files, e.g. the
    * download URL of an uploaded cracker binary archive.
    * @return string backend base url without trailing slash
@@ -1317,17 +1317,36 @@ class Util {
    */
   public static function buildBackendBaseUrl(): string {
     $backendUrl = getenv('HASHTOPOLIS_BACKEND_URL');
-    if ($backendUrl !== false && strlen($backendUrl) > 0) {
-      $parts = parse_url($backendUrl);
-      if ($parts !== false && isset($parts['scheme'], $parts['host'])) {
-        $url = $parts['scheme'] . '://' . $parts['host'];
-        if (isset($parts['port'])) {
-          $url .= ':' . $parts['port'];
-        }
-        return rtrim($url, '/');
-      }
+    $fromEnvironment = $backendUrl !== false && strlen($backendUrl) > 0;
+    if (!$fromEnvironment) {
+      $backendUrl = SConfig::getInstance()->getVal(DConfig::BASE_HOST);
     }
-    return rtrim(Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL), '/');
+    if (!is_string($backendUrl) || strlen($backendUrl) == 0) {
+      throw new Exception("A valid HASHTOPOLIS_BACKEND_URL or baseHost must be configured");
+    }
+    if ($backendUrl !== trim($backendUrl) || preg_match('/[\x00-\x20\x7f]/', $backendUrl)) {
+      throw new Exception("The configured backend URL is invalid");
+    }
+    $parts = parse_url($backendUrl);
+    if ($parts === false || !isset($parts['scheme'], $parts['host'])
+      || !in_array(strtolower($parts['scheme']), ['http', 'https'], true)
+      || isset($parts['user']) || isset($parts['pass'])
+      || isset($parts['query']) || isset($parts['fragment'])
+      || (!$fromEnvironment && isset($parts['path']) && $parts['path'] !== '' && $parts['path'] !== '/')) {
+      throw new Exception("The configured backend URL is invalid");
+    }
+    $url = strtolower($parts['scheme']) . '://' . $parts['host'];
+    if (isset($parts['port'])) {
+      $url .= ':' . $parts['port'];
+    }
+    if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+      throw new Exception("The configured backend URL is invalid");
+    }
+    if (!$fromEnvironment) {
+      $baseUrl = SConfig::getInstance()->getVal(DConfig::BASE_URL);
+      $url .= '/' . ltrim((string)$baseUrl, '/');
+    }
+    return rtrim($url, '/');
   }
   
   /**
