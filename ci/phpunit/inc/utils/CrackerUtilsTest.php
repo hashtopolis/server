@@ -637,8 +637,6 @@ final class CrackerUtilsTest extends TestBase {
     CrackerUtils::deleteBinary($binary->getId());
   }
 
-  private array $httpFileServers = [];
-
   // Returns the hashcat cracker binary type (which is blanket-associated with
   // all hashtypes), creating it first when the initial data does not contain it.
   private function hashcatType(): CrackerBinaryType {
