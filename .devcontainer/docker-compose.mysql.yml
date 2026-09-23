@@ -14,6 +14,7 @@ services:
       HASHTOPOLIS_DB_HOST: hashtopolis-db-dev
       HASHTOPOLIS_DB_DATABASE: hashtopolis
       HASHTOPOLIS_APIV2_ENABLE: 1
+      HASHTOPOLIS_BACKEND_URL: http://localhost
     depends_on:
       - hashtopolis-db-dev
     ports:
