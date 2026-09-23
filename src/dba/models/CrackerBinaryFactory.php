@@ -45,6 +45,6 @@ class CrackerBinaryFactory extends AbstractModelFactory {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
-    return new CrackerBinary($dict['crackerbinaryid'], $dict['crackerbinarytypeid'], $dict['version'], $dict['downloadurl'], $dict['binaryname'], $dict['filename'] ?? null);
+    return new CrackerBinary($dict['crackerbinaryid'], $dict['crackerbinarytypeid'], $dict['version'], $dict['downloadurl'], $dict['binaryname'], $dict['filename']);
   }
 }
