@@ -170,6 +170,26 @@ final class DownloadAppTest extends TestBase {
     $this->assertEquals('bytes 0-5/' . strlen($this->archiveContent), $response->getHeaderLine('Content-Range'));
   }
 
+  // A suffix range returns the requested number of bytes from the end.
+  public function testSuffixRangeRequestReturnsFinalBytes(): void {
+    $_SERVER['HTTP_RANGE'] = 'bytes=-6';
+    $response = $this->runDownloadRequest($this->localBinaryUri() . '?token=' . $this->agentToken);
+    $size = strlen($this->archiveContent);
+    $this->assertEquals(206, $response->getStatusCode());
+    $this->assertEquals(substr($this->archiveContent, -6), (string)$response->getBody());
+    $this->assertEquals('bytes ' . ($size - 6) . '-' . ($size - 1) . '/' . $size, $response->getHeaderLine('Content-Range'));
+  }
+
+  // An open-ended range returns all bytes through the end of the file.
+  public function testOpenEndedRangeRequestReturnsRemainingBytes(): void {
+    $_SERVER['HTTP_RANGE'] = 'bytes=6-';
+    $response = $this->runDownloadRequest($this->localBinaryUri() . '?token=' . $this->agentToken);
+    $size = strlen($this->archiveContent);
+    $this->assertEquals(206, $response->getStatusCode());
+    $this->assertEquals(substr($this->archiveContent, 6), (string)$response->getBody());
+    $this->assertEquals('bytes 6-' . ($size - 1) . '/' . $size, $response->getHeaderLine('Content-Range'));
+  }
+
   // A request with a matching ETag is answered with not modified.
   public function testMatchingEtagReturnsNotModified(): void {
     $archive = CrackerUtils::getCrackersPath() . $this->localBinary->getId() . '_' . $this->localBinary->getFilename();
