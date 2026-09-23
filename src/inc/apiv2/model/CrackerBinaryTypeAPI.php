@@ -34,6 +34,7 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
         
         'relationType' => CrackerBinary::class,
         'relationKey' => CrackerBinary::CRACKER_BINARY_TYPE_ID,
+        'filterACL' => true,
       ],
       'tasks' => [
         'key' => CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
