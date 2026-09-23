@@ -7,6 +7,9 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\BackgroundJob;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\UpdateSet;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\defines\DBackgroundJobStatus;
 use Hashtopolis\inc\defines\DBackgroundJobType;
 use Hashtopolis\inc\defines\DDirectories;
@@ -89,6 +92,32 @@ final class BackgroundJobUtilsTest extends TestBase {
   public function testEnqueueUnknownJobTypeThrows(): void {
     $this->expectException(HTException::class);
     BackgroundJobUtils::enqueue('unknown_job_type', []);
+  }
+
+  /**
+   * @throws Exception
+   */
+  public function testDeleteRejectsJobClaimedAfterFetch(): void {
+    $job = $this->enqueueRecountFileJob(123);
+    $factory = Factory::getBackgroundJobFactory();
+    $stmt = $factory->massUpdate([
+      Factory::UPDATE => new UpdateSet(BackgroundJob::STATUS, DBackgroundJobStatus::RUNNING),
+      Factory::FILTER => [
+        new QueryFilter(BackgroundJob::BACKGROUND_JOB_ID, $job->getId(), "="),
+        new QueryFilter(BackgroundJob::STATUS, DBackgroundJobStatus::PENDING, "="),
+      ],
+    ]);
+    $this->assertSame(1, $stmt->rowCount());
+
+    try {
+      BackgroundJobUtils::deleteJob($job);
+      $this->fail("Deleting a running background job should fail");
+    }
+    catch (HttpConflict) {
+      $storedJob = $factory->get($job->getId());
+      $this->assertNotNull($storedJob);
+      $this->assertSame(DBackgroundJobStatus::RUNNING, $storedJob->getStatus());
+    }
   }
 
   /**

@@ -8,7 +8,6 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
-use Hashtopolis\inc\defines\DBackgroundJobStatus;
 use Hashtopolis\inc\utils\BackgroundJobUtils;
 
 /**
@@ -57,9 +56,6 @@ class BackgroundJobAPI extends AbstractModelAPI {
    * @throws HttpConflict
    */
   protected function deleteObject(AbstractModel $object): void {
-    if ($object->getStatus() === DBackgroundJobStatus::RUNNING) {
-      throw new HttpConflict("Background job is currently running and cannot be deleted!");
-    }
     BackgroundJobUtils::deleteJob($object);
   }
 }
