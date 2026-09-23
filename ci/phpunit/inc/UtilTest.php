@@ -967,7 +967,8 @@ final class UtilTest extends TestBase {
       'crackerBinaryTypeId' => $typeId,
       'version' => '7.0.0',
       'downloadUrl' => 'https://example.com/test.7z',
-      'binaryName' => 'testHashcat'
+      'binaryName' => 'testHashcat',
+      'filename' => null
     ];
     Util::checkOrCreateInitialObject(Factory::getCrackerBinaryFactory(), $data);
     $obj = Factory::getCrackerBinaryFactory()->get($id);
@@ -976,6 +977,7 @@ final class UtilTest extends TestBase {
     $this->assertEquals('7.0.0', $obj->getVersion());
     $this->assertEquals('https://example.com/test.7z', $obj->getDownloadUrl());
     $this->assertEquals('testHashcat', $obj->getBinaryName());
+    $this->assertNull($obj->getFilename());
 
     Factory::getCrackerBinaryFactory()->delete($obj);
     Factory::getCrackerBinaryTypeFactory()->delete(Factory::getCrackerBinaryTypeFactory()->get($typeId));
