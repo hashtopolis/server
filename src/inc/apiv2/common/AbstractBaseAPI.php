@@ -942,7 +942,9 @@ abstract class AbstractBaseAPI {
     $expandResult = [];
     foreach ($expands as $expand) {
       $apiClass = $this->container->get('classMapper')->get(get_class($object));
-      $expandResult[$expand] = $apiClass::fetchExpandObjects([$object], $expand);
+      $apiClassObject = new $apiClass($this->container);
+      $apiClassObject->setCurrentUser($this->getCurrentUser());
+      $expandResult[$expand] = $apiClassObject->fetchVisibleExpandObjects([$object], $expand);
     }
     
     return $this->applyExpansions($object, $expands, $expandResult);
@@ -1785,7 +1787,7 @@ abstract class AbstractBaseAPI {
     $expandResult = [];
     foreach ($expands as $expand) {
       // mapping from $objectId -> result objects in
-      $expandResult[$expand] = $apiClass->fetchExpandObjects($objects, $expand);
+      $expandResult[$expand] = $apiClass->fetchVisibleExpandObjects($objects, $expand);
     }
     
     /* Convert objects to JSON:API */
