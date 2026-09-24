@@ -872,6 +872,23 @@ class TestCrackerHashtypes(BaseTest):
         # the association is unchanged
         self.assertListEqual([hashtype.id], self.hashtype_ids_of(obj))
 
+        # an out-of-group hashcat binary is rejected with the generic access
+        # error, not with the hashcat-specific read-only message: otherwise
+        # the modifying routes would disclose the binary type of a binary
+        # the user has no access to
+        hashcat_obj = self.create_cracker()
+        self.delete_scan_jobs(hashcat_obj)
+        hashcat_relationship_url = f'{APIV2}/ui/crackers/{hashcat_obj.id}/relationships/hashtypes'
+        for method, payload in (
+            ('patch', []),
+            ('post', [{'type': 'hashType', 'id': hashtype.id}]),
+            ('delete', [{'type': 'hashType', 'id': hashtype.id}]),
+        ):
+            r = requests.request(method, hashcat_relationship_url, headers=headers, json={'data': payload})
+            self.assertEqual(403, r.status_code, f'{method} should be denied: {r.text}')
+            self.assertNotIn('hashcat', r.text,
+                              'The rejection must not disclose the hashcat type of the binary!')
+
         # a member of the binary's access group can read and edit the association
         user = User.objects.get(name=username)
         admin_headers = {'Authorization': f'Bearer {get_bearer_token()}',
