@@ -750,6 +750,78 @@ class TestCrackerHashtypes(BaseTest):
         self.assertIn(r.status_code, [201, 204], f'Removing should be allowed: {r.text}')
         self.assertListEqual([], self.hashtype_ids_of(obj))
 
+    def test_reverse_relation_filters_binaries_by_access_group(self):
+        """Expansions and relationship links of a hashtype only show accessible binaries.
+
+        Hashtypes are global, but the binaries associated with them are isolated
+        by access group: a user without access to a binary's access group must
+        not see the binary when the hashtype is expanded, when its relationship
+        link is read or when the related binaries are listed.
+        """
+        obj = self.create_cracker()
+        hashtype = self.create_unique_hashtype()
+        r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': hashtype.id}])
+        self.assertEqual(204, r.status_code, f'Patching failed: {r.text}')
+
+        # the admin is a member of the default access group and sees the binary
+        hashtype_obj = HashType.objects.prefetch_related('crackerBinaries').get(pk=hashtype.id)
+        self.assertIn(obj.id, sorted(cracker.id for cracker in hashtype_obj.crackerBinaries_set))
+
+        username, password = create_restricted_user(self, {
+            'permCrackerBinaryRead': True,
+            'permHashTypeRead': True,
+        })
+        r = requests.post(f'{APIV2}/auth/token', auth=(username, password))
+        self.assertEqual(201, r.status_code, f'Could not get a token: {r.text}')
+        auth_headers = {'Authorization': f"Bearer {r.json()['token']}"}
+
+        # expanding the hashtype does not include the inaccessible binary
+        r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}?include=crackerBinaries',
+                         headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Expanding should be readable: {r.text}')
+        body = r.json()
+        self.assertEqual([], body['data']['relationships']['crackerBinaries']['data'])
+        included = {(item['type'], int(item['id'])) for item in body.get('included', [])}
+        self.assertNotIn(('crackerBinary', obj.id), included)
+
+        # the relationship link and the related resource listing are empty as well
+        r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}/relationships/crackerBinaries',
+                         headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Relationship link should be readable: {r.text}')
+        self.assertEqual([], r.json()['data'])
+        r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}/crackerBinaries',
+                         headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Related listing should be readable: {r.text}')
+        self.assertEqual([], r.json()['data'])
+
+        # a member of the binary's access group sees it in all three views
+        user = User.objects.get(name=username)
+        admin_headers = {'Authorization': f'Bearer {get_bearer_token()}',
+                         'Content-Type': 'application/json'}
+        r = requests.post(f'{APIV2}/ui/accessgroups/1/relationships/userMembers',
+                          headers=admin_headers,
+                          json={'data': [{'type': 'user', 'id': user.id}]})
+        self.assertEqual(201, r.status_code, f'Could not add the user to the access group: {r.text}')
+
+        r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}?include=crackerBinaries',
+                         headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Expanding should be readable: {r.text}')
+        body = r.json()
+        rel_data = [(item['type'], int(item['id']))
+                    for item in body['data']['relationships']['crackerBinaries']['data']]
+        self.assertIn(('crackerBinary', obj.id), rel_data)
+        included = {(item['type'], int(item['id'])) for item in body.get('included', [])}
+        self.assertIn(('crackerBinary', obj.id), included)
+
+        r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}/relationships/crackerBinaries',
+                         headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Relationship link should be readable: {r.text}')
+        self.assertIn(obj.id, [int(item['id']) for item in r.json()['data']])
+        r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}/crackerBinaries',
+                         headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Related listing should be readable: {r.text}')
+        self.assertIn(obj.id, [int(item['id']) for item in r.json()['data']])
+
     def test_delete_binary_removes_associations(self):
         """Deleting a binary also removes its hashtype associations."""
         obj = self.create_cracker(delete=False)
