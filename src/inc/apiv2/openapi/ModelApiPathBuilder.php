@@ -47,9 +47,21 @@ class ModelApiPathBuilder {
       $isToMany = array_key_exists($relation, $class::getToManyRelationships());
       $isToOne = array_key_exists($relation, $class::getToOneRelationships());
       assert(!($isToMany && $isToOne), "An relationship cant be a to one and to many at the same time.");
+      $isReadonly = ($isToMany
+        ? $class::getToManyRelationships()[$relation]
+        : $class::getToOneRelationships()[$relation])['readonly'] ?? false;
     } else {
       $isToMany = $isToOne = false;
       $relation = null;
+      $isReadonly = false;
+    }
+
+    /* The runtime rejects every mutation of a readonly relationship (see
+       patchToOneRelationshipLink(), updateToManyRelationship(),
+       postToManyRelationshipLink() and deleteToManyRelationshipLink()), so
+       the spec does not advertise the mutation operations. */
+    if ($isReadonly && in_array($method, ["patch", "post", "delete"], true)) {
+      return;
     }
 
     $expandables = implode(",", $class->getExpandables());
