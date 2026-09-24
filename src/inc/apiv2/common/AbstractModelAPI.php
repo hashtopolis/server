@@ -1569,8 +1569,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   public function getToManyRelatedResource(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
     
+    /* Validate that the caller has access to the base object, otherwise the
+       relation of an object outside the caller's access groups could be read. */
+    $this->doFetch($args['id']);
+    
     // Base object -> Relation objects
-    // $object = $this->doFetch($request, $args['id']);
     
     $toManyRelation = $this->getToManyRelationships()[$args['relation']];
     $relationClass = $toManyRelation['relationType'];
@@ -1686,6 +1689,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     
     $data = $jsonBody['data'];
+    
+    /* Validate the base object here, so every implementation of
+       updateToManyRelationship() is covered, including overrides in subclasses. */
+    $this->doFetch($args['id']);
+    
     $this->updateToManyRelationship($request, $data, $args);
     
     return $response->withStatus(204)
@@ -1894,6 +1902,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         throw new HttpForbidden("Key '$relationKey' cant be set to null");
       }
     }
+    
+    /* Validate the base object, otherwise associations of an object outside
+       the caller's access groups could be removed. */
+    $this->doFetch($args['id']);
     
     $data = $jsonBody['data'];
     

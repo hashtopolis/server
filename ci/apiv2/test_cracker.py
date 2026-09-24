@@ -8,8 +8,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import requests
 
-from hashtopolis import Cracker, CrackerType, FileImport, HashType, HashtopolisError
-from utils import (BaseTest, SEVEN_ZIP_MAGIC, do_create_agent, do_create_local_cracker,
+from hashtopolis import Cracker, CrackerType, FileImport, HashType, HashtopolisError, User
+from utils import (BaseTest, SEVEN_ZIP_MAGIC, create_restricted_user, do_create_agent, do_create_local_cracker,
                    get_bearer_token, get_hashtopolis_uri)
 
 
@@ -684,6 +684,71 @@ class TestCrackerHashtypes(BaseTest):
                                       [{'type': 'crackerBinary', 'id': obj.id}],
                                       model='hashtypes', relation='crackerBinaries')
         self.assertEqual(400, r.status_code, f'Deleting should be rejected: {r.text}')
+
+    def test_relationship_routes_enforce_binary_access_group(self):
+        """The hashtype relationship routes enforce the binary's access group.
+
+        A user with global cracker permissions who is not a member of the
+        binary's access group must not be able to read, replace, add or remove
+        its hashtype associations, even though hashtypes themselves are global
+        and not isolated by access groups.
+        """
+        obj = self.create_cracker()
+        hashtype = self.create_unique_hashtype()
+        r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': hashtype.id}])
+        self.assertEqual(204, r.status_code, f'Patching failed: {r.text}')
+        self.assertListEqual([hashtype.id], self.hashtype_ids_of(obj))
+
+        username, password = create_restricted_user(self, {
+            'permCrackerBinaryRead': True,
+            'permCrackerBinaryUpdate': True,
+            'permCrackerBinaryDelete': True,
+            'permHashTypeRead': True,
+        })
+        r = requests.post(f'{APIV2}/auth/token', auth=(username, password))
+        self.assertEqual(201, r.status_code, f'Could not get a token: {r.text}')
+        # only requests with a body may announce a json content type, the body
+        # parser rejects bodyless requests which claim to carry json
+        auth_headers = {'Authorization': f"Bearer {r.json()['token']}"}
+        headers = {**auth_headers, 'Content-Type': 'application/json'}
+
+        related_url = f'{APIV2}/ui/crackers/{obj.id}/hashtypes'
+        relationship_url = f'{APIV2}/ui/crackers/{obj.id}/relationships/hashtypes'
+        data = [{'type': 'hashType', 'id': hashtype.id}]
+
+        # reading the association is denied
+        r = requests.get(related_url, headers=auth_headers)
+        self.assertEqual(403, r.status_code, f'Related resource listing should be denied: {r.text}')
+        r = requests.get(relationship_url, headers=auth_headers)
+        self.assertEqual(403, r.status_code, f'Relationship link should be denied: {r.text}')
+
+        # every modifying request is denied
+        r = requests.patch(relationship_url, headers=headers, json={'data': []})
+        self.assertEqual(403, r.status_code, f'Replacing the association should be denied: {r.text}')
+        r = requests.post(relationship_url, headers=headers, json={'data': data})
+        self.assertEqual(403, r.status_code, f'Adding to the association should be denied: {r.text}')
+        r = requests.delete(relationship_url, headers=headers, json={'data': data})
+        self.assertEqual(403, r.status_code, f'Removing from the association should be denied: {r.text}')
+
+        # the association is unchanged
+        self.assertListEqual([hashtype.id], self.hashtype_ids_of(obj))
+
+        # a member of the binary's access group can read and edit the association
+        user = User.objects.get(name=username)
+        admin_headers = {'Authorization': f'Bearer {get_bearer_token()}',
+                         'Content-Type': 'application/json'}
+        r = requests.post(f'{APIV2}/ui/accessgroups/1/relationships/userMembers',
+                          headers=admin_headers,
+                          json={'data': [{'type': 'user', 'id': user.id}]})
+        self.assertEqual(201, r.status_code, f'Could not add the user to the access group: {r.text}')
+
+        r = requests.get(related_url, headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Related resource listing should be allowed: {r.text}')
+        r = requests.get(relationship_url, headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Relationship link should be allowed: {r.text}')
+        r = requests.delete(relationship_url, headers=headers, json={'data': data})
+        self.assertIn(r.status_code, [201, 204], f'Removing should be allowed: {r.text}')
+        self.assertListEqual([], self.hashtype_ids_of(obj))
 
     def test_delete_binary_removes_associations(self):
         """Deleting a binary also removes its hashtype associations."""
