@@ -360,12 +360,15 @@ class CrackerUtils {
    * validated as a 7z archive. Local copies of previous versions or urls of
    * the binary are removed.
    *
+   * Also used by the setup seeding and the binary check to make sure the
+   * archive is available locally, so the background scan can unpack it.
+   *
    * @param CrackerBinary $binary the binary to download the archive for
    * @throws HttpError
    * @throws HTException
    * @throws Exception
    */
-  private static function storeLocalCopy(CrackerBinary $binary): void {
+  public static function storeLocalCopy(CrackerBinary $binary): void {
     $binaryType = CrackerUtils::getBinaryType($binary->getCrackerBinaryTypeId());
     $crackersPath = CrackerUtils::getCrackersPath();
     $filename = CrackerUtils::buildArchiveFilename($binaryType, $binary->getVersion());
@@ -742,22 +745,15 @@ class CrackerUtils {
   public static function checkCrackerBinary(int $binaryId, ?User $user = null): void {
     $binary = CrackerUtils::getBinary($binaryId);
     // locally stored binaries don't need to be downloaded, their archive is
-    // already on the server
+    // already on the server. Url-referenced binaries are downloaded and kept
+    // as a local copy, so the archive is available for the scan (agents
+    // still download from the download url).
     if ($binary->getFilename() === null) {
-      $target = tempnam(sys_get_temp_dir(), 'HTP_CHECK_');
-      if ($target === false) {
-        throw new HTException("Could not create a temporary file for checking the cracker binary!");
+      try {
+        CrackerUtils::storeLocalCopy($binary);
       }
-      unlink($target); // Util::uploadFile only downloads if the target does not exist yet
-      [$success, $msg] = Util::uploadFile($target, "url", $binary->getDownloadUrl());
-      if (!$success) {
-        if (file_exists($target)) {
-          unlink($target);
-        }
-        throw new HTException("Failed to download the archive of the cracker binary: " . $msg);
-      }
-      if (file_exists($target)) {
-        unlink($target);
+      catch (HttpError $e) {
+        throw new HTException($e->getMessage());
       }
     }
     CrackerUtils::enqueueScan($binary, $user);
