@@ -18,6 +18,7 @@ use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\TestBase;
 use Override;
+use PDOException;
 use RuntimeException;
 
 require_once(dirname(__FILE__) . '/../../TestBase.php');
@@ -744,6 +745,19 @@ final class CrackerUtilsTest extends TestBase {
 
     $this->expectException(HttpConflict::class);
     CrackerUtils::addHashtypeToBinary($this->binary->getId(), $hashtype->getId());
+  }
+
+  // Verifies that the database schema enforces the uniqueness of a
+  // binary/hashtype pair, so concurrent requests cannot create the same
+  // association twice even when they pass the check of the helper.
+  public function testDuplicateAssociationIsRejectedByDatabase(): void {
+    $hashtype = $this->createHashType();
+    CrackerUtils::addHashtypeToBinary($this->binary->getId(), $hashtype->getId());
+
+    $this->expectException(PDOException::class);
+    Factory::getCrackerBinaryHashtypeFactory()->save(
+      new CrackerBinaryHashtype(null, $this->binary->getId(), $hashtype->getId())
+    );
   }
 
   // Verifies that associating a hashtype which does not exist is rejected.
