@@ -52,7 +52,8 @@ class CrackerScanUtils {
       throw new HTException("The archive of the cracker binary is not stored on the server: '$archive'");
     }
     $cmd = ['7z', 'x', '-y', '-o' . $targetDir, $archive];
-    $proc = proc_open($cmd, [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']], $pipes);
+    $proc = proc_open($cmd, [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']], $pipes, null,
+      self::childEnvironment());
     if (!is_resource($proc)) {
       throw new HTException("Could not start 7z to unpack the cracker binary archive!");
     }
@@ -107,7 +108,9 @@ class CrackerScanUtils {
     $proc = proc_open(
       [$binaryPath, '--example-hashes', '--machine-readable'],
       [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']],
-      $pipes
+      $pipes,
+      null,
+      self::childEnvironment()
     );
     if (!is_resource($proc)) {
       throw new HTException("Could not start '$binaryName.bin' to scan the supported hash-modes!");
@@ -200,8 +203,19 @@ class CrackerScanUtils {
     return $modes;
   }
 
+  /**
+   * Minimal environment for child processes of the scan: the executed
+   * binary is user-supplied, so the server environment — including the
+   * database credentials — must not be leaked to it. Only PATH is passed
+   * on, so the spawned binaries can be resolved at all.
+   */
+  private static function childEnvironment(): array {
+    return ['PATH' => getenv('PATH') ?: '/usr/local/bin:/usr/bin:/bin'];
+  }
+
   private static function sevenZipAvailable(): bool {
-    $proc = proc_open(['7z'], [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']], $pipes);
+    $proc = proc_open(['7z'], [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']], $pipes, null,
+      self::childEnvironment());
     if (!is_resource($proc)) {
       return false;
     }
