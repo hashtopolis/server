@@ -108,6 +108,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $toManyRelationships[$expand]['junctionTableFilterField'],
           $relationFactory,
           $toManyRelationships[$expand]['relationKey'],
+          $relationFilters,
         );
       }
       
@@ -356,14 +357,16 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * Retrieve ManyToOne relation for $objects ('parents') of type $targetFactory via 'intermediate'
    * of $intermediateFactory joining on $joinField (between 'intermediate' and 'target'). Filtered by
-   * $filterField at $intermediateFactory.
+   * $filterField at $intermediateFactory. Optional $relationFilters restrict the returned target
+   * objects, e.g. to those visible to the current user.
    *
    * @param array $objects Objects Fetch relation for selected Objects
    * @param string $objectField Field to use as base for $objects
    * @param object $intermediateFactory Factory used as intermediate between parentObject and targetObject
-   * @param string $filterField Filter field of intermediateObject to filter against $objects field
+   * @param string $filterField Field of intermediateObject to filter against $objects field
    * @param object $targetFactory Object properties of objects returned
    * @param string $joinField Field to connect 'intermediate' to 'target'
+   * @param array $relationFilters Additional filters on the target objects, e.g. the list ACL of the related API
    * @return array $many2many which is a map where the key is the id of the parent object and the value is an array of the included
    *                objects that are included for this parent object
    * @throws Exception
@@ -375,6 +378,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     string $filterField,
     object $targetFactory,
     string $joinField,
+    array $relationFilters = [],
   ): array {
     assert($intermediateFactory instanceof AbstractModelFactory);
     assert($targetFactory instanceof AbstractModelFactory);
@@ -388,7 +392,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     $qF = new ContainFilter($filterField, $objectIds, $intermediateFactory);
     $jF = new JoinFilter($intermediateFactory, $joinField, $joinField);
-    $hO = $targetFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    $relationFilters[Factory::FILTER] = array_merge(
+      [$qF],
+      $relationFilters[Factory::FILTER] ?? []
+    );
+    $relationFilters[Factory::JOIN] = array_merge(
+      [$jF],
+      $relationFilters[Factory::JOIN] ?? []
+    );
+    $hO = $targetFactory->filter($relationFilters);
     
     $intermediateObjectList = $hO[$intermediateFactory->getModelName()];
     $targetObjectList = $hO[$targetFactory->getModelName()];
@@ -799,8 +811,27 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $aFs[Factory::ORDER] = $orderFilters;
     $aFs[Factory::JOIN] = $joinFilters;
     
-    /* Include relation filters */
-    $finalFs = array_merge($aFs, $relationFs);
+    /* Include relation filters. The filter and join lists are merged instead of
+       overwritten, so the ACL filters of the related API stay effective when
+       the relation provides its own filters and joins. */
+    $finalFs = $aFs;
+    foreach ($relationFs as $relationKey => $relationValue) {
+      if ($relationKey == Factory::FILTER) {
+        $finalFs[$relationKey] = array_merge($finalFs[$relationKey] ?? [], $relationValue);
+      }
+      elseif ($relationKey == Factory::JOIN) {
+        $mergedJoins = $finalFs[$relationKey] ?? [];
+        foreach ($relationValue as $join) {
+          if (!$apiClass::checkJoinExists($mergedJoins, $join->getOtherFactory()->getModelName())) {
+            $mergedJoins[] = $join;
+          }
+        }
+        $finalFs[$relationKey] = $mergedJoins;
+      }
+      else {
+        $finalFs[$relationKey] = $relationValue;
+      }
+    }
     
     //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
     //But this probably needs to be added in getFeatures() then.

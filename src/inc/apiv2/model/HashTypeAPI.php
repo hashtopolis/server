@@ -36,6 +36,8 @@ class HashTypeAPI extends AbstractModelAPI {
         'relationType' => CrackerBinary::class,
         'relationKey' => CrackerBinary::CRACKER_BINARY_ID,
 
+        'filterACL' => true,
+
         // the association is edited from the cracker binary side, from the
         // hashtype side it is only visible
         'readonly' => true,
