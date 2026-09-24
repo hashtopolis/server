@@ -329,7 +329,7 @@
                 ]
             }
         },
-        "/api/v2/ui/configs/{id}/{relation}": {
+        "/api/v2/ui/configs/{id}/configSection": {
             "get": {
                 "tags": [
                     "Configs"
@@ -410,7 +410,7 @@
                 ]
             }
         },
-        "/api/v2/ui/configs/{id}/relationships/{relation}": {
+        "/api/v2/ui/configs/{id}/relationships/configSection": {
             "get": {
                 "tags": [
                     "Configs"
