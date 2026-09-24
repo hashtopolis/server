@@ -52,17 +52,19 @@ class CrackerScanUtils {
       throw new HTException("The archive of the cracker binary is not stored on the server: '$archive'");
     }
     $cmd = ['7z', 'x', '-y', '-o' . $targetDir, $archive];
-    $proc = proc_open($cmd, [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']], $pipes, null,
-      self::childEnvironment());
+    // the listing 7z writes to stdout is not used, it is redirected to
+    // /dev/null: an unread stdout pipe would fill up and block 7z forever
+    $proc = proc_open($cmd,
+      [0 => ['pipe', 'r'], 1 => ['file', '/dev/null', 'w'], 2 => ['pipe', 'w']],
+      $pipes, null, self::childEnvironment());
     if (!is_resource($proc)) {
       throw new HTException("Could not start 7z to unpack the cracker binary archive!");
     }
     fclose($pipes[0]);
-    stream_set_blocking($pipes[1], false);
     stream_set_blocking($pipes[2], false);
     $stderr = '';
     // enforce the timeout by polling the still running process, draining
-    // its output while waiting
+    // its error output while waiting
     $deadline = time() + self::UNPACK_TIMEOUT;
     $status = proc_get_status($proc);
     while ($status['running']) {
@@ -76,8 +78,6 @@ class CrackerScanUtils {
       $status = proc_get_status($proc);
     }
     $stderr .= stream_get_contents($pipes[2]) ?: '';
-    stream_get_contents($pipes[1]);
-    fclose($pipes[1]);
     fclose($pipes[2]);
     $exitCode = proc_close($proc);
     if ($exitCode !== 0) {
@@ -90,12 +90,12 @@ class CrackerScanUtils {
    * returns its stdout, which reports the details of all supported
    * hash-modes as JSON for hashcat binaries. The binary is searched
    * recursively in the unpack directory, hashcat archives contain a version
-   * subdirectory.
+   * subdirectory. The invocation is limited by EXAMPLE_HASHES_TIMEOUT.
    *
    * @param string $unpackDir directory the archive was unpacked into
    * @param string $binaryName binary name of the cracker, e.g. 'hashcat'
    * @return string stdout of the '--example-hashes' invocation
-   * @throws HTException when the binary is not found, not executable or fails to run
+   * @throws HTException when the binary is not found, not executable, fails to run or times out
    */
   public static function runExampleHashes(string $unpackDir, string $binaryName): string {
     $binaryPath = self::findBinary($unpackDir, $binaryName);
@@ -105,34 +105,49 @@ class CrackerScanUtils {
     if (!chmod($binaryPath, 0755) && !is_executable($binaryPath)) {
       throw new HTException("Could not make '$binaryName.bin' executable!");
     }
+    // the report of the hash-modes is read from stdout, stderr only feeds
+    // the error message. stderr is redirected to a file and stdout is
+    // drained while the binary runs: a full unread pipe would block the
+    // binary, and reading one pipe to its end before the other would
+    // deadlock the scan.
+    $errorFile = tempnam(sys_get_temp_dir(), 'HTP_SCAN_ERR_');
+    if ($errorFile === false) {
+      throw new HTException("Could not create a temporary file for the error output of '$binaryName.bin'!");
+    }
     $proc = proc_open(
       [$binaryPath, '--example-hashes', '--machine-readable'],
-      [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']],
+      [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['file', $errorFile, 'w']],
       $pipes,
       null,
       self::childEnvironment()
     );
     if (!is_resource($proc)) {
+      unlink($errorFile);
       throw new HTException("Could not start '$binaryName.bin' to scan the supported hash-modes!");
     }
     fclose($pipes[0]);
-    $stdout = stream_get_contents($pipes[1]) ?: '';
-    $stderr = stream_get_contents($pipes[2]) ?: '';
-    fclose($pipes[1]);
-    fclose($pipes[2]);
-    $status = proc_get_status($proc);
-    // enforce the timeout by polling the still running process
+    stream_set_blocking($pipes[1], false);
+    // enforce the timeout by polling the still running process, draining
+    // its report while waiting
+    $stdout = '';
     $deadline = time() + self::EXAMPLE_HASHES_TIMEOUT;
+    $status = proc_get_status($proc);
     while ($status['running']) {
       if (time() > $deadline) {
         proc_terminate($proc);
         proc_close($proc);
+        unlink($errorFile);
         throw new HTException("Timeout while running '$binaryName.bin --example-hashes'!");
       }
+      $stdout .= stream_get_contents($pipes[1]) ?: '';
       usleep(100000);
       $status = proc_get_status($proc);
     }
+    $stdout .= stream_get_contents($pipes[1]) ?: '';
+    fclose($pipes[1]);
     $exitCode = proc_close($proc);
+    $stderr = file_get_contents($errorFile) ?: '';
+    unlink($errorFile);
     if ($exitCode !== 0) {
       throw new HTException("'$binaryName.bin --example-hashes' failed (exit code $exitCode): " . trim($stderr));
     }
