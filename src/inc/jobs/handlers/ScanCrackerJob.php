@@ -66,10 +66,7 @@ class ScanCrackerJob implements BackgroundJobHandler {
       return new BackgroundJobResult(-1, $e->getMessage());
     }
     finally {
-      foreach (glob($tempDir . '/*') ?: [] as $path) {
-        is_dir($path) ? self::removeDirectory($path) : unlink($path);
-      }
-      @rmdir($tempDir);
+      self::removeDirectory($tempDir);
     }
 
     $modes = CrackerScanUtils::parseHashcatModes($output);
@@ -98,9 +95,26 @@ class ScanCrackerJob implements BackgroundJobHandler {
     );
   }
 
+  /**
+   * Recursively removes the given directory and its contents. The contents
+   * come from a user-controlled archive, so symlinks must never be followed:
+   * is_dir() resolves symlinks, so a link to a directory would be recursed
+   * into and delete files outside the scanned directory. Links are removed
+   * themselves instead, directories are only descended into when they are
+   * real directories.
+   */
   private static function removeDirectory(string $dir): void {
     foreach (glob($dir . '/*') ?: [] as $path) {
-      is_dir($path) ? self::removeDirectory($path) : unlink($path);
+      if (is_link($path)) {
+        // remove the link itself, never recurse through it
+        @unlink($path);
+      }
+      elseif (is_dir($path)) {
+        self::removeDirectory($path);
+      }
+      else {
+        @unlink($path);
+      }
     }
     @rmdir($dir);
   }
