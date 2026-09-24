@@ -140,3 +140,20 @@ class TestTaskWrapperToOneRelations(BaseTest):
         with self.assertRaises(TaskWrapper.DoesNotExist):
             TaskWrapper.objects.prefetch_related('hashType') \
                 .authenticate((username, password)).get(pk=wrapper.id)
+
+    def test_readonly_task_relation_rejects_patch(self):
+        """Patching the readonly task relationship of a wrapper is rejected.
+
+        The task relation of a task wrapper is readonly: the runtime rejects
+        the mutation instead of letting it change task foreign keys.
+        """
+        hashlist = self.create_hashlist()
+        task = self.create_task(hashlist)
+
+        admin_headers = {'Authorization': f'Bearer {get_bearer_token()}',
+                         'Content-Type': 'application/json'}
+        r = requests.patch(f'{APIV2}/ui/taskwrappers/{task.taskWrapperId}/relationships/task',
+                           headers=admin_headers,
+                           json={'data': {'type': 'task', 'id': task.id}})
+        self.assertEqual(400, r.status_code, f'Patching should be rejected: {r.text}')
+        self.assertIn('readonly', r.text)
