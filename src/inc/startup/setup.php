@@ -206,16 +206,6 @@ if ($initialSetup === true) {
   }
   
   Factory::getAgentFactory()->getDB()->commit();
-  
-  // The hashtypes of hashtypes.json which are not present in the initial migration
-  // were just created after the cracker binary hashtype associations of the
-  // migration were already backfilled. Only hashcat binaries are associated
-  // with all hashtypes, binaries of other types start without any association.
-  foreach (Factory::getCrackerBinaryFactory()->filter([]) as $binary) {
-    if (CrackerUtils::isHashcatBinary($binary)) {
-      CrackerUtils::associateAllHashtypes($binary);
-    }
-  }
 }
 
 // check if directories are saved in config
@@ -225,3 +215,29 @@ Util::checkDataDirectory(DDirectories::LOG, StartupConfig::getInstance()->getDir
 Util::checkDataDirectory(DDirectories::CONFIG, StartupConfig::getInstance()->getDirectoryConfig());
 Util::checkDataDirectory(DDirectories::TUS, StartupConfig::getInstance()->getDirectoryTus());
 Util::checkDataDirectory(DDirectories::CRACKERS, StartupConfig::getInstance()->getDirectoryCrackers());
+
+// The hashtypes of hashtypes.json which are not present in the initial migration
+// were created after the initial seed. Hashcat binaries are queued for a
+// scan of their supported hash-modes, which then populates their hashtype
+// associations. Binaries of other types start without any association.
+// Url-referenced binaries have no archive on the server yet, their local
+// copy is downloaded first, so the scan can unpack it. If the download
+// fails (e.g. offline installation), the scan is skipped without failing
+// the setup: it can be triggered later by checking or patching the binary.
+// Runs after the directory configs are stored, the download needs the
+// crackers directory. Only on the initial setup: later boots must not
+// re-download the archives and re-scan all binaries.
+if ($initialSetup) {
+  foreach (Factory::getCrackerBinaryFactory()->filter([]) as $binary) {
+    if ($binary->getFilename() === null) {
+      try {
+        CrackerUtils::storeLocalCopy($binary);
+      }
+      catch (Exception $e) {
+        error_log("Setup: could not fetch the archive of cracker binary " . $binary->getId() . ": " . $e->getMessage());
+        continue;
+      }
+    }
+    CrackerUtils::enqueueScan($binary, null);
+  }
+}
