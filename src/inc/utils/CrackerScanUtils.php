@@ -232,6 +232,11 @@ class CrackerScanUtils {
    * version subdirectory.
    */
   private static function findBinary(string $unpackDir, string $binaryName): ?string {
+    // the binary name is user input, it must be a plain basename so the
+    // candidates cannot escape the unpack directory with ../
+    if ($binaryName !== basename($binaryName) || str_contains($binaryName, '..')) {
+      return null;
+    }
     $candidates = [
       $unpackDir . '/' . $binaryName . '.bin',
     ];
