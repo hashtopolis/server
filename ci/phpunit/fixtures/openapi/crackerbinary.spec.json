@@ -19,10 +19,10 @@
         }
     ],
     "paths": {
-        "/api/v2/ui/crackertypes": {
+        "/api/v2/ui/crackers": {
             "get": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -60,7 +60,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeListResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryListResponse"
                                 }
                             }
                         }
@@ -70,7 +70,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeRead"
+                                "permCrackerBinaryRead"
                             ]
                         ]
                     }
@@ -84,8 +84,8 @@
                             "type": "string",
                             "format": "byte"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlUeXBlSWQiOiAxMjN9fQ==",
-                        "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"crackerBinaryTypeId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlUeXBlSWQiOiAxMjN9fQ==`"
+                        "example": "eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlJZCI6IDEyM319",
+                        "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"crackerBinaryId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
@@ -94,8 +94,8 @@
                             "type": "string",
                             "format": "byte"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlUeXBlSWQiOiAxMjN9fQ==",
-                        "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"crackerBinaryTypeId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlUeXBlSWQiOiAxMjN9fQ==`"
+                        "example": "eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlJZCI6IDEyM319",
+                        "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"crackerBinaryId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
@@ -118,9 +118,9 @@
                                 "type": "string"
                             }
                         },
-                        "description": "Filters results using a query. Every key is an attribute name optionally suffixed with a comparison operator, e.g. `filter[crackerBinaryTypeId__gt]=200`.",
+                        "description": "Filters results using a query. Every key is an attribute name optionally suffixed with a comparison operator, e.g. `filter[crackerBinaryId__gt]=200`.",
                         "example": {
-                            "crackerBinaryTypeId__gt": "200"
+                            "crackerBinaryId__gt": "200"
                         }
                     },
                     {
@@ -133,22 +133,24 @@
                             "items": {
                                 "type": "string",
                                 "enum": [
-                                    "crackerVersions",
-                                    "tasks"
+                                    "crackerBinaryType",
+                                    "accessGroup",
+                                    "tasks",
+                                    "hashtypes"
                                 ]
                             }
                         },
-                        "description": "Relationships to include in the response, comma seperated. Possible options: crackerVersions, tasks",
+                        "description": "Relationships to include in the response, comma seperated. Possible options: crackerBinaryType, accessGroup, tasks, hashtypes",
                         "example": [
-                            "crackerVersions",
-                            "tasks"
+                            "crackerBinaryType",
+                            "accessGroup"
                         ]
                     }
                 ]
             },
             "post": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -186,7 +188,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypePostPatchResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryPostPatchResponse"
                                 }
                             }
                         }
@@ -206,7 +208,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeCreate"
+                                "permCrackerBinaryCreate"
                             ]
                         ]
                     }
@@ -217,7 +219,7 @@
                     "content": {
                         "application/vnd.api+json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CrackerBinaryTypeCreate"
+                                "$ref": "#/components/schemas/CrackerBinaryCreate"
                             }
                         }
                     }
@@ -226,7 +228,7 @@
             },
             "patch": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -287,7 +289,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeUpdate"
+                                "permCrackerBinaryUpdate"
                             ]
                         ]
                     }
@@ -298,7 +300,7 @@
                     "content": {
                         "application/vnd.api+json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CrackerBinaryTypePatchMultiple"
+                                "$ref": "#/components/schemas/CrackerBinaryPatchMultiple"
                             }
                         }
                     }
@@ -307,7 +309,7 @@
             },
             "delete": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -358,7 +360,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeDelete"
+                                "permCrackerBinaryDelete"
                             ]
                         ]
                     }
@@ -369,7 +371,7 @@
                     "content": {
                         "application/vnd.api+json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CrackerBinaryTypeDeleteMultiple"
+                                "$ref": "#/components/schemas/CrackerBinaryDeleteMultiple"
                             }
                         }
                     }
@@ -377,10 +379,10 @@
                 "parameters": []
             }
         },
-        "/api/v2/ui/crackertypes/count": {
+        "/api/v2/ui/crackers/count": {
             "get": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -418,7 +420,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeCountResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryCountResponse"
                                 }
                             }
                         }
@@ -428,7 +430,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeRead"
+                                "permCrackerBinaryRead"
                             ]
                         ]
                     }
@@ -446,9 +448,9 @@
                                 "type": "string"
                             }
                         },
-                        "description": "Filters results using a query. Every key is an attribute name optionally suffixed with a comparison operator, e.g. `filter[crackerBinaryTypeId__gt]=200`.",
+                        "description": "Filters results using a query. Every key is an attribute name optionally suffixed with a comparison operator, e.g. `filter[crackerBinaryId__gt]=200`.",
                         "example": {
-                            "crackerBinaryTypeId__gt": "200"
+                            "crackerBinaryId__gt": "200"
                         }
                     },
                     {
@@ -463,10 +465,10 @@
                 ]
             }
         },
-        "/api/v2/ui/crackertypes/{id}/crackerVersions": {
+        "/api/v2/ui/crackers/{id}/crackerBinaryType": {
             "get": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -514,7 +516,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersionsGetResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryRelationCrackerBinaryTypeGetResponse"
                                 }
                             }
                         }
@@ -524,7 +526,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeRead"
+                                "permCrackerBinaryRead"
                             ]
                         ]
                     }
@@ -544,10 +546,10 @@
                 ]
             }
         },
-        "/api/v2/ui/crackertypes/{id}/relationships/crackerVersions": {
+        "/api/v2/ui/crackers/{id}/relationships/crackerBinaryType": {
             "get": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -595,7 +597,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryResponse"
                                 }
                             }
                         }
@@ -605,7 +607,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeRead"
+                                "permCrackerBinaryRead"
                             ]
                         ]
                     }
@@ -626,7 +628,7 @@
             },
             "patch": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -687,7 +689,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeUpdate"
+                                "permCrackerBinaryUpdate"
                             ]
                         ]
                     }
@@ -698,159 +700,7 @@
                     "content": {
                         "application/vnd.api+json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersions"
-                            }
-                        }
-                    }
-                },
-                "parameters": []
-            },
-            "post": {
-                "tags": [
-                    "CrackerBinaryTypes"
-                ],
-                "responses": {
-                    "400": {
-                        "description": "Invalid request",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Permission denied",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "204": {
-                        "description": "successfully created"
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Resource already exists",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeCreate"
-                            ]
-                        ]
-                    }
-                ],
-                "description": "POST request to create a to-one relationship link.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/vnd.api+json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersions"
-                            }
-                        }
-                    }
-                },
-                "parameters": []
-            },
-            "delete": {
-                "tags": [
-                    "CrackerBinaryTypes"
-                ],
-                "responses": {
-                    "400": {
-                        "description": "Invalid request",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Permission denied",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "204": {
-                        "description": "successfully deleted"
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeDelete"
-                            ]
-                        ]
-                    }
-                ],
-                "description": "",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/vnd.api+json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersions"
+                                "$ref": "#/components/schemas/CrackerBinaryRelationCrackerBinaryType"
                             }
                         }
                     }
@@ -858,10 +708,10 @@
                 "parameters": []
             }
         },
-        "/api/v2/ui/crackertypes/{id}/tasks": {
+        "/api/v2/ui/crackers/{id}/accessGroup": {
             "get": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -909,7 +759,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeRelationTasksGetResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryRelationAccessGroupGetResponse"
                                 }
                             }
                         }
@@ -919,7 +769,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeRead"
+                                "permCrackerBinaryRead"
                             ]
                         ]
                     }
@@ -939,10 +789,10 @@
                 ]
             }
         },
-        "/api/v2/ui/crackertypes/{id}/relationships/tasks": {
+        "/api/v2/ui/crackers/{id}/relationships/accessGroup": {
             "get": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -990,7 +840,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryResponse"
                                 }
                             }
                         }
@@ -1000,7 +850,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeRead"
+                                "permCrackerBinaryRead"
                             ]
                         ]
                     }
@@ -1021,7 +871,7 @@
             },
             "patch": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -1082,7 +932,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeUpdate"
+                                "permCrackerBinaryUpdate"
                             ]
                         ]
                     }
@@ -1093,7 +943,250 @@
                     "content": {
                         "application/vnd.api+json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CrackerBinaryTypeRelationTasks"
+                                "$ref": "#/components/schemas/CrackerBinaryRelationAccessGroup"
+                            }
+                        }
+                    }
+                },
+                "parameters": []
+            }
+        },
+        "/api/v2/ui/crackers/{id}/tasks": {
+            "get": {
+                "tags": [
+                    "CrackerBinarys"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CrackerBinaryRelationTasksGetResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET request to retrieve a single object.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    }
+                ]
+            }
+        },
+        "/api/v2/ui/crackers/{id}/relationships/tasks": {
+            "get": {
+                "tags": [
+                    "CrackerBinarys"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CrackerBinaryResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET request for  for a to-one relationship link. Returns the resource record of the object that is part of the specified relation.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "CrackerBinarys"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "Successfull operation"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryUpdate"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "PATCH request to update a to one relationship.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CrackerBinaryRelationTasks"
                             }
                         }
                     }
@@ -1102,7 +1195,7 @@
             },
             "post": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -1163,7 +1256,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeCreate"
+                                "permCrackerBinaryCreate"
                             ]
                         ]
                     }
@@ -1174,7 +1267,7 @@
                     "content": {
                         "application/vnd.api+json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CrackerBinaryTypeRelationTasks"
+                                "$ref": "#/components/schemas/CrackerBinaryRelationTasks"
                             }
                         }
                     }
@@ -1183,7 +1276,7 @@
             },
             "delete": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -1234,7 +1327,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeDelete"
+                                "permCrackerBinaryDelete"
                             ]
                         ]
                     }
@@ -1245,7 +1338,7 @@
                     "content": {
                         "application/vnd.api+json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CrackerBinaryTypeRelationTasks"
+                                "$ref": "#/components/schemas/CrackerBinaryRelationTasks"
                             }
                         }
                     }
@@ -1253,10 +1346,10 @@
                 "parameters": []
             }
         },
-        "/api/v2/ui/crackertypes/{id}": {
+        "/api/v2/ui/crackers/{id}/hashtypes": {
             "get": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -1304,7 +1397,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryRelationHashtypesGetResponse"
                                 }
                             }
                         }
@@ -1314,7 +1407,402 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeRead"
+                                "permCrackerBinaryRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET request to retrieve a single object.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    }
+                ]
+            }
+        },
+        "/api/v2/ui/crackers/{id}/relationships/hashtypes": {
+            "get": {
+                "tags": [
+                    "CrackerBinarys"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CrackerBinaryResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET request for  for a to-one relationship link. Returns the resource record of the object that is part of the specified relation.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "CrackerBinarys"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "Successfull operation"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryUpdate"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "PATCH request to update a to one relationship.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CrackerBinaryRelationHashtypes"
+                            }
+                        }
+                    }
+                },
+                "parameters": []
+            },
+            "post": {
+                "tags": [
+                    "CrackerBinarys"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "successfully created"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryCreate"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "POST request to create a to-one relationship link.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CrackerBinaryRelationHashtypes"
+                            }
+                        }
+                    }
+                },
+                "parameters": []
+            },
+            "delete": {
+                "tags": [
+                    "CrackerBinarys"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "successfully deleted"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryDelete"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CrackerBinaryRelationHashtypes"
+                            }
+                        }
+                    }
+                },
+                "parameters": []
+            }
+        },
+        "/api/v2/ui/crackers/{id}": {
+            "get": {
+                "tags": [
+                    "CrackerBinarys"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CrackerBinaryResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryRead"
                             ]
                         ]
                     }
@@ -1341,22 +1829,24 @@
                             "items": {
                                 "type": "string",
                                 "enum": [
-                                    "crackerVersions",
-                                    "tasks"
+                                    "crackerBinaryType",
+                                    "accessGroup",
+                                    "tasks",
+                                    "hashtypes"
                                 ]
                             }
                         },
-                        "description": "Relationships to include in the response, comma seperated. Possible options: crackerVersions, tasks",
+                        "description": "Relationships to include in the response, comma seperated. Possible options: crackerBinaryType, accessGroup, tasks, hashtypes",
                         "example": [
-                            "crackerVersions",
-                            "tasks"
+                            "crackerBinaryType",
+                            "accessGroup"
                         ]
                     }
                 ]
             },
             "patch": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -1414,7 +1904,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypePostPatchResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryPostPatchResponse"
                                 }
                             }
                         }
@@ -1424,7 +1914,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeUpdate"
+                                "permCrackerBinaryUpdate"
                             ]
                         ]
                     }
@@ -1435,7 +1925,7 @@
                     "content": {
                         "application/vnd.api+json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CrackerBinaryTypePatch"
+                                "$ref": "#/components/schemas/CrackerBinaryPatch"
                             }
                         }
                     }
@@ -1444,7 +1934,7 @@
             },
             "delete": {
                 "tags": [
-                    "CrackerBinaryTypes"
+                    "CrackerBinarys"
                 ],
                 "responses": {
                     "400": {
@@ -1495,7 +1985,7 @@
                     {
                         "bearerAuth": [
                             [
-                                "permCrackerBinaryTypeDelete"
+                                "permCrackerBinaryDelete"
                             ]
                         ]
                     }
@@ -1739,7 +2229,7 @@
                     }
                 }
             },
-            "CrackerBinaryTypeResourceObject": {
+            "CrackerBinaryResourceObject": {
                 "type": "object",
                 "required": [
                     "id",
@@ -1755,23 +2245,45 @@
                     },
                     "type": {
                         "type": "string",
-                        "const": "crackerBinaryType"
+                        "const": "crackerBinary"
                     },
                     "attributes": {
                         "type": "object",
                         "required": [
-                            "typeName",
-                            "isChunkingAvailable"
+                            "crackerBinaryTypeId",
+                            "version",
+                            "downloadUrl",
+                            "binaryName",
+                            "filename",
+                            "accessGroupId"
                         ],
                         "properties": {
-                            "typeName": {
+                            "crackerBinaryTypeId": {
+                                "type": "integer"
+                            },
+                            "version": {
                                 "type": "string"
                             },
-                            "isChunkingAvailable": {
+                            "downloadUrl": {
                                 "type": [
-                                    "boolean",
+                                    "string",
                                     "null"
-                                ]
+                                ],
+                                "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
+                            },
+                            "binaryName": {
+                                "type": "string"
+                            },
+                            "filename": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                            },
+                            "accessGroupId": {
+                                "type": "integer",
+                                "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                             }
                         }
                     },
@@ -1783,18 +2295,20 @@
                         "properties": {
                             "self": {
                                 "type": "string",
-                                "default": "/api/v2/ui/crackertypes/1"
+                                "default": "/api/v2/ui/crackers/1"
                             }
                         }
                     },
                     "relationships": {
                         "type": "object",
                         "required": [
-                            "crackerVersions",
+                            "accessGroup",
+                            "crackerBinaryType",
+                            "hashtypes",
                             "tasks"
                         ],
                         "properties": {
-                            "crackerVersions": {
+                            "accessGroup": {
                                 "type": "object",
                                 "required": [
                                     "links"
@@ -1809,11 +2323,109 @@
                                         "properties": {
                                             "self": {
                                                 "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
+                                                "default": "/api/v2/ui/crackers/relationships/accessGroup"
                                             },
                                             "related": {
                                                 "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/crackerVersions"
+                                                "default": "/api/v2/ui/crackers/accessGroup"
+                                            }
+                                        }
+                                    },
+                                    "data": {
+                                        "oneOf": [
+                                            {
+                                                "type": "object",
+                                                "required": [
+                                                    "type",
+                                                    "id"
+                                                ],
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string",
+                                                        "const": "accessGroup"
+                                                    },
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            "crackerBinaryType": {
+                                "type": "object",
+                                "required": [
+                                    "links"
+                                ],
+                                "properties": {
+                                    "links": {
+                                        "type": "object",
+                                        "required": [
+                                            "self",
+                                            "related"
+                                        ],
+                                        "properties": {
+                                            "self": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/crackers/relationships/crackerBinaryType"
+                                            },
+                                            "related": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/crackers/crackerBinaryType"
+                                            }
+                                        }
+                                    },
+                                    "data": {
+                                        "oneOf": [
+                                            {
+                                                "type": "object",
+                                                "required": [
+                                                    "type",
+                                                    "id"
+                                                ],
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string",
+                                                        "const": "crackerBinaryType"
+                                                    },
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            "hashtypes": {
+                                "type": "object",
+                                "required": [
+                                    "links"
+                                ],
+                                "properties": {
+                                    "links": {
+                                        "type": "object",
+                                        "required": [
+                                            "self",
+                                            "related"
+                                        ],
+                                        "properties": {
+                                            "self": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/crackers/relationships/hashtypes"
+                                            },
+                                            "related": {
+                                                "type": "string",
+                                                "default": "/api/v2/ui/crackers/hashtypes"
                                             }
                                         }
                                     },
@@ -1828,7 +2440,7 @@
                                             "properties": {
                                                 "type": {
                                                     "type": "string",
-                                                    "const": "crackerBinary"
+                                                    "const": "hashType"
                                                 },
                                                 "id": {
                                                     "type": "integer",
@@ -1854,11 +2466,11 @@
                                         "properties": {
                                             "self": {
                                                 "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                                "default": "/api/v2/ui/crackers/relationships/tasks"
                                             },
                                             "related": {
                                                 "type": "string",
-                                                "default": "/api/v2/ui/crackertypes/tasks"
+                                                "default": "/api/v2/ui/crackers/tasks"
                                             }
                                         }
                                     },
@@ -1888,7 +2500,7 @@
                     }
                 }
             },
-            "CrackerBinaryTypeCreate": {
+            "CrackerBinaryCreate": {
                 "type": "object",
                 "required": [
                     "data"
@@ -1903,24 +2515,74 @@
                         "properties": {
                             "type": {
                                 "type": "string",
-                                "const": "crackerBinaryType"
+                                "const": "crackerBinary"
                             },
                             "attributes": {
                                 "type": "object",
                                 "properties": {
-                                    "typeName": {
+                                    "sourceType": {
+                                        "oneOf": [
+                                            {
+                                                "const": "inline",
+                                                "title": "Archive provided as base64 data in sourceData",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "import",
+                                                "title": "Archive taken from the import directory, sourceData is the filename",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "const": "url",
+                                                "title": "Archive fetched from an http(s) url given in sourceData",
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ],
+                                        "description": "Source the 7z archive is uploaded from: inline (base64 archive data in sourceData), import (filename of a file in the import directory as sourceData) or url (http/https url in sourceData, fetched by the server). Mutually exclusive with downloadUrl."
+                                    },
+                                    "sourceData": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Source of the archive upload, depending on sourceType: base64 encoded archive data, filename of a file in the import directory or a http/https url to fetch the archive from."
+                                    },
+                                    "crackerBinaryTypeId": {
+                                        "type": "integer"
+                                    },
+                                    "version": {
                                         "type": "string"
+                                    },
+                                    "downloadUrl": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
+                                    },
+                                    "binaryName": {
+                                        "type": "string"
+                                    },
+                                    "accessGroupId": {
+                                        "type": "integer",
+                                        "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                     }
                                 },
                                 "required": [
-                                    "typeName"
+                                    "crackerBinaryTypeId",
+                                    "version",
+                                    "binaryName",
+                                    "accessGroupId"
                                 ]
                             }
                         }
                     }
                 }
             },
-            "CrackerBinaryTypePatch": {
+            "CrackerBinaryPatch": {
                 "type": "object",
                 "required": [
                     "data"
@@ -1935,18 +2597,24 @@
                         "properties": {
                             "type": {
                                 "type": "string",
-                                "const": "crackerBinaryType"
+                                "const": "crackerBinary"
                             },
                             "attributes": {
                                 "type": "object",
                                 "properties": {
-                                    "isChunkingAvailable": {
+                                    "accessGroupId": {
+                                        "type": "integer"
+                                    },
+                                    "binaryName": {
+                                        "type": "string"
+                                    },
+                                    "downloadUrl": {
                                         "type": [
-                                            "boolean",
+                                            "string",
                                             "null"
                                         ]
                                     },
-                                    "typeName": {
+                                    "version": {
                                         "type": "string"
                                     }
                                 }
@@ -1955,7 +2623,7 @@
                     }
                 }
             },
-            "CrackerBinaryTypePatchMultiple": {
+            "CrackerBinaryPatchMultiple": {
                 "type": "object",
                 "required": [
                     "data"
@@ -1977,18 +2645,24 @@
                                 },
                                 "type": {
                                     "type": "string",
-                                    "const": "crackerBinaryType"
+                                    "const": "crackerBinary"
                                 },
                                 "attributes": {
                                     "type": "object",
                                     "properties": {
-                                        "isChunkingAvailable": {
+                                        "accessGroupId": {
+                                            "type": "integer"
+                                        },
+                                        "binaryName": {
+                                            "type": "string"
+                                        },
+                                        "downloadUrl": {
                                             "type": [
-                                                "boolean",
+                                                "string",
                                                 "null"
                                             ]
                                         },
-                                        "typeName": {
+                                        "version": {
                                             "type": "string"
                                         }
                                     }
@@ -1998,7 +2672,7 @@
                     }
                 }
             },
-            "CrackerBinaryTypeDeleteMultiple": {
+            "CrackerBinaryDeleteMultiple": {
                 "type": "object",
                 "required": [
                     "data"
@@ -2019,14 +2693,14 @@
                                 },
                                 "type": {
                                     "type": "string",
-                                    "const": "crackerBinaryType"
+                                    "const": "crackerBinary"
                                 }
                             }
                         }
                     }
                 }
             },
-            "CrackerBinaryTypeResponse": {
+            "CrackerBinaryResponse": {
                 "type": "object",
                 "required": [
                     "jsonapi",
@@ -2063,7 +2737,7 @@
                         "properties": {
                             "self": {
                                 "type": "string",
-                                "default": "/api/v2/ui/crackertypes/1"
+                                "default": "/api/v2/ui/crackers/1"
                             }
                         }
                     },
@@ -2083,23 +2757,45 @@
                             },
                             "type": {
                                 "type": "string",
-                                "const": "crackerBinaryType"
+                                "const": "crackerBinary"
                             },
                             "attributes": {
                                 "type": "object",
                                 "required": [
-                                    "typeName",
-                                    "isChunkingAvailable"
+                                    "crackerBinaryTypeId",
+                                    "version",
+                                    "downloadUrl",
+                                    "binaryName",
+                                    "filename",
+                                    "accessGroupId"
                                 ],
                                 "properties": {
-                                    "typeName": {
+                                    "crackerBinaryTypeId": {
+                                        "type": "integer"
+                                    },
+                                    "version": {
                                         "type": "string"
                                     },
-                                    "isChunkingAvailable": {
+                                    "downloadUrl": {
                                         "type": [
-                                            "boolean",
+                                            "string",
                                             "null"
-                                        ]
+                                        ],
+                                        "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
+                                    },
+                                    "binaryName": {
+                                        "type": "string"
+                                    },
+                                    "filename": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                    },
+                                    "accessGroupId": {
+                                        "type": "integer",
+                                        "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                     }
                                 }
                             },
@@ -2111,18 +2807,20 @@
                                 "properties": {
                                     "self": {
                                         "type": "string",
-                                        "default": "/api/v2/ui/crackertypes/1"
+                                        "default": "/api/v2/ui/crackers/1"
                                     }
                                 }
                             },
                             "relationships": {
                                 "type": "object",
                                 "required": [
-                                    "crackerVersions",
+                                    "accessGroup",
+                                    "crackerBinaryType",
+                                    "hashtypes",
                                     "tasks"
                                 ],
                                 "properties": {
-                                    "crackerVersions": {
+                                    "accessGroup": {
                                         "type": "object",
                                         "required": [
                                             "links"
@@ -2137,11 +2835,109 @@
                                                 "properties": {
                                                     "self": {
                                                         "type": "string",
-                                                        "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
+                                                        "default": "/api/v2/ui/crackers/relationships/accessGroup"
                                                     },
                                                     "related": {
                                                         "type": "string",
-                                                        "default": "/api/v2/ui/crackertypes/crackerVersions"
+                                                        "default": "/api/v2/ui/crackers/accessGroup"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "oneOf": [
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "type",
+                                                            "id"
+                                                        ],
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "const": "accessGroup"
+                                                            },
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "crackerBinaryType": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/relationships/crackerBinaryType"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/crackerBinaryType"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "oneOf": [
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "type",
+                                                            "id"
+                                                        ],
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "const": "crackerBinaryType"
+                                                            },
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "hashtypes": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/relationships/hashtypes"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/hashtypes"
                                                     }
                                                 }
                                             },
@@ -2156,7 +2952,7 @@
                                                     "properties": {
                                                         "type": {
                                                             "type": "string",
-                                                            "const": "crackerBinary"
+                                                            "const": "hashType"
                                                         },
                                                         "id": {
                                                             "type": "integer",
@@ -2182,11 +2978,11 @@
                                                 "properties": {
                                                     "self": {
                                                         "type": "string",
-                                                        "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                                        "default": "/api/v2/ui/crackers/relationships/tasks"
                                                     },
                                                     "related": {
                                                         "type": "string",
-                                                        "default": "/api/v2/ui/crackertypes/tasks"
+                                                        "default": "/api/v2/ui/crackers/tasks"
                                                     }
                                                 }
                                             },
@@ -2234,45 +3030,52 @@
                                         },
                                         "type": {
                                             "type": "string",
-                                            "const": "crackerBinary"
+                                            "const": "crackerBinaryType"
                                         },
                                         "attributes": {
                                             "type": "object",
                                             "required": [
-                                                "crackerBinaryTypeId",
-                                                "version",
-                                                "downloadUrl",
-                                                "binaryName",
-                                                "filename",
-                                                "accessGroupId"
+                                                "typeName",
+                                                "isChunkingAvailable"
                                             ],
                                             "properties": {
-                                                "crackerBinaryTypeId": {
-                                                    "type": "integer"
-                                                },
-                                                "version": {
+                                                "typeName": {
                                                     "type": "string"
                                                 },
-                                                "downloadUrl": {
+                                                "isChunkingAvailable": {
                                                     "type": [
-                                                        "string",
+                                                        "boolean",
                                                         "null"
-                                                    ],
-                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
-                                                },
-                                                "binaryName": {
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "accessGroup"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "groupName"
+                                            ],
+                                            "properties": {
+                                                "groupName": {
                                                     "type": "string"
-                                                },
-                                                "filename": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ],
-                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
-                                                },
-                                                "accessGroupId": {
-                                                    "type": "integer",
-                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -2404,6 +3207,43 @@
                                             }
                                         }
                                     }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "hashType"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "description",
+                                                "isSalted",
+                                                "isSlowHash"
+                                            ],
+                                            "properties": {
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "isSalted": {
+                                                    "type": "boolean"
+                                                },
+                                                "isSlowHash": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             ],
                             "discriminator": {
@@ -2413,7 +3253,7 @@
                     }
                 }
             },
-            "CrackerBinaryTypeSingleResponse": {
+            "CrackerBinarySingleResponse": {
                 "type": "object",
                 "required": [
                     "jsonapi",
@@ -2450,7 +3290,7 @@
                         "properties": {
                             "self": {
                                 "type": "string",
-                                "default": "/api/v2/ui/crackertypes/1"
+                                "default": "/api/v2/ui/crackers/1"
                             }
                         }
                     },
@@ -2470,23 +3310,45 @@
                             },
                             "type": {
                                 "type": "string",
-                                "const": "crackerBinaryType"
+                                "const": "crackerBinary"
                             },
                             "attributes": {
                                 "type": "object",
                                 "required": [
-                                    "typeName",
-                                    "isChunkingAvailable"
+                                    "crackerBinaryTypeId",
+                                    "version",
+                                    "downloadUrl",
+                                    "binaryName",
+                                    "filename",
+                                    "accessGroupId"
                                 ],
                                 "properties": {
-                                    "typeName": {
+                                    "crackerBinaryTypeId": {
+                                        "type": "integer"
+                                    },
+                                    "version": {
                                         "type": "string"
                                     },
-                                    "isChunkingAvailable": {
+                                    "downloadUrl": {
                                         "type": [
-                                            "boolean",
+                                            "string",
                                             "null"
-                                        ]
+                                        ],
+                                        "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
+                                    },
+                                    "binaryName": {
+                                        "type": "string"
+                                    },
+                                    "filename": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                    },
+                                    "accessGroupId": {
+                                        "type": "integer",
+                                        "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                     }
                                 }
                             },
@@ -2498,18 +3360,20 @@
                                 "properties": {
                                     "self": {
                                         "type": "string",
-                                        "default": "/api/v2/ui/crackertypes/1"
+                                        "default": "/api/v2/ui/crackers/1"
                                     }
                                 }
                             },
                             "relationships": {
                                 "type": "object",
                                 "required": [
-                                    "crackerVersions",
+                                    "accessGroup",
+                                    "crackerBinaryType",
+                                    "hashtypes",
                                     "tasks"
                                 ],
                                 "properties": {
-                                    "crackerVersions": {
+                                    "accessGroup": {
                                         "type": "object",
                                         "required": [
                                             "links"
@@ -2524,11 +3388,109 @@
                                                 "properties": {
                                                     "self": {
                                                         "type": "string",
-                                                        "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
+                                                        "default": "/api/v2/ui/crackers/relationships/accessGroup"
                                                     },
                                                     "related": {
                                                         "type": "string",
-                                                        "default": "/api/v2/ui/crackertypes/crackerVersions"
+                                                        "default": "/api/v2/ui/crackers/accessGroup"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "oneOf": [
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "type",
+                                                            "id"
+                                                        ],
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "const": "accessGroup"
+                                                            },
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "crackerBinaryType": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/relationships/crackerBinaryType"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/crackerBinaryType"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "oneOf": [
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "type",
+                                                            "id"
+                                                        ],
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "const": "crackerBinaryType"
+                                                            },
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "hashtypes": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/relationships/hashtypes"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/hashtypes"
                                                     }
                                                 }
                                             },
@@ -2543,7 +3505,7 @@
                                                     "properties": {
                                                         "type": {
                                                             "type": "string",
-                                                            "const": "crackerBinary"
+                                                            "const": "hashType"
                                                         },
                                                         "id": {
                                                             "type": "integer",
@@ -2569,11 +3531,11 @@
                                                 "properties": {
                                                     "self": {
                                                         "type": "string",
-                                                        "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                                        "default": "/api/v2/ui/crackers/relationships/tasks"
                                                     },
                                                     "related": {
                                                         "type": "string",
-                                                        "default": "/api/v2/ui/crackertypes/tasks"
+                                                        "default": "/api/v2/ui/crackers/tasks"
                                                     }
                                                 }
                                             },
@@ -2621,45 +3583,52 @@
                                         },
                                         "type": {
                                             "type": "string",
-                                            "const": "crackerBinary"
+                                            "const": "crackerBinaryType"
                                         },
                                         "attributes": {
                                             "type": "object",
                                             "required": [
-                                                "crackerBinaryTypeId",
-                                                "version",
-                                                "downloadUrl",
-                                                "binaryName",
-                                                "filename",
-                                                "accessGroupId"
+                                                "typeName",
+                                                "isChunkingAvailable"
                                             ],
                                             "properties": {
-                                                "crackerBinaryTypeId": {
-                                                    "type": "integer"
-                                                },
-                                                "version": {
+                                                "typeName": {
                                                     "type": "string"
                                                 },
-                                                "downloadUrl": {
+                                                "isChunkingAvailable": {
                                                     "type": [
-                                                        "string",
+                                                        "boolean",
                                                         "null"
-                                                    ],
-                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
-                                                },
-                                                "binaryName": {
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "accessGroup"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "groupName"
+                                            ],
+                                            "properties": {
+                                                "groupName": {
                                                     "type": "string"
-                                                },
-                                                "filename": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ],
-                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
-                                                },
-                                                "accessGroupId": {
-                                                    "type": "integer",
-                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -2791,6 +3760,43 @@
                                             }
                                         }
                                     }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "hashType"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "description",
+                                                "isSalted",
+                                                "isSlowHash"
+                                            ],
+                                            "properties": {
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "isSalted": {
+                                                    "type": "boolean"
+                                                },
+                                                "isSlowHash": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             ],
                             "discriminator": {
@@ -2800,7 +3806,7 @@
                     }
                 }
             },
-            "CrackerBinaryTypePostPatchResponse": {
+            "CrackerBinaryPostPatchResponse": {
                 "type": "object",
                 "required": [
                     "jsonapi",
@@ -2837,7 +3843,7 @@
                         "properties": {
                             "self": {
                                 "type": "string",
-                                "default": "/api/v2/ui/crackertypes/1"
+                                "default": "/api/v2/ui/crackers/1"
                             }
                         }
                     },
@@ -2857,23 +3863,45 @@
                             },
                             "type": {
                                 "type": "string",
-                                "const": "crackerBinaryType"
+                                "const": "crackerBinary"
                             },
                             "attributes": {
                                 "type": "object",
                                 "required": [
-                                    "typeName",
-                                    "isChunkingAvailable"
+                                    "crackerBinaryTypeId",
+                                    "version",
+                                    "downloadUrl",
+                                    "binaryName",
+                                    "filename",
+                                    "accessGroupId"
                                 ],
                                 "properties": {
-                                    "typeName": {
+                                    "crackerBinaryTypeId": {
+                                        "type": "integer"
+                                    },
+                                    "version": {
                                         "type": "string"
                                     },
-                                    "isChunkingAvailable": {
+                                    "downloadUrl": {
                                         "type": [
-                                            "boolean",
+                                            "string",
                                             "null"
-                                        ]
+                                        ],
+                                        "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
+                                    },
+                                    "binaryName": {
+                                        "type": "string"
+                                    },
+                                    "filename": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                    },
+                                    "accessGroupId": {
+                                        "type": "integer",
+                                        "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                     }
                                 }
                             },
@@ -2885,18 +3913,20 @@
                                 "properties": {
                                     "self": {
                                         "type": "string",
-                                        "default": "/api/v2/ui/crackertypes/1"
+                                        "default": "/api/v2/ui/crackers/1"
                                     }
                                 }
                             },
                             "relationships": {
                                 "type": "object",
                                 "required": [
-                                    "crackerVersions",
+                                    "accessGroup",
+                                    "crackerBinaryType",
+                                    "hashtypes",
                                     "tasks"
                                 ],
                                 "properties": {
-                                    "crackerVersions": {
+                                    "accessGroup": {
                                         "type": "object",
                                         "required": [
                                             "links"
@@ -2911,11 +3941,109 @@
                                                 "properties": {
                                                     "self": {
                                                         "type": "string",
-                                                        "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
+                                                        "default": "/api/v2/ui/crackers/relationships/accessGroup"
                                                     },
                                                     "related": {
                                                         "type": "string",
-                                                        "default": "/api/v2/ui/crackertypes/crackerVersions"
+                                                        "default": "/api/v2/ui/crackers/accessGroup"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "oneOf": [
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "type",
+                                                            "id"
+                                                        ],
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "const": "accessGroup"
+                                                            },
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "crackerBinaryType": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/relationships/crackerBinaryType"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/crackerBinaryType"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "oneOf": [
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "type",
+                                                            "id"
+                                                        ],
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "const": "crackerBinaryType"
+                                                            },
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "hashtypes": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/relationships/hashtypes"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/crackers/hashtypes"
                                                     }
                                                 }
                                             },
@@ -2930,7 +4058,7 @@
                                                     "properties": {
                                                         "type": {
                                                             "type": "string",
-                                                            "const": "crackerBinary"
+                                                            "const": "hashType"
                                                         },
                                                         "id": {
                                                             "type": "integer",
@@ -2956,11 +4084,11 @@
                                                 "properties": {
                                                     "self": {
                                                         "type": "string",
-                                                        "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                                        "default": "/api/v2/ui/crackers/relationships/tasks"
                                                     },
                                                     "related": {
                                                         "type": "string",
-                                                        "default": "/api/v2/ui/crackertypes/tasks"
+                                                        "default": "/api/v2/ui/crackers/tasks"
                                                     }
                                                 }
                                             },
@@ -3008,45 +4136,52 @@
                                         },
                                         "type": {
                                             "type": "string",
-                                            "const": "crackerBinary"
+                                            "const": "crackerBinaryType"
                                         },
                                         "attributes": {
                                             "type": "object",
                                             "required": [
-                                                "crackerBinaryTypeId",
-                                                "version",
-                                                "downloadUrl",
-                                                "binaryName",
-                                                "filename",
-                                                "accessGroupId"
+                                                "typeName",
+                                                "isChunkingAvailable"
                                             ],
                                             "properties": {
-                                                "crackerBinaryTypeId": {
-                                                    "type": "integer"
-                                                },
-                                                "version": {
+                                                "typeName": {
                                                     "type": "string"
                                                 },
-                                                "downloadUrl": {
+                                                "isChunkingAvailable": {
                                                     "type": [
-                                                        "string",
+                                                        "boolean",
                                                         "null"
-                                                    ],
-                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
-                                                },
-                                                "binaryName": {
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "accessGroup"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "groupName"
+                                            ],
+                                            "properties": {
+                                                "groupName": {
                                                     "type": "string"
-                                                },
-                                                "filename": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ],
-                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
-                                                },
-                                                "accessGroupId": {
-                                                    "type": "integer",
-                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -3178,6 +4313,43 @@
                                             }
                                         }
                                     }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "hashType"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "description",
+                                                "isSalted",
+                                                "isSlowHash"
+                                            ],
+                                            "properties": {
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "isSalted": {
+                                                    "type": "boolean"
+                                                },
+                                                "isSlowHash": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             ],
                             "discriminator": {
@@ -3187,7 +4359,7 @@
                     }
                 }
             },
-            "CrackerBinaryTypeListResponse": {
+            "CrackerBinaryListResponse": {
                 "type": "object",
                 "required": [
                     "jsonapi",
@@ -3229,32 +4401,32 @@
                         "properties": {
                             "self": {
                                 "type": "string",
-                                "default": "/api/v2/ui/crackertypes?page[size]=25"
+                                "default": "/api/v2/ui/crackers?page[size]=25"
                             },
                             "first": {
                                 "type": "string",
-                                "default": "/api/v2/ui/crackertypes?page[size]=25"
+                                "default": "/api/v2/ui/crackers?page[size]=25"
                             },
                             "last": {
                                 "type": [
                                     "string",
                                     "null"
                                 ],
-                                "default": "/api/v2/ui/crackertypes?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                                "default": "/api/v2/ui/crackers?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
                             },
                             "next": {
                                 "type": [
                                     "string",
                                     "null"
                                 ],
-                                "default": "/api/v2/ui/crackertypes?page[size]=25&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                                "default": "/api/v2/ui/crackers?page[size]=25&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
                             },
                             "prev": {
                                 "type": [
                                     "string",
                                     "null"
                                 ],
-                                "default": "/api/v2/ui/crackertypes?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                                "default": "/api/v2/ui/crackers?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
                             }
                         }
                     },
@@ -3295,23 +4467,45 @@
                                 },
                                 "type": {
                                     "type": "string",
-                                    "const": "crackerBinaryType"
+                                    "const": "crackerBinary"
                                 },
                                 "attributes": {
                                     "type": "object",
                                     "required": [
-                                        "typeName",
-                                        "isChunkingAvailable"
+                                        "crackerBinaryTypeId",
+                                        "version",
+                                        "downloadUrl",
+                                        "binaryName",
+                                        "filename",
+                                        "accessGroupId"
                                     ],
                                     "properties": {
-                                        "typeName": {
+                                        "crackerBinaryTypeId": {
+                                            "type": "integer"
+                                        },
+                                        "version": {
                                             "type": "string"
                                         },
-                                        "isChunkingAvailable": {
+                                        "downloadUrl": {
                                             "type": [
-                                                "boolean",
+                                                "string",
                                                 "null"
-                                            ]
+                                            ],
+                                            "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
+                                        },
+                                        "binaryName": {
+                                            "type": "string"
+                                        },
+                                        "filename": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                        },
+                                        "accessGroupId": {
+                                            "type": "integer",
+                                            "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                         }
                                     }
                                 },
@@ -3323,18 +4517,20 @@
                                     "properties": {
                                         "self": {
                                             "type": "string",
-                                            "default": "/api/v2/ui/crackertypes/1"
+                                            "default": "/api/v2/ui/crackers/1"
                                         }
                                     }
                                 },
                                 "relationships": {
                                     "type": "object",
                                     "required": [
-                                        "crackerVersions",
+                                        "accessGroup",
+                                        "crackerBinaryType",
+                                        "hashtypes",
                                         "tasks"
                                     ],
                                     "properties": {
-                                        "crackerVersions": {
+                                        "accessGroup": {
                                             "type": "object",
                                             "required": [
                                                 "links"
@@ -3349,11 +4545,109 @@
                                                     "properties": {
                                                         "self": {
                                                             "type": "string",
-                                                            "default": "/api/v2/ui/crackertypes/relationships/crackerVersions"
+                                                            "default": "/api/v2/ui/crackers/relationships/accessGroup"
                                                         },
                                                         "related": {
                                                             "type": "string",
-                                                            "default": "/api/v2/ui/crackertypes/crackerVersions"
+                                                            "default": "/api/v2/ui/crackers/accessGroup"
+                                                        }
+                                                    }
+                                                },
+                                                "data": {
+                                                    "oneOf": [
+                                                        {
+                                                            "type": "object",
+                                                            "required": [
+                                                                "type",
+                                                                "id"
+                                                            ],
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "const": "accessGroup"
+                                                                },
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "type": "null"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "crackerBinaryType": {
+                                            "type": "object",
+                                            "required": [
+                                                "links"
+                                            ],
+                                            "properties": {
+                                                "links": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "self",
+                                                        "related"
+                                                    ],
+                                                    "properties": {
+                                                        "self": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/crackers/relationships/crackerBinaryType"
+                                                        },
+                                                        "related": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/crackers/crackerBinaryType"
+                                                        }
+                                                    }
+                                                },
+                                                "data": {
+                                                    "oneOf": [
+                                                        {
+                                                            "type": "object",
+                                                            "required": [
+                                                                "type",
+                                                                "id"
+                                                            ],
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "const": "crackerBinaryType"
+                                                                },
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "type": "null"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "hashtypes": {
+                                            "type": "object",
+                                            "required": [
+                                                "links"
+                                            ],
+                                            "properties": {
+                                                "links": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "self",
+                                                        "related"
+                                                    ],
+                                                    "properties": {
+                                                        "self": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/crackers/relationships/hashtypes"
+                                                        },
+                                                        "related": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/crackers/hashtypes"
                                                         }
                                                     }
                                                 },
@@ -3368,7 +4662,7 @@
                                                         "properties": {
                                                             "type": {
                                                                 "type": "string",
-                                                                "const": "crackerBinary"
+                                                                "const": "hashType"
                                                             },
                                                             "id": {
                                                                 "type": "integer",
@@ -3394,11 +4688,11 @@
                                                     "properties": {
                                                         "self": {
                                                             "type": "string",
-                                                            "default": "/api/v2/ui/crackertypes/relationships/tasks"
+                                                            "default": "/api/v2/ui/crackers/relationships/tasks"
                                                         },
                                                         "related": {
                                                             "type": "string",
-                                                            "default": "/api/v2/ui/crackertypes/tasks"
+                                                            "default": "/api/v2/ui/crackers/tasks"
                                                         }
                                                     }
                                                 },
@@ -3447,45 +4741,52 @@
                                         },
                                         "type": {
                                             "type": "string",
-                                            "const": "crackerBinary"
+                                            "const": "crackerBinaryType"
                                         },
                                         "attributes": {
                                             "type": "object",
                                             "required": [
-                                                "crackerBinaryTypeId",
-                                                "version",
-                                                "downloadUrl",
-                                                "binaryName",
-                                                "filename",
-                                                "accessGroupId"
+                                                "typeName",
+                                                "isChunkingAvailable"
                                             ],
                                             "properties": {
-                                                "crackerBinaryTypeId": {
-                                                    "type": "integer"
-                                                },
-                                                "version": {
+                                                "typeName": {
                                                     "type": "string"
                                                 },
-                                                "downloadUrl": {
+                                                "isChunkingAvailable": {
                                                     "type": [
-                                                        "string",
+                                                        "boolean",
                                                         "null"
-                                                    ],
-                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
-                                                },
-                                                "binaryName": {
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "accessGroup"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "groupName"
+                                            ],
+                                            "properties": {
+                                                "groupName": {
                                                     "type": "string"
-                                                },
-                                                "filename": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ],
-                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
-                                                },
-                                                "accessGroupId": {
-                                                    "type": "integer",
-                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -3617,6 +4918,43 @@
                                             }
                                         }
                                     }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "attributes"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "hashType"
+                                        },
+                                        "attributes": {
+                                            "type": "object",
+                                            "required": [
+                                                "description",
+                                                "isSalted",
+                                                "isSlowHash"
+                                            ],
+                                            "properties": {
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "isSalted": {
+                                                    "type": "boolean"
+                                                },
+                                                "isSlowHash": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             ],
                             "discriminator": {
@@ -3626,7 +4964,7 @@
                     }
                 }
             },
-            "CrackerBinaryTypeCountResponse": {
+            "CrackerBinaryCountResponse": {
                 "type": "object",
                 "required": [
                     "jsonapi",
@@ -3681,63 +5019,107 @@
                     }
                 }
             },
-            "CrackerBinaryTypeRelationCrackerVersions": {
+            "CrackerBinaryRelationCrackerBinaryType": {
                 "type": "object",
                 "required": [
                     "data"
                 ],
                 "properties": {
                     "data": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "required": [
-                                "type",
-                                "id"
-                            ],
-                            "properties": {
-                                "type": {
-                                    "type": "string",
-                                    "const": "crackerVersions"
-                                },
-                                "id": {
-                                    "type": "integer",
-                                    "example": 1
-                                }
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "id"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "crackerBinaryType"
+                            },
+                            "id": {
+                                "type": "integer",
+                                "example": 1
                             }
                         }
                     }
                 }
             },
-            "CrackerBinaryTypeRelationCrackerVersionsGetResponse": {
+            "CrackerBinaryRelationCrackerBinaryTypeGetResponse": {
                 "type": "object",
                 "required": [
                     "data"
                 ],
                 "properties": {
                     "data": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "required": [
-                                "type",
-                                "id"
-                            ],
-                            "properties": {
-                                "type": {
-                                    "type": "string",
-                                    "const": "crackerVersions"
-                                },
-                                "id": {
-                                    "type": "integer",
-                                    "example": 1
-                                }
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "id"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "crackerBinaryType"
+                            },
+                            "id": {
+                                "type": "integer",
+                                "example": 1
                             }
                         }
                     }
                 }
             },
-            "CrackerBinaryTypeRelationTasks": {
+            "CrackerBinaryRelationAccessGroup": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "id"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "accessGroup"
+                            },
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            }
+                        }
+                    }
+                }
+            },
+            "CrackerBinaryRelationAccessGroupGetResponse": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "id"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "accessGroup"
+                            },
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            }
+                        }
+                    }
+                }
+            },
+            "CrackerBinaryRelationTasks": {
                 "type": "object",
                 "required": [
                     "data"
@@ -3765,7 +5147,7 @@
                     }
                 }
             },
-            "CrackerBinaryTypeRelationTasksGetResponse": {
+            "CrackerBinaryRelationTasksGetResponse": {
                 "type": "object",
                 "required": [
                     "data"
@@ -3783,6 +5165,62 @@
                                 "type": {
                                     "type": "string",
                                     "const": "tasks"
+                                },
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "CrackerBinaryRelationHashtypes": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "id"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "const": "hashtypes"
+                                },
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "CrackerBinaryRelationHashtypesGetResponse": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "id"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "const": "hashtypes"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -3852,10 +5290,10 @@
                 "scheme": "bearer",
                 "bearerFormat": "JWT",
                 "scopes": [
-                    "permCrackerBinaryTypeCreate",
-                    "permCrackerBinaryTypeDelete",
-                    "permCrackerBinaryTypeRead",
-                    "permCrackerBinaryTypeUpdate"
+                    "permCrackerBinaryCreate",
+                    "permCrackerBinaryDelete",
+                    "permCrackerBinaryRead",
+                    "permCrackerBinaryUpdate"
                 ]
             },
             "basicAuth": {

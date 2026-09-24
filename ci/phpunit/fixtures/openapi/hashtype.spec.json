@@ -461,7 +461,7 @@
                 ]
             }
         },
-        "/api/v2/ui/hashtypes/{id}/{relation}": {
+        "/api/v2/ui/hashtypes/{id}/crackerBinaries": {
             "get": {
                 "tags": [
                     "HashTypes"
@@ -542,7 +542,7 @@
                 ]
             }
         },
-        "/api/v2/ui/hashtypes/{id}/relationships/{relation}": {
+        "/api/v2/ui/hashtypes/{id}/relationships/crackerBinaries": {
             "get": {
                 "tags": [
                     "HashTypes"
