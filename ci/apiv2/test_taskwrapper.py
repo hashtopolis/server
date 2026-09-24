@@ -1,6 +1,12 @@
 from hashtopolis import Helper, HashtopolisError, TaskWrapper
 from hashtopolis import Cracker
-from utils import BaseTest, get_cracker_archive_url
+from utils import (BaseTest, create_restricted_user, get_bearer_token, get_cracker_archive_url,
+                   get_hashtopolis_uri)
+
+import requests
+
+
+APIV2 = get_hashtopolis_uri() + '/api/v2'
 
 
 class TaskWrapperTest(BaseTest):
@@ -77,3 +83,51 @@ class TaskWrapperTest(BaseTest):
         model_obj = self.create_test_object()
         self._test_acl_list(model_obj, {'permTaskWrapperRead': True})
         self._test_acl_count(model_obj, {'permTaskWrapperRead': True})
+
+
+class TestTaskWrapperToOneRelations(BaseTest):
+    """The to-one relations of task wrappers.
+
+    The hashType relation goes through the hashlist as intermediate table,
+    the hashlist relation is a plain foreign key. Both are resolved from the
+    wrapper and enforce the access group of the wrapper.
+    """
+
+    def test_related_resources_resolve_and_enforce_access_group(self):
+        """The to-one routes resolve the related resources from the wrapper.
+
+        Users without access to the wrapper's access group must not read the
+        related resources, even when they have the global read permissions.
+        """
+        hashlist = self.create_hashlist()
+        task = self.create_task(hashlist)
+        wrapper = TaskWrapper.objects.get(pk=task.taskWrapperId)
+
+        admin_headers = {'Authorization': f'Bearer {get_bearer_token()}'}
+
+        # the hashType is resolved through the hashlist
+        r = requests.get(f'{APIV2}/ui/taskwrappers/{wrapper.id}/hashType', headers=admin_headers)
+        self.assertEqual(200, r.status_code, f'Related hashType should be readable: {r.text}')
+        self.assertEqual(hashlist.hashTypeId, r.json()['data']['id'])
+
+        # the hashlist is a plain foreign key relation
+        r = requests.get(f'{APIV2}/ui/taskwrappers/{wrapper.id}/hashlist', headers=admin_headers)
+        self.assertEqual(200, r.status_code, f'Related hashlist should be readable: {r.text}')
+        self.assertEqual(hashlist.id, r.json()['data']['id'])
+
+        # a user without access to the wrapper's access group is denied everywhere
+        username, password = create_restricted_user(self, {
+            'permTaskWrapperRead': True,
+            'permHashlistRead': True,
+            'permHashTypeRead': True,
+        })
+        r = requests.post(f'{APIV2}/auth/token', auth=(username, password))
+        self.assertEqual(201, r.status_code, f'Could not get a token: {r.text}')
+        headers = {'Authorization': f"Bearer {r.json()['token']}"}
+
+        r = requests.get(f'{APIV2}/ui/taskwrappers/{wrapper.id}/hashType', headers=headers)
+        self.assertEqual(403, r.status_code, f'Related hashType should be denied: {r.text}')
+        r = requests.get(f'{APIV2}/ui/taskwrappers/{wrapper.id}/hashlist', headers=headers)
+        self.assertEqual(403, r.status_code, f'Related hashlist should be denied: {r.text}')
+        r = requests.get(f'{APIV2}/ui/taskwrappers/{wrapper.id}/relationships/hashlist', headers=headers)
+        self.assertEqual(403, r.status_code, f'Relationship link should be denied: {r.text}')
