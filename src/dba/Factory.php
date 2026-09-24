@@ -16,6 +16,7 @@ use Hashtopolis\dba\models\ConfigFactory;
 use Hashtopolis\dba\models\ConfigSectionFactory;
 use Hashtopolis\dba\models\CrackerBinaryFactory;
 use Hashtopolis\dba\models\CrackerBinaryTypeFactory;
+use Hashtopolis\dba\models\CrackerBinaryHashtypeFactory;
 use Hashtopolis\dba\models\FileFactory;
 use Hashtopolis\dba\models\FileDeleteFactory;
 use Hashtopolis\dba\models\FileDownloadFactory;
@@ -66,6 +67,7 @@ class Factory {
   private static ?ConfigSectionFactory $configSectionFactory = null;
   private static ?CrackerBinaryFactory $crackerBinaryFactory = null;
   private static ?CrackerBinaryTypeFactory $crackerBinaryTypeFactory = null;
+  private static ?CrackerBinaryHashtypeFactory $crackerBinaryHashtypeFactory = null;
   private static ?FileFactory $fileFactory = null;
   private static ?FileDeleteFactory $fileDeleteFactory = null;
   private static ?FileDownloadFactory $fileDownloadFactory = null;
@@ -238,6 +240,16 @@ class Factory {
       return $f;
     } else {
       return self::$crackerBinaryTypeFactory;
+    }
+  }
+  
+  public static function getCrackerBinaryHashtypeFactory(): CrackerBinaryHashtypeFactory {
+    if (self::$crackerBinaryHashtypeFactory == null) {
+      $f = new CrackerBinaryHashtypeFactory();
+      self::$crackerBinaryHashtypeFactory = $f;
+      return $f;
+    } else {
+      return self::$crackerBinaryHashtypeFactory;
     }
   }
   

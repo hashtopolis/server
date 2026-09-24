@@ -352,17 +352,19 @@ class JsonApiFragments {
   }
 
   /**
-   * This function builds the post/patch attributes for a relationship. When $istomany is false,
-   * it would build the attributes for a to one relationship. If it is true it will build it for a too many relationship.
-   * */
-  public function buildPostPatchRelation($name, $isToMany): array {
+   * Build the resource identifiers of a relationship document.
+   *
+   * $typeName is the resource type of the related API class, the same value
+   * the runtime puts into the identifiers it emits.
+   */
+  public function buildPostPatchRelation(string $typeName, bool $isToMany): array {
     $resourceRecord = [
       "type" => "object",
       "required" => ["type", "id"],
       "properties" => [
         "type" => [
           "type" => "string",
-          "const" => $name
+          "const" => $typeName
         ],
         "id" => $this->resourceIdSchema()
       ]

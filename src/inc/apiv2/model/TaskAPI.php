@@ -95,6 +95,7 @@ class TaskAPI extends AbstractModelAPI {
         
         'relationType' => Hashlist::class,
         'relationKey' => Hashlist::HASHLIST_ID,
+        'filterACL' => true,
         
         //because task doesnt have a direct connection to hashlist
         'intermediateType' => TaskWrapper::class,
