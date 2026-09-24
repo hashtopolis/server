@@ -831,7 +831,8 @@ class TestCrackerHashtypes(BaseTest):
         its hashtype associations, even though hashtypes themselves are global
         and not isolated by access groups.
         """
-        obj = self.create_cracker()
+        # a generic (non-hashcat) binary, its hashtypes are manually editable
+        obj = self.create_generic_cracker()
         hashtype = self.create_unique_hashtype()
         r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': hashtype.id}])
         self.assertEqual(204, r.status_code, f'Patching failed: {r.text}')
@@ -896,7 +897,8 @@ class TestCrackerHashtypes(BaseTest):
         not see the binary when the hashtype is expanded, when its relationship
         link is read or when the related binaries are listed.
         """
-        obj = self.create_cracker()
+        # a generic (non-hashcat) binary, its hashtypes are manually editable
+        obj = self.create_generic_cracker()
         hashtype = self.create_unique_hashtype()
         r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': hashtype.id}])
         self.assertEqual(204, r.status_code, f'Patching failed: {r.text}')
