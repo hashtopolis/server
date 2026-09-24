@@ -19,6 +19,7 @@ use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
+use PDOException;
 
 class CrackerUtils {
   private const INLINE_MEMORY_RESERVE = 16 * 1024 * 1024;
@@ -597,7 +598,17 @@ class CrackerUtils {
     if ($existing !== null) {
       throw new HttpConflict("The hashtype is already associated with this cracker binary!");
     }
-    Factory::getCrackerBinaryHashtypeFactory()->save(new CrackerBinaryHashtype(null, $binary->getId(), $hashtypeId));
+    try {
+      Factory::getCrackerBinaryHashtypeFactory()->save(new CrackerBinaryHashtype(null, $binary->getId(), $hashtypeId));
+    }
+    catch (PDOException $e) {
+      /* A concurrent request created the association in between. The unique
+         key on (crackerBinaryId, hashTypeId) guarantees it exists only once. */
+      if (in_array($e->getCode(), ['23000', '23505'])) {
+        throw new HttpConflict("The hashtype is already associated with this cracker binary!");
+      }
+      throw $e;
+    }
   }
   
   /**
@@ -637,7 +648,16 @@ class CrackerUtils {
     $factory->getDB()->beginTransaction(); //start transaction to be able roll back
     foreach (Factory::getHashTypeFactory()->filter([]) as $hashtype) {
       if (!in_array($hashtype->getId(), $currentIds)) {
-        $factory->save(new CrackerBinaryHashtype(null, $binary->getId(), $hashtype->getId()));
+        try {
+          $factory->save(new CrackerBinaryHashtype(null, $binary->getId(), $hashtype->getId()));
+        }
+        catch (PDOException $e) {
+          /* A concurrent request created the association in between. Skipping
+             it keeps this function idempotent as documented. */
+          if (!in_array($e->getCode(), ['23000', '23505'])) {
+            throw $e;
+          }
+        }
       }
     }
     if (!$factory->getDB()->commit()) {
