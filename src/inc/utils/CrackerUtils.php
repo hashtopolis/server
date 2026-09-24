@@ -745,6 +745,9 @@ class CrackerUtils {
     // already on the server
     if ($binary->getFilename() === null) {
       $target = tempnam(sys_get_temp_dir(), 'HTP_CHECK_');
+      if ($target === false) {
+        throw new HTException("Could not create a temporary file for checking the cracker binary!");
+      }
       unlink($target); // Util::uploadFile only downloads if the target does not exist yet
       [$success, $msg] = Util::uploadFile($target, "url", $binary->getDownloadUrl());
       if (!$success) {
