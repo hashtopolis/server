@@ -52,7 +52,10 @@ class ScanCrackerJob implements BackgroundJobHandler {
       return new BackgroundJobResult(0, "Cracker binary $binaryId is not of the hashcat type, scan skipped.");
     }
 
-    $tempDir = (string)tempnam(sys_get_temp_dir(), 'HTP_SCAN_');
+    $tempDir = tempnam(sys_get_temp_dir(), 'HTP_SCAN_');
+    if ($tempDir === false) {
+      return new BackgroundJobResult(-1, "Could not create a temporary directory for the scan of the cracker binary $binaryId.");
+    }
     try {
       unlink($tempDir);
       mkdir($tempDir);
