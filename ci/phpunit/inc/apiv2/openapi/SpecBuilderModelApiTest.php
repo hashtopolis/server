@@ -44,6 +44,11 @@ final class SpecBuilderModelApiTest extends TestCase {
       array_keys($spec['paths']['/api/v2/ui/hashtypes/{id}/crackerBinaries'])
     );
 
+    // the resource identifiers carry the resource type of the related API
+    // class, not the plural name of the relationship
+    $identifier = $spec['components']['schemas']['HashTypeRelationCrackerBinariesGetResponse']['properties']['data']['items']['properties']['type'];
+    $this->assertSame(['type' => 'string', 'const' => 'crackerBinary'], $identifier);
+
     $this->assertSame('3.1.0', $spec['openapi']);
     $this->assertArrayHasKey('/api/v2/ui/hashtypes', $spec['paths']);
     $this->assertArrayHasKey('/api/v2/ui/hashtypes/count', $spec['paths']);
@@ -115,6 +120,11 @@ final class SpecBuilderModelApiTest extends TestCase {
       $tasksGet['content'][$mediaType]['schema']['$ref']
     );
 
+    // the resource identifiers carry the resource type of the related API
+    // class, not the plural name of the relationship
+    $crackerVersionsIdentifier = $spec['components']['schemas']['CrackerBinaryTypeRelationCrackerVersionsGetResponse']['properties']['data']['items']['properties']['type'];
+    $this->assertSame(['type' => 'string', 'const' => 'crackerBinary'], $crackerVersionsIdentifier);
+
     $response = $spec['components']['schemas']['CrackerBinaryTypeResponse'];
     // toMany relationship linkage is an array of resource identifiers
     $this->assertSame('array', $response['properties']['data']['properties']['relationships']['properties']['tasks']['properties']['data']['type']);
@@ -183,6 +193,13 @@ final class SpecBuilderModelApiTest extends TestCase {
       '#/components/schemas/CrackerBinaryRelationHashtypes',
       $hashtypesPost['content'][$mediaType]['schema']['$ref']
     );
+
+    // the identifiers carry the resource type of the related API class, not
+    // the plural name of the relationship
+    $hashtypesIdentifier = $spec['components']['schemas']['CrackerBinaryRelationHashtypes']['properties']['data']['items']['properties']['type'];
+    $this->assertSame(['type' => 'string', 'const' => 'hashType'], $hashtypesIdentifier);
+    $tasksIdentifier = $spec['components']['schemas']['CrackerBinaryRelationTasks']['properties']['data']['items']['properties']['type'];
+    $this->assertSame(['type' => 'string', 'const' => 'task'], $tasksIdentifier);
   }
 
   /**

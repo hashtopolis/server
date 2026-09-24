@@ -5136,7 +5136,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -5164,7 +5164,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -5192,7 +5192,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "hashtypes"
+                                    "const": "hashType"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -5220,7 +5220,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "hashtypes"
+                                    "const": "hashType"
                                 },
                                 "id": {
                                     "type": "integer",

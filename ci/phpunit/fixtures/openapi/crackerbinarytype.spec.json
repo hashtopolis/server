@@ -3698,7 +3698,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "crackerVersions"
+                                    "const": "crackerBinary"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -3726,7 +3726,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "crackerVersions"
+                                    "const": "crackerBinary"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -3754,7 +3754,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -3782,7 +3782,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",

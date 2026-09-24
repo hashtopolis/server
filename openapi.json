@@ -39802,7 +39802,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "userMembers"
+                                    "const": "user"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -39830,7 +39830,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "userMembers"
+                                    "const": "user"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -39858,7 +39858,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "agentMembers"
+                                    "const": "agent"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -39886,7 +39886,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "agentMembers"
+                                    "const": "agent"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -43316,7 +43316,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "accessGroups"
+                                    "const": "accessGroup"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -43344,7 +43344,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "accessGroups"
+                                    "const": "accessGroup"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -43372,7 +43372,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "agentStats"
+                                    "const": "agentStat"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -43400,7 +43400,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "agentStats"
+                                    "const": "agentStat"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -43428,7 +43428,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "agentErrors"
+                                    "const": "agentError"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -43456,7 +43456,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "agentErrors"
+                                    "const": "agentError"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -43484,7 +43484,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "chunks"
+                                    "const": "chunk"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -43512,7 +43512,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "chunks"
+                                    "const": "chunk"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -43540,7 +43540,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -43568,7 +43568,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -43596,7 +43596,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "assignments"
+                                    "const": "agentAssignment"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -43624,7 +43624,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "assignments"
+                                    "const": "agentAssignment"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -54088,7 +54088,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -54116,7 +54116,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -54144,7 +54144,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "hashtypes"
+                                    "const": "hashType"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -54172,7 +54172,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "hashtypes"
+                                    "const": "hashType"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -55606,7 +55606,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "crackerVersions"
+                                    "const": "crackerBinary"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -55634,7 +55634,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "crackerVersions"
+                                    "const": "crackerBinary"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -55662,7 +55662,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -55690,7 +55690,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -57932,7 +57932,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "userMembers"
+                                    "const": "user"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -57960,7 +57960,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "userMembers"
+                                    "const": "user"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -62874,7 +62874,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "hashes"
+                                    "const": "hash"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -62902,7 +62902,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "hashes"
+                                    "const": "hash"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -62930,7 +62930,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "hashlists"
+                                    "const": "hashlist"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -62958,7 +62958,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "hashlists"
+                                    "const": "hashlist"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -62986,7 +62986,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -63014,7 +63014,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -63923,7 +63923,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "crackerBinaries"
+                                    "const": "crackerBinary"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -66847,7 +66847,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "healthCheckAgents"
+                                    "const": "healthCheckAgent"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -66875,7 +66875,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "healthCheckAgents"
+                                    "const": "healthCheckAgent"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -70501,7 +70501,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "pretaskFiles"
+                                    "const": "file"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -70529,7 +70529,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "pretaskFiles"
+                                    "const": "file"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -72806,7 +72806,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "pretasks"
+                                    "const": "preTask"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -72834,7 +72834,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "pretasks"
+                                    "const": "preTask"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -76842,7 +76842,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "assignedAgents"
+                                    "const": "agent"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -76870,7 +76870,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "assignedAgents"
+                                    "const": "agent"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -76898,7 +76898,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "files"
+                                    "const": "file"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -76926,7 +76926,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "files"
+                                    "const": "file"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -76954,7 +76954,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "speeds"
+                                    "const": "speed"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -76982,7 +76982,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "speeds"
+                                    "const": "speed"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -80154,7 +80154,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -81243,7 +81243,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -82618,7 +82618,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "accessGroups"
+                                    "const": "accessGroup"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -82646,7 +82646,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "accessGroups"
+                                    "const": "accessGroup"
                                 },
                                 "id": {
                                     "type": "integer",
