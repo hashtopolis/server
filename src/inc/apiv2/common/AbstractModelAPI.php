@@ -1531,6 +1531,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if ($relation == null) {
       throw new HttpError("Relation does not exist!");
     }
+    if (isset($relation["readonly"]) && $relation['readonly'] === true) {
+      throw new HttpError('This relationship is readonly');
+    }
     $relationKey = $relation['relationKey'];
     $relationType = $relation['relationType'];
     

@@ -27,10 +27,22 @@ final class SpecBuilderModelApiTest extends TestCase {
   public function testHashTypeSpec(): void {
     // Simple case: full CRUD model API with one readonly toMany relationship
     // (crackerBinaries), whose target is seeded on the class mapper only, so
-    // its own routes are not part of the spec.
+    // its own routes are not part of the spec. The runtime rejects every
+    // mutation of the readonly relationship, so the spec documents only its
+    // reading operations.
     $spec = (new SpecBuilder())->buildForApiClasses([HashTypeAPI::class], [CrackerBinaryAPI::class]);
 
     $this->assertMatchesJsonFixture($spec, 'hashtype.spec.json');
+
+    // the readonly relationship documents no mutation operations
+    $this->assertSame(
+      ['get'],
+      array_keys($spec['paths']['/api/v2/ui/hashtypes/{id}/relationships/crackerBinaries'])
+    );
+    $this->assertSame(
+      ['get'],
+      array_keys($spec['paths']['/api/v2/ui/hashtypes/{id}/crackerBinaries'])
+    );
 
     $this->assertSame('3.1.0', $spec['openapi']);
     $this->assertArrayHasKey('/api/v2/ui/hashtypes', $spec['paths']);
