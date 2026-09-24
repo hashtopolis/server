@@ -1833,7 +1833,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $relation["junctionTableJoinField"] => $relationItem->getId(),
         ];
         $table_entry = $factory->createObjectFromDict($table_entry_dict);
-        $factory->save($table_entry);
+        try {
+          $factory->save($table_entry);
+        }
+        catch (PDOException $e) {
+          /* A concurrent request created the same relation in between, a
+             unique key on the junction table (if present) guarantees it
+             exists only once. */
+          if (in_array($e->getCode(), ['23000', '23505'])) {
+            throw new HttpConflict("Relation " . $relation['junctionTableType'] . " of " . $baseItem->getId() . " to " . $relationItem->getId() . " already exists");
+          }
+          throw $e;
+        }
       }
     }
     else {

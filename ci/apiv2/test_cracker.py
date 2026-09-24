@@ -643,6 +643,42 @@ class TestCrackerHashtypes(BaseTest):
         r = self.relationship_request(obj, 'POST', [{'type': 'hashType', 'id': hashtype2.id}])
         self.assertEqual(409, r.status_code)
 
+    def test_concurrent_add_creates_single_association(self):
+        """Concurrent requests cannot create the same association twice.
+
+        The unique key on (crackerBinaryId, hashTypeId) guarantees that of two
+        concurrent requests adding the same hashtype only one can create the
+        association; the other one is answered with a conflict instead of
+        creating a duplicate.
+        """
+        # a generic (non-hashcat) binary starts without any association and
+        # the fresh hashtype is only auto-associated with hashcat binaries,
+        # so both requests start from a non-existing association
+        stamp = int(time.time() * 1000)
+        cracker_type = self.create_crackertype(extra_payload={'typeName': f'generic-cracker-{stamp}'})
+        obj = self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+        hashtype = self.create_unique_hashtype()
+        self.assertListEqual([], self.hashtype_ids_of(obj))
+
+        barrier = threading.Barrier(2)
+        results = []
+
+        def add():
+            barrier.wait()
+            results.append(self.relationship_request(obj, 'POST', [{'type': 'hashType', 'id': hashtype.id}]))
+
+        threads = [threading.Thread(target=add) for _ in range(2)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        statuses = sorted(r.status_code for r in results)
+        self.assertEqual([201, 409], statuses,
+                         f'Concurrent adds should give exactly one success and one conflict: '
+                         f'{[(r.status_code, r.text) for r in results]}')
+        self.assertListEqual([hashtype.id], self.hashtype_ids_of(obj))
+
     def test_remove_hashtype_with_relationship_delete(self):
         """Single hashtypes can be removed from the association of a binary."""
         obj = self.create_cracker()

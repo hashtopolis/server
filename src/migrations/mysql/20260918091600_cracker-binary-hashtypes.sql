@@ -1,11 +1,13 @@
 -- Association table between cracker binaries and hashtypes: a binary only
--- supports the hashtypes it is linked to.
+-- supports the hashtypes it is linked to. Each pair is only linked once,
+-- the unique key also protects against concurrent requests creating the
+-- same association twice.
 CREATE TABLE `CrackerBinaryHashtype` (
   `crackerBinaryHashtypeId` int NOT NULL AUTO_INCREMENT,
   `crackerBinaryId` int NOT NULL,
   `hashTypeId` int NOT NULL,
   PRIMARY KEY (`crackerBinaryHashtypeId`),
-  KEY `crackerBinaryId` (`crackerBinaryId`),
+  UNIQUE KEY `crackerBinaryId_hashTypeId` (`crackerBinaryId`, `hashTypeId`),
   KEY `hashTypeId` (`hashTypeId`),
   CONSTRAINT `CrackerBinaryHashtype_ibfk_1` FOREIGN KEY (`crackerBinaryId`) REFERENCES `CrackerBinary` (`crackerBinaryId`),
   CONSTRAINT `CrackerBinaryHashtype_ibfk_2` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`)
@@ -16,7 +18,7 @@ CREATE TABLE `CrackerBinaryHashtype` (
 -- hashtypes. Binaries of other types start without any association, their
 -- supported hashtypes have to be associated manually.
 INSERT INTO `CrackerBinaryHashtype` (`crackerBinaryId`, `hashTypeId`)
-  SELECT b.`crackerBinaryId`, h.`hashTypeId`
+  SELECT DISTINCT b.`crackerBinaryId`, h.`hashTypeId`
   FROM `CrackerBinary` b
   JOIN `CrackerBinaryType` t ON b.`crackerBinaryTypeId` = t.`crackerBinaryTypeId` AND t.`typeName` = 'hashcat'
   CROSS JOIN `HashType` h;
