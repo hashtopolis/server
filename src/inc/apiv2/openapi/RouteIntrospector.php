@@ -57,6 +57,12 @@ class RouteIntrospector {
    * Such a constraint contains balanced braces of its own, so the brace
    * closing the placeholder is found by counting depth rather than by
    * matching up to the first "}".
+   *
+   * The "relation" placeholder is the exception: every relation of a model is
+   * its own route, so the relation name is put into the path as a literal
+   * segment ("/crackers/{id}/hashtypes"). Collapsing them into a shared
+   * "{relation}" template would make the spec key the routes of all relations
+   * to the same paths, with the later relations overwriting the earlier ones.
    */
   private function cleanPathTemplate(string $path): string {
     $clean = '';
@@ -89,7 +95,12 @@ class RouteIntrospector {
 
       $placeholder = substr($path, $i + 1, $end - $i - 1);
       $name = strstr($placeholder, ':', true);
-      $clean .= '{' . ($name === false ? $placeholder : $name) . '}';
+      if ($name === 'relation') {
+        $clean .= substr($placeholder, strlen('relation:'));
+      }
+      else {
+        $clean .= '{' . ($name === false ? $placeholder : $name) . '}';
+      }
       $i = $end;
     }
 
