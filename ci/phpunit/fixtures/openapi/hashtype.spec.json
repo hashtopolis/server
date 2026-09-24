@@ -2409,7 +2409,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "crackerBinaries"
+                                    "const": "crackerBinary"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -2437,7 +2437,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "crackerBinaries"
+                                    "const": "crackerBinary"
                                 },
                                 "id": {
                                     "type": "integer",
