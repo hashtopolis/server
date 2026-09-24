@@ -17,6 +17,9 @@ use JsonException;
  * '--example-hashes --machine-readable'.
  */
 class CrackerScanUtils {
+  /** Timeout of the 7z archive extraction in seconds. */
+  private const UNPACK_TIMEOUT = 120;
+
   /** Timeout of the '--example-hashes' invocation in seconds. */
   private const EXAMPLE_HASHES_TIMEOUT = 120;
 
@@ -32,11 +35,14 @@ class CrackerScanUtils {
   }
 
   /**
-   * Unpacks the given archive into the target directory with 7z.
+   * Unpacks the given archive into the target directory with 7z. The
+   * extraction is limited by UNPACK_TIMEOUT, so a hanging or endlessly
+   * busy 7z process is terminated instead of blocking the background job
+   * runner.
    *
    * @param string $archive path of the archive to unpack
    * @param string $targetDir existing directory to unpack into
-   * @throws HTException when the archive is missing or 7z fails
+   * @throws HTException when the archive is missing, 7z fails or the extraction times out
    */
   public static function unpackArchive(string $archive, string $targetDir): void {
     if (!self::sevenZipAvailable()) {
@@ -51,7 +57,25 @@ class CrackerScanUtils {
       throw new HTException("Could not start 7z to unpack the cracker binary archive!");
     }
     fclose($pipes[0]);
-    $stderr = stream_get_contents($pipes[2]) ?: '';
+    stream_set_blocking($pipes[1], false);
+    stream_set_blocking($pipes[2], false);
+    $stderr = '';
+    // enforce the timeout by polling the still running process, draining
+    // its output while waiting
+    $deadline = time() + self::UNPACK_TIMEOUT;
+    $status = proc_get_status($proc);
+    while ($status['running']) {
+      if (time() > $deadline) {
+        proc_terminate($proc);
+        proc_close($proc);
+        throw new HTException("Timeout while unpacking the cracker binary archive (exceeded " . self::UNPACK_TIMEOUT . " seconds)!");
+      }
+      $stderr .= stream_get_contents($pipes[2]) ?: '';
+      usleep(100000);
+      $status = proc_get_status($proc);
+    }
+    $stderr .= stream_get_contents($pipes[2]) ?: '';
+    stream_get_contents($pipes[1]);
     fclose($pipes[1]);
     fclose($pipes[2]);
     $exitCode = proc_close($proc);
