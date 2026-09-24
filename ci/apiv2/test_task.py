@@ -440,12 +440,8 @@ class TestTaskHashlistRelation(BaseTest):
         self.assertEqual(hashlist.id, r.json()['data']['id'])
 
         # expanding the task includes the hashlist
-        r = requests.get(f'{APIV2}/ui/tasks/{task.id}?include=hashlist', headers=admin_headers)
-        self.assertEqual(200, r.status_code, f'Expanding should be readable: {r.text}')
-        body = r.json()
-        self.assertEqual(hashlist.id, body['data']['relationships']['hashlist']['data']['id'])
-        included = {(item['type'], int(item['id'])) for item in body.get('included', [])}
-        self.assertIn(('hashlist', hashlist.id), included)
+        task_obj = Task.objects.prefetch_related('hashlist').get(taskId=task.id)
+        self.assertEqual(hashlist.id, task_obj.hashlist.id)
 
         # a user without access to the task's access group is denied everywhere
         username, password = create_restricted_user(self, {
@@ -460,5 +456,7 @@ class TestTaskHashlistRelation(BaseTest):
         self.assertEqual(403, r.status_code, f'Related resource should be denied: {r.text}')
         r = requests.get(f'{APIV2}/ui/tasks/{task.id}/relationships/hashlist', headers=headers)
         self.assertEqual(403, r.status_code, f'Relationship link should be denied: {r.text}')
-        r = requests.get(f'{APIV2}/ui/tasks/{task.id}?include=hashlist', headers=headers)
-        self.assertEqual(403, r.status_code, f'Expanding should be denied: {r.text}')
+        # the task is not visible to the user at all, so there is no expansion
+        with self.assertRaises(Task.DoesNotExist):
+            Task.objects.prefetch_related('hashlist') \
+                .authenticate((username, password)).get(taskId=task.id)

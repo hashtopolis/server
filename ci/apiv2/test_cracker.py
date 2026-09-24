@@ -776,13 +776,9 @@ class TestCrackerHashtypes(BaseTest):
         auth_headers = {'Authorization': f"Bearer {r.json()['token']}"}
 
         # expanding the hashtype does not include the inaccessible binary
-        r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}?include=crackerBinaries',
-                         headers=auth_headers)
-        self.assertEqual(200, r.status_code, f'Expanding should be readable: {r.text}')
-        body = r.json()
-        self.assertEqual([], body['data']['relationships']['crackerBinaries']['data'])
-        included = {(item['type'], int(item['id'])) for item in body.get('included', [])}
-        self.assertNotIn(('crackerBinary', obj.id), included)
+        hashtype_obj = HashType.objects.prefetch_related('crackerBinaries') \
+            .authenticate((username, password)).get(pk=hashtype.id)
+        self.assertEqual([], [cracker.id for cracker in hashtype_obj.crackerBinaries_set])
 
         # the relationship link and the related resource listing are empty as well
         r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}/relationships/crackerBinaries',
@@ -803,15 +799,9 @@ class TestCrackerHashtypes(BaseTest):
                           json={'data': [{'type': 'user', 'id': user.id}]})
         self.assertEqual(201, r.status_code, f'Could not add the user to the access group: {r.text}')
 
-        r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}?include=crackerBinaries',
-                         headers=auth_headers)
-        self.assertEqual(200, r.status_code, f'Expanding should be readable: {r.text}')
-        body = r.json()
-        rel_data = [(item['type'], int(item['id']))
-                    for item in body['data']['relationships']['crackerBinaries']['data']]
-        self.assertIn(('crackerBinary', obj.id), rel_data)
-        included = {(item['type'], int(item['id'])) for item in body.get('included', [])}
-        self.assertIn(('crackerBinary', obj.id), included)
+        hashtype_obj = HashType.objects.prefetch_related('crackerBinaries') \
+            .authenticate((username, password)).get(pk=hashtype.id)
+        self.assertIn(obj.id, [cracker.id for cracker in hashtype_obj.crackerBinaries_set])
 
         r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}/relationships/crackerBinaries',
                          headers=auth_headers)
