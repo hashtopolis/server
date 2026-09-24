@@ -81,13 +81,18 @@ class CrackerUtils {
   /**
    * Deletes the scan jobs of the given cracker binary, e.g. when the binary
    * is deleted: its queued scan is cancelled with it and jobs of the deleted
-   * binary would fail anyway.
+   * binary would fail anyway. A currently running scan is left alone: it
+   * cannot be cancelled from here while the runner executes it, and it fails
+   * on its own anyway because the binary and its archive are gone with it.
    *
    * @param int $binaryId
    * @throws Exception
    */
   public static function deleteScanJobs(int $binaryId): void {
     foreach (CrackerUtils::getScanJobs($binaryId) as $job) {
+      if ($job->getStatus() == DBackgroundJobStatus::RUNNING) {
+        continue;
+      }
       Factory::getBackgroundJobFactory()->delete($job);
     }
   }
