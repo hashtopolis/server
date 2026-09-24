@@ -339,4 +339,45 @@ final class ScanCrackerJobTest extends TestBase {
     $this->assertTrue($found, 'the failed scan job was not recorded');
     $this->cleanupScanJobs($binaryId);
   }
+
+  /**
+   * The cleanup of the scan temporary directory must not follow symlinks:
+   * the directory is filled from a user-controlled archive, so a symlinked
+   * directory must never be recursed into and nothing outside the cleaned
+   * up directory must be deleted.
+   *
+   * The traversal is tested directly: the 7z version of the test container
+   * rewrites symlink targets on extraction so they stay inside the unpack
+   * directory, but the cleanup must be safe for any content other 7z
+   * versions or tools extract.
+   */
+  public function testCleanupDoesNotFollowSymlinks(): void {
+    // a sentinel outside the cleaned up directory must survive
+    $sentinelDir = sys_get_temp_dir() . '/hashtopolis-scan-sentinel-' . uniqid();
+    mkdir($sentinelDir);
+    $sentinelFile = $sentinelDir . '/sentinel.txt';
+    file_put_contents($sentinelFile, 'sentinel-content');
+
+    // structure like the scan unpack directory: real subdirectories, files
+    // and symlinks to a directory outside of it
+    $dir = sys_get_temp_dir() . '/hashtopolis-scan-cleanup-' . uniqid();
+    mkdir($dir);
+    mkdir($dir . '/real');
+    file_put_contents($dir . '/real/file.txt', 'real-content');
+    symlink($sentinelDir, $dir . '/escape-link');
+    mkdir($dir . '/inner');
+    symlink($sentinelDir, $dir . '/inner/escape-link');
+
+    $removeDirectory = new \ReflectionMethod(\Hashtopolis\inc\jobs\handlers\ScanCrackerJob::class, 'removeDirectory');
+    $removeDirectory->invoke(null, $dir);
+
+    // the whole structure including the symlinks is removed
+    $this->assertFileDoesNotExist($dir);
+    // the sentinel outside the directory is untouched, a traversal through
+    // a symlink would have deleted its content
+    $this->assertFileExists($sentinelFile);
+    $this->assertSame('sentinel-content', file_get_contents($sentinelFile));
+
+    exec('rm -rf ' . escapeshellarg($sentinelDir));
+  }
 }
