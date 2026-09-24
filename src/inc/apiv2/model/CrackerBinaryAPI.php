@@ -219,13 +219,16 @@ class CrackerBinaryAPI extends AbstractModelAPI {
 
   /**
    * The hashtype associations of hashcat binaries are determined by the scan
-   * of the binary alone, they cannot be edited manually.
+   * of the binary alone, they cannot be edited manually. Must only be called
+   * with a binary which was fetched through doFetch(), so the access group
+   * ACL was enforced and the hashcat check does not disclose the type of a
+   * binary the caller has no access to.
    *
    * @throws HttpForbidden
    * @throws HTException
    */
-  private function assertHashtypesManuallyEditable(int $binaryId): void {
-    if (CrackerUtils::isHashcatBinary(CrackerUtils::getBinary($binaryId))) {
+  private function assertHashtypesManuallyEditable(CrackerBinary $binary): void {
+    if (CrackerUtils::isHashcatBinary($binary)) {
       throw new HttpForbidden("The hashtypes of a cracker binary of the hashcat type are determined by a scan of the binary and cannot be changed manually!");
     }
   }
@@ -244,7 +247,10 @@ class CrackerBinaryAPI extends AbstractModelAPI {
    */
   public function postToManyRelationshipLink(Request $request, Response $response, array $args): Response {
     if ($args['relation'] == 'hashtypes') {
-      $this->assertHashtypesManuallyEditable((int)$args['id']);
+      // boot the request first (preCommon), then fetch through doFetch, so
+      // the access group ACL is enforced before the binary is classified
+      $this->preCommon($request);
+      $this->assertHashtypesManuallyEditable($this->doFetch((int)$args['id']));
     }
     return parent::postToManyRelationshipLink($request, $response, $args);
   }
@@ -263,7 +269,10 @@ class CrackerBinaryAPI extends AbstractModelAPI {
    */
   public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response {
     if ($args['relation'] == 'hashtypes') {
-      $this->assertHashtypesManuallyEditable((int)$args['id']);
+      // boot the request first (preCommon), then fetch through doFetch, so
+      // the access group ACL is enforced before the binary is classified
+      $this->preCommon($request);
+      $this->assertHashtypesManuallyEditable($this->doFetch((int)$args['id']));
     }
     return parent::deleteToManyRelationshipLink($request, $response, $args);
   }
@@ -290,7 +299,9 @@ class CrackerBinaryAPI extends AbstractModelAPI {
       return;
     }
     $id = (int)$args['id'];
-    $this->assertHashtypesManuallyEditable($id);
+    // fetch through doFetch so the access group ACL is enforced before the
+    // binary is classified, even if the ordering of the base changes
+    $this->assertHashtypesManuallyEditable($this->doFetch($id));
     $wantedHashtypes = [];
     foreach ($data as $hashtype) {
       if (!$this->validateResourceRecord($hashtype)) {
