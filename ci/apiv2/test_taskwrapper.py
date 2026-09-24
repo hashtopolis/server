@@ -97,7 +97,8 @@ class TestTaskWrapperToOneRelations(BaseTest):
         """The to-one routes resolve the related resources from the wrapper.
 
         Users without access to the wrapper's access group must not read the
-        related resources, even when they have the global read permissions.
+        related resources or the expansions of the wrapper, even when they
+        have the global read permissions.
         """
         hashlist = self.create_hashlist()
         task = self.create_task(hashlist)
@@ -115,6 +116,10 @@ class TestTaskWrapperToOneRelations(BaseTest):
         self.assertEqual(200, r.status_code, f'Related hashlist should be readable: {r.text}')
         self.assertEqual(hashlist.id, r.json()['data']['id'])
 
+        # the hashType include is resolved through the hashlist as well
+        wrapper_obj = TaskWrapper.objects.prefetch_related('hashType').get(pk=wrapper.id)
+        self.assertEqual(hashlist.hashTypeId, wrapper_obj.hashType.id)
+
         # a user without access to the wrapper's access group is denied everywhere
         username, password = create_restricted_user(self, {
             'permTaskWrapperRead': True,
@@ -131,3 +136,7 @@ class TestTaskWrapperToOneRelations(BaseTest):
         self.assertEqual(403, r.status_code, f'Related hashlist should be denied: {r.text}')
         r = requests.get(f'{APIV2}/ui/taskwrappers/{wrapper.id}/relationships/hashlist', headers=headers)
         self.assertEqual(403, r.status_code, f'Relationship link should be denied: {r.text}')
+        # the wrapper is not visible to the user at all, so there is no expansion
+        with self.assertRaises(TaskWrapper.DoesNotExist):
+            TaskWrapper.objects.prefetch_related('hashType') \
+                .authenticate((username, password)).get(pk=wrapper.id)
