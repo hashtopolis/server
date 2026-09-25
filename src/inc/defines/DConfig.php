@@ -26,6 +26,7 @@ class DConfig {
   const HASHCAT_BRAIN_PASS     = "hashcatBrainPass";
   const HASHLIST_IMPORT_CHECK  = "hashlistImportCheck";
   const HC_ERROR_IGNORE        = "hcErrorIgnore";
+  const BENCHMARK_CACHE_TTL    = "benchmarkCacheTtl";
 
   // Section: Finetuning
   const HASHES_PAGE_SIZE           = "pagingSize";
@@ -116,6 +117,7 @@ class DConfig {
   public static function getConfigType(string $config): string {
     return match ($config) {
       DConfig::BENCHMARK_TIME => DConfigType::NUMBER_INPUT,
+      DConfig::BENCHMARK_CACHE_TTL => DConfigType::NUMBER_INPUT,
       DConfig::CHUNK_DURATION => DConfigType::NUMBER_INPUT,
       DConfig::CHUNK_TIMEOUT => DConfigType::NUMBER_INPUT,
       DConfig::AGENT_TIMEOUT => DConfigType::NUMBER_INPUT,
@@ -184,6 +186,7 @@ class DConfig {
   public static function getConfigDescription(string $config): string {
     return match ($config) {
       DConfig::BENCHMARK_TIME => "Time in seconds an agent should benchmark a task.",
+      DConfig::BENCHMARK_CACHE_TTL => "Time in seconds a cached benchmark result is reused for agents with identical hardware, so they do not re-benchmark on every task pickup. Set to 0 (the default) to disable benchmark caching.",
       DConfig::CHUNK_DURATION => "Time in seconds a client should be working on a single chunk.",
       DConfig::CHUNK_TIMEOUT => "Time in seconds the server will consider an issued chunk as inactive or timed out and will reallocate to another client.",
       DConfig::AGENT_TIMEOUT => "Time in seconds the server will consider a client inactive or timed out.",

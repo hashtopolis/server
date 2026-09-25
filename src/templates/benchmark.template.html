@@ -1,0 +1,81 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Benchmark cache</h2>
+{%TEMPLATE->struct/messages%}
+
+<div class="alert {{IF [[toggledarkmode]] > 0}}alert-dark{{ELSE}}alert-neutral{{ENDIF}}">
+  {{IF [[cacheTtl]] > 0}}
+    Benchmark caching is enabled with a TTL of [[cacheTtl]] seconds.
+  {{ELSE}}
+    Benchmark caching is disabled (benchmarkCacheTtl is 0). Existing entries are shown but no new ones are stored.
+  {{ENDIF}}
+  Cached entries: [[numEntries]] ([[numExpired]] expired).
+</div>
+
+<div class="btn-toolbar">
+  <form action='benchmark.php' method='post' onSubmit='return confirm("Remove all expired benchmark cache entries?")'>
+    <input type='hidden' name='action' value='prune'>
+    <input type="hidden" name="csrf" value="[[csrf]]">
+    <input type='submit' class='btn btn-warning' value='Remove expired'{{IF [[numExpired]] == 0}} disabled{{ENDIF}}>
+  </form>
+</div>
+
+<br>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered table-sm" id="benchmarks">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cracker</th>
+          <th>Hash mode</th>
+          <th>Attack (sig)</th>
+          <th>Device (sig)</th>
+          <th>Type</th>
+          <th>Value</th>
+          <th>Created</th>
+          <th>Expires</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{FOREACH bench;[[benchmarks]]}}
+          <tr>
+            <td>[[bench.getVal('id')]]</td>
+            <td>[[bench.getVal('cracker')]]</td>
+            <td>[[bench.getVal('hashMode')]]</td>
+            <td><code title="attackParameters (SHA-256)">[[bench.getVal('attackShort')]]...</code></td>
+            <td><code title="deviceSignature (SHA-256)">[[bench.getVal('deviceShort')]]...</code></td>
+            <td>[[bench.getVal('benchmarkType')]]</td>
+            <td>[[bench.getVal('benchmarkValue')]]</td>
+            <td>[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[bench.getVal('created')]])]]</td>
+            <td>[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[bench.getVal('expires')]])]]</td>
+            <td>
+              {{IF [[bench.getVal('expired')]] == 1}}
+                <span class="badge badge-danger">Expired</span>
+              {{ELSE}}
+                <span class="badge badge-success">Valid</span>
+              {{ENDIF}}
+            </td>
+            <td>
+              <form action='benchmark.php' method='post'>
+                <input type='hidden' name='action' value='invalidate'>
+                <input type='hidden' name='benchmarkId' value='[[bench.getVal('id')]]'>
+                <input type="hidden" name="csrf" value="[[csrf]]">
+                <input type='submit' class='btn btn-danger btn-sm' value='Invalidate'>
+              </form>
+            </td>
+          </tr>
+        {{ENDFOREACH}}
+        {{IF [[numEntries]] == 0}}
+          <tr>
+            <td colspan="11">The benchmark cache is empty.</td>
+          </tr>
+        {{ENDIF}}
+      </tbody>
+    </table>
+  </div>
+</div>
+{%TEMPLATE->struct/foot%}

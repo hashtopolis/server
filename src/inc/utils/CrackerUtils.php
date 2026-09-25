@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\utils;
 
 use Exception;
+use Hashtopolis\dba\models\Benchmark;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\QueryFilter;
@@ -85,6 +86,10 @@ class CrackerUtils {
     if (sizeof($check) > 0) {
       throw new HTException("There are tasks which use this binary!");
     }
+    // Drop any cached benchmarks keyed on this binary first; Benchmark holds a
+    // foreign key to CrackerBinary with no ON DELETE, so leaving them throws.
+    Factory::getBenchmarkFactory()->massDeletion([Factory::FILTER =>
+      new QueryFilter(Benchmark::CRACKER_BINARY_ID, $binary->getId(), "=")]);
     Factory::getCrackerBinaryFactory()->delete($binary);
   }
   
@@ -114,6 +119,12 @@ class CrackerUtils {
       throw new HTException("There are pretasks which use this cracker type!");
     }
     
+    // drop cached benchmarks for these binaries first (foreign key, no ON DELETE);
+    // guard the empty case so no invalid "IN ()" is emitted
+    if (!empty($versionIds)) {
+      Factory::getBenchmarkFactory()->massDeletion([Factory::FILTER =>
+        new ContainFilter(Benchmark::CRACKER_BINARY_ID, $versionIds)]);
+    }
     // delete
     Factory::getCrackerBinaryFactory()->massDeletion([Factory::FILTER => $qF]);
     Factory::getCrackerBinaryTypeFactory()->delete($binaryType);

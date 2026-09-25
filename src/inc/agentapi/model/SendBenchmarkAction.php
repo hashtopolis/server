@@ -16,6 +16,7 @@ use Hashtopolis\inc\agent\PValues;
 use Hashtopolis\inc\agent\PValuesBenchmarkType;
 use Hashtopolis\inc\agentapi\common\AgentAction;
 use Hashtopolis\inc\agentapi\common\AgentResponseTrait;
+use Hashtopolis\inc\utils\BenchmarkUtils;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\SConfig;
@@ -92,6 +93,14 @@ final class SendBenchmarkAction implements AgentAction {
         $assignment->setBenchmark((string)$benchmark);
         Factory::getAssignmentFactory()->update($assignment);
         DServerLog::log(DServerLog::DEBUG, 'Saved agent benchmark', [$agent, $task, $assignment]);
+
+        $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+        if ($taskWrapper !== null) {
+            $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
+            if ($hashlist !== null) {
+                BenchmarkUtils::store($task, (int)$hashlist->getHashTypeId(), $agent, (string)$benchmark);
+            }
+        }
 
         return $this->success($response, PActions::SEND_BENCHMARK, [
             PResponseSendBenchmark::BENCHMARK => PValues::OK,

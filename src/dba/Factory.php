@@ -11,6 +11,7 @@ use Hashtopolis\dba\models\AgentZapFactory;
 use Hashtopolis\dba\models\ApiKeyFactory;
 use Hashtopolis\dba\models\ApiGroupFactory;
 use Hashtopolis\dba\models\AssignmentFactory;
+use Hashtopolis\dba\models\BenchmarkFactory;
 use Hashtopolis\dba\models\ChunkFactory;
 use Hashtopolis\dba\models\ConfigFactory;
 use Hashtopolis\dba\models\ConfigSectionFactory;
@@ -60,6 +61,7 @@ class Factory {
   private static ?ApiKeyFactory $apiKeyFactory = null;
   private static ?ApiGroupFactory $apiGroupFactory = null;
   private static ?AssignmentFactory $assignmentFactory = null;
+  private static ?BenchmarkFactory $benchmarkFactory = null;
   private static ?ChunkFactory $chunkFactory = null;
   private static ?ConfigFactory $configFactory = null;
   private static ?ConfigSectionFactory $configSectionFactory = null;
@@ -186,6 +188,16 @@ class Factory {
       return $f;
     } else {
       return self::$assignmentFactory;
+    }
+  }
+  
+  public static function getBenchmarkFactory(): BenchmarkFactory {
+    if (self::$benchmarkFactory == null) {
+      $f = new BenchmarkFactory();
+      self::$benchmarkFactory = $f;
+      return $f;
+    } else {
+      return self::$benchmarkFactory;
     }
   }
   
