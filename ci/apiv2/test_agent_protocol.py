@@ -1804,3 +1804,84 @@ class TestDeregister(AgentProtocolBase):
         code, body = agent_request({"action": "deregister"})
         assert_error_envelope(self, body, "deregister")
         self.assertEqual(parse_envelope(body)['message'], "Invalid token!")
+
+
+# ---------------------------------------------------------------------------
+# Benchmark cache (issue #879)
+# ---------------------------------------------------------------------------
+
+class TestBenchmarkCache(AgentProtocolBase):
+    """The benchmark an agent reports is cached and reused for another agent with
+    identical hardware, until the entry expires. Gated by the benchmarkCacheTtl
+    config, which is 0 (disabled) by default.
+    """
+
+    def _get_chunk(self, dummy, task_id):
+        _, body = agent_request({"action": "getChunk", "token": dummy.token, "taskId": task_id})
+        return parse_envelope(body)
+
+    def _run_benchmark(self, dummy, task_id, keyspace=56800):
+        """Drive an agent through keyspace + benchmark; assert it is asked to
+        benchmark (i.e. no cache hit yet). Returns the getChunk response after."""
+        resp = self._get_chunk(dummy, task_id)
+        if resp['status'] == "keyspace_required":
+            agent_request({
+                "action": "sendKeyspace", "token": dummy.token,
+                "taskId": task_id, "keyspace": keyspace,
+            })
+            resp = self._get_chunk(dummy, task_id)
+        self.assertEqual(resp['status'], "benchmark")
+        agent_request({
+            "action": "sendBenchmark", "token": dummy.token,
+            "taskId": task_id, "type": "run", "result": 674,
+        })
+        return self._get_chunk(dummy, task_id)
+
+    def test_benchmark_not_cached_when_disabled(self):
+        """With benchmarkCacheTtl=0 (the default), a second agent with identical
+        hardware still has to run its own benchmark."""
+        config = Config.objects.get(item='benchmarkCacheTtl')
+        original = config.value
+        config.value = "0"
+        config.save()
+        try:
+            dummy1, agent1, task, _ = self._setup_assigned_agent()
+            self._run_benchmark(dummy1, task.id)
+
+            dummy2, agent2 = self._dummy_with_agent()
+            assignment2 = do_create_agentassignent(agent2, task, '0')
+            self.delete_after_test(assignment2)
+
+            resp2 = self._get_chunk(dummy2, task.id)
+            self.assertEqual(resp2['response'], "SUCCESS")
+            self.assertEqual(resp2['status'], "benchmark",
+                             "with caching disabled the second agent must benchmark")
+        finally:
+            config.value = original
+            config.save()
+
+    def test_second_agent_reuses_cached_benchmark(self):
+        """With benchmarkCacheTtl>0, a second agent whose hardware, cracker binary,
+        hash mode and attack match a cached benchmark is not asked to benchmark;
+        the cached value is applied to its assignment and it goes straight to
+        chunking."""
+        config = Config.objects.get(item='benchmarkCacheTtl')
+        original = config.value
+        config.value = "86400"
+        config.save()
+        try:
+            dummy1, agent1, task, _ = self._setup_assigned_agent()
+            resp1 = self._run_benchmark(dummy1, task.id)
+            self.assertEqual(resp1['response'], "SUCCESS")
+
+            dummy2, agent2 = self._dummy_with_agent()
+            assignment2 = do_create_agentassignent(agent2, task, '0')
+            self.delete_after_test(assignment2)
+
+            resp2 = self._get_chunk(dummy2, task.id)
+            self.assertEqual(resp2['response'], "SUCCESS")
+            self.assertNotEqual(resp2['status'], "benchmark",
+                                "a second agent with identical hardware should reuse the cached benchmark")
+        finally:
+            config.value = original
+            config.save()

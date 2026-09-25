@@ -249,6 +249,19 @@ $CONF['Assignment'] = [
     ['name' => 'benchmark', 'read_only' => False, 'type' => 'str(50)'],
   ],
 ];
+$CONF['Benchmark'] = [
+  'columns' => [
+    ['name' => 'benchmarkId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinary'],
+    ['name' => 'hashMode', 'read_only' => True, 'type' => 'int'],
+    ['name' => 'attackParameters', 'read_only' => True, 'type' => 'str(64)'],
+    ['name' => 'deviceSignature', 'read_only' => True, 'type' => 'str(64)'],
+    ['name' => 'benchmarkType', 'read_only' => True, 'type' => 'str(10)'],
+    ['name' => 'benchmarkValue', 'read_only' => True, 'type' => 'str(50)'],
+    ['name' => 'createTime', 'read_only' => True, 'type' => 'int64'],
+    ['name' => 'expireTime', 'read_only' => True, 'type' => 'int64'],
+  ],
+];
 $CONF['Chunk'] = [
   'columns' => [
     ['name' => 'chunkId', 'read_only' => True, 'type' => 'int', 'protected' => True],
