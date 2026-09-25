@@ -74,13 +74,21 @@ class AgentErrorUtils {
     // A task some agent has made progress on is excluded: a node that is working
     // it proves the command runs, so the failures are agent faults, not a task
     // fault (two nodes sharing a driver bug must not condemn a working task).
+    //
+    // The threshold is capped at the number of active agents: with fewer agents
+    // than the configured value a task could never reach it and an agent would
+    // loop on a broken task forever, so a single-agent setup faults on the first
+    // distinct failure. The cap is recomputed per error, so the configured value
+    // applies again once enough agents are active.
     $taskThreshold = intval(SConfig::getInstance()->getVal(DConfig::BROKEN_TASK_THRESHOLD));
-    if ($taskThreshold > 0
-        && self::countDistinctAgentsForTask($task->getId(), $since) >= $taskThreshold
-        && !self::taskHasProgress($task->getId())) {
-      self::markTaskBroken($task, 'Marked broken automatically after ' . $taskThreshold . ' or more distinct agents failed');
-      self::unassignAgentFromTask($agent, $task);
-      return;
+    if ($taskThreshold > 0) {
+      $effectiveThreshold = min($taskThreshold, self::countActiveAgents());
+      if (self::countDistinctAgentsForTask($task->getId(), $since) >= $effectiveThreshold
+          && !self::taskHasProgress($task->getId())) {
+        self::markTaskBroken($task, 'Marked broken automatically after ' . $effectiveThreshold . ' or more distinct agents failed');
+        self::unassignAgentFromTask($agent, $task);
+        return;
+      }
     }
 
     // Agent fault: the agent fails across several distinct tasks, so the agent
@@ -154,6 +162,15 @@ class AgentErrorUtils {
     $qF1 = new QueryFilter(Chunk::TASK_ID, $taskId, '=');
     $qF2 = new QueryFilter(Chunk::PROGRESS, 0, '>');
     return Factory::getChunkFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]) > 0;
+  }
+
+  /**
+   * How many agents are currently active. Used to cap the broken-task threshold
+   * so a task can always be faulted by the agents that actually exist.
+   */
+  private static function countActiveAgents(): int {
+    $qF = new QueryFilter(Agent::IS_ACTIVE, 1, '=');
+    return Factory::getAgentFactory()->countFilter([Factory::FILTER => $qF]);
   }
 
   /**

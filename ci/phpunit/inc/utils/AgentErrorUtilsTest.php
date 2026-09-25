@@ -66,13 +66,14 @@ final class AgentErrorUtilsTest extends TestBase {
     $this->assertEquals(1, Factory::getAgentFactory()->get($agent2->getId())->getIsActive());
   }
 
-  // A single agent failing does not fault the task and does not deactivate the
-  // agent: an untrusted node failing alone is treated as a node problem. The
-  // agent is only unassigned from the failing task.
+  // With at least as many active agents as the threshold, one agent failing does
+  // not fault the task and does not deactivate the agent: an untrusted node
+  // failing alone is treated as a node problem. The agent is only unassigned.
   public function testSingleAgentFailureKeepsTaskAndAgent(): void {
     $this->mockConfig(2, 3, 0);
     $task = $this->createTaskHelper()["task"];
     $agent = $this->createAgent("phpunit");
+    $this->createAgent("phpunit"); // a second active agent, so the effective threshold stays 2
     $this->createDatabaseObject(Factory::getAssignmentFactory(), new Assignment(null, $task->getId(), $agent->getId(), '0'));
 
     AgentErrorUtils::handleClientError($agent, $task, null, 'boom');
@@ -123,5 +124,21 @@ final class AgentErrorUtilsTest extends TestBase {
     $this->registerErrorArtifacts($task);
 
     $this->assertFalse(AgentErrorUtils::isTaskBroken($task->getId()), 'a task some agent is progressing must not be marked broken');
+  }
+
+  // When only one agent is active, the threshold is capped at 1, so that single
+  // agent failing marks the task broken rather than looping on it forever. It
+  // cannot get corroboration from other agents because there are none.
+  public function testSingleActiveAgentFaultsTask(): void {
+    $this->mockConfig(2, 3, 0);
+    $task = $this->createTaskHelper()["task"];
+    $agent = $this->createAgent("phpunit"); // the only active agent
+    $this->createDatabaseObject(Factory::getAssignmentFactory(), new Assignment(null, $task->getId(), $agent->getId(), '0'));
+
+    AgentErrorUtils::handleClientError($agent, $task, null, 'boom');
+    $this->registerErrorArtifacts($task);
+
+    $this->assertTrue(AgentErrorUtils::isTaskBroken($task->getId()), 'a single active agent should fault the task it cannot get corroboration for');
+    $this->assertEquals(1, Factory::getAgentFactory()->get($agent->getId())->getIsActive());
   }
 }
