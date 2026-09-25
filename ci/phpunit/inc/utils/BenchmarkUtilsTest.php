@@ -73,24 +73,48 @@ final class BenchmarkUtilsTest extends TestBase {
     );
   }
 
-  public function testAttackSignatureChangesWithEveryAttackFactor(): void {
-    $base = BenchmarkUtils::computeAttackSignature($this->task);
+  public function testAttackSignatureDependsOnModeAndRulesOnly(): void {
+    // Same attack mode, different mask: one shared signature. This is the point
+    // of keying on the mode rather than the whole command.
+    $maskA = clone $this->task; $maskA->setAttackCmd('#HL# -a 3 ?d?d?d?d');
+    $maskB = clone $this->task; $maskB->setAttackCmd('#HL# -a 3 ?l?l?l?l?l');
+    $this->assertSame(
+      BenchmarkUtils::computeAttackSignature($maskA),
+      BenchmarkUtils::computeAttackSignature($maskB),
+      'two masks of the same attack mode must share a signature'
+    );
 
-    $t = clone $this->task;
-    $t->setAttackCmd($this->task->getAttackCmd() . ' -O');
-    $this->assertNotSame($base, BenchmarkUtils::computeAttackSignature($t), 'attack command must affect the signature');
+    // A different attack mode ('-a') changes the signature.
+    $straight = clone $this->task; $straight->setAttackCmd('#HL# -a 0 wordlist.txt');
+    $this->assertNotSame(
+      BenchmarkUtils::computeAttackSignature($maskA),
+      BenchmarkUtils::computeAttackSignature($straight),
+      'a different attack mode must change the signature'
+    );
 
-    $t = clone $this->task;
-    $t->setForcePipe($this->task->getForcePipe() == 1 ? 0 : 1);
-    $this->assertNotSame($base, BenchmarkUtils::computeAttackSignature($t), 'forcePipe must affect the signature');
+    // Applying a rule file ('-r') changes the signature.
+    $withRules = clone $this->task; $withRules->setAttackCmd('#HL# -a 0 wordlist.txt -r best64.rule');
+    $this->assertNotSame(
+      BenchmarkUtils::computeAttackSignature($straight),
+      BenchmarkUtils::computeAttackSignature($withRules),
+      'applying a rule file must change the signature'
+    );
 
-    $t = clone $this->task;
-    $t->setUsePreprocessor(($this->task->getUsePreprocessor() ?? 0) + 1);
-    $this->assertNotSame($base, BenchmarkUtils::computeAttackSignature($t), 'preprocessor use must affect the signature');
+    // A different rule file, still rules: same signature.
+    $withRules2 = clone $this->task; $withRules2->setAttackCmd('#HL# -a 0 other.txt -r dive.rule');
+    $this->assertSame(
+      BenchmarkUtils::computeAttackSignature($withRules),
+      BenchmarkUtils::computeAttackSignature($withRules2),
+      'the specific rule file must not change the signature'
+    );
 
-    $t = clone $this->task;
-    $t->setPreprocessorCommand('--pw-min=1');
-    $this->assertNotSame($base, BenchmarkUtils::computeAttackSignature($t), 'preprocessor command must affect the signature');
+    // An unrelated option ('-O') must not change the signature.
+    $optimized = clone $this->task; $optimized->setAttackCmd('#HL# -a 3 ?d?d?d?d -O');
+    $this->assertSame(
+      BenchmarkUtils::computeAttackSignature($maskA),
+      BenchmarkUtils::computeAttackSignature($optimized),
+      'an option that does not affect the mode or rule use must not change the signature'
+    );
   }
 
   public function testAttackSignatureIgnoresWhitespaceOnly(): void {
@@ -156,6 +180,9 @@ final class BenchmarkUtilsTest extends TestBase {
 
   public function testLookupMissWhenAnyKeyFactorDiffers(): void {
     $this->setTtl(3600);
+    // Pin a known attack (mask, no rules) so the "different attack" case below is
+    // guaranteed to differ in mode and rule use.
+    $this->task->setAttackCmd('#HL# -a 3 ?d?d?d?d');
     BenchmarkUtils::store($this->task, $this->hashMode, $this->agent, '2345:323.000');
 
     // Control: identical inputs hit.
@@ -169,10 +196,11 @@ final class BenchmarkUtilsTest extends TestBase {
     // Different hash mode.
     $this->assertNull(BenchmarkUtils::lookup($this->task, $this->hashMode + 1, $this->agent), 'hash mode must be part of the key');
 
-    // Different attack command.
+    // Different attack: the signature keys on the '-a' mode and rule use, so a
+    // straight attack with rules differs from the stored mask attack.
     $t = clone $this->task;
-    $t->setAttackCmd($this->task->getAttackCmd() . ' -O');
-    $this->assertNull(BenchmarkUtils::lookup($t, $this->hashMode, $this->agent), 'attack parameters must be part of the key');
+    $t->setAttackCmd('#HL# -a 0 wordlist.txt -r best64.rule');
+    $this->assertNull(BenchmarkUtils::lookup($t, $this->hashMode, $this->agent), 'attack mode and rule use must be part of the key');
 
     // Different device signature.
     $a = clone $this->agent;

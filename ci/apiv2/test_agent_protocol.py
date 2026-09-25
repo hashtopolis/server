@@ -1816,15 +1816,23 @@ class TestBenchmarkCache(AgentProtocolBase):
     identical hardware, until the entry expires. Gated by the benchmarkCacheTtl
     config, which is 0 (disabled) by default.
 
-    Each test uses a unique attack command so its cache key is distinct from the
-    other tests', keeping the shared Benchmark table from leaking state between
-    them.
+    The attack signature keys only on the attack mode ('-a') and whether a rule
+    file is applied ('-r'), so a unique attack command no longer isolates a test.
+    Each test that must be asked to benchmark instead gives its agent a unique
+    device set, keeping the shared Benchmark table from leaking state between
+    tests.
     """
 
     def _uniq_cmd(self):
-        """A valid, per-test-unique attack command (drives the attackParameters
-        part of the cache key so tests do not collide)."""
+        """A valid mask attack command. The specific mask no longer affects the
+        cache key (only the '-a' mode and rule use do), so this is a well-formed
+        command, not an isolation mechanism."""
         return '#HL# -a 3 ?d?d?d?d ' + uuid.uuid4().hex
+
+    def _uniq_devices(self):
+        """A per-test-unique device set, giving each test a distinct cache key now
+        that the attack command no longer varies it."""
+        return ["hashtopolis-test-gpu-" + uuid.uuid4().hex]
 
     def _get_chunk(self, dummy, task_id):
         _, body = agent_request({"action": "getChunk", "token": dummy.token, "taskId": task_id})
@@ -1887,11 +1895,14 @@ class TestBenchmarkCache(AgentProtocolBase):
         config.value = "86400"
         config.save()
         try:
+            devices = self._uniq_devices()
             dummy1, agent1, task, _ = self._setup_assigned_agent(task_extra={'attackCmd': self._uniq_cmd()})
+            self._update_devices(dummy1, devices, "uid-" + uuid.uuid4().hex)
             resp1 = self._run_benchmark(dummy1, task.id)
             self.assertEqual(resp1['response'], "SUCCESS")
 
             dummy2, agent2 = self._dummy_with_agent()
+            self._update_devices(dummy2, devices, "uid-" + uuid.uuid4().hex)
             assignment2 = do_create_agentassignent(agent2, task, '0')
             self.delete_after_test(assignment2)
 
@@ -1912,7 +1923,9 @@ class TestBenchmarkCache(AgentProtocolBase):
         config.value = "86400"
         config.save()
         try:
+            devices = self._uniq_devices()
             dummy1, agent1, task, _ = self._setup_assigned_agent(task_extra={'attackCmd': self._uniq_cmd()})
+            self._update_devices(dummy1, devices, "uid-" + uuid.uuid4().hex)
             self._run_benchmark(dummy1, task.id)
 
             dummy2, agent2 = self._dummy_with_agent()
@@ -1929,21 +1942,24 @@ class TestBenchmarkCache(AgentProtocolBase):
             config.value = original
             config.save()
 
-    def test_different_attack_command_gets_cache_miss(self):
-        """A benchmark cached for one task is NOT reused for a task with a
-        different attack command, even for the same agent: the attack parameters
-        are part of the key, so the agent is still asked to benchmark."""
+    def test_different_attack_mode_gets_cache_miss(self):
+        """A benchmark cached for one task is NOT reused for a task whose attack
+        mode and rule use differ, even for the same agent: those two factors are
+        the attack part of the key, so the agent is still asked to benchmark."""
         config = Config.objects.get(item='benchmarkCacheTtl')
         original = config.value
         config.value = "86400"
         config.save()
         try:
-            dummy1, agent1, task1, hashlist = self._setup_assigned_agent(task_extra={'attackCmd': self._uniq_cmd()})
+            devices = self._uniq_devices()
+            dummy1, agent1, task1, hashlist = self._setup_assigned_agent(task_extra={'attackCmd': '#HL# -a 3 ?d?d?d?d'})
+            self._update_devices(dummy1, devices, "uid-" + uuid.uuid4().hex)
             self._run_benchmark(dummy1, task1.id)
 
-            # Second task on the same hashlist (same hash mode, same cracker) but
-            # a different attack command, assigned to the same agent.
-            task2 = self.create_task(hashlist, extra_payload={'staticChunks': 0, 'attackCmd': self._uniq_cmd()})
+            # Second task on the same hashlist (same hash mode, same cracker, same
+            # agent) but a different attack mode plus a rule file, so its attack
+            # signature differs from task1's mask attack.
+            task2 = self.create_task(hashlist, extra_payload={'staticChunks': 0, 'attackCmd': '#HL# -a 0 example.dict -r best64.rule'})
             self.delete_after_test(task2)
             assignment2 = do_create_agentassignent(agent1, task2, '0')
             self.delete_after_test(assignment2)
@@ -1957,7 +1973,41 @@ class TestBenchmarkCache(AgentProtocolBase):
                 resp = self._get_chunk(dummy1, task2.id)
             self.assertEqual(resp['response'], "SUCCESS")
             self.assertEqual(resp['status'], "benchmark",
-                             "a task with a different attack command must not reuse another task's benchmark")
+                             "a task whose attack mode and rule use differ must not reuse another task's benchmark")
+        finally:
+            config.value = original
+            config.save()
+
+    def test_same_mode_different_mask_reuses_cached_benchmark(self):
+        """Two tasks with the same attack mode but different masks share one
+        benchmark: the specific mask is not part of the key, so the second task
+        reuses the first's benchmark instead of measuring again."""
+        config = Config.objects.get(item='benchmarkCacheTtl')
+        original = config.value
+        config.value = "86400"
+        config.save()
+        try:
+            devices = self._uniq_devices()
+            dummy1, agent1, task1, hashlist = self._setup_assigned_agent(task_extra={'attackCmd': '#HL# -a 3 ?d?d?d?d'})
+            self._update_devices(dummy1, devices, "uid-" + uuid.uuid4().hex)
+            self._run_benchmark(dummy1, task1.id)
+
+            # Same attack mode, a different mask, same agent: same key, so reuse.
+            task2 = self.create_task(hashlist, extra_payload={'staticChunks': 0, 'attackCmd': '#HL# -a 3 ?l?l?l?l?l'})
+            self.delete_after_test(task2)
+            assignment2 = do_create_agentassignent(agent1, task2, '0')
+            self.delete_after_test(assignment2)
+
+            resp = self._get_chunk(dummy1, task2.id)
+            if resp['status'] == "keyspace_required":
+                agent_request({
+                    "action": "sendKeyspace", "token": dummy1.token,
+                    "taskId": task2.id, "keyspace": 56800,
+                })
+                resp = self._get_chunk(dummy1, task2.id)
+            self.assertEqual(resp['response'], "SUCCESS")
+            self.assertNotEqual(resp['status'], "benchmark",
+                                "a task with the same attack mode but a different mask should reuse the cached benchmark")
         finally:
             config.value = original
             config.save()

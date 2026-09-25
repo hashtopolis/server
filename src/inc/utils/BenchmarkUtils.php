@@ -62,17 +62,19 @@ class BenchmarkUtils {
   }
 
   /**
-   * Signature of the attack, hashed so it fits a fixed column and never leaks
-   * command contents into the cache table.
+   * Signature of the attack. The benchmark measures raw candidate speed, which
+   * depends on the attack mode (the '-a' value: straight, combinator, mask, ...)
+   * and on whether a rule file is applied ('-r'), but not on which wordlist,
+   * mask or rule file is used. So the key is just those two factors, and every
+   * mask of a given mode shares one benchmark instead of being measured
+   * separately. Hashed so it fits a fixed column and never leaks command
+   * contents into the cache table.
    */
   public static function computeAttackSignature(Task $task): string {
-    $normalizedCmd = preg_replace('/\s+/', ' ', trim((string)$task->getAttackCmd()));
-    $parts = [
-      $normalizedCmd,
-      (int)$task->getUsePreprocessor(),
-      trim((string)$task->getPreprocessorCommand()),
-      (int)$task->getForcePipe(),
-    ];
+    $cmd = (string)$task->getAttackCmd();
+    $attackMode = preg_match('/(?:^|\s)-a\s*(\d+)/', $cmd, $m) ? $m[1] : '';
+    $hasRules = preg_match('/(?:^|\s)(?:-r|--rules-file)(?:=|\s)/', $cmd) ? 1 : 0;
+    $parts = [$attackMode, (string)$hasRules];
     return hash('sha256', implode("\x1f", $parts));
   }
 
