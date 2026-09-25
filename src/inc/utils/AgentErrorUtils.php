@@ -1,0 +1,168 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Hashtopolis\inc\utils;
+
+use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\Agent;
+use Hashtopolis\dba\models\AgentError;
+use Hashtopolis\dba\models\Assignment;
+use Hashtopolis\dba\models\BrokenTask;
+use Hashtopolis\dba\models\Task;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\inc\DataSet;
+use Hashtopolis\inc\defines\DAgentIgnoreErrors;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DNotificationType;
+use Hashtopolis\inc\defines\DPayloadKeys;
+use Hashtopolis\inc\defines\DServerLog;
+use Hashtopolis\inc\handlers\NotificationHandler;
+use Hashtopolis\inc\SConfig;
+
+/**
+ * Agent error handling (issue #884).
+ *
+ * A single broken task (a bad hashcat command, a syntax error) used to
+ * deactivate every agent that picked it up, one by one, until the whole fleet
+ * was offline. This util separates the two failure modes:
+ *
+ *   - the TASK is broken: several DISTINCT agents fail on the same task, so the
+ *     task is marked broken (see BrokenTask) and the reporting agents stay active;
+ *   - the AGENT is broken: one agent fails across several distinct tasks, so the
+ *     agent itself is deactivated (a locked file, a broken GPU, ...).
+ *
+ * Hashtopolis is built for the untrusted-node case (a cracking contest), so a
+ * single node failing is treated as a driver or hardware problem on that node,
+ * not as proof the task is bad. Only once brokenTaskThreshold DISTINCT agents
+ * have failed on one task is the task considered broken. That count is
+ * configurable.
+ *
+ * All three thresholds are configurable. Setting brokenTaskThreshold to 0 and
+ * brokenAgentThreshold to 1 reproduces the historical "deactivate the agent on
+ * its first error" behaviour.
+ */
+class AgentErrorUtils {
+  /**
+   * Record a client error and decide what, if anything, to deactivate: the task
+   * (marked broken) or the agent, keeping the fleet online where possible.
+   */
+  public static function handleClientError(Agent $agent, Task $task, ?int $chunkId, string $message): void {
+    // Persist the error unless the agent is explicitly configured to not store.
+    if ($agent->getIgnoreErrors() <= DAgentIgnoreErrors::IGNORE_SAVE) {
+      $error = new AgentError(null, $agent->getId(), $task->getId(), $chunkId, time(), $message);
+      Factory::getAgentErrorFactory()->save($error);
+
+      $payload = new DataSet([DPayloadKeys::AGENT => $agent, DPayloadKeys::AGENT_ERROR => $message]);
+      NotificationHandler::checkNotifications(DNotificationType::AGENT_ERROR, $payload);
+      NotificationHandler::checkNotifications(DNotificationType::OWN_AGENT_ERROR, $payload);
+    }
+
+    // Agents explicitly told to ignore errors are never deactivated and never
+    // mark a task broken: keep the historical behaviour for that override.
+    if ($agent->getIgnoreErrors() != DAgentIgnoreErrors::NO) {
+      return;
+    }
+
+    $window = intval(SConfig::getInstance()->getVal(DConfig::BROKEN_ERROR_WINDOW));
+    $since = ($window > 0) ? time() - $window : 0;
+
+    // Task fault: several DISTINCT agents failing on one task points at the task
+    // rather than the hardware, since independent untrusted nodes are unlikely
+    // to hit the same driver fault. Mark it broken and keep the agent active.
+    $taskThreshold = intval(SConfig::getInstance()->getVal(DConfig::BROKEN_TASK_THRESHOLD));
+    if ($taskThreshold > 0 && self::countDistinctAgentsForTask($task->getId(), $since) >= $taskThreshold) {
+      self::markTaskBroken($task, 'Marked broken automatically after ' . $taskThreshold . ' or more distinct agents failed');
+      self::unassignAgentFromTask($agent, $task);
+      return;
+    }
+
+    // Agent fault: the agent fails across several distinct tasks, so the agent
+    // itself is the problem and gets deactivated.
+    $agentThreshold = intval(SConfig::getInstance()->getVal(DConfig::BROKEN_AGENT_THRESHOLD));
+    if ($agentThreshold > 0 && self::countDistinctTasksForAgent($agent->getId(), $since) >= $agentThreshold) {
+      Factory::getAgentFactory()->set($agent, Agent::IS_ACTIVE, 0);
+      return;
+    }
+
+    // Neither threshold reached yet: drop this agent's assignment to the task so
+    // it moves on to other work, but keep it active. This replaces the old
+    // behaviour of deactivating the agent on its first error.
+    self::unassignAgentFromTask($agent, $task);
+  }
+
+  /**
+   * Mark a task as broken so it is no longer handed out until an admin clears
+   * it. A task can carry at most one BrokenTask entry.
+   */
+  public static function markTaskBroken(Task $task, string $reason): void {
+    if (self::isTaskBroken($task->getId())) {
+      return;
+    }
+    $broken = new BrokenTask(null, $task->getId(), time(), $reason);
+    Factory::getBrokenTaskFactory()->save($broken);
+    DServerLog::log(DServerLog::WARNING, 'Task ' . $task->getId() . ' marked broken: ' . $reason, [$task]);
+  }
+
+  /**
+   * Whether the task is currently flagged broken (and therefore not assignable).
+   */
+  public static function isTaskBroken(int $taskId): bool {
+    $qF = new QueryFilter(BrokenTask::TASK_ID, $taskId, '=');
+    return count(Factory::getBrokenTaskFactory()->filter([Factory::FILTER => $qF])) > 0;
+  }
+
+  /**
+   * Clear the broken flag of a task so it becomes assignable again.
+   */
+  public static function clearBrokenTask(int $taskId): void {
+    $qF = new QueryFilter(BrokenTask::TASK_ID, $taskId, '=');
+    Factory::getBrokenTaskFactory()->massDeletion([Factory::FILTER => $qF]);
+  }
+
+  /**
+   * Number of distinct agents that have reported errors on a task, optionally
+   * only those newer than the given unix time (0 counts all). Distinct agents,
+   * not raw error count, because one untrusted node failing repeatedly is a
+   * node problem, not proof the task is broken.
+   */
+  private static function countDistinctAgentsForTask(int $taskId, int $since): int {
+    $filters = [new QueryFilter(AgentError::TASK_ID, $taskId, '=')];
+    if ($since > 0) {
+      $filters[] = new QueryFilter(AgentError::TIME, $since, '>=');
+    }
+    $errors = Factory::getAgentErrorFactory()->filter([Factory::FILTER => $filters]);
+    $agents = [];
+    foreach ($errors as $error) {
+      $agents[$error->getAgentId()] = true;
+    }
+    return count($agents);
+  }
+
+  /**
+   * Number of distinct tasks an agent has reported errors on, optionally only
+   * those newer than the given unix time (0 counts all).
+   */
+  private static function countDistinctTasksForAgent(int $agentId, int $since): int {
+    $filters = [new QueryFilter(AgentError::AGENT_ID, $agentId, '=')];
+    if ($since > 0) {
+      $filters[] = new QueryFilter(AgentError::TIME, $since, '>=');
+    }
+    $errors = Factory::getAgentErrorFactory()->filter([Factory::FILTER => $filters]);
+    $tasks = [];
+    foreach ($errors as $error) {
+      $tasks[$error->getTaskId()] = true;
+    }
+    return count($tasks);
+  }
+
+  /**
+   * Remove the agent's assignment to the task so its next request picks up
+   * different work, without deactivating the agent.
+   */
+  private static function unassignAgentFromTask(Agent $agent, Task $task): void {
+    $qF1 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), '=');
+    $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), '=');
+    Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => [$qF1, $qF2]]);
+  }
+}

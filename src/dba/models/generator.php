@@ -206,6 +206,14 @@ $CONF['AgentError'] = [
     ['name' => 'error', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
   ],
 ];
+$CONF['BrokenTask'] = [
+  'columns' => [
+    ['name' => 'brokenTaskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Task'],
+    ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'reason', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
+  ],
+];
 $CONF['AgentStat'] = [
   'columns' => [
     ['name' => 'agentStatId', 'read_only' => True, 'type' => 'int', 'protected' => True],

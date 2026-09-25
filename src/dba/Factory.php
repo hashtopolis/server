@@ -6,6 +6,7 @@ use Hashtopolis\dba\models\AccessGroupFactory;
 use Hashtopolis\dba\models\AgentFactory;
 use Hashtopolis\dba\models\AgentBinaryFactory;
 use Hashtopolis\dba\models\AgentErrorFactory;
+use Hashtopolis\dba\models\BrokenTaskFactory;
 use Hashtopolis\dba\models\AgentStatFactory;
 use Hashtopolis\dba\models\AgentZapFactory;
 use Hashtopolis\dba\models\ApiKeyFactory;
@@ -55,6 +56,7 @@ class Factory {
   private static ?AgentFactory $agentFactory = null;
   private static ?AgentBinaryFactory $agentBinaryFactory = null;
   private static ?AgentErrorFactory $agentErrorFactory = null;
+  private static ?BrokenTaskFactory $brokenTaskFactory = null;
   private static ?AgentStatFactory $agentStatFactory = null;
   private static ?AgentZapFactory $agentZapFactory = null;
   private static ?ApiKeyFactory $apiKeyFactory = null;
@@ -136,6 +138,16 @@ class Factory {
       return $f;
     } else {
       return self::$agentErrorFactory;
+    }
+  }
+
+  public static function getBrokenTaskFactory(): BrokenTaskFactory {
+    if (self::$brokenTaskFactory == null) {
+      $f = new BrokenTaskFactory();
+      self::$brokenTaskFactory = $f;
+      return $f;
+    } else {
+      return self::$brokenTaskFactory;
     }
   }
   
