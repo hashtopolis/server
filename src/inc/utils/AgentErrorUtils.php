@@ -9,6 +9,7 @@ use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\AgentError;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\BrokenTask;
+use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\DataSet;
@@ -70,8 +71,13 @@ class AgentErrorUtils {
     // Task fault: several DISTINCT agents failing on one task points at the task
     // rather than the hardware, since independent untrusted nodes are unlikely
     // to hit the same driver fault. Mark it broken and keep the agent active.
+    // A task some agent has made progress on is excluded: a node that is working
+    // it proves the command runs, so the failures are agent faults, not a task
+    // fault (two nodes sharing a driver bug must not condemn a working task).
     $taskThreshold = intval(SConfig::getInstance()->getVal(DConfig::BROKEN_TASK_THRESHOLD));
-    if ($taskThreshold > 0 && self::countDistinctAgentsForTask($task->getId(), $since) >= $taskThreshold) {
+    if ($taskThreshold > 0
+        && self::countDistinctAgentsForTask($task->getId(), $since) >= $taskThreshold
+        && !self::taskHasProgress($task->getId())) {
       self::markTaskBroken($task, 'Marked broken automatically after ' . $taskThreshold . ' or more distinct agents failed');
       self::unassignAgentFromTask($agent, $task);
       return;
@@ -137,6 +143,17 @@ class AgentErrorUtils {
       $agents[$error->getAgentId()] = true;
     }
     return count($agents);
+  }
+
+  /**
+   * Whether any agent has made measurable progress on the task. A chunk with a
+   * non-zero progress means the command ran and produced work, so the reported
+   * errors are agent faults rather than a broken task.
+   */
+  private static function taskHasProgress(int $taskId): bool {
+    $qF1 = new QueryFilter(Chunk::TASK_ID, $taskId, '=');
+    $qF2 = new QueryFilter(Chunk::PROGRESS, 0, '>');
+    return Factory::getChunkFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]) > 0;
   }
 
   /**

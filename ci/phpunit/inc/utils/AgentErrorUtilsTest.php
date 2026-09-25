@@ -6,6 +6,7 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\AgentError;
 use Hashtopolis\dba\models\BrokenTask;
+use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\DataSet;
@@ -99,5 +100,28 @@ final class AgentErrorUtilsTest extends TestBase {
       $this->registerErrorArtifacts($task);
     }
     $this->assertEquals(0, Factory::getAgentFactory()->get($agent->getId())->getIsActive(), 'agent failing on three distinct tasks should be deactivated');
+  }
+
+  // Two agents failing reaches the threshold, but a third agent is making
+  // progress on the same task (a chunk with non-zero progress). A working node
+  // proves the command runs, so the task must not be marked broken: the failures
+  // are agent faults, not a task fault.
+  public function testProgressingTaskIsNotMarkedBroken(): void {
+    $this->mockConfig(2, 3, 0);
+    $task = $this->createTaskHelper()["task"];
+    $agent1 = $this->createAgent("phpunit");
+    $agent2 = $this->createAgent("phpunit");
+    $agent3 = $this->createAgent("phpunit");
+    $this->createDatabaseObject(Factory::getAssignmentFactory(), new Assignment(null, $task->getId(), $agent1->getId(), '0'));
+    $this->createDatabaseObject(Factory::getAssignmentFactory(), new Assignment(null, $task->getId(), $agent2->getId(), '0'));
+
+    // The healthy third node is cracking: a dispatched chunk with real progress.
+    $this->createDatabaseObject(Factory::getChunkFactory(), new Chunk(null, $task->getId(), 0, 1000, $agent3->getId(), time(), 0, 0, 5000, 0, 0, 0));
+
+    AgentErrorUtils::handleClientError($agent1, $task, null, 'boom');
+    AgentErrorUtils::handleClientError($agent2, $task, null, 'boom');
+    $this->registerErrorArtifacts($task);
+
+    $this->assertFalse(AgentErrorUtils::isTaskBroken($task->getId()), 'a task some agent is progressing must not be marked broken');
   }
 }
