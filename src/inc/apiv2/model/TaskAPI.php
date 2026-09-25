@@ -12,6 +12,7 @@ use Hashtopolis\dba\Factory;
 
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Assignment;
+use Hashtopolis\dba\models\AgentError;
 use Hashtopolis\dba\models\BrokenTask;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\CrackerBinary;
@@ -20,6 +21,7 @@ use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\FileTask;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Speed;
 use Hashtopolis\dba\models\Task;
@@ -236,8 +238,19 @@ class TaskAPI extends AbstractModelAPI {
    * @param Task $object
    */
   protected function getAggregateBrokenReason(AbstractModel $object): ?string {
-    $qF = new QueryFilter(BrokenTask::TASK_ID, $object->getId(), '=');
-    $broken = Factory::getBrokenTaskFactory()->filter([Factory::FILTER => $qF]);
+    if (!AgentErrorUtils::isTaskBroken($object->getId())) {
+      return null;
+    }
+    // Prefer the actual error that broke the task, its most recent agent error,
+    // over the generic BrokenTask reason, so the UI shows what went wrong.
+    $qF = new QueryFilter(AgentError::TASK_ID, $object->getId(), '=');
+    $oF = new OrderFilter(AgentError::AGENT_ERROR_ID, 'DESC');
+    $errors = Factory::getAgentErrorFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
+    if (count($errors) > 0) {
+      return $errors[0]->getError();
+    }
+    $qF2 = new QueryFilter(BrokenTask::TASK_ID, $object->getId(), '=');
+    $broken = Factory::getBrokenTaskFactory()->filter([Factory::FILTER => $qF2]);
     return count($broken) > 0 ? $broken[0]->getReason() : null;
   }
   
@@ -350,7 +363,12 @@ class TaskAPI extends AbstractModelAPI {
       Task::MAX_AGENTS => fn($value) => TaskUtils::updateMaxAgents($id, $value, $current_user),
       Task::IS_CPU_TASK => fn($value) => TaskUtils::setCpuTask($id, $value, $current_user),
       Task::CHUNK_TIME => fn($value) => TaskUtils::changeChunkTime($id, $value, $current_user),
-      Task::ATTACK_CMD => fn($value) => TaskUtils::changeAttackCmd($id, $value, $current_user),
+      Task::ATTACK_CMD => function ($value) use ($id, $current_user) {
+        TaskUtils::changeAttackCmd($id, $value, $current_user);
+        // Editing the command is an admin fixing the task, so clear its broken
+        // flag; if it is still bad the agents will mark it broken again.
+        AgentErrorUtils::clearBrokenTask($id);
+      },
       Task::PREPROCESSOR_COMMAND => fn($value) => TaskUtils::changePreprocessorCmd($id, $value, $current_user)
     ];
   }
