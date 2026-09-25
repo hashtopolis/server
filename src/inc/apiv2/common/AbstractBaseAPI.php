@@ -345,6 +345,8 @@ abstract class AbstractBaseAPI {
         return Factory::getAgentBinaryFactory();
       case AgentError::class:
         return Factory::getAgentErrorFactory();
+      case Benchmark::class:
+        return Factory::getBenchmarkFactory();
       case AgentStat::class:
         return Factory::getAgentStatFactory();
       case Assignment::class:
