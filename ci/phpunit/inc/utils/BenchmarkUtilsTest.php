@@ -115,6 +115,21 @@ final class BenchmarkUtilsTest extends TestBase {
       BenchmarkUtils::computeAttackSignature($optimized),
       'an option that does not affect the mode or rule use must not change the signature'
     );
+
+    // The long '--attack-mode' spelling is recognized, so two long-form commands
+    // with different modes do not collide, and it matches the short '-a' form.
+    $longStraight = clone $this->task; $longStraight->setAttackCmd('#HL# --attack-mode 0 wordlist.txt');
+    $longMask = clone $this->task; $longMask->setAttackCmd('#HL# --attack-mode 3 ?d?d');
+    $this->assertNotSame(
+      BenchmarkUtils::computeAttackSignature($longStraight),
+      BenchmarkUtils::computeAttackSignature($longMask),
+      'the --attack-mode long form must be parsed so different modes do not collide'
+    );
+    $this->assertSame(
+      BenchmarkUtils::computeAttackSignature($maskA),
+      BenchmarkUtils::computeAttackSignature($longMask),
+      'short -a and long --attack-mode for the same mode must produce the same signature'
+    );
   }
 
   public function testAttackSignatureIgnoresWhitespaceOnly(): void {

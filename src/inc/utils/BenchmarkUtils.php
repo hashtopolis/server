@@ -72,7 +72,16 @@ class BenchmarkUtils {
    */
   public static function computeAttackSignature(Task $task): string {
     $cmd = (string)$task->getAttackCmd();
-    $attackMode = preg_match('/(?:^|\s)-a\s*(\d+)/', $cmd, $m) ? $m[1] : '';
+    // Accept both the short '-a N' and the long '--attack-mode N' spelling. The
+    // short check runs first and cannot match inside '--attack-mode', because
+    // that 'a' is not preceded by whitespace or start of string.
+    if (preg_match('/(?:^|\s)-a\s*(\d+)/', $cmd, $m)) {
+      $attackMode = $m[1];
+    } elseif (preg_match('/(?:^|\s)--attack-mode[\s=]+(\d+)/', $cmd, $m)) {
+      $attackMode = $m[1];
+    } else {
+      $attackMode = '';
+    }
     $hasRules = preg_match('/(?:^|\s)(?:-r|--rules-file)(?:=|\s)/', $cmd) ? 1 : 0;
     $parts = [$attackMode, (string)$hasRules];
     return hash('sha256', implode("\x1f", $parts));
@@ -157,7 +166,15 @@ class BenchmarkUtils {
       $now,
       $now + $ttl
     );
-    Factory::getBenchmarkFactory()->save($benchmark);
+    // The massDeletion above clears the key first, so only a concurrent store
+    // for the same key can collide with the unique index; treat that as a no-op.
+    try {
+      Factory::getBenchmarkFactory()->save($benchmark);
+    }
+    catch (\PDOException $e) {
+      DServerLog::log(DServerLog::DEBUG, 'Benchmark already stored concurrently', [$agent, $task]);
+      return;
+    }
     DServerLog::log(DServerLog::DEBUG, 'Stored benchmark in cache', [$agent, $task, $benchmarkValue]);
   }
 
