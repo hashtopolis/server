@@ -12,6 +12,7 @@ use Hashtopolis\dba\Factory;
 
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Assignment;
+use Hashtopolis\dba\models\BrokenTask;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
@@ -27,6 +28,7 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DTaskStatus;
+use Hashtopolis\inc\utils\AgentErrorUtils;
 use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;
 
@@ -161,6 +163,8 @@ class TaskAPI extends AbstractModelAPI {
         'cprogress' => [$this, 'getAggregateCProgress'],
         'timeSpent' => [$this, 'getAggregateTimeSpent'],
         'cracked' => [$this, 'getAggregateCracked'],
+        'isBroken' => [$this, 'getAggregateIsBroken'],
+        'brokenReason' => [$this, 'getAggregateBrokenReason'],
       ]
     ];
   }
@@ -177,6 +181,8 @@ class TaskAPI extends AbstractModelAPI {
       'cprogress' => self::aggregateFeature('int', 'cprogress'),
       'timeSpent' => self::aggregateFeature('int', 'timeSpent'),
       'cracked' => self::aggregateFeature('int', 'cracked'),
+      'isBroken' => self::aggregateFeature('bool', 'isBroken'),
+      'brokenReason' => self::aggregateFeature('str', 'brokenReason', ['null' => true]),
     ];
   }
 
@@ -214,6 +220,25 @@ class TaskAPI extends AbstractModelAPI {
    */
   protected function getAggregateStatus(AbstractModel $object): int {
     return TaskUtils::getStatus($object);
+  }
+
+  /**
+   * @param Task $object
+   */
+  protected function getAggregateIsBroken(AbstractModel $object): bool {
+    return AgentErrorUtils::isTaskBroken($object->getId());
+  }
+
+  /**
+   * The reason the task was marked broken, or null when it is not broken. Lets
+   * the UI show why a task faulted instead of only that it did.
+   *
+   * @param Task $object
+   */
+  protected function getAggregateBrokenReason(AbstractModel $object): ?string {
+    $qF = new QueryFilter(BrokenTask::TASK_ID, $object->getId(), '=');
+    $broken = Factory::getBrokenTaskFactory()->filter([Factory::FILTER => $qF]);
+    return count($broken) > 0 ? $broken[0]->getReason() : null;
   }
   
   /**
