@@ -74,15 +74,21 @@ class AgentErrorUtils {
     // A task some agent has made progress on is excluded: a node that is working
     // it proves the command runs, so the failures are agent faults, not a task
     // fault (two nodes sharing a driver bug must not condemn a working task).
+    // Note the flip side: once any chunk has progress the task can no longer be
+    // auto-faulted, only the per-agent path still fires. That is deliberate, a
+    // task that ran once is presumed valid.
     //
-    // The threshold is capped at the number of active agents: with fewer agents
-    // than the configured value a task could never reach it and an agent would
-    // loop on a broken task forever, so a single-agent setup faults on the first
-    // distinct failure. The cap is recomputed per error, so the configured value
-    // applies again once enough agents are active.
+    // The threshold is capped at the number of agents ELIGIBLE for this task, not
+    // the whole fleet: a task reachable by only a subset of agents (access group,
+    // trust, a secret hashlist or file) could otherwise never reach a threshold
+    // larger than that subset, and the eligible agents would loop on it forever.
+    // Capping at the eligible count means a task only its single agent can run
+    // faults on that agent's first distinct failure. The cap is recomputed per
+    // error, so the configured value applies again once enough eligible agents
+    // are active.
     $taskThreshold = intval(SConfig::getInstance()->getVal(DConfig::BROKEN_TASK_THRESHOLD));
     if ($taskThreshold > 0) {
-      $effectiveThreshold = min($taskThreshold, self::countActiveAgents());
+      $effectiveThreshold = min($taskThreshold, self::countEligibleAgents($task));
       if (self::countDistinctAgentsForTask($task->getId(), $since) >= $effectiveThreshold
           && !self::taskHasProgress($task->getId())) {
         self::markTaskBroken($task, 'Marked broken automatically after ' . $effectiveThreshold . ' or more distinct agents failed');
@@ -114,7 +120,18 @@ class AgentErrorUtils {
       return;
     }
     $broken = new BrokenTask(null, $task->getId(), time(), $reason);
-    Factory::getBrokenTaskFactory()->save($broken);
+    try {
+      Factory::getBrokenTaskFactory()->save($broken);
+    } catch (\Exception $e) {
+      // A concurrent error on the same task can insert the row between the check
+      // above and this save; the UNIQUE(taskId) constraint then rejects the
+      // duplicate. The task is broken either way, so swallow the race instead of
+      // surfacing a 500 to the reporting agent.
+      if (self::isTaskBroken($task->getId())) {
+        return;
+      }
+      throw $e;
+    }
     DServerLog::log(DServerLog::WARNING, 'Task ' . $task->getId() . ' marked broken: ' . $reason, [$task]);
   }
 
@@ -165,12 +182,22 @@ class AgentErrorUtils {
   }
 
   /**
-   * How many agents are currently active. Used to cap the broken-task threshold
-   * so a task can always be faulted by the agents that actually exist.
+   * How many active agents are eligible to run this task, that is could actually
+   * be assigned it (same access group, trusted enough for any secret hashlist or
+   * file). Used to cap the broken-task threshold so a task is never held to a
+   * threshold higher than the number of agents that can ever work it, which would
+   * otherwise let the eligible agents loop on it forever.
    */
-  private static function countActiveAgents(): int {
+  private static function countEligibleAgents(Task $task): int {
     $qF = new QueryFilter(Agent::IS_ACTIVE, 1, '=');
-    return Factory::getAgentFactory()->countFilter([Factory::FILTER => $qF]);
+    $agents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF]);
+    $count = 0;
+    foreach ($agents as $agent) {
+      if (AccessUtils::agentCanAccessTask($agent, $task)) {
+        $count++;
+      }
+    }
+    return $count;
   }
 
   /**

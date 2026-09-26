@@ -363,12 +363,11 @@ class TaskAPI extends AbstractModelAPI {
       Task::MAX_AGENTS => fn($value) => TaskUtils::updateMaxAgents($id, $value, $current_user),
       Task::IS_CPU_TASK => fn($value) => TaskUtils::setCpuTask($id, $value, $current_user),
       Task::CHUNK_TIME => fn($value) => TaskUtils::changeChunkTime($id, $value, $current_user),
-      Task::ATTACK_CMD => function ($value) use ($id, $current_user) {
-        TaskUtils::changeAttackCmd($id, $value, $current_user);
-        // Editing the command is an admin fixing the task, so clear its broken
-        // flag; if it is still bad the agents will mark it broken again.
-        AgentErrorUtils::clearBrokenTask($id);
-      },
+      // changeAttackCmd purges the task when the command actually changes, which
+      // removes its BrokenTask row too, so editing the command clears the broken
+      // flag (if still bad the agents mark it broken again). Resubmitting the
+      // same command is a no-op and correctly leaves a broken task broken.
+      Task::ATTACK_CMD => fn($value) => TaskUtils::changeAttackCmd($id, $value, $current_user),
       Task::PREPROCESSOR_COMMAND => fn($value) => TaskUtils::changePreprocessorCmd($id, $value, $current_user)
     ];
   }

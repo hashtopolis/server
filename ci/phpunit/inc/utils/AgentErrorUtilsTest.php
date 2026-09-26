@@ -3,6 +3,9 @@
 namespace Hashtopolis\inc\utils;
 
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\AccessGroup;
+use Hashtopolis\dba\models\AccessGroupAgent;
+use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\AgentError;
 use Hashtopolis\dba\models\BrokenTask;
@@ -45,13 +48,24 @@ final class AgentErrorUtilsTest extends TestBase {
     $this->registerDatabaseObjects(Factory::getBrokenTaskFactory(), $broken);
   }
 
+  // Put the agent in the task's access group so it counts as eligible for the
+  // task: countEligibleAgents (and so the effective threshold cap) only counts
+  // agents that could actually be assigned the task.
+  private function makeEligible(AccessGroup $group, Agent $agent): void {
+    $this->createDatabaseObject(Factory::getAccessGroupAgentFactory(), new AccessGroupAgent(null, $group->getId(), $agent->getId()));
+  }
+
   // Two distinct agents failing on one task marks the task broken and keeps both
   // agents active.
   public function testTwoDistinctAgentsFailBreaksTaskNotAgents(): void {
     $this->mockConfig(2, 3, 0);
-    $task = $this->createTaskHelper()["task"];
+    $helper = $this->createTaskHelper();
+    $task = $helper["task"];
+    $group = $helper["accessGroup"];
     $agent1 = $this->createAgent("phpunit");
     $agent2 = $this->createAgent("phpunit");
+    $this->makeEligible($group, $agent1);
+    $this->makeEligible($group, $agent2);
     $this->createDatabaseObject(Factory::getAssignmentFactory(), new Assignment(null, $task->getId(), $agent1->getId(), '0'));
     $this->createDatabaseObject(Factory::getAssignmentFactory(), new Assignment(null, $task->getId(), $agent2->getId(), '0'));
 
@@ -71,9 +85,13 @@ final class AgentErrorUtilsTest extends TestBase {
   // failing alone is treated as a node problem. The agent is only unassigned.
   public function testSingleAgentFailureKeepsTaskAndAgent(): void {
     $this->mockConfig(2, 3, 0);
-    $task = $this->createTaskHelper()["task"];
+    $helper = $this->createTaskHelper();
+    $task = $helper["task"];
+    $group = $helper["accessGroup"];
     $agent = $this->createAgent("phpunit");
-    $this->createAgent("phpunit"); // a second active agent, so the effective threshold stays 2
+    $agent2 = $this->createAgent("phpunit"); // a second eligible agent, so the effective threshold stays 2
+    $this->makeEligible($group, $agent);
+    $this->makeEligible($group, $agent2);
     $this->createDatabaseObject(Factory::getAssignmentFactory(), new Assignment(null, $task->getId(), $agent->getId(), '0'));
 
     AgentErrorUtils::handleClientError($agent, $task, null, 'boom');
@@ -109,10 +127,14 @@ final class AgentErrorUtilsTest extends TestBase {
   // are agent faults, not a task fault.
   public function testProgressingTaskIsNotMarkedBroken(): void {
     $this->mockConfig(2, 3, 0);
-    $task = $this->createTaskHelper()["task"];
+    $helper = $this->createTaskHelper();
+    $task = $helper["task"];
+    $group = $helper["accessGroup"];
     $agent1 = $this->createAgent("phpunit");
     $agent2 = $this->createAgent("phpunit");
     $agent3 = $this->createAgent("phpunit");
+    $this->makeEligible($group, $agent1);
+    $this->makeEligible($group, $agent2);
     $this->createDatabaseObject(Factory::getAssignmentFactory(), new Assignment(null, $task->getId(), $agent1->getId(), '0'));
     $this->createDatabaseObject(Factory::getAssignmentFactory(), new Assignment(null, $task->getId(), $agent2->getId(), '0'));
 
@@ -126,19 +148,46 @@ final class AgentErrorUtilsTest extends TestBase {
     $this->assertFalse(AgentErrorUtils::isTaskBroken($task->getId()), 'a task some agent is progressing must not be marked broken');
   }
 
-  // When only one agent is active, the threshold is capped at 1, so that single
-  // agent failing marks the task broken rather than looping on it forever. It
-  // cannot get corroboration from other agents because there are none.
-  public function testSingleActiveAgentFaultsTask(): void {
+  // When only one agent is eligible for the task, the threshold is capped at 1,
+  // so that single agent failing marks the task broken rather than looping on it
+  // forever. It cannot get corroboration from other agents because none can run
+  // the task.
+  public function testSingleEligibleAgentFaultsTask(): void {
     $this->mockConfig(2, 3, 0);
-    $task = $this->createTaskHelper()["task"];
-    $agent = $this->createAgent("phpunit"); // the only active agent
+    $helper = $this->createTaskHelper();
+    $task = $helper["task"];
+    $group = $helper["accessGroup"];
+    $agent = $this->createAgent("phpunit"); // the only eligible agent
+    $this->makeEligible($group, $agent);
     $this->createDatabaseObject(Factory::getAssignmentFactory(), new Assignment(null, $task->getId(), $agent->getId(), '0'));
 
     AgentErrorUtils::handleClientError($agent, $task, null, 'boom');
     $this->registerErrorArtifacts($task);
 
-    $this->assertTrue(AgentErrorUtils::isTaskBroken($task->getId()), 'a single active agent should fault the task it cannot get corroboration for');
+    $this->assertTrue(AgentErrorUtils::isTaskBroken($task->getId()), 'a single eligible agent should fault the task it cannot get corroboration for');
     $this->assertEquals(1, Factory::getAgentFactory()->get($agent->getId())->getIsActive());
+  }
+
+  // The cap counts agents ELIGIBLE for the task, not the whole active fleet. Here
+  // three agents are active but only one is in the task's access group, so the
+  // effective threshold is capped at 1 and that single eligible agent's failure
+  // faults the task, even though the configured threshold is 2 and two more
+  // active agents exist. Without eligibility scoping the task would loop forever.
+  public function testThresholdCappedToEligibleNotActiveAgents(): void {
+    $this->mockConfig(2, 3, 0);
+    $helper = $this->createTaskHelper();
+    $task = $helper["task"];
+    $group = $helper["accessGroup"];
+    $eligible = $this->createAgent("phpunit");
+    $this->makeEligible($group, $eligible);
+    // Two active agents outside the task's access group: they can never run it.
+    $this->createAgent("phpunit");
+    $this->createAgent("phpunit");
+    $this->createDatabaseObject(Factory::getAssignmentFactory(), new Assignment(null, $task->getId(), $eligible->getId(), '0'));
+
+    AgentErrorUtils::handleClientError($eligible, $task, null, 'boom');
+    $this->registerErrorArtifacts($task);
+
+    $this->assertTrue(AgentErrorUtils::isTaskBroken($task->getId()), 'threshold must cap at eligible agents, not the whole active fleet');
   }
 }
