@@ -12,6 +12,8 @@ use Hashtopolis\dba\Factory;
 
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Assignment;
+use Hashtopolis\dba\models\AgentError;
+use Hashtopolis\dba\models\BrokenTask;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
@@ -19,6 +21,7 @@ use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\FileTask;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\JoinFilter;
+use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Speed;
 use Hashtopolis\dba\models\Task;
@@ -27,6 +30,7 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DTaskStatus;
+use Hashtopolis\inc\utils\AgentErrorUtils;
 use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;
 
@@ -161,6 +165,8 @@ class TaskAPI extends AbstractModelAPI {
         'cprogress' => [$this, 'getAggregateCProgress'],
         'timeSpent' => [$this, 'getAggregateTimeSpent'],
         'cracked' => [$this, 'getAggregateCracked'],
+        'isBroken' => [$this, 'getAggregateIsBroken'],
+        'brokenReason' => [$this, 'getAggregateBrokenReason'],
       ]
     ];
   }
@@ -177,6 +183,8 @@ class TaskAPI extends AbstractModelAPI {
       'cprogress' => self::aggregateFeature('int', 'cprogress'),
       'timeSpent' => self::aggregateFeature('int', 'timeSpent'),
       'cracked' => self::aggregateFeature('int', 'cracked'),
+      'isBroken' => self::aggregateFeature('bool', 'isBroken'),
+      'brokenReason' => self::aggregateFeature('str', 'brokenReason', ['null' => true]),
     ];
   }
 
@@ -214,6 +222,36 @@ class TaskAPI extends AbstractModelAPI {
    */
   protected function getAggregateStatus(AbstractModel $object): int {
     return TaskUtils::getStatus($object);
+  }
+
+  /**
+   * @param Task $object
+   */
+  protected function getAggregateIsBroken(AbstractModel $object): bool {
+    return AgentErrorUtils::isTaskBroken($object->getId());
+  }
+
+  /**
+   * The reason the task was marked broken, or null when it is not broken. Lets
+   * the UI show why a task faulted instead of only that it did.
+   *
+   * @param Task $object
+   */
+  protected function getAggregateBrokenReason(AbstractModel $object): ?string {
+    if (!AgentErrorUtils::isTaskBroken($object->getId())) {
+      return null;
+    }
+    // Prefer the actual error that broke the task, its most recent agent error,
+    // over the generic BrokenTask reason, so the UI shows what went wrong.
+    $qF = new QueryFilter(AgentError::TASK_ID, $object->getId(), '=');
+    $oF = new OrderFilter(AgentError::AGENT_ERROR_ID, 'DESC');
+    $errors = Factory::getAgentErrorFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
+    if (count($errors) > 0) {
+      return $errors[0]->getError();
+    }
+    $qF2 = new QueryFilter(BrokenTask::TASK_ID, $object->getId(), '=');
+    $broken = Factory::getBrokenTaskFactory()->filter([Factory::FILTER => $qF2]);
+    return count($broken) > 0 ? $broken[0]->getReason() : null;
   }
   
   /**
@@ -325,6 +363,10 @@ class TaskAPI extends AbstractModelAPI {
       Task::MAX_AGENTS => fn($value) => TaskUtils::updateMaxAgents($id, $value, $current_user),
       Task::IS_CPU_TASK => fn($value) => TaskUtils::setCpuTask($id, $value, $current_user),
       Task::CHUNK_TIME => fn($value) => TaskUtils::changeChunkTime($id, $value, $current_user),
+      // changeAttackCmd purges the task when the command actually changes, which
+      // removes its BrokenTask row too, so editing the command clears the broken
+      // flag (if still bad the agents mark it broken again). Resubmitting the
+      // same command is a no-op and correctly leaves a broken task broken.
       Task::ATTACK_CMD => fn($value) => TaskUtils::changeAttackCmd($id, $value, $current_user),
       Task::PREPROCESSOR_COMMAND => fn($value) => TaskUtils::changePreprocessorCmd($id, $value, $current_user)
     ];

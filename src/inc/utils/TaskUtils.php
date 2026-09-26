@@ -21,6 +21,7 @@ use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\NotificationSetting;
 use Hashtopolis\dba\models\AgentError;
+use Hashtopolis\dba\models\BrokenTask;
 use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\models\FilePretask;
 use Hashtopolis\dba\models\Pretask;
@@ -1078,6 +1079,11 @@ class TaskUtils {
     $oF = new OrderFilter(Task::PRIORITY, "DESC");
     $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
     foreach ($tasks as $task) {
+      // skip tasks marked broken until an admin clears them (issue #884)
+      if (AgentErrorUtils::isTaskBroken($task->getId())) {
+        continue;
+      }
+
       // count number of other agents already working on the task,
       // no tasks can be candidates if limit is already reached
       $totalAssignments += self::numberOfOtherAssignedAgents($task, $agent);
@@ -1144,6 +1150,8 @@ class TaskUtils {
     Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
     $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");
     Factory::getAgentErrorFactory()->massDeletion([Factory::FILTER => $qF]);
+    $qF = new QueryFilter(BrokenTask::TASK_ID, $task->getId(), "=");
+    Factory::getBrokenTaskFactory()->massDeletion([Factory::FILTER => $qF]);
     $qF = new QueryFilter(TaskDebugOutput::TASK_ID, $task->getId(), "=");
     Factory::getTaskDebugOutputFactory()->massDeletion([Factory::FILTER => $qF]);
     $qF = new QueryFilter(Speed::TASK_ID, $task->getId(), "=");
