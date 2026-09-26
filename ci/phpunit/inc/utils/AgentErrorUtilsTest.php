@@ -21,15 +21,18 @@ require_once(dirname(__FILE__) . '/../../TestBase.php');
 
 final class AgentErrorUtilsTest extends TestBase {
 
-  // Inject the broken-handling thresholds into the SConfig singleton so the
-  // tests control them without touching the Config table.
+  // Override only the broken-handling thresholds in the SConfig singleton so the
+  // tests control them without touching the Config table. Start from the real
+  // config so every OTHER lookup keeps working: markTaskBroken logs through
+  // Util::createLogEntry, whose rotation reads numLogEntries, and wiping it would
+  // make that read null and delete unrelated log entries (breaking test_logentry).
   private function mockConfig(int $taskThreshold, int $agentThreshold, int $window): void {
+    $values = SConfig::getInstance()->getAllValues();
+    $values[DConfig::BROKEN_TASK_THRESHOLD]  = (string)$taskThreshold;
+    $values[DConfig::BROKEN_AGENT_THRESHOLD] = (string)$agentThreshold;
+    $values[DConfig::BROKEN_ERROR_WINDOW]    = (string)$window;
     $p = (new \ReflectionClass(SConfig::class))->getProperty('instance');
-    $p->setValue(null, new DataSet([
-      DConfig::BROKEN_TASK_THRESHOLD  => (string)$taskThreshold,
-      DConfig::BROKEN_AGENT_THRESHOLD => (string)$agentThreshold,
-      DConfig::BROKEN_ERROR_WINDOW    => (string)$window,
-    ]));
+    $p->setValue(null, new DataSet($values));
   }
 
   protected function tearDown(): void {
