@@ -137,6 +137,11 @@ class AgentErrorUtils {
 
   /**
    * Whether the task is currently flagged broken (and therefore not assignable).
+   * Reads the database, so it is impure: a concurrent request can insert or
+   * remove the BrokenTask row between two calls (see the race guard in
+   * markTaskBroken).
+   *
+   * @phpstan-impure
    */
   public static function isTaskBroken(int $taskId): bool {
     $qF = new QueryFilter(BrokenTask::TASK_ID, $taskId, '=');

@@ -11,7 +11,7 @@ class BrokenTaskFactory extends AbstractModelFactory {
   function getModelName(): string {
     return "BrokenTask";
   }
-
+  
   function getModelTable(): string {
     return "BrokenTask";
   }
@@ -19,22 +19,22 @@ class BrokenTaskFactory extends AbstractModelFactory {
   function isMapping(): bool {
     return False;
   }
-
+  
   function isCachable(): bool {
     return false;
   }
-
+  
   function getCacheValidTime(): int {
     return -1;
   }
-
+  
   /**
    * @return BrokenTask
    */
   function getNullObject(): BrokenTask {
     return new BrokenTask(-1, null, null, null);
   }
-
+  
   /**
    * @param array $dict
    * @return BrokenTask

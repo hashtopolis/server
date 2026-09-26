@@ -9,24 +9,24 @@ class BrokenTask extends AbstractModel {
   private ?int $taskId;
   private ?int $time;
   private ?string $reason;
-
+  
   function __construct(?int $brokenTaskId, ?int $taskId, ?int $time, ?string $reason) {
     $this->brokenTaskId = $brokenTaskId;
     $this->taskId = $taskId;
     $this->time = $time;
     $this->reason = $reason;
   }
-
+  
   function getKeyValueDict(): array {
     $dict = array();
     $dict['brokenTaskId'] = $this->brokenTaskId;
     $dict['taskId'] = $this->taskId;
     $dict['time'] = $this->time;
     $dict['reason'] = $this->reason;
-
+    
     return $dict;
   }
-
+  
   static function getFeatures(): array {
     $dict = array();
     $dict['brokenTaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "brokenTaskId", "public" => False, "dba_mapping" => False];
@@ -40,19 +40,19 @@ class BrokenTask extends AbstractModel {
   function getPrimaryKey(): string {
     return "brokenTaskId";
   }
-
+  
   function getPrimaryKeyValue(): ?int {
     return $this->brokenTaskId;
   }
-
+  
   function getId(): ?int {
     return $this->brokenTaskId;
   }
-
+  
   function setId($id): void {
     $this->brokenTaskId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -60,31 +60,31 @@ class BrokenTask extends AbstractModel {
   public function expose(): array {
     return get_object_vars($this);
   }
-
+  
   function getTaskId(): ?int {
     return $this->taskId;
   }
-
+  
   function setTaskId(?int $taskId): void {
     $this->taskId = $taskId;
   }
-
+  
   function getTime(): ?int {
     return $this->time;
   }
-
+  
   function setTime(?int $time): void {
     $this->time = $time;
   }
-
+  
   function getReason(): ?string {
     return $this->reason;
   }
-
+  
   function setReason(?string $reason): void {
     $this->reason = $reason;
   }
-
+  
   const BROKEN_TASK_ID = "brokenTaskId";
   const TASK_ID = "taskId";
   const TIME = "time";

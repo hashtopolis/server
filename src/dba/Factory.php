@@ -140,7 +140,7 @@ class Factory {
       return self::$agentErrorFactory;
     }
   }
-
+  
   public static function getBrokenTaskFactory(): BrokenTaskFactory {
     if (self::$brokenTaskFactory == null) {
       $f = new BrokenTaskFactory();
