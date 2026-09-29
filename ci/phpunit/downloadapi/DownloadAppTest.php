@@ -31,6 +31,7 @@ final class DownloadAppTest extends TestBase {
   private string $agentToken;
   private string $archiveContent;
   private string|false $savedBackendUrl = false;
+  private string|false $savedFrontendPort = false;
   private bool $savedHttpRange = false;
   private string|false $savedHttpRangeValue = false;
 
@@ -39,6 +40,7 @@ final class DownloadAppTest extends TestBase {
     parent::setUp();
 
     $this->savedBackendUrl = getenv('HASHTOPOLIS_BACKEND_URL');
+    $this->savedFrontendPort = getenv('HASHTOPOLIS_FRONTEND_PORT');
     putenv('HASHTOPOLIS_BACKEND_URL=http://localhost/api/v2');
 
     $suffix = uniqid();
@@ -88,6 +90,12 @@ final class DownloadAppTest extends TestBase {
       else {
         putenv('HASHTOPOLIS_BACKEND_URL=' . $this->savedBackendUrl);
       }
+      if ($this->savedFrontendPort === false) {
+        putenv('HASHTOPOLIS_FRONTEND_PORT');
+      }
+      else {
+        putenv('HASHTOPOLIS_FRONTEND_PORT=' . $this->savedFrontendPort);
+      }
       if ($this->savedHttpRange) {
         $_SERVER['HTTP_RANGE'] = $this->savedHttpRangeValue;
       }
@@ -101,8 +109,8 @@ final class DownloadAppTest extends TestBase {
     return Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . '/';
   }
 
-  private function runDownloadRequest(string $uriWithQuery, array $headers = []): ResponseInterface {
-    $request = (new ServerRequestFactory())->createServerRequest('GET', $uriWithQuery);
+  private function runDownloadRequest(string $uriWithQuery, array $headers = [], string $method = 'GET'): ResponseInterface {
+    $request = (new ServerRequestFactory())->createServerRequest($method, $uriWithQuery);
     foreach ($headers as $name => $value) {
       $request = $request->withHeader($name, $value);
     }
@@ -212,5 +220,68 @@ final class DownloadAppTest extends TestBase {
     $etag = md5(filemtime($archive) . strlen($this->archiveContent));
     $response = $this->runDownloadRequest($this->localBinaryUri() . '?token=' . $this->agentToken, ['If-None-Match' => $etag]);
     $this->assertEquals(304, $response->getStatusCode());
+  }
+
+  /**
+   * Configure the backend url and frontend port the CORS check of the apiv2 uses,
+   * like the docker setup where the web-ui is served from another port.
+   */
+  private function useCrossOriginSetup(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=http://localhost:8080/api/v2');
+    putenv('HASHTOPOLIS_FRONTEND_PORT=4200');
+  }
+
+  // The browser preflight of the web-ui (cross origin, Authorization header) is
+  // answered without authentication, otherwise the JWT download cannot start.
+  public function testPreflightIsAnsweredWithoutAuthentication(): void {
+    $this->useCrossOriginSetup();
+    $response = $this->runDownloadRequest($this->localBinaryUri(), [
+      'Origin' => 'http://localhost:4200',
+      'Access-Control-Request-Method' => 'GET',
+      'Access-Control-Request-Headers' => 'authorization,x-skip-error-dialog'
+    ], 'OPTIONS');
+    $this->assertEquals(204, $response->getStatusCode());
+    $this->assertEquals('http://localhost:4200', $response->getHeaderLine('Access-Control-Allow-Origin'));
+    $this->assertStringContainsString('GET', $response->getHeaderLine('Access-Control-Allow-Methods'));
+    $this->assertEquals('authorization,x-skip-error-dialog', $response->getHeaderLine('Access-Control-Allow-Headers'));
+  }
+
+  // Error responses carry the CORS headers too, so the web-ui can read the status.
+  public function testErrorResponsesCarryCorsHeaders(): void {
+    $this->useCrossOriginSetup();
+    $response = $this->runDownloadRequest($this->localBinaryUri(), ['Origin' => 'http://localhost:4200']);
+    $this->assertEquals(401, $response->getStatusCode());
+    $this->assertEquals('http://localhost:4200', $response->getHeaderLine('Access-Control-Allow-Origin'));
+  }
+
+  // A successful cross origin download exposes the filename header to the web-ui.
+  public function testDownloadCarriesCorsHeaders(): void {
+    $this->useCrossOriginSetup();
+    $response = $this->runDownloadRequest(
+      $this->localBinaryUri() . '?token=' . $this->agentToken,
+      ['Origin' => 'http://localhost:4200']
+    );
+    $this->assertEquals(200, $response->getStatusCode());
+    $this->assertEquals('http://localhost:4200', $response->getHeaderLine('Access-Control-Allow-Origin'));
+    $this->assertStringContainsString('Content-Disposition', $response->getHeaderLine('Access-Control-Expose-Headers'));
+  }
+
+  // An origin which does not match the configured backend is rejected like in the apiv2.
+  public function testForeignOriginIsRejected(): void {
+    $this->useCrossOriginSetup();
+    $response = $this->runDownloadRequest($this->localBinaryUri(), [
+      'Origin' => 'http://evil.example:4200',
+      'Access-Control-Request-Method' => 'GET'
+    ], 'OPTIONS');
+    $this->assertEquals(403, $response->getStatusCode());
+    $this->assertEquals('', $response->getHeaderLine('Access-Control-Allow-Origin'));
+  }
+
+  // Agents send no Origin header, their downloads are unaffected by the CORS check.
+  public function testAgentDownloadWithoutOriginIsUnaffected(): void {
+    $this->useCrossOriginSetup();
+    $response = $this->runDownloadRequest($this->localBinaryUri() . '?token=' . $this->agentToken);
+    $this->assertEquals(200, $response->getStatusCode());
+    $this->assertEquals($this->archiveContent, (string)$response->getBody());
   }
 }
