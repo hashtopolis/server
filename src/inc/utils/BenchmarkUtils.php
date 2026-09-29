@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Hashtopolis\inc\utils;
 
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Benchmark;
+use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\models\Task;
+use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\agent\PValuesBenchmarkType;
@@ -30,12 +33,20 @@ use Hashtopolis\inc\SConfig;
  *
  *   - crackerBinaryId: the cracker binary the task runs with. Different binaries
  *     (and versions) have different speeds for the same attack.
- *   - hashMode: the hashcat hash-type (the '-m' mode). Speed varies by orders of
- *     magnitude between modes.
- *   - attackParameters: a SHA-256 of the normalized attack command together with
- *     the task settings that change how the run executes (preprocessor use and
- *     command, forced pipe). The attack command already contains the wordlist,
- *     rule and mask references, which are what actually drive the speed.
+ *   - hashTypeId: the hashcat hash-type (the '-m' mode). Speed varies by orders
+ *     of magnitude between modes.
+ *   - runSignature (stored in the attackParameters column): a SHA-256 of the
+ *     whole normalized attack command, the preprocessor settings (id and
+ *     command), the forced-pipe flag, and the hashlist's salt count. Measurement
+ *     shows the specific mask, wordlist and rule set each move the benchmark by
+ *     several orders of magnitude (a candidate-starved run is far slower than a
+ *     saturating one), so the whole command has to be in the key, not just the
+ *     attack mode. The salt count is added separately because it changes the
+ *     speed (roughly linearly) but is not part of the command: two hashlists of
+ *     the same mode running the same attack, one with many salts, benchmark very
+ *     differently. The salt count is the hashlist's hashCount for a salted mode
+ *     and 1 for an unsalted one, so unsalted modes still share one benchmark
+ *     across their hashlists.
  *   - deviceSignature: a SHA-256 of the agent's reported device string, its
  *     cpuOnly flag and its per-agent command parameters (cmdPars, e.g. -O / -w
  *     tuning). This stands in for "identical hardware, identically configured".
@@ -62,28 +73,45 @@ class BenchmarkUtils {
   }
 
   /**
-   * Signature of the attack. The benchmark measures raw candidate speed, which
-   * depends on the attack mode (the '-a' value: straight, combinator, mask, ...)
-   * and on whether a rule file is applied ('-r'), but not on which wordlist,
-   * mask or rule file is used. So the key is just those two factors, and every
-   * mask of a given mode shares one benchmark instead of being measured
-   * separately. Hashed so it fits a fixed column and never leaks command
-   * contents into the cache table.
+   * Resolve the hashlist a task runs against with a single Task -> TaskWrapper ->
+   * Hashlist join, instead of fetching the wrapper and then the hashlist in two
+   * separate queries.
    */
-  public static function computeAttackSignature(Task $task): string {
-    $cmd = (string)$task->getAttackCmd();
-    // Accept both the short '-a N' and the long '--attack-mode N' spelling. The
-    // short check runs first and cannot match inside '--attack-mode', because
-    // that 'a' is not preceded by whitespace or start of string.
-    if (preg_match('/(?:^|\s)-a\s*(\d+)/', $cmd, $m)) {
-      $attackMode = $m[1];
-    } elseif (preg_match('/(?:^|\s)--attack-mode[\s=]+(\d+)/', $cmd, $m)) {
-      $attackMode = $m[1];
-    } else {
-      $attackMode = '';
-    }
-    $hasRules = preg_match('/(?:^|\s)(?:-r|--rules-file)(?:=|\s)/', $cmd) ? 1 : 0;
-    $parts = [$attackMode, (string)$hasRules];
+  public static function hashlistForTask(Task $task): ?Hashlist {
+    $qF = new QueryFilter(Task::TASK_ID, $task->getId(), '=', Factory::getTaskFactory());
+    $jF1 = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskFactory());
+    $jF2 = new JoinFilter(Factory::getHashlistFactory(), TaskWrapper::HASHLIST_ID, Hashlist::HASHLIST_ID, Factory::getTaskWrapperFactory());
+    $joined = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => [$jF1, $jF2]]);
+    /** @var Hashlist[] $hashlists */
+    $hashlists = $joined[Factory::getHashlistFactory()->getModelName()];
+    return (count($hashlists) > 0) ? $hashlists[0] : null;
+  }
+
+  /**
+   * Number of salts the run has to test each candidate against, which scales the
+   * time and so the measured speed. A salted mode tests every candidate against
+   * every salt, so its hashCount is the salt count; an unsalted mode always
+   * counts as one.
+   */
+  private static function saltCount(Hashlist $hashlist): int {
+    return $hashlist->getIsSalted() ? max(1, (int)$hashlist->getHashCount()) : 1;
+  }
+
+  /**
+   * Signature of everything about the run that changes the measured speed and is
+   * not the hardware: the whole attack command (mask, wordlist, rule set, pipe),
+   * the preprocessor settings, the forced-pipe flag and the salt count. Hashed so
+   * it fits a fixed column and never leaks command contents into the cache table.
+   */
+  public static function computeRunSignature(Task $task, int $saltCount): string {
+    $cmd = preg_replace('/\s+/', ' ', trim((string)$task->getAttackCmd()));
+    $parts = [
+      $cmd,
+      (int)$task->getUsePreprocessor(),
+      trim((string)$task->getPreprocessorCommand()),
+      (int)$task->getForcePipe(),
+      $saltCount,
+    ];
     return hash('sha256', implode("\x1f", $parts));
   }
 
@@ -106,11 +134,11 @@ class BenchmarkUtils {
    *
    * @return QueryFilter[]
    */
-  private static function keyFilters(Task $task, int $hashMode, Agent $agent, string $benchmarkType): array {
+  private static function keyFilters(Task $task, Hashlist $hashlist, Agent $agent, string $benchmarkType): array {
     return [
       new QueryFilter(Benchmark::CRACKER_BINARY_ID, $task->getCrackerBinaryId(), '='),
-      new QueryFilter(Benchmark::HASH_MODE, $hashMode, '='),
-      new QueryFilter(Benchmark::ATTACK_PARAMETERS, self::computeAttackSignature($task), '='),
+      new QueryFilter(Benchmark::HASH_TYPE_ID, (int)$hashlist->getHashTypeId(), '='),
+      new QueryFilter(Benchmark::ATTACK_PARAMETERS, self::computeRunSignature($task, self::saltCount($hashlist)), '='),
       new QueryFilter(Benchmark::DEVICE_SIGNATURE, self::computeDeviceSignature($agent), '='),
       new QueryFilter(Benchmark::BENCHMARK_TYPE, $benchmarkType, '='),
     ];
@@ -120,12 +148,12 @@ class BenchmarkUtils {
    * Return a cached benchmark value for this task/agent combination, or null if
    * caching is disabled or there is no unexpired entry.
    */
-  public static function lookup(Task $task, int $hashMode, Agent $agent): ?string {
+  public static function lookup(Task $task, Hashlist $hashlist, Agent $agent): ?string {
     if (self::getTtl() <= 0) {
       return null;
     }
 
-    $filters = self::keyFilters($task, $hashMode, $agent, self::benchmarkTypeForTask($task));
+    $filters = self::keyFilters($task, $hashlist, $agent, self::benchmarkTypeForTask($task));
     $filters[] = new QueryFilter(Benchmark::EXPIRE_TIME, time(), '>');
     $oF = new OrderFilter(Benchmark::CREATE_TIME, 'DESC');
     /** @var Benchmark[] $entries */
@@ -142,7 +170,7 @@ class BenchmarkUtils {
    * same key so the table keeps one row per key. Does nothing when caching is
    * disabled.
    */
-  public static function store(Task $task, int $hashMode, Agent $agent, string $benchmarkValue): void {
+  public static function store(Task $task, Hashlist $hashlist, Agent $agent, string $benchmarkValue): void {
     $ttl = self::getTtl();
     if ($ttl <= 0) {
       return;
@@ -151,15 +179,15 @@ class BenchmarkUtils {
     self::prune();
 
     $benchmarkType = self::benchmarkTypeForTask($task);
-    $filters = self::keyFilters($task, $hashMode, $agent, $benchmarkType);
+    $filters = self::keyFilters($task, $hashlist, $agent, $benchmarkType);
     Factory::getBenchmarkFactory()->massDeletion([Factory::FILTER => $filters]);
 
     $now = time();
     $benchmark = new Benchmark(
       null,
       $task->getCrackerBinaryId(),
-      $hashMode,
-      self::computeAttackSignature($task),
+      (int)$hashlist->getHashTypeId(),
+      self::computeRunSignature($task, self::saltCount($hashlist)),
       self::computeDeviceSignature($agent),
       $benchmarkType,
       $benchmarkValue,

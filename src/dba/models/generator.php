@@ -253,7 +253,7 @@ $CONF['Benchmark'] = [
   'columns' => [
     ['name' => 'benchmarkId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinary'],
-    ['name' => 'hashMode', 'read_only' => True, 'type' => 'int'],
+    ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'HashType'],
     ['name' => 'attackParameters', 'read_only' => True, 'type' => 'str(64)'],
     ['name' => 'deviceSignature', 'read_only' => True, 'type' => 'str(64)'],
     ['name' => 'benchmarkType', 'read_only' => True, 'type' => 'str(10)'],

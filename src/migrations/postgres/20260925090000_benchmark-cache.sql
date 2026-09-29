@@ -1,10 +1,11 @@
 -- Benchmark caching (issue #879): cache an agent's benchmark result keyed by the
 -- factors that determine cracking speed, so agents with identical hardware reuse
--- a benchmark instead of re-running it on every task pickup.
+-- a benchmark instead of re-running it on every task pickup. The lookup key is
+-- UNIQUE so a concurrent store cannot leave two rows for one key.
 CREATE TABLE benchmark (
     benchmarkid SERIAL PRIMARY KEY,
     crackerbinaryid integer NOT NULL REFERENCES crackerbinary (crackerbinaryid),
-    hashmode integer NOT NULL,
+    hashtypeid integer NOT NULL REFERENCES hashtype (hashtypeid),
     attackparameters varchar(64) NOT NULL,
     devicesignature varchar(64) NOT NULL,
     benchmarktype varchar(10) NOT NULL,
@@ -12,7 +13,7 @@ CREATE TABLE benchmark (
     createtime bigint NOT NULL,
     expiretime bigint NOT NULL
 );
-CREATE INDEX benchmark_lookup ON benchmark (crackerbinaryid, hashmode, attackparameters, devicesignature, benchmarktype);
+CREATE UNIQUE INDEX benchmark_lookup ON benchmark (crackerbinaryid, hashtypeid, attackparameters, devicesignature, benchmarktype);
 CREATE INDEX benchmark_expiretime ON benchmark (expiretime);
 
 -- Seed the benchmark cache TTL (in seconds, 0 disables caching) for existing installs.

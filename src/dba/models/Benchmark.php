@@ -7,7 +7,7 @@ use Hashtopolis\dba\AbstractModel;
 class Benchmark extends AbstractModel {
   private ?int $benchmarkId;
   private ?int $crackerBinaryId;
-  private ?int $hashMode;
+  private ?int $hashTypeId;
   private ?string $attackParameters;
   private ?string $deviceSignature;
   private ?string $benchmarkType;
@@ -15,10 +15,10 @@ class Benchmark extends AbstractModel {
   private ?int $createTime;
   private ?int $expireTime;
   
-  function __construct(?int $benchmarkId, ?int $crackerBinaryId, ?int $hashMode, ?string $attackParameters, ?string $deviceSignature, ?string $benchmarkType, ?string $benchmarkValue, ?int $createTime, ?int $expireTime) {
+  function __construct(?int $benchmarkId, ?int $crackerBinaryId, ?int $hashTypeId, ?string $attackParameters, ?string $deviceSignature, ?string $benchmarkType, ?string $benchmarkValue, ?int $createTime, ?int $expireTime) {
     $this->benchmarkId = $benchmarkId;
     $this->crackerBinaryId = $crackerBinaryId;
-    $this->hashMode = $hashMode;
+    $this->hashTypeId = $hashTypeId;
     $this->attackParameters = $attackParameters;
     $this->deviceSignature = $deviceSignature;
     $this->benchmarkType = $benchmarkType;
@@ -31,7 +31,7 @@ class Benchmark extends AbstractModel {
     $dict = array();
     $dict['benchmarkId'] = $this->benchmarkId;
     $dict['crackerBinaryId'] = $this->crackerBinaryId;
-    $dict['hashMode'] = $this->hashMode;
+    $dict['hashTypeId'] = $this->hashTypeId;
     $dict['attackParameters'] = $this->attackParameters;
     $dict['deviceSignature'] = $this->deviceSignature;
     $dict['benchmarkType'] = $this->benchmarkType;
@@ -46,7 +46,7 @@ class Benchmark extends AbstractModel {
     $dict = array();
     $dict['benchmarkId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "benchmarkId", "public" => False, "dba_mapping" => False];
     $dict['crackerBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "crackerBinaryId", "public" => False, "dba_mapping" => False];
-    $dict['hashMode'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashMode", "public" => False, "dba_mapping" => False];
+    $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashTypeId", "public" => False, "dba_mapping" => False];
     $dict['attackParameters'] = ['read_only' => True, "type" => "str(64)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "attackParameters", "public" => False, "dba_mapping" => False];
     $dict['deviceSignature'] = ['read_only' => True, "type" => "str(64)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "deviceSignature", "public" => False, "dba_mapping" => False];
     $dict['benchmarkType'] = ['read_only' => True, "type" => "str(10)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "benchmarkType", "public" => False, "dba_mapping" => False];
@@ -89,12 +89,12 @@ class Benchmark extends AbstractModel {
     $this->crackerBinaryId = $crackerBinaryId;
   }
   
-  function getHashMode(): ?int {
-    return $this->hashMode;
+  function getHashTypeId(): ?int {
+    return $this->hashTypeId;
   }
   
-  function setHashMode(?int $hashMode): void {
-    $this->hashMode = $hashMode;
+  function setHashTypeId(?int $hashTypeId): void {
+    $this->hashTypeId = $hashTypeId;
   }
   
   function getAttackParameters(): ?string {
@@ -147,7 +147,7 @@ class Benchmark extends AbstractModel {
   
   const BENCHMARK_ID = "benchmarkId";
   const CRACKER_BINARY_ID = "crackerBinaryId";
-  const HASH_MODE = "hashMode";
+  const HASH_TYPE_ID = "hashTypeId";
   const ATTACK_PARAMETERS = "attackParameters";
   const DEVICE_SIGNATURE = "deviceSignature";
   const BENCHMARK_TYPE = "benchmarkType";

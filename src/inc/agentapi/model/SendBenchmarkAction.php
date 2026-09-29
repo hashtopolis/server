@@ -94,12 +94,9 @@ final class SendBenchmarkAction implements AgentAction {
         Factory::getAssignmentFactory()->update($assignment);
         DServerLog::log(DServerLog::DEBUG, 'Saved agent benchmark', [$agent, $task, $assignment]);
 
-        $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
-        if ($taskWrapper !== null) {
-            $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
-            if ($hashlist !== null) {
-                BenchmarkUtils::store($task, (int)$hashlist->getHashTypeId(), $agent, (string)$benchmark);
-            }
+        $hashlist = BenchmarkUtils::hashlistForTask($task);
+        if ($hashlist !== null) {
+            BenchmarkUtils::store($task, $hashlist, $agent, (string)$benchmark);
         }
 
         return $this->success($response, PActions::SEND_BENCHMARK, [

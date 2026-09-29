@@ -71,7 +71,7 @@ foreach ($entries as $entry) {
   // Fall back to the raw id when the cracker binary was removed after the entry
   // was cached, so the row still identifies its key.
   $set->addValue('cracker', ($crackerName === null) ? "#" . $entry->getCrackerBinaryId() : $crackerName);
-  $set->addValue('hashMode', $entry->getHashMode());
+  $set->addValue('hashType', $entry->getHashTypeId());
   // attackParameters and deviceSignature are SHA-256 hashes, so only a prefix
   // is worth showing.
   $set->addValue('attackShort', substr((string)$entry->getAttackParameters(), 0, 12));

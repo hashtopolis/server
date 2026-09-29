@@ -45,6 +45,6 @@ class BenchmarkFactory extends AbstractModelFactory {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
-    return new Benchmark($dict['benchmarkid'], $dict['crackerbinaryid'], $dict['hashmode'], $dict['attackparameters'], $dict['devicesignature'], $dict['benchmarktype'], $dict['benchmarkvalue'], $dict['createtime'], $dict['expiretime']);
+    return new Benchmark($dict['benchmarkid'], $dict['crackerbinaryid'], $dict['hashtypeid'], $dict['attackparameters'], $dict['devicesignature'], $dict['benchmarktype'], $dict['benchmarkvalue'], $dict['createtime'], $dict['expiretime']);
   }
 }
