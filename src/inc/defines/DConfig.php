@@ -186,7 +186,7 @@ class DConfig {
   public static function getConfigDescription(string $config): string {
     return match ($config) {
       DConfig::BENCHMARK_TIME => "Time in seconds an agent should benchmark a task.",
-      DConfig::BENCHMARK_CACHE_TTL => "Time in seconds a cached benchmark result is reused for agents with identical hardware, so they do not re-benchmark on every task pickup. Set to 0 (the default) to disable benchmark caching.",
+      DConfig::BENCHMARK_CACHE_TTL => "Time in seconds a cached benchmark result is reused for agents with identical hardware, so they do not re-benchmark on every task pickup. Defaults to 2592000 (30 days); set to 0 to disable benchmark caching.",
       DConfig::CHUNK_DURATION => "Time in seconds a client should be working on a single chunk.",
       DConfig::CHUNK_TIMEOUT => "Time in seconds the server will consider an issued chunk as inactive or timed out and will reallocate to another client.",
       DConfig::AGENT_TIMEOUT => "Time in seconds the server will consider a client inactive or timed out.",

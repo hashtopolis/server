@@ -922,6 +922,23 @@ class TestGetFile(AgentProtocolBase):
 class TestGetChunk(AgentProtocolBase):
     """Tests for the getChunk action — retrieve a chunk to work on for an assigned task."""
 
+    def setUp(self):
+        super().setUp()
+        # The benchmark cache ships on by default, and the shared test DB
+        # accumulates cached rows across tests, so an un-benchmarked assignment
+        # could get a cache hit here. These tests assert the cold-cache
+        # benchmark-required path, so disable caching for them; the cache itself
+        # is covered by TestBenchmarkCache.
+        self._ttl_config = Config.objects.get(item='benchmarkCacheTtl')
+        self._ttl_original = self._ttl_config.value
+        self._ttl_config.value = "0"
+        self._ttl_config.save()
+
+    def tearDown(self):
+        self._ttl_config.value = self._ttl_original
+        self._ttl_config.save()
+        super().tearDown()
+
     def test_get_chunk_keyspace_required(self):
         """A new task (keyspace=0) returns status='keyspace_required'."""
         dummy, agent, task, _ = self._setup_assigned_agent()

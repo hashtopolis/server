@@ -21,7 +21,7 @@ CREATE TABLE `Benchmark` (
   CONSTRAINT `Benchmark_ibfk_2` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Seed the benchmark cache TTL (in seconds, 0 disables caching) for existing installs.
+-- Seed the benchmark cache TTL to 30 days (in seconds; 0 disables caching).
 INSERT INTO `Config` (`configSectionId`, `item`, `value`)
-SELECT 1, 'benchmarkCacheTtl', '0'
+SELECT 1, 'benchmarkCacheTtl', '2592000'
 WHERE NOT EXISTS (SELECT 1 FROM `Config` WHERE `item` = 'benchmarkCacheTtl');
