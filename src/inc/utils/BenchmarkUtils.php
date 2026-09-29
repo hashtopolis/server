@@ -37,22 +37,25 @@ use Hashtopolis\inc\SConfig;
  *     of magnitude between modes.
  *   - runSignature (stored in the attackParameters column): a SHA-256 of the
  *     whole normalized attack command, the preprocessor settings (id and
- *     command), the forced-pipe flag, and the hashlist's salt count. Measurement
- *     shows the specific mask, wordlist and rule set each move the benchmark by
- *     several orders of magnitude (a candidate-starved run is far slower than a
- *     saturating one), so the whole command has to be in the key, not just the
- *     attack mode. The salt count is added separately because it changes the
- *     speed (roughly linearly) but is not part of the command: two hashlists of
- *     the same mode running the same attack, one with many salts, benchmark very
- *     differently. The salt count is the hashlist's hashCount for a salted mode
- *     and 1 for an unsalted one, so unsalted modes still share one benchmark
- *     across their hashlists.
+ *     command) and the forced-pipe flag. Measurement shows the specific mask,
+ *     wordlist and rule set each move the benchmark by orders of magnitude (the
+ *     attack decides how much of each keyspace step runs in-kernel, so the
+ *     keyspace-rate the server sizes chunks with is not comparable between
+ *     commands), so the whole command has to be in the key, not just the attack
+ *     mode.
  *   - deviceSignature: a SHA-256 of the agent's reported device string, its
  *     cpuOnly flag and its per-agent command parameters (cmdPars, e.g. -O / -w
  *     tuning). This stands in for "identical hardware, identically configured".
  *   - benchmarkType: 'speed' or 'run'. The two methods produce values in
  *     different formats and units, so a value from one must never be reused for
  *     the other.
+ *
+ * The salt count also changes the speed (every candidate is tested against every
+ * salt), but it is a property of the hashlist, not the command, so it is NOT in
+ * the key. Keying on it would store one entry per salt count; instead the value is
+ * normalized to a single salt on store and rescaled to the hashlist's salt count
+ * on lookup, so one entry serves any salt count of the same command and hardware.
+ * See toSingleSalt and fromSingleSalt.
  *
  * A TTL of 0 (or less) disables the cache entirely.
  */
@@ -99,20 +102,70 @@ class BenchmarkUtils {
 
   /**
    * Signature of everything about the run that changes the measured speed and is
-   * not the hardware: the whole attack command (mask, wordlist, rule set, pipe),
-   * the preprocessor settings, the forced-pipe flag and the salt count. Hashed so
-   * it fits a fixed column and never leaks command contents into the cache table.
+   * carried by the attack command: the whole command (mask, wordlist, rule set,
+   * pipe), the preprocessor settings and the forced-pipe flag. Hashed so it fits a
+   * fixed column and never leaks command contents into the cache table.
+   *
+   * The salt count is deliberately NOT part of the signature. It changes the speed
+   * too but is a property of the hashlist, not the command, so instead of keying
+   * on it (which would store one entry per salt count) the value is normalized to a
+   * single salt on store and rescaled to the hashlist's salt count on lookup, so
+   * one entry serves any salt count. See toSingleSalt and fromSingleSalt.
    */
-  public static function computeRunSignature(Task $task, int $saltCount): string {
+  public static function computeRunSignature(Task $task): string {
     $cmd = preg_replace('/\s+/', ' ', trim((string)$task->getAttackCmd()));
     $parts = [
       $cmd,
       (int)$task->getUsePreprocessor(),
       trim((string)$task->getPreprocessorCommand()),
       (int)$task->getForcePipe(),
-      $saltCount,
     ];
     return hash('sha256', implode("\x1f", $parts));
+  }
+
+  /**
+   * Normalize a benchmark value to its single-salt equivalent for storage, so one
+   * cache entry can serve a hashlist of any salt count. The benchmark scales
+   * inversely with the salt count (every candidate is tested against every salt),
+   * so the single-salt value is the salt-independent one to store.
+   *
+   * The speed value is "keyspaceCount:timeMs" and its rate is count/time, so the
+   * single-salt time is time/saltCount. The run value is a scalar proportional to
+   * progress, i.e. to 1/saltCount, so the single-salt value is value*saltCount.
+   */
+  private static function toSingleSalt(string $value, int $saltCount): string {
+    if ($saltCount <= 1) {
+      return $value;
+    }
+    if (str_contains($value, ':')) {
+      [$count, $timeMs] = explode(':', $value, 2);
+      return $count . ':' . self::formatNumber((float)$timeMs / $saltCount);
+    }
+    return self::formatNumber((float)$value * $saltCount);
+  }
+
+  /**
+   * Expand a stored single-salt benchmark back to the given salt count, the
+   * inverse of toSingleSalt.
+   */
+  private static function fromSingleSalt(string $value, int $saltCount): string {
+    if ($saltCount <= 1) {
+      return $value;
+    }
+    if (str_contains($value, ':')) {
+      [$count, $timeMs] = explode(':', $value, 2);
+      return $count . ':' . self::formatNumber((float)$timeMs * $saltCount);
+    }
+    return self::formatNumber((float)$value / $saltCount);
+  }
+
+  /**
+   * Format a rescaled benchmark number as a plain decimal that fits the value
+   * column, with no scientific notation or trailing zeros.
+   */
+  private static function formatNumber(float $value): string {
+    $s = rtrim(rtrim(sprintf('%.6f', $value), '0'), '.');
+    return ($s === '' || $s === '-0') ? '0' : $s;
   }
 
   /**
@@ -138,7 +191,7 @@ class BenchmarkUtils {
     return [
       new QueryFilter(Benchmark::CRACKER_BINARY_ID, $task->getCrackerBinaryId(), '='),
       new QueryFilter(Benchmark::HASH_TYPE_ID, (int)$hashlist->getHashTypeId(), '='),
-      new QueryFilter(Benchmark::ATTACK_PARAMETERS, self::computeRunSignature($task, self::saltCount($hashlist)), '='),
+      new QueryFilter(Benchmark::ATTACK_PARAMETERS, self::computeRunSignature($task), '='),
       new QueryFilter(Benchmark::DEVICE_SIGNATURE, self::computeDeviceSignature($agent), '='),
       new QueryFilter(Benchmark::BENCHMARK_TYPE, $benchmarkType, '='),
     ];
@@ -161,8 +214,11 @@ class BenchmarkUtils {
     if (count($entries) == 0) {
       return null;
     }
-    DServerLog::log(DServerLog::DEBUG, 'Benchmark cache hit', [$agent, $task, $entries[0]->getBenchmarkValue()]);
-    return $entries[0]->getBenchmarkValue();
+    // The stored value is normalized to a single salt; rescale it to this
+    // hashlist's salt count before handing it back.
+    $value = self::fromSingleSalt($entries[0]->getBenchmarkValue(), self::saltCount($hashlist));
+    DServerLog::log(DServerLog::DEBUG, 'Benchmark cache hit', [$agent, $task, $value]);
+    return $value;
   }
 
   /**
@@ -187,10 +243,10 @@ class BenchmarkUtils {
       null,
       $task->getCrackerBinaryId(),
       (int)$hashlist->getHashTypeId(),
-      self::computeRunSignature($task, self::saltCount($hashlist)),
+      self::computeRunSignature($task),
       self::computeDeviceSignature($agent),
       $benchmarkType,
-      $benchmarkValue,
+      self::toSingleSalt($benchmarkValue, self::saltCount($hashlist)),
       $now,
       $now + $ttl
     );

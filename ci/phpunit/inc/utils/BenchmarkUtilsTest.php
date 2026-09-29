@@ -76,8 +76,8 @@ final class BenchmarkUtilsTest extends TestBase {
 
   public function testRunSignatureIsDeterministic(): void {
     $this->assertSame(
-      BenchmarkUtils::computeRunSignature($this->task, 1),
-      BenchmarkUtils::computeRunSignature($this->task, 1)
+      BenchmarkUtils::computeRunSignature($this->task),
+      BenchmarkUtils::computeRunSignature($this->task)
     );
   }
 
@@ -88,82 +88,98 @@ final class BenchmarkUtilsTest extends TestBase {
     $maskA = clone $this->task; $maskA->setAttackCmd('#HL# -a 3 ?d?d?d?d');
     $maskB = clone $this->task; $maskB->setAttackCmd('#HL# -a 3 ?l?l?l?l?l');
     $this->assertNotSame(
-      BenchmarkUtils::computeRunSignature($maskA, 1),
-      BenchmarkUtils::computeRunSignature($maskB, 1),
+      BenchmarkUtils::computeRunSignature($maskA),
+      BenchmarkUtils::computeRunSignature($maskB),
       'two different masks must produce different signatures'
     );
 
     // A different attack mode changes the signature.
     $straight = clone $this->task; $straight->setAttackCmd('#HL# -a 0 wordlist.txt');
     $this->assertNotSame(
-      BenchmarkUtils::computeRunSignature($maskA, 1),
-      BenchmarkUtils::computeRunSignature($straight, 1),
+      BenchmarkUtils::computeRunSignature($maskA),
+      BenchmarkUtils::computeRunSignature($straight),
       'a different attack mode must change the signature'
     );
 
     // Applying a rule file changes the signature.
     $withRules = clone $this->task; $withRules->setAttackCmd('#HL# -a 0 wordlist.txt -r best64.rule');
     $this->assertNotSame(
-      BenchmarkUtils::computeRunSignature($straight, 1),
-      BenchmarkUtils::computeRunSignature($withRules, 1),
+      BenchmarkUtils::computeRunSignature($straight),
+      BenchmarkUtils::computeRunSignature($withRules),
       'applying a rule file must change the signature'
     );
 
     // A different rule set measures at a different speed, so it must change the
-    // signature too (a small rule set is candidate starved, a large one saturates).
+    // signature too.
     $withRules2 = clone $this->task; $withRules2->setAttackCmd('#HL# -a 0 wordlist.txt -r dive.rule');
     $this->assertNotSame(
-      BenchmarkUtils::computeRunSignature($withRules, 1),
-      BenchmarkUtils::computeRunSignature($withRules2, 1),
+      BenchmarkUtils::computeRunSignature($withRules),
+      BenchmarkUtils::computeRunSignature($withRules2),
       'a different rule file must change the signature'
     );
 
     // An optimized-kernel flag changes the speed, so it must change the signature.
     $optimized = clone $this->task; $optimized->setAttackCmd('#HL# -a 3 ?d?d?d?d -O');
     $this->assertNotSame(
-      BenchmarkUtils::computeRunSignature($maskA, 1),
-      BenchmarkUtils::computeRunSignature($optimized, 1),
+      BenchmarkUtils::computeRunSignature($maskA),
+      BenchmarkUtils::computeRunSignature($optimized),
       'a flag that changes the run (like -O) must change the signature'
     );
   }
 
-  public function testRunSignatureDependsOnSaltCount(): void {
-    // The salt count is not in the attack command but scales the measured time,
-    // so it has to change the signature.
-    $this->assertNotSame(
-      BenchmarkUtils::computeRunSignature($this->task, 1),
-      BenchmarkUtils::computeRunSignature($this->task, 1000),
-      'the salt count must change the signature'
-    );
-    $this->assertSame(
-      BenchmarkUtils::computeRunSignature($this->task, 1000),
-      BenchmarkUtils::computeRunSignature($this->task, 1000),
-      'the same salt count must produce the same signature'
-    );
+  public function testSaltNormalizationReusesAcrossSaltCounts(): void {
+    // The salt count is NOT in the key; a benchmark stored for one salt count is
+    // reused for another with the value rescaled. The benchmark scales inversely
+    // with the salt count, so more salts means a proportionally larger time.
+    $this->setTtl(3600);
+
+    // Store a speed benchmark ("keyspaceCount:timeMs") measured on 1000 salts.
+    $salted1000 = clone $this->hashlist;
+    $salted1000->setIsSalted(1);
+    $salted1000->setHashCount(1000);
+    BenchmarkUtils::store($this->task, $salted1000, $this->agent, '857375:286927');
+
+    // An unsalted hashlist (salt count 1) hits the same entry; the stored value is
+    // normalized to a single salt, so its time is 1000x smaller.
+    $unsalted = clone $this->hashlist;
+    $unsalted->setIsSalted(0);
+    $got1 = BenchmarkUtils::lookup($this->task, $unsalted, $this->agent);
+    $this->assertNotNull($got1, 'a benchmark from another salt count must still hit');
+    [$count1, $time1] = explode(':', $got1);
+    $this->assertSame('857375', $count1, 'rescaling leaves the keyspace count unchanged');
+    $this->assertEqualsWithDelta(286.927, (float)$time1, 0.001, 'the time is rescaled to a single salt');
+
+    // A 500-salt hashlist gets half the 1000-salt time.
+    $salted500 = clone $this->hashlist;
+    $salted500->setIsSalted(1);
+    $salted500->setHashCount(500);
+    $got500 = BenchmarkUtils::lookup($this->task, $salted500, $this->agent);
+    [, $time500] = explode(':', $got500);
+    $this->assertEqualsWithDelta(143463.5, (float)$time500, 0.01, 'the time scales with the salt count');
   }
 
   public function testRunSignatureDependsOnPreprocessorAndPipe(): void {
-    $base = BenchmarkUtils::computeRunSignature($this->task, 1);
+    $base = BenchmarkUtils::computeRunSignature($this->task);
 
     $pre = clone $this->task;
     $pre->setUsePreprocessor((int)$this->task->getUsePreprocessor() + 1);
-    $this->assertNotSame($base, BenchmarkUtils::computeRunSignature($pre, 1), 'the preprocessor id must be part of the signature');
+    $this->assertNotSame($base, BenchmarkUtils::computeRunSignature($pre), 'the preprocessor id must be part of the signature');
 
     $preCmd = clone $this->task;
     $preCmd->setPreprocessorCommand('--pw-min=8');
-    $this->assertNotSame($base, BenchmarkUtils::computeRunSignature($preCmd, 1), 'the preprocessor command must be part of the signature');
+    $this->assertNotSame($base, BenchmarkUtils::computeRunSignature($preCmd), 'the preprocessor command must be part of the signature');
 
     $pipe = clone $this->task;
     $pipe->setForcePipe($this->task->getForcePipe() == 1 ? 0 : 1);
-    $this->assertNotSame($base, BenchmarkUtils::computeRunSignature($pipe, 1), 'the forced-pipe flag must be part of the signature');
+    $this->assertNotSame($base, BenchmarkUtils::computeRunSignature($pipe), 'the forced-pipe flag must be part of the signature');
   }
 
   public function testRunSignatureIgnoresWhitespaceOnly(): void {
     $t = clone $this->task;
     $t->setAttackCmd('  ' . preg_replace('/ /', '  ', (string)$this->task->getAttackCmd()) . '  ');
     $this->assertSame(
-      BenchmarkUtils::computeRunSignature($this->task, 1),
-      BenchmarkUtils::computeRunSignature($t, 1),
+      BenchmarkUtils::computeRunSignature($this->task),
+      BenchmarkUtils::computeRunSignature($t),
       'differences in surrounding/redundant whitespace must not change the signature'
     );
   }
@@ -248,11 +264,12 @@ final class BenchmarkUtilsTest extends TestBase {
     $t->setAttackCmd('#HL# -a 3 ?l?l?l?l?l');
     $this->assertNull(BenchmarkUtils::lookup($t, $this->hashlist, $this->agent), 'the whole attack command must be part of the key');
 
-    // Different salt count.
+    // A different salt count is NOT a key factor: it still hits, with the value
+    // rescaled (see testSaltNormalizationReusesAcrossSaltCounts).
     $hl = clone $this->hashlist;
     $hl->setIsSalted(1);
     $hl->setHashCount((int)$this->hashlist->getHashCount() + 987654);
-    $this->assertNull(BenchmarkUtils::lookup($this->task, $hl, $this->agent), 'the salt count must be part of the key');
+    $this->assertNotNull(BenchmarkUtils::lookup($this->task, $hl, $this->agent), 'a different salt count must still hit, rescaled');
 
     // Different device signature.
     $a = clone $this->agent;
