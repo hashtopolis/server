@@ -16,7 +16,7 @@ use Throwable;
  * serves downloads of resources like locally stored cracker binary archives,
  * the download kind in the url is dispatched via {@see DownloadRegistry}.
  * Authentication is done by {@see DownloadAuthMiddleware} with either an
- * agent token or an apiv2 JWT.
+ * agent token or an apiv2 JWT, CORS for the web-ui by {@see DownloadCorsMiddleware}.
  */
 final class DownloadApp {
   public static function create(): App {
@@ -62,6 +62,8 @@ final class DownloadApp {
       return $response;
     });
     $app->addRoutingMiddleware();
+    // outermost, so preflight requests are answered before routing and authentication
+    $app->add(new DownloadCorsMiddleware());
 
     $app->get('/api/download.php/{kind}/{id}', function (Request $request, Response $response, array $args): ResponseInterface {
       $handlerClass = DownloadRegistry::getHandler($args['kind']);
