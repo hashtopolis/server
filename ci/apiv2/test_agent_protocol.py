@@ -1864,9 +1864,11 @@ class TestBenchmarkCache(AgentProtocolBase):
             })
             resp = self._get_chunk(dummy, task_id)
         self.assertEqual(resp['status'], "benchmark")
+        # The default task uses the speed method, so report a speed benchmark
+        # ("count:time"); the cache keys on the reported value's format.
         agent_request({
             "action": "sendBenchmark", "token": dummy.token,
-            "taskId": task_id, "type": "run", "result": 674,
+            "taskId": task_id, "type": "speed", "result": "674:100.0",
         })
         return self._get_chunk(dummy, task_id)
 

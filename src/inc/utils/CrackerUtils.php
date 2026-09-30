@@ -150,6 +150,11 @@ class CrackerUtils {
         CrackerBinary::VERSION => $version
       ]
     );
+    // The executable behind this id may have been replaced (new version or URL),
+    // which changes its speed, so any benchmark cached against this binary id is
+    // now stale. Drop those rows; agents will re-benchmark.
+    Factory::getBenchmarkFactory()->massDeletion([Factory::FILTER =>
+      new QueryFilter(Benchmark::CRACKER_BINARY_ID, $binary->getId(), "=")]);
     return Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
   }
   

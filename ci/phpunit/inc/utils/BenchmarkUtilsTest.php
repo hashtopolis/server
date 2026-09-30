@@ -41,6 +41,10 @@ final class BenchmarkUtilsTest extends TestBase {
     parent::setUp();
     $fixtures = $this->createTaskHelper();
     $this->task = $fixtures['task'];
+    // Use the speed method so the task's benchmark type matches the
+    // "count:time" speed values these tests store, which is what a real speed
+    // task and its agent report.
+    $this->task->setUseNewBench(1);
     $this->hashlist = $fixtures['hashlist'];
     $this->agent = $this->createAgent('benchmarkutils');
   }
@@ -156,6 +160,28 @@ final class BenchmarkUtilsTest extends TestBase {
     $got500 = BenchmarkUtils::lookup($this->task, $salted500, $this->agent);
     [, $time500] = explode(':', $got500);
     $this->assertEqualsWithDelta(143463.5, (float)$time500, 0.01, 'the time scales with the salt count');
+  }
+
+  public function testDegenerateNormalizedValueIsNotCached(): void {
+    // Normalizing a benchmark for an enormous salt count can round the time down
+    // to zero, which would size a zero chunk, so such a value must not be cached.
+    $this->setTtl(3600);
+    $hugeSalts = clone $this->hashlist;
+    $hugeSalts->setIsSalted(1);
+    $hugeSalts->setHashCount(2000000000000000000); // time / this rounds to zero
+    BenchmarkUtils::store($this->task, $hugeSalts, $this->agent, '100:1');
+
+    $this->assertCount(0, Factory::getBenchmarkFactory()->filter([]), 'a value that normalizes to zero must not be stored');
+    $this->assertNull(BenchmarkUtils::lookup($this->task, $this->hashlist, $this->agent), 'and there is nothing to hit');
+  }
+
+  public function testWrongFormatValueIsNotServedForTaskType(): void {
+    // A value reported in the wrong format for the task (here a bare run scalar
+    // for a speed task) is keyed on its own format, so a speed-task lookup does
+    // not serve it and hand a later agent a value in the wrong format.
+    $this->setTtl(3600);
+    BenchmarkUtils::store($this->task, $this->hashlist, $this->agent, '674');
+    $this->assertNull(BenchmarkUtils::lookup($this->task, $this->hashlist, $this->agent), 'a wrong-format value must not be served for the task type');
   }
 
   public function testRunSignatureDependsOnPreprocessorAndPipe(): void {

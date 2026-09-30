@@ -69,8 +69,10 @@ foreach ($entries as $entry) {
   $set = new DataSet();
   $set->addValue('id', $entry->getId());
   // Fall back to the raw id when the cracker binary was removed after the entry
-  // was cached, so the row still identifies its key.
-  $set->addValue('cracker', ($crackerName === null) ? "#" . $entry->getCrackerBinaryId() : $crackerName);
+  // was cached, so the row still identifies its key. Escape the label: the binary
+  // name and version are user supplied and the template does not autoescape.
+  $crackerLabel = ($crackerName === null) ? "#" . $entry->getCrackerBinaryId() : $crackerName;
+  $set->addValue('cracker', htmlentities($crackerLabel, ENT_QUOTES, "UTF-8"));
   $set->addValue('hashType', $entry->getHashTypeId());
   // attackParameters and deviceSignature are SHA-256 hashes, so only a prefix
   // is worth showing.

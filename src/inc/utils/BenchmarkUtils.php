@@ -160,11 +160,29 @@ class BenchmarkUtils {
   }
 
   /**
+   * Whether a benchmark value can size a chunk: both parts of a speed value
+   * "count:time" strictly positive, or a run scalar strictly positive.
+   * Normalizing across a very large salt count can round a time down to zero,
+   * which the chunker rejects as a zero-sized chunk, so such a value has to be
+   * treated as a cache miss rather than stored or returned.
+   */
+  private static function isUsableValue(string $value): bool {
+    if (str_contains($value, ':')) {
+      $parts = explode(':', $value);
+      return count($parts) == 2 && is_numeric($parts[0]) && is_numeric($parts[1])
+        && (float)$parts[0] > 0 && (float)$parts[1] > 0;
+    }
+    return is_numeric($value) && (float)$value > 0;
+  }
+
+  /**
    * Format a rescaled benchmark number as a plain decimal that fits the value
-   * column, with no scientific notation or trailing zeros.
+   * column, with no scientific notation or trailing zeros. A small positive value
+   * keeps more decimals so it does not collapse to zero.
    */
   private static function formatNumber(float $value): string {
-    $s = rtrim(rtrim(sprintf('%.6f', $value), '0'), '.');
+    $decimals = ($value != 0.0 && abs($value) < 1.0) ? 15 : 6;
+    $s = rtrim(rtrim(sprintf('%.' . $decimals . 'f', $value), '0'), '.');
     return ($s === '' || $s === '-0') ? '0' : $s;
   }
 
@@ -217,6 +235,11 @@ class BenchmarkUtils {
     // The stored value is normalized to a single salt; rescale it to this
     // hashlist's salt count before handing it back.
     $value = self::fromSingleSalt($entries[0]->getBenchmarkValue(), self::saltCount($hashlist));
+    if (!self::isUsableValue($value)) {
+      // Rescaling collapsed the value (e.g. a tiny time under a huge salt count),
+      // so do not hand back a benchmark that would size a zero chunk; benchmark.
+      return null;
+    }
     DServerLog::log(DServerLog::DEBUG, 'Benchmark cache hit', [$agent, $task, $value]);
     return $value;
   }
@@ -232,9 +255,21 @@ class BenchmarkUtils {
       return;
     }
 
+    $storedValue = self::toSingleSalt($benchmarkValue, self::saltCount($hashlist));
+    if (!self::isUsableValue($storedValue)) {
+      // Normalization collapsed the value (e.g. a tiny time under a huge salt
+      // count); skip caching rather than store one that rescales to a zero chunk.
+      return;
+    }
+
     self::prune();
 
-    $benchmarkType = self::benchmarkTypeForTask($task);
+    // Key the entry on the reported value's own format, not the task's configured
+    // mode: the speed value is "count:time" and the run value is a bare scalar. If
+    // an agent reports a value in the wrong format for the task, it is stored under
+    // its own type, so a lookup for the task's type never serves a wrong-format
+    // value to a later agent (which would size its chunks wrong).
+    $benchmarkType = str_contains($storedValue, ':') ? PValuesBenchmarkType::SPEED_TEST : PValuesBenchmarkType::RUN_TIME;
     $filters = self::keyFilters($task, $hashlist, $agent, $benchmarkType);
     Factory::getBenchmarkFactory()->massDeletion([Factory::FILTER => $filters]);
 
@@ -246,18 +281,22 @@ class BenchmarkUtils {
       self::computeRunSignature($task),
       self::computeDeviceSignature($agent),
       $benchmarkType,
-      self::toSingleSalt($benchmarkValue, self::saltCount($hashlist)),
+      $storedValue,
       $now,
       $now + $ttl
     );
-    // The massDeletion above clears the key first, so only a concurrent store
-    // for the same key can collide with the unique index; treat that as a no-op.
+    // The massDeletion above clears the key first, so only a duplicate on the
+    // unique lookup key is the expected concurrent-store race (SQLSTATE 23000 on
+    // MySQL, 23505 on PostgreSQL); surface any other database error.
     try {
       Factory::getBenchmarkFactory()->save($benchmark);
     }
     catch (\PDOException $e) {
-      DServerLog::log(DServerLog::DEBUG, 'Benchmark already stored concurrently', [$agent, $task]);
-      return;
+      if (in_array($e->getCode(), ['23000', '23505'], true)) {
+        DServerLog::log(DServerLog::DEBUG, 'Benchmark already stored concurrently', [$agent, $task]);
+        return;
+      }
+      throw $e;
     }
     DServerLog::log(DServerLog::DEBUG, 'Stored benchmark in cache', [$agent, $task, $benchmarkValue]);
   }
