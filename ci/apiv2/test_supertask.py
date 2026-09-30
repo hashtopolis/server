@@ -1,4 +1,4 @@
-from hashtopolis import Supertask
+from hashtopolis import Supertask, HashtopolisError
 from utils import BaseTest
 
 
@@ -12,6 +12,29 @@ class SupertaskTest(BaseTest):
     def test_create(self):
         model_obj = self.create_test_object()
         self._test_create(model_obj)
+
+    def test_create_pretask_cracker_binary_type_mismatch(self):
+        pretask = self.create_pretask()
+        crackertype = self.create_crackertype()
+        pretask_other_type = self.create_pretask(
+            extra_payload={'crackerBinaryTypeId': crackertype.id})
+        with self.assertRaises(HashtopolisError) as e:
+            self.create_supertask(
+                pretasks=[pretask, pretask_other_type],
+                extra_payload={'crackerBinaryTypeId': 1},
+                delete=False)
+        self.assertEqual(e.exception.status_code, 400)
+        self.assertIn('cannot be mixed', e.exception.title)
+
+    def test_create_invalid_cracker_binary_type(self):
+        pretask = self.create_pretask()
+        with self.assertRaises(HashtopolisError) as e:
+            self.create_supertask(
+                pretasks=[pretask],
+                extra_payload={'crackerBinaryTypeId': 999999},
+                delete=False)
+        self.assertEqual(e.exception.status_code, 400)
+        self.assertIn('Invalid cracker binary type ID', e.exception.title)
 
     def test_patch(self):
         model_obj = self.create_test_object()

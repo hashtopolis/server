@@ -17,6 +17,16 @@
 			  <tr>
 				  <th colspan='2'>Select tasks assigned to this supertask:</th>
 			  </tr>
+			  <tr>
+				  <td style="width: 150px;">Cracker Binary which is used to run this supertask:</td>
+				  <td>
+					  <select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
+						  {{FOREACH crackerBinaryType;[[crackerBinaryTypes]]}}
+							  <option value="[[crackerBinaryType.getId()]]">[[crackerBinaryType.getTypeName()]]</option>
+						  {{ENDFOREACH}}
+					  </select>
+				  </td>
+			  </tr>
 			  {{FOREACH task;[[preTasks]]}}
 				  <tr>
 					  <td>&nbsp;</td>
