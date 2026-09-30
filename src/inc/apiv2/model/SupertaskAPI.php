@@ -46,7 +46,8 @@ class SupertaskAPI extends AbstractModelAPI {
   
   public function getFormFields(): array {
     return [
-      "pretasks" => ['type' => 'array', 'subtype' => 'int']
+      "pretasks" => ['type' => 'array', 'subtype' => 'int'],
+      "crackerBinaryTypeId" => ['type' => 'int']
     ];
   }
   
@@ -57,7 +58,8 @@ class SupertaskAPI extends AbstractModelAPI {
     /* Use quirk on 'pretasks' since this is casted to DB representation  */
     $supertask = SupertaskUtils::createSupertask(
       $data[Supertask::SUPERTASK_NAME],
-      $this->db2json($this->getFeatures()['pretasks'], $data["pretasks"])
+      $this->db2json($this->getFeatures()['pretasks'], $data["pretasks"]),
+      (int)$data["crackerBinaryTypeId"]
     );
     return $supertask->getId();
   }

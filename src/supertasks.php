@@ -49,6 +49,7 @@ if (isset($_GET['create']) && $_GET['create'] == "new" && AccessControl::getInst
   Template::loadInstance("supertasks/create");
   $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
   UI::add('preTasks', Factory::getPretaskFactory()->filter([Factory::FILTER => $qF]));
+  UI::add('crackerBinaryTypes', Factory::getCrackerBinaryTypeFactory()->filter([]));
   UI::add('pageTitle', "Create Supertask");
 }
 else if (isset($_GET['create']) && $_GET['create'] == "import" && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_SUPERTASK_ACCESS)) {
