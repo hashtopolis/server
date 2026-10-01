@@ -9,11 +9,18 @@ use Hashtopolis\inc\defines\DBackgroundJobType;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\jobs\BackgroundJobHandler;
 use Hashtopolis\inc\jobs\BackgroundJobResult;
+use Hashtopolis\inc\jobs\payload\JobPayloadField;
 use Hashtopolis\inc\utils\FileUtils;
 
 class RecountFileJob implements BackgroundJobHandler {
   public static function getJobType(): string {
     return DBackgroundJobType::RECOUNT_FILE;
+  }
+
+  public static function getPayloadDefinition(): array {
+    return [
+      File::FILE_ID => new JobPayloadField(JobPayloadField::TYPE_INT),
+    ];
   }
 
   public function getMaxRuntime(): int {
@@ -24,9 +31,6 @@ class RecountFileJob implements BackgroundJobHandler {
    * @throws Exception
    */
   public function execute(BackgroundJob $job, array $payload): BackgroundJobResult {
-    if (!isset($payload[File::FILE_ID]) || !is_int($payload[File::FILE_ID])) {
-      return new BackgroundJobResult(-1, "Missing or invalid '" . File::FILE_ID . "' in payload.");
-    }
     try {
       $count = FileUtils::fileCountLines($payload[File::FILE_ID]);
     }

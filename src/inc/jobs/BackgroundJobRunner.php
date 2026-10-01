@@ -107,6 +107,7 @@ class BackgroundJobRunner {
       if (!is_array($payload)) {
         throw new HTException("Invalid job payload!");
       }
+      BackgroundJobPayloadValidator::validate($payload, $handler::getPayloadDefinition());
       $result = $handler->execute($job, $payload);
       $factory->mset($job, [
         BackgroundJob::STATUS => ($result->getExitCode() === 0) ? DBackgroundJobStatus::DONE : DBackgroundJobStatus::FAILED,
