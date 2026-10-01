@@ -341,6 +341,81 @@ final class ScanCrackerJobTest extends TestBase {
   }
 
   /**
+   * The migration enqueues scans for the hashcat binaries of existing setups
+   * without downloading their archive: a url-referenced binary has no local
+   * copy when the scan runs, the scan job downloads it first and then
+   * populates the associations.
+   *
+   * @throws Exception
+   */
+  public function testScanOfUrlBinaryDownloadsArchiveAndPopulatesAssociations(): void {
+    $archive = $this->buildFakeArchive('fakecracker', self::MODES_OUTPUT_V1);
+    $url = $this->serveHttpFile('cracker.7z', file_get_contents($archive));
+    // the binary is created directly like the migration finds it on an
+    // existing setup: url-referenced, without any local copy
+    $binary = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
+      new CrackerBinary(null, $this->hashcatType()->getId(), '1.0.0', $url, 'fakecracker', null, 1)
+    );
+    $this->trackBinary($binary);
+
+    // the scan is enqueued directly, exactly like the migration does
+    BackgroundJobUtils::enqueue(
+      DBackgroundJobType::SCAN_CRACKER, [CrackerBinary::CRACKER_BINARY_ID => $binary->getId()], null
+    );
+    $this->assertFileDoesNotExist(CrackerScanUtils::getLocalArchivePath($binary));
+
+    BackgroundJobRunner::run();
+
+    // the scan downloaded the archive, unpacked it and populated the associations
+    $jobs = $this->scanJobsOfBinary($binary->getId());
+    $this->assertCount(1, $jobs);
+    $this->assertSame(DBackgroundJobStatus::DONE, $jobs[0]->getStatus(), $jobs[0]->getResultMessage());
+    $this->assertSame(0, $jobs[0]->getExitCode());
+    $this->assertFileExists(CrackerScanUtils::getLocalArchivePath($binary));
+    $this->assertEquals([0, 99901, 99902], $this->associatedHashtypeIds($binary->getId()));
+
+    CrackerUtils::deleteBinary($binary->getId());
+    $this->cleanupScanJobs($binary->getId());
+  }
+
+  /**
+   * A scan of a url-referenced binary whose archive cannot be downloaded (the
+   * download url is unreachable, e.g. on an offline server) fails with the
+   * download error and does not associate anything.
+   *
+   * @throws Exception
+   */
+  public function testScanOfUrlBinaryWithUnreachableUrlFails(): void {
+    // pick a port nothing listens on, the download fails immediately
+    $socket = stream_socket_server('tcp://127.0.0.1:0', $errno, $errstr);
+    $address = stream_socket_get_name($socket, false);
+    fclose($socket);
+    $binary = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
+      new CrackerBinary(null, $this->hashcatType()->getId(), '1.0.0', 'http://' . $address . '/cracker.7z', 'fakecracker', null, 1)
+    );
+    $this->trackBinary($binary);
+    BackgroundJobUtils::enqueue(
+      DBackgroundJobType::SCAN_CRACKER, [CrackerBinary::CRACKER_BINARY_ID => $binary->getId()], null
+    );
+
+    BackgroundJobRunner::run();
+
+    $jobs = $this->scanJobsOfBinary($binary->getId());
+    $this->assertCount(1, $jobs);
+    $this->assertSame(DBackgroundJobStatus::FAILED, $jobs[0]->getStatus(), $jobs[0]->getResultMessage());
+    $this->assertSame(-1, $jobs[0]->getExitCode());
+    $this->assertStringContainsString('Failed to download the archive from the download url', $jobs[0]->getResultMessage());
+    // nothing was associated and no partial archive was left behind
+    $this->assertEquals([], $this->associatedHashtypeIds($binary->getId()));
+    $this->assertEquals([], glob(CrackerUtils::getCrackersPath() . $binary->getId() . '_*') ?: []);
+
+    CrackerUtils::deleteBinary($binary->getId());
+    $this->cleanupScanJobs($binary->getId());
+  }
+
+  /**
    * The cleanup of the scan temporary directory must not follow symlinks:
    * the directory is filled from a user-controlled archive, so a symlinked
    * directory must never be recursed into and nothing outside the cleaned

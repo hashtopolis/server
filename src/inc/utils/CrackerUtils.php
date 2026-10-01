@@ -365,8 +365,9 @@ class CrackerUtils {
    * validated as a 7z archive. Local copies of previous versions or urls of
    * the binary are removed.
    *
-   * Also used by the setup seeding and the binary check to make sure the
-   * archive is available locally, so the background scan can unpack it.
+   * Also used by the setup seeding, the binary check and the scan job itself
+   * to make sure the archive is available locally, so the background scan can
+   * unpack it.
    *
    * @param CrackerBinary $binary the binary to download the archive for
    * @throws HttpError
