@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\auth;
 
 use Hashtopolis\inc\StartupConfig;
+use Hashtopolis\inc\utils\RefreshTokenUtils;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -41,7 +42,7 @@ class RefreshTokenCookie {
    * @return Response
    */
   public static function attach(Request $request, Response $response, string $token): Response {
-    $maxAge = StartupConfig::getInstance()->getRefreshTokenLifetime();
+    $maxAge = RefreshTokenUtils::lifetimeSeconds();
     
     return $response->withAddedHeader("Set-Cookie", self::build($request, $token, $maxAge));
   }

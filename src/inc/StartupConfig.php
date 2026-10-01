@@ -23,7 +23,6 @@ class StartupConfig {
   private const DIRECTORY_CONFIG = "config";
   private const DIRECTORY_TUS    = "tus";
   
-  private const REFRESH_TOKEN_LIFETIME       = "lifetime";
   private const REFRESH_TOKEN_COOKIE_SECURE  = "cookieSecure";
   private const REFRESH_TOKEN_COOKIE_SAMESITE = "cookieSameSite";
   
@@ -73,9 +72,11 @@ class StartupConfig {
     
     $this->peppers = ["", "", "", ""];
     
+    /* How long a refresh token lives is not here: that is the maxSessionLength runtime setting, so an
+       administrator can change it from the interface. What remains are the two cookie attributes,
+       which describe how the deployment is served rather than what anyone prefers, and which would
+       lock every user out if they were set wrongly through the interface. */
     $this->refresh_token = [
-      // 14 days; a session that is not refreshed within this window requires a new login
-      self::REFRESH_TOKEN_LIFETIME => 14 * 24 * 3600,
       // null means the Secure flag follows the scheme the request came in over
       self::REFRESH_TOKEN_COOKIE_SECURE => null,
       /* Frontend and API normally share a site even when they sit on different ports, and ports do not
@@ -151,12 +152,6 @@ class StartupConfig {
       $this->directories[self::DIRECTORY_TUS] = getenv('HASHTOPOLIS_TUS_PATH');
     }
     
-    if (getenv('HASHTOPOLIS_REFRESH_TOKEN_LIFETIME') !== false) {
-      $lifetime = (int)getenv('HASHTOPOLIS_REFRESH_TOKEN_LIFETIME');
-      if ($lifetime > 0) {
-        $this->refresh_token[self::REFRESH_TOKEN_LIFETIME] = $lifetime;
-      }
-    }
     /* Only needed to overrule the automatic detection, for instance behind a proxy which terminates TLS
        without announcing it through X-Forwarded-Proto. */
     if (getenv('HASHTOPOLIS_REFRESH_COOKIE_SECURE') !== false) {
@@ -256,13 +251,6 @@ class StartupConfig {
   
   public function getDatabasePort(): string {
     return $this->db_properties[self::DB_PROPERTY_PORT];
-  }
-  
-  /**
-   * Lifetime of a refresh token in seconds. Every rotation restarts this window.
-   */
-  public function getRefreshTokenLifetime(): int {
-    return $this->refresh_token[self::REFRESH_TOKEN_LIFETIME];
   }
   
   /**

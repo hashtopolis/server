@@ -12,7 +12,8 @@ use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\error\HttpUnauthorized;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DLogEntryIssuer;
-use Hashtopolis\inc\StartupConfig;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 use Random\RandomException;
 
@@ -38,7 +39,31 @@ use Random\RandomException;
 class RefreshTokenUtils {
   /** Number of random bytes in a token; the token string is this hex-encoded, so twice as long. */
   const TOKEN_BYTES = 32;
+
+  /** Used when maxSessionLength holds nothing usable; matches the value the setting is seeded with. */
+  const FALLBACK_LIFETIME_HOURS = 48;
   
+  /**
+   * How long a newly issued refresh token lives, in seconds.
+   *
+   * This is the maxSessionLength runtime setting, so how long a login lasts is something an
+   * administrator changes from the interface rather than a value baked into the deployment. Rotation
+   * restarts the window, so it bounds how long a session may sit idle, not how long it may exist.
+   *
+   * @return int
+   */
+  public static function lifetimeSeconds(): int {
+    $hours = (int)SConfig::getInstance()->getVal(DConfig::MAX_SESSION_LENGTH);
+
+    /* A misconfigured or missing value would otherwise issue tokens that expire the moment they are
+       handed out, locking everyone out of the very setting they would need to fix it. */
+    if ($hours < 1) {
+      $hours = self::FALLBACK_LIFETIME_HOURS;
+    }
+
+    return $hours * 3600;
+  }
+
   /**
    * @param string $plain the token string as presented by the client
    * @return string hex encoded SHA-256 digest, as stored in the database
@@ -67,7 +92,7 @@ class RefreshTokenUtils {
       self::hashToken($plain),
       $familyId ?? bin2hex(random_bytes(16)),
       $now,
-      $now + StartupConfig::getInstance()->getRefreshTokenLifetime(),
+      $now + self::lifetimeSeconds(),
       null,
       0
     );

@@ -2,10 +2,14 @@
 
 namespace Hashtopolis\inc\utils;
 
+use Exception;
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\Config;
 use Hashtopolis\dba\models\RefreshToken;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\error\HttpUnauthorized;
 use Hashtopolis\TestBase;
@@ -40,6 +44,53 @@ final class RefreshTokenUtilsTest extends TestBase {
     return Factory::getRefreshTokenFactory()->filter([Factory::FILTER => $qF]);
   }
   
+  /**
+   * Sets maxSessionLength for the duration of a callback and puts it back afterwards.
+   *
+   * @throws Exception
+   */
+  private function withSessionLength(string $hours, callable $body): void {
+    $config = ConfigUtils::get(DConfig::MAX_SESSION_LENGTH);
+    $original = $config->getValue();
+
+    try {
+      Factory::getConfigFactory()->set($config, Config::VALUE, $hours);
+      SConfig::reload();
+      $body();
+    } finally {
+      Factory::getConfigFactory()->set(ConfigUtils::get(DConfig::MAX_SESSION_LENGTH), Config::VALUE, $original);
+      SConfig::reload();
+    }
+  }
+
+  /**
+   * How long a login lasts is a runtime setting, so an administrator can change it from the interface
+   * without touching the deployment.
+   *
+   * @throws Exception
+   */
+  public function testLifetimeFollowsTheMaxSessionLengthSetting(): void {
+    $this->withSessionLength('6', function (): void {
+      $this->assertSame(6 * 3600, RefreshTokenUtils::lifetimeSeconds());
+
+      $plain = RefreshTokenUtils::issue($this->user->getId());
+      $token = $this->findToken($plain);
+      $this->assertEqualsWithDelta(time() + 6 * 3600, $token->getEndValid(), 5);
+    });
+  }
+
+  /**
+   * A value that would expire a token the moment it is handed out would lock everyone out of the very
+   * setting needed to fix it, so an unusable one falls back instead.
+   *
+   * @throws Exception
+   */
+  public function testAnUnusableSessionLengthFallsBack(): void {
+    $this->withSessionLength('0', function (): void {
+      $this->assertSame(RefreshTokenUtils::FALLBACK_LIFETIME_HOURS * 3600, RefreshTokenUtils::lifetimeSeconds());
+    });
+  }
+
   public function testIssueStoresOnlyTheHashOfTheToken(): void {
     $plain = RefreshTokenUtils::issue($this->user->getId());
     
