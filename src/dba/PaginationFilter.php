@@ -9,15 +9,10 @@ class PaginationFilter extends Filter {
   private string $tieBreakerOperator;
   private string $tieBreakerKey;
   private mixed $tieBreakerValue;
-  /** @var Filter[] $filters */
-  private array $filters;
-  
+
   private ?AbstractModelFactory $overrideFactory;
-  
-  function __construct($key, $value, $operator, $tieBreakerKey, $tieBreakerValue, $filters = [], $overrideFactory = null, $tieBreakerOperator = null) {
-    /**
-     * @param QueryFilter[] $filters
-     */
+
+  function __construct($key, $value, $operator, $tieBreakerKey, $tieBreakerValue, $overrideFactory = null, $tieBreakerOperator = null) {
     $this->key = $key;
     $this->value = $value;
     $this->operator = $operator;
@@ -25,7 +20,6 @@ class PaginationFilter extends Filter {
     $this->overrideFactory = $overrideFactory;
     $this->tieBreakerKey = $tieBreakerKey;
     $this->tieBreakerValue = $tieBreakerValue;
-    $this->filters = $filters;
   }
   
   function getQueryString(AbstractModelFactory $factory, bool $includeTable = false): string {
@@ -37,28 +31,22 @@ class PaginationFilter extends Filter {
       $table = $factory->getMappedModelTable() . ".";
     }
     
-    $parts = array_map(fn($filter) => $filter->getQueryString($factory, true), $this->filters);
-    //ex. SELECT hashTypeId, description, isSalted, isSlowHash FROM HashType 
-    //    where (HashType.isSalted < 1) OR (HashType.isSalted = 1 and HashType.hashTypeId < 12600) 
+    //ex. SELECT hashTypeId, description, isSalted, isSlowHash FROM HashType
+    //    where ((HashType.isSalted < 1) OR (HashType.isSalted = 1 and HashType.hashTypeId < 12600))
     //    ORDER BY HashType.isSalted DESC, HashType.hashTypeId DESC LIMIT 25;
+    // the whole condition is wrapped in parentheses, as it is AND-combined with the other filters (e.g. ACL filters)
     // keys with a sort expression are compared on the expression (also applied to the cursor value), to match the ordering
     $model = $factory->getNullObject();
     $column = AbstractModelFactory::getSortExpression($model, $this->key, $table . AbstractModelFactory::getMappedModelKey($model, $this->key));
     $placeholder = AbstractModelFactory::getSortExpression($model, $this->key, "?");
     $tieBreakerColumn = AbstractModelFactory::getSortExpression($model, $this->tieBreakerKey, $table . AbstractModelFactory::getMappedModelKey($model, $this->tieBreakerKey));
     $tieBreakerPlaceholder = AbstractModelFactory::getSortExpression($model, $this->tieBreakerKey, "?");
-    $queryString = "(" . $column . $this->operator . $placeholder . ") OR (" . $column . "=" . $placeholder
-      . " AND " . $tieBreakerColumn . $this->tieBreakerOperator . $tieBreakerPlaceholder;
-    if (count($this->filters) > 0) {
-      $queryString = $queryString . " AND " . implode(" AND ", $parts);
-    }
-    $queryString .= ")";
-    return $queryString;
+    return "((" . $column . $this->operator . $placeholder . ") OR (" . $column . "=" . $placeholder
+      . " AND " . $tieBreakerColumn . $this->tieBreakerOperator . $tieBreakerPlaceholder . "))";
   }
-  
+
   function getValue(): array {
-    $values = [$this->value, $this->value, $this->tieBreakerValue];
-    return array_merge($values, array_map(fn($filter) => $filter->getValue(), $this->filters));
+    return [$this->value, $this->value, $this->tieBreakerValue];
   }
   
   function getHasValue(): bool {
