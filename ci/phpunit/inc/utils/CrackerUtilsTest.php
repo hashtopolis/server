@@ -745,6 +745,30 @@ final class CrackerUtilsTest extends TestBase {
     $this->assertEquals($expected, $this->associatedHashtypeIds($this->binary->getId()));
   }
 
+  // Verifies that binarySupportsHashtype() accepts every hashtype for a binary
+  // without any associations, the support is unknown and the check must pass.
+  public function testBinarySupportsHashtypeWithoutAssociations(): void {
+    $hashtype = $this->createHashType();
+    $this->assertTrue(CrackerUtils::binarySupportsHashtype($this->binary, $hashtype->getId()));
+  }
+
+  // Verifies that binarySupportsHashtype() accepts a hashtype which is
+  // associated with the binary.
+  public function testBinarySupportsHashtypeAssociated(): void {
+    $hashtype = $this->createHashType();
+    CrackerUtils::addHashtypeToBinary($this->binary->getId(), $hashtype->getId());
+    $this->assertTrue(CrackerUtils::binarySupportsHashtype($this->binary, $hashtype->getId()));
+  }
+
+  // Verifies that binarySupportsHashtype() rejects a hashtype for a binary
+  // which has associations, but not for this hashtype.
+  public function testBinarySupportsHashtypeNotAssociated(): void {
+    $hashtype = $this->createHashType();
+    $otherHashtype = $this->createHashType();
+    CrackerUtils::addHashtypeToBinary($this->binary->getId(), $hashtype->getId());
+    $this->assertFalse(CrackerUtils::binarySupportsHashtype($this->binary, $otherHashtype->getId()));
+  }
+
   // Verifies that adding the same hashtype twice is rejected with a conflict.
   public function testAddHashtypeToBinaryDuplicateThrowsHttpConflict(): void {
     $hashtype = $this->createHashType();

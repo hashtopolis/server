@@ -648,6 +648,29 @@ class CrackerUtils {
     $joined = Factory::getHashTypeFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     return $joined[Factory::getHashTypeFactory()->getModelName()];
   }
+
+  /**
+   * Checks if the given cracker binary can crack the given hash type. A binary
+   * without any hashtype associations (generic binaries, or binaries which were
+   * not scanned yet) is considered to support everything; the associations are
+   * only authoritative once at least one exists.
+   *
+   * @param CrackerBinary $binary
+   * @param int $hashtypeId
+   * @return bool
+   * @throws Exception
+   */
+  public static function binarySupportsHashtype(CrackerBinary $binary, int $hashtypeId): bool {
+    $qF1 = new QueryFilter(CrackerBinaryHashtype::CRACKER_BINARY_ID, $binary->getId(), "=");
+    $qF2 = new QueryFilter(CrackerBinaryHashtype::HASH_TYPE_ID, $hashtypeId, "=");
+    $association = Factory::getCrackerBinaryHashtypeFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
+    if ($association !== null) {
+      return true;
+    }
+    // the binary is not associated with this hashtype: only reject it if it has
+    // any associations at all, an empty set means the support is unknown
+    return Factory::getCrackerBinaryHashtypeFactory()->filter([Factory::FILTER => $qF1], true) === null;
+  }
   
   /**
    * Associates a hashtype with a cracker binary.
