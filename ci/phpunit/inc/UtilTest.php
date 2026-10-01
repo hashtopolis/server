@@ -54,7 +54,27 @@ final class UtilTest extends TestBase {
   public function testExtractFileExtensionEmpty(): void {
     $this->assertEquals("", Util::extractFileExtension(""));
   }
-  
+
+  /**
+   * getAgentDownloadId extracts the numeric id from a filename-terminated path.
+   */
+  public function testGetAgentDownloadIdExtractsId(): void {
+    $this->assertSame(1, Util::getAgentDownloadId("/download/1/hashtopolis.zip"));
+    $this->assertSame(42, Util::getAgentDownloadId("/download/42/foo.7z"));
+    $this->assertSame(1, Util::getAgentDownloadId("/download/1"));
+  }
+
+  /**
+   * getAgentDownloadId returns null for paths that do not match the shape.
+   */
+  public function testGetAgentDownloadIdRejectsNonMatching(): void {
+    $this->assertNull(Util::getAgentDownloadId("/download/abc/x"));
+    $this->assertNull(Util::getAgentDownloadId("/download/1abc"));
+    $this->assertNull(Util::getAgentDownloadId("/other"));
+    $this->assertNull(Util::getAgentDownloadId(""));
+    $this->assertNull(Util::getAgentDownloadId(null));
+  }
+
   /**
    * texEscape leaves normal text unchanged.
    */
