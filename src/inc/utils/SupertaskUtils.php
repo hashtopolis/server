@@ -291,6 +291,10 @@ class SupertaskUtils {
         throw new HttpError("Pretask (" . $pretask->getId() . ") has cracker binary type ID ($pretaskTypeId), which does not match the selected cracker binary type ID ($crackerTypeId), pretasks of different cracker binary types cannot be mixed!");
       }
     }
+    if (!CrackerUtils::binarySupportsHashtype($cracker, $hashlist->getHashTypeId())) {
+      $hashtypeId = $hashlist->getHashTypeId();
+      throw new HttpError("The selected cracker binary (" . $cracker->getId() . ") does not support the hash type ($hashtypeId) of the given hashlist!");
+    }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
     

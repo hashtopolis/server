@@ -1,5 +1,6 @@
-from hashtopolis import Supertask, HashtopolisError, Helper, Task
+from hashtopolis import Supertask, HashtopolisError, Helper, Task, Cracker
 from utils import BaseTest
+import time
 
 
 class SupertaskTest(BaseTest):
@@ -59,6 +60,25 @@ class SupertaskTest(BaseTest):
         for task in tasks:
             self.assertEqual(cracker.id, task.crackerBinaryId)
             self.assertEqual(cracker.crackerBinaryTypeId, task.crackerBinaryTypeId)
+
+    def test_run_supertask_cracker_hashtype_mismatch(self):
+        crackertype = self.create_crackertype()
+        pretasks = [self.create_pretask(extra_payload={'crackerBinaryTypeId': crackertype.id}) for _ in range(2)]
+        supertask = self.create_supertask(pretasks=pretasks, extra_payload={'crackerBinaryTypeId': crackertype.id})
+        cracker = self.create_cracker(extra_payload={'crackerBinaryTypeId': crackertype.id})
+        hashlist = self.create_hashlist()
+        # the binary only supports an unrelated hashtype, not the hashlist's one
+        stamp = int(time.time() * 1000)
+        hashtype = self.create_hashtype(extra_payload={'hashTypeId': 100001 + stamp % 99999,
+                                                       'description': f'supertask-hashtype-{stamp}'})
+        work_obj = Cracker.objects.prefetch_related('hashtypes').get(pk=cracker.id)
+        work_obj.hashtypes_set = [hashtype]
+        work_obj.save()
+
+        with self.assertRaises(HashtopolisError) as e:
+            Helper().create_supertask(supertask, hashlist, cracker)
+        self.assertEqual(e.exception.status_code, 400)
+        self.assertIn('does not support the hash type', e.exception.title)
 
     def test_patch(self):
         model_obj = self.create_test_object()
