@@ -228,6 +228,8 @@ Util::checkDataDirectory(DDirectories::CRACKERS, StartupConfig::getInstance()->g
 // copy is downloaded first, so the scan can unpack it. If the download
 // fails (e.g. offline installation), the scan is skipped without failing
 // the setup: it can be triggered later by checking or patching the binary.
+// The scan job itself downloads a missing archive of a url-referenced binary,
+// so the scans enqueued by the migration on existing setups work as well.
 // Runs after the directory configs are stored, the download needs the
 // crackers directory. Only on the initial setup: later boots must not
 // re-download the archives and re-scan all binaries.

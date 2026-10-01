@@ -19,7 +19,6 @@ use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\TestBase;
 use Override;
 use PDOException;
-use RuntimeException;
 
 require_once(dirname(__FILE__) . '/../../TestBase.php');
 require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
@@ -34,7 +33,6 @@ final class CrackerUtilsTest extends TestBase {
   private ?AbstractModel $type = null;
   private ?AbstractModel $binary = null;
   private string|false $savedBackendUrl = false;
-  private array $httpFileServers = [];
 
   // Creates a CrackerBinaryType and one CrackerBinary before each test.
   // These records provide valid IDs for the "happy path" tests and a known
@@ -56,27 +54,14 @@ final class CrackerUtilsTest extends TestBase {
   #[Override]
   protected function tearDown(): void {
     try {
-      foreach ($this->httpFileServers as $server) {
-        proc_terminate($server['proc']);
-        proc_close($server['proc']);
-        foreach (glob($server['docroot'] . '/*') ?: [] as $path) {
-          unlink($path);
-        }
-        rmdir($server['docroot']);
-      }
-      $this->httpFileServers = [];
+      parent::tearDown();
     }
     finally {
-      try {
-        parent::tearDown();
+      if ($this->savedBackendUrl === false) {
+        putenv('HASHTOPOLIS_BACKEND_URL');
       }
-      finally {
-        if ($this->savedBackendUrl === false) {
-          putenv('HASHTOPOLIS_BACKEND_URL');
-        }
-        else {
-          putenv('HASHTOPOLIS_BACKEND_URL=' . $this->savedBackendUrl);
-        }
+      else {
+        putenv('HASHTOPOLIS_BACKEND_URL=' . $this->savedBackendUrl);
       }
     }
   }
@@ -920,37 +905,4 @@ final class CrackerUtilsTest extends TestBase {
     CrackerUtils::deleteBinary($binary->getId());
     $this->cleanupScanJobs($binary->getId());
   }
-
-  /**
-   * Serves a file with the given content through a local HTTP server, so tests
-   * can use a working download url without external network access. The server
-   * runs until tearDown() shuts it down.
-   */
-  private function serveHttpFile(string $filename, string $content): string {
-    // pick a free port
-    $socket = stream_socket_server('tcp://127.0.0.1:0', $errno, $errstr);
-    $address = stream_socket_get_name($socket, false);
-    fclose($socket);
-    $docroot = sys_get_temp_dir() . '/hashtopolis-http-' . uniqid();
-    mkdir($docroot);
-    file_put_contents($docroot . '/' . $filename, $content);
-    $proc = proc_open(
-      ['php', '-S', $address, '-t', $docroot],
-      [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']],
-      $pipes
-    );
-    // wait until the server responds
-    $deadline = microtime(true) + 10;
-    while (microtime(true) < $deadline) {
-      $conn = @fsockopen('127.0.0.1', parse_url('http://' . $address, PHP_URL_PORT), $errno, $errstr, 0.2);
-      if ($conn !== false) {
-        fclose($conn);
-        $this->httpFileServers[] = ['proc' => $proc, 'docroot' => $docroot];
-        return 'http://' . $address . '/' . $filename;
-      }
-      usleep(50000);
-    }
-    throw new RuntimeException('Local HTTP file server did not come up in time');
-  }
-
 }

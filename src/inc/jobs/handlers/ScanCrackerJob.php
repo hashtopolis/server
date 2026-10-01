@@ -5,6 +5,7 @@ namespace Hashtopolis\inc\jobs\handlers;
 use Exception;
 use Hashtopolis\dba\models\BackgroundJob;
 use Hashtopolis\dba\models\CrackerBinary;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DBackgroundJobType;
 use Hashtopolis\inc\jobs\BackgroundJobHandler;
 use Hashtopolis\inc\jobs\BackgroundJobResult;
@@ -38,6 +39,10 @@ class ScanCrackerJob implements BackgroundJobHandler {
    * the modes the binary supports. Existing hashtypes are never altered,
    * the scan only decides whether the binary supports them or not.
    *
+   * A url-referenced binary whose archive is not on the server (e.g. when the
+   * scan was enqueued without a preceding download, as done by the migration
+   * on existing setups) gets its local copy downloaded first.
+   *
    * @throws Exception
    */
   public function execute(BackgroundJob $job, array $payload): BackgroundJobResult {
@@ -54,6 +59,19 @@ class ScanCrackerJob implements BackgroundJobHandler {
     // since the job was enqueued
     if (!CrackerUtils::isHashcatBinary($binary)) {
       return new BackgroundJobResult(0, "Cracker binary $binaryId is not of the hashcat type, scan skipped.");
+    }
+
+    // url-referenced binaries have no archive on the server when the scan was
+    // enqueued without a preceding download (e.g. by the migration on existing
+    // setups): download the local copy first, so the scan can unpack it. If
+    // the download fails, the scan fails and can be re-triggered later.
+    if ($binary->getFilename() === null && !file_exists(CrackerScanUtils::getLocalArchivePath($binary))) {
+      try {
+        CrackerUtils::storeLocalCopy($binary);
+      }
+      catch (HttpError $e) {
+        return new BackgroundJobResult(-1, $e->getMessage());
+      }
     }
 
     $tempDir = tempnam(sys_get_temp_dir(), 'HTP_SCAN_');
