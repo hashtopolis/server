@@ -10,6 +10,7 @@ use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\defines\DBackgroundJobStatus;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\jobs\BackgroundJobPayloadValidator;
 use Hashtopolis\inc\jobs\BackgroundJobRegistry;
 
 class BackgroundJobUtils {
@@ -26,6 +27,8 @@ class BackgroundJobUtils {
     if (!in_array($jobType, BackgroundJobRegistry::getRegisteredTypes(), true)) {
       throw new HTException("Unknown background job type '$jobType'!");
     }
+    $handlerClass = BackgroundJobRegistry::getHandlerClass($jobType);
+    BackgroundJobPayloadValidator::validate($payload, $handlerClass::getPayloadDefinition());
     $encoded = json_encode($payload);
     if ($encoded === false) {
       throw new HTException("Could not encode background job payload!");
