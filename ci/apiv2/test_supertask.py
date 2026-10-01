@@ -1,4 +1,4 @@
-from hashtopolis import Supertask, HashtopolisError
+from hashtopolis import Supertask, HashtopolisError, Helper, Task
 from utils import BaseTest
 
 
@@ -35,6 +35,30 @@ class SupertaskTest(BaseTest):
                 delete=False)
         self.assertEqual(e.exception.status_code, 400)
         self.assertIn('Invalid cracker binary type ID', e.exception.title)
+
+    def test_run_supertask_cracker_binary_type_mismatch(self):
+        supertask = self.create_test_object()
+        hashlist = self.create_hashlist()
+        crackertype = self.create_crackertype()
+        binary_other_type = self.create_cracker(
+            extra_payload={'crackerBinaryTypeId': crackertype.id})
+        with self.assertRaises(HashtopolisError) as e:
+            Helper().create_supertask(supertask, hashlist, binary_other_type)
+        self.assertEqual(e.exception.status_code, 400)
+        self.assertIn('cannot be mixed', e.exception.title)
+
+    def test_run_supertask_creates_consistent_tasks(self):
+        supertask = self.create_test_object()
+        hashlist = self.create_hashlist()
+        cracker = self.create_cracker()
+        task_wrapper = Helper().create_supertask(supertask, hashlist, cracker)
+        self.delete_after_test(task_wrapper)
+
+        tasks = list(Task.objects.filter(taskWrapperId=task_wrapper.id))
+        self.assertEqual(2, len(tasks))
+        for task in tasks:
+            self.assertEqual(cracker.id, task.crackerBinaryId)
+            self.assertEqual(cracker.crackerBinaryTypeId, task.crackerBinaryTypeId)
 
     def test_patch(self):
         model_obj = self.create_test_object()
