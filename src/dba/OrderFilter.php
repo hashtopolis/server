@@ -31,7 +31,8 @@ class OrderFilter extends Order {
       $table = $factory->getMappedModelTable() . ".";
     }
     
-    return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->by) . " " . $this->type;
+    $column = $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->by);
+    return AbstractModelFactory::getSortExpression($factory->getNullObject(), $this->by, $column) . " " . $this->type;
   }
 }
 
