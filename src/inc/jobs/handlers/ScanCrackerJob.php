@@ -8,6 +8,7 @@ use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\inc\defines\DBackgroundJobType;
 use Hashtopolis\inc\jobs\BackgroundJobHandler;
 use Hashtopolis\inc\jobs\BackgroundJobResult;
+use Hashtopolis\inc\jobs\payload\JobPayloadField;
 use Hashtopolis\inc\utils\CrackerScanUtils;
 use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\inc\utils\HashtypeUtils;
@@ -17,6 +18,12 @@ use Hashtopolis\dba\Factory;
 class ScanCrackerJob implements BackgroundJobHandler {
   public static function getJobType(): string {
     return DBackgroundJobType::SCAN_CRACKER;
+  }
+
+  public static function getPayloadDefinition(): array {
+    return [
+      CrackerBinary::CRACKER_BINARY_ID => new JobPayloadField(JobPayloadField::TYPE_INT),
+    ];
   }
 
   public function getMaxRuntime(): int {
@@ -34,9 +41,6 @@ class ScanCrackerJob implements BackgroundJobHandler {
    * @throws Exception
    */
   public function execute(BackgroundJob $job, array $payload): BackgroundJobResult {
-    if (!isset($payload[CrackerBinary::CRACKER_BINARY_ID]) || !is_int($payload[CrackerBinary::CRACKER_BINARY_ID])) {
-      return new BackgroundJobResult(-1, "Missing or invalid '" . CrackerBinary::CRACKER_BINARY_ID . "' in payload.");
-    }
     $binaryId = $payload[CrackerBinary::CRACKER_BINARY_ID];
 
     try {
