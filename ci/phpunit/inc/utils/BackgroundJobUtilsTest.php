@@ -95,6 +95,24 @@ final class BackgroundJobUtilsTest extends TestBase {
   }
 
   /**
+   * @throws HTException
+   */
+  public function testEnqueueMissingRequiredPayloadKeyThrows(): void {
+    $this->expectException(HTException::class);
+    $this->expectExceptionMessage("Missing required payload key 'fileId'!");
+    BackgroundJobUtils::enqueue(DBackgroundJobType::RECOUNT_FILE, []);
+  }
+
+  /**
+   * @throws HTException
+   */
+  public function testEnqueueInvalidPayloadTypeThrows(): void {
+    $this->expectException(HTException::class);
+    $this->expectExceptionMessage("Invalid type for payload key 'fileId', expected int!");
+    BackgroundJobUtils::enqueue(DBackgroundJobType::RECOUNT_FILE, ['fileId' => '123']);
+  }
+
+  /**
    * @throws Exception
    */
   public function testDeleteRejectsJobClaimedAfterFetch(): void {
@@ -170,6 +188,24 @@ final class BackgroundJobUtilsTest extends TestBase {
     $this->assertSame(DBackgroundJobStatus::FAILED, $job->getStatus());
     $this->assertSame(-1, $job->getExitCode());
     $this->assertStringContainsString("timed out", $job->getResultMessage());
+  }
+
+  /**
+   * @throws Exception
+   */
+  public function testRunnerFailsJobWithPayloadViolatingDefinition(): void {
+    // bypassing enqueue() on purpose to simulate a legacy or manually written job row
+    $job = $this->createDatabaseObject(
+      Factory::getBackgroundJobFactory(),
+      new BackgroundJob(null, DBackgroundJobType::RECOUNT_FILE, '{"fileId": "abc"}', DBackgroundJobStatus::PENDING, null, time(), null, null, null, null)
+    );
+    BackgroundJobRunner::run();
+
+    $job = Factory::getBackgroundJobFactory()->get($job->getId());
+    $this->assertSame(DBackgroundJobStatus::FAILED, $job->getStatus());
+    $this->assertSame(255, $job->getExitCode());
+    $this->assertSame("Invalid type for payload key 'fileId', expected int!", $job->getResultMessage());
+    $this->assertNotNull($job->getFinishedAt());
   }
 
   /**
