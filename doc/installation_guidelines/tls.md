@@ -100,6 +100,10 @@ http {
 
 3. Update the value of `HASHTOPOLIS_BACKEND_URL` in the `.env` file to reflect the changes done above.
 
+    Serving both through the one proxy as shown above puts the frontend and the API on the same
+    origin, so no further configuration is needed. If you instead serve the frontend from its own
+    hostname, see [Serving the frontend on another origin](advanced_install.md#serving-the-frontend-on-another-origin).
+
 4. Start the containers
 ```
 

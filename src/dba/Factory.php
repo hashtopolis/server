@@ -30,6 +30,7 @@ use Hashtopolis\dba\models\LogEntryFactory;
 use Hashtopolis\dba\models\NotificationSettingFactory;
 use Hashtopolis\dba\models\PreprocessorFactory;
 use Hashtopolis\dba\models\PretaskFactory;
+use Hashtopolis\dba\models\RefreshTokenFactory;
 use Hashtopolis\dba\models\RegVoucherFactory;
 use Hashtopolis\dba\models\RightGroupFactory;
 use Hashtopolis\dba\models\SessionFactory;
@@ -79,6 +80,7 @@ class Factory {
   private static ?NotificationSettingFactory $notificationSettingFactory = null;
   private static ?PreprocessorFactory $preprocessorFactory = null;
   private static ?PretaskFactory $pretaskFactory = null;
+  private static ?RefreshTokenFactory $refreshTokenFactory = null;
   private static ?RegVoucherFactory $regVoucherFactory = null;
   private static ?RightGroupFactory $rightGroupFactory = null;
   private static ?SessionFactory $sessionFactory = null;
@@ -376,6 +378,16 @@ class Factory {
       return $f;
     } else {
       return self::$pretaskFactory;
+    }
+  }
+  
+  public static function getRefreshTokenFactory(): RefreshTokenFactory {
+    if (self::$refreshTokenFactory == null) {
+      $f = new RefreshTokenFactory();
+      self::$refreshTokenFactory = $f;
+      return $f;
+    } else {
+      return self::$refreshTokenFactory;
     }
   }
   

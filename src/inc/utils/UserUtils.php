@@ -65,6 +65,8 @@ class UserUtils {
     Factory::getAgentFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
     $qF = new QueryFilter(Session::USER_ID, $user->getId(), "=");
     Factory::getSessionFactory()->massDeletion([Factory::FILTER => $qF]);
+    // Refresh tokens reference the user row, so they have to go before it does
+    RefreshTokenUtils::deleteAllForUser($user->getId());
     $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=");
     Factory::getAccessGroupUserFactory()->massDeletion([Factory::FILTER => $qF]);
     $qF = new QueryFilter(JwtApiKey::USER_ID, $user->getId(), "=");
@@ -103,6 +105,7 @@ class UserUtils {
     $obj = array('username' => $user->getUsername(), 'password' => $newPass);
     if (Util::sendMail($user->getEmail(), "Password reset", $tmpl->render($obj), $tmplPlain->render($obj))) {
       Factory::getUserFactory()->mset($user, [User::PASSWORD_HASH => $newHash, User::PASSWORD_SALT => $newSalt, User::IS_COMPUTED_PASSWORD => 1]);
+      RefreshTokenUtils::revokeAllForUser($user->getId());
     }
     else {
       throw new HTException("Password reset failed because of an error when sending the email! Please check if PHP is able to send emails.");
@@ -134,6 +137,7 @@ class UserUtils {
     $qF = new QueryFilter(Session::USER_ID, $user->getId(), "=");
     $uS = new UpdateSet(Session::IS_OPEN, "0");
     Factory::getSessionFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+    RefreshTokenUtils::revokeAllForUser($user->getId());
     Factory::getUserFactory()->set($user, User::IS_VALID, 0);
   }
   
@@ -189,6 +193,8 @@ class UserUtils {
     $newHash = Encryption::passwordHash($newPassword, $newSalt);
     
     Factory::getUserFactory()->mset($user, [User::PASSWORD_HASH => $newHash, User::PASSWORD_SALT => $newSalt, User::IS_COMPUTED_PASSWORD => 0]);
+    // The old password can no longer be used to log in, so sessions resting on it should not survive either
+    RefreshTokenUtils::revokeAllForUser($user->getId());
   }
   
   /**
@@ -211,6 +217,7 @@ class UserUtils {
     $newHash = Encryption::passwordHash($password, $newSalt);
     
     Factory::getUserFactory()->mset($user, [User::PASSWORD_HASH => $newHash, User::PASSWORD_SALT => $newSalt, User::IS_COMPUTED_PASSWORD => 0]);
+    RefreshTokenUtils::revokeAllForUser($user->getId());
   }
   
   /**

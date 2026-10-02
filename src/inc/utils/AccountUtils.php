@@ -69,6 +69,7 @@ class AccountUtils {
     $newHash = Encryption::passwordHash($newPassword, $newSalt);
     
     $user = Factory::getUserFactory()->mset($user, [User::PASSWORD_HASH => $newHash, User::PASSWORD_SALT => $newSalt, USer::IS_COMPUTED_PASSWORD => 0]);
+    RefreshTokenUtils::revokeAllForUser($user->getId());
     
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "User changed password!");
   }
