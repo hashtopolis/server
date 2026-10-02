@@ -37,6 +37,7 @@ use Hashtopolis\dba\models\Config;
 use Hashtopolis\dba\models\ConfigSection;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\models\CrackerBinaryHashtype;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\FilePretask;
 use Hashtopolis\dba\models\FileTask;
@@ -361,6 +362,8 @@ abstract class AbstractBaseAPI {
         return Factory::getCrackerBinaryFactory();
       case CrackerBinaryType::class:
         return Factory::getCrackerBinaryTypeFactory();
+      case CrackerBinaryHashtype::class:
+        return Factory::getCrackerBinaryHashtypeFactory();
       case File::class:
         return Factory::getFileFactory();
       case FileTask::class:
@@ -542,10 +545,12 @@ abstract class AbstractBaseAPI {
       'crackerBinary' => [CrackerBinary::PERM_READ],
       'crackerBinaryType' => [CrackerBinaryType::PERM_READ],
       'crackerVersions' => [CrackerBinary::PERM_READ],
+      'crackerBinaries' => [CrackerBinary::PERM_READ],
       'hashes' => [Hash::PERM_READ],
       'hashlist' => [Hashlist::PERM_READ],
       'hashlists' => [Hashlist::PERM_READ],
       'hashType' => [HashType::PERM_READ],
+      'hashtypes' => [HashType::PERM_READ],
       'healthCheck' => [HealthCheck::PERM_READ],
       'healthCheckAgents' => [HealthCheckAgent::PERM_READ],
       'globalPermissionGroup' => [RightGroup::PERM_READ],
@@ -622,10 +627,11 @@ abstract class AbstractBaseAPI {
     
     // src/inc/defines/cracker.php
     DAccessControl::CRACKER_BINARY_ACCESS => array(CrackerBinary::PERM_CREATE, CrackerBinary::PERM_READ, CrackerBinary::PERM_UPDATE, CrackerBinary::PERM_DELETE,
-                                                   CrackerBinaryType::PERM_CREATE, CrackerBinaryType::PERM_READ, CrackerBinaryType::PERM_UPDATE, CrackerBinaryType::PERM_DELETE,
-                                                   // src/inc/defines/agents.php
-                                                   AgentBinary::PERM_CREATE, AgentBinary::PERM_READ, AgentBinary::PERM_UPDATE, AgentBinary::PERM_DELETE
-    ),
+                                                    CrackerBinaryType::PERM_CREATE, CrackerBinaryType::PERM_READ, CrackerBinaryType::PERM_UPDATE, CrackerBinaryType::PERM_DELETE,
+                                                    CrackerBinaryHashtype::PERM_CREATE, CrackerBinaryHashtype::PERM_READ, CrackerBinaryHashtype::PERM_UPDATE, CrackerBinaryHashtype::PERM_DELETE,
+                                                    // src/inc/defines/agents.php
+                                                    AgentBinary::PERM_CREATE, AgentBinary::PERM_READ, AgentBinary::PERM_UPDATE, AgentBinary::PERM_DELETE
+     ),
     
     DAccessControl::SERVER_CONFIG_ACCESS => array(Config::PERM_CREATE, Config::PERM_READ, Config::PERM_UPDATE, Config::PERM_DELETE,
                                                   ConfigSection::PERM_CREATE, ConfigSection::PERM_READ, ConfigSection::PERM_UPDATE, ConfigSection::PERM_DELETE,

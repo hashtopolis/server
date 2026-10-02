@@ -81,7 +81,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $junctionTableFactory,
           $relationFactory,
           $toOneRelationships[$expand]['relationKey'],
-          $toOneRelationships[$expand]['parentKey']
+          $toOneRelationships[$expand]['parentKey'],
+          $relationFilters,
         );
       }
       
@@ -108,6 +109,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $toManyRelationships[$expand]['junctionTableFilterField'],
           $relationFactory,
           $toManyRelationships[$expand]['relationKey'],
+          $relationFilters,
         );
       }
       
@@ -205,6 +207,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * @param object $targetFactory Object properties of objects returned
    * @param string $joinField Field to connect 'intermediate' to 'target'
    * @param string $parentKey
+   * @param array $relationFilters Additional filters on the target objects, e.g. the list ACL of the related API
    * @return array $many2One which is a map where the key is the id of the parent object and the value is an array of the included
    *                objects that are included for this parent object
    * @throws HttpError
@@ -216,7 +219,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     object $intermediateFactory,
     object $targetFactory,
     string $joinField,
-    string $parentKey
+    string $parentKey,
+    array $relationFilters = [],
   ): array {
     assert($intermediateFactory instanceof AbstractModelFactory);
     assert($targetFactory instanceof AbstractModelFactory);
@@ -232,7 +236,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $qF = new ContainFilter($objectField, $objectIds, $intermediateFactory);
     $jF = new JoinFilter($intermediateFactory, $joinField, $joinField);
     $jF2 = new JoinFilter($baseFactory, $objectField, $objectField, $intermediateFactory);
-    $hO = $targetFactory->filter([Factory::FILTER => $qF, Factory::JOIN => [$jF, $jF2]]);
+    $relationFilters[Factory::FILTER] = array_merge(
+      [$qF],
+      $relationFilters[Factory::FILTER] ?? []
+    );
+    $relationFilters[Factory::JOIN] = array_merge(
+      [$jF, $jF2],
+      $relationFilters[Factory::JOIN] ?? []
+    );
+    $hO = $targetFactory->filter($relationFilters);
     
     $intermediateObjectList = $hO[$intermediateFactory->getModelName()];
     $targetObjectList = $hO[$targetFactory->getModelName()];
@@ -356,14 +368,16 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * Retrieve ManyToOne relation for $objects ('parents') of type $targetFactory via 'intermediate'
    * of $intermediateFactory joining on $joinField (between 'intermediate' and 'target'). Filtered by
-   * $filterField at $intermediateFactory.
+   * $filterField at $intermediateFactory. Optional $relationFilters restrict the returned target
+   * objects, e.g. to those visible to the current user.
    *
    * @param array $objects Objects Fetch relation for selected Objects
    * @param string $objectField Field to use as base for $objects
    * @param object $intermediateFactory Factory used as intermediate between parentObject and targetObject
-   * @param string $filterField Filter field of intermediateObject to filter against $objects field
+   * @param string $filterField Field of intermediateObject to filter against $objects field
    * @param object $targetFactory Object properties of objects returned
    * @param string $joinField Field to connect 'intermediate' to 'target'
+   * @param array $relationFilters Additional filters on the target objects, e.g. the list ACL of the related API
    * @return array $many2many which is a map where the key is the id of the parent object and the value is an array of the included
    *                objects that are included for this parent object
    * @throws Exception
@@ -375,6 +389,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     string $filterField,
     object $targetFactory,
     string $joinField,
+    array $relationFilters = [],
   ): array {
     assert($intermediateFactory instanceof AbstractModelFactory);
     assert($targetFactory instanceof AbstractModelFactory);
@@ -388,7 +403,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     $qF = new ContainFilter($filterField, $objectIds, $intermediateFactory);
     $jF = new JoinFilter($intermediateFactory, $joinField, $joinField);
-    $hO = $targetFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    $relationFilters[Factory::FILTER] = array_merge(
+      [$qF],
+      $relationFilters[Factory::FILTER] ?? []
+    );
+    $relationFilters[Factory::JOIN] = array_merge(
+      [$jF],
+      $relationFilters[Factory::JOIN] ?? []
+    );
+    $hO = $targetFactory->filter($relationFilters);
     
     $intermediateObjectList = $hO[$intermediateFactory->getModelName()];
     $targetObjectList = $hO[$targetFactory->getModelName()];
@@ -799,8 +822,27 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $aFs[Factory::ORDER] = $orderFilters;
     $aFs[Factory::JOIN] = $joinFilters;
     
-    /* Include relation filters */
-    $finalFs = array_merge($aFs, $relationFs);
+    /* Include relation filters. The filter and join lists are merged instead of
+       overwritten, so the ACL filters of the related API stay effective when
+       the relation provides its own filters and joins. */
+    $finalFs = $aFs;
+    foreach ($relationFs as $relationKey => $relationValue) {
+      if ($relationKey == Factory::FILTER) {
+        $finalFs[$relationKey] = array_merge($finalFs[$relationKey] ?? [], $relationValue);
+      }
+      elseif ($relationKey == Factory::JOIN) {
+        $mergedJoins = $finalFs[$relationKey] ?? [];
+        foreach ($relationValue as $join) {
+          if (!$apiClass::checkJoinExists($mergedJoins, $join->getOtherFactory()->getModelName())) {
+            $mergedJoins[] = $join;
+          }
+        }
+        $finalFs[$relationKey] = $mergedJoins;
+      }
+      else {
+        $finalFs[$relationKey] = $relationValue;
+      }
+    }
     
     //TODO it would be even better if its possible to see if the primary filter is unique, instead of primary key.
     //But this probably needs to be added in getFeatures() then.
@@ -1366,35 +1408,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $relation = $args['relation'];
     $id = $args['id'];
     
-    $relationMapper = $this->getToOneRelationships()[$relation];
-    $intermediate = $relationMapper["intermediateType"];
-    //if there is an intermediate table join on that
-    if ($intermediate !== null) {
-      $intermediateFactory = self::getModelFactory($intermediate);
-      $aFs[Factory::JOIN][] = new JoinFilter(
-        $intermediateFactory,
-        $relationMapper['junctionTableJoinField'],
-        $relationMapper['relationKey'],
-      );
-      
-      $filterFactory = self::getModelFactory($relationMapper['junctionTableType']);
-      $filterField = $relationMapper['joinField'];
-      
-      $aFs[Factory::FILTER][] = new QueryFilter(
-        $filterField,
-        $id,
-        '=',
-        $filterFactory
-      );
-      
-      $factory = $this->getFactory();
-      $object = $factory->filter($aFs)[$intermediateFactory->getModelName()][0];
-      $id = $object->getId();
-    }
-    else {
-      // Base object
-      $object = $this->doFetch($id);
-    }
+    /* Validate the base object, also when the relation goes through an
+       intermediate table. Otherwise the relation of an object outside the
+       caller's access groups could be read. */
+    $object = $this->doFetch($id);
     
     // Relation object
     $relationObjects = $this->fetchVisibleExpandObjects([$object], $relation);
@@ -1403,7 +1420,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     $relationObject = $relationObjects[$id];
     
-    $relationClass = $relationMapper['relationType'];
+    $relationClass = $this->getToOneRelationships()[$relation]['relationType'];
     $relationApiClass = new ($this->container->get('classMapper')->get($relationClass))($this->container);
 
     /* Check the read permission for the related resource ourselves. getOneResource()
@@ -1443,31 +1460,19 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     //     'joinFieldRelation' => TaskWrapper::TASK_WRAPPER_ID,
     // ],
     if (array_key_exists('intermediateType', $relation)) {
-      $aFs = [];
-      $intermediateFactory = self::getModelFactory($relation['intermediateType']);
-      
-      $aFs[Factory::FILTER][] = new QueryFilter(
-        $relation['joinField'],
-        $args['id'],
-        '=',
-        $intermediateFactory
-      );
-      
-      $aFs[Factory::JOIN][] = new JoinFilter(
-        $intermediateFactory,
-        $relation['joinField'],
-        $relation['joinFieldRelation'],
-      );
-      
-      $factory = $this->getFactory();
-      //retrieve the only element of the intermediate table, which contains the data for the relatedResource
-      $object = $factory->filter($aFs)[$intermediateFactory->getModelName()][0];
+      /* Resolve the relation through the base object, which is also validated
+         with doFetch. The link only exposes the id of the related resource,
+         so the related resource itself is deliberately not ACL filtered. */
+      $object = $this->doFetch($args['id']);
+      $relationObjects = static::fetchExpandObjects([$object], $args['relation']);
+      $id = array_key_exists($object->getId(), $relationObjects)
+        ? $relationObjects[$object->getId()]->getId()
+        : null;
     }
     else {
       $object = $this->doFetch($args['id']);
+      $id = $object->getKeyValueDict()[$relation['key']];
     }
-    
-    $id = $object->getKeyValueDict()[$relation['key']];
     
     if (is_null($id)) {
       $dataResource = null;
@@ -1526,6 +1531,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if ($relation == null) {
       throw new HttpError("Relation does not exist!");
     }
+    if (isset($relation["readonly"]) && $relation['readonly'] === true) {
+      throw new HttpError('This relationship is readonly');
+    }
     $relationKey = $relation['relationKey'];
     $relationType = $relation['relationType'];
     
@@ -1569,8 +1577,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   public function getToManyRelatedResource(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
     
+    /* Validate that the caller has access to the base object, otherwise the
+       relation of an object outside the caller's access groups could be read. */
+    $this->doFetch($args['id']);
+    
     // Base object -> Relation objects
-    // $object = $this->doFetch($request, $args['id']);
     
     $toManyRelation = $this->getToManyRelationships()[$args['relation']];
     $relationClass = $toManyRelation['relationType'];
@@ -1686,6 +1697,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
     
     $data = $jsonBody['data'];
+    
+    /* Validate the base object here, so every implementation of
+       updateToManyRelationship() is covered, including overrides in subclasses. */
+    $this->doFetch($args['id']);
+    
     $this->updateToManyRelationship($request, $data, $args);
     
     return $response->withStatus(204)
@@ -1820,7 +1836,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $relation["junctionTableJoinField"] => $relationItem->getId(),
         ];
         $table_entry = $factory->createObjectFromDict($table_entry_dict);
-        $factory->save($table_entry);
+        try {
+          $factory->save($table_entry);
+        }
+        catch (PDOException $e) {
+          /* A concurrent request created the same relation in between, a
+             unique key on the junction table (if present) guarantees it
+             exists only once. */
+          if (in_array($e->getCode(), ['23000', '23505'])) {
+            throw new HttpConflict("Relation " . $relation['junctionTableType'] . " of " . $baseItem->getId() . " to " . $relationItem->getId() . " already exists");
+          }
+          throw $e;
+        }
       }
     }
     else {
@@ -1894,6 +1921,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         throw new HttpForbidden("Key '$relationKey' cant be set to null");
       }
     }
+    
+    /* Validate the base object, otherwise associations of an object outside
+       the caller's access groups could be removed. */
+    $this->doFetch($args['id']);
     
     $data = $jsonBody['data'];
     

@@ -6,12 +6,14 @@ use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\models\CrackerBinaryHashtype;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\FileDownload;
 use Hashtopolis\dba\models\FileTask;
@@ -81,6 +83,17 @@ class TestBase extends TestCase {
         UserUtils::deleteUser($object->getId(), $this->adminUser);
       }
       else {
+        // remove the hashtype associations of cracker binaries and hashtypes before
+        // deleting them, otherwise the foreign key constraints on CrackerBinaryHashtype
+        // would fail
+        if ($object instanceof CrackerBinary) {
+          $qF = new QueryFilter(CrackerBinaryHashtype::CRACKER_BINARY_ID, $object->getId(), "=");
+          Factory::getCrackerBinaryHashtypeFactory()->massDeletion([Factory::FILTER => $qF]);
+        }
+        elseif ($object instanceof HashType) {
+          $qF = new QueryFilter(CrackerBinaryHashtype::HASH_TYPE_ID, $object->getId(), "=");
+          Factory::getCrackerBinaryHashtypeFactory()->massDeletion([Factory::FILTER => $qF]);
+        }
         $factory->delete($object);
       }
     }

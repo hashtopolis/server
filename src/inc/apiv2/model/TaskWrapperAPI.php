@@ -85,6 +85,7 @@ class TaskWrapperAPI extends AbstractModelAPI {
         
         'relationType' => Hashlist::class,
         'relationKey' => Hashlist::HASHLIST_ID,
+        'filterACL' => true,
       ],
       'hashType' => [
         'key' => TaskWrapper::TASK_WRAPPER_ID,
