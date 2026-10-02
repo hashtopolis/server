@@ -5,6 +5,8 @@ namespace Hashtopolis\dba;
 use Exception;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\UpdateSet;
 use Hashtopolis\TestBase;
 use Override;
 
@@ -32,8 +34,8 @@ final class CompareAndSetTest extends TestBase {
   public function testTransitionAppliesWhenTheRowStillMatches(): void {
     $applied = Factory::getAgentFactory()->compareAndSet(
       $this->agent,
-      [Agent::IS_ACTIVE => $this->agent->getIsActive()],
-      [Agent::AGENT_NAME => 'renamed']
+      [new QueryFilter(Agent::IS_ACTIVE, $this->agent->getIsActive(), "=")],
+      [new UpdateSet(Agent::AGENT_NAME, 'renamed')]
     );
     
     $this->assertTrue($applied);
@@ -48,8 +50,8 @@ final class CompareAndSetTest extends TestBase {
   public function testOnlyTheFirstOfTwoCallersWins(): void {
     $claim = fn(string $name): bool => Factory::getAgentFactory()->compareAndSet(
       $this->agent,
-      [Agent::USER_ID => null],
-      [Agent::USER_ID => $this->user->getId(), Agent::AGENT_NAME => $name]
+      [new QueryFilter(Agent::USER_ID, null, "=")],
+      [new UpdateSet(Agent::USER_ID, $this->user->getId()), new UpdateSet(Agent::AGENT_NAME, $name)]
     );
     
     $this->assertTrue($claim('winner'));
@@ -63,8 +65,8 @@ final class CompareAndSetTest extends TestBase {
   public function testTransitionIsRefusedWhenTheRowNoLongerMatches(): void {
     $applied = Factory::getAgentFactory()->compareAndSet(
       $this->agent,
-      [Agent::AGENT_NAME => 'some other name'],
-      [Agent::AGENT_NAME => 'renamed']
+      [new QueryFilter(Agent::AGENT_NAME, 'some other name', "=")],
+      [new UpdateSet(Agent::AGENT_NAME, 'renamed')]
     );
     
     $this->assertFalse($applied);
@@ -82,15 +84,15 @@ final class CompareAndSetTest extends TestBase {
     
     $this->assertTrue(Factory::getAgentFactory()->compareAndSet(
       $this->agent,
-      [Agent::USER_ID => null],
-      [Agent::USER_ID => $this->user->getId()]
+      [new QueryFilter(Agent::USER_ID, null, "=")],
+      [new UpdateSet(Agent::USER_ID, $this->user->getId())]
     ));
     
     // ... and once the column is set, the same expectation no longer holds
     $this->assertFalse(Factory::getAgentFactory()->compareAndSet(
       $this->agent,
-      [Agent::USER_ID => null],
-      [Agent::USER_ID => $this->user->getId()]
+      [new QueryFilter(Agent::USER_ID, null, "=")],
+      [new UpdateSet(Agent::USER_ID, $this->user->getId())]
     ));
   }
   
@@ -102,8 +104,8 @@ final class CompareAndSetTest extends TestBase {
   public function testAllExpectationsMustHold(): void {
     $applied = Factory::getAgentFactory()->compareAndSet(
       $this->agent,
-      [Agent::USER_ID => null, Agent::AGENT_NAME => 'some other name'],
-      [Agent::AGENT_NAME => 'renamed']
+      [new QueryFilter(Agent::USER_ID, null, "="), new QueryFilter(Agent::AGENT_NAME, 'some other name', "=")],
+      [new UpdateSet(Agent::AGENT_NAME, 'renamed')]
     );
     
     $this->assertFalse($applied);
@@ -119,8 +121,8 @@ final class CompareAndSetTest extends TestBase {
     
     Factory::getAgentFactory()->compareAndSet(
       $this->agent,
-      [Agent::USER_ID => null],
-      [Agent::AGENT_NAME => 'renamed']
+      [new QueryFilter(Agent::USER_ID, null, "=")],
+      [new UpdateSet(Agent::AGENT_NAME, 'renamed')]
     );
     
     $this->assertSame($other->getAgentName(), Factory::getAgentFactory()->get($other->getId())->getAgentName());
@@ -133,7 +135,7 @@ final class CompareAndSetTest extends TestBase {
     $this->assertTrue(Factory::getAgentFactory()->compareAndSet(
       $this->agent,
       [],
-      [Agent::AGENT_NAME => 'renamed']
+      [new UpdateSet(Agent::AGENT_NAME, 'renamed')]
     ));
   }
   
@@ -143,7 +145,7 @@ final class CompareAndSetTest extends TestBase {
   public function testUpdatingNothingIsRejected(): void {
     $this->expectException(Exception::class);
     
-    Factory::getAgentFactory()->compareAndSet($this->agent, [Agent::USER_ID => null], []);
+    Factory::getAgentFactory()->compareAndSet($this->agent, [new QueryFilter(Agent::USER_ID, null, "=")], []);
   }
   
   /**
@@ -157,8 +159,8 @@ final class CompareAndSetTest extends TestBase {
     
     Factory::getAgentFactory()->compareAndSet(
       $this->agent,
-      [Agent::IS_TRUSTED => 1],
-      [Agent::IS_TRUSTED => 1]
+      [new QueryFilter(Agent::IS_TRUSTED, 1, "=")],
+      [new UpdateSet(Agent::IS_TRUSTED, 1)]
     );
   }
   
@@ -171,11 +173,27 @@ final class CompareAndSetTest extends TestBase {
   public function testHoldingOneColumnWhileChangingAnotherIsAllowed(): void {
     $this->assertTrue(Factory::getAgentFactory()->compareAndSet(
       $this->agent,
-      [Agent::IS_TRUSTED => 1, Agent::USER_ID => null],
-      [Agent::IS_TRUSTED => 1, Agent::USER_ID => $this->user->getId()]
+      [new QueryFilter(Agent::IS_TRUSTED, 1, "="), new QueryFilter(Agent::USER_ID, null, "=")],
+      [new UpdateSet(Agent::IS_TRUSTED, 1), new UpdateSet(Agent::USER_ID, $this->user->getId())]
     ));
   }
   
+  /**
+   * Conditions describe one known state, so anything but equality is refused: a range would no longer
+   * identify the state being transitioned away from, and with it the at-most-one-winner guarantee.
+   *
+   * @throws Exception
+   */
+  public function testALooseConditionIsRejected(): void {
+    $this->expectException(Exception::class);
+
+    Factory::getAgentFactory()->compareAndSet(
+      $this->agent,
+      [new QueryFilter(Agent::AGENT_ID, 0, ">")],
+      [new UpdateSet(Agent::AGENT_NAME, 'renamed')]
+    );
+  }
+
   /**
    * Booleans are stored as tinyint on MySQL and as a real boolean on PostgreSQL, so a flag flip has
    * to survive both dialects.
@@ -187,16 +205,16 @@ final class CompareAndSetTest extends TestBase {
     
     $this->assertTrue(Factory::getAgentFactory()->compareAndSet(
       $this->agent,
-      [Agent::IS_TRUSTED => 1],
-      [Agent::IS_TRUSTED => 0]
+      [new QueryFilter(Agent::IS_TRUSTED, 1, "=")],
+      [new UpdateSet(Agent::IS_TRUSTED, 0)]
     ));
     $this->assertEquals(0, Factory::getAgentFactory()->get($this->agent->getId())->getIsTrusted());
     
     // The flag has already been flipped, so the same transition must not apply a second time
     $this->assertFalse(Factory::getAgentFactory()->compareAndSet(
       $this->agent,
-      [Agent::IS_TRUSTED => 1],
-      [Agent::IS_TRUSTED => 0]
+      [new QueryFilter(Agent::IS_TRUSTED, 1, "=")],
+      [new UpdateSet(Agent::IS_TRUSTED, 0)]
     ));
   }
 }

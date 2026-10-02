@@ -8,6 +8,7 @@ use Hashtopolis\dba\models\Config;
 use Hashtopolis\dba\models\RefreshToken;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\QueryFilter;
+use Hashtopolis\dba\UpdateSet;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
@@ -167,8 +168,11 @@ final class RefreshTokenUtilsTest extends TestBase {
     
     $claim = fn(): bool => Factory::getRefreshTokenFactory()->compareAndSet(
       $token,
-      [RefreshToken::USED_AT => null, RefreshToken::IS_REVOKED => 0],
-      [RefreshToken::USED_AT => time()]
+      [
+        new QueryFilter(RefreshToken::USED_AT, null, "="),
+        new QueryFilter(RefreshToken::IS_REVOKED, 0, "=")
+      ],
+      [new UpdateSet(RefreshToken::USED_AT, time())]
     );
     
     $this->assertTrue($claim(), 'the first caller should win the token');

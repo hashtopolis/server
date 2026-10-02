@@ -162,8 +162,11 @@ class RefreshTokenUtils {
   private static function claim(RefreshToken $token, int $now): bool {
     return Factory::getRefreshTokenFactory()->compareAndSet(
       $token,
-      [RefreshToken::USED_AT => null, RefreshToken::IS_REVOKED => 0],
-      [RefreshToken::USED_AT => $now]
+      [
+        new QueryFilter(RefreshToken::USED_AT, null, "="),
+        new QueryFilter(RefreshToken::IS_REVOKED, 0, "=")
+      ],
+      [new UpdateSet(RefreshToken::USED_AT, $now)]
     );
   }
   
