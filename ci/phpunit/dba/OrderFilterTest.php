@@ -3,6 +3,7 @@
 namespace Hashtopolis\dba;
 
 use Exception;
+use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\HealthCheckAgent;
 use Hashtopolis\dba\models\User;
@@ -76,7 +77,16 @@ final class OrderFilterTest extends TestBase {
       $order->getQueryString(Factory::getHealthCheckAgentFactory(), true)
     );
   }
-  
+
+  /** Verify a column with a sort expression is ordered by the expression. */
+  public function testQueryStringSortExpression(): void {
+    $order = new OrderFilter(Hash::HASH, 'ASC');
+    $this->assertEquals(
+      'LEFT(Hash.hash, 1024) ASC',
+      $order->getQueryString(Factory::getHashFactory(), true)
+    );
+  }
+
   /**
    * Create 3 hash types with isSalted 1, 5, 10 and order ASC.
    * Expect results in order 1, 5, 10.

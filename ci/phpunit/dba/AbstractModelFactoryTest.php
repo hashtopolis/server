@@ -101,7 +101,28 @@ final class AbstractModelFactoryTest extends TestBase {
     $key_mapped = AbstractModelFactory::getMappedModelKey($healthCheckAgent, HealthCheckAgent::END);
     $this->assertEquals("htp_end", $key_mapped);
   }
-  
+
+  /**
+   * Test that for a key without sort expression the operand remains unchanged
+   *
+   * @return void
+   */
+  public function testGetSortExpressionWithoutExpression(): void {
+    $hashType = new HashType(null, 'placeholder', 0, 0);
+    $this->assertEquals("HashType.isSalted", AbstractModelFactory::getSortExpression($hashType, HashType::IS_SALTED, "HashType.isSalted"));
+  }
+
+  /**
+   * Test that for a key with sort expression the operand gets wrapped into it
+   *
+   * @return void
+   */
+  public function testGetSortExpressionWithExpression(): void {
+    $hash = new Hash(null, 1, 'abc', '', '', 0, null, 0, 0);
+    $this->assertEquals("LEFT(Hash.hash, 1024)", AbstractModelFactory::getSortExpression($hash, Hash::HASH, "Hash.hash"));
+    $this->assertEquals("LEFT(?, 1024)", AbstractModelFactory::getSortExpression($hash, Hash::HASH, "?"));
+  }
+
   /**
    * Test creating a hash type object and saving it.
    *
