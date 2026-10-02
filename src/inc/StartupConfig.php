@@ -154,12 +154,36 @@ class StartupConfig {
     
     /* Only needed to overrule the automatic detection, for instance behind a proxy which terminates TLS
        without announcing it through X-Forwarded-Proto. */
-    if (getenv('HASHTOPOLIS_REFRESH_COOKIE_SECURE') !== false) {
-      $this->refresh_token[self::REFRESH_TOKEN_COOKIE_SECURE] = filter_var(getenv('HASHTOPOLIS_REFRESH_COOKIE_SECURE'), FILTER_VALIDATE_BOOLEAN);
+    $cookieSecure = self::readOptionalEnv('HASHTOPOLIS_REFRESH_COOKIE_SECURE');
+    if ($cookieSecure !== null) {
+      $this->refresh_token[self::REFRESH_TOKEN_COOKIE_SECURE] = filter_var($cookieSecure, FILTER_VALIDATE_BOOLEAN);
     }
-    if (in_array(getenv('HASHTOPOLIS_REFRESH_COOKIE_SAMESITE'), ["Strict", "Lax", "None"], true)) {
-      $this->refresh_token[self::REFRESH_TOKEN_COOKIE_SAMESITE] = getenv('HASHTOPOLIS_REFRESH_COOKIE_SAMESITE');
+    if (in_array(self::readOptionalEnv('HASHTOPOLIS_REFRESH_COOKIE_SAMESITE'), ["Strict", "Lax", "None"], true)) {
+      $this->refresh_token[self::REFRESH_TOKEN_COOKIE_SAMESITE] = self::readOptionalEnv('HASHTOPOLIS_REFRESH_COOKIE_SAMESITE');
     }
+  }
+
+  /**
+   * Reads an optional setting, treating a variable that is present but empty as one that was never
+   * set.
+   *
+   * Docker Compose writes an empty value for every `FOO: $FOO` entry whose variable is absent from
+   * the .env file, and getenv() answers "" for that rather than false. Without this, merely wiring a
+   * setting through the compose file would count as configuring it: an empty
+   * HASHTOPOLIS_REFRESH_COOKIE_SECURE reads as the boolean false and would turn the Secure flag off
+   * on every deployment, rather than leaving it to follow the scheme the request came in over.
+   *
+   * @param string $name
+   * @return string|null the trimmed value, or null when unset, empty or only whitespace
+   */
+  private static function readOptionalEnv(string $name): ?string {
+    $value = getenv($name);
+    if ($value === false) {
+      return null;
+    }
+    $value = trim($value);
+
+    return $value === "" ? null : $value;
   }
   
   /**

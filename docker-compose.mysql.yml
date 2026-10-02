@@ -20,9 +20,16 @@ services:
       # is served from a different host; see env.*.example. Same-origin setups need neither this nor
       # HASHTOPOLIS_FRONTEND_PORT.
       HASHTOPOLIS_FRONTEND_URLS: $HASHTOPOLIS_FRONTEND_URLS
-      # Shorthand for "the backend's own host and scheme, on this port". Set it to "" to switch it
-      # off and let HASHTOPOLIS_FRONTEND_URLS be the whole story.
-      HASHTOPOLIS_FRONTEND_PORT: 4200
+      # Shorthand for "the backend's own host and scheme, on this port". Set HASHTOPOLIS_FRONTEND_PORT=
+      # in the .env file to switch it off and let HASHTOPOLIS_FRONTEND_URLS be the whole story. The
+      # default must use ${VAR-default} and not ${VAR:-default}: the latter treats an explicitly empty
+      # value as absent and would put 4200 straight back.
+      HASHTOPOLIS_FRONTEND_PORT: ${HASHTOPOLIS_FRONTEND_PORT-4200}
+      # How the refresh cookie is written. Both are optional and only needed when the frontend sits on
+      # a different domain (SAMESITE=None) or behind a proxy that terminates TLS without announcing it
+      # through X-Forwarded-Proto (SECURE=true). Leaving them empty keeps the safe defaults.
+      HASHTOPOLIS_REFRESH_COOKIE_SAMESITE: $HASHTOPOLIS_REFRESH_COOKIE_SAMESITE
+      HASHTOPOLIS_REFRESH_COOKIE_SECURE: $HASHTOPOLIS_REFRESH_COOKIE_SECURE
     depends_on:
       - db
     ports:

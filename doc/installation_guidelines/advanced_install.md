@@ -300,8 +300,19 @@ HASHTOPOLIS_FRONTEND_URLS=https://app.example.com
 Entries may carry a path, which is ignored — only the origin part is compared. `localhost`,
 `127.0.0.1` and `[::1]` are treated as the same host, so a development setup can mix them freely.
 
-If you have enumerated every origin in `HASHTOPOLIS_FRONTEND_URLS` and do not want the bundled
-`HASHTOPOLIS_FRONTEND_PORT: 4200` adding one more, set it to an empty string to switch it off.
+All of these go in the `.env` file next to the bundled `docker-compose.yml`, which passes them to the
+backend container.
+
+If you have enumerated every origin in `HASHTOPOLIS_FRONTEND_URLS` and do not want the frontend port
+adding one more, switch it off with an empty value:
+
+```
+HASHTOPOLIS_FRONTEND_PORT=
+```
+
+The bundled compose file defaults this to 4200, so a deployment that never touches it keeps trusting
+the frontend on that port. Leaving it switched on is the common case; switching it off is worth doing
+once your list is exact, because every origin on the list is trusted with the session cookie.
 
 > [!WARNING]
 > Set `HASHTOPOLIS_BACKEND_URL` together with one of the other two, or set none of them. On its own
@@ -317,8 +328,18 @@ A frontend on a genuinely different domain — `app.example.net` against an API 
 `hashtopolis.example.com` — is a different case. Naming it in `HASHTOPOLIS_FRONTEND_URLS` gets the
 requests through, but the browser still refuses to send the session cookie, because the cookie
 defaults to `SameSite=Strict`. Such a deployment additionally needs
-`HASHTOPOLIS_REFRESH_COOKIE_SAMESITE=None` on the backend container, which browsers only honour over
-HTTPS end to end.
+`HASHTOPOLIS_REFRESH_COOKIE_SAMESITE=None`, which browsers only honour over HTTPS end to end:
+
+```
+HASHTOPOLIS_FRONTEND_URLS=https://app.example.net
+HASHTOPOLIS_REFRESH_COOKIE_SAMESITE=None
+```
+
+Without the second line the first one is not enough, and the failure is quiet rather than loud: the
+login succeeds, because that request carries no cookie, and the session then ends the first time it
+needs renewing. There is one more related setting, `HASHTOPOLIS_REFRESH_COOKIE_SECURE`, which forces
+the Secure flag on the cookie. It is normally unnecessary, since the flag follows the scheme the
+request arrived over; set it behind a proxy that terminates TLS without passing `X-Forwarded-Proto`.
 
 ### Upgrading from an older version
 
