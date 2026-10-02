@@ -56,7 +56,7 @@ class HashTypeAPI extends AbstractModelAPI {
   
   /**
    * Hashtypes are only visible through the cracker binaries supporting them:
-   * a hashtype is part of the results iff at least one cracker binary of one
+   * a hashtype is part of the results if at least one cracker binary of one
    * of the caller's access groups is associated with it. Binaries without any
    * association do not make hashtypes visible, the associations are the only
    * authority. Administrators bypass the check to manage the global hashtype
