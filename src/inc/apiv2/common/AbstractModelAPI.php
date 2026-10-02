@@ -658,9 +658,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     /* Generate filters */
     $filters = $apiClass->getFilters($request);
     $qFs_Filter = $apiClass->makeFilter($filters, $apiClass, $joinFilters);
-    
-    //only need the normal filters for pagination
-    $pagination_filters = $qFs_Filter;
 
     $aFs_ACL = $apiClass->getFilterACL();
     if (isset($aFs_ACL[Factory::FILTER])) {
@@ -782,7 +779,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         $secondary_cursor_key = $secondary_cursor_key == '_id' ? array_column($aliasedfeatures, 'alias', 'dbname')[$apiClass->getPrimaryKey()] : $secondary_cursor_key;
         $secondaryOperator = $reverseArray ? "<" : ">";
         $finalFs[Factory::FILTER][] = new PaginationFilter($primary_cursor_key, current($primary_cursor),
-          $operator, $secondary_cursor_key, current($secondary_cursor), $pagination_filters, null, $secondaryOperator
+          $operator, $secondary_cursor_key, current($secondary_cursor), null, $secondaryOperator
         );
       }
       else {

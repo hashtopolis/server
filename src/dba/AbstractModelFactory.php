@@ -153,7 +153,25 @@ abstract class AbstractModelFactory {
     }
     return $key;
   }
-  
+
+  /**
+   * Wrap an operand into the sort expression of a key, if the model defines one for it. This allows sorting on a
+   * derived value instead of the raw column (e.g. only a prefix of very long text columns). The same expression has
+   * to be applied to both sides of pagination comparisons so that they are consistent with the ordering.
+   *
+   * @param AbstractModel $model
+   * @param string $key unmapped column name
+   * @param string $operand SQL fragment to wrap, e.g. the (table-prefixed) mapped column or a "?" placeholder
+   * @return string
+   */
+  public static function getSortExpression(AbstractModel $model, string $key, string $operand): string {
+    $features = $model->getFeatures();
+    if (isset($features[$key]["sort_expression"])) {
+      return sprintf($features[$key]["sort_expression"], $operand);
+    }
+    return $operand;
+  }
+
   /**
    * Saves the passed model in database, and returns it with the real id
    * in the database.
