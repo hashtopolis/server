@@ -131,6 +131,14 @@ class HashlistUtils {
     foreach ($pretasks as $pretask) {
       $task = Factory::getPretaskFactory()->get($pretask);
       if ($task != null) {
+        // skip pretasks of which the user has no accessible binary version, the
+        // newest version of the cracker type in one of the groups of the user is used
+        try {
+          $crackerBinaryId = CrackerBinaryUtils::getNewestVersion($task->getCrackerBinaryTypeId(), $user)->getId();
+        }
+        catch (HTException $e) {
+          continue;
+        }
         if ($hashlist->getHexSalt() == 1 && !str_contains($task->getAttackCmd(), "--hex-salt")) {
           $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
         }
@@ -157,7 +165,7 @@ class HashlistUtils {
           $task->getIsCpuTask(),
           $task->getUseNewBench(),
           0,
-          CrackerBinaryUtils::getNewestVersion($task->getCrackerBinaryTypeId())->getId(),
+          $crackerBinaryId,
           $task->getCrackerBinaryTypeId(),
           $taskWrapper->getId(),
           0,

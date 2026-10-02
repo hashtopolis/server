@@ -33,6 +33,7 @@ class HealthCheckAPI extends AbstractModelAPI {
         
         'relationType' => CrackerBinary::class,
         'relationKey' => CrackerBinary::CRACKER_BINARY_ID,
+        'filterACL' => true,
       ],
       'hashType' => [
         'key' => HealthCheck::HASHTYPE_ID,
