@@ -71703,12 +71703,16 @@
                                             "type": "integer"
                                         }
                                     },
+                                    "crackerBinaryTypeId": {
+                                        "type": "integer"
+                                    },
                                     "supertaskName": {
                                         "type": "string"
                                     }
                                 },
                                 "required": [
                                     "pretasks",
+                                    "crackerBinaryTypeId",
                                     "supertaskName"
                                 ]
                             }

@@ -3,8 +3,8 @@
 namespace Hashtopolis\inc\utils;
 
 use Exception;
-use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\CrackerBinaryHashtype;
+use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\QueryFilter;
@@ -13,7 +13,6 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
-use Hashtopolis\inc\utils\CrackerUtils;
 
 class HashtypeUtils {
   /**
@@ -45,12 +44,12 @@ class HashtypeUtils {
    * @param string $description
    * @param int $isSalted
    * @param bool $isSlowHash
-   * @param User $user
+   * @param User|null $user the user adding the hashtype, null when added by a system background job
    * @return HashType
    * @throws HttpError
    * @throws Exception
    */
-  public static function addHashtype(int $hashtypeId, string $description, int $isSalted, bool $isSlowHash, User $user): HashType {
+  public static function addHashtype(int $hashtypeId, string $description, int $isSalted, bool $isSlowHash, ?User $user): HashType {
     $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
     if ($hashtype != null) {
       throw new HttpError("This hash number is already used!");
@@ -59,7 +58,7 @@ class HashtypeUtils {
     if (strlen($desc) == 0 || $hashtypeId < 0) {
       throw new HttpError("Invalid inputs!");
     }
-    
+
     $salted = 0;
     if ($isSalted) {
       $salted = 1;
@@ -68,21 +67,17 @@ class HashtypeUtils {
     if ($isSlowHash) {
       $slow = 1;
     }
-    
+
     $hashtype = new HashType($hashtypeId, $desc, $salted, $slow);
     $hashtype = Factory::getHashTypeFactory()->save($hashtype);
     if ($hashtype == null) {
       throw new HttpError("Failed to add new hash type!");
     }
-    // a new hashtype is associated with all hashcat binaries, which support
-    // every hashtype; binaries of other types keep their manually associated
-    // hashtypes
-    foreach (Factory::getCrackerBinaryFactory()->filter([]) as $binary) {
-      if (CrackerUtils::isHashcatBinary($binary)) {
-        Factory::getCrackerBinaryHashtypeFactory()->save(new CrackerBinaryHashtype(null, $binary->getId(), $hashtype->getId()));
-      }
+    // hashtypes are not associated with any cracker binary automatically, the
+    // scan of the binaries decides which hashtypes they support
+    if ($user !== null) {
+      Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashtype added: " . $hashtype->getDescription());
     }
-    Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashtype added: " . $hashtype->getDescription());
     return $hashtype;
   }
 }

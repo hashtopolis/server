@@ -900,6 +900,10 @@ class TaskUtils {
     else if (!AccessUtils::userCanAccessCrackerBinary($cracker, $user)) {
       throw new HttpForbidden("You have no access to this cracker binary!");
     }
+    else if (!CrackerUtils::binarySupportsHashtype($cracker, $hashlist->getHashTypeId())) {
+      $hashtypeId = $hashlist->getHashTypeId();
+      throw new HttpError("The selected cracker binary (" . $cracker->getId() . ") does not support the hash type ($hashtypeId) of the given hashlist!");
+    }
     else if (!str_contains($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS))) {
       throw new HttpError("Attack command does not contain hashlist alias!");
     }

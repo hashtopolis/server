@@ -257,6 +257,7 @@ class SupertaskUtils {
    * @param int $hashlistId
    * @param int $crackerId
    * @throws HTException
+   * @throws HttpError
    * @throws Exception
    */
   public static function runSupertask(int $supertaskId, int $hashlistId, int $crackerId, User $user): void {
@@ -283,6 +284,17 @@ class SupertaskUtils {
     $joined = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var Pretask[] $pretasks */
     $pretasks = $joined[Factory::getPretaskFactory()->getModelName()];
+    foreach ($pretasks as $pretask) {
+      if ($pretask->getCrackerBinaryTypeId() !== $cracker->getCrackerBinaryTypeId()) {
+        $pretaskTypeId = $pretask->getCrackerBinaryTypeId();
+        $crackerTypeId = $cracker->getCrackerBinaryTypeId();
+        throw new HttpError("Pretask (" . $pretask->getId() . ") has cracker binary type ID ($pretaskTypeId), which does not match the selected cracker binary type ID ($crackerTypeId), pretasks of different cracker binary types cannot be mixed!");
+      }
+    }
+    if (!CrackerUtils::binarySupportsHashtype($cracker, $hashlist->getHashTypeId())) {
+      $hashtypeId = $hashlist->getHashTypeId();
+      throw new HttpError("The selected cracker binary (" . $cracker->getId() . ") does not support the hash type ($hashtypeId) of the given hashlist!");
+    }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
     
@@ -298,11 +310,6 @@ class SupertaskUtils {
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
     foreach ($pretasks as $pretask) {
-      $crackerBinaryId = $cracker->getId();
-      if ($cracker->getCrackerBinaryTypeId() != $pretask->getCrackerBinaryTypeId()) {
-        $crackerBinaryId = CrackerBinaryUtils::getNewestVersion($pretask->getCrackerBinaryTypeId(), $user)->getId();
-      }
-      
       $task = new Task(
         null,
         $pretask->getTaskName(),
@@ -318,7 +325,7 @@ class SupertaskUtils {
         $pretask->getIsCpuTask(),
         $pretask->getUseNewBench(),
         0,
-        $crackerBinaryId,
+        $cracker->getId(),
         $cracker->getCrackerBinaryTypeId(),
         $taskWrapper->getId(),
         0,
@@ -342,19 +349,27 @@ class SupertaskUtils {
   /**
    * @param string $name
    * @param int[] $pretasks
+   * @param int $crackerBinaryTypeId
    * @return Supertask
    * @throws HttpError
    * @throws Exception
    */
-  public static function createSupertask(string $name, array|null $pretasks): Supertask {
+  public static function createSupertask(string $name, array|null $pretasks, int $crackerBinaryTypeId): Supertask {
     if ($pretasks == null || sizeof($pretasks) == 0) {
       throw new HttpError("Cannot create empty supertask!");
+    }
+    if (Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId) == null) {
+      throw new HttpError("Invalid cracker binary type ID ($crackerBinaryTypeId)!");
     }
     $tasks = [];
     foreach ($pretasks as $pretaskId) {
       $pretask = Factory::getPretaskFactory()->get($pretaskId);
       if ($pretask == null) {
         throw new HttpError("Invalid preconfigured task ID ($pretaskId)!");
+      }
+      if ($pretask->getCrackerBinaryTypeId() !== $crackerBinaryTypeId) {
+        $pretaskTypeId = $pretask->getCrackerBinaryTypeId();
+        throw new HttpError("Pretask ($pretaskId) has cracker binary type ID ($pretaskTypeId), which does not match the supertask cracker binary type ID ($crackerBinaryTypeId), pretasks of different cracker binary types cannot be mixed!");
       }
       $tasks[] = $pretask;
     }
