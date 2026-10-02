@@ -3,23 +3,51 @@
 namespace Hashtopolis\inc;
 
 use Exception;
+use Override;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\StoredValue;
 use Hashtopolis\TestBase;
-use Hashtopolis\dba\AbstractModelFactory;
-use Hashtopolis\dba\models\ConfigSection;
-use Hashtopolis\dba\models\Config;
-use Hashtopolis\dba\models\ApiGroup;
-use Hashtopolis\dba\models\AgentBinary;
-use Hashtopolis\dba\models\CrackerBinary;
-use Hashtopolis\dba\models\CrackerBinaryType;
-use Hashtopolis\dba\models\Preprocessor;
-use Hashtopolis\dba\models\RightGroup;
-use Hashtopolis\dba\models\HashType;
+use Hashtopolis\inc\defines\DConfig;
 
 require_once(dirname(__FILE__) . '/../TestBase.php');
 
 final class UtilTest extends TestBase {
+  private string|false $savedBackendUrl = false;
+  private mixed $savedBaseHost = null;
+  private array $savedServer = [];
+  
+  #[Override]
+  protected function setUp(): void {
+    parent::setUp();
+    $this->savedBackendUrl = getenv('HASHTOPOLIS_BACKEND_URL');
+    $this->savedBaseHost = SConfig::getInstance()->getVal(DConfig::BASE_HOST);
+    $this->savedServer = [
+      'HTTP_HOST' => $_SERVER['HTTP_HOST'] ?? null,
+      'SERVER_PORT' => $_SERVER['SERVER_PORT'] ?? null,
+      'HTTPS' => $_SERVER['HTTPS'] ?? null,
+    ];
+  }
+  
+  #[Override]
+  protected function tearDown(): void {
+    if ($this->savedBackendUrl === false) {
+      putenv('HASHTOPOLIS_BACKEND_URL');
+    }
+    else {
+      putenv('HASHTOPOLIS_BACKEND_URL=' . $this->savedBackendUrl);
+    }
+    SConfig::getInstance()->addValue(DConfig::BASE_HOST, $this->savedBaseHost);
+    foreach ($this->savedServer as $key => $value) {
+      if ($value === null) {
+        unset($_SERVER[$key]);
+      }
+      else {
+        $_SERVER[$key] = $value;
+      }
+    }
+    parent::tearDown();
+  }
+
   /**
    * extractFileExtension returns empty string when no dot is present.
    */
@@ -939,7 +967,8 @@ final class UtilTest extends TestBase {
       'crackerBinaryTypeId' => $typeId,
       'version' => '7.0.0',
       'downloadUrl' => 'https://example.com/test.7z',
-      'binaryName' => 'testHashcat'
+      'binaryName' => 'testHashcat',
+      'filename' => null
     ];
     Util::checkOrCreateInitialObject(Factory::getCrackerBinaryFactory(), $data);
     $obj = Factory::getCrackerBinaryFactory()->get($id);
@@ -948,6 +977,7 @@ final class UtilTest extends TestBase {
     $this->assertEquals('7.0.0', $obj->getVersion());
     $this->assertEquals('https://example.com/test.7z', $obj->getDownloadUrl());
     $this->assertEquals('testHashcat', $obj->getBinaryName());
+    $this->assertNull($obj->getFilename());
 
     Factory::getCrackerBinaryFactory()->delete($obj);
     Factory::getCrackerBinaryTypeFactory()->delete(Factory::getCrackerBinaryTypeFactory()->get($typeId));
@@ -1033,5 +1063,108 @@ final class UtilTest extends TestBase {
       $obj = Factory::getConfigFactory()->get($id);
       $this->assertNotNull($obj, "Config entry $id should exist");
     }
+  }
+
+  /**
+   * buildBackendBaseUrl takes scheme, host and port from HASHTOPOLIS_BACKEND_URL
+   * and strips any path it may contain.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlFromEnv(): void {
+    $_SERVER['HTTP_HOST'] = 'attacker.example';
+    putenv('HASHTOPOLIS_BACKEND_URL=http://localhost:8080/api/v2');
+    $this->assertEquals('http://localhost:8080', Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * buildBackendBaseUrl handles a HASHTOPOLIS_BACKEND_URL without path and port.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlFromEnvNoPath(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=http://hashtopolis.example.com');
+    $this->assertEquals('http://hashtopolis.example.com', Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * buildBackendBaseUrl keeps https scheme and non-default ports.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlFromEnvHttpsPort(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=https://hashtopolis.example.com:8443/hashtopolis/api/v2');
+    $this->assertEquals('https://hashtopolis.example.com:8443', Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * buildBackendBaseUrl keeps IPv6 hosts from HASHTOPOLIS_BACKEND_URL.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlFromEnvIpv6(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=http://[::1]:8080/api/v2');
+    $this->assertEquals('http://[::1]:8080', Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * buildBackendBaseUrl strips a trailing slash of the env value.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlFromEnvTrailingSlash(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=http://localhost:8080/');
+    $this->assertEquals('http://localhost:8080', Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * A malformed environment value is rejected instead of falling back to another
+   * host and hiding the configuration error.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlEnvMalformedThrows(): void {
+    SConfig::getInstance()->addValue(DConfig::BASE_HOST, 'https://configured.example');
+    putenv('HASHTOPOLIS_BACKEND_URL=localhost:8080');
+    $this->expectException(Exception::class);
+    Util::buildBackendBaseUrl();
+  }
+
+  /**
+   * buildBackendBaseUrl uses the explicitly configured baseHost for installations
+   * which do not provide HASHTOPOLIS_BACKEND_URL.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlFromConfiguredBaseHost(): void {
+    $_SERVER['HTTP_HOST'] = 'attacker.example';
+    SConfig::getInstance()->addValue(DConfig::BASE_HOST, 'https://configured.example:8443');
+    putenv('HASHTOPOLIS_BACKEND_URL');
+    $expected = 'https://configured.example:8443/' . ltrim((string)SConfig::getInstance()->getVal(DConfig::BASE_URL), '/');
+    $this->assertEquals(rtrim($expected, '/'), Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * An unconfigured backend URL fails closed and never uses the request Host header.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlUnconfiguredDoesNotUseRequestHost(): void {
+    $_SERVER['HTTP_HOST'] = 'attacker.example';
+    SConfig::getInstance()->addValue(DConfig::BASE_HOST, '');
+    putenv('HASHTOPOLIS_BACKEND_URL');
+    $this->expectException(Exception::class);
+    Util::buildBackendBaseUrl();
+  }
+
+  /**
+   * Only HTTP and HTTPS backend URLs can be persisted for agents.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlRejectsInvalidScheme(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=ftp://configured.example/api/v2');
+    $this->expectException(Exception::class);
+    Util::buildBackendBaseUrl();
   }
 }
