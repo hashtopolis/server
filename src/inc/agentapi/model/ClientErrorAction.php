@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Hashtopolis\inc\agentapi\model;
 
 use Hashtopolis\dba\models\Agent;
-use Hashtopolis\dba\models\AgentError;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
@@ -14,14 +13,10 @@ use Hashtopolis\inc\agent\PQuery;
 use Hashtopolis\inc\agent\PQueryClientError;
 use Hashtopolis\inc\agentapi\common\AgentAction;
 use Hashtopolis\inc\agentapi\common\AgentResponseTrait;
-use Hashtopolis\inc\DataSet;
-use Hashtopolis\inc\defines\DAgentIgnoreErrors;
 use Hashtopolis\inc\defines\DConfig;
-use Hashtopolis\inc\defines\DNotificationType;
-use Hashtopolis\inc\defines\DPayloadKeys;
 use Hashtopolis\inc\defines\DServerLog;
-use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\SConfig;
+use Hashtopolis\inc\utils\AgentErrorUtils;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response;
@@ -31,8 +26,9 @@ use Slim\Psr7\Response;
  *
  * Records an error message sent by an agent for the task it is assigned to.
  * Errors matching the ``HC_ERROR_IGNORE`` whitelist are acknowledged but not
- * stored.  Depending on the agent's ``ignoreErrors`` setting the error is
- * persisted (and notifications fired) and/or the agent is deactivated.
+ * stored. Everything else is handed to AgentErrorUtils, which stores the error
+ * and decides whether to mark the task broken or deactivate the agent
+ * (broken agent), keeping the fleet online where possible (issue #884).
  */
 final class ClientErrorAction implements AgentAction {
     use AgentResponseTrait;
@@ -73,23 +69,14 @@ final class ClientErrorAction implements AgentAction {
             }
         }
 
-        if ($agent->getIgnoreErrors() <= DAgentIgnoreErrors::IGNORE_SAVE) {
-            $chunkId = null;
-            if (isset($body[PQueryClientError::CHUNK_ID])) {
-                $chunkId = intval($body[PQueryClientError::CHUNK_ID]);
-            }
-            $error = new AgentError(null, $agent->getId(), $task->getId(), $chunkId, time(), $body[PQueryClientError::MESSAGE]);
-            Factory::getAgentErrorFactory()->save($error);
-
-            $payload = new DataSet([DPayloadKeys::AGENT => $agent, DPayloadKeys::AGENT_ERROR => $body[PQueryClientError::MESSAGE]]);
-            NotificationHandler::checkNotifications(DNotificationType::AGENT_ERROR, $payload);
-            NotificationHandler::checkNotifications(DNotificationType::OWN_AGENT_ERROR, $payload);
+        $chunkId = null;
+        if (isset($body[PQueryClientError::CHUNK_ID])) {
+            $chunkId = intval($body[PQueryClientError::CHUNK_ID]);
         }
+        AgentErrorUtils::handleClientError($agent, $task, $chunkId, $body[PQueryClientError::MESSAGE]);
 
-        if ($agent->getIgnoreErrors() == DAgentIgnoreErrors::NO) {
-            $agent = Factory::getAgentFactory()->set($agent, Agent::IS_ACTIVE, 0);
-        }
-
+        // The handler may have deactivated the agent, so refresh before replying.
+        $agent = Factory::getAgentFactory()->get($agent->getId());
         $this->updateAgent($agent, PActions::CLIENT_ERROR);
         return $this->success($response, PActions::CLIENT_ERROR);
     }

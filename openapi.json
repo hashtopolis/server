@@ -6040,6 +6040,719 @@
                 "operationId": "deleteApiTokensById"
             }
         },
+        "/api/v2/ui/brokentasks": {
+            "get": {
+                "tags": [
+                    "BrokenTasks"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BrokenTaskListResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "GET many request to retrieve multiple objects.",
+                "parameters": [
+                    {
+                        "name": "page[after]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        },
+                        "example": "eyJwcmltYXJ5Ijp7ImJyb2tlblRhc2tJZCI6IDEyM319",
+                        "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"brokenTaskId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImJyb2tlblRhc2tJZCI6IDEyM319`"
+                    },
+                    {
+                        "name": "page[before]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        },
+                        "example": "eyJwcmltYXJ5Ijp7ImJyb2tlblRhc2tJZCI6IDEyM319",
+                        "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"brokenTaskId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImJyb2tlblRhc2tJZCI6IDEyM319`"
+                    },
+                    {
+                        "name": "page[size]",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        },
+                        "example": 100,
+                        "description": "Amout of data to retrieve inside a single page"
+                    },
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "description": "Filters results using a query. Every key is an attribute name optionally suffixed with a comparison operator, e.g. `filter[brokenTaskId__gt]=200`.",
+                        "example": {
+                            "brokenTaskId__gt": "200"
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "task"
+                                ]
+                            }
+                        },
+                        "description": "Relationships to include in the response, comma seperated. Possible options: task",
+                        "example": [
+                            "task"
+                        ]
+                    }
+                ],
+                "summary": "List BrokenTasks",
+                "operationId": "getBrokentasks"
+            },
+            "delete": {
+                "tags": [
+                    "BrokenTasks"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "successfully deleted"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Delete BrokenTasks",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BrokenTaskDeleteMultiple"
+                            }
+                        }
+                    }
+                },
+                "parameters": [],
+                "summary": "Delete BrokenTasks",
+                "operationId": "deleteBrokentasks"
+            }
+        },
+        "/api/v2/ui/brokentasks/count": {
+            "get": {
+                "tags": [
+                    "BrokenTasks"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BrokenTaskCountResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "GET many request to retrieve multiple objects.",
+                "parameters": [
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "description": "Filters results using a query. Every key is an attribute name optionally suffixed with a comparison operator, e.g. `filter[brokenTaskId__gt]=200`.",
+                        "example": {
+                            "brokenTaskId__gt": "200"
+                        }
+                    },
+                    {
+                        "name": "include_total",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "example": true,
+                        "description": "Also report the number of accessible objects without any filter applied, as `meta.total_count`"
+                    }
+                ],
+                "summary": "Count BrokenTasks",
+                "operationId": "getBrokentasksCount"
+            }
+        },
+        "/api/v2/ui/brokentasks/{id}/{relation}": {
+            "get": {
+                "tags": [
+                    "BrokenTasks"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BrokenTaskRelationTaskGetResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "GET request to retrieve a single object.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "relation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "summary": "Get BrokenTasks",
+                "operationId": "getBrokentasksByIdByRelation"
+            }
+        },
+        "/api/v2/ui/brokentasks/{id}/relationships/{relation}": {
+            "get": {
+                "tags": [
+                    "BrokenTasks"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BrokenTaskResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "GET request for  for a to-one relationship link. Returns the resource record of the object that is part of the specified relation.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "relation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "summary": "Get BrokenTasks",
+                "operationId": "getBrokentasksByIdRelationshipsByRelation"
+            },
+            "patch": {
+                "tags": [
+                    "BrokenTasks"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "Successfull operation"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "PATCH request to update a to one relationship.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BrokenTaskRelationTask"
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "relation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "summary": "Update BrokenTasks",
+                "operationId": "patchBrokentasksByIdRelationshipsByRelation"
+            }
+        },
+        "/api/v2/ui/brokentasks/{id}": {
+            "get": {
+                "tags": [
+                    "BrokenTasks"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BrokenTaskResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "GET request to retrieve a single object.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "style": "form",
+                        "explode": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "task"
+                                ]
+                            }
+                        },
+                        "description": "Relationships to include in the response, comma seperated. Possible options: task",
+                        "example": [
+                            "task"
+                        ]
+                    }
+                ],
+                "summary": "Get BrokenTasks",
+                "operationId": "getBrokentasksById"
+            },
+            "delete": {
+                "tags": [
+                    "BrokenTasks"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "successfully deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Delete BrokenTasks",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "summary": "Delete BrokenTasks",
+                "operationId": "deleteBrokentasksById"
+            }
+        },
         "/api/v2/ui/chunks": {
             "get": {
                 "tags": [
@@ -21213,9 +21926,9 @@
                             }
                         },
                         "required": false,
-                        "description": "Aggregated fields to include by type (comma separated values). Possible options: task: totalAssignedAgents, dispatched, searched, status, totalNumberOfChunks, currentSpeed, estimatedTime, cprogress, timeSpent, cracked",
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: task: totalAssignedAgents, dispatched, searched, status, totalNumberOfChunks, currentSpeed, estimatedTime, cprogress, timeSpent, cracked, isBroken, brokenReason",
                         "example": {
-                            "aggregate[task]": "totalAssignedAgents,dispatched,searched,status,totalNumberOfChunks,currentSpeed,estimatedTime,cprogress,timeSpent,cracked"
+                            "aggregate[task]": "totalAssignedAgents,dispatched,searched,status,totalNumberOfChunks,currentSpeed,estimatedTime,cprogress,timeSpent,cracked,isBroken,brokenReason"
                         }
                     }
                 ],
@@ -23460,9 +24173,9 @@
                             }
                         },
                         "required": false,
-                        "description": "Aggregated fields to include by type (comma separated values). Possible options: taskwrapperdisplay: totalAssignedAgents, dispatched, searched, status, currentSpeed, estimatedTime, cprogress, timeSpent",
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: taskwrapperdisplay: totalAssignedAgents, dispatched, searched, status, currentSpeed, estimatedTime, cprogress, timeSpent, isBroken",
                         "example": {
-                            "aggregate[taskwrapperdisplay]": "totalAssignedAgents,dispatched,searched,status,currentSpeed,estimatedTime,cprogress,timeSpent"
+                            "aggregate[taskwrapperdisplay]": "totalAssignedAgents,dispatched,searched,status,currentSpeed,estimatedTime,cprogress,timeSpent,isBroken"
                         }
                     }
                 ],
@@ -38292,6 +39005,755 @@
                             "type": {
                                 "type": "string",
                                 "const": "user"
+                            },
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            }
+                        }
+                    }
+                }
+            },
+            "BrokenTaskDeleteMultiple": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "brokenTask"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "BrokenTaskResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "links",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "object",
+                        "required": [
+                            "self"
+                        ],
+                        "properties": {
+                            "self": {
+                                "type": "string",
+                                "default": "/api/v2/ui/brokentasks/1"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "type",
+                            "attributes",
+                            "links",
+                            "relationships"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "type": {
+                                "type": "string",
+                                "const": "brokenTask"
+                            },
+                            "attributes": {
+                                "type": "object",
+                                "required": [
+                                    "taskId",
+                                    "time",
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "taskId": {
+                                        "type": "integer"
+                                    },
+                                    "time": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    },
+                                    "reason": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "links": {
+                                "type": "object",
+                                "required": [
+                                    "self"
+                                ],
+                                "properties": {
+                                    "self": {
+                                        "type": "string",
+                                        "default": "/api/v2/ui/brokentasks/1"
+                                    }
+                                }
+                            },
+                            "relationships": {
+                                "type": "object",
+                                "required": [
+                                    "task"
+                                ],
+                                "properties": {
+                                    "task": {
+                                        "type": "object",
+                                        "required": [
+                                            "links"
+                                        ],
+                                        "properties": {
+                                            "links": {
+                                                "type": "object",
+                                                "required": [
+                                                    "self",
+                                                    "related"
+                                                ],
+                                                "properties": {
+                                                    "self": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/brokentasks/relationships/task"
+                                                    },
+                                                    "related": {
+                                                        "type": "string",
+                                                        "default": "/api/v2/ui/brokentasks/task"
+                                                    }
+                                                }
+                                            },
+                                            "data": {
+                                                "oneOf": [
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "type",
+                                                            "id"
+                                                        ],
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "const": "task"
+                                                            },
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "included": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "task"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "required": [
+                                        "taskName",
+                                        "attackCmd",
+                                        "chunkTime",
+                                        "statusTimer",
+                                        "keyspace",
+                                        "keyspaceProgress",
+                                        "priority",
+                                        "maxAgents",
+                                        "color",
+                                        "isSmall",
+                                        "isCpuTask",
+                                        "useNewBench",
+                                        "skipKeyspace",
+                                        "crackerBinaryId",
+                                        "crackerBinaryTypeId",
+                                        "taskWrapperId",
+                                        "isArchived",
+                                        "notes",
+                                        "staticChunks",
+                                        "chunkSize",
+                                        "forcePipe",
+                                        "preprocessorId",
+                                        "preprocessorCommand"
+                                    ],
+                                    "properties": {
+                                        "taskName": {
+                                            "type": "string"
+                                        },
+                                        "attackCmd": {
+                                            "type": "string"
+                                        },
+                                        "chunkTime": {
+                                            "type": "integer"
+                                        },
+                                        "statusTimer": {
+                                            "type": "integer"
+                                        },
+                                        "keyspace": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "keyspaceProgress": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "priority": {
+                                            "type": "integer"
+                                        },
+                                        "maxAgents": {
+                                            "type": "integer"
+                                        },
+                                        "color": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "isSmall": {
+                                            "type": "boolean"
+                                        },
+                                        "isCpuTask": {
+                                            "type": "boolean"
+                                        },
+                                        "useNewBench": {
+                                            "type": "boolean"
+                                        },
+                                        "skipKeyspace": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "crackerBinaryId": {
+                                            "type": "integer"
+                                        },
+                                        "crackerBinaryTypeId": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "taskWrapperId": {
+                                            "type": "integer"
+                                        },
+                                        "isArchived": {
+                                            "type": "boolean"
+                                        },
+                                        "notes": {
+                                            "type": "string"
+                                        },
+                                        "staticChunks": {
+                                            "type": "integer"
+                                        },
+                                        "chunkSize": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "forcePipe": {
+                                            "type": "boolean"
+                                        },
+                                        "preprocessorId": {
+                                            "type": "integer"
+                                        },
+                                        "preprocessorCommand": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "BrokenTaskListResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "links",
+                    "meta",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "links": {
+                        "type": "object",
+                        "required": [
+                            "self",
+                            "first",
+                            "last",
+                            "next",
+                            "prev"
+                        ],
+                        "properties": {
+                            "self": {
+                                "type": "string",
+                                "default": "/api/v2/ui/brokentasks?page[size]=25"
+                            },
+                            "first": {
+                                "type": "string",
+                                "default": "/api/v2/ui/brokentasks?page[size]=25"
+                            },
+                            "last": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/brokentasks?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            },
+                            "next": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/brokentasks?page[size]=25&page[after]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            },
+                            "prev": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "default": "/api/v2/ui/brokentasks?page[size]=25&page[before]=eyJwcmltYXJ5Ijp7InNvbWVVbnFpdWVGaWVsZCI6MTIzfSwic2Vjb25kYXJ5Ijp7InNvbWVPdGhlck9wdGlvbmFsRmllbGQiOiJGb28ifX0="
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "required": [
+                            "page"
+                        ],
+                        "properties": {
+                            "page": {
+                                "type": "object",
+                                "required": [
+                                    "total_elements"
+                                ],
+                                "properties": {
+                                    "total_elements": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes",
+                                "links",
+                                "relationships"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "brokenTask"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "required": [
+                                        "taskId",
+                                        "time",
+                                        "reason"
+                                    ],
+                                    "properties": {
+                                        "taskId": {
+                                            "type": "integer"
+                                        },
+                                        "time": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "reason": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "links": {
+                                    "type": "object",
+                                    "required": [
+                                        "self"
+                                    ],
+                                    "properties": {
+                                        "self": {
+                                            "type": "string",
+                                            "default": "/api/v2/ui/brokentasks/1"
+                                        }
+                                    }
+                                },
+                                "relationships": {
+                                    "type": "object",
+                                    "required": [
+                                        "task"
+                                    ],
+                                    "properties": {
+                                        "task": {
+                                            "type": "object",
+                                            "required": [
+                                                "links"
+                                            ],
+                                            "properties": {
+                                                "links": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "self",
+                                                        "related"
+                                                    ],
+                                                    "properties": {
+                                                        "self": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/brokentasks/relationships/task"
+                                                        },
+                                                        "related": {
+                                                            "type": "string",
+                                                            "default": "/api/v2/ui/brokentasks/task"
+                                                        }
+                                                    }
+                                                },
+                                                "data": {
+                                                    "oneOf": [
+                                                        {
+                                                            "type": "object",
+                                                            "required": [
+                                                                "type",
+                                                                "id"
+                                                            ],
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "const": "task"
+                                                                },
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "type": "null"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "included": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "type",
+                                "attributes"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "const": "task"
+                                },
+                                "attributes": {
+                                    "type": "object",
+                                    "required": [
+                                        "taskName",
+                                        "attackCmd",
+                                        "chunkTime",
+                                        "statusTimer",
+                                        "keyspace",
+                                        "keyspaceProgress",
+                                        "priority",
+                                        "maxAgents",
+                                        "color",
+                                        "isSmall",
+                                        "isCpuTask",
+                                        "useNewBench",
+                                        "skipKeyspace",
+                                        "crackerBinaryId",
+                                        "crackerBinaryTypeId",
+                                        "taskWrapperId",
+                                        "isArchived",
+                                        "notes",
+                                        "staticChunks",
+                                        "chunkSize",
+                                        "forcePipe",
+                                        "preprocessorId",
+                                        "preprocessorCommand"
+                                    ],
+                                    "properties": {
+                                        "taskName": {
+                                            "type": "string"
+                                        },
+                                        "attackCmd": {
+                                            "type": "string"
+                                        },
+                                        "chunkTime": {
+                                            "type": "integer"
+                                        },
+                                        "statusTimer": {
+                                            "type": "integer"
+                                        },
+                                        "keyspace": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "keyspaceProgress": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "priority": {
+                                            "type": "integer"
+                                        },
+                                        "maxAgents": {
+                                            "type": "integer"
+                                        },
+                                        "color": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "isSmall": {
+                                            "type": "boolean"
+                                        },
+                                        "isCpuTask": {
+                                            "type": "boolean"
+                                        },
+                                        "useNewBench": {
+                                            "type": "boolean"
+                                        },
+                                        "skipKeyspace": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "crackerBinaryId": {
+                                            "type": "integer"
+                                        },
+                                        "crackerBinaryTypeId": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "taskWrapperId": {
+                                            "type": "integer"
+                                        },
+                                        "isArchived": {
+                                            "type": "boolean"
+                                        },
+                                        "notes": {
+                                            "type": "string"
+                                        },
+                                        "staticChunks": {
+                                            "type": "integer"
+                                        },
+                                        "chunkSize": {
+                                            "type": "integer",
+                                            "format": "int64"
+                                        },
+                                        "forcePipe": {
+                                            "type": "boolean"
+                                        },
+                                        "preprocessorId": {
+                                            "type": "integer"
+                                        },
+                                        "preprocessorCommand": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "BrokenTaskCountResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "meta",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "required": [
+                            "count"
+                        ],
+                        "properties": {
+                            "count": {
+                                "type": "integer",
+                                "description": "Number of objects accessible to the current user matching the given filters"
+                            },
+                            "total_count": {
+                                "type": "integer",
+                                "description": "Number of objects accessible to the current user without any filter applied, only present when `include_total=true` was requested"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        },
+                        "maxItems": 0,
+                        "description": "Always empty: the count is reported under meta."
+                    }
+                }
+            },
+            "BrokenTaskRelationTask": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "id"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "task"
+                            },
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            }
+                        }
+                    }
+                }
+            },
+            "BrokenTaskRelationTaskGetResponse": {
+                "type": "object",
+                "required": [
+                    "data"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "type",
+                            "id"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "const": "task"
                             },
                             "id": {
                                 "type": "integer",
@@ -60709,6 +62171,15 @@
                             },
                             "cracked": {
                                 "type": "integer"
+                            },
+                            "isBroken": {
+                                "type": "boolean"
+                            },
+                            "brokenReason": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
                             }
                         }
                     },
@@ -61533,6 +63004,15 @@
                                     },
                                     "cracked": {
                                         "type": "integer"
+                                    },
+                                    "isBroken": {
+                                        "type": "boolean"
+                                    },
+                                    "brokenReason": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     }
                                 }
                             },
@@ -62496,6 +63976,15 @@
                                     },
                                     "cracked": {
                                         "type": "integer"
+                                    },
+                                    "isBroken": {
+                                        "type": "boolean"
+                                    },
+                                    "brokenReason": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     }
                                 }
                             },
@@ -63510,6 +64999,15 @@
                                         },
                                         "cracked": {
                                             "type": "integer"
+                                        },
+                                        "isBroken": {
+                                            "type": "boolean"
+                                        },
+                                        "brokenReason": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
                                         }
                                     }
                                 },
@@ -67664,6 +69162,9 @@
                                     },
                                     "timeSpent": {
                                         "type": "integer"
+                                    },
+                                    "isBroken": {
+                                        "type": "boolean"
                                     }
                                 }
                             },
@@ -68192,6 +69693,9 @@
                                         },
                                         "timeSpent": {
                                             "type": "integer"
+                                        },
+                                        "isBroken": {
+                                            "type": "boolean"
                                         }
                                     }
                                 },
@@ -71717,6 +73221,10 @@
         {
             "name": "ApiTokens",
             "description": "Reading and writing the resources served under `/api/v2/ui/apiTokens`."
+        },
+        {
+            "name": "BrokenTasks",
+            "description": "Reading and writing the resources served under `/api/v2/ui/brokentasks`."
         },
         {
             "name": "Chunks",

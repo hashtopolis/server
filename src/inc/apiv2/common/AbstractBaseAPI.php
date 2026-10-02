@@ -28,6 +28,7 @@ use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\AgentBinary;
 use Hashtopolis\dba\models\AgentError;
+use Hashtopolis\dba\models\BrokenTask;
 use Hashtopolis\dba\models\AgentStat;
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Chunk;
@@ -344,6 +345,8 @@ abstract class AbstractBaseAPI {
         return Factory::getAgentBinaryFactory();
       case AgentError::class:
         return Factory::getAgentErrorFactory();
+      case BrokenTask::class:
+        return Factory::getBrokenTaskFactory();
       case AgentStat::class:
         return Factory::getAgentStatFactory();
       case Assignment::class:
@@ -602,7 +605,9 @@ abstract class AbstractBaseAPI {
                                                 Chunk::PERM_READ, Chunk::PERM_UPDATE, Chunk::PERM_DELETE,
                                                 // src/inc/defines/tasks.php
                                                 TaskWrapper::PERM_READ, TaskWrapper::PERM_UPDATE, TaskWrapper::PERM_DELETE,
-                                                FileTask::PERM_READ, FileTask::PERM_UPDATE, FileTask::PERM_DELETE
+                                                FileTask::PERM_READ, FileTask::PERM_UPDATE, FileTask::PERM_DELETE,
+                                                // broken task handling (issue #884)
+                                                BrokenTask::PERM_CREATE, BrokenTask::PERM_READ, BrokenTask::PERM_UPDATE, BrokenTask::PERM_DELETE
     ),
     
     DAccessControl::VIEW_PRETASK_ACCESS[0] => array(Pretask::PERM_READ, FilePretask::PERM_READ),

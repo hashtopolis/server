@@ -6,6 +6,7 @@ use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Aggregation;
 use Hashtopolis\inc\utils\AccessUtils;
+use Hashtopolis\inc\utils\AgentErrorUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\JoinFilter;
@@ -88,6 +89,7 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
         'estimatedTime' => [$this, 'getAggregateEstimatedTime'],
         'cprogress' => [$this, 'getAggregateCProgress'],
         'timeSpent' => [$this, 'getAggregateTimeSpent'],
+        'isBroken' => [$this, 'getAggregateIsBroken'],
       ]
     ];
   }
@@ -106,7 +108,25 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
       'estimatedTime' => self::aggregateFeature('int', 'estimatedTime'),
       'cprogress' => self::aggregateFeature('int', 'cprogress'),
       'timeSpent' => self::aggregateFeature('int', 'timeSpent'),
+      'isBroken' => self::aggregateFeature('bool', 'isBroken'),
     ];
+  }
+
+  /**
+   * A wrapper is broken when any of its tasks is broken. Unlike the run status
+   * aggregates this is reported for every wrapper type, since a supertask can
+   * carry a broken subtask too.
+   *
+   * @param TaskWrapperDisplay $object
+   * @throws Exception
+   */
+  protected function getAggregateIsBroken(AbstractModel $object): bool {
+    foreach (TaskUtils::getTasksOfWrapper($object->getId()) as $task) {
+      if (AgentErrorUtils::isTaskBroken($task->getId())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

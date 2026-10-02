@@ -26,6 +26,9 @@ class DConfig {
   const HASHCAT_BRAIN_PASS     = "hashcatBrainPass";
   const HASHLIST_IMPORT_CHECK  = "hashlistImportCheck";
   const HC_ERROR_IGNORE        = "hcErrorIgnore";
+  const BROKEN_TASK_THRESHOLD  = "brokenTaskThreshold";
+  const BROKEN_AGENT_THRESHOLD = "brokenAgentThreshold";
+  const BROKEN_ERROR_WINDOW    = "brokenErrorWindow";
 
   // Section: Finetuning
   const HASHES_PAGE_SIZE           = "pagingSize";
@@ -119,6 +122,9 @@ class DConfig {
       DConfig::CHUNK_DURATION => DConfigType::NUMBER_INPUT,
       DConfig::CHUNK_TIMEOUT => DConfigType::NUMBER_INPUT,
       DConfig::AGENT_TIMEOUT => DConfigType::NUMBER_INPUT,
+      DConfig::BROKEN_TASK_THRESHOLD => DConfigType::NUMBER_INPUT,
+      DConfig::BROKEN_AGENT_THRESHOLD => DConfigType::NUMBER_INPUT,
+      DConfig::BROKEN_ERROR_WINDOW => DConfigType::NUMBER_INPUT,
       DConfig::HASHES_PAGE_SIZE => DConfigType::NUMBER_INPUT,
       DConfig::FIELD_SEPARATOR => DConfigType::STRING_INPUT,
       DConfig::HASHLIST_ALIAS => DConfigType::STRING_INPUT,
@@ -187,6 +193,9 @@ class DConfig {
       DConfig::CHUNK_DURATION => "Time in seconds a client should be working on a single chunk.",
       DConfig::CHUNK_TIMEOUT => "Time in seconds the server will consider an issued chunk as inactive or timed out and will reallocate to another client.",
       DConfig::AGENT_TIMEOUT => "Time in seconds the server will consider a client inactive or timed out.",
+      DConfig::BROKEN_TASK_THRESHOLD => "Number of distinct agents that must fail on the same task before it is marked broken instead of deactivating the agents. Set to 0 to disable marking tasks broken.",
+      DConfig::BROKEN_AGENT_THRESHOLD => "Number of distinct tasks an agent must fail on before the agent itself is deactivated. Set to 0 to disable deactivating agents.",
+      DConfig::BROKEN_ERROR_WINDOW => "Time in seconds an agent error stays relevant when counting failures for the two thresholds above. Set to 0 to count the whole history.",
       DConfig::HASHES_PAGE_SIZE => "Number of hashes shown on each page of the hashes view.",
       DConfig::FIELD_SEPARATOR => "The separator character used to separate hash and plain (or salt).",
       DConfig::HASHLIST_ALIAS => "The string used as hashlist alias when creating a task.",
