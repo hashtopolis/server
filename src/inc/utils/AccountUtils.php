@@ -6,7 +6,6 @@ use Exception;
 use Hashtopolis\inc\Encryption;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
-use Hashtopolis\inc\defines\DAccountAction;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DLogEntryIssuer;
@@ -15,93 +14,6 @@ use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 
 class AccountUtils {
-  /**
-   * @param User $user
-   * @throws Exception
-   */
-  public static function checkOTP(User $user): void {
-    $isValid = false;
-    
-    if (strlen($user->getOtp1()) == 12) {
-      $isValid = true;
-    }
-    else if (strlen($user->getOtp2()) == 12) {
-      $isValid = true;
-    }
-    else if (strlen($user->getOtp3()) == 12) {
-      $isValid = true;
-    }
-    else if (strlen($user->getOtp4()) == 12) {
-      $isValid = true;
-    }
-    if (!$isValid) {
-      $user->setYubikey(0);
-    }
-    Factory::getUserFactory()->update($user);
-  }
-  
-  /**
-   * @param int $num
-   * @param string $action
-   * @param User $user
-   * @param array $otpArr
-   * @throws HTException
-   * @throws Exception
-   */
-  public static function setOTP(int $num, string $action, User $user, array $otpArr): void {
-    if ($action == DAccountAction::YUBIKEY_ENABLE) {
-      $isValid = false;
-      
-      if (strlen($user->getOtp1()) == 12) {
-        $isValid = true;
-      }
-      else if (strlen($user->getOtp2()) == 12) {
-        $isValid = true;
-      }
-      else if (strlen($user->getOtp3()) == 12) {
-        $isValid = true;
-      }
-      else if (strlen($user->getOtp4()) == 12) {
-        $isValid = true;
-      }
-      
-      if (!$isValid) {
-        throw new HTException("Configure OTP KEY first!");
-      }
-    }
-    
-    switch ($num) {
-      case -1:
-        $user->setYubikey(0);
-        break;
-      case 0:
-        $user->setYubikey(1);
-        break;
-      case 1:
-        $otp = $otpArr[0];
-        $user->setOtp1(substr($otp, 0, 12));
-        break;
-      case 2:
-        $otp = $otpArr[1];
-        $user->setOtp2(substr($otp, 0, 12));
-        break;
-      case 3:
-        $otp = $otpArr[2];
-        $user->setOtp3(substr($otp, 0, 12));
-        break;
-      case 4:
-        $otp = $otpArr[3];
-        $user->setOtp4(substr($otp, 0, 12));
-        break;
-      default:
-        return;
-    }
-    
-    AccountUtils::checkOTP($user);
-    Factory::getUserFactory()->update($user);
-    Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "User changed OTP!");
-  }
-  
   /**
    * @param string $email
    * @param User $user

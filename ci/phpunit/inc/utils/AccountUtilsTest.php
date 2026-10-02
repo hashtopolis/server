@@ -7,101 +7,12 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\Encryption;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\defines\DAccountAction;
 use Hashtopolis\TestBase;
 
 require_once(dirname(__FILE__) . '/../../TestBase.php');
 require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 
 final class AccountUtilsTest extends TestBase {
-  
-  public function testCheckOTPDisablesYubikeyWhenNoValidPrefixExists(): void {
-    $user = $this->createUser('invalid_yubikey_user');
-    $user->setYubikey(1);
-    $user->setOtp1('short');
-    $user->setOtp2('');
-    $user->setOtp3('12345678901');
-    $user->setOtp4('1234567890123');
-    
-    AccountUtils::checkOTP($user);
-    
-    $reloadedUser = Factory::getUserFactory()->filter([
-      Factory::FILTER => new QueryFilter(User::USERNAME, $user->getUsername(), '=')
-    ], true);
-    
-    $this->assertInstanceOf(User::class, $reloadedUser);
-    $this->assertSame('0', $reloadedUser->getYubikey());
-    $this->assertSame('short', $reloadedUser->getOtp1());
-    $this->assertSame('', $reloadedUser->getOtp2());
-    $this->assertSame('12345678901', $reloadedUser->getOtp3());
-    $this->assertSame('1234567890123', $reloadedUser->getOtp4());
-  }
-  
-  public function testCheckOTPKeepsYubikeyEnabledWhenOtp1HasAValidPrefix(): void {
-    $this->assertCheckOTPKeepsYubikeyEnabledForValidSlot(1);
-  }
-  
-  public function testCheckOTPKeepsYubikeyEnabledWhenOtp2HasAValidPrefix(): void {
-    $this->assertCheckOTPKeepsYubikeyEnabledForValidSlot(2);
-  }
-  
-  public function testCheckOTPKeepsYubikeyEnabledWhenOtp3HasAValidPrefix(): void {
-    $this->assertCheckOTPKeepsYubikeyEnabledForValidSlot(3);
-  }
-  
-  public function testCheckOTPKeepsYubikeyEnabledWhenOtp4HasAValidPrefix(): void {
-    $this->assertCheckOTPKeepsYubikeyEnabledForValidSlot(4);
-  }
-  
-  public function testSetOTPThrowsWhenEnablingWithoutAValidConfiguredKey(): void {
-    $user = $this->createUser('setotp_invalid_enable_user');
-    $user->setOtp1('short');
-    $user->setOtp2('');
-    $user->setOtp3('12345678901');
-    $user->setOtp4('1234567890123');
-    
-    try {
-      AccountUtils::setOTP(0, DAccountAction::YUBIKEY_ENABLE, $user, ['', '', '', '']);
-      $this->fail('Expected setOTP to reject enabling Yubikey without a valid configured key.');
-    }
-    catch (HTException $exception) {
-      $this->assertSame('Configure OTP KEY first!', $exception->getMessage());
-    }
-    
-    $this->assertPersistedOtpState($user, '0', '', '', '', '');
-  }
-  
-  public function testSetOTPDisableResetsYubikeyToZero(): void {
-    $user = $this->createUser('setotp_disable_user');
-    $user->setYubikey(1);
-    $user->setOtp1('validyubikey');
-    $user->setOtp2('backupyubico');
-    $user->setOtp3('reservekey12');
-    $user->setOtp4('lastresort12');
-    
-    AccountUtils::setOTP(-1, DAccountAction::YUBIKEY_DISABLE, $user, ['', '', '', '']);
-    
-    $this->assertPersistedOtpState($user, '0', 'validyubikey', 'backupyubico', 'reservekey12', 'lastresort12');
-  }
-  
-  public function testSetOTPYubikeyActivationWithoutValidKeysDisabledAfterCheckOTP(): void {
-    $user = $this->createUser('setotp_activate_without_valid_keys_user');
-    $user->setYubikey(0);
-    $user->setOtp1('short');
-    $user->setOtp2('');
-    $user->setOtp3('12345678901');
-    $user->setOtp4('1234567890123');
-    
-    AccountUtils::setOTP(0, DAccountAction::SET_OTP1, $user, ['', '', '', '']);
-    
-    $this->assertPersistedOtpState($user, '0', 'short', '', '12345678901', '1234567890123');
-  }
-  
-  public function testSetOTPStoresValidPrefixThenActivatesYubikey(): void {
-    foreach ([1, 2, 3, 4] as $slot) {
-      $this->assertSetOTPStoresValidPrefixThenActivatesYubikeyForSlot($slot);
-    }
-  }
   
   public function testSetEmailThrowsOnInvalidEmailFormat(): void {
     $user = $this->createUser('invalid_email_user');
@@ -190,77 +101,6 @@ final class AccountUtilsTest extends TestBase {
     $this->assertFalse(Encryption::passwordVerify('oldpass', $reloadedUser->getPasswordSalt(), $reloadedUser->getPasswordHash()));
     $this->assertTrue(Encryption::passwordVerify('newpass', $reloadedUser->getPasswordSalt(), $reloadedUser->getPasswordHash()));
     $this->assertSame(0, $reloadedUser->getIsComputedPassword());
-  }
-  
-  private function assertCheckOTPKeepsYubikeyEnabledForValidSlot(int $validSlot): void {
-    $user = $this->createUser('valid_yubikey_user_' . $validSlot);
-    $user->setYubikey(1);
-    
-    $otpValues = [
-      1 => '',
-      2 => '',
-      3 => '',
-      4 => '',
-    ];
-    $otpValues[$validSlot] = 'validyubikey';
-    
-    $user->setOtp1($otpValues[1]);
-    $user->setOtp2($otpValues[2]);
-    $user->setOtp3($otpValues[3]);
-    $user->setOtp4($otpValues[4]);
-    
-    AccountUtils::checkOTP($user);
-    
-    $reloadedUser = Factory::getUserFactory()->filter([
-      Factory::FILTER => new QueryFilter(User::USERNAME, $user->getUsername(), '=')
-    ], true);
-    
-    $this->assertInstanceOf(User::class, $reloadedUser);
-    $this->assertSame('1', $reloadedUser->getYubikey());
-    $this->assertSame($otpValues[1], $reloadedUser->getOtp1());
-    $this->assertSame($otpValues[2], $reloadedUser->getOtp2());
-    $this->assertSame($otpValues[3], $reloadedUser->getOtp3());
-    $this->assertSame($otpValues[4], $reloadedUser->getOtp4());
-  }
-  
-  private function assertPersistedOtpState(User $user, string $expectedYubikey, string $expectedOtp1, string $expectedOtp2, string $expectedOtp3, string $expectedOtp4): void {
-    $reloadedUser = Factory::getUserFactory()->filter([
-      Factory::FILTER => new QueryFilter(User::USERNAME, $user->getUsername(), '=')
-    ], true);
-    
-    $this->assertInstanceOf(User::class, $reloadedUser);
-    $this->assertSame($expectedYubikey, $reloadedUser->getYubikey());
-    $this->assertSame($expectedOtp1, $reloadedUser->getOtp1());
-    $this->assertSame($expectedOtp2, $reloadedUser->getOtp2());
-    $this->assertSame($expectedOtp3, $reloadedUser->getOtp3());
-    $this->assertSame($expectedOtp4, $reloadedUser->getOtp4());
-  }
-  
-  private function assertSetOTPStoresValidPrefixThenActivatesYubikeyForSlot(int $slot): void {
-    $user = $this->createUser('setotp_happy_path_user_' . $slot);
-    $fullOtp = 'ccccccdefghdefghdefghdefghdefghdefghdefghi';
-    $actions = [
-      1 => DAccountAction::SET_OTP1,
-      2 => DAccountAction::SET_OTP2,
-      3 => DAccountAction::SET_OTP3,
-      4 => DAccountAction::SET_OTP4,
-    ];
-    $expectedOtpValues = [
-      1 => '',
-      2 => '',
-      3 => '',
-      4 => '',
-    ];
-    $expectedOtpValues[$slot] = 'ccccccdefghd';
-    
-    $otpArr = ['', '', '', ''];
-    $otpArr[$slot - 1] = $fullOtp;
-    
-    AccountUtils::setOTP($slot, $actions[$slot], $user, $otpArr);
-    $this->assertPersistedOtpState($user, '0', $expectedOtpValues[1], $expectedOtpValues[2], $expectedOtpValues[3], $expectedOtpValues[4]);
-    
-    AccountUtils::setOTP(0, DAccountAction::YUBIKEY_ENABLE, $user, ['', '', '', '']);
-    $this->assertPersistedOtpState($user, '1', $expectedOtpValues[1], $expectedOtpValues[2], $expectedOtpValues[3], $expectedOtpValues[4]);
   }
   
   /*

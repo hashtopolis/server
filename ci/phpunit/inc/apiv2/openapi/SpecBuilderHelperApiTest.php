@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\openapi;
 
 use Hashtopolis\inc\apiv2\helper\AbortChunkHelperAPI;
+use Hashtopolis\inc\apiv2\helper\GetBestTasksAgent;
 use Hashtopolis\inc\apiv2\helper\GetCracksPerDayHelperAPI;
 use PHPUnit\Framework\TestCase;
 
@@ -52,13 +53,43 @@ final class SpecBuilderHelperApiTest extends TestCase {
   }
 
   public function testGetCracksPerDaySpec(): void {
-    // GET helper with a custom register() (array callable to handleGet) and
-    // getResponse(): null, which yields a contentless 200 response.
+    // GET helper with a custom register() (array callable to handleGet) whose
+    // meta member carries dynamic names, so it states the meta schema itself
+    // through getMetaResponseSchema().
     $spec = (new SpecBuilder())->buildForApiClasses([GetCracksPerDayHelperAPI::class]);
 
     $get = $spec['paths']['/api/v2/helper/getCracksPerDay']['get'];
     $this->assertStringStartsWith('Returns a map of date -> crack count', $get['description']);
     $this->assertSame([], $get['parameters']);
-    $this->assertSame(['description' => 'successful operation'], $get['responses']['200']);
+    $this->assertSame(
+      ['$ref' => '#/components/schemas/' . GetCracksPerDayHelperAPI::class . 'Response'],
+      $get['responses']['200']['content']['application/vnd.api+json']['schema']
+    );
+
+    $responseSchema = $spec['components']['schemas'][GetCracksPerDayHelperAPI::class . 'Response'];
+    $this->assertSame(['jsonapi', 'meta', 'data'], $responseSchema['required']);
+    $this->assertSame(['type' => 'integer'], $responseSchema['properties']['meta']['additionalProperties']);
+    $this->assertSame(0, $responseSchema['properties']['data']['maxItems']);
+  }
+
+  public function testGetBestTasksAgentSpec(): void {
+    // GET helper declared as "Task[]": it answers with resource objects under
+    // data inside the slim helper envelope (jsonapi and data, no links and no
+    // meta), referencing the resource object component of the model routes.
+    $spec = (new SpecBuilder())->buildForApiClasses([GetBestTasksAgent::class]);
+
+    $get = $spec['paths']['/api/v2/helper/getBestTasksAgent']['get'];
+    $this->assertSame(
+      ['$ref' => '#/components/schemas/' . GetBestTasksAgent::class . 'Response'],
+      $get['responses']['200']['content']['application/vnd.api+json']['schema']
+    );
+
+    $responseSchema = $spec['components']['schemas'][GetBestTasksAgent::class . 'Response'];
+    $this->assertSame(['jsonapi', 'data'], $responseSchema['required']);
+    $this->assertSame('array', $responseSchema['properties']['data']['type']);
+    $this->assertSame(
+      ['$ref' => '#/components/schemas/TaskResourceObject'],
+      $responseSchema['properties']['data']['items']
+    );
   }
 }

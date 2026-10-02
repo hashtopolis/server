@@ -127,6 +127,13 @@ class ModelApiPathBuilder {
         "properties" => $resourceObjectProperties
       ];
 
+      /**
+       * Registered as its own component so the helper routes can describe the
+       * resource objects they answer with (HelperApiPathBuilder): the same
+       * shape as on the model routes, inside a slimmer document.
+       */
+      $components[$name . "ResourceObject"] = $resourceObject;
+
       $expandables = $this->makeExpandables($class, $container);
       /**
        * A model without relationships has nothing to include, so it must not

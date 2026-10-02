@@ -38,7 +38,10 @@ class GetCracksOfTaskHelper extends AbstractHelperAPI {
   }
   
   public static function getResponse(): string {
-    return "Hash";
+    /* Technically a lie: for binary hashlists handleGet answers with HashBinary
+       resources, not Hash. Historically that case is not expected to occur, so
+       we declare Hash[] rather than a union. */
+    return "Hash[]";
   }
   
   
