@@ -828,8 +828,9 @@ class TestCrackerHashtypes(BaseTest):
 
         A user with global cracker permissions who is not a member of the
         binary's access group must not be able to read, replace, add or remove
-        its hashtype associations, even though hashtypes themselves are global
-        and not isolated by access groups.
+        its hashtype associations. The binary's access group governs these
+        routes, independently of the hashtype visibility through the binaries
+        of the caller's access groups.
         """
         # a generic (non-hashcat) binary, its hashtypes are manually editable
         obj = self.create_generic_cracker()
@@ -909,10 +910,11 @@ class TestCrackerHashtypes(BaseTest):
     def test_reverse_relation_filters_binaries_by_access_group(self):
         """Expansions and relationship links of a hashtype only show accessible binaries.
 
-        Hashtypes are global, but the binaries associated with them are isolated
-        by access group: a user without access to a binary's access group must
-        not see the binary when the hashtype is expanded, when its relationship
-        link is read or when the related binaries are listed.
+        Hashtypes are only visible through the binaries of the caller's access
+        groups: a user without access to any binary associated with the hashtype
+        must not see the hashtype at all, all of its routes respond with a not
+        found error. Once the user is a member of the binary's access group, the
+        hashtype is visible and shows the binaries of that group only.
         """
         # a generic (non-hashcat) binary, its hashtypes are manually editable
         obj = self.create_generic_cracker()
@@ -932,22 +934,19 @@ class TestCrackerHashtypes(BaseTest):
         self.assertEqual(201, r.status_code, f'Could not get a token: {r.text}')
         auth_headers = {'Authorization': f"Bearer {r.json()['token']}"}
 
-        # expanding the hashtype does not include the inaccessible binary
-        hashtype_obj = HashType.objects.prefetch_related('crackerBinaries') \
-            .authenticate((username, password)).get(pk=hashtype.id)
-        self.assertEqual([], [cracker.id for cracker in hashtype_obj.crackerBinaries_set])
-
-        # the relationship link and the related resource listing are empty as well
+        # the user has no access to any binary of the hashtype, so the hashtype
+        # itself does not exist for them and is not disclosed anywhere
+        with self.assertRaises(HashType.DoesNotExist):
+            HashType.objects.prefetch_related('crackerBinaries') \
+                .authenticate((username, password)).get(pk=hashtype.id)
         r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}/relationships/crackerBinaries',
                          headers=auth_headers)
-        self.assertEqual(200, r.status_code, f'Relationship link should be readable: {r.text}')
-        self.assertEqual([], r.json()['data'])
+        self.assertEqual(404, r.status_code, 'Relationship link should respond with not found')
         r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}/crackerBinaries',
                          headers=auth_headers)
-        self.assertEqual(200, r.status_code, f'Related listing should be readable: {r.text}')
-        self.assertEqual([], r.json()['data'])
+        self.assertEqual(404, r.status_code, 'Related listing should respond with not found')
 
-        # a member of the binary's access group sees it in all three views
+        # a member of the binary's access group sees the hashtype and its binary
         user = User.objects.get(name=username)
         admin_headers = {'Authorization': f'Bearer {get_bearer_token()}',
                          'Content-Type': 'application/json'}
