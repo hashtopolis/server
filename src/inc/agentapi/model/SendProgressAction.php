@@ -45,6 +45,7 @@ use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\SConfig;
+use Hashtopolis\inc\utils\ChunkUtils;
 use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;
 use Psr\Http\Message\ResponseInterface;
@@ -319,6 +320,7 @@ final class SendProgressAction implements AgentAction {
             case DHashcatStatus::EXHAUSTED:
                 $chunk = Factory::getChunkFactory()->mset($chunk, [Chunk::SPEED => 0, Chunk::PROGRESS => 10000, Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength()]);
                 DServerLog::log(DServerLog::TRACE, 'Chunk is exhausted (cracker status)', [$agent, $chunk]);
+                $this->reconcileChunkSpeed($agent, $task, $chunk);
                 break;
 
             case DHashcatStatus::CRACKED:
@@ -329,6 +331,7 @@ final class SendProgressAction implements AgentAction {
                 DServerLog::log(DServerLog::TRACE, 'Depriorized all tasks of the hashlist and unassigned all agents', [$agent, $totalHashlist]);
                 $payload = new DataSet([DPayloadKeys::HASHLIST => $totalHashlist]);
                 NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
+                $this->reconcileChunkSpeed($agent, $task, $chunk);
                 break;
 
             case DHashcatStatus::ABORTED:
@@ -597,5 +600,33 @@ final class SendProgressAction implements AgentAction {
             Factory::getHashBinaryFactory()->update($hash);
         }
         return $skipped;
+    }
+
+    /**
+     * Adaptive chunk sizing: when a chunk completes, reconcile this (agent,task) assignment's canonical
+     * chunkSpeed toward the whole-chunk observed base-word rate (length / wall-clock duration). Gated by
+     * the adaptiveChunkSizing config; when off, chunkSpeed stays at the benchmark seed = legacy sizing.
+     * Climb-only and damped (see ChunkUtils), so it converges to the sustained rate without oscillating.
+     */
+    private function reconcileChunkSpeed(Agent $agent, Task $task, Chunk $chunk): void {
+        if (intval(SConfig::getInstance()->getVal(DConfig::ADAPTIVE_CHUNK_SIZING)) == 0) {
+            return;
+        }
+        $observed = ChunkUtils::completedChunkSpeed(intval($chunk->getLength()), intval($chunk->getDispatchTime()), intval($chunk->getSolveTime()));
+        if ($observed === null) {
+            return;
+        }
+        $qF1 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), '=');
+        $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), '=');
+        $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
+        if ($assignment == null) {
+            return;
+        }
+        $old = intval($assignment->getChunkSpeed());
+        $new = ChunkUtils::reconcileSpeed($old, $observed);
+        if ($new != $old) {
+            Factory::getAssignmentFactory()->set($assignment, Assignment::CHUNK_SPEED, $new);
+            DServerLog::log(DServerLog::DEBUG, 'Adaptive chunkSpeed reconciled', [$agent, $task, $old, $new, $observed]);
+        }
     }
 }
