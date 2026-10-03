@@ -26,6 +26,7 @@ class DConfig {
   const HASHCAT_BRAIN_PASS     = "hashcatBrainPass";
   const HASHLIST_IMPORT_CHECK  = "hashlistImportCheck";
   const HC_ERROR_IGNORE        = "hcErrorIgnore";
+  const ADAPTIVE_CHUNK_SIZING  = "adaptiveChunkSizing";
 
   // Section: Finetuning
   const HASHES_PAGE_SIZE           = "pagingSize";
@@ -171,6 +172,7 @@ class DConfig {
       DConfig::AGENT_UTIL_THRESHOLD_2 => DConfigType::NUMBER_INPUT,
       DConfig::UAPI_SEND_TASK_IS_COMPLETE => DConfigType::TICKBOX,
       DConfig::HC_ERROR_IGNORE => DConfigType::STRING_INPUT,
+      DConfig::ADAPTIVE_CHUNK_SIZING => DConfigType::TICKBOX,
       DConfig::DEFAULT_PAGE_SIZE => DConfigType::NUMBER_INPUT,
       DConfig::MAX_PAGE_SIZE => DConfigType::NUMBER_INPUT,
       default => DConfigType::STRING_INPUT,
@@ -239,6 +241,7 @@ class DConfig {
       DConfig::AGENT_UTIL_THRESHOLD_2 => "Util value where an agent is shown in red on the agent status page, if below.",
       DConfig::UAPI_SEND_TASK_IS_COMPLETE => "Also send 'isComplete' for each task on the User API when listing all tasks (might affect performance)",
       DConfig::HC_ERROR_IGNORE => "Ignore error messages from crackers which contain given strings (multiple values separated by comma)",
+      DConfig::ADAPTIVE_CHUNK_SIZING => "Continuously resize each agent's chunks from its observed cracking speed (base words/second) instead of only the one-time benchmark. Corrects benchmark under- or over-measurement (notably on slow hashes across multiple GPUs). When disabled, chunk size stays fixed at the initial benchmark.",
       DConfig::DEFAULT_PAGE_SIZE => "The default page size of items that are returned in API calls.",
       DConfig::MAX_PAGE_SIZE => "The maximum page size of items that are allowed to return in an API call.",
       default => $config,

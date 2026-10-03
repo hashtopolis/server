@@ -1,0 +1,1 @@
+ALTER TABLE Assignment ADD COLUMN chunkSpeed BIGINT NULL;

@@ -43,6 +43,7 @@ use Hashtopolis\inc\defines\DNotificationObjectType;
 use Hashtopolis\inc\defines\DNotificationType;
 use Hashtopolis\inc\defines\DPayloadKeys;
 use Hashtopolis\inc\defines\DPrince;
+use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\defines\DTaskStaticChunking;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\handlers\NotificationHandler;
@@ -541,20 +542,10 @@ class TaskUtils {
     if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
       throw new HTException("No access to this task!");
     }
-    Factory::getAgentFactory()->getDB()->beginTransaction();
-    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", Factory::getTaskFactory());
-    $jF = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID);
-    $join = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var Assignment[] $assignments */
-    $assignments = $join[Factory::getAssignmentFactory()->getModelName()];
-    foreach ($assignments as $assignment) {
-      if ($task->getUseNewBench() == 0) {
-        Factory::getAssignmentFactory()->set($assignment, Assignment::BENCHMARK, $assignment->getBenchmark() / $task->getChunkTime() * $chunkTime);
-      }
-    }
+    // Adaptive chunk sizing derives chunk size from the observed chunkSpeed rate and the effective
+    // chunkTime at sizing time, so there is no benchmark to rescale here anymore.
     $task->setChunkTime($chunkTime);
     Factory::getTaskFactory()->update($task);
-    Factory::getAgentFactory()->getDB()->commit();
   }
   
   /**
@@ -623,9 +614,19 @@ class TaskUtils {
       throw new HTException("No access to this agent!");
     }
     // TODO: check benchmark validity
-    Factory::getAssignmentFactory()->set($assignment, Assignment::BENCHMARK, $benchmark);
+    // Keep the raw benchmark as a diagnostic, and also derive the canonical chunkSpeed (H/s) that
+    // adaptive sizing consumes, so a manual override still steers chunk size.
+    $task = Factory::getTaskFactory()->get($assignment->getTaskId());
+    $keyspace = ($task != null) ? $task->getKeyspace() : null;
+    $chunkSpeed = ChunkUtils::benchmarkToChunkSpeed($benchmark, $keyspace);
+    if ($chunkSpeed === null) {
+      DServerLog::log(DServerLog::WARNING, "Manual benchmark override could not be converted to a chunk speed; keeping previous chunkSpeed", [$assignment, $benchmark]);
+      Factory::getAssignmentFactory()->set($assignment, Assignment::BENCHMARK, $benchmark);
+    } else {
+      Factory::getAssignmentFactory()->mset($assignment, [Assignment::BENCHMARK => $benchmark, Assignment::CHUNK_SPEED => $chunkSpeed]);
+    }
   }
-  
+
   /**
    * @param int $taskId
    * @param User $user
@@ -646,8 +647,7 @@ class TaskUtils {
     
     // reset all benchmarks on assignments
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-    $uS = new UpdateSet(Assignment::BENCHMARK, 0);
-    Factory::getAssignmentFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+    Factory::getAssignmentFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => [new UpdateSet(Assignment::BENCHMARK, 0), new UpdateSet(Assignment::CHUNK_SPEED, null)]]);
     
     // get all chunk ids of this task
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
