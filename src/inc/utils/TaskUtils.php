@@ -1545,7 +1545,7 @@ class TaskUtils {
    */
   public static function tuneChunkDuration(Chunk $chunk, Task $task, Agent $agent): void {
     $timeTaken = $chunk->getSolveTime() - $chunk->getDispatchTime();
-    if($timeTaken <= 0) {
+    if ($timeTaken <= 0) {
       return; // prevent math & logic errors
     }
     $differenceToChunk = $task->getChunkTime() / $timeTaken;
@@ -1573,7 +1573,7 @@ class TaskUtils {
 
     $benchmark = $assignment->getBenchmark();
     $benchmarkParts = explode(":", $benchmark);
-    if($benchmarkParts[0] == 0 || count($benchmarkParts) != 2){
+    if ($benchmarkParts[0] == 0 || count($benchmarkParts) != 2) {
       return;
     }
     $newBenchmark = $differenceToChunk * $benchmarkParts[0];
