@@ -1576,7 +1576,7 @@ class TaskUtils {
     if ($benchmarkParts[0] == 0 || count($benchmarkParts) != 2) {
       return;
     }
-    $newBenchmark = $differenceToChunk * $benchmarkParts[0];
+    $newBenchmark = $differenceToChunk * intval($benchmarkParts[0]);
     $assignment->setBenchmark(round($newBenchmark).":".round($benchmarkParts[1]));
     DServerLog::log(DServerLog::INFO, "{$timeTaken}---{$task->getChunkTime()}", [$agent, $assignment]);
     DServerLog::log(DServerLog::INFO, "Multiplied the benchmark of agent by ".round($differenceToChunk,2), [$agent, $assignment]);
