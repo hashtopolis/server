@@ -281,7 +281,7 @@ Set these on the **backend** container:
 
 | Variable | Meaning |
 | --- | --- |
-| `HASHTOPOLIS_BACKEND_URL` | the API's own URL, for example `https://hashtopolis.example.com/api/v2`. The API always trusts its own origin. |
+| `HASHTOPOLIS_BACKEND_URL` | the API's own URL, for example `https://hashtopolis.example.com/api/v2`. The API always trusts its own origin. The path must be empty or end with the API mount `/api/v2`; anything before that mount is the deployment subpath and is put into URLs the server builds to its own download endpoint, e.g. `https://hashtopolis.example.com/hashtopolis/api/v2` serves downloads under `https://hashtopolis.example.com/hashtopolis/api/download.php/...`. |
 | `HASHTOPOLIS_FRONTEND_URLS` | extra origins to trust, comma separated. Use this when the frontend is on a different **host**. |
 | `HASHTOPOLIS_FRONTEND_PORT` | shorthand for "the API's own host and scheme, on this port". Enough when the frontend differs only by **port**, which is what the bundled `docker-compose.yml` does with port 4200. |
 
@@ -297,8 +297,10 @@ HASHTOPOLIS_BACKEND_URL=https://hashtopolis.example.com/api/v2
 HASHTOPOLIS_FRONTEND_URLS=https://app.example.com
 ```
 
-Entries may carry a path, which is ignored — only the origin part is compared. `localhost`,
-`127.0.0.1` and `[::1]` are treated as the same host, so a development setup can mix them freely.
+Entries may carry a path, which is ignored for the origin comparison — only scheme, host and
+port are matched. The path of `HASHTOPOLIS_BACKEND_URL` additionally configures the deployment
+subpath used for the download URLs described above. `localhost`, `127.0.0.1` and `[::1]` are
+treated as the same host, so a development setup can mix them freely.
 
 All of these go in the `.env` file next to the bundled `docker-compose.yml`, which passes them to the
 backend container.

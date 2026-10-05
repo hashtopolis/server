@@ -1305,9 +1305,13 @@ class Util {
   
   /**
    * Determines the base URL of the backend as it is reachable from the outside.
-   * If HASHTOPOLIS_BACKEND_URL is set in the environment, scheme, host and port are
-   * taken from it and any path is stripped (e.g. "http://localhost:8080/api/v2"
-   * results in "http://localhost:8080"). Otherwise, the explicitly configured
+   * If HASHTOPOLIS_BACKEND_URL is set in the environment, scheme, host, port and
+   * the deployment prefix are taken from it. The API is always mounted at the
+   * fixed path "/api/v2", so the URL path must be empty or end with that mount;
+   * everything before the mount is kept as deployment prefix (e.g.
+   * "https://example.com/api/v2" results in "https://example.com" and
+   * "https://example.com/hashtopolis/api/v2" in
+   * "https://example.com/hashtopolis"). Otherwise, the explicitly configured
    * baseHost and baseUrl are used. Request headers are never used because this URL
    * may be persisted and later receive agent credentials.
    * Used to generate agent reachable URLs for locally hosted files, e.g. the
@@ -1342,7 +1346,20 @@ class Util {
     if (filter_var($url, FILTER_VALIDATE_URL) === false) {
       throw new Exception("The configured backend URL is invalid");
     }
-    if (!$fromEnvironment) {
+    if ($fromEnvironment) {
+      /* The API is mounted at the fixed path "/api/v2", so the path of the
+       * configured URL is a deployment prefix followed by the mount. Only the
+       * mount is removed and the prefix is kept, so that servers reachable
+       * under a subpath build download URLs which point to the right location. */
+      $path = (isset($parts['path'])) ? rtrim($parts['path'], '/') : '';
+      if ($path !== '') {
+        if (!str_ends_with($path, '/api/v2')) {
+          throw new Exception("The configured backend URL ('$backendUrl') is invalid: its path must be empty or end with the api mount path '/api/v2' (e.g. 'https://hashtopolis.example.com/api/v2' or 'https://hashtopolis.example.com/hashtopolis/api/v2')");
+        }
+        $url .= substr($path, 0, -strlen('/api/v2'));
+      }
+    }
+    else {
       $baseUrl = SConfig::getInstance()->getVal(DConfig::BASE_URL);
       $url .= '/' . ltrim((string)$baseUrl, '/');
     }
