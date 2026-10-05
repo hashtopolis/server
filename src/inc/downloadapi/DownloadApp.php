@@ -2,6 +2,8 @@
 
 namespace Hashtopolis\inc\downloadapi;
 
+use Exception;
+use Hashtopolis\inc\Util;
 use JimTools\JwtAuth\Exceptions\AuthorizationException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -21,6 +23,21 @@ use Throwable;
 final class DownloadApp {
   public static function create(): App {
     $app = AppFactory::create();
+
+    /* Servers reachable under a deployment subpath (HASHTOPOLIS_BACKEND_URL
+     * like 'https://example.com/hashtopolis/api/v2') get download URLs which
+     * contain that subpath, so the routes have to be served under the same
+     * prefix. When no usable backend base url is configured the routes stay at
+     * the root instead of failing the endpoint as a whole. */
+    try {
+      $basePath = parse_url(Util::buildBackendBaseUrl(), PHP_URL_PATH);
+    }
+    catch (Exception) {
+      $basePath = false;
+    }
+    if (is_string($basePath) && $basePath !== '' && $basePath !== '/') {
+      $app->getRouteCollector()->setBasePath($basePath);
+    }
 
     $app->add(new DownloadAuthMiddleware());
 

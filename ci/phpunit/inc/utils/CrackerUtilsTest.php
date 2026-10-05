@@ -184,6 +184,35 @@ final class CrackerUtilsTest extends TestBase {
     unlink($archive);
   }
 
+  // Verifies that the download url of a locally stored binary includes the
+  // deployment subpath of the backend url, so agents reach the download
+  // endpoint on servers which are not served from the root.
+  public function testCreateBinaryFromUploadSubpathBackendUrl(): void {
+    $savedBackendUrl = getenv('HASHTOPOLIS_BACKEND_URL');
+    putenv('HASHTOPOLIS_BACKEND_URL=https://example.com/hashtopolis/api/v2');
+    try {
+      $name = 'test-archive-' . uniqid() . '.7z';
+      file_put_contents($this->getImportPath() . $name, self::SEVEN_ZIP_MAGIC . 'subpath-content');
+      $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name);
+      $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
+
+      $this->assertEquals(
+        'https://example.com/hashtopolis/api/download.php/crackerBinary/' . $b->getId(),
+        $b->getDownloadUrl()
+      );
+
+      unlink(CrackerUtils::getCrackersPath() . $b->getId() . '_' . $b->getFilename());
+    }
+    finally {
+      if ($savedBackendUrl === false) {
+        putenv('HASHTOPOLIS_BACKEND_URL');
+      }
+      else {
+        putenv('HASHTOPOLIS_BACKEND_URL=' . $savedBackendUrl);
+      }
+    }
+  }
+
   // A missing or invalid public backend URL is detected before the archive or
   // database record is stored, and a request Host header cannot replace it.
   public function testCreateBinaryFromUploadInvalidBackendUrlHasNoSideEffects(): void {

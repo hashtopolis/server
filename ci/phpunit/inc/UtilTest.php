@@ -1067,7 +1067,7 @@ final class UtilTest extends TestBase {
 
   /**
    * buildBackendBaseUrl takes scheme, host and port from HASHTOPOLIS_BACKEND_URL
-   * and strips any path it may contain.
+   * and strips the api mount path '/api/v2' it may contain.
    *
    * @throws Exception
    */
@@ -1088,13 +1088,38 @@ final class UtilTest extends TestBase {
   }
 
   /**
-   * buildBackendBaseUrl keeps https scheme and non-default ports.
+   * buildBackendBaseUrl keeps https scheme, non-default ports and the deployment
+   * subpath before the api mount of HASHTOPOLIS_BACKEND_URL.
    *
    * @throws Exception
    */
   public function testBuildBackendBaseUrlFromEnvHttpsPort(): void {
     putenv('HASHTOPOLIS_BACKEND_URL=https://hashtopolis.example.com:8443/hashtopolis/api/v2');
-    $this->assertEquals('https://hashtopolis.example.com:8443', Util::buildBackendBaseUrl());
+    $this->assertEquals('https://hashtopolis.example.com:8443/hashtopolis', Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * buildBackendBaseUrl keeps the deployment subpath of HASHTOPOLIS_BACKEND_URL
+   * and tolerates a trailing slash after the api mount.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlFromEnvSubpath(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=https://hashtopolis.example.com/hashtopolis/api/v2/');
+    $this->assertEquals('https://hashtopolis.example.com/hashtopolis', Util::buildBackendBaseUrl());
+  }
+
+  /**
+   * A HASHTOPOLIS_BACKEND_URL path which is neither empty nor the api mount is
+   * a configuration error: the deployment prefix cannot be told from a wrong
+   * path, so it is rejected instead of guessed.
+   *
+   * @throws Exception
+   */
+  public function testBuildBackendBaseUrlEnvPathWithoutApiMountThrows(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=https://hashtopolis.example.com/hashtopolis');
+    $this->expectException(Exception::class);
+    Util::buildBackendBaseUrl();
   }
 
   /**

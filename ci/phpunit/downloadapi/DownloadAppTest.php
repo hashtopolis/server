@@ -162,6 +162,15 @@ final class DownloadAppTest extends TestBase {
     $this->assertEquals('Unknown download kind!', (string)$response->getBody());
   }
 
+  // A backend url with a deployment subpath serves the download routes under
+  // that subpath, so the download urls built from it point to a matching route.
+  public function testSubpathBackendUrlIsServed(): void {
+    putenv('HASHTOPOLIS_BACKEND_URL=https://localhost:8443/hashtopolis/api/v2');
+    $response = $this->runDownloadRequest('/hashtopolis' . $this->localBinaryUri() . '?token=' . $this->agentToken);
+    $this->assertEquals(200, $response->getStatusCode());
+    $this->assertEquals($this->archiveContent, (string)$response->getBody());
+  }
+
   // A non existing binary id is rejected with 404.
   public function testUnknownBinaryIdIsRejected(): void {
     $response = $this->runDownloadRequest('/api/download.php/crackerBinary/99999999?token=' . $this->agentToken);
