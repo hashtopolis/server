@@ -26326,7 +26326,7 @@
         },
         "/api/v2/helper/createSupertask": {
             "post": {
-                "description": "Endpoint to create a supertask from a supertask template",
+                "description": "Endpoint to create a supertask from a supertask template.<br />When skipCompleted is true, pretasks whose equivalent attack has already been fully<br />exhausted against the target hashlist are skipped. The skipped pretasks are reported<br />under the top-level \"meta.skippedPretasks\" member (each entry has pretaskId and<br />matchingTaskId). If every pretask is skipped, no TaskWrapper is created and a meta-only<br />response with \"taskWrapperId\": null is returned.",
                 "responses": {
                     "400": {
                         "description": "Invalid request",
@@ -26380,7 +26380,7 @@
                     }
                 },
                 "requestBody": {
-                    "description": "supertaskTemplateId is the the Id of the supertasktemplate of which you want to create a supertask of.<br />hashlistId is the Id of the hashlist that has to be used for the supertask.<br />crackerVersionId is the Id of the crackerversion that is used for the created supertask.",
+                    "description": "supertaskTemplateId is the the Id of the supertasktemplate of which you want to create a supertask of.<br />hashlistId is the Id of the hashlist that has to be used for the supertask.<br />crackerVersionId is the Id of the crackerversion that is used for the created supertask.<br />skipCompleted (optional, default false) skips any pretask whose equivalent attack has already<br />  been fully exhausted against the hashlist instead of re-instantiating it.",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -70696,6 +70696,12 @@
                     },
                     "crackerVersionId": {
                         "type": "integer"
+                    },
+                    "skipCompleted": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
                     }
                 }
             },

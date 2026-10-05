@@ -49,6 +49,16 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
   public function getParamsSwagger(): array {
     return [];
   }
+
+  /**
+   * Extra top-level JSON:API "meta" members to include alongside an object response.
+   * Overridden by helpers that return a resource object but also need to surface
+   * additional information (e.g. createSupertask returning the TaskWrapper plus a
+   * list of skipped pretasks). Default is empty, so existing helpers are unaffected.
+   */
+  protected function getExtraMeta(): array {
+    return [];
+  }
   
   /**
    * Chunk API endpoint specific call to abort chunk
@@ -97,7 +107,7 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
       /* Permissions were already checked in preCommon() above, using the helper's own
          requirements. getOneResource() does not check again, which is what we want: a
          POST helper should not need the create permission of the model route. */
-      return self::getOneResource($apiClass, $newObject, $request, $response);
+      return self::getOneResource($apiClass, $newObject, $request, $response, 200, $this->getExtraMeta());
       /* A meta response of a helper function */
     }
     elseif (is_array($newObject)) {

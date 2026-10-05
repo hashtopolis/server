@@ -1348,7 +1348,141 @@ class TaskUtils {
     $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     return $joined[Factory::getFileFactory()->getModelName()];
   }
-  
+
+  /**
+   * @param Task $task
+   * @return int[] the file ids attached to the task via FileTask
+   */
+  public static function getFileIdsOfTask($task) {
+    $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=");
+    $fileTasks = Factory::getFileTaskFactory()->filter([Factory::FILTER => $qF]);
+    $fileIds = [];
+    foreach ($fileTasks as $fileTask) {
+      $fileIds[] = $fileTask->getFileId();
+    }
+    return $fileIds;
+  }
+
+  /**
+   * @param Pretask $pretask
+   * @return int[] the file ids attached to the pretask via FilePretask
+   */
+  public static function getFileIdsOfPretask($pretask) {
+    $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=");
+    $filePretasks = Factory::getFilePretaskFactory()->filter([Factory::FILTER => $qF]);
+    $fileIds = [];
+    foreach ($filePretasks as $filePretask) {
+      $fileIds[] = $filePretask->getFileId();
+    }
+    return $fileIds;
+  }
+
+  /**
+   * Normalizes an attack command for duplicate comparison by collapsing runs of
+   * whitespace into single spaces and trimming. Flag ordering is intentionally
+   * NOT normalized: a different flag order is treated as a different attack and
+   * will not be skipped (conservative). Note that whitespace inside quoted
+   * arguments is collapsed as well; hashcat masks and charsets practically never
+   * contain spaces, so this is accepted.
+   *
+   * @param string|null $attackCmd
+   * @return string
+   */
+  public static function normalizeAttackCmd($attackCmd) {
+    return trim(preg_replace('/\s+/', ' ', $attackCmd ?? ''));
+  }
+
+  /**
+   * Returns every task on the given hashlist whose keyspace has been fully searched.
+   *
+   * "Fully searched" follows the same definition as getStatus(): keyspace > 0 and the
+   * chunk-based progress (sum of chunk checkpoints minus skips, see getTaskProgress())
+   * has reached the keyspace. Task::KEYSPACE_PROGRESS alone is NOT sufficient, since it
+   * is advanced when a chunk is dispatched, not when it is finished: a task whose last
+   * chunk was aborted, or one created with a skipKeyspace offset, reaches
+   * keyspaceProgress == keyspace without having searched everything.
+   *
+   * Archived tasks and tasks in archived wrappers are included: an archived but
+   * exhausted task already did its work.
+   *
+   * @param int $hashlistId
+   * @return Task[]
+   */
+  public static function getCompletedTasksOfHashlist($hashlistId) {
+    $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlistId, "=");
+    $wrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => $qF]);
+    if (count($wrappers) == 0) {
+      return [];
+    }
+    $cF = new ContainFilter(Task::TASK_WRAPPER_ID, Util::arrayOfIds($wrappers));
+    $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $cF]);
+    $completed = [];
+    foreach ($tasks as $task) {
+      // cheap pre-filter: never measured, or not even fully dispatched yet
+      if ($task->getKeyspace() <= 0 || $task->getKeyspaceProgress() < $task->getKeyspace()) {
+        continue;
+      }
+      // authoritative check: chunk-based progress, as in getStatus()
+      if (self::getTaskProgress($task->getId()) < $task->getKeyspace()) {
+        continue;
+      }
+      $completed[] = $task;
+    }
+    return $completed;
+  }
+
+  /**
+   * Finds an existing, fully-exhausted Task on the given hashlist that is an exact
+   * duplicate of the supplied attack specification. Used to optionally skip
+   * re-running pretasks that have already been completed against the target
+   * hashlist when applying a supertask (or a single pretask).
+   *
+   * A Task is considered a match when ALL of the following hold:
+   *  - it belongs to a TaskWrapper on $hashlistId
+   *  - it is fully exhausted (see getCompletedTasksOfHashlist())
+   *  - crackerBinaryId AND crackerBinaryTypeId equality
+   *  - normalized attackCmd equality (see normalizeAttackCmd())
+   *  - identical set of fileIds (via FileTask) compared to $fileIds
+   *
+   * Partial tasks never match, since the remaining keyspace is still valuable work.
+   *
+   * @param int $hashlistId
+   * @param string $attackCmd        effective attack command (after any --hex-salt prefixing)
+   * @param int[] $fileIds           file ids that would be attached to the new task
+   * @param int $crackerBinaryId     resolved cracker binary id that would be used
+   * @param int $crackerBinaryTypeId resolved cracker binary type id that would be used
+   * @param Task[]|null $candidates  completed tasks of the hashlist, as returned by
+   *                                 getCompletedTasksOfHashlist(); pass them in when
+   *                                 checking several specs against the same hashlist so
+   *                                 the lookup runs once. Fetched on demand when null.
+   * @return Task|null the matching completed Task, or null if none exists
+   */
+  public static function findCompletedEquivalent($hashlistId, $attackCmd, $fileIds, $crackerBinaryId, $crackerBinaryTypeId, $candidates = null) {
+    if ($candidates === null) {
+      $candidates = self::getCompletedTasksOfHashlist($hashlistId);
+    }
+    $normalizedCmd = self::normalizeAttackCmd($attackCmd);
+    $wantedFileIds = array_map('intval', $fileIds);
+    sort($wantedFileIds);
+
+    foreach ($candidates as $task) {
+      // a hashcat version change invalidates the dedup (conservative)
+      if ($task->getCrackerBinaryId() != $crackerBinaryId || $task->getCrackerBinaryTypeId() != $crackerBinaryTypeId) {
+        continue;
+      }
+      if (self::normalizeAttackCmd($task->getAttackCmd()) !== $normalizedCmd) {
+        continue;
+      }
+      $taskFileIds = array_map('intval', self::getFileIdsOfTask($task));
+      sort($taskFileIds);
+      if ($taskFileIds !== $wantedFileIds) {
+        continue;
+      }
+      return $task;
+    }
+    return null;
+  }
+
   /**
    * @param int $supertaskId
    * @param User $user
