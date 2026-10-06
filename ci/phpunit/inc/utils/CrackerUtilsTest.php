@@ -224,7 +224,7 @@ final class CrackerUtilsTest extends TestBase {
     try {
       $name = 'test-archive-' . uniqid() . '.7z';
       file_put_contents($this->getImportPath() . $name, self::SEVEN_ZIP_MAGIC . 'subpath-content');
-      $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name);
+      $b = CrackerUtils::createBinaryFromUpload('7.2.7', 'testcracker', $this->type->getId(), 'import', $name, 1);
       $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $b);
 
       $this->assertEquals(
