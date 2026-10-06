@@ -153,7 +153,25 @@ abstract class AbstractModelFactory {
     }
     return $key;
   }
-  
+
+  /**
+   * Wrap an operand into the sort expression of a key, if the model defines one for it. This allows sorting on a
+   * derived value instead of the raw column (e.g. only a prefix of very long text columns). The same expression has
+   * to be applied to both sides of pagination comparisons so that they are consistent with the ordering.
+   *
+   * @param AbstractModel $model
+   * @param string $key unmapped column name
+   * @param string $operand SQL fragment to wrap, e.g. the (table-prefixed) mapped column or a "?" placeholder
+   * @return string
+   */
+  public static function getSortExpression(AbstractModel $model, string $key, string $operand): string {
+    $features = $model->getFeatures();
+    if (isset($features[$key]["sort_expression"])) {
+      return sprintf($features[$key]["sort_expression"], $operand);
+    }
+    return $operand;
+  }
+
   /**
    * Saves the passed model in database, and returns it with the real id
    * in the database.
@@ -328,6 +346,80 @@ abstract class AbstractModelFactory {
     $model = $this->get($model->getPrimaryKeyValue());
     assert($model !== null); // assert as on this update we should not get null back (unless race-condition)
     return $model;
+  }
+  
+  /**
+   * Updates one row, but only while it still matches the given conditions.
+   *
+   * The test and the write are a single statement, so callers arriving together cannot all read the
+   * old state and all act on it: the database applies exactly one of them, and the return value says
+   * which caller that was. Reach for this wherever a transition has to happen at most once - a token
+   * being consumed, a queued job being picked up, a one-shot flag being flipped. A plain
+   * "UPDATE ... WHERE id = ?" does not do this: without the expected state in the WHERE clause every
+   * caller matches the row and every caller wins.
+   *
+   * Conditions compare for equality only. Anything looser would stop describing one known state, and
+   * with it the guarantee that at most one caller can make the transition. A condition whose value is
+   * null becomes IS NULL, so an "unset until now" column can be claimed.
+   *
+   * The update has to genuinely change the row. MySQL counts changed rows rather than matched ones,
+   * so writing a value a column already holds looks identical to not matching at all, and the same
+   * call would answer differently on PostgreSQL. A transition that writes back what it required is
+   * rejected outright rather than being left to differ between the two.
+   *
+   * @param TModel $model the row to update, addressed by its primary key
+   * @param QueryFilter[] $expected conditions the row must still satisfy, each with the "=" operator
+   * @param UpdateSet[] $updates the columns to write, at least one of them to a new value
+   * @return bool true when this caller made the transition, false when the row no longer matched
+   * @throws Exception
+   */
+  public function compareAndSet(AbstractModel $model, array $expected, array $updates): bool {
+    if (count($updates) == 0) {
+      throw new Exception("Cannot compare-and-set without any column to update!");
+    }
+    
+    foreach ($expected as $condition) {
+      if ($condition->getOperator() !== "=") {
+        throw new Exception("Compare-and-set conditions compare for equality only, but '" . $condition->getOperator() . "' was given for '" . $condition->getKey() . "'!");
+      }
+    }
+    
+    $changes = array_filter($updates, fn(UpdateSet $update): bool => !self::isRequiredBy($update, $expected));
+    if (count($changes) == 0) {
+      throw new Exception("Cannot compare-and-set a row to the values it is required to already hold; the update would change nothing and the result would differ between database types!");
+    }
+    
+    // Addressing the row by its primary key is what keeps this a single-row operation
+    $filters = array_merge(
+      [new QueryFilter($model->getPrimaryKey(), $model->getPrimaryKeyValue(), "=")],
+      array_values($expected)
+    );
+    
+    $vals = [];
+    $query = $this->buildMassUpdateQuery([Factory::UPDATE => array_values($updates), Factory::FILTER => $filters], $vals);
+    
+    $stmt = $this->getDB()->prepare($query);
+    $stmt->execute($vals);
+    
+    return $stmt->rowCount() === 1;
+  }
+  
+  /**
+   * Whether an update writes back exactly the value a condition already requires, which would leave
+   * the row unchanged.
+   *
+   * @param UpdateSet $update
+   * @param QueryFilter[] $expected
+   * @return bool
+   */
+  private static function isRequiredBy(UpdateSet $update, array $expected): bool {
+    foreach ($expected as $condition) {
+      if ($condition->getKey() === $update->getKey() && $condition->getValue() === $update->getValue()) {
+        return true;
+      }
+    }
+    
+    return false;
   }
   
   /**
@@ -1104,9 +1196,24 @@ abstract class AbstractModelFactory {
    * @throws Exception
    */
   public function massUpdate($options): bool {
-    $query = "UPDATE " . $this->getMappedModelTable();
-    
     $vals = [];
+    $query = $this->buildMassUpdateQuery($options, $vals);
+    
+    $dbh = self::getDB();
+    $stmt = $dbh->prepare($query);
+    return $stmt->execute($vals);
+  }
+  
+  /**
+   * Assembles an UPDATE from update and filter options, collecting the values to bind in order.
+   *
+   * @param array $options $options[Factory::UPDATE] holds UpdateSet objects, $options[Factory::FILTER] Filters
+   * @param array $vals collects the values to bind, in the order the statement expects them
+   * @return string
+   * @throws Exception
+   */
+  private function buildMassUpdateQuery(array $options, array &$vals): string {
+    $query = "UPDATE " . $this->getMappedModelTable();
     
     if (array_key_exists(Factory::UPDATE, $options)) {
       $query = $query . " SET ";
@@ -1134,9 +1241,7 @@ abstract class AbstractModelFactory {
       $query .= $this->applyFilters($vals, $options[Factory::FILTER]);
     }
     
-    $dbh = self::getDB();
-    $stmt = $dbh->prepare($query);
-    return $stmt->execute($vals);
+    return $query;
   }
   
   /**

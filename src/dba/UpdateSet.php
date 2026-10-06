@@ -20,6 +20,10 @@ class UpdateSet {
     return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . "=?";
   }
   
+  function getKey(): string {
+    return $this->key;
+  }
+  
   function getValue(): mixed {
     return $this->value;
   }

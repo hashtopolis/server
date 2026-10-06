@@ -1186,7 +1186,7 @@ class HashlistUtils {
         "crackpos" => $entry->getCrackPos()
       ];
       if ($hashlist->getIsSalted()) {
-        if (strlen($entry->getSalt()) > 0) {
+        if (strlen($entry->getSalt() ?? '') > 0) {
           $arr["hash"] .= $hashlist->getSaltSeparator() . $entry->getSalt();
         }
       }

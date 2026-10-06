@@ -154,6 +154,8 @@ $FieldNotificationTypeChoices = [
 // Null: means that an attribute is optional.
 // Alias: used for setting new names for attributes. This is for the transition between APIv1 and APIv2.
 //        Alias determines the name for the attribute as it should be called by APIv2
+// Sort_expression: optional SQL expression used instead of the raw column when sorting/paginating on it, '%s' is
+//        replaced with the column. Must be supported by all database types.
 
 //
 // Entities
@@ -338,7 +340,8 @@ $CONF['Hash'] = [
   'columns' => [
     ['name' => 'hashId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'relation' => 'Hashlist'],
-    ['name' => 'hash', 'read_only' => False, 'type' => 'str(65535)'],
+    // sorting on full, potentially very long hashes fails on MySQL with "Out of sort memory" (see #2481)
+    ['name' => 'hash', 'read_only' => False, 'type' => 'str(65535)', 'sort_expression' => 'LEFT(%s, 1024)'],
     ['name' => 'salt', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'plaintext', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'timeCracked', 'read_only' => False, 'type' => 'int64'],
@@ -475,6 +478,18 @@ $CONF['Pretask'] = [
     ['name' => 'maxAgents', 'read_only' => False, 'type' => 'int'],
     ['name' => 'isMaskImport', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'crackerBinaryTypeId', 'read_only' => False, 'type' => 'int'],
+  ],
+];
+$CONF['RefreshToken'] = [
+  'columns' => [
+    ['name' => 'refreshTokenId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'relation' => 'User'],
+    ['name' => 'tokenHash', 'read_only' => True, 'type' => 'str(64)', 'protected' => True, 'private' => True],
+    ['name' => 'familyId', 'read_only' => True, 'type' => 'str(32)', 'protected' => True, 'private' => True],
+    ['name' => 'issuedAt', 'read_only' => True, 'type' => 'int64'],
+    ['name' => 'endValid', 'read_only' => True, 'type' => 'int64'],
+    ['name' => 'usedAt', 'read_only' => True, 'null' => True, 'type' => 'int64'],
+    ['name' => 'isRevoked', 'read_only' => True, 'type' => 'bool'],
   ],
 ];
 $CONF['RegVoucher'] = [
@@ -775,6 +790,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
       '"alias" => "' . $COLUMN['alias'] . '", ' .
       '"public" => ' . ($COLUMN['public'] ? 'True' : 'False') . ', ' .
       '"dba_mapping" => ' . ($COLUMN['dba_mapping'] ? 'True' : 'False') .
+      (isset($COLUMN['sort_expression']) ? ', "sort_expression" => "' . $COLUMN['sort_expression'] . '"' : '') .
       '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
     $variables[] = "const " . makeConstant($col) . " = \"$col\";";

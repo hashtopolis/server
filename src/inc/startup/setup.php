@@ -26,18 +26,21 @@ require_once(dirname(__FILE__) . "/include.php");
 foreach (StartupConfig::getInstance()->getDirectories() as $name => $path) {
   if (!file_exists($path)) {
     if (mkdir($path) === false) {
-      die("Unable to create directory '$path'!");
+      echo "Unable to create directory '$path'!\n";
+      exit(-1);
     }
   }
   elseif (!is_writable($path)) {
-    die("Directory '$path' is not writable!");
+    echo "Directory '$path' is not writable!\n";
+    exit(-1);
   }
 }
 
 // check if the system is set up and installed
 if (Factory::getUserFactory()->getDB() === null) {
   //connection not valid
-  die("Database connection failed!");
+  echo "Database connection failed!\n";
+  exit(-1);
 }
 $initialSetup = false;
 try {
@@ -137,7 +140,8 @@ if ($initialSetup === true) {
     
     $json_config_filepath = StartupConfig::getInstance()->getDirectoryConfig() . "/config.json";
     if (file_put_contents($json_config_filepath, json_encode(array('PEPPER' => $pepper))) === false) {
-      die("Cannot write configuration file '$json_config_filepath'!");
+      echo "Cannot write configuration file '$json_config_filepath'!\n";
+      exit(-1);
     }
     StartupConfig::reload();
   }

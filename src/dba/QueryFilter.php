@@ -34,6 +34,14 @@ class QueryFilter extends Filter {
     return $table . AbstractModelFactory::getMappedModelKey($factory->getNullObject(), $this->key) . $this->operator . "?";
   }
   
+  function getKey(): string {
+    return $this->key;
+  }
+  
+  function getOperator(): string {
+    return $this->operator;
+  }
+  
   function getValue(): mixed {
     if ($this->value === null) {
       return null;

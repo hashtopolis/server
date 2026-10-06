@@ -41,8 +41,12 @@ wait_for_mysql() {
 }
 
 wait_for_postgres() {
+  # Note: pg_isready is not sufficient here, as it only checks that a server
+  # is accepting connection requests, not that the database already exists
+  # (the postgres entrypoint first-run init starts a temporary server on the
+  # unix socket before POSTGRES_DB is created).
   for _ in {1..90}; do
-    if docker exec "$db_container" pg_isready -U "$user" -d "$database" >/dev/null 2>&1; then
+    if docker exec "$db_container" psql -U "$user" -d "$database" -c 'SELECT 1;' >/dev/null 2>&1; then
       return 0
     fi
     sleep 1
