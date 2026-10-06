@@ -542,20 +542,10 @@ class TaskUtils {
     if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
       throw new HTException("No access to this task!");
     }
-    Factory::getAgentFactory()->getDB()->beginTransaction();
-    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", Factory::getTaskFactory());
-    $jF = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID);
-    $join = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    /** @var Assignment[] $assignments */
-    $assignments = $join[Factory::getAssignmentFactory()->getModelName()];
-    foreach ($assignments as $assignment) {
-      if ($task->getUseNewBench() == 0) {
-        Factory::getAssignmentFactory()->set($assignment, Assignment::BENCHMARK, $assignment->getBenchmark() / $task->getChunkTime() * $chunkTime);
-      }
-    }
+    // Adaptive chunk sizing derives chunk size from the observed chunkSpeed rate and the effective
+    // chunkTime at sizing time, so there is no benchmark to rescale here anymore.
     $task->setChunkTime($chunkTime);
     Factory::getTaskFactory()->update($task);
-    Factory::getAgentFactory()->getDB()->commit();
   }
   
   /**
