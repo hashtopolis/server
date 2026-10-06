@@ -244,7 +244,7 @@ foreach ($hashes as $hash) {
     else {
       $output .= "[...]";
     }
-    if (!$binaryFormat && strlen($hash->getSalt()) > 0) {
+    if (!$binaryFormat && strlen($hash->getSalt() ?? '') > 0) {
       $output .= ":" . htmlentities($hash->getSalt(), ENT_QUOTES, "UTF-8");
     }
     if ($filter == "cracked" || $filter == "") {
@@ -255,7 +255,7 @@ foreach ($hashes as $hash) {
   }
   else if ($displaying == "hash") {
     $output .= $hash->getHash();
-    if (!$binaryFormat && strlen($hash->getSalt()) > 0) {
+    if (!$binaryFormat && strlen($hash->getSalt() ?? '') > 0) {
       $output .= ":" . htmlentities($hash->getSalt(), ENT_QUOTES, "UTF-8");
     }
   }
