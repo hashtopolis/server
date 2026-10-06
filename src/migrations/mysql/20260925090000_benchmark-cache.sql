@@ -22,6 +22,6 @@ CREATE TABLE `Benchmark` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Seed the benchmark cache TTL to 30 days (in seconds; 0 disables caching).
-INSERT INTO `Config` (`configSectionId`, `item`, `value`)
-SELECT 1, 'benchmarkCacheTtl', '2592000'
+INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`)
+SELECT 81, 1, 'benchmarkCacheTtl', '2592000'
 WHERE NOT EXISTS (SELECT 1 FROM `Config` WHERE `item` = 'benchmarkCacheTtl');

@@ -17,6 +17,6 @@ CREATE UNIQUE INDEX benchmark_lookup ON benchmark (crackerbinaryid, hashtypeid, 
 CREATE INDEX benchmark_expiretime ON benchmark (expiretime);
 
 -- Seed the benchmark cache TTL to 30 days (in seconds; 0 disables caching).
-INSERT INTO config (configsectionid, item, value)
-SELECT 1, 'benchmarkCacheTtl', '2592000'
+INSERT INTO config (configid, configsectionid, item, value)
+SELECT 81, 1, 'benchmarkCacheTtl', '2592000'
 WHERE NOT EXISTS (SELECT 1 FROM config WHERE item = 'benchmarkCacheTtl');
