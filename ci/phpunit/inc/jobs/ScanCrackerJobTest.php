@@ -36,6 +36,8 @@ final class ScanCrackerJobTest extends TestBase {
   /** @var int[] ids of the binaries the tests created, for archive cleanup */
   private array $testBinaryIds = [];
 
+  private string|false $savedBackendUrl = false;
+
   /** canned '--example-hashes --machine-readable' report of the fake cracker binary */
   private const MODES_OUTPUT_V1 = 'hashcat (v9.9.9) starting in autodetect mode' . "\n" .
     "\n" .
@@ -141,26 +143,52 @@ final class ScanCrackerJobTest extends TestBase {
   }
 
   /**
+   * The binary creation validates the backend url, so the tests provide one
+   * themselves instead of relying on the environment of the test run, which
+   * other tests may unset.
+   */
+  #[Override]
+  protected function setUp(): void {
+    parent::setUp();
+    $this->savedBackendUrl = getenv('HASHTOPOLIS_BACKEND_URL');
+    putenv('HASHTOPOLIS_BACKEND_URL=http://localhost:8080/api/v2');
+  }
+
+  /**
    * Removes the scan jobs and the hashtypes the test created and the local
    * archive of the test binaries, also when the test failed on the way.
    */
   #[Override]
   protected function tearDown(): void {
-    foreach ($this->testBinaryIds as $binaryId) {
-      $this->cleanupScanJobs($binaryId);
-      // remove leftover local archives of binaries the test did not clean up
-      foreach (glob(CrackerUtils::getCrackersPath() . $binaryId . '_*') ?: [] as $path) {
-        unlink($path);
+    try {
+      foreach ($this->testBinaryIds as $binaryId) {
+        $this->cleanupScanJobs($binaryId);
+        // remove leftover local archives of binaries the test did not clean up
+        foreach (glob(CrackerUtils::getCrackersPath() . $binaryId . '_*') ?: [] as $path) {
+          unlink($path);
+        }
+      }
+      $this->testBinaryIds = [];
+      foreach ($this->scanHashtypeIds as $hashtypeId) {
+        $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
+        if ($hashtype !== null) {
+          Factory::getHashTypeFactory()->delete($hashtype);
+        }
       }
     }
-    $this->testBinaryIds = [];
-    foreach ($this->scanHashtypeIds as $hashtypeId) {
-      $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
-      if ($hashtype !== null) {
-        Factory::getHashTypeFactory()->delete($hashtype);
+    finally {
+      try {
+        parent::tearDown();
+      }
+      finally {
+        if ($this->savedBackendUrl === false) {
+          putenv('HASHTOPOLIS_BACKEND_URL');
+        }
+        else {
+          putenv('HASHTOPOLIS_BACKEND_URL=' . $this->savedBackendUrl);
+        }
       }
     }
-    parent::tearDown();
   }
 
   private function trackBinary(\Hashtopolis\dba\models\CrackerBinary $binary): void {
