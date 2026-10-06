@@ -43,9 +43,9 @@ use Hashtopolis\inc\defines\DNotificationObjectType;
 use Hashtopolis\inc\defines\DNotificationType;
 use Hashtopolis\inc\defines\DPayloadKeys;
 use Hashtopolis\inc\defines\DPrince;
+use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\defines\DTaskStaticChunking;
 use Hashtopolis\inc\defines\DTaskTypes;
-use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
@@ -624,9 +624,19 @@ class TaskUtils {
       throw new HTException("No access to this agent!");
     }
     // TODO: check benchmark validity
-    Factory::getAssignmentFactory()->set($assignment, Assignment::BENCHMARK, $benchmark);
+    // Keep the raw benchmark as a diagnostic, and also derive the canonical chunkSpeed (H/s) that
+    // adaptive sizing consumes, so a manual override still steers chunk size.
+    $task = Factory::getTaskFactory()->get($assignment->getTaskId());
+    $keyspace = ($task != null) ? $task->getKeyspace() : null;
+    $chunkSpeed = ChunkUtils::benchmarkToChunkSpeed($benchmark, $keyspace);
+    if ($chunkSpeed === null) {
+      DServerLog::log(DServerLog::WARNING, "Manual benchmark override could not be converted to a chunk speed; keeping previous chunkSpeed", [$assignment, $benchmark]);
+      Factory::getAssignmentFactory()->set($assignment, Assignment::BENCHMARK, $benchmark);
+    } else {
+      Factory::getAssignmentFactory()->mset($assignment, [Assignment::BENCHMARK => $benchmark, Assignment::CHUNK_SPEED => $chunkSpeed]);
+    }
   }
-  
+
   /**
    * @param int $taskId
    * @param User $user
@@ -647,8 +657,7 @@ class TaskUtils {
     
     // reset all benchmarks on assignments
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-    $uS = new UpdateSet(Assignment::BENCHMARK, 0);
-    Factory::getAssignmentFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+    Factory::getAssignmentFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => [new UpdateSet(Assignment::BENCHMARK, 0), new UpdateSet(Assignment::CHUNK_SPEED, null)]]);
     
     // get all chunk ids of this task
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
@@ -1533,53 +1542,5 @@ class TaskUtils {
     $qF4 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
     $agg = new Aggregation(Chunk::SPEED, Aggregation::SUM);
     return (int)(Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2, $qF3, $qF4])], [$agg])[$agg->getName()] ?? 0);
-  }
-
-  /**
-   *  Adjust the benchmark of an agent for a task to ensure the actual time it takes to calculate a chunk
-   *  is within 20% of the configured chunk duration time.
-   *
-   * @param Chunk $chunk
-   * @param Task $task
-   * @throws Exception
-   */
-  public static function tuneChunkDuration(Chunk $chunk, Task $task, Agent $agent): void {
-    $timeTaken = $chunk->getSolveTime() - $chunk->getDispatchTime();
-    if ($timeTaken <= 0) {
-      return; // prevent math & logic errors
-    }
-    $differenceToChunk = $task->getChunkTime() / $timeTaken;
-
-    // If the difference between the configured chunk duration time and the actual time taken
-    // is less than 20% don't make any adjustments, margin of error. We also disregard any 
-    // adjustments that would result in a smaller chunk size (anything < 1.0), since we do not want to perform
-    // automatic reductions in chunk size.
-    $MIN_CHUNK_DIFFERENCE = 1.2;
-    if ($differenceToChunk < $MIN_CHUNK_DIFFERENCE) {
-      return;
-    }
-    
-    // Limit the multiplier used to adjust the benchmark score this prevents overshooting the time
-    // an agent should work on a chunk. This value could be increased (to allow for faster ramping up),
-    // but since the benchmark results and/or chunk calculation times for small chunks can be pretty
-    // inaccurate this is a pretty safe and reasonable multiplier. Keep in mind the chunk duration 
-    // will not be tuned down, only up. So once overshot, you're stuck with that time for the remainder of the task.
-    $MAX_CHUNK_DIFFERENCE = 1.5;
-    $differenceToChunk = ($differenceToChunk > $MAX_CHUNK_DIFFERENCE) ? $MAX_CHUNK_DIFFERENCE : $differenceToChunk;
-    
-    $qF1 = new QueryFilter(Assignment::AGENT_ID, $chunk->getAgentId(), "=");
-    $qF2 = new QueryFilter(Assignment::TASK_ID, $chunk->getTaskId(), "=");
-    $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]])[0];
-
-    $benchmark = $assignment->getBenchmark();
-    $benchmarkParts = explode(":", $benchmark);
-    if ($benchmarkParts[0] == 0 || count($benchmarkParts) != 2) {
-      return;
-    }
-    $newBenchmark = $differenceToChunk * intval($benchmarkParts[0]);
-    $assignment->setBenchmark(round($newBenchmark).":".round($benchmarkParts[1]));
-    DServerLog::log(DServerLog::INFO, "{$timeTaken}---{$task->getChunkTime()}", [$agent, $assignment]);
-    DServerLog::log(DServerLog::INFO, "Multiplied the benchmark of agent by ".round($differenceToChunk,2), [$agent, $assignment]);
-    Factory::getAssignmentFactory()->update($assignment);
   }
 }
