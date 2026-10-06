@@ -2,6 +2,7 @@
 
 namespace Tests\Utils;
 
+use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Hashlist;
@@ -34,7 +35,7 @@ final class BenchmarkUtilsTest extends TestBase {
   private ?Agent $agent = null;
 
   /**
-   * @throws \Exception
+   * @throws Exception
    */
   #[Override]
   protected function setUp(): void {
@@ -50,7 +51,7 @@ final class BenchmarkUtilsTest extends TestBase {
   }
 
   /**
-   * @throws \Exception
+   * @throws Exception
    */
   #[Override]
   protected function tearDown(): void {

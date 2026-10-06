@@ -17,6 +17,7 @@ use Hashtopolis\inc\agent\PValuesBenchmarkType;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\SConfig;
+use PDOException;
 
 /**
  * Benchmark cache (issue #879).
@@ -291,7 +292,7 @@ class BenchmarkUtils {
     try {
       Factory::getBenchmarkFactory()->save($benchmark);
     }
-    catch (\PDOException $e) {
+    catch (PDOException $e) {
       if (in_array($e->getCode(), ['23000', '23505'], true)) {
         DServerLog::log(DServerLog::DEBUG, 'Benchmark already stored concurrently', [$agent, $task]);
         return;

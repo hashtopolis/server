@@ -1831,7 +1831,8 @@ class TestDeregister(AgentProtocolBase):
 class TestBenchmarkCache(AgentProtocolBase):
     """The benchmark an agent reports is cached and reused for another agent with
     identical hardware, until the entry expires. Gated by the benchmarkCacheTtl
-    config, which is 0 (disabled) by default.
+    config, which ships on by default (the migration seeds 2592000, i.e. 30
+    days); set it to 0 to disable caching.
 
     The run signature keys on the whole attack command (plus the preprocessor and
     pipe settings and the hashlist salt count), so a unique attack command does
@@ -1880,8 +1881,8 @@ class TestBenchmarkCache(AgentProtocolBase):
         })
 
     def test_benchmark_not_cached_when_disabled(self):
-        """With benchmarkCacheTtl=0 (the default), a second agent with identical
-        hardware still has to run its own benchmark."""
+        """With benchmarkCacheTtl=0, a second agent with identical hardware
+        still has to run its own benchmark."""
         config = Config.objects.get(item='benchmarkCacheTtl')
         original = config.value
         config.value = "0"

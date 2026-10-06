@@ -91,9 +91,14 @@ final class GetChunkAction implements AgentAction {
 
         if (($assignment->getBenchmark() == '0' || $assignment->getBenchmark() == '') && $task->getIsSmall() == 0 && $task->getStaticChunks() == DTaskStaticChunking::NORMAL) {
             $cachedBenchmark = null;
-            $hashlist = BenchmarkUtils::hashlistForTask($task);
-            if ($hashlist !== null) {
-                $cachedBenchmark = BenchmarkUtils::lookup($task, $hashlist, $agent);
+            // Only consult the cache when it is enabled; the lookup does a
+            // 3-table join, so skip it (and that join) entirely when caching is
+            // off and fall straight through to requesting a benchmark.
+            if (BenchmarkUtils::getTtl() > 0) {
+                $hashlist = BenchmarkUtils::hashlistForTask($task);
+                if ($hashlist !== null) {
+                    $cachedBenchmark = BenchmarkUtils::lookup($task, $hashlist, $agent);
+                }
             }
             if ($cachedBenchmark === null) {
                 DServerLog::log(DServerLog::TRACE, 'Need to run a benchmark!', [$agent, $task]);
