@@ -32,7 +32,7 @@ class AssignmentFactory extends AbstractModelFactory {
    * @return Assignment
    */
   function getNullObject(): Assignment {
-    return new Assignment(-1, null, null, null);
+    return new Assignment(-1, null, null, null, null);
   }
   
   /**
@@ -45,6 +45,6 @@ class AssignmentFactory extends AbstractModelFactory {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
-    return new Assignment($dict['assignmentid'], $dict['taskid'], $dict['agentid'], $dict['benchmark']);
+    return new Assignment($dict['assignmentid'], $dict['taskid'], $dict['agentid'], $dict['benchmark'], $dict['chunkspeed']);
   }
 }
