@@ -24,6 +24,7 @@ use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\defines\DTaskStaticChunking;
 use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\utils\AccessUtils;
+use Hashtopolis\inc\utils\BenchmarkUtils;
 use Hashtopolis\inc\utils\ChunkUtils;
 use Hashtopolis\inc\utils\HealthUtils;
 use Hashtopolis\inc\utils\Lock;
@@ -89,10 +90,25 @@ final class GetChunkAction implements AgentAction {
         }
 
         if (($assignment->getBenchmark() == '0' || $assignment->getBenchmark() == '') && $task->getIsSmall() == 0 && $task->getStaticChunks() == DTaskStaticChunking::NORMAL) {
-            DServerLog::log(DServerLog::TRACE, 'Need to run a benchmark!', [$agent, $task]);
-            return $this->success($response, PActions::GET_CHUNK, [
-                PResponseGetChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED,
-            ]);
+            $cachedBenchmark = null;
+            // Only consult the cache when it is enabled; the lookup does a
+            // 3-table join, so skip it (and that join) entirely when caching is
+            // off and fall straight through to requesting a benchmark.
+            if (BenchmarkUtils::getTtl() > 0) {
+                $hashlist = BenchmarkUtils::hashlistForTask($task);
+                if ($hashlist !== null) {
+                    $cachedBenchmark = BenchmarkUtils::lookup($task, $hashlist, $agent);
+                }
+            }
+            if ($cachedBenchmark === null) {
+                DServerLog::log(DServerLog::TRACE, 'Need to run a benchmark!', [$agent, $task]);
+                return $this->success($response, PActions::GET_CHUNK, [
+                    PResponseGetChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED,
+                ]);
+            }
+            DServerLog::log(DServerLog::DEBUG, 'Reusing cached benchmark, skipping benchmark request', [$agent, $task]);
+            $assignment->setBenchmark($cachedBenchmark);
+            Factory::getAssignmentFactory()->update($assignment);
         }
 
         if ($agent->getIsActive() == 0) {
