@@ -1193,4 +1193,58 @@ final class UtilTest extends TestBase {
     $this->expectException(Exception::class);
     Util::buildBackendBaseUrl();
   }
+
+  /**
+   * fileLineCount returns -1 if the file does not exist.
+   */
+  public function testFileLineCountFileNotFound(): void {
+    $this->assertEquals(-1, Util::fileLineCount('/tmp/hashtopolis_util_nonexistent_file'));
+  }
+
+  /**
+   * fileLineCount counts the lines of a plain file.
+   */
+  public function testFileLineCountPlainFile(): void {
+    $path = tempnam(sys_get_temp_dir(), 'hashtopolis_util_');
+    file_put_contents($path, "line1\nline2\nline3\n");
+    $this->assertEquals(3, Util::fileLineCount($path));
+    unlink($path);
+  }
+
+  /**
+   * fileLineCount counts the lines of the decompressed stream of a .gz file
+   * (it is assumed that the archive contains exactly one file).
+   */
+  public function testFileLineCountGzFile(): void {
+    $path = tempnam(sys_get_temp_dir(), 'hashtopolis_util_') . '.gz';
+    $plainPath = tempnam(sys_get_temp_dir(), 'hashtopolis_util_');
+    file_put_contents($plainPath, "line1\nline2\nline3\n");
+    $gz = gzopen($path, 'wb');
+    gzwrite($gz, file_get_contents($plainPath));
+    gzclose($gz);
+    unlink($plainPath);
+    $this->assertEquals(3, Util::fileLineCount($path));
+    unlink($path);
+  }
+
+  /**
+   * fileLineCount counts zero lines for an empty .gz file.
+   */
+  public function testFileLineCountGzFileEmpty(): void {
+    $path = tempnam(sys_get_temp_dir(), 'hashtopolis_util_') . '.gz';
+    $gz = gzopen($path, 'wb');
+    gzclose($gz);
+    $this->assertEquals(0, Util::fileLineCount($path));
+    unlink($path);
+  }
+
+  /**
+   * fileLineCount returns -1 for a corrupted .gz file which cannot be decompressed.
+   */
+  public function testFileLineCountGzFileCorrupted(): void {
+    $path = tempnam(sys_get_temp_dir(), 'hashtopolis_util_') . '.gz';
+    file_put_contents($path, "this is not gzip data\n");
+    $this->assertEquals(-1, Util::fileLineCount($path));
+    unlink($path);
+  }
 }
