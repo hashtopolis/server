@@ -785,6 +785,32 @@ class Util {
     }
     // find out what a prettier solution for this would be, as opposed to setting the max execution time to an arbitrary two hours
     ini_set('max_execution_time', '7200');
+    if (str_ends_with($file, '.gz')) {
+      // gzip files are counted on the decompressed stream. It is assumed that the archive contains exactly one file.
+      $raw = @fopen($file, 'rb');
+      if ($raw === false) {
+        return -1;
+      }
+      $magic = fread($raw, 2);
+      fclose($raw);
+      if ($magic !== "\x1f\x8b") {
+        return -1;
+      }
+      $handle = @fopen('compress.zlib://' . $file, 'rb');
+      if ($handle === false) {
+        return -1;
+      }
+      $count = 0;
+      while (($line = @fgets($handle)) !== false) {
+        $count++;
+      }
+      if (!feof($handle)) {
+        fclose($handle);
+        return -1;
+      }
+      fclose($handle);
+      return $count;
+    }
     $file = new SplFileObject($file, 'r');
     $file->seek(PHP_INT_MAX);
     
