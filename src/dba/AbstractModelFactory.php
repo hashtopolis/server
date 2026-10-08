@@ -107,14 +107,28 @@ abstract class AbstractModelFactory {
   /**
    * @param AbstractModel $model
    * @param string $key unmapped column name
-   * @return string placeholder SQL fragment ("?" or db-specific hex-to-binary function)
+   * @return bool
    */
-  private static function binaryPlaceholder(AbstractModel $model, string $key): string {
-    if (!self::isBinaryColumn($model, $key)) {
-      return "?";
+  private static function isJsonColumn(AbstractModel $model, string $key): bool {
+    $features = $model->getFeatures();
+    return isset($features[$key]['type']) && $features[$key]['type'] === 'json';
+  }
+  
+  /**
+   * @param AbstractModel $model
+   * @param string $key unmapped column name
+   * @return string placeholder SQL fragment ("?" or db-specific value conversion function)
+   */
+  private static function columnPlaceholder(AbstractModel $model, string $key): string {
+    if (self::isBinaryColumn($model, $key)) {
+      $dbType = StartupConfig::getInstance()->getDatabaseType();
+      return $dbType === 'mysql' ? "UNHEX(?)" : "decode(?, 'hex')";
     }
-    $dbType = StartupConfig::getInstance()->getDatabaseType();
-    return $dbType === 'mysql' ? "UNHEX(?)" : "decode(?, 'hex')";
+    elseif (self::isJsonColumn($model, $key)) {
+      $dbType = StartupConfig::getInstance()->getDatabaseType();
+      return $dbType === 'mysql' ? "?" : "?::json";
+    }
+    return "?";
   }
   
   /**
@@ -204,7 +218,7 @@ abstract class AbstractModelFactory {
     $query .= " (" . implode(",", $keys) . ") ";
     $placeholders = [];
     foreach ($origKeys as $k) {
-      $placeholders[] = self::binaryPlaceholder($model, $k);
+      $placeholders[] = self::columnPlaceholder($model, $k);
     }
     $query = $query . " VALUES (" . implode(",", $placeholders) . ")";
     
@@ -278,7 +292,7 @@ abstract class AbstractModelFactory {
     $mappedKeys = self::getMappedModelKeys($model);
     
     for ($i = 0; $i < count($mappedKeys); $i++) {
-      $query .= $mappedKeys[$i] . "=" . self::binaryPlaceholder($model, $origKeys[$i]);
+      $query .= $mappedKeys[$i] . "=" . self::columnPlaceholder($model, $origKeys[$i]);
       if ($i < count($mappedKeys) - 1) {
         $query .= ", ";
       }
@@ -306,7 +320,7 @@ abstract class AbstractModelFactory {
     $elements = [];
     $values = [];
     foreach ($arr as $key => $val) {
-      $elements[] = self::getMappedModelKey($model, $key) . "=" . self::binaryPlaceholder($model, $key) . " ";
+      $elements[] = self::getMappedModelKey($model, $key) . "=" . self::columnPlaceholder($model, $key) . " ";
       $values[] = $val;
     }
     $query .= implode(", ", $elements);
@@ -333,7 +347,7 @@ abstract class AbstractModelFactory {
    * @throws Exception
    */
   public function set(AbstractModel $model, string $key, $value): AbstractModel {
-    $query = "UPDATE " . $this->getMappedModelTable() . " SET " . self::getMappedModelKey($model, $key) . "=" . self::binaryPlaceholder($model, $key);
+    $query = "UPDATE " . $this->getMappedModelTable() . " SET " . self::getMappedModelKey($model, $key) . "=" . self::columnPlaceholder($model, $key);
     
     $values = [];
     $query = $query . " WHERE " . $model->getPrimaryKey() . "=?";
@@ -512,7 +526,7 @@ abstract class AbstractModelFactory {
     $query .= " (" . implode(",", $keys) . ") ";
     $placeholders = [];
     foreach ($origKeys as $k) {
-      $placeholders[] = self::binaryPlaceholder($models[0], $k);
+      $placeholders[] = self::columnPlaceholder($models[0], $k);
     }
     $placeHolderStr = " (" . implode(",", $placeholders) . ")";
     
@@ -1192,16 +1206,17 @@ abstract class AbstractModelFactory {
   
   /**
    * @param $options
-   * @return bool
+   * @return PDOStatement
    * @throws Exception
    */
-  public function massUpdate($options): bool {
+  public function massUpdate($options): PDOStatement {
     $vals = [];
     $query = $this->buildMassUpdateQuery($options, $vals);
     
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
-    return $stmt->execute($vals);
+    $stmt->execute($vals);
+    return $stmt;
   }
   
   /**
@@ -1300,4 +1315,3 @@ abstract class AbstractModelFactory {
     }
   }
 }
-

@@ -116,7 +116,27 @@ echo ""
 echo "                        Hashtopolis is now ready to use!"
 echo "                                      *\0/*"
 echo ""
+
 echo ""
 
+
+# Schedule the background job runner. It is called once a minute, overlapping runs
+# are prevented by the runner itself using a lock file. A cron daemon cannot be used
+# here as the container runs with an unprivileged user (vscode/www-data), so a simple
+# scheduler loop is started in the background instead. The loop inherits the container
+# environment, which a cron daemon would not. Set HASHTOPOLIS_CRON_ENABLE=0 to disable
+# it, for example to run the runner with an external cron or for deterministic tests.
+if [[ -z "${HASHTOPOLIS_CRON_ENABLE+x}" ]]; then
+    HASHTOPOLIS_CRON_ENABLE="1"
+fi
+if [[ "$HASHTOPOLIS_CRON_ENABLE" == "1" ]]; then
+    echo "Starting background job runner scheduler (every 60s)..."
+    (
+        while true; do
+            php -d xdebug.mode=off -f ${HASHTOPOLIS_DOCUMENT_ROOT}/inc/cron.php
+            sleep 60
+        done
+    ) &
+fi
 
 docker-php-entrypoint apache2-foreground
