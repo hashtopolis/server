@@ -576,11 +576,14 @@ abstract class AbstractBaseAPI {
    * Temporary mapping until src/inc/defines/accessControl.php permissions are no longer used
    */
   public static array $acl_mapping = array(
-    DAccessControl::VIEW_HASHLIST_ACCESS[0] => array(Hashlist::PERM_READ),
+    // Working with hashlists needs the hashtypes: picking one for a new hashlist, showing the one of a hashlist and
+    // looking up the cracker versions supporting it when creating tasks
+    DAccessControl::VIEW_HASHLIST_ACCESS[0] => array(Hashlist::PERM_READ, HashType::PERM_READ),
     DAccessControl::MANAGE_HASHLIST_ACCESS => array(Hashlist::PERM_READ, Hashlist::PERM_UPDATE, Hashlist::PERM_DELETE,
-                                                    Hash::PERM_READ, Hash::PERM_UPDATE, Hash::PERM_DELETE
+                                                    Hash::PERM_READ, Hash::PERM_UPDATE, Hash::PERM_DELETE,
+                                                    HashType::PERM_READ
     ),
-    DAccessControl::CREATE_HASHLIST_ACCESS => array(Hashlist::PERM_CREATE, Hash::PERM_CREATE),
+    DAccessControl::CREATE_HASHLIST_ACCESS => array(Hashlist::PERM_CREATE, Hash::PERM_CREATE, HashType::PERM_READ),
     
     DAccessControl::CREATE_SUPERHASHLIST_ACCESS => array(HashlistHashlist::PERM_CREATE, HashlistHashlist::PERM_READ),
     
