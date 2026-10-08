@@ -8,8 +8,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import requests
 
-from hashtopolis import Cracker, CrackerType, FileImport, HashtopolisError
-from utils import (BaseTest, SEVEN_ZIP_MAGIC, do_create_agent, do_create_local_cracker,
+from hashtopolis import Cracker, CrackerType, FileImport, HashType, HashtopolisError, User
+from utils import (BaseTest, SEVEN_ZIP_MAGIC, create_restricted_user, do_create_agent, do_create_local_cracker,
                    get_bearer_token, get_hashtopolis_uri)
 
 
@@ -549,3 +549,315 @@ class TestDownloadEndpoint(BaseTest):
         obj = self.create_local_cracker()
         r = self._download(obj, params={'token': agent.token}, kind='unknown')
         self.assertEqual(404, r.status_code)
+
+
+class TestCrackerHashtypes(BaseTest):
+    """The n-m association between cracker binaries and hashtypes.
+
+    Hashcat binaries are associated with all existing hashtypes (hashcat
+    supports all of them), binaries of other types start without any
+    association, the supported hashtypes have to be associated manually via
+    the relationship endpoints.
+    """
+
+    def hashtype_ids_of(self, obj):
+        obj = Cracker.objects.prefetch_related('hashtypes').get(pk=obj.id)
+        return sorted(ht.id for ht in obj.hashtypes_set)
+
+    def create_unique_hashtype(self):
+        stamp = int(time.time() * 1000)
+        # ids above the seeded hashcat modes and the ranges of the other test files
+        # (hashtype ids are user supplied, they are the hashcat mode numbers)
+        return self.create_hashtype(extra_payload={'hashTypeId': 100001 + stamp % 99999,
+                                                    'description': f'cracker-relation-hashtype-{stamp}'})
+
+    def relationship_request(self, obj, method, data, model='crackers', relation='hashtypes'):
+        headers = {'Authorization': f'Bearer {get_bearer_token()}',
+                    'Content-Type': 'application/json'}
+        return requests.request(method,
+                                 f'{APIV2}/ui/{model}/{obj.id}/relationships/{relation}',
+                                 headers=headers, json={'data': data})
+
+    def test_create_associates_all_hashtypes(self):
+        """A new hashcat binary is associated with all existing hashtypes."""
+        obj = self.create_cracker()
+
+        all_ids = sorted(ht.id for ht in HashType.objects.all())
+        self.assertListEqual(all_ids, self.hashtype_ids_of(obj))
+
+    def test_create_non_hashcat_type_associates_no_hashtypes(self):
+        """A binary of a non-hashcat type is created without any hashtype associations."""
+        stamp = int(time.time() * 1000)
+        cracker_type = self.create_crackertype(extra_payload={'typeName': f'generic-cracker-{stamp}'})
+        obj = self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+
+        self.assertListEqual([], self.hashtype_ids_of(obj))
+
+    def test_user_associates_hashtype_with_generic_cracker(self):
+        """A user can create a hashtype and associate it with his generic cracker binary."""
+        stamp = int(time.time() * 1000)
+        cracker_type = self.create_crackertype(extra_payload={'typeName': f'generic-cracker-{stamp}'})
+        obj = self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+        hashtype = self.create_unique_hashtype()
+
+        # the generic binary starts without associations, the new hashtype is
+        # not associated with it automatically either
+        self.assertListEqual([], self.hashtype_ids_of(obj))
+        hashtype_obj = HashType.objects.prefetch_related('crackerBinaries').get(pk=hashtype.id)
+        self.assertNotIn(obj.id, sorted(cracker.id for cracker in hashtype_obj.crackerBinaries_set))
+
+        # the user associates his hashtype with the generic binary manually
+        r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': hashtype.id}])
+        self.assertEqual(204, r.status_code, f'Patching failed: {r.text}')
+        self.assertListEqual([hashtype.id], self.hashtype_ids_of(obj))
+
+    def test_patch_hashtypes_replaces_set(self):
+        """Patching the relationship replaces the associated hashtypes with the given list."""
+        obj = self.create_cracker()
+        hashtype1 = self.create_unique_hashtype()
+        hashtype2 = self.create_unique_hashtype()
+
+        work_obj = Cracker.objects.prefetch_related('hashtypes').get(pk=obj.id)
+        work_obj.hashtypes_set = [hashtype1, hashtype2]
+        work_obj.save()
+
+        self.assertListEqual(sorted([hashtype1.id, hashtype2.id]), self.hashtype_ids_of(obj))
+
+    def test_add_hashtype_with_relationship_post(self):
+        """Single hashtypes can be added to the association of a binary."""
+        obj = self.create_cracker()
+        hashtype1 = self.create_unique_hashtype()
+        hashtype2 = self.create_unique_hashtype()
+
+        # replace the set of the new binary with a single hashtype
+        r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': hashtype1.id}])
+        self.assertEqual(204, r.status_code)
+        self.assertListEqual([hashtype1.id], self.hashtype_ids_of(obj))
+
+        # add the second hashtype to the association
+        r = self.relationship_request(obj, 'POST', [{'type': 'hashType', 'id': hashtype2.id}])
+        self.assertIn(r.status_code, [201, 204], f'Adding failed: {r.text}')
+        self.assertListEqual(sorted([hashtype1.id, hashtype2.id]), self.hashtype_ids_of(obj))
+
+        # adding the same hashtype again results in a conflict
+        r = self.relationship_request(obj, 'POST', [{'type': 'hashType', 'id': hashtype2.id}])
+        self.assertEqual(409, r.status_code)
+
+    def test_concurrent_add_creates_single_association(self):
+        """Concurrent requests cannot create the same association twice.
+
+        The unique key on (crackerBinaryId, hashTypeId) guarantees that of two
+        concurrent requests adding the same hashtype only one can create the
+        association; the other one is answered with a conflict instead of
+        creating a duplicate.
+        """
+        # a generic (non-hashcat) binary starts without any association and
+        # the fresh hashtype is only auto-associated with hashcat binaries,
+        # so both requests start from a non-existing association
+        stamp = int(time.time() * 1000)
+        cracker_type = self.create_crackertype(extra_payload={'typeName': f'generic-cracker-{stamp}'})
+        obj = self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+        hashtype = self.create_unique_hashtype()
+        self.assertListEqual([], self.hashtype_ids_of(obj))
+
+        barrier = threading.Barrier(2)
+        results = []
+
+        def add():
+            barrier.wait()
+            results.append(self.relationship_request(obj, 'POST', [{'type': 'hashType', 'id': hashtype.id}]))
+
+        threads = [threading.Thread(target=add) for _ in range(2)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        statuses = sorted(r.status_code for r in results)
+        self.assertEqual([201, 409], statuses,
+                         f'Concurrent adds should give exactly one success and one conflict: '
+                         f'{[(r.status_code, r.text) for r in results]}')
+        self.assertListEqual([hashtype.id], self.hashtype_ids_of(obj))
+
+    def test_remove_hashtype_with_relationship_delete(self):
+        """Single hashtypes can be removed from the association of a binary."""
+        obj = self.create_cracker()
+        hashtype = self.create_unique_hashtype()
+
+        # replace the set of the new binary with two hashtypes
+        seeded_hashtype = HashType.objects.all()[0]
+        r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': seeded_hashtype.id},
+                                                     {'type': 'hashType', 'id': hashtype.id}])
+        self.assertEqual(204, r.status_code)
+        self.assertListEqual(sorted([seeded_hashtype.id, hashtype.id]), self.hashtype_ids_of(obj))
+
+        # remove one of them
+        r = self.relationship_request(obj, 'DELETE', [{'type': 'hashType', 'id': seeded_hashtype.id}])
+        self.assertIn(r.status_code, [201, 204], f'Removal failed: {r.text}')
+        self.assertListEqual([hashtype.id], self.hashtype_ids_of(obj))
+
+    def test_association_is_readonly_from_hashtype_side(self):
+        """The association can only be edited from the cracker binary side."""
+        hashtype = self.create_unique_hashtype()
+        obj = self.create_cracker()
+
+        # the hashtype is visible from the hashtype side
+        hashtype_obj = HashType.objects.prefetch_related('crackerBinaries').get(pk=hashtype.id)
+        self.assertIn(obj.id, sorted(cracker.id for cracker in hashtype_obj.crackerBinaries_set))
+
+        # but it cannot be changed from there
+        r = self.relationship_request(hashtype, 'PATCH',
+                                      [{'type': 'crackerBinary', 'id': obj.id}],
+                                      model='hashtypes', relation='crackerBinaries')
+        self.assertEqual(400, r.status_code, f'Patching should be rejected: {r.text}')
+
+        r = self.relationship_request(hashtype, 'POST',
+                                      [{'type': 'crackerBinary', 'id': obj.id}],
+                                      model='hashtypes', relation='crackerBinaries')
+        self.assertEqual(400, r.status_code, f'Adding should be rejected: {r.text}')
+
+        r = self.relationship_request(hashtype, 'DELETE',
+                                      [{'type': 'crackerBinary', 'id': obj.id}],
+                                      model='hashtypes', relation='crackerBinaries')
+        self.assertEqual(400, r.status_code, f'Deleting should be rejected: {r.text}')
+
+    def test_relationship_routes_enforce_binary_access_group(self):
+        """The hashtype relationship routes enforce the binary's access group.
+
+        A user with global cracker permissions who is not a member of the
+        binary's access group must not be able to read, replace, add or remove
+        its hashtype associations, even though hashtypes themselves are global
+        and not isolated by access groups.
+        """
+        obj = self.create_cracker()
+        hashtype = self.create_unique_hashtype()
+        r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': hashtype.id}])
+        self.assertEqual(204, r.status_code, f'Patching failed: {r.text}')
+        self.assertListEqual([hashtype.id], self.hashtype_ids_of(obj))
+
+        username, password = create_restricted_user(self, {
+            'permCrackerBinaryRead': True,
+            'permCrackerBinaryUpdate': True,
+            'permCrackerBinaryDelete': True,
+            'permHashTypeRead': True,
+        })
+        r = requests.post(f'{APIV2}/auth/token', auth=(username, password))
+        self.assertEqual(201, r.status_code, f'Could not get a token: {r.text}')
+        # only requests with a body may announce a json content type, the body
+        # parser rejects bodyless requests which claim to carry json
+        auth_headers = {'Authorization': f"Bearer {r.json()['token']}"}
+        headers = {**auth_headers, 'Content-Type': 'application/json'}
+
+        related_url = f'{APIV2}/ui/crackers/{obj.id}/hashtypes'
+        relationship_url = f'{APIV2}/ui/crackers/{obj.id}/relationships/hashtypes'
+        data = [{'type': 'hashType', 'id': hashtype.id}]
+
+        # reading the association is denied
+        r = requests.get(related_url, headers=auth_headers)
+        self.assertEqual(403, r.status_code, f'Related resource listing should be denied: {r.text}')
+        r = requests.get(relationship_url, headers=auth_headers)
+        self.assertEqual(403, r.status_code, f'Relationship link should be denied: {r.text}')
+
+        # every modifying request is denied
+        r = requests.patch(relationship_url, headers=headers, json={'data': []})
+        self.assertEqual(403, r.status_code, f'Replacing the association should be denied: {r.text}')
+        r = requests.post(relationship_url, headers=headers, json={'data': data})
+        self.assertEqual(403, r.status_code, f'Adding to the association should be denied: {r.text}')
+        r = requests.delete(relationship_url, headers=headers, json={'data': data})
+        self.assertEqual(403, r.status_code, f'Removing from the association should be denied: {r.text}')
+
+        # the association is unchanged
+        self.assertListEqual([hashtype.id], self.hashtype_ids_of(obj))
+
+        # a member of the binary's access group can read and edit the association
+        user = User.objects.get(name=username)
+        admin_headers = {'Authorization': f'Bearer {get_bearer_token()}',
+                         'Content-Type': 'application/json'}
+        r = requests.post(f'{APIV2}/ui/accessgroups/1/relationships/userMembers',
+                          headers=admin_headers,
+                          json={'data': [{'type': 'user', 'id': user.id}]})
+        self.assertEqual(201, r.status_code, f'Could not add the user to the access group: {r.text}')
+
+        r = requests.get(related_url, headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Related resource listing should be allowed: {r.text}')
+        r = requests.get(relationship_url, headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Relationship link should be allowed: {r.text}')
+        r = requests.delete(relationship_url, headers=headers, json={'data': data})
+        self.assertIn(r.status_code, [201, 204], f'Removing should be allowed: {r.text}')
+        self.assertListEqual([], self.hashtype_ids_of(obj))
+
+    def test_reverse_relation_filters_binaries_by_access_group(self):
+        """Expansions and relationship links of a hashtype only show accessible binaries.
+
+        Hashtypes are global, but the binaries associated with them are isolated
+        by access group: a user without access to a binary's access group must
+        not see the binary when the hashtype is expanded, when its relationship
+        link is read or when the related binaries are listed.
+        """
+        obj = self.create_cracker()
+        hashtype = self.create_unique_hashtype()
+        r = self.relationship_request(obj, 'PATCH', [{'type': 'hashType', 'id': hashtype.id}])
+        self.assertEqual(204, r.status_code, f'Patching failed: {r.text}')
+
+        # the admin is a member of the default access group and sees the binary
+        hashtype_obj = HashType.objects.prefetch_related('crackerBinaries').get(pk=hashtype.id)
+        self.assertIn(obj.id, sorted(cracker.id for cracker in hashtype_obj.crackerBinaries_set))
+
+        username, password = create_restricted_user(self, {
+            'permCrackerBinaryRead': True,
+            'permHashTypeRead': True,
+        })
+        r = requests.post(f'{APIV2}/auth/token', auth=(username, password))
+        self.assertEqual(201, r.status_code, f'Could not get a token: {r.text}')
+        auth_headers = {'Authorization': f"Bearer {r.json()['token']}"}
+
+        # expanding the hashtype does not include the inaccessible binary
+        hashtype_obj = HashType.objects.prefetch_related('crackerBinaries') \
+            .authenticate((username, password)).get(pk=hashtype.id)
+        self.assertEqual([], [cracker.id for cracker in hashtype_obj.crackerBinaries_set])
+
+        # the relationship link and the related resource listing are empty as well
+        r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}/relationships/crackerBinaries',
+                         headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Relationship link should be readable: {r.text}')
+        self.assertEqual([], r.json()['data'])
+        r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}/crackerBinaries',
+                         headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Related listing should be readable: {r.text}')
+        self.assertEqual([], r.json()['data'])
+
+        # a member of the binary's access group sees it in all three views
+        user = User.objects.get(name=username)
+        admin_headers = {'Authorization': f'Bearer {get_bearer_token()}',
+                         'Content-Type': 'application/json'}
+        r = requests.post(f'{APIV2}/ui/accessgroups/1/relationships/userMembers',
+                          headers=admin_headers,
+                          json={'data': [{'type': 'user', 'id': user.id}]})
+        self.assertEqual(201, r.status_code, f'Could not add the user to the access group: {r.text}')
+
+        hashtype_obj = HashType.objects.prefetch_related('crackerBinaries') \
+            .authenticate((username, password)).get(pk=hashtype.id)
+        self.assertIn(obj.id, [cracker.id for cracker in hashtype_obj.crackerBinaries_set])
+
+        r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}/relationships/crackerBinaries',
+                         headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Relationship link should be readable: {r.text}')
+        self.assertIn(obj.id, [int(item['id']) for item in r.json()['data']])
+        r = requests.get(f'{APIV2}/ui/hashtypes/{hashtype.id}/crackerBinaries',
+                         headers=auth_headers)
+        self.assertEqual(200, r.status_code, f'Related listing should be readable: {r.text}')
+        self.assertIn(obj.id, [int(item['id']) for item in r.json()['data']])
+
+    def test_delete_binary_removes_associations(self):
+        """Deleting a binary also removes its hashtype associations."""
+        obj = self.create_cracker(delete=False)
+        hashtype = self.create_unique_hashtype()
+        self.assertIn(hashtype.id, self.hashtype_ids_of(obj))
+        hashtype_obj = HashType.objects.prefetch_related('crackerBinaries').get(pk=hashtype.id)
+        self.assertIn(obj.id, sorted(cracker.id for cracker in hashtype_obj.crackerBinaries_set))
+
+        obj.delete()
+
+        # the deleted binary is not associated with the hashtype anymore
+        hashtype_obj = HashType.objects.prefetch_related('crackerBinaries').get(pk=hashtype.id)
+        self.assertNotIn(obj.id, sorted(cracker.id for cracker in hashtype_obj.crackerBinaries_set))
