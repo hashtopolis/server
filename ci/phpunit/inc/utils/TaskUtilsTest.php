@@ -6,8 +6,10 @@ use Exception;
 
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Chunk;
+use Hashtopolis\dba\models\CrackerBinaryHashtype;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
+use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\TestBase;
 
 
@@ -322,5 +324,73 @@ final class TaskUtilsTest extends TestBase {
     TaskUtils::setCpuTask($taskObjects["task"]->getId(), 0, $taskObjects["user"]);
     $taskUpdated = Factory::getTaskFactory()->get($taskObjects["task"]->getId());
     $this->assertEquals(0, $taskUpdated->getIsCpuTask());
+  }
+
+  /**
+   * Creates the fixtures needed to create tasks directly with TaskUtils::createTask().
+   *
+   * @throws Exception
+   */
+  private function createTaskFixtures(): array {
+    $user = $this->createUser("phpunitTaskUtils");
+    $accessGroup = $this->createAccessGroup("phpunitTaskUtils");
+    $this->createAccessGroupUser($user, $accessGroup);
+    $hashType = $this->createHashType();
+    $hashlist = $this->createHashlist($accessGroup, $hashType);
+    $crackerBinaryType = $this->createCrackerBinaryType();
+    $crackerBinary = $this->createCrackerBinary($crackerBinaryType, $accessGroup->getId());
+    return [
+      "user" => $user,
+      "hashlist" => $hashlist,
+      "hashType" => $hashType,
+      "crackerBinary" => $crackerBinary,
+    ];
+  }
+
+  /**
+   * Test that task creation is rejected when the cracker binary has hashtype
+   * associations, but not for the hashtype of the hashlist.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testCreateTaskRejectsBinaryWithoutHashtypeSupport(): void {
+    $fixtures = $this->createTaskFixtures();
+    $otherHashType = $this->createHashType();
+    $this->createDatabaseObject(
+      Factory::getCrackerBinaryHashtypeFactory(),
+      new CrackerBinaryHashtype(null, $fixtures["crackerBinary"]->getId(), $otherHashType->getId())
+    );
+
+    $this->expectException(HttpError::class);
+    $this->expectExceptionMessage("does not support the hash type");
+    TaskUtils::createTask(
+      $fixtures["hashlist"]->getId(), "Test", "#HL# -a3 ?l?l?l?l", 600, 30, 'speed', '', false, false, 0, '', 0, 0, 0, [],
+      $fixtures["crackerBinary"]->getId(), $fixtures["user"]
+    );
+  }
+
+  /**
+   * Test that task creation passes for a binary without any hashtype
+   * associations, its support is unknown and the check must not reject it.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testCreateTaskAllowsBinaryWithoutAssociations(): void {
+    $fixtures = $this->createTaskFixtures();
+
+    $task = TaskUtils::createTask(
+      $fixtures["hashlist"]->getId(), "Test", "#HL# -a3 ?l?l?l?l", 600, 30, 'speed', '', false, false, 0, '', 0, 0, 0, [],
+      $fixtures["crackerBinary"]->getId(), $fixtures["user"]
+    );
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    $this->assertNotNull($taskWrapper);
+    // the task must be deleted before the task wrapper it belongs to, the
+    // teardown deletes the registered objects in reverse registration order
+    $this->registerDatabaseObject(Factory::getTaskWrapperFactory(), $taskWrapper);
+    $this->registerDatabaseObject(Factory::getTaskFactory(), $task);
+
+    $this->assertSame($fixtures["crackerBinary"]->getId(), $task->getCrackerBinaryId());
   }
 }

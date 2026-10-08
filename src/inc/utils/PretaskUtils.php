@@ -261,6 +261,10 @@ class PretaskUtils {
     else if (!AccessUtils::userCanAccessCrackerBinary($cracker, $user)) {
       throw new HTException("You have no access to this cracker binary!");
     }
+    else if (!CrackerUtils::binarySupportsHashtype($cracker, $hashlist->getHashTypeId())) {
+      $hashtypeId = $hashlist->getHashTypeId();
+      throw new HttpError("The selected cracker binary (" . $cracker->getId() . ") does not support the hash type ($hashtypeId) of the given hashlist!");
+    }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $taskWrapper = new TaskWrapper(null, $pretask->getPriority(), $pretask->getMaxAgents(), DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0, 0);

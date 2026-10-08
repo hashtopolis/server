@@ -152,6 +152,10 @@ jobs:
       - name: Remove backend
         run: docker rm backend
 
+      # The cron scheduler is disabled so the seed comparison is deterministic:
+      # the background job runner would scan the seeded cracker binary, which
+      # creates hashtypes missing from the seed list at an unpredictable time
+      # relative to the dumps.
       - name: Start new backend
         run: |
           docker run -d --network ht-test-net --name backend \
@@ -162,6 +166,7 @@ jobs:
             -e HASHTOPOLIS_DB_DATABASE=${{ env.DB_NAME }} \
             -e HASHTOPOLIS_ADMIN_USER=admin \
             -e HASHTOPOLIS_ADMIN_PASSWORD=hashtopolis \
+            -e HASHTOPOLIS_CRON_ENABLE=0 \
             -v ht-data:/usr/local/share/hashtopolis \
             hashtopolis/backend:test
 
@@ -240,6 +245,7 @@ jobs:
             docker exec db mysql -u root -p${{ env.DB_PASS }} -e "DROP DATABASE IF EXISTS ${{ env.DB_NAME }}; CREATE DATABASE ${{ env.DB_NAME }};"
           fi
 
+      # See the comment on 'Start new backend' for why the scheduler is disabled.
       - name: Start fresh backend (newest version)
         run: |
           docker run -d --network ht-test-net --name backend \
@@ -250,6 +256,7 @@ jobs:
             -e HASHTOPOLIS_DB_DATABASE=${{ env.DB_NAME }} \
             -e HASHTOPOLIS_ADMIN_USER=admin \
             -e HASHTOPOLIS_ADMIN_PASSWORD=hashtopolis \
+            -e HASHTOPOLIS_CRON_ENABLE=0 \
             -v ht-data-fresh:/usr/local/share/hashtopolis \
             hashtopolis/backend:test
 

@@ -13,12 +13,15 @@ CREATE TABLE `CrackerBinaryHashtype` (
   CONSTRAINT `CrackerBinaryHashtype_ibfk_2` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`)
 ) ENGINE=InnoDB;
 
--- Transition for existing binaries: hashcat binaries support every hashtype
--- (they follow the hashcat mode numbering), so they are linked to all existing
--- hashtypes. Binaries of other types start without any association, their
+-- Transition for existing binaries: hashcat binaries get their hashtype
+-- associations populated by a scan of the binary, which reads the supported
+-- hash-modes from the unpacked archive. A pending scan job is enqueued for
+-- each of them here, the next run of the background job runner executes the
+-- scans. Binaries of other types start without any association, their
 -- supported hashtypes have to be associated manually.
-INSERT INTO `CrackerBinaryHashtype` (`crackerBinaryId`, `hashTypeId`)
-  SELECT DISTINCT b.`crackerBinaryId`, h.`hashTypeId`
+INSERT INTO `BackgroundJob` (`jobType`, `payload`, `status`, `userId`, `createdAt`)
+  SELECT 'scan_cracker',
+         JSON_OBJECT('crackerBinaryId', b.`crackerBinaryId`),
+         0, NULL, UNIX_TIMESTAMP()
   FROM `CrackerBinary` b
-  JOIN `CrackerBinaryType` t ON b.`crackerBinaryTypeId` = t.`crackerBinaryTypeId` AND t.`typeName` = 'hashcat'
-  CROSS JOIN `HashType` h;
+  JOIN `CrackerBinaryType` t ON b.`crackerBinaryTypeId` = t.`crackerBinaryTypeId` AND t.`typeName` = 'hashcat';

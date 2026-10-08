@@ -2376,6 +2376,12 @@
     "isSlowHash" : 0
   },
   {
+    "hashTypeId" : 24901,
+    "description" : "Besder Authentication MD5",
+    "isSalted" : 0,
+    "isSlowHash" : 0
+  },
+  {
     "hashTypeId" : 25000,
     "description" : "SNMPv3 HMAC-MD5-96/HMAC-SHA1-96",
     "isSalted" : 0,
@@ -2662,6 +2668,12 @@
     "description" : "Kerberos 5, etype 18, DB",
     "isSalted" : 0,
     "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 29000,
+    "description" : "sha1($salt.sha1(utf16le($username).':'.utf16le($pass)))",
+    "isSalted" : 0,
+    "isSlowHash" : 0
   },
   {
     "hashTypeId" : 29100,
@@ -3464,6 +3476,12 @@
   {
     "hashTypeId" : 73000,
     "description" : "Generic Hash [Bridged: Python Interpreter with GIL]",
+    "isSalted" : 0,
+    "isSlowHash" : 1
+  },
+  {
+    "hashTypeId" : 74000,
+    "description" : "Generic Hash [Bridged: Rust]",
     "isSalted" : 0,
     "isSlowHash" : 1
   },

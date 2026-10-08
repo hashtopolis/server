@@ -141,10 +141,10 @@ class UserAPISupertask extends UserAPIBasic {
    * @throws HTException
    */
   private function createSupertask($QUERY) {
-    if (!isset($QUERY[UQueryTask::SUPERTASK_NAME]) || !isset($QUERY[UQueryTask::PRETASKS])) {
+    if (!isset($QUERY[UQueryTask::SUPERTASK_NAME]) || !isset($QUERY[UQueryTask::PRETASKS]) || !isset($QUERY[UQueryTask::TASK_CRACKER_TYPE])) {
       throw new HTException("Invalid query!");
     }
-    SupertaskUtils::createSupertask($QUERY[UQueryTask::SUPERTASK_NAME], $QUERY[UQueryTask::PRETASKS]);
+    SupertaskUtils::createSupertask($QUERY[UQueryTask::SUPERTASK_NAME], $QUERY[UQueryTask::PRETASKS], $QUERY[UQueryTask::TASK_CRACKER_TYPE]);
     $this->sendSuccessResponse($QUERY);
   }
   
