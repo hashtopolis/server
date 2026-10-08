@@ -3,10 +3,9 @@
 namespace Hashtopolis\dba;
 
 use Exception;
-use Hashtopolis\dba\models\Hashlist;
+use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\User;
-use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\TestBase;
 
 require_once(dirname(__FILE__) . '/../TestBase.php');
@@ -16,7 +15,7 @@ final class PaginationFilterTest extends TestBase {
   public function testQueryStringBasic(): void {
     $filter = new PaginationFilter(HashType::IS_SALTED, 5, '>', HashType::HASH_TYPE_ID, 0);
     $this->assertEquals(
-      '(isSalted>?) OR (isSalted=? AND hashTypeId>?)',
+      '((isSalted>?) OR (isSalted=? AND hashTypeId>?))',
       $filter->getQueryString(Factory::getHashlistFactory())
     );
   }
@@ -25,29 +24,25 @@ final class PaginationFilterTest extends TestBase {
   public function testQueryStringWithTable(): void {
     $filter = new PaginationFilter(HashType::IS_SALTED, 5, '>', HashType::HASH_TYPE_ID, 0);
     $this->assertEquals(
-      '(Hashlist.isSalted>?) OR (Hashlist.isSalted=? AND Hashlist.hashTypeId>?)',
+      '((Hashlist.isSalted>?) OR (Hashlist.isSalted=? AND Hashlist.hashTypeId>?))',
       $filter->getQueryString(Factory::getHashlistFactory(), true)
     );
   }
   
-  /** Verify extra filters are AND-ed inside the second OR branch. */
-  public function testQueryStringWithFilters(): void {
-    putenv('HASHTOPOLIS_DB_TYPE=mysql');
-    StartupConfig::getInstance(true);
-    $inner = new LikeFilter(Hashlist::HASHLIST_NAME, '%test%');
-    $filter = new PaginationFilter(Hashlist::IS_SALTED, 5, '>', Hashlist::HASH_TYPE_ID, 0, [$inner]);
-    $result = $filter->getQueryString(Factory::getHashlistFactory(), true);
-    $this->assertStringContainsString('(Hashlist.isSalted>?)', $result);
-    $this->assertStringContainsString('OR (Hashlist.isSalted=?', $result);
-    $this->assertStringContainsString('AND Hashlist.hashTypeId>?', $result);
-    $this->assertStringContainsString('AND Hashlist.hashlistName LIKE BINARY ?', $result);
+  /** Verify a sort expression of a column is applied to the column and the cursor value. */
+  public function testQueryStringSortExpression(): void {
+    $filter = new PaginationFilter(Hash::HASH, 'abc', '>', Hash::HASH_ID, 0);
+    $this->assertEquals(
+      '((LEFT(Hash.hash, 1024)>LEFT(?, 1024)) OR (LEFT(Hash.hash, 1024)=LEFT(?, 1024) AND Hash.hashId>?))',
+      $filter->getQueryString(Factory::getHashFactory(), true)
+    );
   }
-
+  
   /** Verify mixed cursor operators support DESC primary sort with ASC tie-breaker. */
   public function testQueryStringMixedOperators(): void {
-    $filter = new PaginationFilter(HashType::IS_SALTED, 5, '<', HashType::HASH_TYPE_ID, 10, [], null, '>');
+    $filter = new PaginationFilter(HashType::IS_SALTED, 5, '<', HashType::HASH_TYPE_ID, 10, null, '>');
     $this->assertEquals(
-      '(isSalted<?) OR (isSalted=? AND hashTypeId>?)',
+      '((isSalted<?) OR (isSalted=? AND hashTypeId>?))',
       $filter->getQueryString(Factory::getHashTypeFactory())
     );
   }
@@ -56,16 +51,16 @@ final class PaginationFilterTest extends TestBase {
   public function testQueryStringMappedTable(): void {
     $filter = new PaginationFilter(User::USER_ID, 1, '>', User::USERNAME, '');
     $this->assertEquals(
-      '(htp_User.userId>?) OR (htp_User.userId=? AND htp_User.username>?)',
+      '((htp_User.userId>?) OR (htp_User.userId=? AND htp_User.username>?))',
       $filter->getQueryString(Factory::getUserFactory(), true)
     );
   }
   
   /** Verify overrideFactory resolves columns from the override. */
   public function testQueryStringOverrideFactory(): void {
-    $filter = new PaginationFilter(HashType::IS_SALTED, 5, '>', HashType::HASH_TYPE_ID, 0, [], Factory::getHashlistFactory());
+    $filter = new PaginationFilter(HashType::IS_SALTED, 5, '>', HashType::HASH_TYPE_ID, 0, Factory::getHashlistFactory());
     $this->assertEquals(
-      '(Hashlist.isSalted>?) OR (Hashlist.isSalted=? AND Hashlist.hashTypeId>?)',
+      '((Hashlist.isSalted>?) OR (Hashlist.isSalted=? AND Hashlist.hashTypeId>?))',
       $filter->getQueryString(Factory::getUserFactory(), true)
     );
   }
@@ -74,13 +69,6 @@ final class PaginationFilterTest extends TestBase {
   public function testGetValue(): void {
     $filter = new PaginationFilter(HashType::IS_SALTED, 5, '>', HashType::HASH_TYPE_ID, 10);
     $this->assertEquals([5, 5, 10], $filter->getValue());
-  }
-  
-  /** Verify getValue includes inner filter values. */
-  public function testGetValueWithFilters(): void {
-    $inner = new LikeFilter(HashType::DESCRIPTION, '%search%');
-    $filter = new PaginationFilter(HashType::IS_SALTED, 5, '>', HashType::HASH_TYPE_ID, 10, [$inner]);
-    $this->assertEquals([5, 5, 10, '%search%'], $filter->getValue());
   }
   
   /** Verify getHasValue returns true when value is not null. */
@@ -108,7 +96,7 @@ final class PaginationFilterTest extends TestBase {
     $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3_' . $testId, 10, 0));
     
     $scope = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
-    $pf = new PaginationFilter(HashType::IS_SALTED, 3, '>', HashType::HASH_TYPE_ID, 0, [$scope]);
+    $pf = new PaginationFilter(HashType::IS_SALTED, 3, '>', HashType::HASH_TYPE_ID, 0);
     $results = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$scope, $pf]]);
     
     $this->assertGreaterThanOrEqual(2, count($results));
@@ -130,7 +118,7 @@ final class PaginationFilterTest extends TestBase {
     $this->createDatabaseObject(Factory::getHashTypeFactory(), new HashType(null, 'ht3_' . $testId, 10, 0));
     
     $scope = new LikeFilter(HashType::DESCRIPTION, '%' . $testId);
-    $pf = new PaginationFilter(HashType::IS_SALTED, 6, '<', HashType::HASH_TYPE_ID, 0, [$scope]);
+    $pf = new PaginationFilter(HashType::IS_SALTED, 6, '<', HashType::HASH_TYPE_ID, 0);
     $results = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$scope, $pf]]);
     
     $this->assertGreaterThanOrEqual(2, count($results));
@@ -169,7 +157,6 @@ final class PaginationFilterTest extends TestBase {
       '<',
       HashType::HASH_TYPE_ID,
       $firstDuplicate->getId(),
-      [$scope],
       null,
       '>'
     );
@@ -184,5 +171,33 @@ final class PaginationFilterTest extends TestBase {
     $this->assertCount(2, $results);
     $this->assertSame($secondDuplicate->getId(), $results[0]->getId());
     $this->assertSame($lowerPrimary->getId(), $results[1]->getId());
+  }
+  
+  /**
+   * Verify that the pagination condition is combined as a whole with the other filters.
+   *
+   * The row in scope and the row out of scope share the primary value, so the out of scope row only matches the
+   * tie-break branch of the condition. It must still be excluded by the scope filter (e.g. an ACL filter).
+   *
+   * @throws Exception
+   */
+  public function testFilterPaginationTieBreakerRespectsOtherFilters(): void {
+    $testId = uniqid();
+    $inScope = $this->createDatabaseObject(
+      Factory::getHashTypeFactory(),
+      new HashType(null, 'ht_in_' . $testId, 5, 0)
+    );
+    $outOfScope = $this->createDatabaseObject(
+      Factory::getHashTypeFactory(),
+      new HashType(null, 'ht_out_' . $testId, 5, 0)
+    );
+    
+    $scope = new LikeFilter(HashType::DESCRIPTION, 'ht_in_' . $testId);
+    $pf = new PaginationFilter(HashType::IS_SALTED, 5, '>', HashType::HASH_TYPE_ID, $inScope->getId() - 1);
+    $results = Factory::getHashTypeFactory()->filter([Factory::FILTER => [$scope, $pf]]);
+    
+    $ids = array_map(fn($ht) => $ht->getId(), $results);
+    $this->assertContains($inScope->getId(), $ids);
+    $this->assertNotContains($outOfScope->getId(), $ids);
   }
 }

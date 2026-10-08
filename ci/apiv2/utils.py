@@ -110,8 +110,8 @@ def do_create_agent_with_task(gpu_temperatures=None, gpu_utilisations=None,
     return dict(dummy_agent=dummy_agent, agent=agent, hashlist=hashlist, task=task)
 
 
-def do_create_agentassignent(agent, task):
-    return AgentAssignment(agentId=agent.id, taskId=task.id, benchmark='0').save()
+def do_create_agentassignent(agent, task, benchmark='0'):
+    return AgentAssignment(agentId=agent.id, taskId=task.id, benchmark=benchmark).save()
 
 
 def do_create_agentbinary(**kwargs):
@@ -123,6 +123,7 @@ def do_create_apitoken(extra_payload={}, **kwargs):
     extra_payload = dict(extra_payload or {})
     extra_payload.setdefault('startValid', now)
     extra_payload.setdefault('endValid', now + 3600)
+    extra_payload.setdefault('tokenName', 'pytest-token')
     extra_payload.setdefault('isRevoked', False)
     return _do_create_obj_from_file(ApiToken, 'create_apitoken', extra_payload, **kwargs)
 
@@ -140,6 +141,7 @@ def create_apitoken_raw(test, auth, scopes):
                 'scopes': scopes,
                 'startValid': now,
                 'endValid': now + 3600,
+                'tokenName': 'pytest-token',
                 'isRevoked': False,
             },
             'type': 'ApiToken',

@@ -26,19 +26,20 @@ final class JwtTokenUtilsTest extends TestBase {
     $start = time();
     $end = $start + 3600;
     
-    $key = JwtTokenUtils::createKey($this->user->getId(), $start, $end);
+    $key = JwtTokenUtils::createKey($this->user->getId(), $start, $end, 'test-token');
     
     $this->assertInstanceOf(JwtApiKey::class, $key);
     $this->assertSame($start, $key->getStartValid());
     $this->assertSame($end, $key->getEndValid());
     $this->assertSame($this->user->getId(), $key->getUserId());
+    $this->assertSame('test-token', $key->getTokenName());
     $this->assertNotNull($key->getId());
     $this->registerDatabaseObject(Factory::getJwtApiKeyFactory(), $key);
   }
   
   public function testCreateKeyThrowsForInvalidUser(): void {
     $this->expectException(HttpError::class);
-    JwtTokenUtils::createKey(-1, time(), time() + 3600);
+    JwtTokenUtils::createKey(-1, time(), time() + 3600, 'test-token');
   }
   
   public function testDeleteKeyDeletesExpiredKey(): void {

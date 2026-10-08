@@ -91,24 +91,6 @@
       "value" : "50000"
     },
     {
-      "configId" : 18,
-      "configSectionId" : 2,
-      "item" : "yubikey_id",
-      "value" : ""
-    },
-    {
-      "configId" : 19,
-      "configSectionId" : 2,
-      "item" : "yubikey_key",
-      "value" : ""
-    },
-    {
-      "configId" : 20,
-      "configSectionId" : 2,
-      "item" : "yubikey_url",
-      "value" : "https://api.yubico.com/wsapi/2.0/verify"
-    },
-    {
       "configId" : 22,
       "configSectionId" : 3,
       "item" : "pagingSize",
@@ -383,10 +365,6 @@
     {
       "configSectionId" : 1,
       "sectionName" : "Cracking/Tasks"
-    },
-    {
-      "configSectionId" : 2,
-      "sectionName" : "Yubikey"
     },
     {
       "configSectionId" : 3,

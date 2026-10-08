@@ -33,8 +33,8 @@ class ChunkUtils {
     DServerLog::log(DServerLog::TRACE, "Handling existing chunk...", [$task, $chunk, $assignment]);
     $initialProgress = ($task->getUsePreprocessor() || $task->getForcePipe()) ? null : 0;
     
-    $agentChunkSize = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize());
-    $agentChunkSizeMax = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance, $task->getStaticChunks(), $task->getChunkSize());
+    $agentChunkSize = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize(), $assignment->getAgentId());
+    $agentChunkSizeMax = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance, $task->getStaticChunks(), $task->getChunkSize(), $assignment->getAgentId());
     if (($chunk->getCheckpoint() == $chunk->getSkip() || SConfig::getInstance()->getVal(DConfig::DISABLE_TRIMMING)) && $agentChunkSizeMax >= $chunk->getLength()) {
       //chunk has not started yet
       DServerLog::log(DServerLog::TRACE, "Chunk did not start yet and is small enough to give it to agent", [$task, $chunk, $assignment]);
@@ -127,7 +127,7 @@ class ChunkUtils {
     if ($remaining == 0 && $task->getKeyspace() != DPrince::PRINCE_KEYSPACE) {
       return null;
     }
-    $agentChunkSize = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize());
+    $agentChunkSize = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize(), $assignment->getAgentId());
     $start = $task->getKeyspaceProgress();
     $length = $agentChunkSize;
     if ($remaining / $length <= $disptolerance && $task->getKeyspace() != DPrince::PRINCE_KEYSPACE) {
@@ -148,13 +148,12 @@ class ChunkUtils {
    * @param float $tolerance
    * @param int $staticChunking
    * @param int $chunkSize
+   * @param int|null $agentId
    * @return int
    * @throws HTException
    * @throws Exception
    */
-  public static function calculateChunkSize(int $keyspace, string $benchmark, int $chunkTime, float $tolerance = 1.0, int $staticChunking = DTaskStaticChunking::NORMAL, int $chunkSize = 0): int {
-    global $QUERY;
-    
+  public static function calculateChunkSize(int $keyspace, string $benchmark, int $chunkTime, float $tolerance = 1.0, int $staticChunking = DTaskStaticChunking::NORMAL, int $chunkSize = 0, ?int $agentId = 0): int {
     if ($chunkTime <= 0) {
       $chunkTime = SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION);
     }
@@ -180,7 +179,7 @@ class ChunkUtils {
     
     if (!str_contains($benchmark, ":")) {
       // old benchmarking method
-      if ($benchmark == 0) {
+      if ($benchmark == '0' || $benchmark == '') {
         // special case on small tasks, so we just create a chunk with the size of the keyspace
         return $keyspace;
       }
@@ -207,7 +206,7 @@ class ChunkUtils {
         $benchmark = implode(":", $benchmark);
       }
       DServerLog::log(DServerLog::WARNING, "Chunk size 0!", [$keyspace, $benchmark, $chunkTime]);
-      Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Calculated chunk size was 0 on benchmark $benchmark!");
+      Util::createLogEntry("API", $agentId, DLogEntry::WARN, "Calculated chunk size was 0 on benchmark $benchmark!");
     }
     
     return intval($chunkSize);

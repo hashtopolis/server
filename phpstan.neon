@@ -9,5 +9,4 @@ parameters:
     treatPhpDocTypesAsCertain: false
     excludePaths:
         # this is deprecated/legacy and will not be touched until remove
-        - src/inc/Auth_Yubico.php
         - src/inc/Login.php

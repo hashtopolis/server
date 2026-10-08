@@ -12,6 +12,7 @@ use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
+use Hashtopolis\inc\defines\DTokenType;
 use Hashtopolis\inc\StartupConfig;
 
 use Hashtopolis\inc\utils\AccessUtils;
@@ -102,7 +103,8 @@ class ApiTokenAPI extends AbstractModelAPI {
     $secret = StartupConfig::getInstance()->getPepper(0);
     $iat = $data[JwtApiKey::START_VALID];
     $expires = $data[JwtApiKey::END_VALID];
-    $token = JwtTokenUtils::createKey($this->getCurrentUser()->getId(), $iat, $expires, $data[JwtApiKey::IS_REVOKED]);
+    $tokenName = $data[JwtApiKey::TOKEN_NAME];
+    $token = JwtTokenUtils::createKey($this->getCurrentUser()->getId(), $iat, $expires, $tokenName, $data[JwtApiKey::IS_REVOKED]);
     $jti = $token->getId();
     
     $payload = [
@@ -113,7 +115,9 @@ class ApiTokenAPI extends AbstractModelAPI {
       "scope" => json_encode($requestedScopes),
       "iss" => "Hashtopolis",
       "aud" => $this::API_AUD,
-      "kid" => hash("sha256", $secret)
+      "kid" => hash("sha256", $secret),
+      // An API token authorises resource requests, the same as a login token does
+      "type" => DTokenType::ACCESS
     ];
     
     $tokenEncoded = JWT::encode($payload, $secret, "HS256");

@@ -71,5 +71,5 @@ class CracksPerDayTest(BaseTest):
                                 headers=restricted._headers)
         self.assertEqual(response.status_code, 200, response.text)
 
-        self.assertEqual(response.json()['data'], {},
+        self.assertEqual(response.json()['meta'], {},
                          "Restricted user should not see cracks outside their access groups")

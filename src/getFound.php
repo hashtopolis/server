@@ -63,7 +63,7 @@ switch ($format) {
         $output = "";
         foreach ($current as $entry) {
           $output .= $entry->getHash();
-          if (strlen($entry->getSalt()) > 0) {
+          if (strlen($entry->getSalt() ?? '') > 0) {
             $output .= "\t" . $entry->getSalt();
           }
           $output .= "\tFF" . $lineDelimiter;

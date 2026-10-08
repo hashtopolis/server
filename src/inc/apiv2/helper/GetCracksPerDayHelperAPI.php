@@ -35,7 +35,21 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
   public static function getResponse(): null {
     return null;
   }
-  
+
+  /**
+   * The keys are dates, so a fixed getResponse() example cannot describe this.
+   * Describe the meta member with a schema instead.
+   */
+  public static function getMetaResponseSchema(): ?array {
+    return [
+      "type" => "object",
+      "description" => "Map of date (YYYY-MM-DD) to the number of hashes cracked on that day; days without cracks are omitted.",
+      "additionalProperties" => ["type" => "integer"],
+      "example" => ["2026-08-31" => 5]
+    ];
+  }
+
+
   /**
    * @param array $data
    * @return AbstractModel|array|null
@@ -78,11 +92,13 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
       $counts[$key] = ($counts[$key] ?? 0) + $value;
     }
     
-    $ret = self::createJsonResponse(data: $counts);
-    if(empty($counts)) {
-      $ret["data"] = new stdClass();
+    /* These are just counts, not resource objects, so they go into meta. An empty
+       result still has to come out as {} instead of meta being left out entirely. */
+    $ret = self::createJsonResponse(meta: $counts);
+    if (empty($counts)) {
+      $ret["meta"] = new stdClass();
     }
-    
+
     $body = $response->getBody();
     $body->write($this->ret2json($ret));
 

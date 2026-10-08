@@ -64,16 +64,47 @@ class HelperApiPathBuilder {
     elseif ($method == "get") {
       $paths[$path][$method]["parameters"] = $class->getParamsSwagger();
     }
+
+    /* A method that answers 204 No Content has no response body to describe. */
+    $noContentMethods = array_map('strtolower', $class::getNoContentMethods());
+    if (in_array($method, $noContentMethods, true)) {
+      $paths[$path][$method]["responses"]["204"] = ["description" => "No content"];
+      return;
+    }
+
     $request_response = $class->getResponse();
+    $metaResponseSchema = $class::getMetaResponseSchema();
     $ref = null;
-    if (is_array($request_response)) {
+    if ($metaResponseSchema !== null) {
+      $components[$name . "Response"] = $this->jsonApiFragments->buildMetaSchemaResponse($metaResponseSchema);
+      $ref = "#/components/schemas/" . $name . "Response";
+    }
+    else if (is_array($request_response)) {
       $components[$name . "Response"] = $this->jsonApiFragments->buildMetaResponse(
         $this->typeMapper->mapToProperties($request_response)
       );
       $ref = "#/components/schemas/" . $name . "Response";
     }
     else if (is_string($request_response)) {
-      $ref = "#/components/schemas/" . $request_response . "SingleResponse";
+      /**
+       * A "Model[]" declaration marks a helper that answers with a list of
+       * resource objects. GET helpers hand-assemble their document (jsonapi
+       * and data only), while the write helpers answer through
+       * AbstractBaseAPI::getOneResource and so share the model routes' single
+       * resource document.
+       */
+      $isList = str_ends_with($request_response, '[]');
+      $model = $isList ? substr($request_response, 0, -2) : $request_response;
+      if ($method == "get") {
+        $components[$name . "Response"] = $this->jsonApiFragments->buildHelperResourceResponse(
+          "#/components/schemas/" . $model . "ResourceObject",
+          $isList
+        );
+        $ref = "#/components/schemas/" . $name . "Response";
+      }
+      else {
+        $ref = "#/components/schemas/" . $model . "SingleResponse";
+      }
     }
     else if ($name == "ImportFileHelperAPI") {
       //ImportFileHelperAPI is hardcoded, because its different than other helpers.

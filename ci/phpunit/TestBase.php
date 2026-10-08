@@ -56,7 +56,7 @@ class TestBase extends TestCase {
     
     $this->databaseObjects = [];
     $this->savedDbType = (string)getenv('HASHTOPOLIS_DB_TYPE');
-    $this->adminUser = new User(1, 'admin', 'admin@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, 1, '', '', '', '', '');
+    $this->adminUser = new User(1, 'admin', 'admin@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, 1);
     
     // Avoid test warnings
     $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] ?? 'localhost';
@@ -234,10 +234,10 @@ class TestBase extends TestCase {
   /**
    * @throws Exception
    */
-  protected function createJwtApiKey(User $user, ?int $startValid = null, ?int $endValid = null, int $isRevoked = 0): JwtApiKey {
+  protected function createJwtApiKey(User $user, ?int $startValid = null, ?int $endValid = null, int $isRevoked = 0, string $tokenName = "test-token"): JwtApiKey {
     $key = $this->createDatabaseObject(
       Factory::getJwtApiKeyFactory(),
-      new JwtApiKey(null, $startValid ?? time(), $endValid ?? time() + 3600, $user->getId(), $isRevoked)
+      new JwtApiKey(null, $startValid ?? time(), $endValid ?? time() + 3600, $user->getId(), $tokenName, $isRevoked)
     );
     $this->assertTrue($key instanceof JwtApiKey);
     return $key;

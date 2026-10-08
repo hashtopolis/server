@@ -86,6 +86,6 @@ class GetAccessGroupsHelperAPI extends AbstractHelperAPI {
    * getAccessGroups is different because it returns via another function
    */
   public static function getResponse(): string {
-    return "AccessGroup";
+    return "AccessGroup[]";
   }
 }

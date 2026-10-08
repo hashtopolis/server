@@ -428,6 +428,25 @@ Zaps are notification to agents that another agent already cracked a hash, allow
 
 ---
 
+<span style="font-size:1.2em; font-weight:bold;">❓ The browser console shows a CORS error, or I get logged out every couple of hours</span>
+
+Both point at the same setting. The API only shares responses with origins it has been told to trust,
+and only sends the session cookie to those origins. If the frontend is served from a different
+hostname or port than the API, it has to be named — see
+[Serving the frontend on another origin](../installation_guidelines/advanced_install.md#serving-the-frontend-on-another-origin).
+
+Being logged out roughly every two hours with no visible error is the subtler half of the same
+problem: logging in works, but the session cannot be renewed because the cookie never reaches the
+API, so it lasts exactly as long as the access token.
+
+The backend logs the origin it rejected together with the list it would have accepted:
+
+```
+docker logs hashtopolis-backend
+```
+
+---
+
 ## Security & Access Control
 
 <span style="font-size:1.2em; font-weight:bold;">❓ Is there a way to trust all agents by default?</span>

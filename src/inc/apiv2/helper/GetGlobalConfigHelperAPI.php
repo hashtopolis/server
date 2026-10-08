@@ -87,7 +87,7 @@ class GetGlobalConfigHelperAPI extends AbstractHelperAPI {
   }
   
   public static function getResponse(): string {
-    return "Config";
+    return "Config[]";
   }
 
   protected function filterData(array $object): array {

@@ -41,8 +41,8 @@ class GetCompletedCountHelperAPI extends AbstractHelperAPI {
     return [TaskWrapper::PERM_READ, Task::PERM_READ];
   }
   
-  public static function getResponse(): string {
-    return "Task";
+  public static function getResponse(): array {
+    return ["completedTasks" => 5, "completedSupertasks" => 2];
   }
   
   /**
@@ -130,14 +130,9 @@ class GetCompletedCountHelperAPI extends AbstractHelperAPI {
     }
     
     $data["completedSupertasks"] = array_sum($completed);
-    
-    $ret = self::createJsonResponse(data: $data);
-    
-    $body = $response->getBody();
-    $body->write($this->ret2json($ret));
-    
-    return $response->withStatus(200)
-      ->withHeader("Content-Type", 'application/vnd.api+json;');
+
+    /* These are just counts, not resource objects, so they go into meta */
+    return self::getMetaResponse($data, $request, $response);
   }
   
   static public function register($app): void {

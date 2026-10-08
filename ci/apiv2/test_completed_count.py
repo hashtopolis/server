@@ -185,8 +185,8 @@ class CompletedCountTest(BaseTest):
                                 headers=helper._headers)
         self.assertEqual(response.status_code, 200, response.text)
 
-        data = response.json()['data']
-        self.assertEqual(data['completedTasks'], 0,
+        meta = response.json()['meta']
+        self.assertEqual(meta['completedTasks'], 0,
                          "Restricted user should not count completed tasks outside their access groups")
-        self.assertEqual(data['completedSupertasks'], 0,
+        self.assertEqual(meta['completedSupertasks'], 0,
                          "Restricted user should not count completed supertasks outside their access groups")

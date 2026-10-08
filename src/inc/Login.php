@@ -7,7 +7,6 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Session;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
-use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DLogEntryIssuer;
 use Hashtopolis\inc\defines\DNotificationType;
@@ -116,11 +115,10 @@ class Login {
    *
    * @param string $username username of the user to be logged in
    * @param string $password password which was entered on login form
-   * @param ?string $otp OTP login field
    * @return bool true on success and false on failure
    * @throws Exception
    */
-  public function login(string $username, string $password, ?string $otp = NULL): bool {
+  public function login(string $username, string $password): bool {
     /****** Check password ******/
     if ($this->valid) {
       return false;
@@ -145,45 +143,6 @@ class Login {
     }
     $this->user = $user;
     /****** End check password ******/
-    
-    /***** Check Yubikey *****/
-    if ($user->getYubikey() && Util::isYubikeyEnabled() && sizeof(SConfig::getInstance()->getVal(DConfig::YUBIKEY_ID)) != 0 && sizeof(SConfig::getInstance()->getVal(DConfig::YUBIKEY_KEY) != 0)) {
-      $keyId = substr($otp, 0, 12);
-      
-      if (strtoupper($user->getOtp1()) != strtoupper($keyId) && strtoupper($user->getOtp2()) != strtoupper($keyId) && strtoupper($user->getOtp3()) != strtoupper($keyId) && strtoupper($user->getOtp4()) != strtoupper($keyId)) {
-        Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed Yubikey login attempt due to wrong keyId!");
-        return false;
-      }
-      
-      $useHttps = true;
-      $urlOTP = SConfig::getInstance()->getVal(DConfig::YUBIKEY_URL);
-      if (!empty($urlOTP) && $_url = parse_url($urlOTP)) {
-        if ($_url['scheme'] == "http") {
-          $useHttps = false;
-        }
-        $urlPart = $_url['host'];
-        if (!empty($_url['port'])) {
-          $urlPart .= ':' . $_url['port'];
-        }
-        $urlPart .= $_url['path'];
-      }
-      
-      $yubi = new Auth_Yubico(SConfig::getInstance()->getVal(DConfig::YUBIKEY_ID), SConfig::getInstance()->getVal(DConfig::YUBIKEY_KEY), $useHttps, true);
-      
-      if (!empty($urlPart)) {
-        $yubi->addURLpart($urlPart);
-      }
-      $auth = $yubi->verify($otp);
-      
-      if (PEAR::isError($auth)) {
-        Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed login attempt due to wrong Yubikey OTP!");
-        return false;
-      }
-    }
-    else if ($user->getYubikey() && Util::isYubikeyEnabled()) {
-      return false;
-    }
-    /****** End check Yubikey ******/
     
     // At this point the user is authenticated successfully, so the session can be created.
     

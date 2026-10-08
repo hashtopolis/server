@@ -8,6 +8,7 @@ class StartupConfig {
   private array $directories;
   private array $db_properties;
   private array $peppers;
+  private array $refresh_token;
   
   /**
    * The choice here is to define the possible keys for config settings only private and only allow to
@@ -21,6 +22,9 @@ class StartupConfig {
   private const DIRECTORY_LOG    = "log";
   private const DIRECTORY_CONFIG = "config";
   private const DIRECTORY_TUS    = "tus";
+  
+  private const REFRESH_TOKEN_COOKIE_SECURE  = "cookieSecure";
+  private const REFRESH_TOKEN_COOKIE_SAMESITE = "cookieSameSite";
   
   private const DB_PROPERTY_TYPE   = "type";
   private const DB_PROPERTY_USER   = "user";
@@ -67,6 +71,19 @@ class StartupConfig {
     ];
     
     $this->peppers = ["", "", "", ""];
+    
+    /* How long a refresh token lives is not here: that is the maxSessionLength runtime setting, so an
+       administrator can change it from the interface. What remains are the two cookie attributes,
+       which describe how the deployment is served rather than what anyone prefers, and which would
+       lock every user out if they were set wrongly through the interface. */
+    $this->refresh_token = [
+      // null means the Secure flag follows the scheme the request came in over
+      self::REFRESH_TOKEN_COOKIE_SECURE => null,
+      /* Frontend and API normally share a site even when they sit on different ports, and ports do not
+         make a request cross-site, so Strict holds for the usual deployment. Only a frontend on a
+         genuinely different domain needs None, which in turn only works on a Secure cookie. */
+      self::REFRESH_TOKEN_COOKIE_SAMESITE => "Strict",
+    ];
     
     // this is a legacy check for old setups (through manual install) where some settings were stored in the conf.php
     if (file_exists(dirname(__FILE__) . "/conf.php")) {
@@ -134,6 +151,39 @@ class StartupConfig {
     if (getenv('HASHTOPOLIS_TUS_PATH') !== false) {
       $this->directories[self::DIRECTORY_TUS] = getenv('HASHTOPOLIS_TUS_PATH');
     }
+    
+    /* Only needed to overrule the automatic detection, for instance behind a proxy which terminates TLS
+       without announcing it through X-Forwarded-Proto. */
+    $cookieSecure = self::readOptionalEnv('HASHTOPOLIS_REFRESH_COOKIE_SECURE');
+    if ($cookieSecure !== null) {
+      $this->refresh_token[self::REFRESH_TOKEN_COOKIE_SECURE] = filter_var($cookieSecure, FILTER_VALIDATE_BOOLEAN);
+    }
+    if (in_array(self::readOptionalEnv('HASHTOPOLIS_REFRESH_COOKIE_SAMESITE'), ["Strict", "Lax", "None"], true)) {
+      $this->refresh_token[self::REFRESH_TOKEN_COOKIE_SAMESITE] = self::readOptionalEnv('HASHTOPOLIS_REFRESH_COOKIE_SAMESITE');
+    }
+  }
+
+  /**
+   * Reads an optional setting, treating a variable that is present but empty as one that was never
+   * set.
+   *
+   * Docker Compose writes an empty value for every `FOO: $FOO` entry whose variable is absent from
+   * the .env file, and getenv() answers "" for that rather than false. Without this, merely wiring a
+   * setting through the compose file would count as configuring it: an empty
+   * HASHTOPOLIS_REFRESH_COOKIE_SECURE reads as the boolean false and would turn the Secure flag off
+   * on every deployment, rather than leaving it to follow the scheme the request came in over.
+   *
+   * @param string $name
+   * @return string|null the trimmed value, or null when unset, empty or only whitespace
+   */
+  private static function readOptionalEnv(string $name): ?string {
+    $value = getenv($name);
+    if ($value === false) {
+      return null;
+    }
+    $value = trim($value);
+
+    return $value === "" ? null : $value;
   }
   
   /**
@@ -227,6 +277,17 @@ class StartupConfig {
     return $this->db_properties[self::DB_PROPERTY_PORT];
   }
   
+  /**
+   * @return bool|null null when the Secure flag should follow the scheme of the incoming request
+   */
+  public function getRefreshCookieSecure(): ?bool {
+    return $this->refresh_token[self::REFRESH_TOKEN_COOKIE_SECURE];
+  }
+  
+  public function getRefreshCookieSameSite(): string {
+    return $this->refresh_token[self::REFRESH_TOKEN_COOKIE_SAMESITE];
+  }
+  
   public function getPepper(int $index): string {
     if ($index < 0 || $index >= count($this->peppers)) {
       return "";
@@ -235,7 +296,7 @@ class StartupConfig {
   }
   
   public function getVersion(): string {
-    return "v1.0.0+dev";
+    return "v1.0.1+dev";
   }
   
   public function getBuild(): string {

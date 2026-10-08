@@ -154,6 +154,8 @@ $FieldNotificationTypeChoices = [
 // Null: means that an attribute is optional.
 // Alias: used for setting new names for attributes. This is for the transition between APIv1 and APIv2.
 //        Alias determines the name for the attribute as it should be called by APIv2
+// Sort_expression: optional SQL expression used instead of the raw column when sorting/paginating on it, '%s' is
+//        replaced with the column. Must be supported by all database types.
 
 //
 // Entities
@@ -255,7 +257,7 @@ $CONF['Chunk'] = [
     ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Task'],
     ['name' => 'skip', 'read_only' => True, 'type' => 'uint64', 'protected' => True],
     ['name' => 'length', 'read_only' => True, 'type' => 'uint64', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent', 'null' => True],
     ['name' => 'dispatchTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'solveTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'checkpoint', 'read_only' => True, 'type' => 'int64', 'protected' => True],
@@ -325,7 +327,8 @@ $CONF['Hash'] = [
   'columns' => [
     ['name' => 'hashId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'relation' => 'Hashlist'],
-    ['name' => 'hash', 'read_only' => False, 'type' => 'str(65535)'],
+    // sorting on full, potentially very long hashes fails on MySQL with "Out of sort memory" (see #2481)
+    ['name' => 'hash', 'read_only' => False, 'type' => 'str(65535)', 'sort_expression' => 'LEFT(%s, 1024)'],
     ['name' => 'salt', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'plaintext', 'read_only' => False, 'type' => 'str(256)'],
     ['name' => 'timeCracked', 'read_only' => False, 'type' => 'int64'],
@@ -405,6 +408,7 @@ $CONF['JwtApiKey'] = [
     ['name' => 'startValid', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'endValid', 'read_only' => True, 'type' => 'int64'],
     ['name' => 'userId', 'read_only' => True, 'null' => True, 'type' => 'int', 'relation' => 'User'],
+    ['name' => 'tokenName', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'isRevoked', 'read_only' => False, 'type' => 'bool'],
   ],
 ];
@@ -461,6 +465,18 @@ $CONF['Pretask'] = [
     ['name' => 'maxAgents', 'read_only' => False, 'type' => 'int'],
     ['name' => 'isMaskImport', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'crackerBinaryTypeId', 'read_only' => False, 'type' => 'int'],
+  ],
+];
+$CONF['RefreshToken'] = [
+  'columns' => [
+    ['name' => 'refreshTokenId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'relation' => 'User'],
+    ['name' => 'tokenHash', 'read_only' => True, 'type' => 'str(64)', 'protected' => True, 'private' => True],
+    ['name' => 'familyId', 'read_only' => True, 'type' => 'str(32)', 'protected' => True, 'private' => True],
+    ['name' => 'issuedAt', 'read_only' => True, 'type' => 'int64'],
+    ['name' => 'endValid', 'read_only' => True, 'type' => 'int64'],
+    ['name' => 'usedAt', 'read_only' => True, 'null' => True, 'type' => 'int64'],
+    ['name' => 'isRevoked', 'read_only' => True, 'type' => 'bool'],
   ],
 ];
 $CONF['RegVoucher'] = [
@@ -569,20 +585,20 @@ $CONF['TaskWrapperDisplay'] = [
     ['name' => 'displayName', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'taskWrapperIsArchived', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'taskName', 'read_only' => False, 'type' => 'str(256)'],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'null' => True],
+    ['name' => 'taskName', 'read_only' => False, 'type' => 'str(256)', 'null' => True],
     ['name' => 'color', 'read_only' => False, 'type' => 'str(50)', 'null' => True],
-    ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(65535)'],
-    ['name' => 'chunkTime', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'statusTimer', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'keyspace', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'keyspaceProgress', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'taskPriority', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'taskMaxAgents', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(65535)', 'null' => True],
+    ['name' => 'chunkTime', 'read_only' => False, 'type' => 'int', 'null' => True],
+    ['name' => 'statusTimer', 'read_only' => False, 'type' => 'int', 'null' => True],
+    ['name' => 'keyspace', 'read_only' => True, 'type' => 'int64', 'protected' => True, 'null' => True],
+    ['name' => 'keyspaceProgress', 'read_only' => True, 'type' => 'int64', 'protected' => True, 'null' => True],
+    ['name' => 'taskPriority', 'read_only' => False, 'type' => 'int', 'null' => True],
+    ['name' => 'taskMaxAgents', 'read_only' => False, 'type' => 'int', 'null' => True],
     ['name' => 'isSmall', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'isCpuTask', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'taskIsArchived', 'read_only' => False, 'type' => 'bool'],
-    ['name' => 'taskUsePreprocessor', 'read_only' => True, 'type' => 'int', 'alias' => 'preprocessorId'],
+    ['name' => 'taskUsePreprocessor', 'read_only' => True, 'type' => 'int', 'alias' => 'preprocessorId', 'null' => True],
     ['name' => 'hashlistName', 'read_only' => True, 'type' => 'str(100)', 'protected' => True],
     ['name' => 'hashCount', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'hashlistCracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -605,11 +621,6 @@ $CONF['User'] = [
     ['name' => 'registeredSince', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'sessionLifetime', 'read_only' => False, 'type' => 'int', 'protected' => False],
     ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int', 'alias' => 'globalPermissionGroupId', 'relation' => 'RightGroup'],
-    ['name' => 'yubikey', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
-    ['name' => 'otp1', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
-    ['name' => 'otp2', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
-    ['name' => 'otp3', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
-    ['name' => 'otp4', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
   ],
   "dba_mapping" => True,
 ];
@@ -618,7 +629,7 @@ $CONF['Zap'] = [
     ['name' => 'zapId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'hash', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
     ['name' => 'solveTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent'],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Agent', 'null' => True],
     ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'relation' => 'Hashlist'],
   ],
 ];
@@ -767,6 +778,7 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
       '"alias" => "' . $COLUMN['alias'] . '", ' .
       '"public" => ' . ($COLUMN['public'] ? 'True' : 'False') . ', ' .
       '"dba_mapping" => ' . ($COLUMN['dba_mapping'] ? 'True' : 'False') .
+      (isset($COLUMN['sort_expression']) ? ', "sort_expression" => "' . $COLUMN['sort_expression'] . '"' : '') .
       '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
     $variables[] = "const " . makeConstant($col) . " = \"$col\";";

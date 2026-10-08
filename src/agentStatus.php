@@ -103,6 +103,9 @@ $agentChunks = new DataSet();
 $agentAssignments = new DataSet();
 $agents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
 foreach ($agents as $agent) {
+  $agentTasks->addValue($agent->getId(), 0);
+  $agentSpeeds->addValue($agent->getId(), 0);
+  $agentChunks->addValue($agent->getId(), 0);
   $qF1 = new QueryFilter(Chunk::AGENT_ID, $agent->getId(), "=");
   $qF2 = new QueryFilter(Chunk::SPEED, 0, ">");
   $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
