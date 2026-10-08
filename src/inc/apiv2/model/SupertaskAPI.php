@@ -50,8 +50,7 @@ class SupertaskAPI extends AbstractModelAPI {
   
   public function getFormFields(): array {
     return [
-      "pretasks" => ['type' => 'array', 'subtype' => 'int'],
-      "crackerBinaryTypeId" => ['type' => 'int']
+      "pretasks" => ['type' => 'array', 'subtype' => 'int']
     ];
   }
   

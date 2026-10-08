@@ -87,7 +87,7 @@ class SupertaskUtils {
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $pretasks = SupertaskUtils::createIterationPretasks($command, $name, $basefilesChecked, $iterfilesChecked, $isSmall, $maxAgents, $isCpuOnly, $crackerBinaryType, $benchtype);
     
-    $supertask = new Supertask(null, $name);
+    $supertask = new Supertask(null, $name, $crackerBinaryTypeId);
     $supertask = Factory::getSupertaskFactory()->save($supertask);
     foreach ($pretasks as $preTask) {
       $relation = new SupertaskPretask(null, $supertask->getId(), $preTask->getId());
@@ -375,7 +375,7 @@ class SupertaskUtils {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $supertask = new Supertask(null, $name);
+    $supertask = new Supertask(null, $name, $crackerBinaryTypeId);
     $supertask = Factory::getSupertaskFactory()->save($supertask);
     
     foreach ($tasks as $pretask) {
@@ -436,7 +436,7 @@ class SupertaskUtils {
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $pretasks = SupertaskUtils::createImportPretasks($masks, $isSmall, $maxAgents, $isCpuOnly, $crackerBinaryType, $useOptimized, $benchtype);
     
-    $supertask = new Supertask(null, $name);
+    $supertask = new Supertask(null, $name, $crackerBinaryTypeId);
     $supertask = Factory::getSupertaskFactory()->save($supertask);
     foreach ($pretasks as $preTask) {
       $relation = new SupertaskPretask(null, $supertask->getId(), $preTask->getId());

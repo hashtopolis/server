@@ -546,6 +546,7 @@ $CONF['Supertask'] = [
   'columns' => [
     ['name' => 'supertaskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'supertaskName', 'read_only' => False, 'type' => 'str(50)'],
+    ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinaryType'],
   ],
 ];
 $CONF['Task'] = [
