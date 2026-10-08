@@ -32,7 +32,7 @@ class SupertaskFactory extends AbstractModelFactory {
    * @return Supertask
    */
   function getNullObject(): Supertask {
-    return new Supertask(-1, null);
+    return new Supertask(-1, null, null);
   }
   
   /**
@@ -45,6 +45,6 @@ class SupertaskFactory extends AbstractModelFactory {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
-    return new Supertask($dict['supertaskid'], $dict['supertaskname']);
+    return new Supertask($dict['supertaskid'], $dict['supertaskname'], $dict['crackerbinarytypeid']);
   }
 }

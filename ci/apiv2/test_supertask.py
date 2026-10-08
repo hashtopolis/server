@@ -17,6 +17,13 @@ class SupertaskTest(BaseTest):
         model_obj = self.create_test_object()
         self._test_create(model_obj)
 
+    def test_create_stores_cracker_binary_type(self):
+        crackertype = self.create_crackertype()
+        pretasks = [self.create_pretask(extra_payload={'crackerBinaryTypeId': crackertype.id}) for _ in range(2)]
+        supertask = self.create_supertask(pretasks=pretasks, extra_payload={'crackerBinaryTypeId': crackertype.id})
+        obj = Supertask.objects.get(pk=supertask.id)
+        self.assertEqual(crackertype.id, obj.crackerBinaryTypeId)
+
     def test_create_pretask_cracker_binary_type_mismatch(self):
         pretask = self.create_pretask()
         crackertype = self.create_crackertype()
