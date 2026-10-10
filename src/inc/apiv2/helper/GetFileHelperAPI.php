@@ -49,10 +49,13 @@ class GetFileHelperAPI extends AbstractHelperAPI {
   }
   
   /**
+   * Resolves a file id to its File row, checking that the current user may access it and that the
+   * content is actually readable on disk.
+   *
    * @throws HTException
    * @throws Exception
    */
-  public function validateFile($request, $file_id): string {
+  public function validateFile($request, $file_id): File {
     if (!is_numeric($file_id)) {
       throw new HTException("Invalid file id given: " . $file_id);
     }
@@ -73,7 +76,7 @@ class GetFileHelperAPI extends AbstractHelperAPI {
       throw new HttpForbiddenException($request, "Not allowed to read file");
     }
     
-    return $filename;
+    return $file;
   }
   
   /**
@@ -112,9 +115,10 @@ class GetFileHelperAPI extends AbstractHelperAPI {
     }
     $file_id = intval($fileParam);
     
-    $filename = $this->validateFile($request, $file_id);
+    $file = $this->validateFile($request, $file_id);
+    $filename = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename();
     
-    return $this->startDownload($request, $response, $filename);
+    return $this->startDownload($request, $response, $filename, $file->getChecksum());
   }
   
   static public function register($app): void {
