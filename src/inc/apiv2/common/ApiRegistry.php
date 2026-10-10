@@ -27,6 +27,7 @@ use Hashtopolis\inc\apiv2\helper\ImportFileHelperAPI;
 use Hashtopolis\inc\apiv2\helper\MaskSupertaskBuilderHelperAPI;
 use Hashtopolis\inc\apiv2\helper\PurgeTaskHelperAPI;
 use Hashtopolis\inc\apiv2\helper\RebuildChunkCacheHelperAPI;
+use Hashtopolis\inc\apiv2\helper\RecomputeFileChecksumHelperAPI;
 use Hashtopolis\inc\apiv2\helper\RecountFileLinesHelperAPI;
 use Hashtopolis\inc\apiv2\helper\RescanGlobalFilesHelperAPI;
 use Hashtopolis\inc\apiv2\helper\ResetChunkHelperAPI;
@@ -136,6 +137,7 @@ final class ApiRegistry {
     MaskSupertaskBuilderHelperAPI::class,
     PurgeTaskHelperAPI::class,
     RebuildChunkCacheHelperAPI::class,
+    RecomputeFileChecksumHelperAPI::class,
     RecountFileLinesHelperAPI::class,
     RescanGlobalFilesHelperAPI::class,
     ResetChunkHelperAPI::class,

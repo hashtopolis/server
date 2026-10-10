@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\jobs;
 
 use Hashtopolis\inc\defines\DBackgroundJobType;
+use Hashtopolis\inc\jobs\handlers\ChecksumFileJob;
 use Hashtopolis\inc\jobs\handlers\RecountFileJob;
 use Hashtopolis\inc\jobs\handlers\ScanCrackerJob;
 
@@ -11,6 +12,7 @@ class BackgroundJobRegistry {
   private const HANDLERS = [
     DBackgroundJobType::RECOUNT_FILE => RecountFileJob::class,
     DBackgroundJobType::SCAN_CRACKER => ScanCrackerJob::class,
+    DBackgroundJobType::CHECKSUM_FILE => ChecksumFileJob::class,
   ];
 
   /**

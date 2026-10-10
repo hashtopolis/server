@@ -146,10 +146,11 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
    * @param Request $request
    * @param Response $response
    * @param string $filename Absolute path of the file to stream
+   * @param string|null $checksum BLAKE3 checksum of the file, advertised as Repr-Digest when known
    * @return Response
    * @throws HttpForbiddenException
    */
-  protected function startDownload(Request $request, Response $response, string $filename): Response {
-    return DownloadUtils::startDownload($request, $response, $filename);
+  protected function startDownload(Request $request, Response $response, string $filename, ?string $checksum = null): Response {
+    return DownloadUtils::startDownload($request, $response, $filename, null, $checksum);
   }
 }

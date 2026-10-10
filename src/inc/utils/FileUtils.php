@@ -108,6 +108,7 @@ class FileUtils {
     }
     
     FileDownloadUtils::removeFile($file->getId());
+    FileChecksumUtils::removePendingJobs($file->getId());
     $fileDelete = new FileDelete(null, $file->getFilename(), time());
     Factory::getFileDeleteFactory()->save($fileDelete);
     Factory::getFileFactory()->delete($file);
@@ -326,6 +327,8 @@ class FileUtils {
     $qF = new QueryFilter(FileDelete::FILENAME, $newName, "=");
     Factory::getFileDeleteFactory()->massDeletion([Factory::FILTER => $qF]);
     
+    // the checksum is deliberately kept: renaming moves the same bytes to a new name, so the stored
+    // digest still describes the content clients download
     Factory::getFileFactory()->set($file, File::FILENAME, $newName);
     Factory::getAgentFactory()->getDB()->commit();
   }
