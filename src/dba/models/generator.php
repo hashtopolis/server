@@ -320,6 +320,7 @@ $CONF['File'] = [
     ['name' => 'fileType', 'read_only' => False, 'type' => 'int', 'choices' => $FieldFileTypeChoices],
     ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', 'relation' => 'AccessGroup'],
     ['name' => 'lineCount', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'checksum', 'read_only' => True, 'type' => 'str(64)', 'null' => True, 'protected' => True],
   ],
 ];
 $CONF['FileDelete'] = [

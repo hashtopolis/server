@@ -3,12 +3,14 @@
 namespace Hashtopolis\inc\jobs;
 
 use Hashtopolis\inc\defines\DBackgroundJobType;
+use Hashtopolis\inc\jobs\handlers\ChecksumFileJob;
 use Hashtopolis\inc\jobs\handlers\RecountFileJob;
 
 class BackgroundJobRegistry {
   /** @var array<string, class-string<BackgroundJobHandler>> */
   private const HANDLERS = [
     DBackgroundJobType::RECOUNT_FILE => RecountFileJob::class,
+    DBackgroundJobType::CHECKSUM_FILE => ChecksumFileJob::class,
   ];
 
   /**

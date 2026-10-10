@@ -79,10 +79,11 @@ class DownloadUtils {
    * @param Response $response
    * @param string $path Absolute path of the file to stream
    * @param string|null $displayName Filename to announce to the client, defaults to the base name of the path
+   * @param string|null $checksum BLAKE3 checksum of the file, advertised as Repr-Digest when known
    * @return Response
    * @throws HttpForbiddenException
    */
-  public static function startDownload(Request $request, Response $response, string $path, ?string $displayName = null): Response {
+  public static function startDownload(Request $request, Response $response, string $path, ?string $displayName = null, ?string $checksum = null): Response {
     if ($displayName === null) {
       $displayName = basename($path);
     }
@@ -134,7 +135,7 @@ class DownloadUtils {
     }
     fclose($fp);
 
-    return $response->withStatus($status)
+    $response = $response->withStatus($status)
       ->withHeader("Content-Type", $contentType)
       ->withHeader("Content-Description", $displayName)
       ->withHeader("Content-Disposition", "attachment; filename=\"" . $displayName . "\"")
@@ -142,5 +143,17 @@ class DownloadUtils {
       ->withHeader("Content-Range", "bytes $start-$end/$size")
       ->withHeader("Content-Length", $length)
       ->withHeader("ETag", $etag);
+
+    /* Repr-Digest (RFC 9530) describes the full representation rather than the bytes of this
+       particular message, so it stays correct on a 206 partial response and lets a client verify
+       the complete file once it has all of it. It must be listed in Access-Control-Expose-Headers,
+       as exposed headers are configured per endpoint here and a browser cannot read it otherwise. */
+    $reprDigest = FileChecksumUtils::toReprDigest($checksum);
+    if ($reprDigest !== null) {
+      $response = $response->withHeader("Repr-Digest", $reprDigest)
+        ->withHeader("Access-Control-Expose-Headers", "Repr-Digest");
+    }
+
+    return $response;
   }
 }

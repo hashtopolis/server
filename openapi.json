@@ -29023,6 +29023,84 @@
                 ]
             }
         },
+        "/api/v2/helper/recomputeFileChecksum": {
+            "post": {
+                "description": "Endpoint to enqueue the checksum computation of a file, for when it is missing or the content on<br />disk was replaced. The checksum is computed asynchronously by the background job runner, so the<br />returned File still carries the old value until that job ran.",
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FileSingleResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "description": "FileId is the id of the file whose checksum needs to be recomputed.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecomputeFileChecksumHelperAPI"
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Helpers"
+                ],
+                "summary": "Create Helpers",
+                "operationId": "postRecomputeFileChecksum",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v2/helper/recountFileLines": {
             "post": {
                 "description": "Endpoint to enqueue the recounting of files for when there is size mismatch. The line count is<br />calculated asynchronously by the background job runner.",
@@ -46486,7 +46564,8 @@
                                     "isSecret",
                                     "fileType",
                                     "accessGroupId",
-                                    "lineCount"
+                                    "lineCount",
+                                    "checksum"
                                 ],
                                 "properties": {
                                     "filename": {
@@ -46529,6 +46608,12 @@
                                     "lineCount": {
                                         "type": "integer",
                                         "format": "int64"
+                                    },
+                                    "checksum": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     }
                                 }
                             },
@@ -46704,7 +46789,8 @@
                                     "isSecret",
                                     "fileType",
                                     "accessGroupId",
-                                    "lineCount"
+                                    "lineCount",
+                                    "checksum"
                                 ],
                                 "properties": {
                                     "filename": {
@@ -46747,6 +46833,12 @@
                                     "lineCount": {
                                         "type": "integer",
                                         "format": "int64"
+                                    },
+                                    "checksum": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     }
                                 }
                             },
@@ -46922,7 +47014,8 @@
                                     "isSecret",
                                     "fileType",
                                     "accessGroupId",
-                                    "lineCount"
+                                    "lineCount",
+                                    "checksum"
                                 ],
                                 "properties": {
                                     "filename": {
@@ -46965,6 +47058,12 @@
                                     "lineCount": {
                                         "type": "integer",
                                         "format": "int64"
+                                    },
+                                    "checksum": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     }
                                 }
                             },
@@ -47191,7 +47290,8 @@
                                         "isSecret",
                                         "fileType",
                                         "accessGroupId",
-                                        "lineCount"
+                                        "lineCount",
+                                        "checksum"
                                     ],
                                     "properties": {
                                         "filename": {
@@ -47234,6 +47334,12 @@
                                         "lineCount": {
                                             "type": "integer",
                                             "format": "int64"
+                                        },
+                                        "checksum": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
                                         }
                                     }
                                 },
@@ -59510,7 +59616,8 @@
                                         "isSecret",
                                         "fileType",
                                         "accessGroupId",
-                                        "lineCount"
+                                        "lineCount",
+                                        "checksum"
                                     ],
                                     "properties": {
                                         "filename": {
@@ -59553,6 +59660,12 @@
                                         "lineCount": {
                                             "type": "integer",
                                             "format": "int64"
+                                        },
+                                        "checksum": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
                                         }
                                     }
                                 }
@@ -59771,7 +59884,8 @@
                                         "isSecret",
                                         "fileType",
                                         "accessGroupId",
-                                        "lineCount"
+                                        "lineCount",
+                                        "checksum"
                                     ],
                                     "properties": {
                                         "filename": {
@@ -59814,6 +59928,12 @@
                                         "lineCount": {
                                             "type": "integer",
                                             "format": "int64"
+                                        },
+                                        "checksum": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
                                         }
                                     }
                                 }
@@ -60084,7 +60204,8 @@
                                         "isSecret",
                                         "fileType",
                                         "accessGroupId",
-                                        "lineCount"
+                                        "lineCount",
+                                        "checksum"
                                     ],
                                     "properties": {
                                         "filename": {
@@ -60127,6 +60248,12 @@
                                         "lineCount": {
                                             "type": "integer",
                                             "format": "int64"
+                                        },
+                                        "checksum": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
                                         }
                                     }
                                 }
@@ -64165,7 +64292,8 @@
                                                 "isSecret",
                                                 "fileType",
                                                 "accessGroupId",
-                                                "lineCount"
+                                                "lineCount",
+                                                "checksum"
                                             ],
                                             "properties": {
                                                 "filename": {
@@ -64208,6 +64336,12 @@
                                                 "lineCount": {
                                                     "type": "integer",
                                                     "format": "int64"
+                                                },
+                                                "checksum": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 }
                                             }
                                         }
@@ -65145,7 +65279,8 @@
                                                 "isSecret",
                                                 "fileType",
                                                 "accessGroupId",
-                                                "lineCount"
+                                                "lineCount",
+                                                "checksum"
                                             ],
                                             "properties": {
                                                 "filename": {
@@ -65188,6 +65323,12 @@
                                                 "lineCount": {
                                                     "type": "integer",
                                                     "format": "int64"
+                                                },
+                                                "checksum": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 }
                                             }
                                         }
@@ -66177,7 +66318,8 @@
                                                 "isSecret",
                                                 "fileType",
                                                 "accessGroupId",
-                                                "lineCount"
+                                                "lineCount",
+                                                "checksum"
                                             ],
                                             "properties": {
                                                 "filename": {
@@ -66220,6 +66362,12 @@
                                                 "lineCount": {
                                                     "type": "integer",
                                                     "format": "int64"
+                                                },
+                                                "checksum": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 }
                                             }
                                         }
@@ -73245,6 +73393,14 @@
                         },
                         "maxItems": 0,
                         "description": "Always empty: a helper answers with meta only."
+                    }
+                }
+            },
+            "RecomputeFileChecksumHelperAPI": {
+                "type": "object",
+                "properties": {
+                    "fileId": {
+                        "type": "integer"
                     }
                 }
             },

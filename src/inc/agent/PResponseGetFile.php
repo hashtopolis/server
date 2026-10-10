@@ -7,4 +7,5 @@ class PResponseGetFile extends PResponse {
   const EXTENSION = "extension";
   const URL       = "url";
   const FILESIZE  = "filesize";
+  const CHECKSUM  = "checksum";
 }
