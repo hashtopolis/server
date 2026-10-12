@@ -8,6 +8,15 @@
       "filename" : "hashtopolis.zip",
       "updateTrack" : "stable",
       "updateAvailable" : ""
+    },
+    {
+      "agentBinaryId" : 2,
+      "binaryType" : "rust",
+      "version" : "0.1.1",
+      "operatingSystems" : "Windows, Linux, OS X",
+      "filename" : "rust-agent.zip",
+      "updateTrack" : "stable",
+      "updateAvailable" : ""
     }
   ],
   "ApiGroup" : [
