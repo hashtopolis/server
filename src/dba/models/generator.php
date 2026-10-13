@@ -249,6 +249,7 @@ $CONF['Assignment'] = [
     ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'relation' => 'Task'],
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'relation' => 'Agent'],
     ['name' => 'benchmark', 'read_only' => False, 'type' => 'str(50)'],
+    ['name' => 'chunkSpeed', 'read_only' => True, 'type' => 'int64', 'protected' => True, 'null' => True],
   ],
 ];
 $CONF['Chunk'] = [

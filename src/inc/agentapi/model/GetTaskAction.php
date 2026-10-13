@@ -134,7 +134,7 @@ final class GetTaskAction implements AgentAction {
    */
   private function sendTask(Response $response, Agent $agent, Task $task, ?Assignment $assignment): ResponseInterface {
         if ($assignment === null) {
-            $assignment = new Assignment(null, $task->getId(), $agent->getId(), '0');
+            $assignment = new Assignment(null, $task->getId(), $agent->getId(), '0', null);
             $assignment = Factory::getAssignmentFactory()->save($assignment);
             DServerLog::log(DServerLog::TRACE, 'No assignment present, created', [$agent, $assignment]);
         }
@@ -143,7 +143,7 @@ final class GetTaskAction implements AgentAction {
                 $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), '=');
                 Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
                 DServerLog::log(DServerLog::TRACE, 'Current task does not match assignment, delete it', [$agent, $assignment]);
-                $assignment = new Assignment(null, $task->getId(), $agent->getId(), '0');
+                $assignment = new Assignment(null, $task->getId(), $agent->getId(), '0', null);
                 $assignment = Factory::getAssignmentFactory()->save($assignment);
                 DServerLog::log(DServerLog::TRACE, 'Created new assignment', [$agent, $assignment]);
             }

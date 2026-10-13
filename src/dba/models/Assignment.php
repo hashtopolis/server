@@ -9,12 +9,14 @@ class Assignment extends AbstractModel {
   private ?int $taskId;
   private ?int $agentId;
   private ?string $benchmark;
+  private ?int $chunkSpeed;
   
-  function __construct(?int $assignmentId, ?int $taskId, ?int $agentId, ?string $benchmark) {
+  function __construct(?int $assignmentId, ?int $taskId, ?int $agentId, ?string $benchmark, ?int $chunkSpeed) {
     $this->assignmentId = $assignmentId;
     $this->taskId = $taskId;
     $this->agentId = $agentId;
     $this->benchmark = $benchmark;
+    $this->chunkSpeed = $chunkSpeed;
   }
   
   function getKeyValueDict(): array {
@@ -23,6 +25,7 @@ class Assignment extends AbstractModel {
     $dict['taskId'] = $this->taskId;
     $dict['agentId'] = $this->agentId;
     $dict['benchmark'] = $this->benchmark;
+    $dict['chunkSpeed'] = $this->chunkSpeed;
     
     return $dict;
   }
@@ -33,6 +36,7 @@ class Assignment extends AbstractModel {
     $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId", "public" => False, "dba_mapping" => False];
     $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "agentId", "public" => False, "dba_mapping" => False];
     $dict['benchmark'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "benchmark", "public" => False, "dba_mapping" => False];
+    $dict['chunkSpeed'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => True, "private" => False, "alias" => "chunkSpeed", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
@@ -85,10 +89,19 @@ class Assignment extends AbstractModel {
     $this->benchmark = $benchmark;
   }
   
+  function getChunkSpeed(): ?int {
+    return $this->chunkSpeed;
+  }
+  
+  function setChunkSpeed(?int $chunkSpeed): void {
+    $this->chunkSpeed = $chunkSpeed;
+  }
+  
   const ASSIGNMENT_ID = "assignmentId";
   const TASK_ID = "taskId";
   const AGENT_ID = "agentId";
   const BENCHMARK = "benchmark";
+  const CHUNK_SPEED = "chunkSpeed";
 
   const PERM_CREATE = "permAgentAssignmentCreate";
   const PERM_READ = "permAgentAssignmentRead";

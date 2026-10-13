@@ -45,6 +45,7 @@ use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\SConfig;
+use Hashtopolis\inc\utils\ChunkUtils;
 use Hashtopolis\inc\utils\TaskUtils;
 use Hashtopolis\inc\Util;
 use Psr\Http\Message\ResponseInterface;
@@ -319,12 +320,7 @@ final class SendProgressAction implements AgentAction {
             case DHashcatStatus::EXHAUSTED:
                 $chunk = Factory::getChunkFactory()->mset($chunk, [Chunk::SPEED => 0, Chunk::PROGRESS => 10000, Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength()]);
                 DServerLog::log(DServerLog::TRACE, 'Chunk is exhausted (cracker status)', [$agent, $chunk]);
-
-                // If we don't make use of static chunks we attempt to tune the duration a chunk takes to calculate
-                if ($task->getStaticChunks() === 0 && SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION_AUTO_TUNE)) {
-                  TaskUtils::tuneChunkDuration($chunk, $task, $agent);
-                }
-                
+                $this->reconcileChunkSpeed($agent, $task, $chunk);
                 break;
 
             case DHashcatStatus::CRACKED:
@@ -335,6 +331,7 @@ final class SendProgressAction implements AgentAction {
                 DServerLog::log(DServerLog::TRACE, 'Depriorized all tasks of the hashlist and unassigned all agents', [$agent, $totalHashlist]);
                 $payload = new DataSet([DPayloadKeys::HASHLIST => $totalHashlist]);
                 NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
+                $this->reconcileChunkSpeed($agent, $task, $chunk);
                 break;
 
             case DHashcatStatus::ABORTED:
@@ -603,5 +600,34 @@ final class SendProgressAction implements AgentAction {
             Factory::getHashBinaryFactory()->update($hash);
         }
         return $skipped;
+    }
+
+    /**
+     * Chunk duration auto-tune: when a chunk completes, reconcile this (agent,task) assignment's canonical
+     * chunkSpeed toward the whole-chunk observed base-word rate (length / wall-clock duration). Gated by
+     * the chunktimeAutoTune config; when off, chunkSpeed stays at the benchmark seed = legacy sizing.
+     * Static-chunking tasks size from the task settings, not chunkSpeed, so there is nothing to tune.
+     * Climb-only and damped (see ChunkUtils), so it converges to the sustained rate without oscillating.
+     */
+    private function reconcileChunkSpeed(Agent $agent, Task $task, Chunk $chunk): void {
+        if ($task->getStaticChunks() != 0 || intval(SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION_AUTO_TUNE)) == 0) {
+            return;
+        }
+        $observed = ChunkUtils::completedChunkSpeed(intval($chunk->getLength()), intval($chunk->getDispatchTime()), intval($chunk->getSolveTime()));
+        if ($observed === null) {
+            return;
+        }
+        $qF1 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), '=');
+        $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), '=');
+        $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
+        if ($assignment == null) {
+            return;
+        }
+        $old = intval($assignment->getChunkSpeed());
+        $new = ChunkUtils::reconcileSpeed($old, $observed);
+        if ($new != $old) {
+            Factory::getAssignmentFactory()->set($assignment, Assignment::CHUNK_SPEED, $new);
+            DServerLog::log(DServerLog::DEBUG, 'Adaptive chunkSpeed reconciled', [$agent, $task, $old, $new, $observed]);
+        }
     }
 }

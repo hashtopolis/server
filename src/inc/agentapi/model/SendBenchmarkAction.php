@@ -19,6 +19,7 @@ use Hashtopolis\inc\agentapi\common\AgentResponseTrait;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DServerLog;
 use Hashtopolis\inc\SConfig;
+use Hashtopolis\inc\utils\ChunkUtils;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response;
@@ -90,6 +91,11 @@ final class SendBenchmarkAction implements AgentAction {
         }
 
         $assignment->setBenchmark((string)$benchmark);
+        // Adaptive chunk sizing: seed this assignment's canonical chunkSpeed from the benchmark so the
+        // first dispatched chunk is sized from measured capability rather than a fixed default. Null when
+        // the benchmark does not yield a usable base-word rate; later progress reports reconcile it.
+        $chunkSpeed = ChunkUtils::benchmarkToChunkSpeed($benchmark, $task->getKeyspace());
+        $assignment->setChunkSpeed(($chunkSpeed !== null && $chunkSpeed > 0) ? $chunkSpeed : null);
         Factory::getAssignmentFactory()->update($assignment);
         DServerLog::log(DServerLog::DEBUG, 'Saved agent benchmark', [$agent, $task, $assignment]);
 
