@@ -70,10 +70,33 @@ final class RouteIntrospectorTest extends TestCase {
       $app->get($pattern, [RouteIntrospectorTestStub::class, 'handle']);
     });
 
-    $target = $targets['/api/v2/ui/accessgroups/{id}/relationships/{relation}'];
+    $target = $targets['/api/v2/ui/accessgroups/{id}/relationships/userMembers'];
     $this->assertSame($pattern, $target->pattern);
     $this->assertSame(RouteIntrospectorTestStub::class, $target->className);
     $this->assertSame('handle', $target->methodName);
+  }
+
+  /**
+   * Every relation of a model is its own route, so the relation name becomes
+   * a literal path segment. The templates of the relations must stay distinct,
+   * otherwise the spec would key them to the same paths and the later
+   * relations would overwrite the earlier ones.
+   */
+  public function testPutsTheRelationNameIntoTheTemplate(): void {
+    $targets = $this->introspect(function ($app) {
+      $app->get('/api/v2/ui/things/{id:[0-9]+}/{relation:tasks}', [RouteIntrospectorTestStub::class, 'handle']);
+      $app->get('/api/v2/ui/things/{id:[0-9]+}/{relation:hashtypes}', [RouteIntrospectorTestStub::class, 'handle']);
+      $app->get('/api/v2/ui/things/{id:[0-9]+}/relationships/{relation:hashtypes}', [RouteIntrospectorTestStub::class, 'handle']);
+    });
+
+    $this->assertSame(
+      [
+        '/api/v2/ui/things/{id}/tasks',
+        '/api/v2/ui/things/{id}/hashtypes',
+        '/api/v2/ui/things/{id}/relationships/hashtypes',
+      ],
+      array_keys($targets)
+    );
   }
 
   /**

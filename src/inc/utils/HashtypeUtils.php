@@ -4,6 +4,7 @@ namespace Hashtopolis\inc\utils;
 
 use Exception;
 use Hashtopolis\dba\models\HashType;
+use Hashtopolis\dba\models\CrackerBinaryHashtype;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\QueryFilter;
@@ -12,6 +13,7 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
+use Hashtopolis\inc\utils\CrackerUtils;
 
 class HashtypeUtils {
   /**
@@ -30,6 +32,10 @@ class HashtypeUtils {
     if (sizeof($hashlists) > 0) {
       throw new HTException("You cannot delete this hashtype! There are hashlists present which are of this type!");
     }
+    
+    // remove the associations of this hashtype with cracker binaries
+    $qF = new QueryFilter(CrackerBinaryHashtype::HASH_TYPE_ID, $hashtype->getId(), "=");
+    Factory::getCrackerBinaryHashtypeFactory()->massDeletion([Factory::FILTER => $qF]);
     
     Factory::getHashTypeFactory()->delete($hashtype);
   }
@@ -67,6 +73,14 @@ class HashtypeUtils {
     $hashtype = Factory::getHashTypeFactory()->save($hashtype);
     if ($hashtype == null) {
       throw new HttpError("Failed to add new hash type!");
+    }
+    // a new hashtype is associated with all hashcat binaries, which support
+    // every hashtype; binaries of other types keep their manually associated
+    // hashtypes
+    foreach (Factory::getCrackerBinaryFactory()->filter([]) as $binary) {
+      if (CrackerUtils::isHashcatBinary($binary)) {
+        Factory::getCrackerBinaryHashtypeFactory()->save(new CrackerBinaryHashtype(null, $binary->getId(), $hashtype->getId()));
+      }
     }
     Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashtype added: " . $hashtype->getDescription());
     return $hashtype;
