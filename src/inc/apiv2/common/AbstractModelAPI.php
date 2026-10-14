@@ -507,10 +507,21 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if ($group->getPermissions() !== 'ALL' && $otherFactory == null && $this->getSingleACL($this->getCurrentUser(),
         $object
       ) === false) {
-      throw new HttpForbidden("No access to this object!", 403);
+      throw $this->getSingleACLError();
     }
     
     return $object;
+  }
+  
+  /**
+   * Error to throw when the single object ACL denies the access to an object.
+   * Subclasses can override it to hide the existence of objects outside of
+   * the caller's access, e.g. by responding with a not found error instead.
+   *
+   * @return Exception
+   */
+  protected function getSingleACLError(): Exception {
+    return new HttpForbidden("No access to this object!", 403);
   }
   
   /**

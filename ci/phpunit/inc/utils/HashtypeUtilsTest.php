@@ -53,25 +53,20 @@ final class HashtypeUtilsTest extends TestBase {
     HashtypeUtils::addHashtype(-1, 'desc', 0, false, $this->user);
   }
 
-  // Verifies that a newly added hashtype is associated with the hashcat
-  // cracker binaries, which support all hashtypes, but not with binaries of
-  // other types, which keep their manually associated hashtypes.
-  public function testAddHashtypeAssociatesAllBinaries(): void {
+  // Verifies that a newly added hashtype is not associated with any cracker
+  // binary, the scan of the hashcat binaries and the manual associations of
+  // the other binaries decide which binaries support it.
+  public function testAddHashtypeAssociatesNoBinaries(): void {
     $hashcatBinary = $this->createCrackerBinary($this->hashcatBinaryType());
     $genericBinary = $this->createCrackerBinary($this->createCrackerBinaryType());
     $hashtypeId = 999004;
 
     $hashtype = HashtypeUtils::addHashtype($hashtypeId, 'assoc_desc', 0, false, $this->user);
 
-    $associatedHashcat = false;
-    foreach (CrackerUtils::getHashtypesOfBinary($hashcatBinary->getId()) as $hashtypeObj) {
-      if ($hashtypeObj->getId() == $hashtype->getId()) {
-        $associatedHashcat = true;
+    foreach ([$hashcatBinary, $genericBinary] as $binary) {
+      foreach (CrackerUtils::getHashtypesOfBinary($binary->getId()) as $hashtypeObj) {
+        $this->assertNotEquals($hashtype->getId(), $hashtypeObj->getId(), "Hashtype must not be associated with any binary automatically");
       }
-    }
-    $this->assertTrue($associatedHashcat, "Hashtype was not associated with the hashcat binary");
-    foreach (CrackerUtils::getHashtypesOfBinary($genericBinary->getId()) as $hashtypeObj) {
-      $this->assertNotEquals($hashtype->getId(), $hashtypeObj->getId(), "Hashtype must not be associated with the generic binary");
     }
 
     HashtypeUtils::deleteHashtype($hashtype->getId());

@@ -22,6 +22,7 @@ use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\Util;
+use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 
@@ -212,20 +213,84 @@ class CrackerBinaryAPI extends AbstractModelAPI {
     ];
     parent::updateObject($objectId, $data);
     if ($refreshLocalCopy) {
-      CrackerUtils::refreshLocalCopy($objectId, $previousValues);
+      CrackerUtils::refreshLocalCopy($objectId, $previousValues, $this->getCurrentUser());
     }
+  }
+
+  /**
+   * The hashtype associations of hashcat binaries are determined by the scan
+   * of the binary alone, they cannot be edited manually. Must only be called
+   * with a binary which was fetched through doFetch(), so the access group
+   * ACL was enforced and the hashcat check does not disclose the type of a
+   * binary the caller has no access to.
+   *
+   * @throws HttpForbidden
+   * @throws HTException
+   */
+  private function assertHashtypesManuallyEditable(CrackerBinary $binary): void {
+    if (CrackerUtils::isHashcatBinary($binary)) {
+      throw new HttpForbidden("The hashtypes of a cracker binary of the hashcat type are determined by a scan of the binary and cannot be changed manually!");
+    }
+  }
+
+  /**
+   * The hashtypes of a hashcat binary cannot be added manually, the scan of
+   * the binary is the only authority.
+   *
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws HTException
+   * @throws ResourceNotFoundError
+   */
+  public function postToManyRelationshipLink(Request $request, Response $response, array $args): Response {
+    if ($args['relation'] == 'hashtypes') {
+      // boot the request first (preCommon), then fetch through doFetch, so
+      // the access group ACL is enforced before the binary is classified
+      $this->preCommon($request);
+      $this->assertHashtypesManuallyEditable($this->doFetch((int)$args['id']));
+    }
+    return parent::postToManyRelationshipLink($request, $response, $args);
+  }
+
+  /**
+   * The hashtypes of a hashcat binary cannot be removed manually, the scan of
+   * the binary is the only authority.
+   *
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws HTException
+   * @throws ResourceNotFoundError
+   */
+  public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response {
+    if ($args['relation'] == 'hashtypes') {
+      // boot the request first (preCommon), then fetch through doFetch, so
+      // the access group ACL is enforced before the binary is classified
+      $this->preCommon($request);
+      $this->assertHashtypesManuallyEditable($this->doFetch((int)$args['id']));
+    }
+    return parent::deleteToManyRelationshipLink($request, $response, $args);
   }
 
   /**
    * Replaces the hashtypes which are associated with the cracker binary with
    * the given list, i.e. hashtypes given in the list but not associated yet
-   * are added and associations which are not in the list are removed.
+   * are added and associations which are not in the list are removed. The
+   * hashtypes of hashcat binaries cannot be replaced, the scan of the binary
+   * is the only authority.
    *
    * @param Request $request
    * @param array $data
    * @param array $args
    * @throws HttpError
+   * @throws HttpForbidden
    * @throws HTException
+   * @throws ResourceNotFoundError
    * @throws Exception
    */
   public function updateToManyRelationship(Request $request, array $data, array $args): void {
@@ -233,7 +298,10 @@ class CrackerBinaryAPI extends AbstractModelAPI {
       parent::updateToManyRelationship($request, $data, $args);
       return;
     }
-    $id = $args['id'];
+    $id = (int)$args['id'];
+    // fetch through doFetch so the access group ACL is enforced before the
+    // binary is classified, even if the ordering of the base changes
+    $this->assertHashtypesManuallyEditable($this->doFetch($id));
     $wantedHashtypes = [];
     foreach ($data as $hashtype) {
       if (!$this->validateResourceRecord($hashtype)) {
@@ -246,28 +314,6 @@ class CrackerBinaryAPI extends AbstractModelAPI {
       $wantedHashtypes[] = $hashtype["id"];
     }
 
-    // Find out which associations to add and remove
-    $currentHashtypes = CrackerUtils::getHashtypesOfBinary($id);
-    $currentIds = [];
-    foreach ($currentHashtypes as $hashtype) {
-      $currentIds[] = $hashtype->getId();
-    }
-
-    $toAddHashtypes = array_diff($wantedHashtypes, $currentIds);
-    $toRemoveHashtypes = array_diff($currentIds, $wantedHashtypes);
-
-    $factory = $this->getFactory();
-    $factory->getDB()->beginTransaction(); //start transaction to be able roll back
-
-    foreach ($toAddHashtypes as $hashtypeId) {
-      CrackerUtils::addHashtypeToBinary($id, $hashtypeId);
-    }
-    foreach ($toRemoveHashtypes as $hashtypeId) {
-      CrackerUtils::removeHashtypeFromBinary($id, $hashtypeId);
-    }
-
-    if (!$factory->getDB()->commit()) {
-      throw new HttpError("Was not able to update to many relationship");
-    }
+    CrackerUtils::setHashtypesOfBinary($id, $wantedHashtypes);
   }
 }

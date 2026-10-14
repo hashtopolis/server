@@ -59,9 +59,9 @@ class TaskWrapperTest(BaseTest):
         self.assertEqual(len(TaskWrapper.objects.filter(hashlistId=hashlist.id)), 1)
 
     def test_helper_create_supertask_generic_cracker(self):
-        pretasks = [self.create_pretask() for i in range(2)]
-        supertask = self.create_supertask(pretasks=pretasks)
         crackertype = self.create_crackertype()
+        pretasks = [self.create_pretask(extra_payload={'crackerBinaryTypeId': crackertype.id}) for i in range(2)]
+        supertask = self.create_supertask(pretasks=pretasks, extra_payload={'crackerBinaryTypeId': crackertype.id})
         cracker = Cracker(
             crackerBinaryTypeId=crackertype.id,
             version='1.2.3',

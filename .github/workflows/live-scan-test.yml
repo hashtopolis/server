@@ -1,0 +1,142 @@
+name: Live Scan Test
+
+# Exercises the scan of the seeded cracker binary with a real downloaded
+# hashcat archive: the background job runner downloads the archive from the
+# binary's url, unpacks it, runs its --example-hashes output and syncs the
+# hashtypes and their associations. The hashtypes of the binary are compared
+# against the seeded ones afterwards, a difference means the seed list lags
+# behind the bundled binary and has to be synced.
+# The workflow depends on the availability of the cracker download url, so it
+# is only scheduled and must never gate pull requests.
+on:
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DB_NAME: hashtopolis
+  DB_USER: hashtopolis
+  DB_PASS: hashtopolis
+
+jobs:
+  live-scan-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build new image from repository
+        run: docker build -t hashtopolis/backend:test .
+
+      - name: Set up Docker network and volumes
+        run: |
+          docker network create ht-test-net
+          docker volume create ht-data
+          docker volume create ht-db
+
+      - name: Start database container mysql:8.4
+        run: |
+          docker run -d --network ht-test-net --name db \
+            -e MYSQL_ROOT_PASSWORD=${{ env.DB_PASS }} \
+            -e MYSQL_DATABASE=${{ env.DB_NAME }} \
+            -e MYSQL_USER=${{ env.DB_USER }} \
+            -e MYSQL_PASSWORD=${{ env.DB_PASS }} \
+            -v ht-db:/var/lib/mysql \
+            mysql:8.4
+
+      - name: Wait for database container to be running
+        run: |
+          timeout 120 bash -c '
+            until [ "$(docker container inspect -f "{{.State.Status}}" db 2>/dev/null)" = "running" ]; do
+              sleep 2
+            done
+          '
+          echo "Database container is running"
+
+      - name: Wait for database to accept connections
+        run: |
+          timeout 60 bash -c 'until docker exec db mysqladmin ping -u root -p${{ env.DB_PASS }} --silent 2>/dev/null; do sleep 2; done'
+          echo "Database ready"
+
+      # The scheduler is disabled so the scan is triggered at a defined point,
+      # after the seeded hashtypes were captured (see the upgrade-test for the
+      # same rationale).
+      - name: Start backend
+        run: |
+          docker run -d --network ht-test-net --name backend \
+            -e HASHTOPOLIS_DB_TYPE=mysql \
+            -e HASHTOPOLIS_DB_USER=${{ env.DB_USER }} \
+            -e HASHTOPOLIS_DB_PASS=${{ env.DB_PASS }} \
+            -e HASHTOPOLIS_DB_HOST=db \
+            -e HASHTOPOLIS_DB_DATABASE=${{ env.DB_NAME }} \
+            -e HASHTOPOLIS_ADMIN_USER=admin \
+            -e HASHTOPOLIS_ADMIN_PASSWORD=hashtopolis \
+            -e HASHTOPOLIS_CRON_ENABLE=0 \
+            -v ht-data:/usr/local/share/hashtopolis \
+            hashtopolis/backend:test
+
+      # The initialization downloads the archive of the seeded cracker binary,
+      # so it can take longer than usual depending on the download speed.
+      - name: Wait for backend initialization
+        run: |
+          timeout 300 bash -c 'until docker logs backend 2>&1 | grep -q "Initialization complete!"; do sleep 3; done'
+          echo "Backend initialized"
+
+      - name: Show backend logs
+        if: always()
+        run: docker logs backend
+
+      - name: Capture the hashtypes seeded by the setup
+        run: |
+          docker exec db mysql -N -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
+            -e "SELECT hashTypeId FROM HashType ORDER BY hashTypeId" > seeded-hashtypes.dump
+          echo "Seeded hashtypes ($(wc -l < seeded-hashtypes.dump) rows)"
+
+      - name: Run the scan of the seeded cracker binary
+        run: |
+          timeout 600 docker exec backend php -d xdebug.mode=off -f /var/www/html/src/inc/cron.php
+          echo "Background job runner finished"
+
+      - name: Check the result of the scan job
+        run: |
+          docker exec db mysql -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
+            -e "SELECT backgroundJobId, jobType, status, exitCode, resultMessage FROM BackgroundJob WHERE jobType='scan_cracker';"
+          STATUS=$(docker exec db mysql -N -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
+            -e "SELECT status FROM BackgroundJob WHERE jobType='scan_cracker' ORDER BY backgroundJobId DESC LIMIT 1")
+          if [ -z "$STATUS" ]; then
+            echo "::error::No scan job was enqueued, the setup most likely failed to download the archive of the cracker binary (see the backend logs above)."
+            exit 1
+          fi
+          if [ "$STATUS" != "2" ]; then
+            echo "::error::The scan of the cracker binary did not complete successfully (status: $STATUS, expected: 2)."
+            exit 1
+          fi
+          echo "Scan completed successfully"
+
+      - name: Check that the scan populated the hashtype associations of the binary
+        run: |
+          COUNT=$(docker exec db mysql -N -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
+            -e "SELECT COUNT(*) FROM CrackerBinaryHashtype")
+          if [ "$COUNT" -le 0 ]; then
+            echo "::error::The scan did not associate any hashtype with the cracker binary."
+            exit 1
+          fi
+          echo "The cracker binary is associated with $COUNT hashtypes"
+
+      - name: Check that the scan created no hashtypes beyond the seed
+        run: |
+          docker exec db mysql -N -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
+            -e "SELECT hashTypeId FROM HashType ORDER BY hashTypeId" > scanned-hashtypes.dump
+          if ! diff seeded-hashtypes.dump scanned-hashtypes.dump > seed-lag.diff; then
+            echo "::error::The cracker binary supports hash-modes which are missing from the seed:"
+            cat seed-lag.diff
+            CREATED=$(grep '^>' seed-lag.diff | tr -d '> ' | paste -sd, -)
+            docker exec db mysql -u ${{ env.DB_USER }} -p${{ env.DB_PASS }} ${{ env.DB_NAME }} \
+              -e "SELECT * FROM HashType WHERE hashTypeId IN ($CREATED);"
+            echo "Sync hashtypes.json with the modes of the bundled binary and provide them for upgraded installs with a data migration (see 20261001120000_hashcat-712-hashtypes.sql)."
+            exit 1
+          fi
+          echo "The seed contains all hash-modes supported by the cracker binary"
