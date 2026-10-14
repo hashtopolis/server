@@ -18,6 +18,7 @@ services:
       # origin instead of a wildcard, so the dev frontend on :4200 has to be named here.
       HASHTOPOLIS_BACKEND_URL: http://localhost:8080/api/v2
       HASHTOPOLIS_FRONTEND_URLS: http://localhost:4200,http://127.0.0.1:4200
+      HASHTOPOLIS_CRON_ENABLE: 0
     depends_on:
       - hashtopolis-db-dev
     ports:
