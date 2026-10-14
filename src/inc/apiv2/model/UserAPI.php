@@ -57,7 +57,7 @@ class UserAPI extends AbstractModelAPI {
     ];
   }
   
-  protected static function fetchExpandObjects(array $objects, string $expand): array {
+  protected static function fetchExpandObjects(array $objects, string $expand, array $relationFilters = []): array {
     array_walk($objects, function ($obj) {
       assert($obj instanceof User);
     });
@@ -133,4 +133,3 @@ class UserAPI extends AbstractModelAPI {
   }
   
 }
-

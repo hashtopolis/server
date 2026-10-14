@@ -60,7 +60,8 @@ class TaskWrapperTest(BaseTest):
             crackerBinaryTypeId=crackertype.id,
             version='1.2.3',
             downloadUrl=get_cracker_archive_url(),
-            binaryName='generic-x64')
+            binaryName='generic-x64',
+            accessGroupId=1)
         cracker.save()
         self.delete_after_test(cracker)
         hashlist = self.create_hashlist()

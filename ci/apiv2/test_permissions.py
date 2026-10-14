@@ -4,7 +4,7 @@ import time
 
 import pytest
 import requests
-from hashtopolis import Agent, Chunk, File, Hash, Hashlist, HashType, HealthCheckAgent, Helper, Task, TaskWrapper, User
+from hashtopolis import Agent, Chunk, Cracker, CrackerType, File, Hash, Hashlist, HashType, HealthCheckAgent, Helper, Task, TaskWrapper, User
 
 from utils import BaseTest, create_apitoken_raw, create_restricted_user, do_create_agentassignent, do_create_dummy_agent, request_with_api_token, get_hashtopolis_uri
 
@@ -1402,6 +1402,102 @@ class PermissionsTest(BaseTest):
         self.assertEqual(body['meta']['page']['total_elements'], 1)
         self.assertIn('permCrackerBinaryRead', json.dumps(body['meta']))
         self.assertNotIn('crackerBinary', {item['type'] for item in body.get('included', [])})
+
+    def test_api_token_cracker_types_include_versions_enforces_cracker_access_group(self):
+        """Cracker version includes enforce the related binary's access-group ACL."""
+        cracker_type = self.create_crackertype()
+        cracker = self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+        permissions = {
+            'permJwtApiKeyCreate': True,
+            'permCrackerBinaryTypeRead': True,
+            'permCrackerBinaryRead': True,
+        }
+        auth = create_restricted_user(self, permissions)
+        token = create_apitoken_raw(self, auth, [
+            'permCrackerBinaryTypeRead',
+            'permCrackerBinaryRead',
+        ])
+
+        response = request_with_api_token(token.token, self._cracker_types_list_query_path(cracker_type))
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['data'][0]['relationships']['crackerVersions']['data'], [])
+        included = {(item['type'], item['id']) for item in body.get('included', [])}
+        self.assertNotIn(('crackerBinary', cracker.id), included)
+
+    def test_api_token_health_check_include_enforces_cracker_access_group(self):
+        """To-one cracker includes hide binaries outside the user's access groups."""
+        cracker = self.create_cracker()
+        health_check = self.create_healthcheck(extra_payload={'crackerBinaryId': cracker.id})
+        permissions = {
+            'permJwtApiKeyCreate': True,
+            'permHealthCheckRead': True,
+            'permCrackerBinaryRead': True,
+        }
+        auth = create_restricted_user(self, permissions)
+        token = create_apitoken_raw(self, auth, [
+            'permHealthCheckRead',
+            'permCrackerBinaryRead',
+        ])
+        path = (
+            f'/ui/healthchecks?include=crackerBinary'
+            f'&filter[healthCheckId__eq]={health_check.id}&page[size]=1'
+        )
+
+        response = request_with_api_token(token.token, path)
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertIsNone(body['data'][0]['relationships']['crackerBinary']['data'])
+        included = {(item['type'], item['id']) for item in body.get('included', [])}
+        self.assertNotIn(('crackerBinary', cracker.id), included)
+
+    def test_api_token_cracker_type_delete_rejects_inaccessible_binary(self):
+        """Type deletion is atomic when any child binary is outside the user's groups."""
+        inaccessible_group = self._create_unique_accessgroup()
+        cracker_type = self.create_crackertype()
+        admin_token = self.create_apitoken(extra_payload={'scopes': _all_scopes_except(self, [])})
+        admin_membership_response = request_with_api_token(
+            admin_token.token,
+            f'/ui/accessgroups/{inaccessible_group.id}/relationships/userMembers',
+            method='POST',
+            payload=self._relationship_payload('user', 1),
+        )
+        self.assertEqual(admin_membership_response.status_code, 201, admin_membership_response.text)
+
+        accessible_cracker = self.create_cracker(extra_payload={
+            'crackerBinaryTypeId': cracker_type.id,
+            'accessGroupId': 1,
+        })
+        inaccessible_cracker = self.create_cracker(extra_payload={
+            'crackerBinaryTypeId': cracker_type.id,
+            'accessGroupId': inaccessible_group.id,
+        })
+        permissions = {
+            'permJwtApiKeyCreate': True,
+            'permCrackerBinaryTypeDelete': True,
+        }
+        auth = create_restricted_user(self, permissions)
+        user = User.objects.get(name=auth[0])
+
+        membership_response = request_with_api_token(
+            admin_token.token,
+            '/ui/accessgroups/1/relationships/userMembers',
+            method='POST',
+            payload=self._relationship_payload('user', user.id),
+        )
+        self.assertEqual(membership_response.status_code, 201, membership_response.text)
+
+        token = create_apitoken_raw(self, auth, ['permCrackerBinaryTypeDelete'])
+        response = request_with_api_token(
+            token.token,
+            f'/ui/crackertypes/{cracker_type.id}',
+            method='DELETE',
+        )
+        self.assertEqual(response.status_code, 403, response.text)
+
+        self.assertEqual(CrackerType.objects.get(pk=cracker_type.id).id, cracker_type.id)
+        self.assertEqual(Cracker.objects.get(pk=accessible_cracker.id).id, accessible_cracker.id)
+        self.assertEqual(Cracker.objects.get(pk=inaccessible_cracker.id).id, inaccessible_cracker.id)
 
     def test_api_token_high_value_helpers_report_each_missing_required_scope(self):
         """High-value helper endpoints enforce every declared required permission.

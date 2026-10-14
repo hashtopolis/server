@@ -82,6 +82,7 @@ class TaskAPI extends AbstractModelAPI {
         
         'relationType' => CrackerBinary::class,
         'relationKey' => CrackerBinary::CRACKER_BINARY_ID,
+        'filterACL' => true,
       ],
       'crackerBinaryType' => [
         'key' => Task::CRACKER_BINARY_TYPE_ID,
@@ -330,4 +331,3 @@ class TaskAPI extends AbstractModelAPI {
     ];
   }
 }
-

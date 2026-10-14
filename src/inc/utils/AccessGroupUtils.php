@@ -5,6 +5,7 @@ namespace Hashtopolis\inc\utils;
 use Exception;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\Chunk;
+use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\UpdateSet;
@@ -215,7 +216,12 @@ class AccessGroupUtils {
     $qF = new QueryFilter(File::ACCESS_GROUP_ID, $group->getId(), "=");
     $uS = new UpdateSet(File::ACCESS_GROUP_ID, $default->getId());
     Factory::getFileFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
-    
+
+    // update associations of cracker binaries with this group
+    $qF = new QueryFilter(CrackerBinary::ACCESS_GROUP_ID, $group->getId(), "=");
+    $uS = new UpdateSet(CrackerBinary::ACCESS_GROUP_ID, $default->getId());
+    Factory::getCrackerBinaryFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+
     // delete all associations to users
     $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $group->getId(), "=");
     Factory::getAccessGroupUserFactory()->massDeletion([Factory::FILTER => $qF]);
