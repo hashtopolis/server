@@ -1772,7 +1772,7 @@ abstract class AbstractBaseAPI {
    * @throws JsonException
    * @throws NotFoundExceptionInterface
    */
-  protected static function getOneResource(AbstractModelAPI $apiClass, AbstractModel $object, Request $request, Response $response, int $statusCode = 200): Response {
+  protected static function getOneResource(AbstractModelAPI $apiClass, AbstractModel $object, Request $request, Response $response, int $statusCode = 200, array $extraMeta = []): Response {
     /* Only prepare the request here, no permission check. The action that
        called us has already done that. */
     $apiClass->bootRequest($request);
@@ -1808,7 +1808,7 @@ abstract class AbstractBaseAPI {
     $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' . $linksQuery : '');
     $links = ["self" => $linksSelf];
     
-    $metaData = [];
+    $metaData = $extraMeta;
     if ($apiClass->permissionErrors !== null) {
       $metaData["Include errors"] = $apiClass->permissionErrors;
     }

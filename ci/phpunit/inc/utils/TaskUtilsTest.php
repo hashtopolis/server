@@ -7,6 +7,7 @@ use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\Task;
+use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\TestBase;
 
@@ -322,5 +323,375 @@ final class TaskUtilsTest extends TestBase {
     TaskUtils::setCpuTask($taskObjects["task"]->getId(), 0, $taskObjects["user"]);
     $taskUpdated = Factory::getTaskFactory()->get($taskObjects["task"]->getId());
     $this->assertEquals(0, $taskUpdated->getIsCpuTask());
+  }
+
+  /**
+   * Builds the common fixtures used by the findCompletedEquivalent tests:
+   * an access group, a hashlist, a (normal) task wrapper on that hashlist, a
+   * cracker binary + type and a file.
+   *
+   * @return array
+   * @throws Exception
+   */
+  private function findCompletedSetup(): array {
+    $accessGroup = $this->createAccessGroup("phpunit");
+    $hashType = $this->createHashType();
+    $hashlist = $this->createHashlist($accessGroup, $hashType);
+    $taskWrapper = $this->createTaskWrapper($accessGroup, $hashlist);
+    $crackerBinaryType = $this->createCrackerBinaryType();
+    $crackerBinary = $this->createCrackerBinary($crackerBinaryType);
+    $file = $this->createFile($accessGroup);
+    return array(
+      "accessGroup" => $accessGroup,
+      "hashType" => $hashType,
+      "hashlist" => $hashlist,
+      "taskWrapper" => $taskWrapper,
+      "crackerBinaryType" => $crackerBinaryType,
+      "crackerBinary" => $crackerBinary,
+      "file" => $file,
+    );
+  }
+
+  /**
+   * Creates a task on the given wrapper with a specific attack command, file set and
+   * keyspace state, used to stand in for an already-completed task. A single chunk
+   * covering [0, $keyspaceProgress) with checkpoint $checkpoint is attached, so both the
+   * dispatch pointer (Task::KEYSPACE_PROGRESS) and the chunk-based progress can be
+   * controlled independently; by default the chunk is finished and covers the keyspace.
+   *
+   * @param TaskWrapper $taskWrapper
+   * @param mixed $crackerBinary
+   * @param mixed $crackerBinaryType
+   * @param string $attackCmd
+   * @param array $files
+   * @param int $keyspace
+   * @param int $keyspaceProgress
+   * @param int $isArchived
+   * @param int|null $checkpoint chunk checkpoint, defaults to $keyspaceProgress (chunk finished)
+   * @param int $skipKeyspace
+   * @return Task
+   * @throws Exception
+   */
+  private function makeCompletedTask($taskWrapper, $crackerBinary, $crackerBinaryType, string $attackCmd, array $files, int $keyspace = 1000, int $keyspaceProgress = 1000, int $isArchived = 0, ?int $checkpoint = null, int $skipKeyspace = 0): Task {
+    $task = $this->createTask($taskWrapper, $crackerBinary, $crackerBinaryType);
+    Factory::getTaskFactory()->mset($task, [
+      Task::ATTACK_CMD => $attackCmd,
+      Task::KEYSPACE => $keyspace,
+      Task::KEYSPACE_PROGRESS => $keyspaceProgress,
+      Task::IS_ARCHIVED => $isArchived,
+      Task::SKIP_KEYSPACE => $skipKeyspace,
+    ]);
+    foreach ($files as $file) {
+      $this->createFileTask($file, $task);
+    }
+    if ($keyspaceProgress > $skipKeyspace) {
+      $checkpoint = $checkpoint ?? $keyspaceProgress;
+      $state = ($checkpoint >= $keyspaceProgress) ? DHashcatStatus::EXHAUSTED : DHashcatStatus::ABORTED;
+      $this->createDatabaseObject(
+        Factory::getChunkFactory(),
+        new Chunk(null, $task->getId(), $skipKeyspace, $keyspaceProgress - $skipKeyspace, null, time() - 60, time(), $checkpoint, 0, $state, 0, 0)
+      );
+    }
+    return Factory::getTaskFactory()->get($task->getId());
+  }
+
+  /**
+   * A fully exhausted task with a matching attack command, file set and cracker is found.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFindCompletedEquivalentMatches(): void {
+    $s = $this->findCompletedSetup();
+    $task = $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 0 dict.txt", [$s["file"]]);
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 0 dict.txt",
+      [$s["file"]->getId()],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId()
+    );
+
+    $this->assertNotNull($match);
+    $this->assertEquals($task->getId(), $match->getId());
+  }
+
+  /**
+   * A task with no files matches a spec with no files.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFindCompletedEquivalentNoFilesMatches(): void {
+    $s = $this->findCompletedSetup();
+    $task = $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 3 ?d?d?d?d", []);
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 3 ?d?d?d?d",
+      [],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId()
+    );
+
+    $this->assertNotNull($match);
+    $this->assertEquals($task->getId(), $match->getId());
+  }
+
+  /**
+   * An archived but fully exhausted task still counts as a match.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFindCompletedEquivalentArchivedMatches(): void {
+    $s = $this->findCompletedSetup();
+    $task = $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 0 dict.txt", [$s["file"]], 1000, 1000, 1);
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 0 dict.txt",
+      [$s["file"]->getId()],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId()
+    );
+
+    $this->assertNotNull($match);
+    $this->assertEquals($task->getId(), $match->getId());
+  }
+
+  /**
+   * Whitespace differences in the attack command are normalized away.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFindCompletedEquivalentAttackCmdWhitespaceNormalized(): void {
+    $s = $this->findCompletedSetup();
+    $task = $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL#   -a    0   dict.txt", [$s["file"]]);
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 0 dict.txt",
+      [$s["file"]->getId()],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId()
+    );
+
+    $this->assertNotNull($match);
+    $this->assertEquals($task->getId(), $match->getId());
+  }
+
+  /**
+   * A partially completed task (progress below keyspace) is not a match.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFindCompletedEquivalentPartialKeyspaceNoMatch(): void {
+    $s = $this->findCompletedSetup();
+    $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 0 dict.txt", [$s["file"]], 1000, 500);
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 0 dict.txt",
+      [$s["file"]->getId()],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId()
+    );
+
+    $this->assertNull($match);
+  }
+
+  /**
+   * A task with keyspace 0 (never measured) is not a match.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFindCompletedEquivalentZeroKeyspaceNoMatch(): void {
+    $s = $this->findCompletedSetup();
+    $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 0 dict.txt", [$s["file"]], 0, 0);
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 0 dict.txt",
+      [$s["file"]->getId()],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId()
+    );
+
+    $this->assertNull($match);
+  }
+
+  /**
+   * A different cracker binary invalidates the match.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFindCompletedEquivalentDifferentCrackerNoMatch(): void {
+    $s = $this->findCompletedSetup();
+    $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 0 dict.txt", [$s["file"]]);
+    $otherBinary = $this->createCrackerBinary($s["crackerBinaryType"]);
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 0 dict.txt",
+      [$s["file"]->getId()],
+      $otherBinary->getId(),
+      $s["crackerBinaryType"]->getId()
+    );
+
+    $this->assertNull($match);
+  }
+
+  /**
+   * A different file set invalidates the match.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFindCompletedEquivalentDifferentFilesetNoMatch(): void {
+    $s = $this->findCompletedSetup();
+    $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 0 dict.txt", [$s["file"]]);
+    $otherFile = $this->createFile($s["accessGroup"]);
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 0 dict.txt",
+      [$otherFile->getId()],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId()
+    );
+
+    $this->assertNull($match);
+  }
+
+  /**
+   * A different attack command invalidates the match.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFindCompletedEquivalentDifferentAttackCmdNoMatch(): void {
+    $s = $this->findCompletedSetup();
+    $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 0 dict.txt", [$s["file"]]);
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 3 ?d?d?d?d",
+      [$s["file"]->getId()],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId()
+    );
+
+    $this->assertNull($match);
+  }
+
+  /**
+   * An identical completed task on a different hashlist is not a match.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFindCompletedEquivalentDifferentHashlistNoMatch(): void {
+    $s = $this->findCompletedSetup();
+    $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 0 dict.txt", [$s["file"]]);
+    $otherHashlist = $this->createHashlist($s["accessGroup"], $s["hashType"]);
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $otherHashlist->getId(),
+      "#HL# -a 0 dict.txt",
+      [$s["file"]->getId()],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId()
+    );
+
+    $this->assertNull($match);
+  }
+
+  /**
+   * A task whose last chunk was dispatched but never finished (keyspaceProgress reached
+   * the keyspace, chunk checkpoint did not) is not a match: part of the keyspace was
+   * never searched.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFindCompletedEquivalentDispatchedButUnfinishedNoMatch(): void {
+    $s = $this->findCompletedSetup();
+    $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 0 dict.txt", [$s["file"]], 1000, 1000, 0, 500);
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 0 dict.txt",
+      [$s["file"]->getId()],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId()
+    );
+
+    $this->assertNull($match);
+  }
+
+  /**
+   * A task created with a skipKeyspace offset only searched part of the keyspace, so it
+   * is not a match even though its dispatch pointer reached the keyspace.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testFindCompletedEquivalentSkipKeyspaceNoMatch(): void {
+    $s = $this->findCompletedSetup();
+    $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 0 dict.txt", [$s["file"]], 1000, 1000, 0, null, 400);
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 0 dict.txt",
+      [$s["file"]->getId()],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId()
+    );
+
+    $this->assertNull($match);
+  }
+
+  /**
+   * getCompletedTasksOfHashlist returns only the fully searched tasks, and passing its
+   * result as candidates yields the same match as the on-demand lookup.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testGetCompletedTasksOfHashlistAndCandidates(): void {
+    $s = $this->findCompletedSetup();
+    $done = $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 0 dict.txt", [$s["file"]]);
+    $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 3 ?d?d?d?d", [], 1000, 500);
+    $this->makeCompletedTask($s["taskWrapper"], $s["crackerBinary"], $s["crackerBinaryType"], "#HL# -a 3 ?l?l?l?l", [], 1000, 1000, 0, 200);
+
+    $completed = TaskUtils::getCompletedTasksOfHashlist($s["hashlist"]->getId());
+    $this->assertCount(1, $completed);
+    $this->assertEquals($done->getId(), $completed[0]->getId());
+
+    $match = TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 0 dict.txt",
+      [$s["file"]->getId()],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId(),
+      $completed
+    );
+    $this->assertNotNull($match);
+    $this->assertEquals($done->getId(), $match->getId());
+
+    $this->assertNull(TaskUtils::findCompletedEquivalent(
+      $s["hashlist"]->getId(),
+      "#HL# -a 3 ?l?l?l?l",
+      [],
+      $s["crackerBinary"]->getId(),
+      $s["crackerBinaryType"]->getId(),
+      $completed
+    ));
   }
 }
