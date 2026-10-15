@@ -5,6 +5,7 @@ namespace Hashtopolis\inc\utils;
 use Exception;
 use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\models\Benchmark;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\Factory;
@@ -30,7 +31,12 @@ class HashtypeUtils {
     if (sizeof($hashlists) > 0) {
       throw new HTException("You cannot delete this hashtype! There are hashlists present which are of this type!");
     }
-    
+
+    // Drop any cached benchmarks keyed on this hash type first; Benchmark holds a
+    // foreign key to HashType with no ON DELETE, so leaving them would block the
+    // delete, and cached rows are disposable.
+    Factory::getBenchmarkFactory()->massDeletion([Factory::FILTER =>
+      new QueryFilter(Benchmark::HASH_TYPE_ID, $hashtype->getId(), "=")]);
     Factory::getHashTypeFactory()->delete($hashtype);
   }
   

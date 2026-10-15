@@ -30,6 +30,7 @@ use Hashtopolis\dba\models\AgentBinary;
 use Hashtopolis\dba\models\AgentError;
 use Hashtopolis\dba\models\AgentStat;
 use Hashtopolis\dba\models\Assignment;
+use Hashtopolis\dba\models\Benchmark;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\ComparisonFilter;
 use Hashtopolis\dba\models\Config;
@@ -344,6 +345,8 @@ abstract class AbstractBaseAPI {
         return Factory::getAgentBinaryFactory();
       case AgentError::class:
         return Factory::getAgentErrorFactory();
+      case Benchmark::class:
+        return Factory::getBenchmarkFactory();
       case AgentStat::class:
         return Factory::getAgentStatFactory();
       case Assignment::class:
@@ -632,7 +635,9 @@ abstract class AbstractBaseAPI {
                                                   HealthCheck::PERM_CREATE, HealthCheck::PERM_READ, HealthCheck::PERM_UPDATE, HealthCheck::PERM_DELETE,
                                                   HealthCheckAgent::PERM_CREATE, HealthCheckAgent::PERM_READ, HealthCheckAgent::PERM_UPDATE, HealthCheckAgent::PERM_DELETE,
                                                   // src/inc/defines/hashlists.php
-                                                  HashType::PERM_CREATE, HashType::PERM_READ, HashType::PERM_UPDATE, HashType::PERM_DELETE
+                                                  HashType::PERM_CREATE, HashType::PERM_READ, HashType::PERM_UPDATE, HashType::PERM_DELETE,
+                                                  // benchmark cache (issue #879)
+                                                  Benchmark::PERM_CREATE, Benchmark::PERM_READ, Benchmark::PERM_UPDATE, Benchmark::PERM_DELETE
     ),
     
     DAccessControl::USER_CONFIG_ACCESS => array(User::PERM_CREATE, User::PERM_READ, User::PERM_UPDATE, User::PERM_DELETE, RightGroup::PERM_CREATE, RightGroup::PERM_READ, RightGroup::PERM_UPDATE, RightGroup::PERM_DELETE),
