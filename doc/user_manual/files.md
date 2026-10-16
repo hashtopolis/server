@@ -35,7 +35,7 @@ Navigating to the Files page of the Hashtopolis User Interface, you can manage t
 
 1. **Select Category**.
 2. **Secret**: Files that are marked as secret will only be sent to trusted agents.
-3. **Line count**: Reprocess the file and update the line count with the number of lines contained in the file.
+3. **Line count**: Reprocess the file and update the line count with the number of lines contained in the file. The recount is executed as a [background job](./background_jobs.md).
 4. **Edit**: Edit the parameters of the file (name, file type and associated group).
 5. **Delete**: Removes the file from Hashtopolis.
 
@@ -86,5 +86,20 @@ docker cp <file> hashtopolis-backend:/usr/local/share/hashtopolis/import/
 2. **Associated Access Group**: Define the access group that will have permissions to access the file(s) you are uploading. 
 3. **URL**: Provide the URL to download from..
 4. **Download file**.
+
+## File Checksums
+
+Each file carries a checksum of its content so that integrity can be verified beyond the file size. Keywords to document:
+
+- `checksum` attribute: BLAKE3 digest of the file content, 64 lowercase hex characters
+- computed asynchronously by a background job (`checksum_file`, see [Background Jobs](./background_jobs.md)); `null` until the job ran — treat `null` as "no checksum available"
+- the job is enqueued when a file is created (upload, import, URL download, hashlist-generated wordlists), deduplicated while pending/running, and withdrawn when the file is deleted
+- invalidated whenever the file bytes change (detected through a size mismatch during the global file rescan); kept across a rename
+- recompute on demand (API v2): `POST /api/v2/helper/recomputeFileChecksum` with `fileId`
+- global file rescan: backfills files without a checksum and re-queues files whose size no longer matches (API v2: `POST /api/v2/helper/rescanGlobalFiles`)
+- downloads: `Repr-Digest: blake3=:<base64 digest>:` header (RFC 9530) sent with `GET /api/v2/helper/getFile` and the legacy `getFile.php`, including partial (`206`) responses
+- agents: the agent protocol's `getFile` response carries a `checksum` field (additive, `null` until computed)
+- server requirement: the `b3sum` tool (included in the official Docker image); the job fails with an explicit error if it is missing
+
 
 

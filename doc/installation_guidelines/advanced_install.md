@@ -69,6 +69,9 @@ Continue with the normal docker installation described in the [basic installatio
 
 ## Local webserver for cracker binaries
 
+> [!NOTE]
+> The server can now store cracker binary archives itself, which makes this local webserver optional. Uploading an archive to the server (import directory, inline, or server-fetched URL) is the recommended way, especially for offline/air-gapped environments — see [Binaries user manual](../user_manual/crackers_binary.md#storing-the-binary-on-the-server). The setup below remains useful if you want to keep serving binaries from an external `Download URL`.
+
 If you want to use a custom binary or a different version of hashcat (for example with custom modules), you need to supply an URL for a ZIP-file containing that binary, that the agents can reach. You may want to store all your binaries within a local webserver, especially if your environment is offline/air-gapped.
 
 
@@ -184,9 +187,11 @@ docker build . -t hashtopolis/backend:latest --target hashtopolis-server-prod
 
 ## Using Local Folders outside of the Docker Volumes
 
-By default (when you use the default docker-compose) the Hashtopolis folder (import, files and binaries) are in a Docker volume.
+By default (when you use the default docker-compose) the Hashtopolis folder (import, files, binaries and crackers) are in a Docker volume.
 
 You can list this volume via docker volume ls. You can also access the volume directly in the backend, because it is mounted at: ```/usr/local/share/hashtopolis``` inside the container.
+
+The *crackers* directory holds the cracker binary archives stored on the server (default `/usr/local/share/hashtopolis/crackers`; override with the `HASHTOPOLIS_CRACKERS_PATH` environment variable). See the [Binaries user manual](../user_manual/crackers_binary.md#storing-the-binary-on-the-server) for the upload flow.
 
 However, if you prefer not to use Docker volumes and instead use folders on the host OS, you can update the mount points in the *docker-compose.yml* file. 
 
@@ -207,6 +212,7 @@ services:
       - /opt/hashtopolis/import:/usr/local/share/hashtopolis/import:Z
       - /opt/hashtopolis/binaries:/usr/local/share/hashtopolis/binaries:Z
       - /opt/hashtopolis/files:/usr/local/share/hashtopolis/files:Z
+      - /opt/hashtopolis/crackers:/usr/local/share/hashtopolis/crackers:Z
     environment:
       HASHTOPOLIS_DB_USER: $MYSQL_USER
       HASHTOPOLIS_DB_PASS: $MYSQL_PASSWORD
@@ -256,6 +262,17 @@ docker compose up
 ```
 
 Finally, copy the data back into the appropriate folders after recreating the containers.
+
+## Background Job Scheduler
+
+Long-running server operations (file line recounts, hashcat hashtype scans, file checksum computations) are processed by a background job runner. See the [Background Jobs](../user_manual/background_jobs.md) user manual page for what jobs are and how they are monitored.
+
+- the official Docker image starts a scheduler loop in the entrypoint that runs the job runner every 60 seconds
+- disable the built-in scheduler with `HASHTOPOLIS_CRON_ENABLE=0`, e.g. to drive the runner with an external cron instead: run `php -f inc/cron.php` inside the backend container
+- jobs are processed one at a time under a global lock, so a long job (e.g. checksumming a very large wordlist) delays other jobs until it finishes
+
+> [!NOTE]
+> The runner relies on external tools that are included in the official backend image: `7z` (p7zip-full) to unpack cracker binary archives and `b3sum` to compute file checksums. Non-Docker installations must provide them; a job fails with an explicit error message when a tool is missing.
 
 ## Serving the frontend on another origin
 

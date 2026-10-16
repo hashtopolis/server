@@ -131,6 +131,11 @@
 
 In Hashcat (and by extension, Hashtopolis), a hashtype refers to the specific algorithm or format used to generate a hash from a password. Hashtopolis is preconfigured with the hashtypes supported by the latest version of hashcat. For flexibility reason, there is the possibility to include additional hashtypes in case you use a modified version of hashcat with additional modules. 
 
+Hashtopolis keeps this list in sync with hashcat automatically: when a hashcat binary is added, updated or checked, a [background job](./background_jobs.md) scans it and creates the hashtypes it reports (description, salted status, slow hash). Manually created hashtypes and existing entries are never modified by the scan (see [Automatic Hashcat Scanning](./crackers_binary.md#automatic-hashcat-scanning)).
+
+> [!NOTE]
+> Visibility: users who are not admins only see the hashtypes that are supported by at least one cracker binary in their [access groups](./users.md#access-groups). Admins can manage the full catalog.
+
 Click on *+ New Hashtype* to add a new hashtype. Fill the corresponding fields described below:
 
 - **Hashtype**: The numeric ID corresponding to the Hashcat hashmode (used with the -m option), e.g. -m 0 for MD5.

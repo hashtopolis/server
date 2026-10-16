@@ -46,6 +46,13 @@ In the global permissions, we have defined what rights users are generally allow
 When creating a hashlist, I have to define which access group this hashlist is assigned to. As a user with the global permission **Create Task**, I can now only see the hashlist when creating the task if I am also a member of the corresponding access group. The Access Group can therefore regulate who can see, use and work with which files.
 The same applies to the agents. I can therefore use the access groups to control who gets which access to my computing resources.
 
+The same also applies to the cracker binaries. Keywords to document:
+
+- each binary version is assigned to an access group when it is created (the creating user must be a member of that group)
+- users only see and can select binaries of their access groups when creating tasks, preconfigured tasks or supertasks
+- agents only receive tasks whose cracker binary belongs to one of their access groups
+- on upgrade, existing binaries are assigned to the default access group; deleting an access group moves its binaries to the default group
+
 In contrast to the permission groups, a user can be a member of none, one or more access groups in order to keep the options offered by Hashtopolis as flexible as possible.
 
 To create a new Access Group, click on **New Access Group**. As with the global permissions, only a name is initially defined here.

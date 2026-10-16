@@ -36,7 +36,7 @@ These additional task configuration options allow greater control over execution
 
 12. **Task is small**: If this flag is enabled, a single agent can be assigned to this task. This is relevant for small tasks or to assign the full keyspace in a single chunk to an agent. Note that this is **NOT** equivalent to define the *Maximum number of agents* to 1. Indeed, in this latter case, the task will still be divided in chunks according to the *chunk size* parameter. The flag is disabled by default.
 
-13. **Binary type to run the task**: Specify the binary type and version to use for this task. Defaults to the latest available in the [Binaries](./crackers_binary.md#crackers) section. 
+13. **Binary type to run the task**: Specify the binary type and version to use for this task. Defaults to the latest available in the [Binaries](./crackers_binary.md#crackers) section. The selected binary must belong to one of your [access groups](./users.md#access-groups) and must support the [hashtype](./crackers_binary.md#supported-hashtypes) of the selected hashlist.
 
 14. **Set as preprocessor task**: This option allows the usage of a preprocessor. By default Hashtopolis is installed with a single preprocessor, namely [*Prince*](https://github.com/hashcat/princeprocessor). Additional preprocessors can be defined in the [*preprocessors*](./crackers_binary.md#preprocessors) page. The command that should be used for this preprocessor must be defined in the free text zone below. A task defined with a preprocessor will result in the execution of the preprocessor, redirecting its output as stdin for the command line defined above in the same task. This allows the usage of "external" candidate generators such as Prince.  
 
@@ -97,11 +97,14 @@ Supertasks are ideal for defining consistent cracking strategies which can be us
 
 A new supertask can be created from the *SuperTask* page by clicking on the *+ New* button. In the following page, give a name to the supertask and select all the preconfigured tasks to include. Click the "Create SuperTask" button to finalize.
 
+- **Cracker Binary which is used to run this supertask**: the cracker binary type of the supertask, required at creation. All included preconfigured tasks must be of this binary type; they cannot be mixed.
+- when applied to a hashlist, the selected binary must belong to the user's [access groups](./users.md#access-groups) and must support the hashlist's [hashtype](./crackers_binary.md#supported-hashtypes).
+
 ### Overview
 
 The **SuperTask menu** shows a list of all supertasks and their associated preconfigured tasks. The following options are available:
 
-- **Apply to Hashlist**: Select a target hashlist and binary in the opened page. This action creates all the sub-tasks from the supertask to the selected hashlist.
+- **Apply to Hashlist**: Select a target hashlist and binary in the opened page. This action creates all the sub-tasks from the supertask to the selected hashlist. Only binaries of the user's [access groups](./users.md#access-groups) supporting the hashlist's [hashtype](./crackers_binary.md#supported-hashtypes) can be selected.
 - **Show/Hide**: Expands the supertask view to show the included subtasks with their details:
   - **ID**: Preconfigured task ID.
   - **Name**: Clickable name to open and view the subtask details. 
