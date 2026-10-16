@@ -1,0 +1,19 @@
+# This file will be read by the confidence module to
+# - load user specific configurations
+#
+# confidence provides a convenient way of using this kind of precedence,
+# letting 'more local' files take precedence over system-wide sources
+# load_name will attempt to load multiple files, skipping ones that
+# don't exist (using typical *nix paths, XDG-specified locations, some
+# Windows environment variables and typical OSX paths):
+# - /etc/xdg/hpsc.yaml
+# - /etc/hpsc.yaml
+# - /Library/Preferences/hpsc.yaml
+# - C:/ProgramData/hpsc.yaml
+# - ~/.config/hpsc.yaml
+# - ~/Library/Preferences/hpsc.yaml
+# - ~/AppData/Roaming/hpsc.yaml
+# - ~/.hpsc.yaml
+# - ./hpsc.yaml
+api_endpoint: 'http://HASHTOPOLIS_HOST/hashtopolis/api/user.php'
+api_key: 'HASHTOPOLIS_API_KEY'
