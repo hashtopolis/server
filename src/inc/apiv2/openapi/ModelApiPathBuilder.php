@@ -313,10 +313,22 @@ class ModelApiPathBuilder {
 
       /* Method specific responses and requests for single objects */
       if ($method == 'get') {
-        if (!$isRelation && str_contains($pattern, "relation:")) {
+        if ($isRelation) {
+          /* The relationship route answers with the linkage, the resource
+             identifiers of the related resources (getToOneRelationshipLink,
+             getToManyRelationshipLink) */
           $paths[$path][$method]["responses"]["200"] = $this->jsonApiFragments->jsonApiResponse(
             "successful operation",
             "#/components/schemas/" . $name . "Relation" . ucfirst($relation) . "GetResponse"
+          );
+        }
+        elseif (str_contains($pattern, "relation:")) {
+          /* The related-resource route answers with the documents of the
+             related API class itself, a single resource or a paginated list
+             (getToOneRelatedResource, getToManyRelatedResource) */
+          $paths[$path][$method]["responses"]["200"] = $this->jsonApiFragments->jsonApiResponse(
+            "successful operation",
+            "#/components/schemas/" . ucfirst($relationTypeName) . ($isToMany ? "ListResponse" : "Response")
           );
         }
         else {
@@ -669,6 +681,10 @@ class ModelApiPathBuilder {
    * The resource identifiers inside carry $relationTypeName, the resource
    * type of the related API class, matching the identifiers the runtime
    * emits and accepts.
+   *
+   * The GetResponse is the linkage the relationship route answers with. An
+   * unset to-one relationship is answered with null data, like the linkage
+   * inside the resource object (see makeRelationships).
    */
   private function addRelationComponents(string $name, ?string $relation, bool $isToMany, ?string $relationTypeName, array &$components): void {
     if ($relation === null) {
@@ -684,11 +700,14 @@ class ModelApiPathBuilder {
         "properties" => $properties,
       ];
 
+    $getProperties = $isToMany
+      ? $properties
+      : ["data" => ["oneOf" => [$properties["data"], ["type" => "null"]]]];
     $components[$name . "Relation" . ucfirst($relation) . "GetResponse"] =
       [
         "type" => "object",
         "required" => ["data"],
-        "properties" => $properties
+        "properties" => $getProperties
       ];
   }
 

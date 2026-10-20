@@ -514,7 +514,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersionsGetResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryListResponse"
                                 }
                             }
                         }
@@ -595,7 +595,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersionsGetResponse"
                                 }
                             }
                         }
@@ -909,7 +909,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeRelationTasksGetResponse"
+                                    "$ref": "#/components/schemas/TaskListResponse"
                                 }
                             }
                         }
@@ -990,7 +990,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryTypeRelationTasksGetResponse"
                                 }
                             }
                         }

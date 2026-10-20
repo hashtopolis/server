@@ -380,7 +380,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ConfigRelationConfigSectionGetResponse"
+                                    "$ref": "#/components/schemas/ConfigSectionResponse"
                                 }
                             }
                         }
@@ -461,7 +461,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ConfigResponse"
+                                    "$ref": "#/components/schemas/ConfigRelationConfigSectionGetResponse"
                                 }
                             }
                         }
@@ -3376,21 +3376,28 @@
                 ],
                 "properties": {
                     "data": {
-                        "type": "object",
-                        "required": [
-                            "type",
-                            "id"
-                        ],
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "const": "configSection"
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "required": [
+                                    "type",
+                                    "id"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "configSection"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
                             },
-                            "id": {
-                                "type": "integer",
-                                "example": 1
+                            {
+                                "type": "null"
                             }
-                        }
+                        ]
                     }
                 }
             },

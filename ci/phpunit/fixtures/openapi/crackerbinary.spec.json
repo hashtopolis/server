@@ -516,7 +516,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryRelationCrackerBinaryTypeGetResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryTypeResponse"
                                 }
                             }
                         }
@@ -597,7 +597,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryRelationCrackerBinaryTypeGetResponse"
                                 }
                             }
                         }
@@ -759,7 +759,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryRelationAccessGroupGetResponse"
+                                    "$ref": "#/components/schemas/AccessGroupResponse"
                                 }
                             }
                         }
@@ -840,7 +840,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryRelationAccessGroupGetResponse"
                                 }
                             }
                         }
@@ -1002,7 +1002,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryRelationTasksGetResponse"
+                                    "$ref": "#/components/schemas/TaskListResponse"
                                 }
                             }
                         }
@@ -1083,7 +1083,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryRelationTasksGetResponse"
                                 }
                             }
                         }
@@ -1397,7 +1397,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryRelationHashtypesGetResponse"
+                                    "$ref": "#/components/schemas/HashTypeListResponse"
                                 }
                             }
                         }
@@ -1478,7 +1478,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryRelationHashtypesGetResponse"
                                 }
                             }
                         }
@@ -5143,21 +5143,28 @@
                 ],
                 "properties": {
                     "data": {
-                        "type": "object",
-                        "required": [
-                            "type",
-                            "id"
-                        ],
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "const": "crackerBinaryType"
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "required": [
+                                    "type",
+                                    "id"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "crackerBinaryType"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
                             },
-                            "id": {
-                                "type": "integer",
-                                "example": 1
+                            {
+                                "type": "null"
                             }
-                        }
+                        ]
                     }
                 }
             },
@@ -5193,21 +5200,28 @@
                 ],
                 "properties": {
                     "data": {
-                        "type": "object",
-                        "required": [
-                            "type",
-                            "id"
-                        ],
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "const": "accessGroup"
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "required": [
+                                    "type",
+                                    "id"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "accessGroup"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
                             },
-                            "id": {
-                                "type": "integer",
-                                "example": 1
+                            {
+                                "type": "null"
                             }
-                        }
+                        ]
                     }
                 }
             },

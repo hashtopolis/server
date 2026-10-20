@@ -512,7 +512,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/HashTypeRelationCrackerBinariesGetResponse"
+                                    "$ref": "#/components/schemas/CrackerBinaryListResponse"
                                 }
                             }
                         }
@@ -593,7 +593,7 @@
                         "content": {
                             "application/vnd.api+json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/HashTypeResponse"
+                                    "$ref": "#/components/schemas/HashTypeRelationCrackerBinariesGetResponse"
                                 }
                             }
                         }

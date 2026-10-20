@@ -75,6 +75,26 @@ final class SpecBuilderModelApiTest extends TestCase {
     $this->assertArrayHasKey('/api/v2/ui/configs/{id}/configSection', $spec['paths']);
     $this->assertArrayHasKey('/api/v2/ui/configs/{id}/relationships/configSection', $spec['paths']);
 
+    // the related-resource route answers with the related resource itself,
+    // the relationship route with its (nullable) resource identifier
+    $mediaType = 'application/vnd.api+json';
+    $relatedGet = $spec['paths']['/api/v2/ui/configs/{id}/configSection']['get']['responses']['200'];
+    $this->assertSame(
+      '#/components/schemas/ConfigSectionResponse',
+      $relatedGet['content'][$mediaType]['schema']['$ref']
+    );
+    $relationshipGet = $spec['paths']['/api/v2/ui/configs/{id}/relationships/configSection']['get']['responses']['200'];
+    $this->assertSame(
+      '#/components/schemas/ConfigRelationConfigSectionGetResponse',
+      $relationshipGet['content'][$mediaType]['schema']['$ref']
+    );
+    $linkage = $spec['components']['schemas']['ConfigRelationConfigSectionGetResponse']['properties']['data'];
+    $this->assertSame(
+      ['type' => 'string', 'const' => 'configSection'],
+      $linkage['oneOf'][0]['properties']['type']
+    );
+    $this->assertSame(['type' => 'null'], $linkage['oneOf'][1]);
+
     $response = $spec['components']['schemas']['ConfigResponse'];
     // getOpenAPIAttributesSchemaOverride() replaces the default attributes object
     $this->assertArrayHasKey('oneOf', $response['properties']['data']['properties']['attributes']);
@@ -107,17 +127,30 @@ final class SpecBuilderModelApiTest extends TestCase {
     $this->assertArrayHasKey('/api/v2/ui/crackertypes/{id}/relationships/crackerVersions', $spec['paths']);
     $this->assertArrayHasKey('/api/v2/ui/crackertypes/{id}/relationships/tasks', $spec['paths']);
 
-    // each relation is documented with its own schemas, none overwrites another
+    // each relation is documented with its own schemas, none overwrites
+    // another: the related-resource routes answer with the list document of
+    // the related API class (only referenced here, as that class is seeded on
+    // the mapper only), the relationship routes with the per-relation linkage
     $mediaType = 'application/vnd.api+json';
     $crackerVersionsGet = $spec['paths']['/api/v2/ui/crackertypes/{id}/crackerVersions']['get']['responses']['200'];
     $this->assertSame(
-      '#/components/schemas/CrackerBinaryTypeRelationCrackerVersionsGetResponse',
+      '#/components/schemas/CrackerBinaryListResponse',
       $crackerVersionsGet['content'][$mediaType]['schema']['$ref']
     );
     $tasksGet = $spec['paths']['/api/v2/ui/crackertypes/{id}/tasks']['get']['responses']['200'];
     $this->assertSame(
-      '#/components/schemas/CrackerBinaryTypeRelationTasksGetResponse',
+      '#/components/schemas/TaskListResponse',
       $tasksGet['content'][$mediaType]['schema']['$ref']
+    );
+    $crackerVersionsLinkageGet = $spec['paths']['/api/v2/ui/crackertypes/{id}/relationships/crackerVersions']['get']['responses']['200'];
+    $this->assertSame(
+      '#/components/schemas/CrackerBinaryTypeRelationCrackerVersionsGetResponse',
+      $crackerVersionsLinkageGet['content'][$mediaType]['schema']['$ref']
+    );
+    $tasksLinkageGet = $spec['paths']['/api/v2/ui/crackertypes/{id}/relationships/tasks']['get']['responses']['200'];
+    $this->assertSame(
+      '#/components/schemas/CrackerBinaryTypeRelationTasksGetResponse',
+      $tasksLinkageGet['content'][$mediaType]['schema']['$ref']
     );
 
     // the resource identifiers carry the resource type of the related API
@@ -169,17 +202,35 @@ final class SpecBuilderModelApiTest extends TestCase {
       $this->assertContains($expectedPath, $actualPaths);
     }
 
-    // the related-resource routes answer with the per-relation document
+    // the related-resource routes answer with the documents of the related
+    // API class, a list for toMany and a single resource for toOne
     $mediaType = 'application/vnd.api+json';
     $tasksGet = $spec['paths']['/api/v2/ui/crackers/{id}/tasks']['get']['responses']['200'];
     $this->assertSame(
-      '#/components/schemas/CrackerBinaryRelationTasksGetResponse',
+      '#/components/schemas/TaskListResponse',
       $tasksGet['content'][$mediaType]['schema']['$ref']
     );
     $hashtypesGet = $spec['paths']['/api/v2/ui/crackers/{id}/hashtypes']['get']['responses']['200'];
     $this->assertSame(
-      '#/components/schemas/CrackerBinaryRelationHashtypesGetResponse',
+      '#/components/schemas/HashTypeListResponse',
       $hashtypesGet['content'][$mediaType]['schema']['$ref']
+    );
+    $crackerBinaryTypeGet = $spec['paths']['/api/v2/ui/crackers/{id}/crackerBinaryType']['get']['responses']['200'];
+    $this->assertSame(
+      '#/components/schemas/CrackerBinaryTypeResponse',
+      $crackerBinaryTypeGet['content'][$mediaType]['schema']['$ref']
+    );
+
+    // the relationship routes answer with the per-relation linkage
+    $hashtypesLinkageGet = $spec['paths']['/api/v2/ui/crackers/{id}/relationships/hashtypes']['get']['responses']['200'];
+    $this->assertSame(
+      '#/components/schemas/CrackerBinaryRelationHashtypesGetResponse',
+      $hashtypesLinkageGet['content'][$mediaType]['schema']['$ref']
+    );
+    $crackerBinaryTypeLinkageGet = $spec['paths']['/api/v2/ui/crackers/{id}/relationships/crackerBinaryType']['get']['responses']['200'];
+    $this->assertSame(
+      '#/components/schemas/CrackerBinaryRelationCrackerBinaryTypeGetResponse',
+      $crackerBinaryTypeLinkageGet['content'][$mediaType]['schema']['$ref']
     );
 
     // the write requests carry the per-relation resource identifiers
