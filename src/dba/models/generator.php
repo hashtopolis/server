@@ -2,6 +2,7 @@
 
 use Hashtopolis\inc\defines\DAgentIgnoreErrors;
 use Hashtopolis\inc\defines\DAgentStatsType;
+use Hashtopolis\inc\defines\DBackgroundJobStatus;
 use Hashtopolis\inc\defines\DFileDownloadStatus;
 use Hashtopolis\inc\defines\DFileType;
 use Hashtopolis\inc\defines\DHashcatStatus;
@@ -20,6 +21,7 @@ $CONF = array();
 
 require_once(dirname(__FILE__) . "/../../inc/defines/DAgentIgnoreErrors.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DAgentStatsType.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/DBackgroundJobStatus.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DFileDownloadStatus.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DFileType.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/DHashcatStatus.php");
@@ -111,6 +113,13 @@ $FieldHealthCheckAgentStatusChoices = [
   ['key' => DHealthCheckAgentStatus::FAILED, 'label' => 'Failed'],
   ['key' => DHealthCheckAgentStatus::PENDING, 'label' => 'Pending'],
   ['key' => DHealthCheckAgentStatus::COMPLETED, 'label' => 'Completed'],
+];
+
+$FieldBackgroundJobStatusChoices = [
+  ['key' => DBackgroundJobStatus::FAILED, 'label' => 'Failed'],
+  ['key' => DBackgroundJobStatus::PENDING, 'label' => 'Pending'],
+  ['key' => DBackgroundJobStatus::RUNNING, 'label' => 'Running'],
+  ['key' => DBackgroundJobStatus::DONE, 'label' => 'Done'],
 ];
 
 $FieldLogEntryIssuerChoices = [
@@ -286,8 +295,13 @@ $CONF['CrackerBinary'] = [
     ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinaryType'],
     ['name' => 'version', 'read_only' => False, 'type' => 'str(20)'],
-    ['name' => 'downloadUrl', 'read_only' => False, 'type' => 'str(150)'],
+    ['name' => 'downloadUrl', 'read_only' => False, 'null' => True, 'type' => 'str(255)'],
     ['name' => 'binaryName', 'read_only' => False, 'type' => 'str(50)'],
+    // archive filename of a server-hosted binary; NULL means the binary is downloaded from downloadUrl
+    ['name' => 'filename', 'read_only' => True, 'null' => True, 'type' => 'str(100)', 'protected' => True],
+    // access group the binary belongs to, required on creation and patchable with
+    // membership validation of the current and the new group
+    ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int', 'relation' => 'AccessGroup'],
   ],
 ];
 $CONF['CrackerBinaryType'] = [
@@ -295,6 +309,15 @@ $CONF['CrackerBinaryType'] = [
     ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'typeName', 'read_only' => False, 'type' => 'str(30)'],
     ['name' => 'isChunkingAvailable', 'read_only' => False, 'null' => True, 'type' => 'bool'],
+  ],
+];
+// n-m association between cracker binaries and hashtypes: a binary only
+// supports the hashtypes it is linked to
+$CONF['CrackerBinaryHashtype'] = [
+  'columns' => [
+    ['name' => 'crackerBinaryHashtypeId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinary'],
+    ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'HashType'],
   ],
 ];
 $CONF['File'] = [
@@ -523,6 +546,7 @@ $CONF['Supertask'] = [
   'columns' => [
     ['name' => 'supertaskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'supertaskName', 'read_only' => False, 'type' => 'str(50)'],
+    ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'relation' => 'CrackerBinaryType'],
   ],
 ];
 $CONF['Task'] = [
@@ -679,6 +703,21 @@ $CONF['HashlistHashlist'] = [
   ],
 ];
 
+$CONF['BackgroundJob'] = [
+  'columns' => [
+    ['name' => 'backgroundJobId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'jobType', 'read_only' => True, 'type' => 'str(100)', 'protected' => True],
+    ['name' => 'payload', 'read_only' => True, 'type' => 'json', 'protected' => True],
+    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldBackgroundJobStatusChoices],
+    ['name' => 'userId', 'read_only' => True, 'protected' => True, 'type' => 'int', 'relation' => 'User', 'null' => True],
+    ['name' => 'createdAt', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'startedAt', 'read_only' => True, 'type' => 'int64', 'protected' => True, 'null' => True],
+    ['name' => 'finishedAt', 'read_only' => True, 'type' => 'int64', 'protected' => True, 'null' => True],
+    ['name' => 'exitCode', 'read_only' => True, 'type' => 'int', 'protected' => True, 'null' => True],
+    ['name' => 'resultMessage', 'read_only' => True, 'type' => 'str(1024)', 'protected' => True, 'null' => True],
+  ],
+];
+
 $CONF['_sqlx_migrations'] = [
   'columns' => [
     ['name' => 'version', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
@@ -710,6 +749,9 @@ function getTypingType($str, $nullable = false): string {
     return ($nullable ? '?' : '') . 'string';
   }
   if ($str == 'binary') {
+    return ($nullable ? '?' : '') . 'string';
+  }
+  if ($str == 'json') {
     return ($nullable ? '?' : '') . 'string';
   }
   throw new Exception("Cannot convert type " . $str);

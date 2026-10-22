@@ -42,14 +42,35 @@ class ModelApiPathBuilder {
     $uri = $class->getBaseUri();
 
     $isRelation = (strstr($path, "/relationships/")) !== false;
+    $relationTypeName = null;
     if (str_contains($pattern, "relation:")) {
       $relation = rtrim(explode("relation:", $pattern)[1], "}");
       $isToMany = array_key_exists($relation, $class::getToManyRelationships());
       $isToOne = array_key_exists($relation, $class::getToOneRelationships());
       assert(!($isToMany && $isToOne), "An relationship cant be a to one and to many at the same time.");
+      $relationConfig = $isToMany
+        ? $class::getToManyRelationships()[$relation]
+        : $class::getToOneRelationships()[$relation];
+      $isReadonly = $relationConfig['readonly'] ?? false;
+      /* The resource identifiers of a relationship carry the type of the
+         related resource, which is derived from its API class (see
+         AbstractBaseAPI::getObjectTypeName), not the name of the
+         relationship. */
+      $relationApiClassName = $container->get('classMapper')->get($relationConfig['relationType']);
+      $relationNameParts = explode('\\', $relationApiClassName);
+      $relationTypeName = lcfirst(substr(end($relationNameParts), 0, -3));
     } else {
       $isToMany = $isToOne = false;
       $relation = null;
+      $isReadonly = false;
+    }
+
+    /* The runtime rejects every mutation of a readonly relationship (see
+       patchToOneRelationshipLink(), updateToManyRelationship(),
+       postToManyRelationshipLink() and deleteToManyRelationshipLink()), so
+       the spec does not advertise the mutation operations. */
+    if ($isReadonly && in_array($method, ["patch", "post", "delete"], true)) {
+      return;
     }
 
     $expandables = implode(",", $class->getExpandables());
@@ -188,6 +209,12 @@ class ModelApiPathBuilder {
         array_filter($createFeatures, fn($f) => !$f['null'])
       ));
       $properties_create = $this->jsonApiFragments->buildPatchPost($this->typeMapper->makeProperties($createFeatures), $typeName, null, $requiredCreateAttributes);
+      /* Descriptions document the creation, the response corrections do not
+         apply to a request schema */
+      $properties_create["data"]["properties"]["attributes"] = $this->overrides->applyDescriptions(
+        $name,
+        $properties_create["data"]["properties"]["attributes"]
+      );
       $properties_patch = $this->jsonApiFragments->buildPatchPost($this->typeMapper->makeProperties($class->getPatchValidFeatures(), true), $typeName);
 
       $components[$name . "Create"] =
@@ -234,7 +261,7 @@ class ModelApiPathBuilder {
 
       $components[$name . "Response"] = $singleDocument;
 
-      $this->addRelationComponents($name, $relation, ($isToMany && !$isToOne), $components);
+      $this->addRelationComponents($name, $relation, ($isToMany && !$isToOne), $relationTypeName, $components);
 
       $components[$name . "SingleResponse"] = $singleDocument;
 
@@ -286,10 +313,22 @@ class ModelApiPathBuilder {
 
       /* Method specific responses and requests for single objects */
       if ($method == 'get') {
-        if (!$isRelation && str_contains($pattern, "relation:")) {
+        if ($isRelation) {
+          /* The relationship route answers with the linkage, the resource
+             identifiers of the related resources (getToOneRelationshipLink,
+             getToManyRelationshipLink) */
           $paths[$path][$method]["responses"]["200"] = $this->jsonApiFragments->jsonApiResponse(
             "successful operation",
             "#/components/schemas/" . $name . "Relation" . ucfirst($relation) . "GetResponse"
+          );
+        }
+        elseif (str_contains($pattern, "relation:")) {
+          /* The related-resource route answers with the documents of the
+             related API class itself, a single resource or a paginated list
+             (getToOneRelatedResource, getToManyRelatedResource) */
+          $paths[$path][$method]["responses"]["200"] = $this->jsonApiFragments->jsonApiResponse(
+            "successful operation",
+            "#/components/schemas/" . ucfirst($relationTypeName) . ($isToMany ? "ListResponse" : "Response")
           );
         }
         else {
@@ -638,12 +677,21 @@ class ModelApiPathBuilder {
    * Relation schemas only exist for relationship routes. Other routes of the
    * same model carry no relation name, so nothing must be emitted for them:
    * that produced a nameless "<Model>Relation" schema with a null type const.
+   *
+   * The resource identifiers inside carry $relationTypeName, the resource
+   * type of the related API class, matching the identifiers the runtime
+   * emits and accepts.
+   *
+   * The GetResponse is the linkage the relationship route answers with. An
+   * unset to-one relationship is answered with null data, like the linkage
+   * inside the resource object (see makeRelationships).
    */
-  private function addRelationComponents(string $name, ?string $relation, bool $isToMany, array &$components): void {
+  private function addRelationComponents(string $name, ?string $relation, bool $isToMany, ?string $relationTypeName, array &$components): void {
     if ($relation === null) {
       return;
     }
-    $properties = $this->jsonApiFragments->buildPostPatchRelation($relation, $isToMany);
+    assert($relationTypeName !== null);
+    $properties = $this->jsonApiFragments->buildPostPatchRelation($relationTypeName, $isToMany);
 
     $components[$name . "Relation" . ucfirst($relation)] =
       [
@@ -652,11 +700,14 @@ class ModelApiPathBuilder {
         "properties" => $properties,
       ];
 
+    $getProperties = $isToMany
+      ? $properties
+      : ["data" => ["oneOf" => [$properties["data"], ["type" => "null"]]]];
     $components[$name . "Relation" . ucfirst($relation) . "GetResponse"] =
       [
         "type" => "object",
         "required" => ["data"],
-        "properties" => $properties
+        "properties" => $getProperties
       ];
   }
 

@@ -16,6 +16,7 @@ use Hashtopolis\dba\models\ConfigFactory;
 use Hashtopolis\dba\models\ConfigSectionFactory;
 use Hashtopolis\dba\models\CrackerBinaryFactory;
 use Hashtopolis\dba\models\CrackerBinaryTypeFactory;
+use Hashtopolis\dba\models\CrackerBinaryHashtypeFactory;
 use Hashtopolis\dba\models\FileFactory;
 use Hashtopolis\dba\models\FileDeleteFactory;
 use Hashtopolis\dba\models\FileDownloadFactory;
@@ -49,6 +50,7 @@ use Hashtopolis\dba\models\FileTaskFactory;
 use Hashtopolis\dba\models\FilePretaskFactory;
 use Hashtopolis\dba\models\SupertaskPretaskFactory;
 use Hashtopolis\dba\models\HashlistHashlistFactory;
+use Hashtopolis\dba\models\BackgroundJobFactory;
 use Hashtopolis\dba\models\_sqlx_migrationsFactory;
 
 class Factory {
@@ -66,6 +68,7 @@ class Factory {
   private static ?ConfigSectionFactory $configSectionFactory = null;
   private static ?CrackerBinaryFactory $crackerBinaryFactory = null;
   private static ?CrackerBinaryTypeFactory $crackerBinaryTypeFactory = null;
+  private static ?CrackerBinaryHashtypeFactory $crackerBinaryHashtypeFactory = null;
   private static ?FileFactory $fileFactory = null;
   private static ?FileDeleteFactory $fileDeleteFactory = null;
   private static ?FileDownloadFactory $fileDownloadFactory = null;
@@ -99,6 +102,7 @@ class Factory {
   private static ?FilePretaskFactory $filePretaskFactory = null;
   private static ?SupertaskPretaskFactory $supertaskPretaskFactory = null;
   private static ?HashlistHashlistFactory $hashlistHashlistFactory = null;
+  private static ?BackgroundJobFactory $backgroundJobFactory = null;
   private static ?_sqlx_migrationsFactory $_sqlx_migrationsFactory = null;
   
   public static function getAccessGroupFactory(): AccessGroupFactory {
@@ -238,6 +242,16 @@ class Factory {
       return $f;
     } else {
       return self::$crackerBinaryTypeFactory;
+    }
+  }
+  
+  public static function getCrackerBinaryHashtypeFactory(): CrackerBinaryHashtypeFactory {
+    if (self::$crackerBinaryHashtypeFactory == null) {
+      $f = new CrackerBinaryHashtypeFactory();
+      self::$crackerBinaryHashtypeFactory = $f;
+      return $f;
+    } else {
+      return self::$crackerBinaryHashtypeFactory;
     }
   }
   
@@ -568,6 +582,16 @@ class Factory {
       return $f;
     } else {
       return self::$hashlistHashlistFactory;
+    }
+  }
+  
+  public static function getBackgroundJobFactory(): BackgroundJobFactory {
+    if (self::$backgroundJobFactory == null) {
+      $f = new BackgroundJobFactory();
+      self::$backgroundJobFactory = $f;
+      return $f;
+    } else {
+      return self::$backgroundJobFactory;
     }
   }
   

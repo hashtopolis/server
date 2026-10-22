@@ -329,7 +329,88 @@
                 ]
             }
         },
-        "/api/v2/ui/configs/{id}/{relation}": {
+        "/api/v2/ui/configs/{id}/configSection": {
+            "get": {
+                "tags": [
+                    "Configs"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfigSectionResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permConfigRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET request to retrieve a single object.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    }
+                ]
+            }
+        },
+        "/api/v2/ui/configs/{id}/relationships/configSection": {
             "get": {
                 "tags": [
                     "Configs"
@@ -381,87 +462,6 @@
                             "application/vnd.api+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ConfigRelationConfigSectionGetResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": [
-                            [
-                                "permConfigRead"
-                            ]
-                        ]
-                    }
-                ],
-                "description": "GET request to retrieve a single object.",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int32",
-                            "example": 10
-                        }
-                    }
-                ]
-            }
-        },
-        "/api/v2/ui/configs/{id}/relationships/{relation}": {
-            "get": {
-                "tags": [
-                    "Configs"
-                ],
-                "responses": {
-                    "400": {
-                        "description": "Invalid request",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Permission denied",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/vnd.api+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ConfigResponse"
                                 }
                             }
                         }
@@ -3376,21 +3376,28 @@
                 ],
                 "properties": {
                     "data": {
-                        "type": "object",
-                        "required": [
-                            "type",
-                            "id"
-                        ],
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "const": "configSection"
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "required": [
+                                    "type",
+                                    "id"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "configSection"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
                             },
-                            "id": {
-                                "type": "integer",
-                                "example": 1
+                            {
+                                "type": "null"
                             }
-                        }
+                        ]
                     }
                 }
             },

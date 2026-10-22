@@ -2,15 +2,28 @@
 
 namespace Hashtopolis\inc\apiv2\model;
 
+use Exception;
 use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\dba\ContainFilter;
+use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\utils\CrackerUtils;
+use Hashtopolis\inc\utils\AccessUtils;
 
 use Hashtopolis\dba\models\CrackerBinary;
+use Hashtopolis\dba\models\CrackerBinaryHashtype;
+use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\models\HashType;
 use Hashtopolis\dba\models\Task;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
+use Hashtopolis\inc\apiv2\error\HttpForbidden;
+use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\Util;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 
 /**
@@ -24,6 +37,48 @@ class CrackerBinaryAPI extends AbstractModelAPI {
   public static function getDBAclass(): string {
     return CrackerBinary::class;
   }
+
+  /**
+   * @param CrackerBinary $object
+   * @throws Exception
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
+    return in_array(
+      $object->getAccessGroupId(),
+      Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user))
+    );
+  }
+
+  /**
+   * @throws Exception
+   */
+  protected function getFilterACL(): array {
+    return [
+      Factory::FILTER => [
+        new ContainFilter(
+          CrackerBinary::ACCESS_GROUP_ID,
+          Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()))
+        )
+      ]
+    ];
+  }
+
+  /**
+   * Extra fields which are valid for creation of object. With one of the source
+   * fields given, the archive of the cracker binary is uploaded to the server
+   * instead of referencing it with an external download url.
+   */
+  public function getFormFields(): array {
+    return [
+      "sourceType" => ['type' => 'str', 'null' => True,
+        'choices' => [
+          "inline" => "Archive provided as base64 data in sourceData",
+          "import" => "Archive taken from the import directory, sourceData is the filename",
+          "url" => "Archive fetched from an http(s) url given in sourceData"
+        ]],
+      "sourceData" => ['type' => 'str', 'null' => True]
+    ];
+  }
   
   public static function getToOneRelationships(): array {
     return [
@@ -32,6 +87,12 @@ class CrackerBinaryAPI extends AbstractModelAPI {
         
         'relationType' => CrackerBinaryType::class,
         'relationKey' => CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
+      ],
+      'accessGroup' => [
+        'key' => CrackerBinary::ACCESS_GROUP_ID,
+
+        'relationType' => AccessGroup::class,
+        'relationKey' => AccessGroup::ACCESS_GROUP_ID,
       ],
     ];
   }
@@ -44,6 +105,16 @@ class CrackerBinaryAPI extends AbstractModelAPI {
         'relationType' => Task::class,
         'relationKey' => Task::CRACKER_BINARY_ID,
       ],
+      'hashtypes' => [
+        'key' => CrackerBinary::CRACKER_BINARY_ID,
+
+        'junctionTableType' => CrackerBinaryHashtype::class,
+        'junctionTableFilterField' => CrackerBinaryHashtype::CRACKER_BINARY_ID,
+        'junctionTableJoinField' => CrackerBinaryHashtype::HASH_TYPE_ID,
+
+        'relationType' => HashType::class,
+        'relationKey' => HashType::HASH_TYPE_ID,
+      ],
     ];
   }
   
@@ -52,11 +123,34 @@ class CrackerBinaryAPI extends AbstractModelAPI {
    * @throws HTException
    */
   protected function createObject(array $data): int {
+    if (isset($data["sourceType"])) {
+      if (isset($data[CrackerBinary::DOWNLOAD_URL])) {
+        throw new HttpError("downloadUrl cannot be provided when the archive is uploaded with sourceType!");
+      }
+      if (!isset($data["sourceData"])) {
+        throw new HttpError("sourceData is required when sourceType is provided!");
+      }
+      $binary = CrackerUtils::createBinaryFromUpload(
+        $data[CrackerBinary::VERSION],
+        $data[CrackerBinary::BINARY_NAME],
+        $data[CrackerBinary::CRACKER_BINARY_TYPE_ID],
+        $data["sourceType"],
+        $data["sourceData"],
+        $data[CrackerBinary::ACCESS_GROUP_ID],
+        $this->getCurrentUser()
+      );
+      return $binary->getId();
+    }
+    if (!isset($data[CrackerBinary::DOWNLOAD_URL]) || strlen($data[CrackerBinary::DOWNLOAD_URL]) == 0) {
+      throw new HttpError("Please provide all information!");
+    }
     $binary = CrackerUtils::createBinary(
       $data[CrackerBinary::VERSION],
       $data[CrackerBinary::BINARY_NAME],
       $data[CrackerBinary::DOWNLOAD_URL],
-      $data[CrackerBinary::CRACKER_BINARY_TYPE_ID]
+      $data[CrackerBinary::CRACKER_BINARY_TYPE_ID],
+      $data[CrackerBinary::ACCESS_GROUP_ID],
+      $this->getCurrentUser()
     );
     return $binary->getId();
   }
@@ -67,5 +161,159 @@ class CrackerBinaryAPI extends AbstractModelAPI {
    */
   protected function deleteObject(AbstractModel $object): void {
     CrackerUtils::deleteBinary($object->getId());
+  }
+
+  /**
+   * The access group of a binary can be changed, but only to a group the user is
+   * also a member of (and only from a group the user has access to).
+   *
+   * @param int $id
+   * @param User $current_user
+   */
+  protected function getUpdateHandlers($id, $current_user): array {
+    return [
+      CrackerBinary::ACCESS_GROUP_ID => fn($value) => CrackerUtils::changeAccessGroup($id, $value, $current_user)
+    ];
+  }
+
+  /**
+   * The download url of locally stored binaries is owned by the server, so it
+   * cannot be overwritten with a patch. When the download url of a binary which
+   * is referenced by an external url is changed, the server downloads a new
+   * local copy of the archive from it; if that download fails, the update is
+   * rolled back so nothing is changed.
+   *
+   * @param int $objectId
+   * @param array $data
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws ResourceNotFoundError
+   * @throws HTException
+   */
+  protected function updateObject(int $objectId, array $data): void {
+    $binary = CrackerUtils::getBinary($objectId);
+    if (array_key_exists(CrackerBinary::DOWNLOAD_URL, $data)) {
+      if ($data[CrackerBinary::DOWNLOAD_URL] === null) {
+        throw new HttpError("downloadUrl cannot be null!");
+      }
+      if ($binary->getFilename() !== null) {
+        throw new HttpError("The download url of a locally stored cracker binary cannot be changed!");
+      }
+    }
+    $refreshLocalCopy = $binary->getFilename() === null
+      && ($data[CrackerBinary::DOWNLOAD_URL] ?? null) !== null
+      && $data[CrackerBinary::DOWNLOAD_URL] != $binary->getDownloadUrl();
+    if ($refreshLocalCopy) {
+      CrackerUtils::validateDownloadUrl($data[CrackerBinary::DOWNLOAD_URL]);
+    }
+    $previousValues = [
+      CrackerBinary::VERSION => $binary->getVersion(),
+      CrackerBinary::DOWNLOAD_URL => $binary->getDownloadUrl(),
+      CrackerBinary::BINARY_NAME => $binary->getBinaryName()
+    ];
+    parent::updateObject($objectId, $data);
+    if ($refreshLocalCopy) {
+      CrackerUtils::refreshLocalCopy($objectId, $previousValues, $this->getCurrentUser());
+    }
+  }
+
+  /**
+   * The hashtype associations of hashcat binaries are determined by the scan
+   * of the binary alone, they cannot be edited manually. Must only be called
+   * with a binary which was fetched through doFetch(), so the access group
+   * ACL was enforced and the hashcat check does not disclose the type of a
+   * binary the caller has no access to.
+   *
+   * @throws HttpForbidden
+   * @throws HTException
+   */
+  private function assertHashtypesManuallyEditable(CrackerBinary $binary): void {
+    if (CrackerUtils::isHashcatBinary($binary)) {
+      throw new HttpForbidden("The hashtypes of a cracker binary of the hashcat type are determined by a scan of the binary and cannot be changed manually!");
+    }
+  }
+
+  /**
+   * The hashtypes of a hashcat binary cannot be added manually, the scan of
+   * the binary is the only authority.
+   *
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws HTException
+   * @throws ResourceNotFoundError
+   */
+  public function postToManyRelationshipLink(Request $request, Response $response, array $args): Response {
+    if ($args['relation'] == 'hashtypes') {
+      // boot the request first (preCommon), then fetch through doFetch, so
+      // the access group ACL is enforced before the binary is classified
+      $this->preCommon($request);
+      $this->assertHashtypesManuallyEditable($this->doFetch((int)$args['id']));
+    }
+    return parent::postToManyRelationshipLink($request, $response, $args);
+  }
+
+  /**
+   * The hashtypes of a hashcat binary cannot be removed manually, the scan of
+   * the binary is the only authority.
+   *
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws HTException
+   * @throws ResourceNotFoundError
+   */
+  public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response {
+    if ($args['relation'] == 'hashtypes') {
+      // boot the request first (preCommon), then fetch through doFetch, so
+      // the access group ACL is enforced before the binary is classified
+      $this->preCommon($request);
+      $this->assertHashtypesManuallyEditable($this->doFetch((int)$args['id']));
+    }
+    return parent::deleteToManyRelationshipLink($request, $response, $args);
+  }
+
+  /**
+   * Replaces the hashtypes which are associated with the cracker binary with
+   * the given list, i.e. hashtypes given in the list but not associated yet
+   * are added and associations which are not in the list are removed. The
+   * hashtypes of hashcat binaries cannot be replaced, the scan of the binary
+   * is the only authority.
+   *
+   * @param Request $request
+   * @param array $data
+   * @param array $args
+   * @throws HttpError
+   * @throws HttpForbidden
+   * @throws HTException
+   * @throws ResourceNotFoundError
+   * @throws Exception
+   */
+  public function updateToManyRelationship(Request $request, array $data, array $args): void {
+    if ($args['relation'] != 'hashtypes') {
+      parent::updateToManyRelationship($request, $data, $args);
+      return;
+    }
+    $id = (int)$args['id'];
+    // fetch through doFetch so the access group ACL is enforced before the
+    // binary is classified, even if the ordering of the base changes
+    $this->assertHashtypesManuallyEditable($this->doFetch($id));
+    $wantedHashtypes = [];
+    foreach ($data as $hashtype) {
+      if (!$this->validateResourceRecord($hashtype)) {
+        $encoded_hashtype = json_encode($hashtype);
+        throw new HttpError('Invalid resource record given in list! invalid resource record: ' . $encoded_hashtype);
+      }
+      if (Factory::getHashTypeFactory()->get($hashtype["id"]) === null) {
+        throw new ResourceNotFoundError("Hashtype with id " . $hashtype["id"] . " does not exist!");
+      }
+      $wantedHashtypes[] = $hashtype["id"];
+    }
+
+    CrackerUtils::setHashtypesOfBinary($id, $wantedHashtypes);
   }
 }

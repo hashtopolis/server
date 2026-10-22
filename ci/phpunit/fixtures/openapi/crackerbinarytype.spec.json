@@ -463,7 +463,483 @@
                 ]
             }
         },
-        "/api/v2/ui/crackertypes/{id}/{relation}": {
+        "/api/v2/ui/crackertypes/{id}/crackerVersions": {
+            "get": {
+                "tags": [
+                    "CrackerBinaryTypes"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CrackerBinaryListResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryTypeRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET request to retrieve a single object.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    }
+                ]
+            }
+        },
+        "/api/v2/ui/crackertypes/{id}/relationships/crackerVersions": {
+            "get": {
+                "tags": [
+                    "CrackerBinaryTypes"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersionsGetResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryTypeRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET request for  for a to-one relationship link. Returns the resource record of the object that is part of the specified relation.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "CrackerBinaryTypes"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "Successfull operation"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryTypeUpdate"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "PATCH request to update a to one relationship.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersions"
+                            }
+                        }
+                    }
+                },
+                "parameters": []
+            },
+            "post": {
+                "tags": [
+                    "CrackerBinaryTypes"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "successfully created"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Resource already exists",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryTypeCreate"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "POST request to create a to-one relationship link.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersions"
+                            }
+                        }
+                    }
+                },
+                "parameters": []
+            },
+            "delete": {
+                "tags": [
+                    "CrackerBinaryTypes"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "successfully deleted"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryTypeDelete"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/vnd.api+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CrackerBinaryTypeRelationCrackerVersions"
+                            }
+                        }
+                    }
+                },
+                "parameters": []
+            }
+        },
+        "/api/v2/ui/crackertypes/{id}/tasks": {
+            "get": {
+                "tags": [
+                    "CrackerBinaryTypes"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TaskListResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": [
+                            [
+                                "permCrackerBinaryTypeRead"
+                            ]
+                        ]
+                    }
+                ],
+                "description": "GET request to retrieve a single object.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "example": 10
+                        }
+                    }
+                ]
+            }
+        },
+        "/api/v2/ui/crackertypes/{id}/relationships/tasks": {
             "get": {
                 "tags": [
                     "CrackerBinaryTypes"
@@ -515,87 +991,6 @@
                             "application/vnd.api+json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/CrackerBinaryTypeRelationTasksGetResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": [
-                            [
-                                "permCrackerBinaryTypeRead"
-                            ]
-                        ]
-                    }
-                ],
-                "description": "GET request to retrieve a single object.",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int32",
-                            "example": 10
-                        }
-                    }
-                ]
-            }
-        },
-        "/api/v2/ui/crackertypes/{id}/relationships/{relation}": {
-            "get": {
-                "tags": [
-                    "CrackerBinaryTypes"
-                ],
-                "responses": {
-                    "400": {
-                        "description": "Invalid request",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Permission denied",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/vnd.api+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CrackerBinaryTypeResponse"
                                 }
                             }
                         }
@@ -1939,7 +2334,9 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -1949,10 +2346,25 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -2309,7 +2721,9 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -2319,10 +2733,25 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -2679,7 +3108,9 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -2689,10 +3120,25 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -3101,7 +3547,9 @@
                                                 "crackerBinaryTypeId",
                                                 "version",
                                                 "downloadUrl",
-                                                "binaryName"
+                                                "binaryName",
+                                                "filename",
+                                                "accessGroupId"
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
@@ -3111,10 +3559,25 @@
                                                     "type": "string"
                                                 },
                                                 "downloadUrl": {
-                                                    "type": "string"
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
                                                     "type": "string"
+                                                },
+                                                "filename": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                },
+                                                "accessGroupId": {
+                                                    "type": "integer",
+                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
                                         }
@@ -3327,7 +3790,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "crackerVersions"
+                                    "const": "crackerBinary"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -3355,7 +3818,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "crackerVersions"
+                                    "const": "crackerBinary"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -3383,7 +3846,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",
@@ -3411,7 +3874,7 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "const": "tasks"
+                                    "const": "task"
                                 },
                                 "id": {
                                     "type": "integer",

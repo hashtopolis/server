@@ -1,7 +1,14 @@
-from hashtopolis import Task, TaskWrapper, Config, HashtopolisResponseError
-from utils import BaseTest, do_create_dummy_agent, do_create_agentassignent
+from hashtopolis import Task, TaskWrapper, Config, HashtopolisResponseError, HashtopolisError, Cracker, HashType
+from utils import (BaseTest, create_restricted_user, do_create_dummy_agent, do_create_agentassignent,
+                   get_bearer_token, get_hashtopolis_uri)
 from hashtopolis_agent import ProcessState
 import base64
+import time
+
+import requests
+
+
+APIV2 = get_hashtopolis_uri() + '/api/v2'
 
 
 class TaskTest(BaseTest):
@@ -29,6 +36,42 @@ class TaskTest(BaseTest):
     def test_create(self):
         model_obj = self.create_test_object()
         self._test_create(model_obj)
+
+    def create_generic_cracker(self):
+        """Creates a binary of a non-hashcat type, which is never scanned."""
+        stamp = int(time.time() * 1000)
+        cracker_type = self.create_crackertype(extra_payload={'typeName': f'generic-cracker-{stamp}'})
+        return self.create_cracker(extra_payload={'crackerBinaryTypeId': cracker_type.id})
+
+    def create_unique_hashtype(self):
+        stamp = int(time.time() * 1000)
+        return self.create_hashtype(extra_payload={'hashTypeId': 100001 + stamp % 99999,
+                                                   'description': f'task-hashtype-{stamp}'})
+
+    def associate_hashtypes(self, cracker, hashtypes):
+        work_obj = Cracker.objects.prefetch_related('hashtypes').get(pk=cracker.id)
+        work_obj.hashtypes_set = hashtypes
+        work_obj.save()
+
+    def test_create_cracker_without_hashtype_support_rejected(self):
+        """A binary with associations which do not include the hashlist's hashtype is rejected."""
+        hashlist = self.create_hashlist()  # hashTypeId 0 (MD5)
+        cracker = self.create_generic_cracker()
+        self.associate_hashtypes(cracker, [self.create_unique_hashtype()])
+
+        with self.assertRaises(HashtopolisError) as e:
+            self.create_task(hashlist=hashlist, extra_payload={'crackerBinaryId': cracker.id}, delete=False)
+        self.assertEqual(e.exception.status_code, 400)
+        self.assertIn('does not support the hash type', e.exception.title)
+
+    def test_create_cracker_with_hashtype_support(self):
+        """A binary which is associated with the hashlist's hashtype can create tasks."""
+        hashlist = self.create_hashlist()  # hashTypeId 0 (MD5)
+        cracker = self.create_generic_cracker()
+        self.associate_hashtypes(cracker, [HashType.objects.get(pk=0)])
+
+        task = self.create_task(hashlist=hashlist, extra_payload={'crackerBinaryId': cracker.id})
+        self.assertEqual(cracker.id, task.crackerBinaryId)
 
     def test_expand(self):
         model_obj = self.create_test_object()
@@ -401,3 +444,56 @@ class TaskTest(BaseTest):
             model_obj.preprocessorCommand = config.value
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
+
+
+class TestTaskHashlistRelation(BaseTest):
+    """The to-one relation from tasks to their hashlist.
+
+    The relation goes through the task wrapper as intermediate table, the
+    to-one routes have to resolve it from the task and enforce the access
+    group of the task.
+    """
+
+    def test_related_resource_and_link_enforce_access_group(self):
+        """The to-one hashlist routes resolve from the task and deny foreign users.
+
+        Users without access to the task's access group must not read the
+        hashlist through the related resource route, the relationship link
+        or an expansion, even when they have the global read permissions.
+        """
+        hashlist = self.create_hashlist()
+        task = self.create_task(hashlist)
+
+        admin_headers = {'Authorization': f'Bearer {get_bearer_token()}'}
+
+        # the related resource route resolves the hashlist through the wrapper
+        r = requests.get(f'{APIV2}/ui/tasks/{task.id}/hashlist', headers=admin_headers)
+        self.assertEqual(200, r.status_code, f'Related resource should be readable: {r.text}')
+        self.assertEqual(hashlist.id, r.json()['data']['id'])
+
+        # the relationship link exposes the hashlist id
+        r = requests.get(f'{APIV2}/ui/tasks/{task.id}/relationships/hashlist', headers=admin_headers)
+        self.assertEqual(200, r.status_code, f'Relationship link should be readable: {r.text}')
+        self.assertEqual(hashlist.id, r.json()['data']['id'])
+
+        # expanding the task includes the hashlist
+        task_obj = Task.objects.prefetch_related('hashlist').get(taskId=task.id)
+        self.assertEqual(hashlist.id, task_obj.hashlist.id)
+
+        # a user without access to the task's access group is denied everywhere
+        username, password = create_restricted_user(self, {
+            'permTaskRead': True,
+            'permHashlistRead': True,
+        })
+        r = requests.post(f'{APIV2}/auth/token', auth=(username, password))
+        self.assertEqual(201, r.status_code, f'Could not get a token: {r.text}')
+        headers = {'Authorization': f"Bearer {r.json()['token']}"}
+
+        r = requests.get(f'{APIV2}/ui/tasks/{task.id}/hashlist', headers=headers)
+        self.assertEqual(403, r.status_code, f'Related resource should be denied: {r.text}')
+        r = requests.get(f'{APIV2}/ui/tasks/{task.id}/relationships/hashlist', headers=headers)
+        self.assertEqual(403, r.status_code, f'Relationship link should be denied: {r.text}')
+        # the task is not visible to the user at all, so there is no expansion
+        with self.assertRaises(Task.DoesNotExist):
+            Task.objects.prefetch_related('hashlist') \
+                .authenticate((username, password)).get(taskId=task.id)

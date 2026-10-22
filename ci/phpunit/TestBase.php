@@ -6,12 +6,14 @@ use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\AbstractModelFactory;
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
+use Hashtopolis\dba\models\CrackerBinaryHashtype;
 use Hashtopolis\dba\models\File;
 use Hashtopolis\dba\models\FileDownload;
 use Hashtopolis\dba\models\FileTask;
@@ -40,6 +42,7 @@ use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\utils\UserUtils;
 use PHPUnit\Framework\TestCase;
 use Override;
+use RuntimeException;
 
 require_once(dirname(__FILE__) . '/TestMocks.php');
 require_once(dirname(__FILE__) . '/../../src/inc/startup/include.php');
@@ -48,6 +51,8 @@ require_once(dirname(__FILE__) . '/../../src/inc/startup/include.php');
 class TestBase extends TestCase {
   private array  $databaseObjects;
   private string $savedDbType;
+  /** @var array<int, array{proc: resource, docroot: string}> HTTP file servers started by serveHttpFile() */
+  private array $httpFileServers = [];
   protected User $adminUser;
   
   #[Override]
@@ -55,6 +60,7 @@ class TestBase extends TestCase {
     parent::setUp();
     
     $this->databaseObjects = [];
+    $this->httpFileServers = [];
     $this->savedDbType = (string)getenv('HASHTOPOLIS_DB_TYPE');
     $this->adminUser = new User(1, 'admin', 'admin@example.com', 'hash', 'salt', 1, 0, 0, time(), 3600, 1);
     
@@ -72,6 +78,17 @@ class TestBase extends TestCase {
   protected function tearDown(): void {
     \hashtopolis_clear_test_mocks();
     
+    // shut down the HTTP file servers started by serveHttpFile()
+    foreach ($this->httpFileServers as $server) {
+      proc_terminate($server['proc']);
+      proc_close($server['proc']);
+      foreach (glob($server['docroot'] . '/*') ?: [] as $path) {
+        unlink($path);
+      }
+      rmdir($server['docroot']);
+    }
+    $this->httpFileServers = [];
+    
     $numObjects = sizeof($this->databaseObjects);
     for ($i = $numObjects - 1; $i >= 0; $i--) {
       $factory = $this->databaseObjects[$i]["factory"];
@@ -81,6 +98,17 @@ class TestBase extends TestCase {
         UserUtils::deleteUser($object->getId(), $this->adminUser);
       }
       else {
+        // remove the hashtype associations of cracker binaries and hashtypes before
+        // deleting them, otherwise the foreign key constraints on CrackerBinaryHashtype
+        // would fail
+        if ($object instanceof CrackerBinary) {
+          $qF = new QueryFilter(CrackerBinaryHashtype::CRACKER_BINARY_ID, $object->getId(), "=");
+          Factory::getCrackerBinaryHashtypeFactory()->massDeletion([Factory::FILTER => $qF]);
+        }
+        elseif ($object instanceof HashType) {
+          $qF = new QueryFilter(CrackerBinaryHashtype::HASH_TYPE_ID, $object->getId(), "=");
+          Factory::getCrackerBinaryHashtypeFactory()->massDeletion([Factory::FILTER => $qF]);
+        }
         $factory->delete($object);
       }
     }
@@ -210,10 +238,10 @@ class TestBase extends TestCase {
   /**
    * @throws Exception
    */
-  protected function createCrackerBinary(CrackerBinaryType $crackerBinaryType): CrackerBinary {
+  protected function createCrackerBinary(CrackerBinaryType $crackerBinaryType, int $accessGroupId = 1): CrackerBinary {
     $crackerBinary = $this->createDatabaseObject(
       Factory::getCrackerBinaryFactory(),
-      new CrackerBinary(null, $crackerBinaryType->getId(), '1.0.' . uniqid(), 'https://example.invalid/' . uniqid(), 'binary_' . uniqid())
+      new CrackerBinary(null, $crackerBinaryType->getId(), '1.0.' . uniqid(), 'https://example.invalid/' . uniqid(), 'binary_' . uniqid(), null, $accessGroupId)
     );
     $this->assertTrue($crackerBinary instanceof CrackerBinary);
     return $crackerBinary;
@@ -370,5 +398,37 @@ class TestBase extends TestCase {
     foreach ($objects as $object) {
       $this->databaseObjects[] = ["factory" => $factory, "object" => $object];
     }
+  }
+
+  /**
+   * Serves a file with the given content through a local HTTP server, so tests
+   * can use a working download url without external network access. The server
+   * runs until tearDown() shuts it down.
+   */
+  protected function serveHttpFile(string $filename, string $content): string {
+    // pick a free port
+    $socket = stream_socket_server('tcp://127.0.0.1:0', $errno, $errstr);
+    $address = stream_socket_get_name($socket, false);
+    fclose($socket);
+    $docroot = sys_get_temp_dir() . '/hashtopolis-http-' . uniqid();
+    mkdir($docroot);
+    file_put_contents($docroot . '/' . $filename, $content);
+    $proc = proc_open(
+      ['php', '-S', $address, '-t', $docroot],
+      [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']],
+      $pipes
+    );
+    // wait until the server responds
+    $deadline = microtime(true) + 10;
+    while (microtime(true) < $deadline) {
+      $conn = @fsockopen('127.0.0.1', parse_url('http://' . $address, PHP_URL_PORT), $errno, $errstr, 0.2);
+      if ($conn !== false) {
+        fclose($conn);
+        $this->httpFileServers[] = ['proc' => $proc, 'docroot' => $docroot];
+        return 'http://' . $address . '/' . $filename;
+      }
+      usleep(50000);
+    }
+    throw new RuntimeException('Local HTTP file server did not come up in time');
   }
 }

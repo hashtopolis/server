@@ -30,6 +30,7 @@ ENV HASHTOPOLIS_IMPORT_PATH=${HASHTOPOLIS_PATH}/import
 ENV HASHTOPOLIS_LOG_PATH=${HASHTOPOLIS_PATH}/log
 ENV HASHTOPOLIS_CONFIG_PATH=${HASHTOPOLIS_PATH}/config
 ENV HASHTOPOLIS_BINARIES_PATH=${HASHTOPOLIS_PATH}/binaries
+ENV HASHTOPOLIS_CRACKERS_PATH=${HASHTOPOLIS_PATH}/crackers
 ENV HASHTOPOLIS_TUS_PATH=/var/tmp/tus
 ENV HASHTOPOLIS_TEMP_UPLOADS_PATH=${HASHTOPOLIS_TUS_PATH}/uploads
 ENV HASHTOPOLIS_TEMP_META_PATH=${HASHTOPOLIS_TUS_PATH}/meta
@@ -46,6 +47,8 @@ RUN apt-get update \
     \
     # Install git, procps, lsb-release (useful for CLI installs) \
     && apt-get -y install git iproute2 procps lsb-release \
+    # 7z is needed to unpack cracker binary archives for the background scan \
+    && apt-get -y install p7zip-full \
     && apt-get -y install mariadb-client postgresql-client libpq-dev \
     && apt-get -y install libpng-dev \
     && apt-get -y install ssmtp \
@@ -80,6 +83,7 @@ RUN mkdir -p \
     ${HASHTOPOLIS_LOG_PATH} \
     ${HASHTOPOLIS_CONFIG_PATH} \
     ${HASHTOPOLIS_BINARIES_PATH} \
+    ${HASHTOPOLIS_CRACKERS_PATH} \
     ${HASHTOPOLIS_TUS_PATH} \
     ${HASHTOPOLIS_TEMP_UPLOADS_PATH} \
     ${HASHTOPOLIS_TEMP_META_PATH} \

@@ -14,7 +14,7 @@ class HashType:
         self.slowHash = slowHash
 
 
-url = "https://raw.githubusercontent.com/hashcat/hashcat/refs/tags/v7.1.1/docs/hashcat-example-hashes.md"
+url = "https://raw.githubusercontent.com/hashcat/hashcat/refs/tags/v7.1.2/docs/hashcat-example-hashes.md"
 binary = sys.argv[1]  # The hashcat binary is the first argument
 if not os.path.isfile(binary):
     print("usage: python3 update-hashes.py <hashcat binary>")

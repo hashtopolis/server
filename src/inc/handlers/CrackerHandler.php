@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\handlers;
 
 use Hashtopolis\inc\utils\AccessControl;
+use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\CrackerUtils;
 use Throwable;
 use Hashtopolis\inc\defines\DCrackerBinaryAction;
@@ -32,12 +33,12 @@ class CrackerHandler implements Handler {
           die();
         case DCrackerBinaryAction::CREATE_BINARY:
           AccessControl::getInstance()->checkPermission(DCrackerBinaryAction::CREATE_BINARY_PERM);
-          $binary = CrackerUtils::createBinary($_POST['version'], $_POST['name'], $_POST['url'], $_POST['binaryTypeId']);
+          $binary = CrackerUtils::createBinary($_POST['version'], $_POST['name'], $_POST['url'], $_POST['binaryTypeId'], AccessUtils::getOrCreateDefaultAccessGroup()->getId(), AccessControl::getInstance()->getUser());
           header("Location: crackers.php?id=" . $binary->getCrackerBinaryTypeId());
           die();
         case DCrackerBinaryAction::EDIT_BINARY:
           AccessControl::getInstance()->checkPermission(DCrackerBinaryAction::EDIT_BINARY_PERM);
-          $binaryType = CrackerUtils::updateBinary($_POST['version'], $_POST['name'], $_POST['url'], $_POST['binaryId']);
+          $binaryType = CrackerUtils::updateBinary($_POST['version'], $_POST['name'], $_POST['url'], $_POST['binaryId'], AccessControl::getInstance()->getUser());
           header("Location: crackers.php?id=" . $binaryType->getId());
           die();
         default:
