@@ -86,6 +86,9 @@ final class GetFileAction implements AgentAction {
             PResponseGetFile::EXTENSION => $extension,
             PResponseGetFile::URL       => 'getFile.php?file=' . $file->getId() . '&token=' . $agent->getToken(),
             PResponseGetFile::FILESIZE  => (int)$file->getSize(),
+            // null while the background job computing it has not run yet, which an agent has to
+            // treat as "no checksum available" rather than as a mismatch
+            PResponseGetFile::CHECKSUM  => $file->getChecksum(),
         ]);
     }
 }

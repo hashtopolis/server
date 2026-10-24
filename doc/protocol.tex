@@ -246,10 +246,16 @@
 	  "response":"SUCCESS",
 	  "extension": ".txt",
 	  "url":"get.php?file=5&token=GHhgdf(/&",
-	  "filesize": 267729
+	  "filesize": 267729,
+	  "checksum": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 	}
 	\end{verbatim}
-	
+	where 'checksum' is the BLAKE3 hash of the file content as 64 lowercase hex characters, which the
+	client can use to verify the download. It is computed by a background job on the server, so it is
+	\texttt{null} as long as that job has not run yet; a client must treat \texttt{null} as 'no
+	checksum available' rather than as a mismatch. The same digest is sent on the download itself in
+	the \texttt{Repr-Digest} header (RFC 9530), as \texttt{blake3=:<base64>:}.
+
 	\subsection*{Get Hashlist}
 	The client can download a Hashlist/Superhashlist.
 	\begin{verbatim}

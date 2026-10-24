@@ -15,18 +15,20 @@ paths, where `DummyAgent._do_request` would raise on non-SUCCESS responses).
 
 import json
 import re
+import subprocess
 import unittest
 import urllib.parse
 
 import requests
 
-from hashtopolis import Agent, Config, Cracker, HealthCheck, Voucher
+from hashtopolis import Agent, Config, Cracker, File, HealthCheck, Voucher
 from hashtopolis_agent import DummyAgent
 from utils import (BaseTest, SEVEN_ZIP_MAGIC, do_create_agentassignent, do_create_dummy_agent,
                    do_create_voucher, get_hashtopolis_uri)
 
 
 AGENT_ENDPOINT = '/api/server.php'
+CRON_RUNNER = '/var/www/html/src/inc/cron.php'
 
 
 def _uri():
@@ -931,6 +933,40 @@ class TestGetFile(AgentProtocolBase):
         self.assertIsInstance(resp['url'], str)
         self.assertIn('getFile.php', resp['url'])
         self.assertIsInstance(resp['filesize'], int)
+        # the checksum is computed by a background job, so it is announced but still null here
+        self.assertIn('checksum', resp)
+        self.assertIsNone(resp['checksum'])
+
+    def test_get_file_returns_the_checksum_once_computed(self):
+        """After the background job ran, getFile hands the agent the file's BLAKE3 checksum."""
+        file_obj = self.create_file()
+        hashlist = self.create_hashlist()
+        task = self.create_task(hashlist, extra_payload={
+            'staticChunks': 0, 'files': [file_obj.id],
+        })
+        dummy, agent = self._dummy_with_agent()
+        assignment = do_create_agentassignent(agent, task)
+        self.delete_after_test(assignment)
+
+        result = subprocess.run(
+            ['php', '-d', 'xdebug.mode=off', '-f', CRON_RUNNER],
+            capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        expected = File.objects.get(fileId=file_obj.id).checksum
+        self.assertIsNotNone(expected)
+
+        code, body = agent_request({
+            "action": "getFile",
+            "token": dummy.token,
+            "taskId": task.id,
+            "file": file_obj.filename,
+        })
+        self.assertEqual(code, 200)
+        resp = parse_envelope(body)
+        self.assertEqual(resp['response'], "SUCCESS")
+        self.assertEqual(resp['checksum'], expected)
+        self.assertRegex(resp['checksum'], r'^[0-9a-f]{64}$')
 
     def test_get_file_invalid_task(self):
         """getFile for a non-existent task returns 'Invalid task!'."""

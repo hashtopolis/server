@@ -14,6 +14,7 @@ use Hashtopolis\inc\Util;
 use Hashtopolis\inc\utils\AccessControl;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\DownloadUtils;
+use Hashtopolis\inc\utils\FileChecksumUtils;
 
 require_once(dirname(__FILE__) . "/inc/startup/load.php");
 
@@ -109,6 +110,13 @@ else {
 
 header("Content-Description: " . $line->getFilename());
 header("Content-Disposition: attachment; filename=\"" . $line->getFilename() . "\"");
+
+/* Repr-Digest (RFC 9530) covers the full representation rather than the bytes of this message, so
+   it is also correct on the 206 response below and lets an agent verify the file once complete. */
+$reprDigest = FileChecksumUtils::toReprDigest($line->getChecksum());
+if ($reprDigest !== null) {
+  header("Repr-Digest: " . $reprDigest);
+}
 
 if (isset($_SERVER['HTTP_RANGE'])) {
   if (!DownloadUtils::handleRangeRequest($start, $end, $size, $fp)) {
