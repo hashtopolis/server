@@ -450,7 +450,7 @@ final class SendProgressAction implements AgentAction {
    * @throws Exception
    */
     private function processPlainCrack(array $splitLine, array $hashlists, Chunk $chunk, Agent $agent, Hashlist $totalHashlist, bool $isNewWPA, array &$cracked): array|string {
-        if ($isNewWPA) {
+        if ($isNewWPA && !str_starts_with($splitLine[0], 'WPA*')) {
             $split = explode(':', $splitLine[0]);
             if (sizeof($split) == 4) {
                 $split[3] = Util::strToHex($split[3]);
