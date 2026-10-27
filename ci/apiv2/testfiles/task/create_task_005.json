@@ -1,0 +1,22 @@
+{
+            "attackCmd": "#HL#  -a 0 ad a1",
+            "chunkSize": 0,
+            "chunkTime": 10,
+            "color": "7C6EFF",
+            "crackerBinaryId": 1,
+            "forcePipe": false,
+            "files": [],
+            "isArchived": false,
+            "isCpuTask": false,
+            "isSmall": false,
+            "maxAgents": 112,
+            "notes": "adaptive-normal-chunking",
+            "preprocessorCommand": "",
+            "priority": 10,
+            "skipKeyspace": 0,
+            "staticChunks": 0,
+            "statusTimer": 5,
+            "taskName": "Example - adaptive normal chunking",
+            "useNewBench": false,
+            "preprocessorId": 0
+}
