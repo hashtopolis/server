@@ -301,7 +301,7 @@ class TestBase extends TestCase {
   protected function createFile(AccessGroup $group, int $isSecret = 0, ?string $filename = null, int $size = 0, int $fileType = 0, int $lineCount = 0): File {
     $file = $this->createDatabaseObject(
       Factory::getFileFactory(),
-      new File(null, $filename ?? 'file_' . uniqid(), $size, $isSecret, $fileType, $group->getId(), $lineCount)
+      new File(null, $filename ?? 'file_' . uniqid(), $size, $isSecret, $fileType, $group->getId(), $lineCount, null)
     );
     $this->assertTrue($file instanceof File);
     return $file;

@@ -374,6 +374,10 @@ class ConfigUtils {
   public static function scanFiles(): void {
     $allOk = true;
     $messages = [];
+    /* Files whose checksum has to be (re)computed. Collected and enqueued in one go at the end, so
+       a server holding thousands of files does not repeat the "is it queued already" lookup once
+       per file. */
+    $needChecksum = [];
     $files = Factory::getFileFactory()->filter([]);
     foreach ($files as $file) {
       $absolutePath = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename();
@@ -391,8 +395,17 @@ class ConfigUtils {
         $allOk = false;
         $messages[] = "File size mismatch of " . $file->getFilename() . ", will be corrected.";
         Factory::getFileFactory()->set($file, File::SIZE, $size);
+        // the bytes on disk changed, so any stored checksum describes content which is no longer
+        // there and must not be handed to clients
+        FileChecksumUtils::invalidate($file->getId());
+        $needChecksum[] = $file->getId();
+      }
+      else if ($file->getChecksum() === null) {
+        // backfills files which predate checksumming, or whose previous job failed
+        $needChecksum[] = $file->getId();
       }
     }
+    FileChecksumUtils::enqueueMany($needChecksum);
     if (!$allOk) {
       throw new HTMessages($messages);
     }
