@@ -13,6 +13,7 @@ what real agents do) and through a small raw request helper (envelope / error
 paths, where `DummyAgent._do_request` would raise on non-SUCCESS responses).
 """
 
+import base64
 import json
 import re
 import unittest
@@ -1390,6 +1391,11 @@ class TestSendProgress(AgentProtocolBase):
         "Y2MwM2U3NDdhNmFmYmJjYmY4YmU3NjY4YWNmZWJlZTUK"
         "MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjYK"
     )
+    WPA_HASH = "WPA*01*4d4fe7aac3a2cecab195321ceb99a7d0*fc690c158264*f4747f87f9f4*686173686361742d6573736964***"
+    WPA_HASHCAT_7_OUTPUT = "4d4fe7aac3a2cecab195321ceb99a7d0:fc690c158264:f4747f87f9f4:hashcat-essid"
+    WPA_PLAIN = "hashcat!"
+    WPA_HEX = "6861736863617421"
+    WPA_HASH_2 = "WPA*01*00000000000000000000000000000000*fc690c158264*f4747f87f9f4*686173686361742d6573736964***"
 
     def _make_chunk(self, dummy, task_id):
         """Drive an agent through the lifecycle and return the OK chunk response."""
@@ -1416,6 +1422,12 @@ class TestSendProgress(AgentProtocolBase):
     def _setup_with_two_hashes(self):
         """Set up an agent + task on a 2-hash hashlist so cracking 1 hash is safe."""
         hashlist = self.create_hashlist(extra_payload={'sourceData': self.TWO_HASH_SOURCE_DATA})
+        return self._setup_assigned_agent(hashlist=hashlist)
+
+    def _setup_with_two_wpa_hashes(self):
+        """Set up an agent + task on a 2-hash 22000 hashlist so cracking 1 hash is safe."""
+        source_data = base64.b64encode(f"{self.WPA_HASH}\n{self.WPA_HASH_2}\n".encode()).decode()
+        hashlist = self.create_hashlist(extra_payload={'hashTypeId': 22000, 'sourceData': source_data})
         return self._setup_assigned_agent(hashlist=hashlist)
 
     def test_send_progress_no_cracks(self):
@@ -1473,6 +1485,28 @@ class TestSendProgress(AgentProtocolBase):
         self.assertEqual(resp['response'], "SUCCESS")
         self.assertEqual(resp['cracked'], 1)
         self.assertEqual(resp['skipped'], 1)
+
+    def test_send_progress_wpa_crack_as_hash_line(self):
+        """A 22000 crack reported as the original hash line (hashcat 8.0.0+) returns cracked=1."""
+        dummy, agent, task, _ = self._setup_with_two_wpa_hashes()
+        chunk = self._make_chunk(dummy, task.id)
+        resp = self._send_progress(dummy.token, chunk, cracks=[
+            [self.WPA_HASH, self.WPA_PLAIN, self.WPA_HEX, "1"],
+        ])
+        self.assertEqual(resp['response'], "SUCCESS")
+        self.assertEqual(resp['cracked'], 1)
+        self.assertEqual(resp['skipped'], 0)
+
+    def test_send_progress_wpa_crack_as_hashcat_7_output(self):
+        """A 22000 crack reported as pmkid/mic:mac_ap:mac_client:essid (hashcat 7.1.2 and earlier) returns cracked=1."""
+        dummy, agent, task, _ = self._setup_with_two_wpa_hashes()
+        chunk = self._make_chunk(dummy, task.id)
+        resp = self._send_progress(dummy.token, chunk, cracks=[
+            [self.WPA_HASHCAT_7_OUTPUT, self.WPA_PLAIN, self.WPA_HEX, "1"],
+        ])
+        self.assertEqual(resp['response'], "SUCCESS")
+        self.assertEqual(resp['cracked'], 1)
+        self.assertEqual(resp['skipped'], 0)
 
     def test_send_progress_receives_zaps(self):
         """When agent A cracks a hash, agent B on the same task receives a zap containing the cracked hash.
