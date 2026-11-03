@@ -50,6 +50,11 @@ final class FeatureTypeMapperTest extends TestCase {
     $this->assertSame("integer", $result['subtype']);
   }
 
+  public function testTypeLookupArrayUsesSubtype(): void {
+    $this->assertSame("integer", $this->mapper->typeLookup(['type' => 'array', 'subtype' => 'int', 'choices' => 'unset'])['subtype']);
+    $this->assertSame("string", $this->mapper->typeLookup(['type' => 'array', 'subtype' => 'string', 'choices' => 'unset'])['subtype']);
+  }
+
   public function testTypeLookupChoices(): void {
     $result = $this->mapper->typeLookup(['type' => 'int', 'choices' => [0 => 'Linux', 1 => 'Windows', 2 => 'macOS']]);
     $this->assertSame([0, 1, 2], $result['type_enum']);
@@ -113,6 +118,14 @@ final class FeatureTypeMapperTest extends TestCase {
     $features = [['type' => 'array', 'choices' => 'unset', 'null' => false, 'alias' => 'fileIds', 'pk' => false]];
     $this->assertSame(
       ['fileIds' => ['type' => 'array', 'items' => ['type' => 'integer']]],
+      $this->mapper->makeProperties($features)
+    );
+  }
+
+  public function testMakePropertiesStringArrayUsesStringItems(): void {
+    $features = [['type' => 'array', 'subtype' => 'string', 'choices' => 'unset', 'null' => false, 'alias' => 'scopes', 'pk' => false]];
+    $this->assertSame(
+      ['scopes' => ['type' => 'array', 'items' => ['type' => 'string']]],
       $this->mapper->makeProperties($features)
     );
   }

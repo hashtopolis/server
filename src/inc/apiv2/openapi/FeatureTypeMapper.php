@@ -38,7 +38,7 @@ class FeatureTypeMapper {
     }
     elseif ($feature['type'] == 'array') {
       $type = "array";
-      $sub_type = "integer"; //TODO: subtype is hardcoded because we only have int arrays
+      $sub_type = $this->typeLookup(['type' => $feature['subtype'] ?? 'int', 'choices' => 'unset'])['type'];
     }
     elseif ($feature['type'] == 'bool') {
       $type = "boolean";
@@ -46,7 +46,7 @@ class FeatureTypeMapper {
     elseif (str_starts_with($feature['type'], 'str(')) {
       $type = "string";
     }
-    elseif ($feature['type'] == 'str') {
+    elseif ($feature['type'] == 'str' || $feature['type'] == 'string') {
       $type = "string";
     }
     else {

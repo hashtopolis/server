@@ -47302,7 +47302,7 @@
                                     "scopes": {
                                         "type": "array",
                                         "items": {
-                                            "type": "integer"
+                                            "type": "string"
                                         }
                                     },
                                     "startValid": {
