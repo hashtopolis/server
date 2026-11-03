@@ -6,6 +6,15 @@ window.onload = function() {
     url: "/api/v2/openapi.json",
     dom_id: '#swagger-ui',
     deepLinking: true,
+    filter: true,
+    persistAuthorization: true,
+    // Authorize bearerAuth with the JWT returned by /api/v2/auth/token
+    responseInterceptor: (response) => {
+      if (response.ok && response.url.endsWith("/api/v2/auth/token") && response.body?.token) {
+        window.ui.preauthorizeApiKey("bearerAuth", response.body.token);
+      }
+      return response;
+    },
     presets: [
       SwaggerUIBundle.presets.apis,
       SwaggerUIStandalonePreset
