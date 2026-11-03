@@ -521,37 +521,38 @@ class ModelApiPathBuilder {
         $parameters = [
           [
             "name" => "page[after]",
-            "in" => "path",
+            "in" => "query",
+            "required" => false,
             "schema" => [
               "type" => "string",
-              "format" => "byte",
+              "pattern" => "^[A-Za-z0-9+/]*={0,2}$",
             ],
-            "example" => base64_encode($exampleCursor),
             "description" => "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.
             \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`
             \n\nExample: `$exampleCursor` -> `" . (base64_encode($exampleCursor)) . "`"
           ],
           [
             "name" => "page[before]",
-            "in" => "path",
+            "in" => "query",
+            "required" => false,
             "schema" => [
               "type" => "string",
-              "format" => "byte",
+              "pattern" => "^[A-Za-z0-9+/]*={0,2}$",
             ],
-            "example" => base64_encode($exampleCursor),
             "description" => "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.
             \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`
             \n\nExample: `$exampleCursor` -> `" . (base64_encode($exampleCursor)) . "`"
           ],
           [
             "name" => "page[size]",
-            "in" => "path",
+            "in" => "query",
+            "required" => false,
             "schema" => [
               "type" => "integer",
-              "format" => "int32"
+              "format" => "int32",
+              "minimum" => 1
             ],
-            "example" => 100,
-            "description" => "Amout of data to retrieve inside a single page"
+            "description" => "Amount of data to retrieve inside a single page"
           ],
           $this->makeFilterParameter($primaryKey),
           $this->makeIncludeParameter($class)

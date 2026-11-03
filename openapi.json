@@ -76,32 +76,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImFjY2Vzc0dyb3VwSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"accessGroupId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImFjY2Vzc0dyb3VwSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImFjY2Vzc0dyb3VwSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"accessGroupId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImFjY2Vzc0dyb3VwSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -1597,32 +1598,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImFnZW50SWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"agentId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImFnZW50SWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImFnZW50SWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"agentId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImFnZW50SWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -4963,32 +4965,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImFzc2lnbm1lbnRJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"assignmentId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImFzc2lnbm1lbnRJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImFzc2lnbm1lbnRJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"assignmentId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImFzc2lnbm1lbnRJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -6169,32 +6172,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImFnZW50QmluYXJ5SWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"agentBinaryId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImFnZW50QmluYXJ5SWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImFnZW50QmluYXJ5SWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"agentBinaryId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImFnZW50QmluYXJ5SWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -6850,32 +6854,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImFnZW50RXJyb3JJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"agentErrorId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImFnZW50RXJyb3JJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImFnZW50RXJyb3JJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"agentErrorId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImFnZW50RXJyb3JJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -7539,32 +7544,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImFnZW50U3RhdElkIjogMTIzfX0=",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"agentStatId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImFnZW50U3RhdElkIjogMTIzfX0=`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImFnZW50U3RhdElkIjogMTIzfX0=",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"agentStatId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImFnZW50U3RhdElkIjogMTIzfX0=`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -7970,32 +7976,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7Imp3dEFwaUtleUlkIjogMTIzfX0=",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"jwtApiKeyId\": 123}}` -> `eyJwcmltYXJ5Ijp7Imp3dEFwaUtleUlkIjogMTIzfX0=`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7Imp3dEFwaUtleUlkIjogMTIzfX0=",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"jwtApiKeyId\": 123}}` -> `eyJwcmltYXJ5Ijp7Imp3dEFwaUtleUlkIjogMTIzfX0=`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -8909,32 +8916,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImJhY2tncm91bmRKb2JJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"backgroundJobId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImJhY2tncm91bmRKb2JJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImJhY2tncm91bmRKb2JJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"backgroundJobId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImJhY2tncm91bmRKb2JJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -9598,32 +9606,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNodW5rSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"chunkId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNodW5rSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNodW5rSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"chunkId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNodW5rSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -10400,32 +10409,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -11143,32 +11153,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configSectionId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configSectionId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -11437,32 +11448,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"crackerBinaryId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"crackerBinaryId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -13454,32 +13466,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlUeXBlSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"crackerBinaryTypeId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlUeXBlSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlUeXBlSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"crackerBinaryTypeId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNyYWNrZXJCaW5hcnlUeXBlSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -14975,32 +14988,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImZpbGVJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"fileId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImZpbGVJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImZpbGVJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"fileId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImZpbGVJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -15914,32 +15928,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InJpZ2h0R3JvdXBJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"rightGroupId\": 123}}` -> `eyJwcmltYXJ5Ijp7InJpZ2h0R3JvdXBJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InJpZ2h0R3JvdXBJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"rightGroupId\": 123}}` -> `eyJwcmltYXJ5Ijp7InJpZ2h0R3JvdXBJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -17019,32 +17034,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7Imhhc2hJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"hashId\": 123}}` -> `eyJwcmltYXJ5Ijp7Imhhc2hJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7Imhhc2hJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"hashId\": 123}}` -> `eyJwcmltYXJ5Ijp7Imhhc2hJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -17821,32 +17837,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7Imhhc2hsaXN0SWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"hashlistId\": 123}}` -> `eyJwcmltYXJ5Ijp7Imhhc2hsaXN0SWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7Imhhc2hsaXN0SWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"hashlistId\": 123}}` -> `eyJwcmltYXJ5Ijp7Imhhc2hsaXN0SWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -20252,32 +20269,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7Imhhc2hUeXBlSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"hashTypeId\": 123}}` -> `eyJwcmltYXJ5Ijp7Imhhc2hUeXBlSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7Imhhc2hUeXBlSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"hashTypeId\": 123}}` -> `eyJwcmltYXJ5Ijp7Imhhc2hUeXBlSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -21103,32 +21121,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImhlYWx0aENoZWNrQWdlbnRJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"healthCheckAgentId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImhlYWx0aENoZWNrQWdlbnRJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImhlYWx0aENoZWNrQWdlbnRJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"healthCheckAgentId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImhlYWx0aENoZWNrQWdlbnRJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -21905,32 +21924,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImhlYWx0aENoZWNrSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"healthCheckId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImhlYWx0aENoZWNrSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImhlYWx0aENoZWNrSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"healthCheckId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImhlYWx0aENoZWNrSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -23508,32 +23528,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImxvZ0VudHJ5SWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"logEntryId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImxvZ0VudHJ5SWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImxvZ0VudHJ5SWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"logEntryId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImxvZ0VudHJ5SWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -23802,32 +23823,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7Im5vdGlmaWNhdGlvblNldHRpbmdJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"notificationSettingId\": 123}}` -> `eyJwcmltYXJ5Ijp7Im5vdGlmaWNhdGlvblNldHRpbmdJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7Im5vdGlmaWNhdGlvblNldHRpbmdJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"notificationSettingId\": 123}}` -> `eyJwcmltYXJ5Ijp7Im5vdGlmaWNhdGlvblNldHRpbmdJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -24741,32 +24763,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InByZXByb2Nlc3NvcklkIjogMTIzfX0=",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"preprocessorId\": 123}}` -> `eyJwcmltYXJ5Ijp7InByZXByb2Nlc3NvcklkIjogMTIzfX0=`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InByZXByb2Nlc3NvcklkIjogMTIzfX0=",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"preprocessorId\": 123}}` -> `eyJwcmltYXJ5Ijp7InByZXByb2Nlc3NvcklkIjogMTIzfX0=`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -25422,32 +25445,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InByZXRhc2tJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"pretaskId\": 123}}` -> `eyJwcmltYXJ5Ijp7InByZXRhc2tJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InByZXRhc2tJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"pretaskId\": 123}}` -> `eyJwcmltYXJ5Ijp7InByZXRhc2tJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -26544,32 +26568,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InNwZWVkSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"speedId\": 123}}` -> `eyJwcmltYXJ5Ijp7InNwZWVkSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InNwZWVkSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"speedId\": 123}}` -> `eyJwcmltYXJ5Ijp7InNwZWVkSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -27346,32 +27371,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InN1cGVydGFza0lkIjogMTIzfX0=",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"supertaskId\": 123}}` -> `eyJwcmltYXJ5Ijp7InN1cGVydGFza0lkIjogMTIzfX0=`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InN1cGVydGFza0lkIjogMTIzfX0=",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"supertaskId\": 123}}` -> `eyJwcmltYXJ5Ijp7InN1cGVydGFza0lkIjogMTIzfX0=`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -28468,32 +28494,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InRhc2tJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"taskId\": 123}}` -> `eyJwcmltYXJ5Ijp7InRhc2tJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InRhc2tJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"taskId\": 123}}` -> `eyJwcmltYXJ5Ijp7InRhc2tJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -31164,32 +31191,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InRhc2tXcmFwcGVySWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"taskWrapperId\": 123}}` -> `eyJwcmltYXJ5Ijp7InRhc2tXcmFwcGVySWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InRhc2tXcmFwcGVySWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"taskWrapperId\": 123}}` -> `eyJwcmltYXJ5Ijp7InRhc2tXcmFwcGVySWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -32845,32 +32873,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InRhc2tXcmFwcGVySWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"taskWrapperId\": 123}}` -> `eyJwcmltYXJ5Ijp7InRhc2tXcmFwcGVySWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InRhc2tXcmFwcGVySWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"taskWrapperId\": 123}}` -> `eyJwcmltYXJ5Ijp7InRhc2tXcmFwcGVySWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -33326,32 +33355,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InVzZXJJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"userId\": 123}}` -> `eyJwcmltYXJ5Ijp7InVzZXJJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InVzZXJJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"userId\": 123}}` -> `eyJwcmltYXJ5Ijp7InVzZXJJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -34681,32 +34711,33 @@
                     {
                         "name": "page[after]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InJlZ1ZvdWNoZXJJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"regVoucherId\": 123}}` -> `eyJwcmltYXJ5Ijp7InJlZ1ZvdWNoZXJJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7InJlZ1ZvdWNoZXJJZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"regVoucherId\": 123}}` -> `eyJwcmltYXJ5Ijp7InJlZ1ZvdWNoZXJJZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
