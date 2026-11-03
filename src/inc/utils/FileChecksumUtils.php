@@ -122,7 +122,14 @@ class FileChecksumUtils {
     foreach ($jobs as $job) {
       $payload = json_decode($job->getPayload() ?? "{}", true);
       if (is_array($payload) && ($payload[File::FILE_ID] ?? null) === $fileId) {
-        Factory::getBackgroundJobFactory()->delete($job);
+        // Condiditionally delete the job, because the job runner may have already picked it up and changed its status to running.
+        // In that case we leave it alone and let it finish.
+        Factory::getBackgroundJobFactory()->massDeletion([
+           Factory::FILTER => [
+             new QueryFilter(BackgroundJob::BACKGROUND_JOB_ID, $job->getId(), "="),
+             $qF2,
+           ]
+        ]);
       }
     }
   }
