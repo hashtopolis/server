@@ -47,6 +47,7 @@ class RecomputeFileChecksumHelperAPI extends AbstractHelperAPI {
     // first retrieve the file, as this checks the access permissions, which enqueueing the job does not do
     FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser());
 
+    FileChecksumUtils::invalidate($data[File::FILE_ID]);
     FileChecksumUtils::enqueue($data[File::FILE_ID], $this->getCurrentUser());
 
     /* Return the File itself so it comes back as a resource object under data.
