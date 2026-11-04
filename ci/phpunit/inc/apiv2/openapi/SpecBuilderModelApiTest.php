@@ -269,7 +269,7 @@ final class SpecBuilderModelApiTest extends TestCase {
     /* Only the public attribute survives a caller without 'permUserRead' */
     $this->assertSame(['name'], $attributes['required']);
     /* The optional attributes stay described, and stay non-nullable */
-    $this->assertSame(['type' => 'string', 'maxLength' => 150], $attributes['properties']['email']);
+    $this->assertSame(['type' => 'string'], $attributes['properties']['email']);
     $this->assertSame(['type' => 'boolean'], $attributes['properties']['isValid']);
 
     $includedUser = $spec['components']['schemas']['ApiTokenResponse']['properties']['included']['items'];

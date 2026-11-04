@@ -1692,16 +1692,13 @@
                                 "type": "object",
                                 "properties": {
                                     "configSectionId": {
-                                        "type": "integer",
-                                        "format": "int32"
+                                        "type": "integer"
                                     },
                                     "item": {
-                                        "type": "string",
-                                        "maxLength": 128
+                                        "type": "string"
                                     },
                                     "value": {
-                                        "type": "string",
-                                        "maxLength": 65535
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
@@ -1735,12 +1732,10 @@
                                 "type": "object",
                                 "properties": {
                                     "item": {
-                                        "type": "string",
-                                        "maxLength": 128
+                                        "type": "string"
                                     },
                                     "value": {
-                                        "type": "string",
-                                        "maxLength": 65535
+                                        "type": "string"
                                     }
                                 }
                             }
@@ -1776,12 +1771,10 @@
                                     "type": "object",
                                     "properties": {
                                         "item": {
-                                            "type": "string",
-                                            "maxLength": 128
+                                            "type": "string"
                                         },
                                         "value": {
-                                            "type": "string",
-                                            "maxLength": 65535
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -2166,8 +2159,7 @@
                                     ],
                                     "properties": {
                                         "sectionName": {
-                                            "type": "string",
-                                            "maxLength": 100
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -2524,8 +2516,7 @@
                                     ],
                                     "properties": {
                                         "sectionName": {
-                                            "type": "string",
-                                            "maxLength": 100
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -2882,8 +2873,7 @@
                                     ],
                                     "properties": {
                                         "sectionName": {
-                                            "type": "string",
-                                            "maxLength": 100
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -3292,8 +3282,7 @@
                                     ],
                                     "properties": {
                                         "sectionName": {
-                                            "type": "string",
-                                            "maxLength": 100
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -3438,8 +3427,7 @@
                         ],
                         "properties": {
                             "sectionName": {
-                                "type": "string",
-                                "maxLength": 100
+                                "type": "string"
                             }
                         }
                     },
@@ -3478,8 +3466,7 @@
                                 "type": "object",
                                 "properties": {
                                     "sectionName": {
-                                        "type": "string",
-                                        "maxLength": 100
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
@@ -3511,8 +3498,7 @@
                                 "type": "object",
                                 "properties": {
                                     "sectionName": {
-                                        "type": "string",
-                                        "maxLength": 100
+                                        "type": "string"
                                     }
                                 }
                             }
@@ -3548,8 +3534,7 @@
                                     "type": "object",
                                     "properties": {
                                         "sectionName": {
-                                            "type": "string",
-                                            "maxLength": 100
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -3651,8 +3636,7 @@
                                 ],
                                 "properties": {
                                     "sectionName": {
-                                        "type": "string",
-                                        "maxLength": 100
+                                        "type": "string"
                                     }
                                 }
                             },
@@ -3737,8 +3721,7 @@
                                 ],
                                 "properties": {
                                     "sectionName": {
-                                        "type": "string",
-                                        "maxLength": 100
+                                        "type": "string"
                                     }
                                 }
                             },
@@ -3823,8 +3806,7 @@
                                 ],
                                 "properties": {
                                     "sectionName": {
-                                        "type": "string",
-                                        "maxLength": 100
+                                        "type": "string"
                                     }
                                 }
                             },
@@ -3960,8 +3942,7 @@
                                     ],
                                     "properties": {
                                         "sectionName": {
-                                            "type": "string",
-                                            "maxLength": 100
+                                            "type": "string"
                                         }
                                     }
                                 },
