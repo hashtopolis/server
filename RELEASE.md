@@ -60,23 +60,12 @@ When cutting a release, create an issue under this repository with the version a
   docker tag hashtopolis/frontend:vMAJOR.MINOR.PATCH hashtopolis/frontend:latest
   docker push hashtopolis/frontend:latest
   ```
+- [ ] Update maintained tags on docker readme page.
 
 ### Post-Release
 
 - [ ] **Bump version to `+dev` on `master`**: update backend `StartupConfig::getVersion()` to `"vMAJOR.MINOR.PATCH+dev"` (e.g., `v1.1.0+dev` after releasing `v1.1.0`).
 - [ ] **Bump version to `+dev` on `master`**: update frontend (`src/config/default/app/main.ts`)
-
-## Hashcat Modes Diff
-
-To check whether hashcat added or removed modes since the last release:
-
-```
-cat dbmodes | grep -Eo '\([0-9]+,' | tr -d '(,' > dbmodes.num
-cat hcmodes | cut -d'|' -f 1 | tr -d ' ' | sort -n > hcmodes.num
-comm -32 hcmodes.num dbmodes.num | tee diff
-```
-
-Where `dbmodes` contains the current SQL entries and `hcmodes` is a dump of the hashcat wiki mode table.
 
 ## Version Schema
 
