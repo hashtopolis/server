@@ -12,19 +12,21 @@ When cutting a release, create an issue under this repository with the version a
 
 ### Release Preparations
 
-#### Agent
+#### Agents
 
-- [ ] Update agent release notes and version in [hashtopolis-agent-python](https://github.com/hashtopolis/hashtopolis-agent-python) if needed
-- [ ] Release the agent
+- [ ] Update agent version in [hashtopolis/agent-python](https://github.com/hashtopolis/agent-python) if needed
+- [ ] Release the python agent
+- [ ] Update agent version in [hashtopolis/agent-rust](https://github.com/hashtopolis/agent-rust) if needed
+- [ ] Release the rust agent
 
 #### Backend
 
 - [ ] Start branch for release preparations
-- [ ] Update hashcat modes in the database schema (`hashtopolis.sql` and update scripts) — see [Hashcat Modes Diff](#hashcat-modes-diff) below
-- [ ] Build the agent via `./build.sh` in [hashtopolis-agent-python](https://github.com/hashtopolis/hashtopolis-agent-python), copy the resulting zip to `src/bin/`
-- [ ] Update agent version references in migration for initial setups
-- [ ] Insert newest hashcat version as a migration for initial setups
-- [ ] Adjust server release notes (`changelog.md`) _(legacy)_
+- [ ] Build the python agent via `./build.sh` in [hashtopolis/agent-python](https://github.com/hashtopolis/agent-python), copy the resulting zip to `src/bin/`
+- [ ] Copy the built rust agent release zip to `src/bin/`
+- [ ] Update agent versions references in setup.json
+- [ ] Add migration to update existing agent versions
+- [ ] Insert newest hashcat version in setup.json
 - [ ] Update `StartupConfig::getVersion()` from `"vMAJOR.MINOR.PATCH+dev"` to `"vMAJOR.MINOR.PATCH"`
 - [ ] Ensure `master` is in sync with any long-running feature branches
 - [ ] Create PR for merging
