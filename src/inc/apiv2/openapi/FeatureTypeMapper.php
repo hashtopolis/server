@@ -16,15 +16,12 @@ class FeatureTypeMapper {
     $type_format = null;
     $type_enum = null;
     $sub_type = null;
-    /* Limits the API enforces on input (AbstractBaseAPI::validateData) */
-    $constraints = [];
     if ($feature['type'] == 'int') {
       $type = "integer";
-      $type_format = "int32";
     }
     elseif ($feature['type'] == 'uint64') {
+      /* TODO: Specify integer ranges */
       $type = "integer";
-      $constraints["minimum"] = 0;
     }
     elseif ($feature['type'] == 'int64') {
       $type = "integer";
@@ -46,9 +43,8 @@ class FeatureTypeMapper {
     elseif ($feature['type'] == 'bool') {
       $type = "boolean";
     }
-    elseif (preg_match('/^str\((\d+)\)$/', $feature['type'], $matches)) {
+    elseif (str_starts_with($feature['type'], 'str(')) {
       $type = "string";
-      $constraints["maxLength"] = (int)$matches[1];
     }
     elseif ($feature['type'] == 'str' || $feature['type'] == 'string') {
       $type = "string";
@@ -66,8 +62,7 @@ class FeatureTypeMapper {
       "type_format" => $type_format,
       "type_enum" => $type_enum,
       "type_enum_labels" => $type_enum !== null ? array_values($feature['choices']) : null,
-      "subtype" => $sub_type,
-      "constraints" => $constraints
+      "subtype" => $sub_type
     ];
   }
 
@@ -136,7 +131,6 @@ class FeatureTypeMapper {
         if ($ret["type_enum"] !== null) {
           $propertyVal[$feature['alias']]["enum"] = $ret["type_enum"];
         }
-        $propertyVal[$feature['alias']] += $ret["constraints"];
       }
       if ($ret["subtype"] !== null) {
         if ($ret["type"] === "object") {

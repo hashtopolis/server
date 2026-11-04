@@ -418,8 +418,7 @@
                 "type": "object",
                 "properties": {
                     "chunkId": {
-                        "type": "integer",
-                        "format": "int32"
+                        "type": "integer"
                     }
                 }
             },

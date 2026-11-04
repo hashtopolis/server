@@ -1858,8 +1858,7 @@
                         ],
                         "properties": {
                             "typeName": {
-                                "type": "string",
-                                "maxLength": 30
+                                "type": "string"
                             },
                             "isChunkingAvailable": {
                                 "type": [
@@ -2003,8 +2002,7 @@
                                 "type": "object",
                                 "properties": {
                                     "typeName": {
-                                        "type": "string",
-                                        "maxLength": 30
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
@@ -2042,8 +2040,7 @@
                                         ]
                                     },
                                     "typeName": {
-                                        "type": "string",
-                                        "maxLength": 30
+                                        "type": "string"
                                     }
                                 }
                             }
@@ -2085,8 +2082,7 @@
                                             ]
                                         },
                                         "typeName": {
-                                            "type": "string",
-                                            "maxLength": 30
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -2190,8 +2186,7 @@
                                 ],
                                 "properties": {
                                     "typeName": {
-                                        "type": "string",
-                                        "maxLength": 30
+                                        "type": "string"
                                     },
                                     "isChunkingAvailable": {
                                         "type": [
@@ -2346,36 +2341,30 @@
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "version": {
-                                                    "type": "string",
-                                                    "maxLength": 20
+                                                    "type": "string"
                                                 },
                                                 "downloadUrl": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "maxLength": 255,
                                                     "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
-                                                    "type": "string",
-                                                    "maxLength": 50
+                                                    "type": "string"
                                                 },
                                                 "filename": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "maxLength": 100,
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
                                                     "type": "integer",
-                                                    "format": "int32",
                                                     "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
@@ -2427,20 +2416,16 @@
                                             ],
                                             "properties": {
                                                 "taskName": {
-                                                    "type": "string",
-                                                    "maxLength": 256
+                                                    "type": "string"
                                                 },
                                                 "attackCmd": {
-                                                    "type": "string",
-                                                    "maxLength": 65535
+                                                    "type": "string"
                                                 },
                                                 "chunkTime": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "statusTimer": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "keyspace": {
                                                     "type": "integer",
@@ -2451,19 +2436,16 @@
                                                     "format": "int64"
                                                 },
                                                 "priority": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "maxAgents": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "color": {
                                                     "type": [
                                                         "string",
                                                         "null"
-                                                    ],
-                                                    "maxLength": 50
+                                                    ]
                                                 },
                                                 "isSmall": {
                                                     "type": "boolean"
@@ -2479,30 +2461,25 @@
                                                     "format": "int64"
                                                 },
                                                 "crackerBinaryId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "crackerBinaryTypeId": {
                                                     "type": [
                                                         "integer",
                                                         "null"
-                                                    ],
-                                                    "format": "int32"
+                                                    ]
                                                 },
                                                 "taskWrapperId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "isArchived": {
                                                     "type": "boolean"
                                                 },
                                                 "notes": {
-                                                    "type": "string",
-                                                    "maxLength": 65535
+                                                    "type": "string"
                                                 },
                                                 "staticChunks": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "chunkSize": {
                                                     "type": "integer",
@@ -2512,12 +2489,10 @@
                                                     "type": "boolean"
                                                 },
                                                 "preprocessorId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "preprocessorCommand": {
-                                                    "type": "string",
-                                                    "maxLength": 256
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -2598,8 +2573,7 @@
                                 ],
                                 "properties": {
                                     "typeName": {
-                                        "type": "string",
-                                        "maxLength": 30
+                                        "type": "string"
                                     },
                                     "isChunkingAvailable": {
                                         "type": [
@@ -2754,36 +2728,30 @@
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "version": {
-                                                    "type": "string",
-                                                    "maxLength": 20
+                                                    "type": "string"
                                                 },
                                                 "downloadUrl": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "maxLength": 255,
                                                     "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
-                                                    "type": "string",
-                                                    "maxLength": 50
+                                                    "type": "string"
                                                 },
                                                 "filename": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "maxLength": 100,
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
                                                     "type": "integer",
-                                                    "format": "int32",
                                                     "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
@@ -2835,20 +2803,16 @@
                                             ],
                                             "properties": {
                                                 "taskName": {
-                                                    "type": "string",
-                                                    "maxLength": 256
+                                                    "type": "string"
                                                 },
                                                 "attackCmd": {
-                                                    "type": "string",
-                                                    "maxLength": 65535
+                                                    "type": "string"
                                                 },
                                                 "chunkTime": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "statusTimer": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "keyspace": {
                                                     "type": "integer",
@@ -2859,19 +2823,16 @@
                                                     "format": "int64"
                                                 },
                                                 "priority": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "maxAgents": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "color": {
                                                     "type": [
                                                         "string",
                                                         "null"
-                                                    ],
-                                                    "maxLength": 50
+                                                    ]
                                                 },
                                                 "isSmall": {
                                                     "type": "boolean"
@@ -2887,30 +2848,25 @@
                                                     "format": "int64"
                                                 },
                                                 "crackerBinaryId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "crackerBinaryTypeId": {
                                                     "type": [
                                                         "integer",
                                                         "null"
-                                                    ],
-                                                    "format": "int32"
+                                                    ]
                                                 },
                                                 "taskWrapperId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "isArchived": {
                                                     "type": "boolean"
                                                 },
                                                 "notes": {
-                                                    "type": "string",
-                                                    "maxLength": 65535
+                                                    "type": "string"
                                                 },
                                                 "staticChunks": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "chunkSize": {
                                                     "type": "integer",
@@ -2920,12 +2876,10 @@
                                                     "type": "boolean"
                                                 },
                                                 "preprocessorId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "preprocessorCommand": {
-                                                    "type": "string",
-                                                    "maxLength": 256
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -3006,8 +2960,7 @@
                                 ],
                                 "properties": {
                                     "typeName": {
-                                        "type": "string",
-                                        "maxLength": 30
+                                        "type": "string"
                                     },
                                     "isChunkingAvailable": {
                                         "type": [
@@ -3162,36 +3115,30 @@
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "version": {
-                                                    "type": "string",
-                                                    "maxLength": 20
+                                                    "type": "string"
                                                 },
                                                 "downloadUrl": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "maxLength": 255,
                                                     "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
-                                                    "type": "string",
-                                                    "maxLength": 50
+                                                    "type": "string"
                                                 },
                                                 "filename": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "maxLength": 100,
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
                                                     "type": "integer",
-                                                    "format": "int32",
                                                     "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
@@ -3243,20 +3190,16 @@
                                             ],
                                             "properties": {
                                                 "taskName": {
-                                                    "type": "string",
-                                                    "maxLength": 256
+                                                    "type": "string"
                                                 },
                                                 "attackCmd": {
-                                                    "type": "string",
-                                                    "maxLength": 65535
+                                                    "type": "string"
                                                 },
                                                 "chunkTime": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "statusTimer": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "keyspace": {
                                                     "type": "integer",
@@ -3267,19 +3210,16 @@
                                                     "format": "int64"
                                                 },
                                                 "priority": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "maxAgents": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "color": {
                                                     "type": [
                                                         "string",
                                                         "null"
-                                                    ],
-                                                    "maxLength": 50
+                                                    ]
                                                 },
                                                 "isSmall": {
                                                     "type": "boolean"
@@ -3295,30 +3235,25 @@
                                                     "format": "int64"
                                                 },
                                                 "crackerBinaryId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "crackerBinaryTypeId": {
                                                     "type": [
                                                         "integer",
                                                         "null"
-                                                    ],
-                                                    "format": "int32"
+                                                    ]
                                                 },
                                                 "taskWrapperId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "isArchived": {
                                                     "type": "boolean"
                                                 },
                                                 "notes": {
-                                                    "type": "string",
-                                                    "maxLength": 65535
+                                                    "type": "string"
                                                 },
                                                 "staticChunks": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "chunkSize": {
                                                     "type": "integer",
@@ -3328,12 +3263,10 @@
                                                     "type": "boolean"
                                                 },
                                                 "preprocessorId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "preprocessorCommand": {
-                                                    "type": "string",
-                                                    "maxLength": 256
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -3465,8 +3398,7 @@
                                     ],
                                     "properties": {
                                         "typeName": {
-                                            "type": "string",
-                                            "maxLength": 30
+                                            "type": "string"
                                         },
                                         "isChunkingAvailable": {
                                             "type": [
@@ -3622,36 +3554,30 @@
                                             ],
                                             "properties": {
                                                 "crackerBinaryTypeId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "version": {
-                                                    "type": "string",
-                                                    "maxLength": 20
+                                                    "type": "string"
                                                 },
                                                 "downloadUrl": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "maxLength": 255,
                                                     "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                                 },
                                                 "binaryName": {
-                                                    "type": "string",
-                                                    "maxLength": 50
+                                                    "type": "string"
                                                 },
                                                 "filename": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "maxLength": 100,
                                                     "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                                 },
                                                 "accessGroupId": {
                                                     "type": "integer",
-                                                    "format": "int32",
                                                     "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                                 }
                                             }
@@ -3703,20 +3629,16 @@
                                             ],
                                             "properties": {
                                                 "taskName": {
-                                                    "type": "string",
-                                                    "maxLength": 256
+                                                    "type": "string"
                                                 },
                                                 "attackCmd": {
-                                                    "type": "string",
-                                                    "maxLength": 65535
+                                                    "type": "string"
                                                 },
                                                 "chunkTime": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "statusTimer": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "keyspace": {
                                                     "type": "integer",
@@ -3727,19 +3649,16 @@
                                                     "format": "int64"
                                                 },
                                                 "priority": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "maxAgents": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "color": {
                                                     "type": [
                                                         "string",
                                                         "null"
-                                                    ],
-                                                    "maxLength": 50
+                                                    ]
                                                 },
                                                 "isSmall": {
                                                     "type": "boolean"
@@ -3755,30 +3674,25 @@
                                                     "format": "int64"
                                                 },
                                                 "crackerBinaryId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "crackerBinaryTypeId": {
                                                     "type": [
                                                         "integer",
                                                         "null"
-                                                    ],
-                                                    "format": "int32"
+                                                    ]
                                                 },
                                                 "taskWrapperId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "isArchived": {
                                                     "type": "boolean"
                                                 },
                                                 "notes": {
-                                                    "type": "string",
-                                                    "maxLength": 65535
+                                                    "type": "string"
                                                 },
                                                 "staticChunks": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "chunkSize": {
                                                     "type": "integer",
@@ -3788,12 +3702,10 @@
                                                     "type": "boolean"
                                                 },
                                                 "preprocessorId": {
-                                                    "type": "integer",
-                                                    "format": "int32"
+                                                    "type": "integer"
                                                 },
                                                 "preprocessorCommand": {
-                                                    "type": "string",
-                                                    "maxLength": 256
+                                                    "type": "string"
                                                 }
                                             }
                                         }
