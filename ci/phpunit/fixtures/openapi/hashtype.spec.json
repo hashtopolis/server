@@ -79,33 +79,34 @@
                 "parameters": [
                     {
                         "name": "page[after]",
-                        "in": "path",
+                        "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7Imhhc2hUeXBlSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"hashTypeId\": 123}}` -> `eyJwcmltYXJ5Ijp7Imhhc2hUeXBlSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[before]",
-                        "in": "path",
+                        "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7Imhhc2hUeXBlSWQiOiAxMjN9fQ==",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"hashTypeId\": 123}}` -> `eyJwcmltYXJ5Ijp7Imhhc2hUeXBlSWQiOiAxMjN9fQ==`"
                     },
                     {
                         "name": "page[size]",
-                        "in": "path",
+                        "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -1226,7 +1227,8 @@
                         ],
                         "properties": {
                             "description": {
-                                "type": "string"
+                                "type": "string",
+                                "maxLength": 256
                             },
                             "isSalted": {
                                 "type": "boolean"
@@ -1324,10 +1326,12 @@
                                 "type": "object",
                                 "properties": {
                                     "hashTypeId": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int32"
                                     },
                                     "description": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 256
                                     },
                                     "isSalted": {
                                         "type": "boolean"
@@ -1368,7 +1372,8 @@
                                 "type": "object",
                                 "properties": {
                                     "description": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 256
                                     },
                                     "isSalted": {
                                         "type": "boolean"
@@ -1410,7 +1415,8 @@
                                     "type": "object",
                                     "properties": {
                                         "description": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 256
                                         },
                                         "isSalted": {
                                             "type": "boolean"
@@ -1521,7 +1527,8 @@
                                 ],
                                 "properties": {
                                     "description": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 256
                                     },
                                     "isSalted": {
                                         "type": "boolean"
@@ -1628,30 +1635,36 @@
                                     ],
                                     "properties": {
                                         "crackerBinaryTypeId": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int32"
                                         },
                                         "version": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 20
                                         },
                                         "downloadUrl": {
                                             "type": [
                                                 "string",
                                                 "null"
                                             ],
+                                            "maxLength": 255,
                                             "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                         },
                                         "binaryName": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 50
                                         },
                                         "filename": {
                                             "type": [
                                                 "string",
                                                 "null"
                                             ],
+                                            "maxLength": 100,
                                             "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                         },
                                         "accessGroupId": {
                                             "type": "integer",
+                                            "format": "int32",
                                             "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                         }
                                     }
@@ -1729,7 +1742,8 @@
                                 ],
                                 "properties": {
                                     "description": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 256
                                     },
                                     "isSalted": {
                                         "type": "boolean"
@@ -1836,30 +1850,36 @@
                                     ],
                                     "properties": {
                                         "crackerBinaryTypeId": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int32"
                                         },
                                         "version": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 20
                                         },
                                         "downloadUrl": {
                                             "type": [
                                                 "string",
                                                 "null"
                                             ],
+                                            "maxLength": 255,
                                             "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                         },
                                         "binaryName": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 50
                                         },
                                         "filename": {
                                             "type": [
                                                 "string",
                                                 "null"
                                             ],
+                                            "maxLength": 100,
                                             "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                         },
                                         "accessGroupId": {
                                             "type": "integer",
+                                            "format": "int32",
                                             "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                         }
                                     }
@@ -1937,7 +1957,8 @@
                                 ],
                                 "properties": {
                                     "description": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 256
                                     },
                                     "isSalted": {
                                         "type": "boolean"
@@ -2044,30 +2065,36 @@
                                     ],
                                     "properties": {
                                         "crackerBinaryTypeId": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int32"
                                         },
                                         "version": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 20
                                         },
                                         "downloadUrl": {
                                             "type": [
                                                 "string",
                                                 "null"
                                             ],
+                                            "maxLength": 255,
                                             "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                         },
                                         "binaryName": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 50
                                         },
                                         "filename": {
                                             "type": [
                                                 "string",
                                                 "null"
                                             ],
+                                            "maxLength": 100,
                                             "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                         },
                                         "accessGroupId": {
                                             "type": "integer",
+                                            "format": "int32",
                                             "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                         }
                                     }
@@ -2196,7 +2223,8 @@
                                     ],
                                     "properties": {
                                         "description": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 256
                                         },
                                         "isSalted": {
                                             "type": "boolean"
@@ -2304,30 +2332,36 @@
                                     ],
                                     "properties": {
                                         "crackerBinaryTypeId": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int32"
                                         },
                                         "version": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 20
                                         },
                                         "downloadUrl": {
                                             "type": [
                                                 "string",
                                                 "null"
                                             ],
+                                            "maxLength": 255,
                                             "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
                                         },
                                         "binaryName": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 50
                                         },
                                         "filename": {
                                             "type": [
                                                 "string",
                                                 "null"
                                             ],
+                                            "maxLength": 100,
                                             "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
                                         },
                                         "accessGroupId": {
                                             "type": "integer",
+                                            "format": "int32",
                                             "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
                                         }
                                     }

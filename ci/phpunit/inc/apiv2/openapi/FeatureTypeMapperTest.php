@@ -14,13 +14,15 @@ final class FeatureTypeMapperTest extends TestCase {
 
   public function testTypeLookupInt(): void {
     $this->assertSame(
-      ["type" => "integer", "type_format" => null, "type_enum" => null, "type_enum_labels" => null, "subtype" => null],
+      ["type" => "integer", "type_format" => "int32", "type_enum" => null, "type_enum_labels" => null, "subtype" => null, "constraints" => []],
       $this->mapper->typeLookup(['type' => 'int', 'choices' => 'unset'])
     );
   }
 
   public function testTypeLookupUint64(): void {
-    $this->assertSame("integer", $this->mapper->typeLookup(['type' => 'uint64', 'choices' => 'unset'])['type']);
+    $result = $this->mapper->typeLookup(['type' => 'uint64', 'choices' => 'unset']);
+    $this->assertSame("integer", $result['type']);
+    $this->assertSame(["minimum" => 0], $result['constraints']);
   }
 
   public function testTypeLookupInt64HasFormat(): void {
@@ -38,6 +40,11 @@ final class FeatureTypeMapperTest extends TestCase {
     $this->assertSame("string", $this->mapper->typeLookup(['type' => 'str(256)', 'choices' => 'unset'])['type']);
   }
 
+  public function testTypeLookupSizedStrHasMaxLength(): void {
+    $this->assertSame(["maxLength" => 256], $this->mapper->typeLookup(['type' => 'str(256)', 'choices' => 'unset'])['constraints']);
+    $this->assertSame([], $this->mapper->typeLookup(['type' => 'str', 'choices' => 'unset'])['constraints']);
+  }
+
   public function testTypeLookupDictWithSubtype(): void {
     $result = $this->mapper->typeLookup(['type' => 'dict', 'subtype' => 'str', 'choices' => 'unset']);
     $this->assertSame("object", $result['type']);
@@ -48,6 +55,11 @@ final class FeatureTypeMapperTest extends TestCase {
     $result = $this->mapper->typeLookup(['type' => 'array', 'choices' => 'unset']);
     $this->assertSame("array", $result['type']);
     $this->assertSame("integer", $result['subtype']);
+  }
+
+  public function testTypeLookupArrayUsesSubtype(): void {
+    $this->assertSame("integer", $this->mapper->typeLookup(['type' => 'array', 'subtype' => 'int', 'choices' => 'unset'])['subtype']);
+    $this->assertSame("string", $this->mapper->typeLookup(['type' => 'array', 'subtype' => 'string', 'choices' => 'unset'])['subtype']);
   }
 
   public function testTypeLookupChoices(): void {
@@ -68,7 +80,7 @@ final class FeatureTypeMapperTest extends TestCase {
 
   public function testMakePropertiesNullableUsesTypeArray(): void {
     $features = [['type' => 'int', 'choices' => 'unset', 'null' => true, 'alias' => 'userId', 'pk' => false]];
-    $this->assertSame(['userId' => ['type' => ['integer', 'null']]], $this->mapper->makeProperties($features));
+    $this->assertSame(['userId' => ['type' => ['integer', 'null'], 'format' => 'int32']], $this->mapper->makeProperties($features));
   }
 
   public function testMakePropertiesInt64Format(): void {
@@ -80,8 +92,8 @@ final class FeatureTypeMapperTest extends TestCase {
     $features = [['type' => 'int', 'choices' => [0 => 'Linux', 1 => 'Windows'], 'null' => false, 'alias' => 'os', 'pk' => false]];
     $this->assertSame([
       'os' => ['oneOf' => [
-        ['const' => 0, 'title' => 'Linux', 'type' => 'integer'],
-        ['const' => 1, 'title' => 'Windows', 'type' => 'integer'],
+        ['const' => 0, 'title' => 'Linux', 'type' => 'integer', 'format' => 'int32'],
+        ['const' => 1, 'title' => 'Windows', 'type' => 'integer', 'format' => 'int32'],
       ]],
     ], $this->mapper->makeProperties($features));
   }
@@ -115,6 +127,25 @@ final class FeatureTypeMapperTest extends TestCase {
       ['fileIds' => ['type' => 'array', 'items' => ['type' => 'integer']]],
       $this->mapper->makeProperties($features)
     );
+  }
+
+  public function testMakePropertiesStringArrayUsesStringItems(): void {
+    $features = [['type' => 'array', 'subtype' => 'string', 'choices' => 'unset', 'null' => false, 'alias' => 'scopes', 'pk' => false]];
+    $this->assertSame(
+      ['scopes' => ['type' => 'array', 'items' => ['type' => 'string']]],
+      $this->mapper->makeProperties($features)
+    );
+  }
+
+  public function testMakePropertiesAddsConstraints(): void {
+    $features = [
+      ['type' => 'str(50)', 'choices' => 'unset', 'null' => true, 'alias' => 'name', 'pk' => false],
+      ['type' => 'uint64', 'choices' => 'unset', 'null' => false, 'alias' => 'keyspace', 'pk' => false],
+    ];
+    $this->assertSame([
+      'name' => ['type' => ['string', 'null'], 'maxLength' => 50],
+      'keyspace' => ['type' => 'integer', 'minimum' => 0],
+    ], $this->mapper->makeProperties($features));
   }
 
   public function testMapToPropertiesInfersTypesFromSampleValues(): void {

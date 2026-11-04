@@ -79,33 +79,34 @@
                 "parameters": [
                     {
                         "name": "page[after]",
-                        "in": "path",
+                        "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=`"
                     },
                     {
                         "name": "page[before]",
-                        "in": "path",
+                        "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ0lkIjogMTIzfX0=`"
                     },
                     {
                         "name": "page[size]",
-                        "in": "path",
+                        "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -820,33 +821,34 @@
                 "parameters": [
                     {
                         "name": "page[after]",
-                        "in": "path",
+                        "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data after the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configSectionId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319`"
                     },
                     {
                         "name": "page[before]",
-                        "in": "path",
+                        "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string",
-                            "format": "byte"
+                            "pattern": "^[A-Za-z0-9+/]*={0,2}$"
                         },
-                        "example": "eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319",
                         "description": "Pointer to paginate to retrieve the data before the object provided. Specify the `base64` encoded JSON string in a **uniquely identifiable** manner (e.g. object IDs), i.e. by using one (primary) or two (primary and secondary) fields that allow for **stable** sorting.\n            \n\nFormat: `{\"primary\":{\"someField\": 123},\"secondary\":{\"someOtherOptionalField\": \"Foo\"}}`\n            \n\nExample: `{\"primary\":{\"configSectionId\": 123}}` -> `eyJwcmltYXJ5Ijp7ImNvbmZpZ1NlY3Rpb25JZCI6IDEyM319`"
                     },
                     {
                         "name": "page[size]",
-                        "in": "path",
+                        "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer",
-                            "format": "int32"
+                            "format": "int32",
+                            "minimum": 1
                         },
-                        "example": 100,
-                        "description": "Amout of data to retrieve inside a single page"
+                        "description": "Amount of data to retrieve inside a single page"
                     },
                     {
                         "name": "filter",
@@ -1690,13 +1692,16 @@
                                 "type": "object",
                                 "properties": {
                                     "configSectionId": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int32"
                                     },
                                     "item": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 128
                                     },
                                     "value": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 65535
                                     }
                                 },
                                 "required": [
@@ -1730,10 +1735,12 @@
                                 "type": "object",
                                 "properties": {
                                     "item": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 128
                                     },
                                     "value": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 65535
                                     }
                                 }
                             }
@@ -1769,10 +1776,12 @@
                                     "type": "object",
                                     "properties": {
                                         "item": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 128
                                         },
                                         "value": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 65535
                                         }
                                     }
                                 }
@@ -2157,7 +2166,8 @@
                                     ],
                                     "properties": {
                                         "sectionName": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 100
                                         }
                                     }
                                 }
@@ -2514,7 +2524,8 @@
                                     ],
                                     "properties": {
                                         "sectionName": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 100
                                         }
                                     }
                                 }
@@ -2871,7 +2882,8 @@
                                     ],
                                     "properties": {
                                         "sectionName": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 100
                                         }
                                     }
                                 }
@@ -3280,7 +3292,8 @@
                                     ],
                                     "properties": {
                                         "sectionName": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 100
                                         }
                                     }
                                 }
@@ -3425,7 +3438,8 @@
                         ],
                         "properties": {
                             "sectionName": {
-                                "type": "string"
+                                "type": "string",
+                                "maxLength": 100
                             }
                         }
                     },
@@ -3464,7 +3478,8 @@
                                 "type": "object",
                                 "properties": {
                                     "sectionName": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 100
                                     }
                                 },
                                 "required": [
@@ -3496,7 +3511,8 @@
                                 "type": "object",
                                 "properties": {
                                     "sectionName": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 100
                                     }
                                 }
                             }
@@ -3532,7 +3548,8 @@
                                     "type": "object",
                                     "properties": {
                                         "sectionName": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 100
                                         }
                                     }
                                 }
@@ -3634,7 +3651,8 @@
                                 ],
                                 "properties": {
                                     "sectionName": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 100
                                     }
                                 }
                             },
@@ -3719,7 +3737,8 @@
                                 ],
                                 "properties": {
                                     "sectionName": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 100
                                     }
                                 }
                             },
@@ -3804,7 +3823,8 @@
                                 ],
                                 "properties": {
                                     "sectionName": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 100
                                     }
                                 }
                             },
@@ -3940,7 +3960,8 @@
                                     ],
                                     "properties": {
                                         "sectionName": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "maxLength": 100
                                         }
                                     }
                                 },
