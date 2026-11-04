@@ -1,0 +1,209 @@
+hashcat (v6.2.5) starting in autodetect mode
+
+Hash Info:
+==========
+
+Hash mode #0
+  Name................: MD5
+  Category............: Raw Hash
+  Slow.Hash...........: No
+  Password.Len.Min....: 0
+  Password.Len.Max....: 256
+  Kernel.Type(s)......: pure, optimized
+  Example.Hash.Format.: plain
+  Example.Hash........: 8743b52063cd84097a65d1633f5c74f5
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?b?b?b?b?b?b?b
+
+Hash mode #20
+  Name................: md5($salt.$pass)
+  Category............: Raw Hash salted and/or iterated
+  Slow.Hash...........: No
+  Password.Len.Min....: 0
+  Password.Len.Max....: 256
+  Salt.Type...........: Generic
+  Salt.Len.Min........: 0
+  Salt.Len.Max........: 256
+  Kernel.Type(s)......: pure, optimized
+  Example.Hash.Format.: plain
+  Example.Hash........: 57ab8499d08c59a7211c77f557bf9425:4247
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?b?b?b?b?b?b?b
+
+Hash mode #500
+  Name................: md5crypt, MD5 (Unix), Cisco-IOS $1$ (MD5)
+  Category............: Operating System
+  Slow.Hash...........: Yes
+  Password.Len.Min....: 0
+  Password.Len.Max....: 256
+  Salt.Type...........: Embedded
+  Salt.Len.Min........: 0
+  Salt.Len.Max........: 256
+  Kernel.Type(s)......: pure
+  Example.Hash.Format.: plain
+  Example.Hash........: $1$38652870$DUjsu4TTlTsOe/xxZ05uf/
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?a?a?a?a?a?a?a
+
+Hash mode #1000
+  Name................: NTLM
+  Category............: Operating System
+  Slow.Hash...........: No
+  Password.Len.Min....: 0
+  Password.Len.Max....: 256
+  Kernel.Type(s)......: pure, optimized
+  Example.Hash.Format.: plain
+  Example.Hash........: b4b9b02e6f09a9bd760f388b67351e2b
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?b?b?b?b?b?b?b
+
+Hash mode #2100
+  Name................: Domain Cached Credentials 2 (DCC2), MS Cache 2
+  Category............: Operating System
+  Slow.Hash...........: Yes
+  Password.Len.Min....: 0
+  Password.Len.Max....: 256
+  Salt.Type...........: Embedded
+  Salt.Len.Min........: 0
+  Salt.Len.Max........: 256
+  Kernel.Type(s)......: pure
+  Example.Hash.Format.: plain
+  Example.Hash........: $DCC2$10240#6848#e2829c8af2232fa53797e2f0e35e4626
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?a?a?a?a?a?a?a
+
+Hash mode #2600
+  Name................: md5(md5($pass))
+  Category............: Raw Hash salted and/or iterated
+  Slow.Hash...........: No
+  Password.Len.Min....: 0
+  Password.Len.Max....: 256
+  Salt.Type...........: Virtual
+  Salt.Len.Min........: 0
+  Salt.Len.Max........: 256
+  Kernel.Type(s)......: pure, optimized
+  Example.Hash.Format.: plain
+  Example.Hash........: a936af92b0ae20b1ff6c3347a72e5fbe
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?b?b?b?b?b?b?b
+
+Hash mode #3200
+  Name................: bcrypt $2*$, Blowfish (Unix)
+  Category............: Operating System
+  Slow.Hash...........: Yes
+  Password.Len.Min....: 0
+  Password.Len.Max....: 72
+  Salt.Type...........: Embedded
+  Salt.Len.Min........: 0
+  Salt.Len.Max........: 256
+  Kernel.Type(s)......: pure
+  Example.Hash.Format.: plain
+  Example.Hash........: $2a$05$MBCzKhG1KhezLh.0LRa0Kuw12nLJtpHy6DIaU.JAnqJUDYspHC.Ou
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?a?a?a?a?a?a?a
+
+Hash mode #5800
+  Name................: Samsung Android Password/PIN
+  Category............: Operating System
+  Slow.Hash...........: Yes
+  Password.Len.Min....: 0
+  Password.Len.Max....: 256
+  Salt.Type...........: Generic
+  Salt.Len.Min........: 0
+  Salt.Len.Max........: 256
+  Kernel.Type(s)......: pure, optimized
+  Example.Hash.Format.: plain
+  Example.Hash........: 3edde1eb9e6679ccbc1ff3c417e8a475a2d2e279:7724368582277760
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?a?a?a?a?a?a?a
+
+Hash mode #8300
+  Name................: DNSSEC (NSEC3)
+  Category............: FTP, HTTP, SMTP, LDAP Server
+  Slow.Hash...........: No
+  Password.Len.Min....: 0
+  Password.Len.Max....: 63
+  Salt.Type...........: Embedded
+  Salt.Len.Min........: 0
+  Salt.Len.Max........: 256
+  Kernel.Type(s)......: pure, optimized
+  Example.Hash.Format.: plain
+  Example.Hash........: pi6a89u8tca930h8mvolklmesefc5gmn:.fnmlbsik.net:35537886:1
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?b?b?b?b?b?b?b
+  Benchmark.Charset1..: abcdefghijklmnopqrstuvwxyz
+
+Hash mode #10900
+  Name................: PBKDF2-HMAC-SHA256
+  Category............: Generic KDF
+  Slow.Hash...........: Yes
+  Password.Len.Min....: 0
+  Password.Len.Max....: 256
+  Salt.Type...........: Embedded
+  Salt.Len.Min........: 0
+  Salt.Len.Max........: 256
+  Kernel.Type(s)......: pure
+  Example.Hash.Format.: plain
+  Example.Hash........: sha256:1000:NjI3MDM3:vVfavLQL9ZWjg8BUMq6/FB8FtpkIGWYk
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?a?a?a?a?a?a?a
+
+Hash mode #11300
+  Name................: Bitcoin/Litecoin wallet.dat
+  Category............: Cryptocurrency Wallet
+  Slow.Hash...........: Yes
+  Password.Len.Min....: 0
+  Password.Len.Max....: 256
+  Salt.Type...........: Embedded
+  Salt.Len.Min........: 0
+  Salt.Len.Max........: 256
+  Kernel.Type(s)......: pure
+  Example.Hash.Format.: plain
+  Example.Hash........: $bitcoin$96$c265931309b4a59307921cf054b4ec6b6e4554369be79802e94e16477645777d948ae1d375191831efc78e5acd1f0443$16$8017214013543185$200460$96$480008005625057442352316337722323437108374245623701184230273883222762730232857701607167815448714$66$014754433300175043011633205413774877455616682000536368706315333388
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?a?a?a?a?a?a?a
+
+Hash mode #18400
+  Name................: Open Document Format (ODF) 1.2 (SHA-256, AES)
+  Category............: Document
+  Slow.Hash...........: Yes
+  Password.Len.Min....: 0
+  Password.Len.Max....: 256
+  Salt.Type...........: Embedded
+  Salt.Len.Min........: 0
+  Salt.Len.Max........: 256
+  Kernel.Type(s)......: pure
+  Example.Hash.Format.: plain
+  Example.Hash........: $odf$*1*1*100000*32*751854d8b90731ce0579f96bea6f0d4ac2fb2f546b31f1b6af9a5f66952a0bf4*16*2185a966155baa9e2fb597298febecbc*16*c18eaae34bcbbe9119be017fe5f8b52d*0*051e0f1ce0e866f2b771029e03a6c7119aad132af54c4e45824f16f61f357a40
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?a?a?a?a?a?a?a
+
+Hash mode #22000
+  Name................: WPA-PBKDF2-PMKID+EAPOL
+  Category............: Network Protocol
+  Slow.Hash...........: Yes
+  Password.Len.Min....: 8
+  Password.Len.Max....: 63
+  Salt.Type...........: Embedded
+  Salt.Len.Min........: 0
+  Salt.Len.Max........: 256
+  Kernel.Type(s)......: pure
+  Example.Hash.Format.: hex-encoded
+  Example.Hash........: WPA*01*4d4fe7aac3a2cecab195321ceb99a7d0*fc690c158264*f4747f87f9f4*686173686361742d6573736964***
+  Example.Pass........: hashcat!
+  Benchmark.Mask......: ?a?a?a?a?a?a?a?a
+
+Hash mode #34810
+  Name................: BLAKE2b-256($pass.$salt)
+  Category............: Raw Hash salted and/or iterated
+  Slow.Hash...........: No
+  Password.Len.Min....: 0
+  Password.Len.Max....: 256
+  Salt.Type...........: Generic
+  Salt.Len.Min........: 0
+  Salt.Len.Max........: 256
+  Kernel.Type(s)......: pure, optimized
+  Example.Hash.Format.: plain
+  Example.Hash........: $BLAKE2$2b51353016a512b60e587bea98d799c2de243468085ca6cd67f983b2e55bfb67:2353288289
+  Example.Pass........: hashcat
+  Benchmark.Mask......: ?b?b?b?b?b?b?b

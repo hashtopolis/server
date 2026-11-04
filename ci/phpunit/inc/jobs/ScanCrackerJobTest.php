@@ -22,10 +22,11 @@ require_once(dirname(__FILE__) . '/../../../../src/inc/startup/include.php');
 
 /**
  * End-to-end tests of the scan_cracker background job. The cracker binary
- * archives are fakes: a shell script named '<binaryName>.bin' which echoes a
- * canned '--example-hashes --machine-readable' report, packed into a 7z
- * archive. No hashcat binary is needed
- * to run them.
+ * archives are fakes: a shell script named '<binaryName>.bin' which echoes
+ * its version for '--version' and a canned '--example-hashes' report, with
+ * '--machine-readable' for the JSON report of hashcat 6.2.6 and newer and
+ * without it for the plain report of older versions, packed into a 7z
+ * archive. No hashcat binary is needed to run them.
  */
 final class ScanCrackerJobTest extends TestBase {
   private const SEVEN_ZIP_MAGIC = "\x37\x7A\xBC\xAF\x27\x1C";
@@ -52,6 +53,50 @@ final class ScanCrackerJobTest extends TestBase {
     ' "99902": { "name": "Fake Salted Mode", "slow_hash": true, "is_salted": true, "salt_type": "generic" },' .
     ' "99903": { "name": "Fake Mode Three", "slow_hash": false, "is_salted": true, "salt_type": "embedded" }}' . "\n";
 
+  /**
+   * Canned plain '--example-hashes' report of a fake hashcat before 6.2.6:
+   * the block format hashcat 6.2.0 to 6.2.5 prints, with the salt and
+   * slow-hash details of the fake modes.
+   */
+  private const PLAIN_MODES_OUTPUT = 'hashcat (v6.2.5) starting in autodetect mode' . "\n" .
+    "\n" .
+    "Hash Info:\n" .
+    "==========\n" .
+    "\n" .
+    "Hash mode #0\n" .
+    "  Name................: MD5\n" .
+    "  Category............: Raw Hash\n" .
+    "  Slow.Hash...........: No\n" .
+    "  Kernel.Type(s)......: pure, optimized\n" .
+    "  Example.Hash.Format.: plain\n" .
+    "  Example.Hash........: 8743b52063cd84097a65d1633f5c74f5\n" .
+    "  Example.Pass........: hashcat\n" .
+    "  Benchmark.Mask......: ?b?b?b?b?b?b?b\n" .
+    "\n" .
+    "Hash mode #99901\n" .
+    "  Name................: Fake Mode One\n" .
+    "  Slow.Hash...........: No\n" .
+    "  Example.Hash.Format.: plain\n" .
+    "  Example.Hash........: 8743b52063cd84097a65d1633f5c74f5\n" .
+    "  Example.Pass........: hashcat\n" .
+    "\n" .
+    "Hash mode #99902\n" .
+    "  Name................: Fake Salted Mode\n" .
+    "  Slow.Hash...........: Yes\n" .
+    "  Salt.Type...........: Generic\n" .
+    "  Example.Hash.Format.: plain\n" .
+    "  Example.Hash........: 3edde1eb9e6679ccbc1ff3c417e8a475a2d2e279:7724368582277760\n" .
+    "  Example.Pass........: hashcat\n" .
+    "\n" .
+    "Hash mode #99903\n" .
+    "  Name................: Fake Mode Three\n" .
+    "  Slow.Hash...........: Yes\n" .
+    "  Salt.Type...........: Embedded\n" .
+    "  Example.Hash.Format.: plain\n" .
+    '  Example.Hash........: $1$38652870$DUjsu4TTlTsOe/xxZ05uf/' . "\n" .
+    "  Example.Pass........: hashcat\n" .
+    "\n";
+
   // Returns the hashcat cracker binary type, creating it first when the
   // initial data does not contain it.
   private function hashcatType(): CrackerBinaryType {
@@ -68,20 +113,37 @@ final class ScanCrackerJobTest extends TestBase {
 
   /**
    * Builds a fake cracker binary archive: a shell script '<binaryName>.bin'
-   * which echoes the given output when started with
-   * '--example-hashes --machine-readable', packed with 7z.
+   * which echoes the given version for '--version' and the given report
+   * for '--example-hashes', packed with 7z. The JSON report is echoed when
+   * '--machine-readable' is passed as well, like hashcat 6.2.6 and newer
+   * do, the plain report of the older versions is echoed without it.
+   *
+   * @param string $binaryName name of the fake binary, e.g. 'fakecracker'
+   * @param string $machineReadableOutput canned '--example-hashes --machine-readable' report
+   * @param string $version version the fake reports for '--version'
+   * @param string|null $plainOutput canned plain '--example-hashes' report of versions before 6.2.6
    */
-  private function buildFakeArchive(string $binaryName, string $modesOutput): string {
+  private function buildFakeArchive(string $binaryName, string $machineReadableOutput, string $version = 'v9.9.9',
+                                    ?string $plainOutput = null): string {
     $dir = sys_get_temp_dir() . '/hashtopolis-fake-cracker-' . uniqid();
     mkdir($dir);
-    file_put_contents($dir . '/' . $binaryName . '.bin',
-      "#!/bin/sh\n" .
-      "if [ \"\$1\" = '--example-hashes' ] && [ \"\$2\" = '--machine-readable' ]; then\n" .
-      "  cat <<'HTP_EOF'\n" . $modesOutput . "HTP_EOF\n" .
+    $script = "#!/bin/sh\n" .
+      "if [ \"\$1\" = '--version' ]; then\n" .
+      "  echo '$version'\n" .
       "  exit 0\n" .
       "fi\n" .
-      "exit 1\n"
-    );
+      "if [ \"\$1\" = '--example-hashes' ] && [ \"\$2\" = '--machine-readable' ]; then\n" .
+      "  cat <<'HTP_EOF'\n" . $machineReadableOutput . "HTP_EOF\n" .
+      "  exit 0\n" .
+      "fi\n";
+    if ($plainOutput !== null) {
+      $script .= "if [ \"\$1\" = '--example-hashes' ]; then\n" .
+        "  cat <<'HTP_EOF'\n" . $plainOutput . "HTP_EOF\n" .
+        "  exit 0\n" .
+        "fi\n";
+    }
+    $script .= "exit 1\n";
+    file_put_contents($dir . '/' . $binaryName . '.bin', $script);
     chmod($dir . '/' . $binaryName . '.bin', 0755);
     $archive = $dir . '.7z';
     exec('7z a ' . escapeshellarg($archive) . ' ' . escapeshellarg($dir) . ' > /dev/null', $out, $rc);
@@ -237,6 +299,128 @@ final class ScanCrackerJobTest extends TestBase {
     // over from the report
     $this->assertSame(1, $salted->getIsSalted());
     $this->assertSame(1, $salted->getIsSlowHash());
+
+    CrackerUtils::deleteBinary($binary->getId());
+    $this->cleanupScanJobs($binary->getId());
+  }
+
+  /**
+   * A hashcat version before 6.2.6 does not print a JSON report with
+   * '--machine-readable': the scan reads the plain text report without the
+   * flag and takes the salt and slow-hash details of the modes from it.
+   *
+   * @throws Exception
+   */
+  public function testScanOfPreMachineReadableHashcatParsesPlainOutput(): void {
+    $archive = $this->buildFakeArchive('fakecracker', '', 'v6.2.5', self::PLAIN_MODES_OUTPUT);
+    $binary = CrackerUtils::createBinaryFromUpload(
+      '6.2.5', 'fakecracker', $this->hashcatType()->getId(), 'inline',
+      base64_encode(file_get_contents($archive)), 1
+    );
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+    $this->trackBinary($binary);
+    $jobs = $this->pendingScanJobs($binary->getId());
+    $this->assertCount(1, $jobs);
+
+    BackgroundJobRunner::run();
+
+    $job = Factory::getBackgroundJobFactory()->get($jobs[0]->getId());
+    $this->assertSame(DBackgroundJobStatus::DONE, $job->getStatus(), $job->getResultMessage());
+    $this->assertSame(0, $job->getExitCode());
+    // the scan reports the version it detected
+    $this->assertStringContainsString('hashcat 6.2.5', $job->getResultMessage());
+
+    $this->assertEquals([0, 99901, 99902, 99903], $this->associatedHashtypeIds($binary->getId()));
+    $created = Factory::getHashTypeFactory()->get(99901);
+    $this->assertNotNull($created);
+    $this->assertSame('Fake Mode One', $created->getDescription());
+    $this->assertSame(0, $created->getIsSalted());
+    $this->assertSame(0, $created->getIsSlowHash());
+    $salted = Factory::getHashTypeFactory()->get(99902);
+    $this->assertNotNull($salted);
+    $this->assertSame('Fake Salted Mode', $salted->getDescription());
+    // only a generic salt counts as salted, the slow-hash flag is taken
+    // over from the 'Slow.Hash' line
+    $this->assertSame(1, $salted->getIsSalted());
+    $this->assertSame(1, $salted->getIsSlowHash());
+    $embedded = Factory::getHashTypeFactory()->get(99903);
+    $this->assertNotNull($embedded);
+    $this->assertSame(0, $embedded->getIsSalted());
+    $this->assertSame(1, $embedded->getIsSlowHash());
+
+    CrackerUtils::deleteBinary($binary->getId());
+    $this->cleanupScanJobs($binary->getId());
+  }
+
+  /**
+   * Hashcat 6.0.0 to 6.1.1 do not state the salt and slow-hash properties
+   * in their report: hashtypes created by their scan default to unsalted
+   * fast hashes.
+   *
+   * @throws Exception
+   */
+  public function testScanOfOldHashcatCreatesHashtypesWithDefaultFlags(): void {
+    $plainOutput = 'hashcat (v6.1.1) starting in autodetect mode' . "\n" .
+      "\n" .
+      "MODE: 0\n" .
+      "TYPE: MD5\n" .
+      "HASH: 8743b52063cd84097a65d1633f5c74f5\n" .
+      "PASS: hashcat\n" .
+      "\n" .
+      "MODE: 99901\n" .
+      "TYPE: Fake Salted Mode\n" .
+      "HASH: 3edde1eb9e6679ccbc1ff3c417e8a475a2d2e279:7724368582277760\n" .
+      "PASS: hashcat\n" .
+      "\n";
+    $archive = $this->buildFakeArchive('fakecracker', '', 'v6.1.1', $plainOutput);
+    $binary = CrackerUtils::createBinaryFromUpload(
+      '6.1.1', 'fakecracker', $this->hashcatType()->getId(), 'inline',
+      base64_encode(file_get_contents($archive)), 1
+    );
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+    $this->trackBinary($binary);
+
+    BackgroundJobRunner::run();
+
+    $jobs = $this->scanJobsOfBinary($binary->getId());
+    $this->assertSame(DBackgroundJobStatus::DONE, $jobs[0]->getStatus(), $jobs[0]->getResultMessage());
+    $this->assertEquals([0, 99901], $this->associatedHashtypeIds($binary->getId()));
+    $created = Factory::getHashTypeFactory()->get(99901);
+    $this->assertNotNull($created);
+    $this->assertSame('Fake Salted Mode', $created->getDescription());
+    // the salt and slow-hash properties are not stated in the report, they default to false
+    $this->assertSame(0, $created->getIsSalted());
+    $this->assertSame(0, $created->getIsSlowHash());
+
+    CrackerUtils::deleteBinary($binary->getId());
+    $this->cleanupScanJobs($binary->getId());
+  }
+
+  /**
+   * A hashcat version older than 6.0.0 cannot be scanned, its report has
+   * no mode details in a parseable format: the scan fails with a message
+   * naming the required version.
+   *
+   * @throws Exception
+   */
+  public function testScanOfTooOldHashcatFails(): void {
+    $archive = $this->buildFakeArchive('fakecracker', '', 'v5.1.0');
+    $binary = CrackerUtils::createBinaryFromUpload(
+      '5.1.0', 'fakecracker', $this->hashcatType()->getId(), 'inline',
+      base64_encode(file_get_contents($archive)), 1
+    );
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+    $this->trackBinary($binary);
+
+    BackgroundJobRunner::run();
+
+    $jobs = $this->scanJobsOfBinary($binary->getId());
+    $this->assertSame(DBackgroundJobStatus::FAILED, $jobs[0]->getStatus(), $jobs[0]->getResultMessage());
+    $this->assertSame(-1, $jobs[0]->getExitCode());
+    $this->assertStringContainsString('5.1.0', $jobs[0]->getResultMessage());
+    $this->assertStringContainsString('6.0.0', $jobs[0]->getResultMessage());
+    // nothing was associated
+    $this->assertEquals([], $this->associatedHashtypeIds($binary->getId()));
 
     CrackerUtils::deleteBinary($binary->getId());
     $this->cleanupScanJobs($binary->getId());

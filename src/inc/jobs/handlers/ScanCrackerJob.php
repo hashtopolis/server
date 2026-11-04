@@ -39,6 +39,11 @@ class ScanCrackerJob implements BackgroundJobHandler {
    * the modes the binary supports. Existing hashtypes are never altered,
    * the scan only decides whether the binary supports them or not.
    *
+   * The report of the hash-modes is read with '--example-hashes': hashcat
+   * 6.2.6 and newer print it as JSON with '--machine-readable', older
+   * versions from 6.0.0 on print plain text which is parsed instead.
+   * Versions before 6.0.0 fail the scan, their output cannot be parsed.
+   *
    * A url-referenced binary whose archive is not on the server (e.g. when the
    * scan was enqueued without a preceding download, as done by the migration
    * on existing setups) gets its local copy downloaded first.
@@ -78,11 +83,32 @@ class ScanCrackerJob implements BackgroundJobHandler {
     if ($tempDir === false) {
       return new BackgroundJobResult(-1, "Could not create a temporary directory for the scan of the cracker binary $binaryId.");
     }
+    // the version of the binary decides in which format it reports its
+    // hash-modes: 6.2.6 and newer print JSON with '--machine-readable',
+    // versions from 6.0.0 on print plain text without it, versions before
+    // 6.0.0 cannot be parsed at all. A binary which does not report its
+    // version is treated as a new one, the report decides whether it can
+    // be parsed.
+    $machineReadable = true;
+    $version = null;
     try {
       unlink($tempDir);
       mkdir($tempDir);
       CrackerScanUtils::unpackArchive(CrackerScanUtils::getLocalArchivePath($binary), $tempDir);
-      $output = CrackerScanUtils::runExampleHashes($tempDir, $binary->getBinaryName());
+      $version = CrackerScanUtils::parseHashcatVersion(
+        CrackerScanUtils::runVersion($tempDir, $binary->getBinaryName())
+      );
+      if ($version !== null && CrackerScanUtils::versionLessThan($version, CrackerScanUtils::MINIMUM_VERSION)) {
+        return new BackgroundJobResult(
+          -1,
+          "The cracker binary $binaryId is hashcat " . CrackerScanUtils::formatVersion($version) .
+            ", but hashcat " . CrackerScanUtils::formatVersion(CrackerScanUtils::MINIMUM_VERSION) .
+            " or newer is required for the scan."
+        );
+      }
+      $machineReadable = $version === null
+        || !CrackerScanUtils::versionLessThan($version, CrackerScanUtils::MACHINE_READABLE_VERSION);
+      $output = CrackerScanUtils::runExampleHashes($tempDir, $binary->getBinaryName(), $machineReadable);
     }
     catch (HTException $e) {
       return new BackgroundJobResult(-1, $e->getMessage());
@@ -91,7 +117,9 @@ class ScanCrackerJob implements BackgroundJobHandler {
       self::removeDirectory($tempDir);
     }
 
-    $modes = CrackerScanUtils::parseHashcatModes($output);
+    $modes = $machineReadable
+      ? CrackerScanUtils::parseHashcatModes($output)
+      : CrackerScanUtils::parseHashcatModesPlain($output);
     if (sizeof($modes) == 0) {
       return new BackgroundJobResult(-1, "Could not find any hash-modes in the output of the cracker binary $binaryId.");
     }
@@ -113,7 +141,9 @@ class ScanCrackerJob implements BackgroundJobHandler {
 
     return new BackgroundJobResult(
       0,
-      "Scanned " . sizeof($modes) . " hash-modes, created $created hashtypes, added $added and removed $removed associations."
+      "Scanned " . sizeof($modes) . " hash-modes" .
+        ($version === null ? "" : " of hashcat " . CrackerScanUtils::formatVersion($version)) .
+        ", created $created hashtypes, added $added and removed $removed associations."
     );
   }
 

@@ -576,6 +576,68 @@ class TestCrackerHashtypes(BaseTest):
         ' "880002": { "name": "Fake Salted Mode", "slow_hash": true, "is_salted": true, "salt_type": "generic" }}\n'
     )
 
+    # canned plain '--example-hashes' report of a fake hashcat before 6.2.6:
+    # the block format hashcat 6.2.0 to 6.2.5 prints, with the salt and
+    # slow-hash details of the fake modes
+    FAKE_PLAIN_MODES_OUTPUT = (
+        'hashcat (v6.2.5) starting in autodetect mode\n'
+        '\n'
+        'Hash Info:\n'
+        '==========\n'
+        '\n'
+        'Hash mode #0\n'
+        '  Name................: MD5\n'
+        '  Slow.Hash...........: No\n'
+        '\n'
+        'Hash mode #880011\n'
+        '  Name................: Fake Mode One\n'
+        '  Slow.Hash...........: No\n'
+        '\n'
+        'Hash mode #880012\n'
+        '  Name................: Fake Salted Mode\n'
+        '  Slow.Hash...........: Yes\n'
+        '  Salt.Type...........: Generic\n'
+        '\n'
+    )
+
+    def build_fake_cracker_archive(self, version='v9.9.9', json_output=None, plain_output=None):
+        """Builds a 7z archive with a fake cracker binary: a shell script
+        'cracker.bin' which echoes the given version for '--version' and the
+        given report for '--example-hashes', with '--machine-readable' for
+        the JSON report of hashcat 6.2.6 and newer, without it for the plain
+        report of the older versions. Returns the base64 sourceData of the
+        archive for create_local_cracker."""
+        json_output = self.FAKE_MODES_OUTPUT if json_output is None else json_output
+        script = (
+            '#!/bin/sh\n'
+            "if [ \"$1\" = '--version' ]; then\n"
+            f"echo '{version}'\n"
+            'exit 0\n'
+            'fi\n'
+            "if [ \"$1\" = '--example-hashes' ] && [ \"$2\" = '--machine-readable' ]; then\n"
+            f"cat <<'HTP_EOF'\n{json_output}HTP_EOF\n"
+            'exit 0\n'
+            'fi\n'
+        )
+        if plain_output is not None:
+            script += (
+                "if [ \"$1\" = '--example-hashes' ]; then\n"
+                f"cat <<'HTP_EOF'\n{plain_output}HTP_EOF\n"
+                'exit 0\n'
+                'fi\n'
+            )
+        script += 'exit 1\n'
+        with tempfile.TemporaryDirectory() as tmpdir:
+            binary_dir = Path(tmpdir) / 'fake-hashcat'
+            binary_dir.mkdir()
+            (binary_dir / 'cracker.bin').write_text(script)
+            (binary_dir / 'cracker.bin').chmod(0o755)
+            archive = Path(tmpdir) / 'fake-hashcat.7z'
+            result = subprocess.run(['7z', 'a', str(archive), str(binary_dir)],
+                                    capture_output=True, text=True)
+            self.assertEqual(0, result.returncode, f'Packing the fake archive failed: {result.stderr}')
+            return base64.b64encode(archive.read_bytes()).decode()
+
     def hashtype_ids_of(self, obj):
         obj = Cracker.objects.prefetch_related('hashtypes').get(pk=obj.id)
         return sorted(ht.id for ht in obj.hashtypes_set)
@@ -659,25 +721,7 @@ class TestCrackerHashtypes(BaseTest):
 
     def test_scan_populates_associations_and_creates_hashtypes(self):
         """The scan of a hashcat binary populates its associations and creates missing hashtypes."""
-        # fake cracker archive: a shell script 'cracker.bin' which echoes a
-        # canned '--example-hashes --machine-readable' report, packed with 7z
-        with tempfile.TemporaryDirectory() as tmpdir:
-            binary_dir = Path(tmpdir) / 'fake-hashcat'
-            binary_dir.mkdir()
-            (binary_dir / 'cracker.bin').write_text(
-                '#!/bin/sh\n'
-                "if [ \"$1\" = '--example-hashes' ] && [ \"$2\" = '--machine-readable' ]; then\n"
-                f"cat <<'HTP_EOF'\n{self.FAKE_MODES_OUTPUT}HTP_EOF\n"
-                'exit 0\n'
-                'fi\n'
-                'exit 1\n'
-            )
-            (binary_dir / 'cracker.bin').chmod(0o755)
-            archive = Path(tmpdir) / 'fake-hashcat.7z'
-            result = subprocess.run(['7z', 'a', str(archive), str(binary_dir)],
-                                     capture_output=True, text=True)
-            self.assertEqual(0, result.returncode, f'Packing the fake archive failed: {result.stderr}')
-            source_data = base64.b64encode(archive.read_bytes()).decode()
+        source_data = self.build_fake_cracker_archive(json_output=self.FAKE_MODES_OUTPUT)
 
         obj = self.create_local_cracker(source_data=source_data)
         try:
@@ -705,6 +749,39 @@ class TestCrackerHashtypes(BaseTest):
             # regular test object teardown
             self.delete_scan_jobs(obj)
             for hashtype_id in (880001, 880002):
+                r = requests.delete(f'{APIV2}/ui/hashtypes/{hashtype_id}',
+                                    headers={'Authorization': f'Bearer {get_bearer_token()}'})
+                self.assertIn(r.status_code, [204, 404], f'Deleting hashtype {hashtype_id} failed: {r.text}')
+
+    def test_scan_of_pre_machine_readable_hashcat_uses_plain_report(self):
+        """Hashcat before 6.2.6 prints no JSON report with '--machine-readable':
+        the scan reads the plain text report without the flag instead and
+        takes the salt and slow-hash details of the modes from it."""
+        source_data = self.build_fake_cracker_archive(
+            version='v6.2.5', json_output='', plain_output=self.FAKE_PLAIN_MODES_OUTPUT)
+
+        obj = self.create_local_cracker(source_data=source_data, extra_payload={'version': '6.2.5'})
+        try:
+            self.assertListEqual([], self.hashtype_ids_of(obj))
+
+            run_background_job_runner()
+
+            # mode 0 exists already, the two fake modes were created with the
+            # description and flags of the plain mode report
+            self.assertListEqual([0, 880011, 880012], self.hashtype_ids_of(obj))
+            created = HashType.objects.get(pk=880011)
+            self.assertEqual('Fake Mode One', created.description)
+            self.assertFalse(created.isSalted)
+            self.assertFalse(created.isSlowHash)
+            salted = HashType.objects.get(pk=880012)
+            self.assertEqual('Fake Salted Mode', salted.description)
+            # only a generic salt counts as salted, the slow-hash flag is
+            # taken over from the report
+            self.assertTrue(salted.isSalted)
+            self.assertTrue(salted.isSlowHash)
+        finally:
+            self.delete_scan_jobs(obj)
+            for hashtype_id in (880011, 880012):
                 r = requests.delete(f'{APIV2}/ui/hashtypes/{hashtype_id}',
                                     headers={'Authorization': f'Bearer {get_bearer_token()}'})
                 self.assertIn(r.status_code, [204, 404], f'Deleting hashtype {hashtype_id} failed: {r.text}')
