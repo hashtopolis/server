@@ -400,8 +400,8 @@
     {
       "crackerBinaryId" : 1,
       "crackerBinaryTypeId" : 1,
-      "version" : "7.1.2",
-      "downloadUrl" : "https://hashcat.net/files/hashcat-7.1.2.7z",
+      "version" : "8.0.0",
+      "downloadUrl" : "https://hashcat.net/files/hashcat-8.0.0.7z",
       "binaryName" : "hashcat",
       "filename" : null,
       "accessGroupId" : 1
