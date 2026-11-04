@@ -37,13 +37,20 @@ final class AccountUtilsTest extends TestBase {
   public function testUpdateSessionLifetimeThrowsWhenBelowMinimum(): void {
     $user = $this->createUser('invalid_lifetime_user');
     $this->expectException(HTException::class);
-    
-    AccountUtils::updateSessionLifetime(59, $user);
+
+    AccountUtils::updateSessionLifetime(RefreshTokenUtils::MIN_LIFETIME_SECONDS - 1, $user);
   }
-  
+
+  public function testUpdateSessionLifetimeThrowsWhenAboveMaximum(): void {
+    $user = $this->createUser('too_long_lifetime_user');
+    $this->expectException(HTException::class);
+
+    AccountUtils::updateSessionLifetime(RefreshTokenUtils::maxLifetimeSeconds() + 1, $user);
+  }
+
   public function testUpdateSessionLifetimeUpdatesPersistedValue(): void {
     $user = $this->createUser('valid_lifetime_user');
-    $newLifetime = 60;
+    $newLifetime = RefreshTokenUtils::MIN_LIFETIME_SECONDS + 3600;
     
     AccountUtils::updateSessionLifetime($newLifetime, $user);
     

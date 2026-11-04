@@ -1,3 +1,4 @@
+import time
 from hashtopolis import User, Helper, HashtopolisError
 from utils import BaseTest
 
@@ -112,7 +113,7 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, f"Lifetime must be larger than 1 minute and smaller than 48 hours!")
+        self.assertEqual(e.exception.title, f"Lifetime must be at least 2 hours and at most 48 hours!")
 
     def test_patch_invalid_session_lifetime_negative(self):
         model_obj = self.create_test_object()
@@ -120,7 +121,7 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, f"Lifetime must be larger than 1 minute and smaller than 48 hours!")
+        self.assertEqual(e.exception.title, f"Lifetime must be at least 2 hours and at most 48 hours!")
 
     def test_patch_invalid_session_lifetime_large(self):
         model_obj = self.create_test_object()
@@ -128,7 +129,33 @@ class UserTest(BaseTest):
         with self.assertRaises(HashtopolisError) as e:
             model_obj.save()
         self.assertEqual(e.exception.status_code, 500)
-        self.assertEqual(e.exception.title, f"Lifetime must be larger than 1 minute and smaller than 48 hours!")
+        self.assertEqual(e.exception.title, f"Lifetime must be at least 2 hours and at most 48 hours!")
+
+    def test_patch_invalid_session_lifetime_below_minimum(self):
+        model_obj = self.create_test_object()
+        model_obj.sessionLifetime = 7199
+        with self.assertRaises(HashtopolisError) as e:
+            model_obj.save()
+        self.assertEqual(e.exception.status_code, 500)
+        self.assertEqual(e.exception.title, f"Lifetime must be at least 2 hours and at most 48 hours!")
+
+    def test_patch_session_lifetime(self):
+        model_obj = self.create_test_object()
+        self._test_patch(model_obj, 'sessionLifetime', 3 * 3600)
+
+    def test_create_invalid_session_lifetime_below_minimum(self):
+        stamp = int(time.time() * 1000)
+        user = User(
+            name=f'test-{stamp}',
+            email='test@example.com',
+            globalPermissionGroupId=1,
+            isValid=True,
+            sessionLifetime=3600,
+        )
+        with self.assertRaises(HashtopolisError) as e:
+            user.save()
+        self.assertEqual(e.exception.status_code, 500)
+        self.assertEqual(e.exception.title, f"Lifetime must be at least 2 hours and at most 48 hours!")
 
     def test_patch_registeredSince(self):
         model_obj = self.create_test_object()
