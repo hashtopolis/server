@@ -2,6 +2,7 @@
 
 namespace Hashtopolis\inc\apiv2\auth;
 
+use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\StartupConfig;
 use Hashtopolis\inc\utils\RefreshTokenUtils;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -39,10 +40,11 @@ class RefreshTokenCookie {
    * @param Request $request the request being answered, used to decide on the Secure flag
    * @param Response $response
    * @param string $token the token string to hand to the client
+   * @param User $user the owner of the token, whose session lifetime the cookie outlives no longer
    * @return Response
    */
-  public static function attach(Request $request, Response $response, string $token): Response {
-    $maxAge = RefreshTokenUtils::lifetimeSeconds();
+  public static function attach(Request $request, Response $response, string $token, User $user): Response {
+    $maxAge = RefreshTokenUtils::lifetimeSeconds($user);
     
     return $response->withAddedHeader("Set-Cookie", self::build($request, $token, $maxAge));
   }
