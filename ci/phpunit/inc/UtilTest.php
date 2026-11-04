@@ -855,7 +855,8 @@ final class UtilTest extends TestBase {
   }
 
   /**
-   * checkOrCreateInitialObject does not create a duplicate when the object already exists.
+   * checkOrCreateInitialObject does not create a duplicate when the object already exists
+   * and by default leaves the values of the existing entry unchanged.
    *
    * @throws Exception
    */
@@ -866,6 +867,10 @@ final class UtilTest extends TestBase {
     Util::checkOrCreateInitialObject(Factory::getConfigSectionFactory(), $data);
     $obj = Factory::getConfigSectionFactory()->get($id);
     $this->assertNotNull($obj);
+    Util::checkOrCreateInitialObject(Factory::getConfigSectionFactory(), ['configSectionId' => $id, 'sectionName' => 'Changed']);
+    $obj = Factory::getConfigSectionFactory()->get($id);
+    $this->assertNotNull($obj);
+    $this->assertEquals('Skip Test', $obj->getSectionName());
     Factory::getConfigSectionFactory()->delete($obj);
   }
 
@@ -979,6 +984,47 @@ final class UtilTest extends TestBase {
     $this->assertEquals('https://example.com/test.7z', $obj->getDownloadUrl());
     $this->assertEquals('testHashcat', $obj->getBinaryName());
     $this->assertNull($obj->getFilename());
+
+    Factory::getCrackerBinaryFactory()->delete($obj);
+    Factory::getCrackerBinaryTypeFactory()->delete(Factory::getCrackerBinaryTypeFactory()->get($typeId));
+  }
+
+  /**
+   * checkOrCreateInitialObject updates the values of an existing entry when
+   * $updateIfExists is set, as the setup does for cracker binaries seeded by migrations.
+   *
+   * @throws Exception
+   */
+  public function testCheckOrCreateInitialObjectUpdatesExistingCrackerBinary(): void {
+    $typeId = 9012;
+    $typeData = ['crackerBinaryTypeId' => $typeId, 'typeName' => 'binTypeUpdate', 'isChunkingAvailable' => 0];
+    Util::checkOrCreateInitialObject(Factory::getCrackerBinaryTypeFactory(), $typeData);
+
+    $id = 9013;
+    $data = [
+      'crackerBinaryId' => $id,
+      'crackerBinaryTypeId' => $typeId,
+      'version' => '7.0.0',
+      'downloadUrl' => 'https://example.com/old.7z',
+      'binaryName' => 'testHashcat',
+      'filename' => null,
+      'accessGroupId' => 1
+    ];
+    Util::checkOrCreateInitialObject(Factory::getCrackerBinaryFactory(), $data);
+
+    $data['version'] = '8.0.0';
+    $data['downloadUrl'] = 'https://example.com/new.7z';
+    Util::checkOrCreateInitialObject(Factory::getCrackerBinaryFactory(), $data, true);
+
+    $obj = Factory::getCrackerBinaryFactory()->get($id);
+    $this->assertNotNull($obj);
+    $this->assertEquals($id, $obj->getId());
+    $this->assertEquals($typeId, $obj->getCrackerBinaryTypeId());
+    $this->assertEquals('8.0.0', $obj->getVersion());
+    $this->assertEquals('https://example.com/new.7z', $obj->getDownloadUrl());
+    $this->assertEquals('testHashcat', $obj->getBinaryName());
+    $this->assertNull($obj->getFilename());
+    $this->assertEquals(1, $obj->getAccessGroupId());
 
     Factory::getCrackerBinaryFactory()->delete($obj);
     Factory::getCrackerBinaryTypeFactory()->delete(Factory::getCrackerBinaryTypeFactory()->get($typeId));

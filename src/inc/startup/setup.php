@@ -196,13 +196,22 @@ if ($initialSetup === true) {
     Factory::getApiGroupFactory(),
     Factory::getAgentBinaryFactory(),
     Factory::getCrackerBinaryTypeFactory(),
-    Factory::getCrackerBinaryFactory(),
     Factory::getPreprocessorFactory(),
   ];
   foreach ($factories as $factory) {
     foreach ($objects[$factory->getModelName()] as $object) {
       Util::checkOrCreateInitialObject($factory, $object);
     }
+  }
+  // Note: The following block is needed/relevant until the next migration generation, then such
+  // migrations will not happen anymore.
+  //
+  // The hashcat binary is already seeded by the initial migration with the version which
+  // was current when the migration was created. On fresh setups the entry in setup.json is
+  // authoritative, so the seeded entry is updated in place to the values given there.
+  $crackerBinaryFactory = Factory::getCrackerBinaryFactory();
+  foreach ($objects[$crackerBinaryFactory->getModelName()] as $object) {
+    Util::checkOrCreateInitialObject($crackerBinaryFactory, $object, true);
   }
   // insert hashtypes
   foreach ($hashtypes as $hashtype) {
