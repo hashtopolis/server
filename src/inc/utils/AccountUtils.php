@@ -6,11 +6,9 @@ use Exception;
 use Hashtopolis\inc\Encryption;
 use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\Factory;
-use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DLogEntryIssuer;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\SConfig;
 use Hashtopolis\inc\Util;
 
 class AccountUtils {
@@ -30,15 +28,28 @@ class AccountUtils {
   }
   
   /**
+   * Rejects a session lifetime (in seconds) a user may not have.
+   *
+   * @param int $lifetime
+   * @throws HTException
+   */
+  public static function validateSessionLifetime(int $lifetime): void {
+    $min = RefreshTokenUtils::MIN_LIFETIME_SECONDS;
+    $max = RefreshTokenUtils::maxLifetimeSeconds();
+
+    if ($lifetime < $min || $lifetime > $max) {
+      throw new HTException("Lifetime must be at least " . ($min / 3600) . " hours and at most " . ($max / 3600) . " hours!");
+    }
+  }
+
+  /**
    * @param int $lifetime
    * @param User $user
    * @throws HTException
    * @throws Exception
    */
   public static function updateSessionLifetime(int $lifetime, User $user): void {
-    if ($lifetime < 60 || $lifetime > SConfig::getInstance()->getVal(DConfig::MAX_SESSION_LENGTH) * 3600) {
-      throw new HTException("Lifetime must be larger than 1 minute and smaller than " . SConfig::getInstance()->getVal(DConfig::MAX_SESSION_LENGTH) . " hours!");
-    }
+    self::validateSessionLifetime($lifetime);
     
     Factory::getUserFactory()->set($user, User::SESSION_LIFETIME, $lifetime);
   }
