@@ -1745,13 +1745,17 @@ class Util {
   
   /**
    * Checks if a given initial object data with this ID exists and if not, creates it.
+   * If it exists and $updateIfExists is set, the existing entry is updated with the given data.
    *
    * @throws Exception
    */
-  public static function checkOrCreateInitialObject(AbstractModelFactory $factory, array $data): void {
+  public static function checkOrCreateInitialObject(AbstractModelFactory $factory, array $data, bool $updateIfExists = false): void {
     $object = $factory->createObjectFromDict($data);
     $check = $factory->get($object->getId());
     if ($check !== null) {
+      if ($updateIfExists) {
+        $factory->update($object);
+      }
       return;
     }
     $factory->save($object);
