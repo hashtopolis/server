@@ -7,7 +7,7 @@ The release changelogs are available at the corresponding release for the backen
 
 ## Backend Legacy Changelog
 
-The following was the legacy changelog for the backend used until before the 1.0.0 release.
+The following was the legacy changelog for the backend used until before the 1.0.0 release:
 
 ### v1.0.0-rc3 -> v1.0.0-rc4
 
