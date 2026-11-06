@@ -73,7 +73,24 @@ class Util {
     }
     return $split[sizeof($split) - 1];
   }
-  
+
+  /**
+   * Extracts the agent binary id from a filename-terminated download path such
+   * as "/download/1/hashtopolis.zip" (the PATH_INFO of agents.php). The trailing
+   * filename segment is only there so clients name the saved file correctly; the
+   * numeric id is what selects the binary. Returns null if the path does not
+   * match this shape.
+   *
+   * @param string|null $pathInfo
+   * @return int|null
+   */
+  public static function getAgentDownloadId(?string $pathInfo): ?int {
+    if ($pathInfo !== null && preg_match('#^/download/([0-9]+)(?:/|$)#', $pathInfo, $matches)) {
+      return (int)$matches[1];
+    }
+    return null;
+  }
+
   /**
    * Downloads the data at the given url and saves it at the specified destination.
    * It will overwrite files if they already exist.
