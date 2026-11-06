@@ -32,7 +32,7 @@ class FileFactory extends AbstractModelFactory {
    * @return File
    */
   function getNullObject(): File {
-    return new File(-1, null, null, null, null, null, null);
+    return new File(-1, null, null, null, null, null, null, null);
   }
   
   /**
@@ -45,6 +45,6 @@ class FileFactory extends AbstractModelFactory {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
-    return new File($dict['fileid'], $dict['filename'], $dict['size'], $dict['issecret'], $dict['filetype'], $dict['accessgroupid'], $dict['linecount']);
+    return new File($dict['fileid'], $dict['filename'], $dict['size'], $dict['issecret'], $dict['filetype'], $dict['accessgroupid'], $dict['linecount'], $dict['checksum']);
   }
 }

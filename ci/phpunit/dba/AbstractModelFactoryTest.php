@@ -1012,9 +1012,9 @@ final class AbstractModelFactoryTest extends TestBase {
     $accessGroup2 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup2' . $testId));
     $this->assertTrue($accessGroup1 instanceof AccessGroup);
     
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testId, 1, 0, 0, $accessGroup1->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testId, 1, 0, 0, $accessGroup2->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testId, 1, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testId, 1, 0, 0, $accessGroup1->getId(), 1, null));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testId, 1, 0, 0, $accessGroup2->getId(), 1, null));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testId, 1, 0, 0, $accessGroup1->getId(), 1, null));
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup1->getGroupName(), "=", Factory::getAccessGroupFactory());
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
@@ -1046,9 +1046,9 @@ final class AbstractModelFactoryTest extends TestBase {
     $accessGroup2 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup2' . $testId));
     $this->assertTrue($accessGroup1 instanceof AccessGroup);
     
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testId, 1, 0, 0, $accessGroup1->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testId, 2, 0, 0, $accessGroup2->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testId, 3, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testId, 1, 0, 0, $accessGroup1->getId(), 1, null));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testId, 2, 0, 0, $accessGroup2->getId(), 1, null));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testId, 3, 0, 0, $accessGroup1->getId(), 1, null));
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup1->getGroupName(), "=", Factory::getAccessGroupFactory());
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
@@ -1081,10 +1081,10 @@ final class AbstractModelFactoryTest extends TestBase {
     $accessGroup2 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'testgroup2' . $testId));
     $this->assertTrue($accessGroup1 instanceof AccessGroup);
     
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testId, 1, 0, 0, $accessGroup1->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testId, 2, 0, 0, $accessGroup2->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testId, 3, 0, 0, $accessGroup1->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file4' . $testId, 4, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1' . $testId, 1, 0, 0, $accessGroup1->getId(), 1, null));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2' . $testId, 2, 0, 0, $accessGroup2->getId(), 1, null));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file3' . $testId, 3, 0, 0, $accessGroup1->getId(), 1, null));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file4' . $testId, 4, 0, 0, $accessGroup1->getId(), 1, null));
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup1->getGroupName(), "=", Factory::getAccessGroupFactory());
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
@@ -1323,8 +1323,8 @@ final class AbstractModelFactoryTest extends TestBase {
     $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag1_' . $testId));
     $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag2_' . $testId));
     
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1_' . $testId, 1, 0, 0, $accessGroup1->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2_' . $testId, 2, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1_' . $testId, 1, 0, 0, $accessGroup1->getId(), 1, null));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2_' . $testId, 2, 0, 0, $accessGroup1->getId(), 1, null));
     
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroup::ACCESS_GROUP_ID);
     $filenames = Factory::getFileFactory()->columnFilter(
@@ -1348,8 +1348,8 @@ final class AbstractModelFactoryTest extends TestBase {
     $accessGroup1 = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag1_' . $testId));
     $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag2_' . $testId));
     
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1_' . $testId, 10, 0, 0, $accessGroup1->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2_' . $testId, 20, 0, 0, $accessGroup1->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1_' . $testId, 10, 0, 0, $accessGroup1->getId(), 1, null));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2_' . $testId, 20, 0, 0, $accessGroup1->getId(), 1, null));
     
     $jF = new JoinFilter(Factory::getAccessGroupFactory(), File::ACCESS_GROUP_ID, AccessGroup::ACCESS_GROUP_ID);
     $aggregations = [
@@ -1375,7 +1375,7 @@ final class AbstractModelFactoryTest extends TestBase {
     $testId = uniqid();
     
     $accessGroup = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag_' . $testId));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file_' . $testId, 1, 0, 0, $accessGroup->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file_' . $testId, 1, 0, 0, $accessGroup->getId(), 1, null));
     $this->assertTrue($accessGroup instanceof AccessGroup);
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup->getGroupName(), '=', Factory::getAccessGroupFactory());
@@ -1401,8 +1401,8 @@ final class AbstractModelFactoryTest extends TestBase {
     $testId = uniqid();
     
     $accessGroup = $this->createDatabaseObject(Factory::getAccessGroupFactory(), new AccessGroup(null, 'ag_' . $testId));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1_' . $testId, 1, 0, 0, $accessGroup->getId(), 1));
-    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2_' . $testId, 2, 0, 0, $accessGroup->getId(), 1));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file1_' . $testId, 1, 0, 0, $accessGroup->getId(), 1, null));
+    $this->createDatabaseObject(Factory::getFileFactory(), new File(null, 'file2_' . $testId, 2, 0, 0, $accessGroup->getId(), 1, null));
     $this->assertTrue($accessGroup instanceof AccessGroup);
     
     $qF = new QueryFilter(AccessGroup::GROUP_NAME, $accessGroup->getGroupName(), '=', Factory::getAccessGroupFactory());

@@ -253,8 +253,11 @@ class HashlistUtils {
     fclose($wordlistFile);
     
     //add file to files list
-    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), DFileType::WORDLIST, $hashlist->getAccessGroupId(), $wordCount);
+    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), DFileType::WORDLIST, $hashlist->getAccessGroupId(), $wordCount, null);
     $file = Factory::getFileFactory()->save($file);
+    if ($file !== null) {
+      FileChecksumUtils::enqueue($file->getId());
+    }
     # TODO: returning wordCount and wordlistName are not really required here as the name and the count are already given in the file object
     return [$wordCount, $wordlistName, $file];
   }
@@ -795,8 +798,12 @@ class HashlistUtils {
     fclose($file);
     usleep(1000000);
     
-    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), DFileType::OTHER, $hashlist->getAccessGroupId(), $numEntries);
-    return Factory::getFileFactory()->save($file);
+    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), DFileType::OTHER, $hashlist->getAccessGroupId(), $numEntries, null);
+    $file = Factory::getFileFactory()->save($file);
+    if ($file !== null) {
+      FileChecksumUtils::enqueue($file->getId());
+    }
+    return $file;
   }
   
   /**
@@ -1167,8 +1174,12 @@ class HashlistUtils {
     fclose($file);
     usleep(1000000);
     
-    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), DFileType::OTHER, $hashlist->getAccessGroupId(), $numEntries);
-    return Factory::getFileFactory()->save($file);
+    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), DFileType::OTHER, $hashlist->getAccessGroupId(), $numEntries, null);
+    $file = Factory::getFileFactory()->save($file);
+    if ($file !== null) {
+      FileChecksumUtils::enqueue($file->getId());
+    }
+    return $file;
   }
   
   /**

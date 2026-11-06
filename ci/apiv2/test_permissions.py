@@ -1700,7 +1700,10 @@ class PermissionsTest(BaseTest):
             headers=connector._headers,
         )
         self.assertEqual(response.status_code, 200, response.text)
-        jobs = [job for job in response.json()['data'] if job['attributes']['payload'].get('fileId') == file_obj.id]
+        # narrowed by job type, as creating the file also enqueues a checksum job for it
+        jobs = [job for job in response.json()['data']
+                if job['attributes']['payload'].get('fileId') == file_obj.id
+                and job['attributes']['jobType'] == 'recount_file']
         self.assertEqual(len(jobs), 1)
         response = requests.delete(
             connector._api_endpoint + f"/ui/backgroundJobs/{jobs[0]['id']}",
