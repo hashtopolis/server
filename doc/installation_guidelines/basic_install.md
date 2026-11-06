@@ -44,10 +44,10 @@ wget https://raw.githubusercontent.com/hashtopolis/server/master/env.mysql.examp
 **or**
 
 Download docker-compose.postgres.yml and env.postgres.example for PostgreSQL   
- ```
+```
 wget https://raw.githubusercontent.com/hashtopolis/server/master/docker-compose.postgres.yml -O docker-compose.yml
 wget https://raw.githubusercontent.com/hashtopolis/server/master/env.postgres.example -O .env
- ```
+```
 
 3. Edit the .env file and change the settings to your likings
 
