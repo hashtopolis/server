@@ -1,4 +1,8 @@
+import json
 import time
+
+import requests
+
 from hashtopolis import AgentAssignment, Chunk
 from hashtopolis_agent import ProcessState
 
@@ -136,3 +140,85 @@ class AgentStatTest(BaseTest):
         self.assertIsNotNone(chunk_id)
         self.assertEqual(chunk_id, dummy_agent.chunk['chunkId'])
         self.assertNotEqual(chunk_id, first_chunk_id)
+
+    def _get_assignment_attributes(self, assignment_id):
+        """Fetch the raw JSON:API resource object for an assignment and return its attributes dict.
+
+        We go through the connector directly (rather than the ORM-style wrapper) so we can assert on
+        the wire format the server actually emits, e.g. that chunkSpeed is present under
+        data.attributes and that it is null on a fresh assignment.
+        """
+        connector = AgentAssignment.objects.get_conn()
+        connector.authenticate()
+        uri = connector._api_endpoint + connector._model_uri + f'/{assignment_id}'
+        # A bodyless GET must NOT carry a Content-Type header: the JsonBodyParserMiddleware would
+        # try to json-decode the empty body and reject it with 400 "Malformed request".
+        headers = {k: v for k, v in connector._headers.items() if k.lower() != 'content-type'}
+        r = requests.get(uri, headers=headers)
+        self.assertEqual(r.status_code, 200,
+                         f"GET assignment failed: status={r.status_code} body={r.text}")
+        return r.json()['data']['attributes']
+
+    def test_chunkspeed_present_on_get(self):
+        """chunkSpeed must be exposed on a GET of an agent-assignment resource."""
+        model_obj = self.create_test_object()
+
+        # Exposed on the wire under data.attributes ...
+        attributes = self._get_assignment_attributes(model_obj.id)
+        self.assertIn('chunkSpeed', attributes,
+                      "chunkSpeed missing from agent-assignment GET attributes")
+
+        # ... and surfaced as a model attribute by the ORM-style client.
+        obj = self.model_class.objects.get(pk=model_obj.id)
+        self.assertTrue(hasattr(obj, 'chunkSpeed'),
+                        "chunkSpeed not surfaced as an attribute on the fetched model")
+
+    def test_chunkspeed_null_on_fresh_assignment(self):
+        """A freshly-created assignment has not benchmarked, so chunkSpeed must be null."""
+        model_obj = self.create_test_object()
+
+        attributes = self._get_assignment_attributes(model_obj.id)
+        self.assertIn('chunkSpeed', attributes)
+        self.assertIsNone(attributes['chunkSpeed'],
+                          "chunkSpeed should be null before the agent has benchmarked")
+
+    def test_chunkspeed_is_read_only(self):
+        """chunkSpeed is a read-only feature: a PATCH attempting to set it must not change it.
+
+        There is no generic read-only-scalar helper in utils.py, so this is written bespoke.
+        We issue a raw JSON:API PATCH so we fully control the payload (the ORM client would only
+        send the field if it had locally diverged). The server rejects writes to read-only keys
+        with HTTP 403 "immutable" (see AbstractBaseAPI::isAllowedToMutate); regardless of the exact
+        status, the authoritative assertion is that re-reading the object shows chunkSpeed unchanged.
+        """
+        model_obj = self.create_test_object()
+
+        # Precondition: fresh assignment, chunkSpeed is null.
+        before = self._get_assignment_attributes(model_obj.id)
+        self.assertIsNone(before['chunkSpeed'])
+
+        connector = AgentAssignment.objects.get_conn()
+        connector.authenticate()
+        uri = connector._api_endpoint + connector._model_uri + f'/{model_obj.id}'
+        headers = {**connector._headers, 'Content-Type': 'application/json'}
+        payload = {
+            'data': {
+                'type': 'AgentAssignment',
+                'id': model_obj.id,
+                'attributes': {'chunkSpeed': 999999},
+            },
+        }
+        r = requests.patch(uri, headers=headers, data=json.dumps(payload))
+
+        # The write must not succeed in changing the value. The server enforces this by rejecting
+        # the read-only key (403). We accept any non-2xx here and rely on the re-GET below as the
+        # definitive no-op check, so the test stays robust to how the rejection is surfaced.
+        self.assertNotIn(r.status_code, range(200, 300),
+                         f"PATCH of read-only chunkSpeed unexpectedly succeeded: "
+                         f"status={r.status_code} body={r.text}")
+
+        after = self._get_assignment_attributes(model_obj.id)
+        self.assertEqual(after['chunkSpeed'], before['chunkSpeed'],
+                         "chunkSpeed must be unchanged after a PATCH attempt (read-only)")
+        self.assertIsNone(after['chunkSpeed'],
+                          "chunkSpeed must remain null after a rejected/no-op PATCH")
