@@ -65,6 +65,7 @@ class ConfigUtils {
       DConfig::HASHES_PER_PAGE,
       DConfig::DEFAULT_PAGE_SIZE,
       DConfig::MAX_PAGE_SIZE => ['min' => 1],
+      DConfig::MAX_SESSION_LENGTH => ['min' => intdiv(RefreshTokenUtils::MIN_LIFETIME_SECONDS, 3600)],
       DConfig::EMAIL_SENDER,
       DConfig::CONTACT_EMAIL => ['maxLength' => 320],
       DConfig::FIELD_SEPARATOR => ['maxLength' => 1],

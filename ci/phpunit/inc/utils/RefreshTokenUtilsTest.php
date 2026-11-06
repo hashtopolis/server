@@ -65,18 +65,65 @@ final class RefreshTokenUtilsTest extends TestBase {
   }
 
   /**
-   * How long a login lasts is a runtime setting, so an administrator can change it from the interface
-   * without touching the deployment.
+   * @throws Exception
+   */
+  private function withUserLifetime(int $seconds): User {
+    return Factory::getUserFactory()->set($this->user, User::SESSION_LIFETIME, $seconds);
+  }
+
+  /**
+   * How long a login lasts is the session lifetime the user chose for their own account.
    *
    * @throws Exception
    */
-  public function testLifetimeFollowsTheMaxSessionLengthSetting(): void {
-    $this->withSessionLength('6', function (): void {
-      $this->assertSame(6 * 3600, RefreshTokenUtils::lifetimeSeconds());
+  public function testLifetimeFollowsTheUsersSessionLifetime(): void {
+    $this->withSessionLength('48', function (): void {
+      $user = $this->withUserLifetime(6 * 3600);
 
-      $plain = RefreshTokenUtils::issue($this->user->getId());
-      $token = $this->findToken($plain);
-      $this->assertEqualsWithDelta(time() + 6 * 3600, $token->getEndValid(), 5);
+      $plain = RefreshTokenUtils::issue($user);
+
+      $this->assertSame(6 * 3600, RefreshTokenUtils::lifetimeSeconds($user));
+      $this->assertEqualsWithDelta(time() + 6 * 3600, $this->findToken($plain)->getEndValid(), 5);
+    });
+  }
+
+  /**
+   * An administrator lowering maxSessionLength shortens sessions which were set up before.
+   *
+   * @throws Exception
+   */
+  public function testLifetimeIsCappedAtTheMaxSessionLengthSetting(): void {
+    $this->withSessionLength('6', function (): void {
+      $user = $this->withUserLifetime(24 * 3600);
+
+      $this->assertSame(6 * 3600, RefreshTokenUtils::lifetimeSeconds($user));
+    });
+  }
+
+  /**
+   * A refresh token shorter than an access token would expire before the client ever uses it.
+   *
+   * @throws Exception
+   */
+  public function testLifetimeIsRaisedToTheMinimum(): void {
+    $this->withSessionLength('48', function (): void {
+      $user = $this->withUserLifetime(3600);
+
+      $this->assertSame(RefreshTokenUtils::MIN_LIFETIME_SECONDS, RefreshTokenUtils::lifetimeSeconds($user));
+    });
+  }
+
+  /**
+   * A maxSessionLength below the minimum cannot push refresh tokens below the access token lifetime.
+   *
+   * @throws Exception
+   */
+  public function testMaxSessionLengthBelowTheMinimumIsRaised(): void {
+    $this->withSessionLength('1', function (): void {
+      $user = $this->withUserLifetime(RefreshTokenUtils::MIN_LIFETIME_SECONDS);
+
+      $this->assertSame(RefreshTokenUtils::MIN_LIFETIME_SECONDS, RefreshTokenUtils::maxLifetimeSeconds());
+      $this->assertSame(RefreshTokenUtils::MIN_LIFETIME_SECONDS, RefreshTokenUtils::lifetimeSeconds($user));
     });
   }
 
@@ -88,12 +135,12 @@ final class RefreshTokenUtilsTest extends TestBase {
    */
   public function testAnUnusableSessionLengthFallsBack(): void {
     $this->withSessionLength('0', function (): void {
-      $this->assertSame(RefreshTokenUtils::FALLBACK_LIFETIME_HOURS * 3600, RefreshTokenUtils::lifetimeSeconds());
+      $this->assertSame(RefreshTokenUtils::FALLBACK_LIFETIME_HOURS * 3600, RefreshTokenUtils::maxLifetimeSeconds());
     });
   }
 
   public function testIssueStoresOnlyTheHashOfTheToken(): void {
-    $plain = RefreshTokenUtils::issue($this->user->getId());
+    $plain = RefreshTokenUtils::issue($this->user);
     
     $token = $this->findToken($plain);
     $this->assertInstanceOf(RefreshToken::class, $token);
@@ -104,14 +151,14 @@ final class RefreshTokenUtilsTest extends TestBase {
   }
   
   public function testIssueStartsANewFamilyPerLogin(): void {
-    $first = $this->findToken(RefreshTokenUtils::issue($this->user->getId()));
-    $second = $this->findToken(RefreshTokenUtils::issue($this->user->getId()));
+    $first = $this->findToken(RefreshTokenUtils::issue($this->user));
+    $second = $this->findToken(RefreshTokenUtils::issue($this->user));
     
     $this->assertNotSame($first->getFamilyId(), $second->getFamilyId());
   }
   
   public function testRotateConsumesTheTokenAndKeepsTheFamily(): void {
-    $plain = RefreshTokenUtils::issue($this->user->getId());
+    $plain = RefreshTokenUtils::issue($this->user);
     $original = $this->findToken($plain);
     
     $rotated = RefreshTokenUtils::rotate($plain);
@@ -133,7 +180,7 @@ final class RefreshTokenUtilsTest extends TestBase {
   }
   
   public function testRotateRejectsAnExpiredToken(): void {
-    $plain = RefreshTokenUtils::issue($this->user->getId());
+    $plain = RefreshTokenUtils::issue($this->user);
     Factory::getRefreshTokenFactory()->set($this->findToken($plain), RefreshToken::END_VALID, time() - 1);
     
     $this->expectException(HttpUnauthorized::class);
@@ -141,7 +188,7 @@ final class RefreshTokenUtilsTest extends TestBase {
   }
   
   public function testReplayRevokesTheWholeFamily(): void {
-    $plain = RefreshTokenUtils::issue($this->user->getId());
+    $plain = RefreshTokenUtils::issue($this->user);
     $rotated = RefreshTokenUtils::rotate($plain);
     
     try {
@@ -163,7 +210,7 @@ final class RefreshTokenUtilsTest extends TestBase {
        checks it is unconsumed, so that concurrent requests cannot both find it unused. Running the
        claim twice stands in for two requests arriving together; only one may report having made the
        transition. */
-    $plain = RefreshTokenUtils::issue($this->user->getId());
+    $plain = RefreshTokenUtils::issue($this->user);
     $token = $this->findToken($plain);
     
     $claim = fn(): bool => Factory::getRefreshTokenFactory()->compareAndSet(
@@ -180,7 +227,7 @@ final class RefreshTokenUtilsTest extends TestBase {
   }
   
   public function testLosingTheClaimLeavesTheWinnersTimestampAlone(): void {
-    $plain = RefreshTokenUtils::issue($this->user->getId());
+    $plain = RefreshTokenUtils::issue($this->user);
     $token = $this->findToken($plain);
     
     // Stand in for a request that already consumed the token a moment ago
@@ -198,7 +245,7 @@ final class RefreshTokenUtilsTest extends TestBase {
   }
   
   public function testARevokedTokenCannotBeClaimed(): void {
-    $plain = RefreshTokenUtils::issue($this->user->getId());
+    $plain = RefreshTokenUtils::issue($this->user);
     RefreshTokenUtils::revoke($plain);
     
     try {
@@ -215,7 +262,7 @@ final class RefreshTokenUtilsTest extends TestBase {
    * treated as the leak it might be. Clients avoid this by serialising their own refreshes.
    */
   public function testASecondExchangeIsAReplayEvenImmediately(): void {
-    $plain = RefreshTokenUtils::issue($this->user->getId());
+    $plain = RefreshTokenUtils::issue($this->user);
     
     $first = RefreshTokenUtils::rotate($plain);
     
@@ -231,7 +278,7 @@ final class RefreshTokenUtilsTest extends TestBase {
   }
   
   public function testRotateRefusesADeactivatedUser(): void {
-    $plain = RefreshTokenUtils::issue($this->user->getId());
+    $plain = RefreshTokenUtils::issue($this->user);
     Factory::getUserFactory()->set($this->user, User::IS_VALID, 0);
     
     try {
@@ -245,8 +292,8 @@ final class RefreshTokenUtilsTest extends TestBase {
   }
   
   public function testRevokeEndsOnlyItsOwnSession(): void {
-    $sessionA = RefreshTokenUtils::issue($this->user->getId());
-    $sessionB = RefreshTokenUtils::issue($this->user->getId());
+    $sessionA = RefreshTokenUtils::issue($this->user);
+    $sessionB = RefreshTokenUtils::issue($this->user);
     
     RefreshTokenUtils::revoke($sessionA);
     
@@ -260,8 +307,8 @@ final class RefreshTokenUtilsTest extends TestBase {
   }
   
   public function testRevokeAllForUserEndsEverySession(): void {
-    $sessionA = RefreshTokenUtils::issue($this->user->getId());
-    $sessionB = RefreshTokenUtils::issue($this->user->getId());
+    $sessionA = RefreshTokenUtils::issue($this->user);
+    $sessionB = RefreshTokenUtils::issue($this->user);
     
     RefreshTokenUtils::revokeAllForUser($this->user->getId());
     
@@ -270,8 +317,8 @@ final class RefreshTokenUtilsTest extends TestBase {
   }
   
   public function testPurgeExpiredKeepsTokensWhichCanStillBeExchanged(): void {
-    $live = RefreshTokenUtils::issue($this->user->getId());
-    $stale = RefreshTokenUtils::issue($this->user->getId());
+    $live = RefreshTokenUtils::issue($this->user);
+    $stale = RefreshTokenUtils::issue($this->user);
     Factory::getRefreshTokenFactory()->set($this->findToken($stale), RefreshToken::END_VALID, time() - 1);
     
     RefreshTokenUtils::purgeExpired($this->user->getId());
@@ -281,8 +328,8 @@ final class RefreshTokenUtilsTest extends TestBase {
   }
   
   public function testDeleteAllForUserLeavesNothingBehind(): void {
-    RefreshTokenUtils::issue($this->user->getId());
-    RefreshTokenUtils::issue($this->user->getId());
+    RefreshTokenUtils::issue($this->user);
+    RefreshTokenUtils::issue($this->user);
     
     RefreshTokenUtils::deleteAllForUser($this->user->getId());
     
@@ -293,7 +340,7 @@ final class RefreshTokenUtilsTest extends TestBase {
     // Deliberately not registered for teardown: the test deletes the user itself
     $name = 'rt_victim_' . uniqid();
     $victim = UserUtils::createUser($name, $name . '@example.com', $this->createRightGroup()->getId(), $this->adminUser);
-    $plain = RefreshTokenUtils::issue($victim->getId());
+    $plain = RefreshTokenUtils::issue($victim);
     
     UserUtils::deleteUser($victim->getId(), $this->adminUser);
     
@@ -301,7 +348,7 @@ final class RefreshTokenUtilsTest extends TestBase {
   }
   
   public function testDisablingAUserRevokesItsRefreshTokens(): void {
-    $plain = RefreshTokenUtils::issue($this->user->getId());
+    $plain = RefreshTokenUtils::issue($this->user);
     
     UserUtils::disableUser($this->user->getId(), $this->adminUser);
     
