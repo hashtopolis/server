@@ -226,4 +226,42 @@ final class CrackerScanUtilsTest extends TestBase {
     $this->assertFalse(CrackerScanUtils::versionLessThan([6, 2, 7], [6, 2, 6]));
     $this->assertSame('6.2.5', CrackerScanUtils::formatVersion([6, 2, 5]));
   }
+
+  // The plain name of the binary is tried first, then the two bitness
+  // suffixed variants an agent falls back to, so an archive which only
+  // ships 'hashcat64.bin' or 'hashcat32.bin' is accepted as well.
+  public function testBinaryCandidates(): void {
+    $this->assertSame(
+      ['hashcat.bin', 'hashcat64.bin', 'hashcat32.bin'],
+      CrackerScanUtils::binaryCandidates('hashcat')
+    );
+    // a name which already carries the bitness is a base name of its own
+    $this->assertSame(
+      ['hashcat64.bin', 'hashcat6464.bin', 'hashcat6432.bin'],
+      CrackerScanUtils::binaryCandidates('hashcat64')
+    );
+  }
+
+  // The binary name is user input: names which are not a plain basename
+  // could escape the unpack directory, they yield no candidate at all.
+  public function testBinaryCandidatesRejectsNonBasenames(): void {
+    $this->assertSame([], CrackerScanUtils::binaryCandidates('../hashcat'));
+    $this->assertSame([], CrackerScanUtils::binaryCandidates('sub/hashcat'));
+    $this->assertSame([], CrackerScanUtils::binaryCandidates('/etc/passwd'));
+    $this->assertSame([], CrackerScanUtils::binaryCandidates('..'));
+    $this->assertSame([], CrackerScanUtils::binaryCandidates('hash..cat'));
+  }
+
+  // Glob metacharacters in the binary name stay literal: the candidates are
+  // filenames which are checked directly, they are never used as a pattern.
+  public function testBinaryCandidatesKeepsGlobMetacharactersLiteral(): void {
+    $this->assertSame(
+      ['hash*cat.bin', 'hash*cat64.bin', 'hash*cat32.bin'],
+      CrackerScanUtils::binaryCandidates('hash*cat')
+    );
+    $this->assertSame(
+      ['hash[0-9]cat.bin', 'hash[0-9]cat64.bin', 'hash[0-9]cat32.bin'],
+      CrackerScanUtils::binaryCandidates('hash[0-9]cat')
+    );
+  }
 }

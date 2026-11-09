@@ -42,7 +42,7 @@ Whether it is the first version for a new cracker or to update an existing crack
 
 The three following information are required to deploy a new version.
 
-- **Binary Base Name**: this is how the cracker should be called from the command line by the agent. In our example, the hashcat cracker is called with ```hashcat```. 
+- **Binary Base Name**: this is how the cracker should be called from the command line by the agent. In our example, the hashcat cracker is called with ```hashcat```. The agent appends the extension of its operating system to this name, and falls back to the name with its bitness inserted before the extension when that file is missing, so an archive which ships ```hashcat64.bin``` or ```hashcat32.bin``` instead of ```hashcat.bin``` works with the base name ```hashcat``` as well. The hashtype scan of the binary accepts the same names.
 - **Binary Version**: the version number of the cracker should be inserted here. The backend will order them in decreasing order. The latest version will be selected by default for this cracker.
 - **Download URL**: this specifies from where the agent should download the binary package. In the case of our example, it is directly downloaded from the hashcat webpage. 
 

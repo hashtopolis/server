@@ -110,8 +110,9 @@ class CrackerScanUtils {
    * binaries. Hashcat 6.2.6 and newer print the report as JSON when
    * '--machine-readable' is passed as well, older versions accept the flag
    * but ignore it and print plain text, so it is only passed for versions
-   * which use it. The binary is searched recursively in the unpack
-   * directory, hashcat archives contain a version subdirectory. The
+   * which use it. The binary is searched in the unpack directory and in its
+   * immediate subdirectories, hashcat archives contain a version
+   * subdirectory; binaryCandidates() lists the accepted filenames. The
    * invocation is limited by EXAMPLE_HASHES_TIMEOUT.
    *
    * @param string $unpackDir directory the archive was unpacked into
@@ -123,10 +124,17 @@ class CrackerScanUtils {
   public static function runExampleHashes(string $unpackDir, string $binaryName, bool $machineReadable = true): string {
     $binaryPath = self::findBinary($unpackDir, $binaryName);
     if ($binaryPath === null) {
-      throw new HTException("Could not find '$binaryName.bin' in the archive of the cracker binary!");
+      $candidates = self::binaryCandidates($binaryName);
+      if (sizeof($candidates) == 0) {
+        throw new HTException("The binary name '$binaryName' of the cracker is not a plain filename!");
+      }
+      throw new HTException(
+        "Could not find any of '" . implode("', '", $candidates) .
+          "' in the archive of the cracker binary!"
+      );
     }
     if (!chmod($binaryPath, 0755) && !is_executable($binaryPath)) {
-      throw new HTException("Could not make '$binaryName.bin' executable!");
+      throw new HTException("Could not make '" . basename($binaryPath) . "' executable!");
     }
     $args = ['--example-hashes'];
     if ($machineReadable) {
@@ -430,25 +438,58 @@ class CrackerScanUtils {
   }
 
   /**
-   * Finds the '<binaryName>.bin' executable in the unpack directory, searching
-   * one level of subdirectories as well because hashcat archives contain a
-   * version subdirectory.
+   * Filenames the executable of a cracker can have inside its archive, in
+   * the order they are tried.
+   *
+   * The name stored for a cracker binary is a base name: an agent appends
+   * the extension of its operating system to it (DownloadBinaryAction) and
+   * looks for that file in the unpacked archive. When the file is missing,
+   * the agent falls back to the name with the bitness of its host inserted
+   * before the extension — the layout hashcat used up to 5.1.0,
+   * 'hashcat64.bin' and 'hashcat32.bin' — so an archive shipping only the
+   * suffixed name runs on an agent just fine. The scan accepts both bitness
+   * variants as well, so it does not fail on an archive the agents can run.
+   * Only the '.bin' extension is covered: the scan executes the binary on
+   * this server, so a Windows- or macOS-only archive cannot be scanned
+   * regardless of the name it is found under.
+   *
+   * @param string $binaryName binary name of the cracker, e.g. 'hashcat'
+   * @return array<string> candidate filenames, empty when the name is not a plain basename
    */
-  private static function findBinary(string $unpackDir, string $binaryName): ?string {
+  public static function binaryCandidates(string $binaryName): array {
     // the binary name is user input, it must be a plain basename so the
     // candidates cannot escape the unpack directory with ../
     if ($binaryName !== basename($binaryName) || str_contains($binaryName, '..')) {
-      return null;
+      return [];
     }
-    $candidates = [
-      $unpackDir . '/' . $binaryName . '.bin',
+    return [
+      $binaryName . '.bin',
+      $binaryName . '64.bin',
+      $binaryName . '32.bin',
     ];
-    foreach (glob($unpackDir . '/*/' . $binaryName . '.bin') ?: [] as $path) {
-      $candidates[] = $path;
+  }
+
+  /**
+   * Finds the executable of the cracker in the unpack directory, looking for
+   * every name of binaryCandidates() in the directory itself and in its
+   * immediate subdirectories, because hashcat archives contain a version
+   * subdirectory. The candidates are tried in order, so the plain name wins
+   * over a bitness-suffixed one wherever the two are placed.
+   */
+  private static function findBinary(string $unpackDir, string $binaryName): ?string {
+    // the subdirectories are listed instead of globbing for the candidate
+    // itself: the binary name is user input and glob() would treat '*', '?'
+    // and '[' in it as pattern metacharacters
+    $directories = [$unpackDir];
+    foreach (glob($unpackDir . '/*', GLOB_ONLYDIR) ?: [] as $subDirectory) {
+      $directories[] = $subDirectory;
     }
-    foreach ($candidates as $path) {
-      if (file_exists($path)) {
-        return $path;
+    foreach (self::binaryCandidates($binaryName) as $candidate) {
+      foreach ($directories as $directory) {
+        $path = $directory . '/' . $candidate;
+        if (file_exists($path)) {
+          return $path;
+        }
       }
     }
     return null;

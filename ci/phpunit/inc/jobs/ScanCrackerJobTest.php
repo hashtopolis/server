@@ -305,6 +305,94 @@ final class ScanCrackerJobTest extends TestBase {
   }
 
   /**
+   * An archive which only ships the binary under its bitness suffixed name
+   * — the layout hashcat used up to 5.1.0 — is scanned as well. An agent
+   * falls back to that name when the plain one is missing, so such a binary
+   * runs on an agent and the scan must not fail on it.
+   *
+   * @throws Exception
+   */
+  public function testScanFindsBitness64SuffixedBinary(): void {
+    $this->assertBitnessSuffixedBinaryIsScanned('64');
+  }
+
+  /**
+   * The 32 bit variant of the suffixed name is accepted as well, so an
+   * archive of a 32 bit build does not fail the scan either.
+   *
+   * @throws Exception
+   */
+  public function testScanFindsBitness32SuffixedBinary(): void {
+    $this->assertBitnessSuffixedBinaryIsScanned('32');
+  }
+
+  /**
+   * Scans a binary configured with the plain base name 'fakecracker' whose
+   * archive only contains 'fakecracker<bitness>.bin', and asserts the scan
+   * found it and populated the associations.
+   *
+   * @param string $bitness bitness suffix of the name in the archive, '64' or '32'
+   * @throws Exception
+   */
+  private function assertBitnessSuffixedBinaryIsScanned(string $bitness): void {
+    $archive = $this->buildFakeArchive('fakecracker' . $bitness, self::MODES_OUTPUT_V1);
+    $binary = CrackerUtils::createBinaryFromUpload(
+      '1.0.0', 'fakecracker', $this->hashcatType()->getId(), 'inline',
+      base64_encode(file_get_contents($archive)), 1
+    );
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+    $this->trackBinary($binary);
+
+    $jobs = $this->pendingScanJobs($binary->getId());
+    $this->assertCount(1, $jobs);
+
+    BackgroundJobRunner::run();
+
+    $job = Factory::getBackgroundJobFactory()->get($jobs[0]->getId());
+    $this->assertSame(DBackgroundJobStatus::DONE, $job->getStatus(), $job->getResultMessage());
+    $this->assertSame(0, $job->getExitCode());
+    // the report of the binary was read, so the associations are populated
+    $this->assertEquals([0, 99901, 99902], $this->associatedHashtypeIds($binary->getId()));
+
+    CrackerUtils::deleteBinary($binary->getId());
+    $this->cleanupScanJobs($binary->getId());
+  }
+
+  /**
+   * An archive which contains no binary under any of the accepted names
+   * fails the scan, and the message names the filenames which were looked
+   * for, so the configured base name can be corrected.
+   *
+   * @throws Exception
+   */
+  public function testScanOfMissingBinaryReportsTriedNames(): void {
+    // the archive ships 'somethingelse.bin', which none of the candidates of
+    // the configured name 'fakecracker' matches
+    $archive = $this->buildFakeArchive('somethingelse', self::MODES_OUTPUT_V1);
+    $binary = CrackerUtils::createBinaryFromUpload(
+      '1.0.0', 'fakecracker', $this->hashcatType()->getId(), 'inline',
+      base64_encode(file_get_contents($archive)), 1
+    );
+    $this->registerDatabaseObject(Factory::getCrackerBinaryFactory(), $binary);
+    $this->trackBinary($binary);
+
+    BackgroundJobRunner::run();
+
+    $jobs = $this->scanJobsOfBinary($binary->getId());
+    $this->assertSame(DBackgroundJobStatus::FAILED, $jobs[0]->getStatus(), $jobs[0]->getResultMessage());
+    $this->assertSame(-1, $jobs[0]->getExitCode());
+    $message = $jobs[0]->getResultMessage();
+    $this->assertStringContainsString('fakecracker.bin', $message);
+    $this->assertStringContainsString('fakecracker64.bin', $message);
+    $this->assertStringContainsString('fakecracker32.bin', $message);
+    // nothing was associated
+    $this->assertEquals([], $this->associatedHashtypeIds($binary->getId()));
+
+    CrackerUtils::deleteBinary($binary->getId());
+    $this->cleanupScanJobs($binary->getId());
+  }
+
+  /**
    * A hashcat version before 6.2.6 does not print a JSON report with
    * '--machine-readable': the scan reads the plain text report without the
    * flag and takes the salt and slow-hash details of the modes from it.
