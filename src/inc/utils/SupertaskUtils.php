@@ -90,7 +90,7 @@ class SupertaskUtils {
     $supertask = new Supertask(null, $name, $crackerBinaryTypeId);
     $supertask = Factory::getSupertaskFactory()->save($supertask);
     foreach ($pretasks as $preTask) {
-      $relation = new SupertaskPretask(null, $supertask->getId(), $preTask->getId());
+      $relation = new SupertaskPretask(null, $supertask->getId(), $preTask->getId(), $preTask->getPriority());
       Factory::getSupertaskPretaskFactory()->save($relation);
     }
     Factory::getAgentFactory()->getDB()->commit();
@@ -231,11 +231,28 @@ class SupertaskUtils {
    * @throws Exception
    */
   public static function getPretasksOfSupertask(int $supertaskId): array {
-    $oF = new OrderFilter(Pretask::PRIORITY, "DESC", Factory::getPretaskFactory());
+    $oF = new OrderFilter(SupertaskPretask::PRIORITY, "DESC", Factory::getSupertaskPretaskFactory());
     $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertaskId, "=", Factory::getSupertaskPretaskFactory());
     $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
     $joined = Factory::getPretaskFactory()->filter([Factory::ORDER => $oF, Factory::JOIN => $jF, Factory::FILTER => $qF]);
     return $joined[Factory::getPretaskFactory()->getModelName()];
+  }
+  
+  /**
+   * The associations of a supertask with its pretasks, keyed by pretask ID.
+   *
+   * @param int $supertaskId
+   * @return SupertaskPretask[]
+   * @throws Exception
+   */
+  public static function getSupertaskPretasksOfSupertask(int $supertaskId): array {
+    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertaskId, "=");
+    $supertaskPretasks = Factory::getSupertaskPretaskFactory()->filter([Factory::FILTER => $qF]);
+    $byPretaskId = [];
+    foreach ($supertaskPretasks as $supertaskPretask) {
+      $byPretaskId[$supertaskPretask->getPretaskId()] = $supertaskPretask;
+    }
+    return $byPretaskId;
   }
   
   /**
@@ -284,6 +301,7 @@ class SupertaskUtils {
     $joined = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var Pretask[] $pretasks */
     $pretasks = $joined[Factory::getPretaskFactory()->getModelName()];
+    $supertaskPretasks = SupertaskUtils::getSupertaskPretasksOfSupertask($supertask->getId());
     foreach ($pretasks as $pretask) {
       if ($pretask->getCrackerBinaryTypeId() !== $cracker->getCrackerBinaryTypeId()) {
         $pretaskTypeId = $pretask->getCrackerBinaryTypeId();
@@ -301,8 +319,9 @@ class SupertaskUtils {
     $wrapperPriority = 0;
     $wrapperMaxAgents = 0;
     foreach ($pretasks as $pretask) {
-      if ($wrapperPriority == 0 || $wrapperPriority > $pretask->getPriority()) {
-        $wrapperPriority = $pretask->getPriority();
+      $priority = $supertaskPretasks[$pretask->getId()]->getPriority();
+      if ($wrapperPriority == 0 || $wrapperPriority > $priority) {
+        $wrapperPriority = $priority;
       }
     }
     
@@ -318,7 +337,7 @@ class SupertaskUtils {
         $pretask->getStatusTimer(),
         0,
         0,
-        $pretask->getPriority(),
+        $supertaskPretasks[$pretask->getId()]->getPriority(),
         $pretask->getMaxAgents(),
         $pretask->getColor(),
         $pretask->getIsSmall(),
@@ -379,7 +398,7 @@ class SupertaskUtils {
     $supertask = Factory::getSupertaskFactory()->save($supertask);
     
     foreach ($tasks as $pretask) {
-      $supertaskPretask = new SupertaskPretask(null, $supertask->getId(), $pretask->getId());
+      $supertaskPretask = new SupertaskPretask(null, $supertask->getId(), $pretask->getId(), $pretask->getPriority());
       Factory::getSupertaskPretaskFactory()->save($supertaskPretask);
     }
     
@@ -439,7 +458,7 @@ class SupertaskUtils {
     $supertask = new Supertask(null, $name, $crackerBinaryTypeId);
     $supertask = Factory::getSupertaskFactory()->save($supertask);
     foreach ($pretasks as $preTask) {
-      $relation = new SupertaskPretask(null, $supertask->getId(), $preTask->getId());
+      $relation = new SupertaskPretask(null, $supertask->getId(), $preTask->getId(), $preTask->getPriority());
       Factory::getSupertaskPretaskFactory()->save($relation);
     }
     Factory::getAgentFactory()->getDB()->commit();
@@ -592,7 +611,7 @@ class SupertaskUtils {
       $pretasks[] = $pretask;
       SupertaskUtils::checkPretaskBinaryTypeConsistency($pretasks);
     }
-    $supertaskPretask = new SupertaskPretask(null, $supertaskId, $pretaskId);
+    $supertaskPretask = new SupertaskPretask(null, $supertaskId, $pretaskId, $pretask->getPriority());
     Factory::getSupertaskPretaskFactory()->save($supertaskPretask);
   }
 }

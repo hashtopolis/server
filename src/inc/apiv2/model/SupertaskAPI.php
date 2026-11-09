@@ -125,6 +125,22 @@ class SupertaskAPI extends AbstractModelAPI {
   }
 
   /**
+   * A pretask enters a supertask with the priority it currently has, from then
+   * on the priority belongs to this supertask alone.
+   *
+   * @param string $relationName
+   * @param Supertask $baseItem
+   * @param Pretask $relationItem
+   * @return array
+   */
+  protected function getJunctionTableExtraFields(string $relationName, AbstractModel $baseItem, AbstractModel $relationItem): array {
+    if ($relationName !== 'pretasks') {
+      return parent::getJunctionTableExtraFields($relationName, $baseItem, $relationItem);
+    }
+    return [SupertaskPretask::PRIORITY => $relationItem->getPriority()];
+  }
+  
+  /**
    * Pretasks of a supertask must all be of the same cracker binary type, so
    * adding a pretask of a different type than the ones already associated is
    * rejected.
