@@ -61,6 +61,7 @@ use Hashtopolis\inc\apiv2\model\PreprocessorAPI;
 use Hashtopolis\inc\apiv2\model\PreTaskAPI;
 use Hashtopolis\inc\apiv2\model\SpeedAPI;
 use Hashtopolis\inc\apiv2\model\SupertaskAPI;
+use Hashtopolis\inc\apiv2\model\SupertaskPretaskAPI;
 use Hashtopolis\inc\apiv2\model\TaskAPI;
 use Hashtopolis\inc\apiv2\model\TaskWrapperAPI;
 use Hashtopolis\inc\apiv2\model\TaskWrapperDisplayAPI;
@@ -103,6 +104,7 @@ final class ApiRegistry {
     PreTaskAPI::class,
     SpeedAPI::class,
     SupertaskAPI::class,
+    SupertaskPretaskAPI::class,
     TaskAPI::class,
     TaskWrapperAPI::class,
     TaskWrapperDisplayAPI::class,
