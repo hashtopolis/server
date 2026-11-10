@@ -1,4 +1,4 @@
-from hashtopolis import Hashlist, Helper, File
+from hashtopolis import Hashlist, Helper, File, HashtopolisError
 from utils import BaseTest
 
 
@@ -41,7 +41,11 @@ class HashlistTest(BaseTest):
     def test_export_cracked_hashes(self):
         model_obj = self.create_test_object(file_id='001')
 
+        cracked = "cc03e747a6afbbcbf8be7668acfebee5:test123"
+
         helper = Helper()
+        helper.import_cracked_hashes(model_obj, 'paste', cracked, ':', 0)
+
         file = helper.export_cracked_hashes(model_obj)
 
         obj = File.objects.get(fileId=file.id)
@@ -49,6 +53,16 @@ class HashlistTest(BaseTest):
         self.assertIn('Pre-cracked_', obj.filename)
 
         self.delete_after_test(obj)
+
+    def test_export_cracked_hashes_no_cracked(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        helper = Helper()
+
+        with self.assertRaises(HashtopolisError) as e:
+            helper.export_cracked_hashes(model_obj)
+
+        self.assertEqual(e.exception.status_code, 400)
 
     def test_export_left_hashes(self):
         model_obj = self.create_test_object(file_id='001')
@@ -61,6 +75,19 @@ class HashlistTest(BaseTest):
         self.assertIn('Leftlist_', obj.filename)
 
         self.delete_after_test(obj)
+
+    def test_export_left_hashes_no_hashes_left(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        cracked = "cc03e747a6afbbcbf8be7668acfebee5:test123"
+
+        helper = Helper()
+        helper.import_cracked_hashes(model_obj, 'paste', cracked, ':', 0)
+
+        with self.assertRaises(HashtopolisError) as e:
+            helper.export_left_hashes(model_obj)
+
+        self.assertEqual(e.exception.status_code, 400)
 
     def test_export_wordlist(self):
         model_obj = self.create_test_object(file_id='001')
@@ -77,6 +104,16 @@ class HashlistTest(BaseTest):
         self.assertIn('Wordlist_', obj.filename)
 
         self.delete_after_test(obj)
+
+    def test_export_wordlist_no_cracked(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        helper = Helper()
+
+        with self.assertRaises(HashtopolisError) as e:
+            helper.export_wordlist(model_obj)
+
+        self.assertEqual(e.exception.status_code, 400)
 
     def test_import_cracked_hashes(self):
         model_obj = self.create_test_object(file_id='001')

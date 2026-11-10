@@ -1811,16 +1811,17 @@ class PermissionsTest(BaseTest):
         verifies those scopes are sufficient and that the returned file exists in the API
         with the filename prefix used by the corresponding export path.
         """
-        hashlist = self.create_hashlist(file_id='001')
+        leftlist_hashlist = self.create_hashlist(file_id='001')
+        cracked_hashlist = self.create_hashlist(file_id='001')
         cracked = 'cc03e747a6afbbcbf8be7668acfebee5:test123'
-        Helper().import_cracked_hashes(hashlist, 'paste', cracked, ':', 0)
+        Helper().import_cracked_hashes(cracked_hashlist, 'paste', cracked, ':', 0)
         helpers = [
-            ('exportCrackedHashes', 'Pre-cracked_'),
-            ('exportLeftHashes', 'Leftlist_'),
-            ('exportWordlist', 'Wordlist_'),
+            ('exportCrackedHashes', 'Pre-cracked_', cracked_hashlist),
+            ('exportLeftHashes', 'Leftlist_', leftlist_hashlist),
+            ('exportWordlist', 'Wordlist_', cracked_hashlist),
         ]
 
-        for helper_name, filename_prefix in helpers:
+        for helper_name, filename_prefix, hashlist in helpers:
             with self.subTest(helper=helper_name):
                 token = self.create_apitoken(extra_payload={'scopes': ['permHashlistRead', 'permHashRead', 'permFileCreate']})
 
