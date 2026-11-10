@@ -694,6 +694,7 @@ $CONF['SupertaskPretask'] = [
     ['name' => 'supertaskPretaskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'supertaskId', 'read_only' => True, 'type' => 'int', 'relation' => 'Supertask'],
     ['name' => 'pretaskId', 'read_only' => True, 'type' => 'int', 'relation' => 'Pretask'],
+    ['name' => 'priority', 'read_only' => False, 'type' => 'int'],
   ],
 ];
 $CONF['HashlistHashlist'] = [

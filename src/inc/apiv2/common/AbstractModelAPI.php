@@ -1768,6 +1768,21 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   }
   
   /**
+   * The columns a junction table carries beyond its primary key and the two
+   * foreign keys, for the association that is about to be created. Keyed by
+   * column name. The base implementation covers junction tables that have no
+   * such columns.
+   *
+   * @param string $relationName
+   * @param AbstractModel $baseItem
+   * @param AbstractModel $relationItem
+   * @return array
+   */
+  protected function getJunctionTableExtraFields(string $relationName, AbstractModel $baseItem, AbstractModel $relationItem): array {
+    return [];
+  }
+  
+  /**
    * POST request for the to many relationship link
    * @param Request $request
    * @param Response $response
@@ -1802,9 +1817,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     // check if the object queried exists
     $baseItem = $this->doFetch($args["id"]);
     
-    // TODO this ia an abstract way of adding to junction tables. This only works for intermediate tables
-    // that have 3 fields (1 primary key and 2 foreign keys to link the tables) for models that have intermediate
-    // tables with more than 3 fields, the postToManyRelationshipLink() function should be overridden.
+    /* Junction tables with columns beyond the primary key and the two foreign
+       keys get the values of those columns from getJunctionTableExtraFields(). */
     if (array_key_exists("junctionTableType", $relation)) {
       $relationType = $relation['junctionTableType'];
       $primaryKey = $this->getPrimaryKeyOther($relationType);
@@ -1831,7 +1845,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
           $primaryKey => null,
           $relation["junctionTableFilterField"] => $baseItem->getId(),
           $relation["junctionTableJoinField"] => $relationItem->getId(),
-        ];
+        ] + $this->getJunctionTableExtraFields($args['relation'], $baseItem, $relationItem);
         $table_entry = $factory->createObjectFromDict($table_entry_dict);
         try {
           $factory->save($table_entry);
