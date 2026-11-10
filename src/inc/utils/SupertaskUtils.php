@@ -239,23 +239,6 @@ class SupertaskUtils {
   }
   
   /**
-   * The associations of a supertask with its pretasks, keyed by pretask ID.
-   *
-   * @param int $supertaskId
-   * @return SupertaskPretask[]
-   * @throws Exception
-   */
-  public static function getSupertaskPretasksOfSupertask(int $supertaskId): array {
-    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertaskId, "=");
-    $supertaskPretasks = Factory::getSupertaskPretaskFactory()->filter([Factory::FILTER => $qF]);
-    $byPretaskId = [];
-    foreach ($supertaskPretasks as $supertaskPretask) {
-      $byPretaskId[$supertaskPretask->getPretaskId()] = $supertaskPretask;
-    }
-    return $byPretaskId;
-  }
-  
-  /**
    * @param int $supertaskId
    * @return Supertask
    * @throws HTException
