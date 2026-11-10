@@ -301,7 +301,10 @@ class SupertaskUtils {
     $joined = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var Pretask[] $pretasks */
     $pretasks = $joined[Factory::getPretaskFactory()->getModelName()];
-    $supertaskPretasks = SupertaskUtils::getSupertaskPretasksOfSupertask($supertask->getId());
+    $supertaskPretasks = [];
+    foreach ($joined[Factory::getSupertaskPretaskFactory()->getModelTable()] as $supertaskPretask) {
+      $supertaskPretasks[$supertaskPretask->getPretaskId()] = $supertaskPretask;
+    }
     foreach ($pretasks as $pretask) {
       if ($pretask->getCrackerBinaryTypeId() !== $cracker->getCrackerBinaryTypeId()) {
         $pretaskTypeId = $pretask->getCrackerBinaryTypeId();
