@@ -143,7 +143,10 @@ class RealWorldDumpSmokeTest(BaseTest):
         first_ids = [chunk.id for chunk in first_page]
         self.assertEqual(first_ids, list(range(1157, 1167)))
         self.assertTrue(all(chunk.taskId == 1308 for chunk in first_page))
-        self.assertTrue(all(chunk.state == 4 for chunk in first_page))
+        # State 5 is EXHAUSTED in hashcat's aligned status_rc_t enum; the dump itself
+        # still carries the old pre-SELFTEST numbering (4) which the server migration
+        # shifts on startup.
+        self.assertTrue(all(chunk.state == 5 for chunk in first_page))
 
         second_page = Chunk.objects.paginate(size=10, after=self._cursor_after('chunkId', first_ids[-1])) \
             .filter(taskId=1308).order_by('chunkId').get_pagination()
