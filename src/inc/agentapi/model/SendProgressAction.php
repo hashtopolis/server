@@ -267,7 +267,7 @@ final class SendProgressAction implements AgentAction {
 
         DServerLog::log(DServerLog::TRACE, 'Updated with received cracks', [$agent, $chunk]);
 
-        if ($chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME) {
+        if ($chunk->getState() == DHashcatStatus::ABORTED_RUNTIME) {
             $chunk = Factory::getChunkFactory()->set($chunk, Chunk::STATE, DHashcatStatus::ABORTED);
             DServerLog::log(DServerLog::TRACE, 'Chunk was manually interrupted', [$agent]);
             return $this->error($response, PActions::SEND_PROGRESS, 'Chunk was manually interrupted.');
@@ -339,6 +339,8 @@ final class SendProgressAction implements AgentAction {
 
             case DHashcatStatus::ABORTED:
             case DHashcatStatus::QUIT:
+            case DHashcatStatus::ERROR:
+            case DHashcatStatus::ABORTED_FINISH:
                 $chunk = Factory::getChunkFactory()->set($chunk, Chunk::SPEED, 0);
                 return $this->error($response, PActions::SEND_PROGRESS, 'Chunk was aborted!');
 

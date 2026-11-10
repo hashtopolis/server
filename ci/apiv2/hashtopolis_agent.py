@@ -35,18 +35,22 @@ def _load_config():
 
 
 class ProcessState(enum.IntEnum):
-    """ See src/inc/defines/hashcat.php for mapping"""
+    """ See src/inc/defines/DHashcatStatus.php for mapping"""
     INIT = 0
     AUTOTUNE = 1
-    RUNNING = 2
-    PAUSED = 3
-    EXHAUSTED = 4
-    CRACKED = 5
-    ABORTED = 6
-    QUIT = 7
-    BYPASS = 8
-    ABORTED_CHECKPOINT = 9
-    STATUS_ABORTED_RUNTIME = 10
+    SELFTEST = 2
+    RUNNING = 3
+    PAUSED = 4
+    EXHAUSTED = 5
+    CRACKED = 6
+    ABORTED = 7
+    QUIT = 8
+    BYPASS = 9
+    ABORTED_CHECKPOINT = 10
+    ABORTED_RUNTIME = 11
+    ERROR = 13
+    ABORTED_FINISH = 14
+    AUTODETECT = 16
 
 
 class HashtopolisConfig(object):

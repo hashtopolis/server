@@ -9,6 +9,7 @@ use Hashtopolis\dba\OrderFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\Factory;
+use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\Login;
 
@@ -113,7 +114,7 @@ else {
     }
     
     if ($end - $start < 3) {
-      if ($chunk->getState() >= 6) {
+      if (in_array($chunk->getState(), DHashcatStatus::ABORTED_STATES, true)) {
         imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $red);
       }
       else if ($chunk->getCracked() > 0) {
@@ -124,7 +125,7 @@ else {
       }
     }
     else {
-      if ($chunk->getState() >= 6) {
+      if (in_array($chunk->getState(), DHashcatStatus::ABORTED_STATES, true)) {
         imagerectangle($image, $start, 0, $end, ($size[1] - 1), $red);
       }
       else {

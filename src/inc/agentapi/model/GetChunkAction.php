@@ -174,7 +174,7 @@ final class GetChunkAction implements AgentAction {
                 }
             }
             $timeoutTime = time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT);
-            if ($chunk->getState() == DHashcatStatus::ABORTED || $chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME || max($chunk->getDispatchTime(), $chunk->getSolveTime()) < $timeoutTime) {
+            if (in_array($chunk->getState(), [DHashcatStatus::ABORTED, DHashcatStatus::ABORTED_RUNTIME, DHashcatStatus::ERROR, DHashcatStatus::ABORTED_FINISH], true) || max($chunk->getDispatchTime(), $chunk->getSolveTime()) < $timeoutTime) {
                 DServerLog::log(DServerLog::DEBUG, 'Found existing chunk which is not done yet', [$agent, $task, $chunk]);
                 $result = $this->sendChunk($response, ChunkUtils::handleExistingChunk($chunk, $task, $assignment));
                 if ($result !== null) {

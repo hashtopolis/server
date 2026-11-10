@@ -252,7 +252,7 @@ final class SchemaRegistry {
                     PQuerySendProgress::KEYSPACE_PROGRESS      => ['type' => 'integer',       'required' => true,  'description' => 'Keyspace progress (current position)'],
                     PQuerySendProgress::RELATIVE_PROGRESS      => ['type' => 'integer',      'required' => true,  'description' => 'Relative progress (0-10000)'],
                     PQuerySendProgress::SPEED                  => ['type' => 'integer',       'required' => true,  'description' => 'Cracking speed (H/s)'],
-                    PQuerySendProgress::HASHCAT_STATE          => ['type' => 'integer',       'required' => true,  'description' => 'Hashcat state (0=INIT, 2=RUNNING, 4=EXHAUSTED, 5=CRACKED, 6=ABORTED, 7=QUIT, 10=STATUS_ABORTED_RUNTIME)'],
+                    PQuerySendProgress::HASHCAT_STATE          => ['type' => 'integer',       'required' => true,  'description' => 'Hashcat state (0=INIT, 1=AUTOTUNE, 2=SELFTEST, 3=RUNNING, 4=PAUSED, 5=EXHAUSTED, 6=CRACKED, 7=ABORTED, 8=QUIT, 9=BYPASS, 10=ABORTED_CHECKPOINT, 11=ABORTED_RUNTIME, 13=ERROR, 14=ABORTED_FINISH, 16=AUTODETECT)'],
                     PQuerySendProgress::CRACKED_HASHES         => ['type' => 'array<array>', 'required' => true,  'description' => 'Cracked hashes: [[hash, plain, hex_plain, crack_pos], ...]'],
                     PQuerySendProgress::DEBUG_OUTPUT           => ['type' => 'array<string>', 'required' => false, 'description' => 'Debug output lines'],
                     PQuerySendProgress::GPU_TEMP               => ['type' => 'array<integer>', 'required' => false, 'description' => 'GPU temperatures'],

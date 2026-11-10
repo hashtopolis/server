@@ -1162,7 +1162,7 @@ class TestGetChunk(AgentProtocolBase):
             "keyspaceProgress": resp['skip'] + resp['length'],
             "relativeProgress": 10000,
             "speed": 1000,
-            "state": 4,
+            "state": 5,
             "cracks": [],
         })
         code, body = agent_request({
@@ -1438,7 +1438,7 @@ class TestSendProgress(AgentProtocolBase):
         return self._drive_agent_to_chunk(dummy, task_id)
 
     @staticmethod
-    def _send_progress(token, chunk, state=2, cracks=None, progress=100):
+    def _send_progress(token, chunk, state=3, cracks=None, progress=100):
         """Send a progress update and return the parsed response."""
         _, body = agent_request({
             "action": "sendProgress",
@@ -1583,24 +1583,7 @@ class TestSendProgress(AgentProtocolBase):
         self.assertNotIn(self.CRACK_HASH, resp['zaps'])
 
     def test_send_progress_state_aborted(self):
-        """Sending progress with state=ABORTED (6) returns error 'Chunk was aborted!'."""
-        dummy, agent, task, _ = self._setup_with_two_hashes()
-        chunk = self._make_chunk(dummy, task.id)
-        code, body = agent_request({
-            "action": "sendProgress",
-            "token": dummy.token,
-            "chunkId": chunk['chunkId'],
-            "keyspaceProgress": chunk['skip'] + 1,
-            "relativeProgress": 100,
-            "speed": 5700,
-            "state": 6,
-            "cracks": [],
-        })
-        assert_error_envelope(self, body, "sendProgress")
-        self.assertEqual(parse_envelope(body)['message'], "Chunk was aborted!")
-
-    def test_send_progress_state_quit(self):
-        """Sending progress with state=QUIT (7) returns error 'Chunk was aborted!'."""
+        """Sending progress with state=ABORTED (7) returns error 'Chunk was aborted!'."""
         dummy, agent, task, _ = self._setup_with_two_hashes()
         chunk = self._make_chunk(dummy, task.id)
         code, body = agent_request({
@@ -1616,6 +1599,66 @@ class TestSendProgress(AgentProtocolBase):
         assert_error_envelope(self, body, "sendProgress")
         self.assertEqual(parse_envelope(body)['message'], "Chunk was aborted!")
 
+    def test_send_progress_state_quit(self):
+        """Sending progress with state=QUIT (8) returns error 'Chunk was aborted!'."""
+        dummy, agent, task, _ = self._setup_with_two_hashes()
+        chunk = self._make_chunk(dummy, task.id)
+        code, body = agent_request({
+            "action": "sendProgress",
+            "token": dummy.token,
+            "chunkId": chunk['chunkId'],
+            "keyspaceProgress": chunk['skip'] + 1,
+            "relativeProgress": 100,
+            "speed": 5700,
+            "state": 8,
+            "cracks": [],
+        })
+        assert_error_envelope(self, body, "sendProgress")
+        self.assertEqual(parse_envelope(body)['message'], "Chunk was aborted!")
+
+    def test_send_progress_state_error(self):
+        """Sending progress with state=ERROR (13) returns error 'Chunk was aborted!'."""
+        dummy, agent, task, _ = self._setup_with_two_hashes()
+        chunk = self._make_chunk(dummy, task.id)
+        code, body = agent_request({
+            "action": "sendProgress",
+            "token": dummy.token,
+            "chunkId": chunk['chunkId'],
+            "keyspaceProgress": chunk['skip'] + 1,
+            "relativeProgress": 100,
+            "speed": 5700,
+            "state": 13,
+            "cracks": [],
+        })
+        assert_error_envelope(self, body, "sendProgress")
+        self.assertEqual(parse_envelope(body)['message'], "Chunk was aborted!")
+
+    def test_send_progress_state_aborted_finish(self):
+        """Sending progress with state=ABORTED_FINISH (14) returns error 'Chunk was aborted!'."""
+        dummy, agent, task, _ = self._setup_with_two_hashes()
+        chunk = self._make_chunk(dummy, task.id)
+        code, body = agent_request({
+            "action": "sendProgress",
+            "token": dummy.token,
+            "chunkId": chunk['chunkId'],
+            "keyspaceProgress": chunk['skip'] + 1,
+            "relativeProgress": 100,
+            "speed": 5700,
+            "state": 14,
+            "cracks": [],
+        })
+        assert_error_envelope(self, body, "sendProgress")
+        self.assertEqual(parse_envelope(body)['message'], "Chunk was aborted!")
+
+    def test_send_progress_state_transient_states(self):
+        """Transient states SELFTEST (2) and AUTODETECT (16) are handled like RUNNING."""
+        dummy, agent, task, _ = self._setup_with_two_hashes()
+        chunk = self._make_chunk(dummy, task.id)
+        resp = self._send_progress(dummy.token, chunk, state=2)
+        self.assertEqual(resp['response'], "SUCCESS")
+        resp = self._send_progress(dummy.token, chunk, state=16)
+        self.assertEqual(resp['response'], "SUCCESS")
+
     def test_send_progress_on_already_aborted_chunk(self):
         """Sending progress on an already-aborted chunk returns 'Chunk was aborted!' via the aborting path."""
         dummy, agent, task, _ = self._setup_with_two_hashes()
@@ -1627,7 +1670,7 @@ class TestSendProgress(AgentProtocolBase):
             "keyspaceProgress": chunk['skip'] + 1,
             "relativeProgress": 100,
             "speed": 5700,
-            "state": 6,
+            "state": 7,
             "cracks": [],
         })
         code, body = agent_request({
@@ -1637,14 +1680,14 @@ class TestSendProgress(AgentProtocolBase):
             "keyspaceProgress": chunk['skip'] + 2,
             "relativeProgress": 200,
             "speed": 5700,
-            "state": 2,
+            "state": 3,
             "cracks": [],
         })
         assert_error_envelope(self, body, "sendProgress")
         self.assertEqual(parse_envelope(body)['message'], "Chunk was aborted!")
 
-    def test_send_progress_state_status_aborted_runtime(self):
-        """Sending progress with state=STATUS_ABORTED_RUNTIME (10) returns 'Chunk was manually interrupted.'."""
+    def test_send_progress_state_aborted_runtime(self):
+        """Sending progress with state=ABORTED_RUNTIME (11) returns 'Chunk was manually interrupted.'."""
         dummy, agent, task, _ = self._setup_with_two_hashes()
         chunk = self._make_chunk(dummy, task.id)
         code, body = agent_request({
@@ -1654,17 +1697,17 @@ class TestSendProgress(AgentProtocolBase):
             "keyspaceProgress": chunk['skip'] + 1,
             "relativeProgress": 100,
             "speed": 5700,
-            "state": 10,
+            "state": 11,
             "cracks": [],
         })
         assert_error_envelope(self, body, "sendProgress")
         self.assertEqual(parse_envelope(body)['message'], "Chunk was manually interrupted.")
 
     def test_send_progress_state_exhausted(self):
-        """Sending progress with state=EXHAUSTED (4) returns SUCCESS with cracked/skipped fields."""
+        """Sending progress with state=EXHAUSTED (5) returns SUCCESS with cracked/skipped fields."""
         dummy, agent, task, _ = self._setup_with_two_hashes()
         chunk = self._make_chunk(dummy, task.id)
-        resp = self._send_progress(dummy.token, chunk, state=4, progress=100)
+        resp = self._send_progress(dummy.token, chunk, state=5, progress=100)
         self.assertEqual(resp['response'], "SUCCESS")
         self.assertIsInstance(resp['cracked'], int)
         self.assertIsInstance(resp['skipped'], int)
@@ -1678,7 +1721,7 @@ class TestSendProgress(AgentProtocolBase):
         """
         dummy, agent, task, _ = self._setup_assigned_agent()
         chunk = self._make_chunk(dummy, task.id)
-        resp = self._send_progress(dummy.token, chunk, state=2, cracks=[
+        resp = self._send_progress(dummy.token, chunk, state=3, cracks=[
             [self.CRACK_HASH, self.CRACK_PLAIN, self.CRACK_HEX, "1"],
         ])
         self.assertEqual(resp['response'], "SUCCESS")
@@ -1694,7 +1737,7 @@ class TestSendProgress(AgentProtocolBase):
             "keyspaceProgress": 1,
             "relativeProgress": 1,
             "speed": 1,
-            "state": 2,
+            "state": 3,
             "cracks": [],
         })
         assert_error_envelope(self, body, "sendProgress")
@@ -1712,7 +1755,7 @@ class TestSendProgress(AgentProtocolBase):
             "keyspaceProgress": chunk['skip'] + 1,
             "relativeProgress": 100,
             "speed": 5700,
-            "state": 2,
+            "state": 3,
             "cracks": [],
         })
         assert_error_envelope(self, body, "sendProgress")
@@ -1731,7 +1774,7 @@ class TestSendProgress(AgentProtocolBase):
             "keyspaceProgress": chunk['skip'] + 1,
             "relativeProgress": 100,
             "speed": 5700,
-            "state": 2,
+            "state": 3,
             "cracks": [],
         })
         assert_error_envelope(self, body, "sendProgress")
@@ -1746,20 +1789,20 @@ class TestSendProgress(AgentProtocolBase):
             "keyspaceProgress": 1,
             "relativeProgress": 1,
             "speed": 1,
-            "state": 2,
+            "state": 3,
             "cracks": [],
         })
         assert_error_envelope(self, body, "sendProgress")
         self.assertEqual(parse_envelope(body)['message'], "Invalid token!")
 
     def test_send_progress_state_cracked(self):
-        """Sending progress with state=CRACKED (5) returns SUCCESS (deprioritizes all tasks and unassigns all agents).
+        """Sending progress with state=CRACKED (6) returns SUCCESS (deprioritizes all tasks and unassigns all agents).
 
         Uses a single-hash hashlist so cracking it triggers the CRACKED state.
         """
         dummy, agent, task, _ = self._setup_assigned_agent()
         chunk = self._make_chunk(dummy, task.id)
-        resp = self._send_progress(dummy.token, chunk, state=5, cracks=[
+        resp = self._send_progress(dummy.token, chunk, state=6, cracks=[
             [self.CRACK_HASH, self.CRACK_PLAIN, self.CRACK_HEX, "1"],
         ])
         self.assertEqual(resp['response'], "SUCCESS")

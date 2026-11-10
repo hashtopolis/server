@@ -73,6 +73,7 @@ $FieldAgentStatTypeChoices = [
 $FieldHashcatStatusChoices = [
   ['key' => DHashcatStatus::INIT, 'label' => 'Init'],
   ['key' => DHashcatStatus::AUTOTUNE, 'label' => 'Autotune'],
+  ['key' => DHashcatStatus::SELFTEST, 'label' => 'Selftest'],
   ['key' => DHashcatStatus::RUNNING, 'label' => 'Running'],
   ['key' => DHashcatStatus::PAUSED, 'label' => 'Paused'],
   ['key' => DHashcatStatus::EXHAUSTED, 'label' => 'Exhausted'],
@@ -81,7 +82,10 @@ $FieldHashcatStatusChoices = [
   ['key' => DHashcatStatus::QUIT, 'label' => 'Quit'],
   ['key' => DHashcatStatus::BYPASS, 'label' => 'Bypass'],
   ['key' => DHashcatStatus::ABORTED_CHECKPOINT, 'label' => 'Aborted at checkpoint'],
-  ['key' => DHashcatStatus::STATUS_ABORTED_RUNTIME, 'label' => 'Aborted at runtime'],
+  ['key' => DHashcatStatus::ABORTED_RUNTIME, 'label' => 'Aborted at runtime'],
+  ['key' => DHashcatStatus::ERROR, 'label' => 'Error'],
+  ['key' => DHashcatStatus::ABORTED_FINISH, 'label' => 'Aborted at finish'],
+  ['key' => DHashcatStatus::AUTODETECT, 'label' => 'Autodetect'],
 ];
 
 $FieldFileTypeChoices = [
