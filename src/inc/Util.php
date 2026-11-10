@@ -48,6 +48,7 @@ use Hashtopolis\inc\defines\DPrince;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\handlers\NotificationHandler;
 use Hashtopolis\inc\utils\AccessUtils;
+use Hashtopolis\inc\utils\FileChecksumUtils;
 use PDO;
 use Random\RandomException;
 use SplFileObject;
@@ -418,15 +419,18 @@ class Util {
     $qF = new QueryFilter(FileDelete::FILENAME, $name, "=");
     Factory::getFileDeleteFactory()->massDeletion([Factory::FILTER => $qF]);
     if ($fileType == DFileType::RULE) {
-      $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId, Util::rulefileLineCount($path));
+      $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId, Util::rulefileLineCount($path), null);
     }
     else {
-      $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId, Util::fileLineCount($path));
+      $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId, Util::fileLineCount($path), null);
     }
     $file = Factory::getFileFactory()->save($file);
     if ($file == null) {
       return false;
     }
+    // the checksum of a file this size cannot be computed inside the request, so it is left to the
+    // background job runner and stays null until that job ran
+    FileChecksumUtils::enqueue($file->getId());
     return true;
   }
   

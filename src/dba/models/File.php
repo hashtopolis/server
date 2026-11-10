@@ -12,8 +12,9 @@ class File extends AbstractModel {
   private ?int $fileType;
   private ?int $accessGroupId;
   private ?int $lineCount;
+  private ?string $checksum;
   
-  function __construct(?int $fileId, ?string $filename, ?int $size, ?int $isSecret, ?int $fileType, ?int $accessGroupId, ?int $lineCount) {
+  function __construct(?int $fileId, ?string $filename, ?int $size, ?int $isSecret, ?int $fileType, ?int $accessGroupId, ?int $lineCount, ?string $checksum) {
     $this->fileId = $fileId;
     $this->filename = $filename;
     $this->size = $size;
@@ -21,6 +22,7 @@ class File extends AbstractModel {
     $this->fileType = $fileType;
     $this->accessGroupId = $accessGroupId;
     $this->lineCount = $lineCount;
+    $this->checksum = $checksum;
   }
   
   function getKeyValueDict(): array {
@@ -32,6 +34,7 @@ class File extends AbstractModel {
     $dict['fileType'] = $this->fileType;
     $dict['accessGroupId'] = $this->accessGroupId;
     $dict['lineCount'] = $this->lineCount;
+    $dict['checksum'] = $this->checksum;
     
     return $dict;
   }
@@ -45,6 +48,7 @@ class File extends AbstractModel {
     $dict['fileType'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => [0 => "Wordlist", 1 => "Rule", 2 => "Other", 100 => "Temporary", ], "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "fileType", "public" => False, "dba_mapping" => False];
     $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "accessGroupId", "public" => False, "dba_mapping" => False];
     $dict['lineCount'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lineCount", "public" => False, "dba_mapping" => False];
+    $dict['checksum'] = ['read_only' => True, "type" => "str(64)", "subtype" => "unset", "choices" => "unset", "null" => True, "pk" => False, "protected" => True, "private" => False, "alias" => "checksum", "public" => False, "dba_mapping" => False];
 
     return $dict;
   }
@@ -121,6 +125,14 @@ class File extends AbstractModel {
     $this->lineCount = $lineCount;
   }
   
+  function getChecksum(): ?string {
+    return $this->checksum;
+  }
+  
+  function setChecksum(?string $checksum): void {
+    $this->checksum = $checksum;
+  }
+  
   const FILE_ID = "fileId";
   const FILENAME = "filename";
   const SIZE = "size";
@@ -128,6 +140,7 @@ class File extends AbstractModel {
   const FILE_TYPE = "fileType";
   const ACCESS_GROUP_ID = "accessGroupId";
   const LINE_COUNT = "lineCount";
+  const CHECKSUM = "checksum";
 
   const PERM_CREATE = "permFileCreate";
   const PERM_READ = "permFileRead";

@@ -17,8 +17,15 @@ def run_background_job_runner():
     assert result.returncode == 0, f"Background job runner failed: {result.stderr}"
 
 
-def get_jobs_for_file(file_id):
-    return [job for job in BackgroundJob.objects.all() if job.payload.get('fileId') == file_id]
+def get_jobs_for_file(file_id, job_type=None):
+    """Background jobs enqueued for one file, optionally narrowed to a single job type.
+
+    Creating a file enqueues a checksum job of its own, so callers which care about one specific
+    kind of work have to say which.
+    """
+    return [job for job in BackgroundJob.objects.all()
+            if job.payload.get('fileId') == file_id
+            and (job_type is None or job.jobType == job_type)]
 
 
 def get_admin_connector():
@@ -40,10 +47,14 @@ class BackgroundJobTest(BaseTest):
         # other operations. The recount file lines helper is the reference producer.
         file_obj = self.create_file()
         enqueue_recount_job(file_obj)
-        jobs = get_jobs_for_file(file_obj.id)
+        jobs = get_jobs_for_file(file_obj.id, 'recount_file')
         assert len(jobs) == 1
         if delete:
             self.delete_after_test(jobs[0])
+        # the checksum job the file creation enqueued is not the subject of these tests, but it
+        # must not be left behind either
+        for job in get_jobs_for_file(file_obj.id, 'checksum_file'):
+            self.delete_after_test(job)
         return jobs[0]
 
     def test_recount_file_job_is_enqueued_as_pending(self):
