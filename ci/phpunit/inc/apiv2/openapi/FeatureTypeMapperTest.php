@@ -14,7 +14,8 @@ final class FeatureTypeMapperTest extends TestCase {
 
   public function testTypeLookupInt(): void {
     $this->assertSame(
-      ["type" => "integer", "type_format" => null, "type_enum" => null, "type_enum_labels" => null, "subtype" => null],
+      ["type" => "integer", "type_format" => null, "type_enum" => null, "type_enum_labels" => null,
+        "type_enum_names" => null, "subtype" => null],
       $this->mapper->typeLookup(['type' => 'int', 'choices' => 'unset'])
     );
   }
@@ -59,6 +60,29 @@ final class FeatureTypeMapperTest extends TestCase {
     $result = $this->mapper->typeLookup(['type' => 'int', 'choices' => [0 => 'Linux', 1 => 'Windows', 2 => 'macOS']]);
     $this->assertSame([0, 1, 2], $result['type_enum']);
     $this->assertSame(['Linux', 'Windows', 'macOS'], $result['type_enum_labels']);
+    $this->assertNull($result['type_enum_names']);
+  }
+
+  public function testTypeLookupChoiceNames(): void {
+    $result = $this->mapper->typeLookup([
+      'type' => 'int',
+      'choices' => [0 => 'Linux', 1 => 'Windows'],
+      'choice_names' => [0 => 'LINUX', 1 => 'WINDOWS'],
+    ]);
+    $this->assertSame(['LINUX', 'WINDOWS'], $result['type_enum_names']);
+  }
+
+  /**
+   * Names without choices describe nothing, so they are dropped rather than
+   * emitted next to an absent enum.
+   */
+  public function testTypeLookupIgnoresChoiceNamesWithoutChoices(): void {
+    $result = $this->mapper->typeLookup([
+      'type' => 'int',
+      'choices' => 'unset',
+      'choice_names' => [0 => 'LINUX'],
+    ]);
+    $this->assertNull($result['type_enum_names']);
   }
 
   public function testTypeLookupUnknownTypeThrows(): void {
@@ -81,20 +105,83 @@ final class FeatureTypeMapperTest extends TestCase {
     $this->assertSame(['lastTime' => ['type' => 'integer', 'format' => 'int64']], $this->mapper->makeProperties($features));
   }
 
-  public function testMakePropertiesChoicesBecomeOneOfWithConstAndTitle(): void {
+  /**
+   * A flat enum rather than a oneOf of single-const branches, because Swagger
+   * UI renders neither a const nor the title of a oneOf branch.
+   */
+  public function testMakePropertiesChoicesBecomeAnEnumDescribingEveryValue(): void {
     $features = [['type' => 'int', 'choices' => [0 => 'Linux', 1 => 'Windows'], 'null' => false, 'alias' => 'os', 'pk' => false]];
     $this->assertSame([
-      'os' => ['oneOf' => [
-        ['const' => 0, 'title' => 'Linux', 'type' => 'integer'],
-        ['const' => 1, 'title' => 'Windows', 'type' => 'integer'],
-      ]],
+      'os' => [
+        'type' => 'integer',
+        'enum' => [0, 1],
+        'description' => "One of:\n\n* `0` - Linux\n* `1` - Windows",
+      ],
     ], $this->mapper->makeProperties($features));
   }
 
-  public function testMakePropertiesNullableChoicesAppendNullBranch(): void {
+  public function testMakePropertiesChoiceNamesBecomeEnumVarnames(): void {
+    $features = [[
+      'type' => 'int',
+      'choices' => [0 => 'Linux', 1 => 'Windows'],
+      'choice_names' => [0 => 'LINUX', 1 => 'WINDOWS'],
+      'null' => false,
+      'alias' => 'os',
+      'pk' => false,
+    ]];
+    $properties = $this->mapper->makeProperties($features);
+    $this->assertSame(['LINUX', 'WINDOWS'], $properties['os']['x-enum-varnames']);
+  }
+
+  /**
+   * A value the property accepts that its enum leaves out is a schema nothing
+   * can satisfy, so null joins the enum as well as the type.
+   */
+  public function testMakePropertiesNullableChoicesAcceptNull(): void {
     $features = [['type' => 'int', 'choices' => [0 => 'Off', 1 => 'On'], 'null' => true, 'alias' => 'state', 'pk' => false]];
     $properties = $this->mapper->makeProperties($features);
-    $this->assertSame(['type' => 'null'], end($properties['state']['oneOf']));
+    $this->assertSame(['integer', 'null'], $properties['state']['type']);
+    $this->assertSame([0, 1, null], $properties['state']['enum']);
+  }
+
+  public function testMakePropertiesKeepsTheFormatOfAnEnumeratedInt64(): void {
+    $features = [['type' => 'int64', 'choices' => [0 => 'Off'], 'null' => false, 'alias' => 'state', 'pk' => false]];
+    $properties = $this->mapper->makeProperties($features);
+    $this->assertSame('int64', $properties['state']['format']);
+    $this->assertSame([0], $properties['state']['enum']);
+  }
+
+  public function testMakePropertiesDescriptionLeadsTheValueList(): void {
+    $features = [[
+      'type' => 'str',
+      'choices' => ['a' => 'The first', 'b' => 'The second'],
+      'description' => 'Which one it is.',
+      'null' => false,
+      'alias' => 'which',
+      'pk' => false,
+    ]];
+    $properties = $this->mapper->makeProperties($features);
+    $this->assertSame(
+      "Which one it is.\n\nOne of:\n\n* `a` - The first\n* `b` - The second",
+      $properties['which']['description']
+    );
+  }
+
+  public function testMakePropertiesDescriptionWithoutChoices(): void {
+    $features = [['type' => 'str', 'choices' => 'unset', 'description' => 'What it holds.', 'null' => false, 'alias' => 'name', 'pk' => false]];
+    $this->assertSame(
+      ['name' => ['type' => 'string', 'description' => 'What it holds.']],
+      $this->mapper->makeProperties($features)
+    );
+  }
+
+  /**
+   * A property nobody has documented carries no description at all, rather
+   * than a restatement of its own name.
+   */
+  public function testComposeDescriptionIsNullWithNothingToSay(): void {
+    $this->assertNull(FeatureTypeMapper::composeDescription(null, null, null));
+    $this->assertNull(FeatureTypeMapper::composeDescription('   ', null, null));
   }
 
   public function testMakePropertiesSkipsPrimaryKeyWhenRequested(): void {

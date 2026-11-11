@@ -113,9 +113,16 @@ class HashlistAPI extends AbstractModelAPI {
   public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return [
-      "hashlistSeperator" => ['type' => 'str', "null" => True],
-      "sourceType" => ['type' => 'str'],
-      "sourceData" => ['type' => 'str'],
+      "hashlistSeperator" => ['type' => 'str', "null" => True,
+        'description' => 'Character separating a hash from its salt in the imported data.'],
+      "sourceType" => ['type' => 'str',
+        'choices' => [
+          "paste" => "The hashes are the base64 encoded sourceData of this request",
+          "import" => "The hashes are read from the file in the import directory that sourceData names",
+          "url" => "The hashes are fetched by the server from the http(s) url in sourceData"
+        ]],
+      "sourceData" => ['type' => 'str',
+        'description' => 'Where the hashes come from, read according to sourceType.'],
     ];
   }
   

@@ -5,7 +5,7 @@ import subprocess
 import pytest
 import requests
 
-from hashtopolis import File, Helper
+from hashtopolis import File, Helper, HashtopolisError
 from utils import (BaseTest, BackgroundJob, create_restricted_user,
                    get_hashtopolis_uri)
 
@@ -270,3 +270,9 @@ class FileTest(BaseTest):
         jobs = self._jobs_for_file(model_obj.id, 'checksum_file')
         self.assertEqual(len(jobs), 1)
         jobs[0].delete()
+
+    def test_create_with_bogus_source_type_rejects(self):
+        """The sourceType form field declares its choices, so an unlisted value never reaches createObject."""
+        with self.assertRaises(HashtopolisError) as e:
+            self.create_test_object(extra_payload={'sourceType': 'bogus'}, delete=False)
+        self.assertEqual(400, e.exception.status_code)

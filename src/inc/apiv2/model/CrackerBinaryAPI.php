@@ -71,12 +71,14 @@ class CrackerBinaryAPI extends AbstractModelAPI {
   public function getFormFields(): array {
     return [
       "sourceType" => ['type' => 'str', 'null' => True,
+        'description' => 'Where the 7z archive is uploaded from. Mutually exclusive with downloadUrl.',
         'choices' => [
-          "inline" => "Archive provided as base64 data in sourceData",
-          "import" => "Archive taken from the import directory, sourceData is the filename",
-          "url" => "Archive fetched from an http(s) url given in sourceData"
+          "inline" => "The archive is the base64 encoded sourceData of this request",
+          "import" => "The archive is taken from the file in the import directory that sourceData names",
+          "url" => "The archive is fetched by the server from the http(s) url in sourceData"
         ]],
-      "sourceData" => ['type' => 'str', 'null' => True]
+      "sourceData" => ['type' => 'str', 'null' => True,
+        'description' => 'Where the archive comes from, read according to sourceType.']
     ];
   }
   

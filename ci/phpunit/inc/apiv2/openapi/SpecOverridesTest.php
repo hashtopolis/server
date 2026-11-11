@@ -18,10 +18,11 @@ final class SpecOverridesTest extends TestCase {
         "name" => ["type" => "string"],
         "email" => ["type" => "string"],
         "isValid" => ["type" => "boolean"],
-        "state" => ["oneOf" => [
-          ["const" => 0, "title" => "Off", "type" => "integer"],
-          ["const" => 1, "title" => "On", "type" => "integer"],
-        ]],
+        "state" => [
+          "type" => "integer",
+          "enum" => [0, 1],
+          "description" => "One of:\n\n* `0` - Off\n* `1` - On",
+        ],
       ],
     ];
   }
@@ -55,8 +56,9 @@ final class SpecOverridesTest extends TestCase {
 
     $this->assertSame(["name", "email", "isValid", "state"], $result['required']);
     $this->assertSame(["type" => ["string", "null"]], $result['properties']['email']);
-    /* An enum is a oneOf, so null becomes one more branch of it */
-    $this->assertSame(["type" => "null"], $result['properties']['state']['oneOf'][2]);
+    /* A value the property accepts has to be in its enum too, or nothing can satisfy the schema */
+    $this->assertSame(["integer", "null"], $result['properties']['state']['type']);
+    $this->assertSame([0, 1, null], $result['properties']['state']['enum']);
   }
 
   public function testTheTwoCorrectionsCombinePerAttribute(): void {
@@ -143,28 +145,42 @@ final class SpecOverridesTest extends TestCase {
 
   /**
    * Only User carries 'public' features, so it is the only model whose
-   * responses arrive attribute-filtered and need optional corrections.
-   * CrackerBinary only carries creation documentation.
+   * responses arrive attribute-filtered and needs a correction here at all.
+   * Documentation lives on the features instead, where it reaches every
+   * schema rather than only the response and the create request.
    */
   public function testTheDefaultsContainTheExpectedModels(): void {
     $this->assertTrue(SpecOverrides::defaults()->has('User'));
-    $this->assertTrue(SpecOverrides::defaults()->has('CrackerBinary'));
-    foreach (['Agent', 'Task', 'Hashlist', 'Config', 'ApiToken'] as $model) {
+    foreach (['Agent', 'Task', 'Hashlist', 'Config', 'ApiToken', 'CrackerBinary'] as $model) {
       $this->assertFalse(SpecOverrides::defaults()->has($model), $model);
     }
+  }
+
+  /**
+   * The description of an attribute limited to a set of values carries the
+   * meaning of each value, which replacing the text would silently drop, so
+   * such an attribute has to be described where its values are declared.
+   */
+  public function testDescribingAnEnumeratedAttributeIsRefused(): void {
+    $overrides = new SpecOverrides([
+      'Foo' => [SpecOverrides::ATTRIBUTE_DESCRIPTIONS => ['state' => 'The state']],
+    ]);
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage("limited to a set of values");
+    $overrides->apply('Foo', $this->attributesSchema());
   }
 
   public function testAttributeDescriptionsAreAdded(): void {
     $overrides = new SpecOverrides([
       'Foo' => [SpecOverrides::ATTRIBUTE_DESCRIPTIONS => [
         'email' => 'The email address',
-        'state' => 'On or off',
+        'isValid' => 'Whether the account may sign in',
       ]],
     ]);
     $result = $overrides->apply('Foo', $this->attributesSchema());
 
     $this->assertSame('The email address', $result['properties']['email']['description']);
-    $this->assertSame('On or off', $result['properties']['state']['description']);
+    $this->assertSame('Whether the account may sign in', $result['properties']['isValid']['description']);
     /* purely additive, the required list and the types stay as they were */
     $this->assertSame(["name", "email", "isValid", "state"], $result['required']);
     $this->assertSame(["type" => "string"], ['type' => $result['properties']['email']['type']]);

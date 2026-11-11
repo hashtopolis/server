@@ -224,20 +224,21 @@ final class FullSpecTest extends TestCase {
     $agentAttributes = $schemas['AgentResponse']['properties']['data']['properties']['attributes']['properties'];
     $this->assertSame(['integer', 'null'], $agentAttributes['userId']['type']);
 
-    // Integer enum rendered as oneOf with const + title
-    $this->assertSame(0, $agentAttributes['ignoreErrors']['oneOf'][0]['const']);
-    $this->assertArrayHasKey('title', $agentAttributes['ignoreErrors']['oneOf'][0]);
+    // Integer enum rendered as a flat enum, its values documented and named
+    $this->assertSame([0, 1, 2], $agentAttributes['ignoreErrors']['enum']);
+    $this->assertSame(['NO', 'IGNORE_SAVE', 'IGNORE_NOSAVE'], $agentAttributes['ignoreErrors']['x-enum-varnames']);
+    $this->assertStringContainsString('* `0` - Deactivate the agent', $agentAttributes['ignoreErrors']['description']);
+    $this->assertSame([0, 1, 2], $agentAttributes['os']['enum']);
     $this->assertSame(
-      [0 => 'Linux', 1 => 'Windows', 2 => 'macOS'],
-      array_column($agentAttributes['os']['oneOf'], 'title', 'const')
+      "Operating system the agent reported for the machine it runs on.\n\n"
+      . "One of:\n\n* `0` - Linux\n* `1` - Windows\n* `2` - macOS",
+      $agentAttributes['os']['description']
     );
 
     // A string enum names its values the same way
     $notificationSetting = $schemas['NotificationSettingResponse']['properties']['data']['properties']['attributes'];
-    $this->assertContains(
-      'taskComplete',
-      array_column($notificationSetting['properties']['action']['oneOf'], 'const')
-    );
+    $this->assertContains('taskComplete', $notificationSetting['properties']['action']['enum']);
+    $this->assertContains('TASK_COMPLETE', $notificationSetting['properties']['action']['x-enum-varnames']);
 
     // A notification not tied to an object reports objectId as null, so the
     // attribute is present but nullable

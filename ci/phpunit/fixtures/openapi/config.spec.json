@@ -1421,38 +1421,16 @@
                                         "const": "serverLogLevel"
                                     },
                                     "value": {
-                                        "oneOf": [
-                                            {
-                                                "const": "0",
-                                                "title": "TRACE",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "10",
-                                                "title": "DEBUG",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "20",
-                                                "title": "INFO",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "30",
-                                                "title": "WARNING",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "40",
-                                                "title": "ERROR",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "50",
-                                                "title": "FATAL",
-                                                "type": "string"
-                                            }
-                                        ]
+                                        "type": "string",
+                                        "enum": [
+                                            "0",
+                                            "10",
+                                            "20",
+                                            "30",
+                                            "40",
+                                            "50"
+                                        ],
+                                        "description": "One of:\n\n* `0` - TRACE\n* `10` - DEBUG\n* `20` - INFO\n* `30` - WARNING\n* `40` - ERROR\n* `50` - FATAL"
                                     },
                                     "valueBoundaries": {
                                         "type": "object",
@@ -1498,28 +1476,14 @@
                                         "const": "notificationsProxyType"
                                     },
                                     "value": {
-                                        "oneOf": [
-                                            {
-                                                "const": "HTTP",
-                                                "title": "HTTP",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "HTTPS",
-                                                "title": "HTTPS",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "SOCKS4",
-                                                "title": "SOCKS4",
-                                                "type": "string"
-                                            },
-                                            {
-                                                "const": "SOCKS5",
-                                                "title": "SOCKS5",
-                                                "type": "string"
-                                            }
-                                        ]
+                                        "type": "string",
+                                        "enum": [
+                                            "HTTP",
+                                            "HTTPS",
+                                            "SOCKS4",
+                                            "SOCKS5"
+                                        ],
+                                        "description": "One of:\n\n* `HTTP` - HTTP\n* `HTTPS` - HTTPS\n* `SOCKS4` - SOCKS4\n* `SOCKS5` - SOCKS5"
                                     },
                                     "valueBoundaries": {
                                         "type": "object",
@@ -1884,38 +1848,16 @@
                                                 "const": "serverLogLevel"
                                             },
                                             "value": {
-                                                "oneOf": [
-                                                    {
-                                                        "const": "0",
-                                                        "title": "TRACE",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "10",
-                                                        "title": "DEBUG",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "20",
-                                                        "title": "INFO",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "30",
-                                                        "title": "WARNING",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "40",
-                                                        "title": "ERROR",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "50",
-                                                        "title": "FATAL",
-                                                        "type": "string"
-                                                    }
-                                                ]
+                                                "type": "string",
+                                                "enum": [
+                                                    "0",
+                                                    "10",
+                                                    "20",
+                                                    "30",
+                                                    "40",
+                                                    "50"
+                                                ],
+                                                "description": "One of:\n\n* `0` - TRACE\n* `10` - DEBUG\n* `20` - INFO\n* `30` - WARNING\n* `40` - ERROR\n* `50` - FATAL"
                                             },
                                             "valueBoundaries": {
                                                 "type": "object",
@@ -1961,28 +1903,14 @@
                                                 "const": "notificationsProxyType"
                                             },
                                             "value": {
-                                                "oneOf": [
-                                                    {
-                                                        "const": "HTTP",
-                                                        "title": "HTTP",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "HTTPS",
-                                                        "title": "HTTPS",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "SOCKS4",
-                                                        "title": "SOCKS4",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "SOCKS5",
-                                                        "title": "SOCKS5",
-                                                        "type": "string"
-                                                    }
-                                                ]
+                                                "type": "string",
+                                                "enum": [
+                                                    "HTTP",
+                                                    "HTTPS",
+                                                    "SOCKS4",
+                                                    "SOCKS5"
+                                                ],
+                                                "description": "One of:\n\n* `HTTP` - HTTP\n* `HTTPS` - HTTPS\n* `SOCKS4` - SOCKS4\n* `SOCKS5` - SOCKS5"
                                             },
                                             "valueBoundaries": {
                                                 "type": "object",
@@ -2241,38 +2169,16 @@
                                                 "const": "serverLogLevel"
                                             },
                                             "value": {
-                                                "oneOf": [
-                                                    {
-                                                        "const": "0",
-                                                        "title": "TRACE",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "10",
-                                                        "title": "DEBUG",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "20",
-                                                        "title": "INFO",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "30",
-                                                        "title": "WARNING",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "40",
-                                                        "title": "ERROR",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "50",
-                                                        "title": "FATAL",
-                                                        "type": "string"
-                                                    }
-                                                ]
+                                                "type": "string",
+                                                "enum": [
+                                                    "0",
+                                                    "10",
+                                                    "20",
+                                                    "30",
+                                                    "40",
+                                                    "50"
+                                                ],
+                                                "description": "One of:\n\n* `0` - TRACE\n* `10` - DEBUG\n* `20` - INFO\n* `30` - WARNING\n* `40` - ERROR\n* `50` - FATAL"
                                             },
                                             "valueBoundaries": {
                                                 "type": "object",
@@ -2318,28 +2224,14 @@
                                                 "const": "notificationsProxyType"
                                             },
                                             "value": {
-                                                "oneOf": [
-                                                    {
-                                                        "const": "HTTP",
-                                                        "title": "HTTP",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "HTTPS",
-                                                        "title": "HTTPS",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "SOCKS4",
-                                                        "title": "SOCKS4",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "SOCKS5",
-                                                        "title": "SOCKS5",
-                                                        "type": "string"
-                                                    }
-                                                ]
+                                                "type": "string",
+                                                "enum": [
+                                                    "HTTP",
+                                                    "HTTPS",
+                                                    "SOCKS4",
+                                                    "SOCKS5"
+                                                ],
+                                                "description": "One of:\n\n* `HTTP` - HTTP\n* `HTTPS` - HTTPS\n* `SOCKS4` - SOCKS4\n* `SOCKS5` - SOCKS5"
                                             },
                                             "valueBoundaries": {
                                                 "type": "object",
@@ -2598,38 +2490,16 @@
                                                 "const": "serverLogLevel"
                                             },
                                             "value": {
-                                                "oneOf": [
-                                                    {
-                                                        "const": "0",
-                                                        "title": "TRACE",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "10",
-                                                        "title": "DEBUG",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "20",
-                                                        "title": "INFO",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "30",
-                                                        "title": "WARNING",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "40",
-                                                        "title": "ERROR",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "50",
-                                                        "title": "FATAL",
-                                                        "type": "string"
-                                                    }
-                                                ]
+                                                "type": "string",
+                                                "enum": [
+                                                    "0",
+                                                    "10",
+                                                    "20",
+                                                    "30",
+                                                    "40",
+                                                    "50"
+                                                ],
+                                                "description": "One of:\n\n* `0` - TRACE\n* `10` - DEBUG\n* `20` - INFO\n* `30` - WARNING\n* `40` - ERROR\n* `50` - FATAL"
                                             },
                                             "valueBoundaries": {
                                                 "type": "object",
@@ -2675,28 +2545,14 @@
                                                 "const": "notificationsProxyType"
                                             },
                                             "value": {
-                                                "oneOf": [
-                                                    {
-                                                        "const": "HTTP",
-                                                        "title": "HTTP",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "HTTPS",
-                                                        "title": "HTTPS",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "SOCKS4",
-                                                        "title": "SOCKS4",
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "const": "SOCKS5",
-                                                        "title": "SOCKS5",
-                                                        "type": "string"
-                                                    }
-                                                ]
+                                                "type": "string",
+                                                "enum": [
+                                                    "HTTP",
+                                                    "HTTPS",
+                                                    "SOCKS4",
+                                                    "SOCKS5"
+                                                ],
+                                                "description": "One of:\n\n* `HTTP` - HTTP\n* `HTTPS` - HTTPS\n* `SOCKS4` - SOCKS4\n* `SOCKS5` - SOCKS5"
                                             },
                                             "valueBoundaries": {
                                                 "type": "object",
@@ -3006,38 +2862,16 @@
                                                     "const": "serverLogLevel"
                                                 },
                                                 "value": {
-                                                    "oneOf": [
-                                                        {
-                                                            "const": "0",
-                                                            "title": "TRACE",
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "const": "10",
-                                                            "title": "DEBUG",
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "const": "20",
-                                                            "title": "INFO",
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "const": "30",
-                                                            "title": "WARNING",
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "const": "40",
-                                                            "title": "ERROR",
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "const": "50",
-                                                            "title": "FATAL",
-                                                            "type": "string"
-                                                        }
-                                                    ]
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "0",
+                                                        "10",
+                                                        "20",
+                                                        "30",
+                                                        "40",
+                                                        "50"
+                                                    ],
+                                                    "description": "One of:\n\n* `0` - TRACE\n* `10` - DEBUG\n* `20` - INFO\n* `30` - WARNING\n* `40` - ERROR\n* `50` - FATAL"
                                                 },
                                                 "valueBoundaries": {
                                                     "type": "object",
@@ -3083,28 +2917,14 @@
                                                     "const": "notificationsProxyType"
                                                 },
                                                 "value": {
-                                                    "oneOf": [
-                                                        {
-                                                            "const": "HTTP",
-                                                            "title": "HTTP",
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "const": "HTTPS",
-                                                            "title": "HTTPS",
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "const": "SOCKS4",
-                                                            "title": "SOCKS4",
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "const": "SOCKS5",
-                                                            "title": "SOCKS5",
-                                                            "type": "string"
-                                                        }
-                                                    ]
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "HTTP",
+                                                        "HTTPS",
+                                                        "SOCKS4",
+                                                        "SOCKS5"
+                                                    ],
+                                                    "description": "One of:\n\n* `HTTP` - HTTP\n* `HTTPS` - HTTPS\n* `SOCKS4` - SOCKS4\n* `SOCKS5` - SOCKS5"
                                                 },
                                                 "valueBoundaries": {
                                                     "type": "object",

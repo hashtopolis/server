@@ -18,18 +18,36 @@ class DTaskStatus {
   const SKIPPED   = 4;
 
   /**
-   * Status value => label, in the form expected by the 'choices' entry of a
-   * feature definition.
+   * Status value => what that value means, in the form expected by the
+   * 'choices' entry of a feature definition. The descriptions are what the API
+   * reference shows for each value.
    *
    * @return array<int, string>
    */
   public static function choices(): array {
     return [
-      self::INIT      => 'init',
-      self::RUNNING   => 'running',
-      self::IDLE      => 'idle',
-      self::COMPLETED => 'completed',
-      self::SKIPPED   => 'skipped',
+      self::INIT      => 'The starting value, before any task of the wrapper has been looked at',
+      self::RUNNING   => 'An agent reported on a chunk of the task within the chunk timeout',
+      self::IDLE      => 'Work is left, but no agent has reported on it within the chunk timeout',
+      self::COMPLETED => 'The whole keyspace was searched, or every hash of the hashlist is cracked and this task found one',
+      self::SKIPPED   => 'Archived, or every hash of the hashlist was cracked without this task finding one',
+    ];
+  }
+
+  /**
+   * Status value => the name of the constant holding it, in the form expected
+   * by the 'choice_names' entry of a feature definition. It names the values
+   * in the generated OpenAPI spec, for a reader and for code generators.
+   *
+   * @return array<int, string>
+   */
+  public static function choiceNames(): array {
+    return [
+      self::INIT      => 'INIT',
+      self::RUNNING   => 'RUNNING',
+      self::IDLE      => 'IDLE',
+      self::COMPLETED => 'COMPLETED',
+      self::SKIPPED   => 'SKIPPED',
     ];
   }
 }

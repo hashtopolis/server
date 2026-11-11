@@ -22,14 +22,18 @@ use InvalidArgumentException;
  * - OPTIONAL_ATTRIBUTES: the attribute may be missing, so it is dropped from
  *   the "required" list of the attributes object. This is what permission
  *   filtering does: the key is not there at all.
- * - NULLABLE_ATTRIBUTES: the attribute may be null, so "null" joins its type
- *   (or a "null" branch its oneOf). The key stays required.
+ * - NULLABLE_ATTRIBUTES: the attribute may be null, so "null" joins its type,
+ *   and its enum when it has one. The key stays required.
  * - ATTRIBUTE_DESCRIPTIONS: a map of attribute alias to description text.
  *   Purely additive documentation, applied to the response schemas and, via
  *   applyDescriptions(), to the create request schema. Properties the schema
  *   does not carry are skipped, so one description set can serve the
  *   different shapes a model's attributes take (responses do not contain
- *   creation-only form fields, for example).
+ *   creation-only form fields, for example). It is a side channel for what the
+ *   features cannot say; an attribute the features can describe is described
+ *   by the 'description' of its feature instead, which reaches every schema
+ *   rather than these two, and an attribute limited to a set of values has to
+ *   be, because its description carries the meaning of each value.
  *
  * Both the openapi.json route and ci/tools/generate-openapi.php build with
  * defaults(), so the served spec and the committed one agree.
@@ -117,15 +121,6 @@ class SpecOverrides {
           'globalPermissionGroupId',
         ],
       ],
-      'CrackerBinary' => [
-        self::ATTRIBUTE_DESCRIPTIONS => [
-          'downloadUrl' => 'External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards.',
-          'accessGroupId' => 'Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups.',
-          'filename' => 'Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided.',
-          'sourceType' => 'Source the 7z archive is uploaded from: inline (base64 archive data in sourceData), import (filename of a file in the import directory as sourceData) or url (http/https url in sourceData, fetched by the server). Mutually exclusive with downloadUrl.',
-          'sourceData' => 'Source of the archive upload, depending on sourceType: base64 encoded archive data, filename of a file in the import directory or a http/https url to fetch the archive from.',
-        ],
-      ],
     ]);
   }
 
@@ -175,7 +170,7 @@ class SpecOverrides {
       $schema['properties'][$alias] = $this->makeNullable($schema['properties'][$alias]);
     }
 
-    return $this->applyDescriptionEntries($entry[self::ATTRIBUTE_DESCRIPTIONS] ?? [], $schema);
+    return $this->applyDescriptionEntries($entry[self::ATTRIBUTE_DESCRIPTIONS] ?? [], $schema, $model);
   }
 
   /**
@@ -193,45 +188,55 @@ class SpecOverrides {
       return $schema;
     }
     $descriptions = $this->byModel[$model][self::ATTRIBUTE_DESCRIPTIONS] ?? [];
-    return $this->applyDescriptionEntries($descriptions, $schema);
+    return $this->applyDescriptionEntries($descriptions, $schema, $model);
   }
 
   /**
    * @param array<string, string> $descriptions attribute alias to description text
+   * @param string $model model name, for the error message of the enum guard
    */
-  private function applyDescriptionEntries(array $descriptions, array $schema): array {
+  private function applyDescriptionEntries(array $descriptions, array $schema, string $model): array {
     foreach ($descriptions as $alias => $description) {
-      if (array_key_exists($alias, $schema['properties'] ?? [])) {
-        $schema['properties'][$alias]['description'] = $description;
+      if (!array_key_exists($alias, $schema['properties'] ?? [])) {
+        continue;
       }
+      /**
+       * An attribute limited to a set of values carries the meaning of every
+       * value in its description, which replacing the text would silently
+       * drop. Such an attribute is documented where its values are declared,
+       * by the 'description' of its feature, so that one source states both.
+       */
+      if (is_array($schema['properties'][$alias]['enum'] ?? null)) {
+        throw new InvalidArgumentException(
+          "Spec override '" . self::ATTRIBUTE_DESCRIPTIONS . "' of '$model' describes attribute " .
+          "'$alias', which is limited to a set of values; describe it with the 'description' of " .
+          "its feature instead, so that the meaning of each value is kept"
+        );
+      }
+      $schema['properties'][$alias]['description'] = $description;
     }
     return $schema;
   }
 
   /**
-   * Widen a property schema by null, in both shapes FeatureTypeMapper emits:
-   * a plain (or already widened) "type", and the "oneOf" of an enum.
+   * Widen a property schema by null: "null" joins its type and, when the
+   * property is limited to a set of values, null joins that set as well,
+   * because a value the property accepts that its enum omits is a schema no
+   * response can satisfy.
    */
   private function makeNullable(array $property): array {
-    if (array_key_exists('oneOf', $property)) {
-      foreach ($property['oneOf'] as $branch) {
-        if (($branch['type'] ?? null) === 'null') {
-          return $property;
-        }
-      }
-      $property['oneOf'][] = ["type" => "null"];
-      return $property;
-    }
-
     $type = $property['type'] ?? null;
     if (is_array($type)) {
       if (!in_array("null", $type, true)) {
         $property['type'][] = "null";
       }
-      return $property;
     }
-    if ($type !== null && $type !== "null") {
+    elseif ($type !== null && $type !== "null") {
       $property['type'] = [$type, "null"];
+    }
+
+    if (is_array($property['enum'] ?? null) && !in_array(null, $property['enum'], true)) {
+      $property['enum'][] = null;
     }
     return $property;
   }
