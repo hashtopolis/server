@@ -71,8 +71,14 @@ class FileAPI extends AbstractModelAPI {
   public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return [
-      "sourceType" => ['type' => 'str'],
-      "sourceData" => ['type' => 'str']
+      "sourceType" => ['type' => 'str',
+        'choices' => [
+          "inline" => "The file content is the base64 encoded sourceData of this request",
+          "import" => "The file is taken from the file in the import directory that sourceData names",
+          "url" => "The file is fetched by the server from the http(s) url in sourceData"
+        ]],
+      "sourceData" => ['type' => 'str',
+        'description' => 'Where the file content comes from, read according to sourceType.']
     ];
   }
   

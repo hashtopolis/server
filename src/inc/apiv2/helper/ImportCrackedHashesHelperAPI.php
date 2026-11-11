@@ -33,10 +33,18 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
   public function getFormFields(): array {
     return [
       Hashlist::HASHLIST_ID => ["type" => "int"],
-      "sourceType" => ['type' => 'str'],
-      "sourceData" => ['type' => 'str'],
-      "separator" => ['type' => 'str'],
-      "overwrite" => ['type' => 'int'],
+      "sourceType" => ['type' => 'str',
+        'choices' => [
+          "paste" => "The cracks are the base64 encoded sourceData of this request",
+          "import" => "The cracks are read from the file in the import directory that sourceData names",
+          "url" => "The cracks are fetched by the server from the http(s) url in sourceData"
+        ]],
+      "sourceData" => ['type' => 'str',
+        'description' => 'Where the cracked hashes come from, read according to sourceType.'],
+      "separator" => ['type' => 'str',
+        'description' => 'Character separating a hash from its plaintext in the imported data.'],
+      "overwrite" => ['type' => 'int',
+        'description' => 'Whether a hash that is already cracked has its plaintext replaced.'],
     ];
   }
   

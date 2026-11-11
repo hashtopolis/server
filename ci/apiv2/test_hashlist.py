@@ -222,3 +222,14 @@ class HashlistTest(BaseTest):
         model_obj = self.create_test_object()
         self._test_acl_list(model_obj, {'permHashlistRead': True})
         self._test_acl_count(model_obj, {'permHashlistRead': True})
+
+    def test_create_with_value_outside_the_format_choices_rejects(self):
+        """The format column declares its choices, so an unlisted value never reaches createObject."""
+        with self.assertRaises(HashtopolisError) as e:
+            self.create_test_object(extra_payload={'format': 4}, delete=False)
+        self.assertEqual(400, e.exception.status_code)
+
+    def test_create_with_bogus_source_type_rejects(self):
+        with self.assertRaises(HashtopolisError) as e:
+            self.create_test_object(extra_payload={'sourceType': 'bogus'}, delete=False)
+        self.assertEqual(400, e.exception.status_code)

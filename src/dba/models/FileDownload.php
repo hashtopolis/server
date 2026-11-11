@@ -32,7 +32,7 @@ class FileDownload extends AbstractModel {
     $dict['fileDownloadId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileDownloadId", "public" => False, "dba_mapping" => False];
     $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time", "public" => False, "dba_mapping" => False];
     $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "fileId", "public" => False, "dba_mapping" => False];
-    $dict['status'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => [-100 => "Deleted", -1 => "Failed", 0 => "Pending", 1 => "Done", ], "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "status", "public" => False, "dba_mapping" => False];
+    $dict['status'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => [-100 => "The file was deleted again", -1 => "The download failed", 0 => "The download has not finished yet", 1 => "The file was downloaded", ], "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "status", "public" => False, "dba_mapping" => False, "choice_names" => [-100 => "DELETED", -1 => "FAILED", 0 => "PENDING", 1 => "DONE", ], "description" => "How far the server has got with fetching the file."];
 
     return $dict;
   }

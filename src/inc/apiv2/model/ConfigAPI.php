@@ -10,6 +10,7 @@ use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DConfigType;
+use Hashtopolis\inc\apiv2\openapi\FeatureTypeMapper;
 use Hashtopolis\inc\HTException;
 
 
@@ -119,13 +120,19 @@ class ConfigAPI extends AbstractModelAPI {
         continue;
       }
       $selection = DConfig::getSelection($item)->getAllValues();
-      $valueEnum = [];
+      $values = [];
+      $labels = [];
       foreach ($selection as $enumKey => $enumLabel) {
-        $valueEnum[] = [
-          'const' => (string)$enumKey,
-          'title' => (string)$enumLabel,
-          'type'  => 'string',
-        ];
+        $values[] = (string)$enumKey;
+        $labels[] = (string)$enumLabel;
+      }
+      /* A flat enum with the meanings in the description, for the same reason
+         FeatureTypeMapper emits one: Swagger UI renders neither a const nor
+         the title of a oneOf branch. */
+      $value = ['type' => 'string', 'enum' => $values];
+      $description = FeatureTypeMapper::composeDescription(null, $values, $labels);
+      if ($description !== null) {
+        $value['description'] = $description;
       }
       $branches[] = [
         'type'       => 'object',
@@ -133,7 +140,7 @@ class ConfigAPI extends AbstractModelAPI {
         'properties' => [
           'configSectionId' => ['type' => 'integer'],
           'item'            => ['type' => 'string', 'const' => $item],
-          'value'           => ['oneOf' => $valueEnum],
+          'value'           => $value,
         ],
         'required'   => ['configSectionId', 'item', 'value'],
       ];

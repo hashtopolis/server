@@ -2344,28 +2344,30 @@
                                                     "type": "integer"
                                                 },
                                                 "version": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Version of the cracker this binary holds."
                                                 },
                                                 "downloadUrl": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
+                                                    "description": "External http or https url the agent downloads the binary archive from. The server keeps a local copy for later analysis: it is fetched on creation, and changing the url fetches it again, the change being rejected when the download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType, which points this url at the download endpoint of this server and then makes it unchangeable."
                                                 },
                                                 "binaryName": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Name of the executable inside the archive that the agent runs."
                                                 },
                                                 "filename": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                    "description": "Name of the locally stored 7z archive, null while the binary is downloaded from downloadUrl. Cannot be set."
                                                 },
                                                 "accessGroupId": {
                                                     "type": "integer",
-                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
+                                                    "description": "Access group this cracker binary belongs to. Required on creation, where the requesting user must be a member, and changeable only by a user who belongs to both the current and the new group."
                                                 }
                                             }
                                         }
@@ -2419,46 +2421,58 @@
                                                     "type": "string"
                                                 },
                                                 "attackCmd": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "The cracker arguments the agents run, with #HL# standing in for the hashlist file."
                                                 },
                                                 "chunkTime": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "How long one chunk of this task should keep an agent busy, in seconds. The chunk size is derived from it and the benchmark of the agent."
                                                 },
                                                 "statusTimer": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "How often an agent working on this task reports its progress, in seconds."
                                                 },
                                                 "keyspace": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "Size of the keyspace of the task, as the cracker measured it. Zero until an agent has reported it."
                                                 },
                                                 "keyspaceProgress": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "How far into the keyspace the task has been handed out, which is where the next chunk begins."
                                                 },
                                                 "priority": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Dispatch order: of the tasks an agent may take, the one with the highest priority is handed out first."
                                                 },
                                                 "maxAgents": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "How many agents may work on this task at the same time. Zero leaves it unlimited."
                                                 },
                                                 "color": {
                                                     "type": [
                                                         "string",
                                                         "null"
-                                                    ]
+                                                    ],
+                                                    "description": "Colour the web interface tints the task with, as an RGB hex triplet without the leading hash sign."
                                                 },
                                                 "isSmall": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether the task is small, in which case only ever one agent is assigned to it."
                                                 },
                                                 "isCpuTask": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether the task is meant for CPU agents rather than for agents with a GPU."
                                                 },
                                                 "useNewBench": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether agents benchmark this task by speed rather than by runtime. Sent to the agent as benchType."
                                                 },
                                                 "skipKeyspace": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "How much of the keyspace to leave out at the beginning of the task."
                                                 },
                                                 "crackerBinaryId": {
                                                     "type": "integer"
@@ -2479,20 +2493,35 @@
                                                     "type": "string"
                                                 },
                                                 "staticChunks": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        0,
+                                                        1,
+                                                        2
+                                                    ],
+                                                    "x-enum-varnames": [
+                                                        "NORMAL",
+                                                        "CHUNK_SIZE",
+                                                        "NUM_CHUNKS"
+                                                    ],
+                                                    "description": "How the keyspace of the task is cut into chunks. Anything but the default reads the chunk size from chunkSize instead of benchmarking the agent.\n\nOne of:\n\n* `0` - Size every chunk from the benchmark of the agent and the chunk time of the task\n* `1` - Give every chunk the fixed size held in chunkSize\n* `2` - Split the keyspace into the number of equally sized chunks held in chunkSize"
                                                 },
                                                 "chunkSize": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "The fixed chunk size, or the number of chunks, that staticChunks asks for. Ignored while staticChunks is at its default."
                                                 },
                                                 "forcePipe": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether the candidates are always piped into the cracker, which applies the rules before the rejects."
                                                 },
                                                 "preprocessorId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "The preprocessor generating the candidates of this task, or 0 for none."
                                                 },
                                                 "preprocessorCommand": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Arguments handed to the preprocessor, without its binary name and without the range options the server adds itself."
                                                 }
                                             }
                                         }
@@ -2731,28 +2760,30 @@
                                                     "type": "integer"
                                                 },
                                                 "version": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Version of the cracker this binary holds."
                                                 },
                                                 "downloadUrl": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
+                                                    "description": "External http or https url the agent downloads the binary archive from. The server keeps a local copy for later analysis: it is fetched on creation, and changing the url fetches it again, the change being rejected when the download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType, which points this url at the download endpoint of this server and then makes it unchangeable."
                                                 },
                                                 "binaryName": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Name of the executable inside the archive that the agent runs."
                                                 },
                                                 "filename": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                    "description": "Name of the locally stored 7z archive, null while the binary is downloaded from downloadUrl. Cannot be set."
                                                 },
                                                 "accessGroupId": {
                                                     "type": "integer",
-                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
+                                                    "description": "Access group this cracker binary belongs to. Required on creation, where the requesting user must be a member, and changeable only by a user who belongs to both the current and the new group."
                                                 }
                                             }
                                         }
@@ -2806,46 +2837,58 @@
                                                     "type": "string"
                                                 },
                                                 "attackCmd": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "The cracker arguments the agents run, with #HL# standing in for the hashlist file."
                                                 },
                                                 "chunkTime": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "How long one chunk of this task should keep an agent busy, in seconds. The chunk size is derived from it and the benchmark of the agent."
                                                 },
                                                 "statusTimer": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "How often an agent working on this task reports its progress, in seconds."
                                                 },
                                                 "keyspace": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "Size of the keyspace of the task, as the cracker measured it. Zero until an agent has reported it."
                                                 },
                                                 "keyspaceProgress": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "How far into the keyspace the task has been handed out, which is where the next chunk begins."
                                                 },
                                                 "priority": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Dispatch order: of the tasks an agent may take, the one with the highest priority is handed out first."
                                                 },
                                                 "maxAgents": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "How many agents may work on this task at the same time. Zero leaves it unlimited."
                                                 },
                                                 "color": {
                                                     "type": [
                                                         "string",
                                                         "null"
-                                                    ]
+                                                    ],
+                                                    "description": "Colour the web interface tints the task with, as an RGB hex triplet without the leading hash sign."
                                                 },
                                                 "isSmall": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether the task is small, in which case only ever one agent is assigned to it."
                                                 },
                                                 "isCpuTask": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether the task is meant for CPU agents rather than for agents with a GPU."
                                                 },
                                                 "useNewBench": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether agents benchmark this task by speed rather than by runtime. Sent to the agent as benchType."
                                                 },
                                                 "skipKeyspace": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "How much of the keyspace to leave out at the beginning of the task."
                                                 },
                                                 "crackerBinaryId": {
                                                     "type": "integer"
@@ -2866,20 +2909,35 @@
                                                     "type": "string"
                                                 },
                                                 "staticChunks": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        0,
+                                                        1,
+                                                        2
+                                                    ],
+                                                    "x-enum-varnames": [
+                                                        "NORMAL",
+                                                        "CHUNK_SIZE",
+                                                        "NUM_CHUNKS"
+                                                    ],
+                                                    "description": "How the keyspace of the task is cut into chunks. Anything but the default reads the chunk size from chunkSize instead of benchmarking the agent.\n\nOne of:\n\n* `0` - Size every chunk from the benchmark of the agent and the chunk time of the task\n* `1` - Give every chunk the fixed size held in chunkSize\n* `2` - Split the keyspace into the number of equally sized chunks held in chunkSize"
                                                 },
                                                 "chunkSize": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "The fixed chunk size, or the number of chunks, that staticChunks asks for. Ignored while staticChunks is at its default."
                                                 },
                                                 "forcePipe": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether the candidates are always piped into the cracker, which applies the rules before the rejects."
                                                 },
                                                 "preprocessorId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "The preprocessor generating the candidates of this task, or 0 for none."
                                                 },
                                                 "preprocessorCommand": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Arguments handed to the preprocessor, without its binary name and without the range options the server adds itself."
                                                 }
                                             }
                                         }
@@ -3118,28 +3176,30 @@
                                                     "type": "integer"
                                                 },
                                                 "version": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Version of the cracker this binary holds."
                                                 },
                                                 "downloadUrl": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
+                                                    "description": "External http or https url the agent downloads the binary archive from. The server keeps a local copy for later analysis: it is fetched on creation, and changing the url fetches it again, the change being rejected when the download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType, which points this url at the download endpoint of this server and then makes it unchangeable."
                                                 },
                                                 "binaryName": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Name of the executable inside the archive that the agent runs."
                                                 },
                                                 "filename": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                    "description": "Name of the locally stored 7z archive, null while the binary is downloaded from downloadUrl. Cannot be set."
                                                 },
                                                 "accessGroupId": {
                                                     "type": "integer",
-                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
+                                                    "description": "Access group this cracker binary belongs to. Required on creation, where the requesting user must be a member, and changeable only by a user who belongs to both the current and the new group."
                                                 }
                                             }
                                         }
@@ -3193,46 +3253,58 @@
                                                     "type": "string"
                                                 },
                                                 "attackCmd": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "The cracker arguments the agents run, with #HL# standing in for the hashlist file."
                                                 },
                                                 "chunkTime": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "How long one chunk of this task should keep an agent busy, in seconds. The chunk size is derived from it and the benchmark of the agent."
                                                 },
                                                 "statusTimer": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "How often an agent working on this task reports its progress, in seconds."
                                                 },
                                                 "keyspace": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "Size of the keyspace of the task, as the cracker measured it. Zero until an agent has reported it."
                                                 },
                                                 "keyspaceProgress": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "How far into the keyspace the task has been handed out, which is where the next chunk begins."
                                                 },
                                                 "priority": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Dispatch order: of the tasks an agent may take, the one with the highest priority is handed out first."
                                                 },
                                                 "maxAgents": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "How many agents may work on this task at the same time. Zero leaves it unlimited."
                                                 },
                                                 "color": {
                                                     "type": [
                                                         "string",
                                                         "null"
-                                                    ]
+                                                    ],
+                                                    "description": "Colour the web interface tints the task with, as an RGB hex triplet without the leading hash sign."
                                                 },
                                                 "isSmall": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether the task is small, in which case only ever one agent is assigned to it."
                                                 },
                                                 "isCpuTask": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether the task is meant for CPU agents rather than for agents with a GPU."
                                                 },
                                                 "useNewBench": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether agents benchmark this task by speed rather than by runtime. Sent to the agent as benchType."
                                                 },
                                                 "skipKeyspace": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "How much of the keyspace to leave out at the beginning of the task."
                                                 },
                                                 "crackerBinaryId": {
                                                     "type": "integer"
@@ -3253,20 +3325,35 @@
                                                     "type": "string"
                                                 },
                                                 "staticChunks": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        0,
+                                                        1,
+                                                        2
+                                                    ],
+                                                    "x-enum-varnames": [
+                                                        "NORMAL",
+                                                        "CHUNK_SIZE",
+                                                        "NUM_CHUNKS"
+                                                    ],
+                                                    "description": "How the keyspace of the task is cut into chunks. Anything but the default reads the chunk size from chunkSize instead of benchmarking the agent.\n\nOne of:\n\n* `0` - Size every chunk from the benchmark of the agent and the chunk time of the task\n* `1` - Give every chunk the fixed size held in chunkSize\n* `2` - Split the keyspace into the number of equally sized chunks held in chunkSize"
                                                 },
                                                 "chunkSize": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "The fixed chunk size, or the number of chunks, that staticChunks asks for. Ignored while staticChunks is at its default."
                                                 },
                                                 "forcePipe": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether the candidates are always piped into the cracker, which applies the rules before the rejects."
                                                 },
                                                 "preprocessorId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "The preprocessor generating the candidates of this task, or 0 for none."
                                                 },
                                                 "preprocessorCommand": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Arguments handed to the preprocessor, without its binary name and without the range options the server adds itself."
                                                 }
                                             }
                                         }
@@ -3557,28 +3644,30 @@
                                                     "type": "integer"
                                                 },
                                                 "version": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Version of the cracker this binary holds."
                                                 },
                                                 "downloadUrl": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "description": "External http/https url where the agent downloads the binary archive from. The server keeps a local copy of the archive for later analysis: on creation it is downloaded from this url, and changing the url re-downloads it from the new url. The creation or change is rejected if that download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType: when the archive is uploaded with sourceType, this url is set automatically to the download endpoint of this server and cannot be changed afterwards."
+                                                    "description": "External http or https url the agent downloads the binary archive from. The server keeps a local copy for later analysis: it is fetched on creation, and changing the url fetches it again, the change being rejected when the download fails or the archive is not a valid 7z file. Mutually exclusive with sourceType, which points this url at the download endpoint of this server and then makes it unchangeable."
                                                 },
                                                 "binaryName": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Name of the executable inside the archive that the agent runs."
                                                 },
                                                 "filename": {
                                                     "type": [
                                                         "string",
                                                         "null"
                                                     ],
-                                                    "description": "Filename of the locally stored 7z archive, null when the binary is downloaded from the downloadUrl. Cannot be provided."
+                                                    "description": "Name of the locally stored 7z archive, null while the binary is downloaded from downloadUrl. Cannot be set."
                                                 },
                                                 "accessGroupId": {
                                                     "type": "integer",
-                                                    "description": "Access group containing this cracker binary. Required on creation; the requesting user must belong to the group. It can be changed only when the user belongs to both the current and new groups."
+                                                    "description": "Access group this cracker binary belongs to. Required on creation, where the requesting user must be a member, and changeable only by a user who belongs to both the current and the new group."
                                                 }
                                             }
                                         }
@@ -3632,46 +3721,58 @@
                                                     "type": "string"
                                                 },
                                                 "attackCmd": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "The cracker arguments the agents run, with #HL# standing in for the hashlist file."
                                                 },
                                                 "chunkTime": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "How long one chunk of this task should keep an agent busy, in seconds. The chunk size is derived from it and the benchmark of the agent."
                                                 },
                                                 "statusTimer": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "How often an agent working on this task reports its progress, in seconds."
                                                 },
                                                 "keyspace": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "Size of the keyspace of the task, as the cracker measured it. Zero until an agent has reported it."
                                                 },
                                                 "keyspaceProgress": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "How far into the keyspace the task has been handed out, which is where the next chunk begins."
                                                 },
                                                 "priority": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "Dispatch order: of the tasks an agent may take, the one with the highest priority is handed out first."
                                                 },
                                                 "maxAgents": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "How many agents may work on this task at the same time. Zero leaves it unlimited."
                                                 },
                                                 "color": {
                                                     "type": [
                                                         "string",
                                                         "null"
-                                                    ]
+                                                    ],
+                                                    "description": "Colour the web interface tints the task with, as an RGB hex triplet without the leading hash sign."
                                                 },
                                                 "isSmall": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether the task is small, in which case only ever one agent is assigned to it."
                                                 },
                                                 "isCpuTask": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether the task is meant for CPU agents rather than for agents with a GPU."
                                                 },
                                                 "useNewBench": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether agents benchmark this task by speed rather than by runtime. Sent to the agent as benchType."
                                                 },
                                                 "skipKeyspace": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "How much of the keyspace to leave out at the beginning of the task."
                                                 },
                                                 "crackerBinaryId": {
                                                     "type": "integer"
@@ -3692,20 +3793,35 @@
                                                     "type": "string"
                                                 },
                                                 "staticChunks": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        0,
+                                                        1,
+                                                        2
+                                                    ],
+                                                    "x-enum-varnames": [
+                                                        "NORMAL",
+                                                        "CHUNK_SIZE",
+                                                        "NUM_CHUNKS"
+                                                    ],
+                                                    "description": "How the keyspace of the task is cut into chunks. Anything but the default reads the chunk size from chunkSize instead of benchmarking the agent.\n\nOne of:\n\n* `0` - Size every chunk from the benchmark of the agent and the chunk time of the task\n* `1` - Give every chunk the fixed size held in chunkSize\n* `2` - Split the keyspace into the number of equally sized chunks held in chunkSize"
                                                 },
                                                 "chunkSize": {
                                                     "type": "integer",
-                                                    "format": "int64"
+                                                    "format": "int64",
+                                                    "description": "The fixed chunk size, or the number of chunks, that staticChunks asks for. Ignored while staticChunks is at its default."
                                                 },
                                                 "forcePipe": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "description": "Whether the candidates are always piped into the cracker, which applies the rules before the rejects."
                                                 },
                                                 "preprocessorId": {
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "description": "The preprocessor generating the candidates of this task, or 0 for none."
                                                 },
                                                 "preprocessorCommand": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Arguments handed to the preprocessor, without its binary name and without the range options the server adds itself."
                                                 }
                                             }
                                         }
