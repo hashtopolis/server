@@ -8,6 +8,7 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\StoredValue;
 use Hashtopolis\TestBase;
 use Hashtopolis\inc\defines\DConfig;
+use Hashtopolis\inc\defines\DHashcatStatus;
 
 require_once(dirname(__FILE__) . '/../TestBase.php');
 
@@ -618,9 +619,13 @@ final class UtilTest extends TestBase {
    * getStaticArray returns the state label for each chunk state.
    */
   public function testGetStaticArrayStates(): void {
-    $this->assertEquals("New", Util::getStaticArray("0", "states"));
-    $this->assertEquals("Running", Util::getStaticArray("2", "states"));
-    $this->assertEquals("Cracked", Util::getStaticArray("5", "states"));
+    $this->assertEquals("New", Util::getStaticArray(DHashcatStatus::INIT, "states"));
+    $this->assertEquals("Running", Util::getStaticArray(DHashcatStatus::RUNNING, "states"));
+    $this->assertEquals("Cracked", Util::getStaticArray(DHashcatStatus::CRACKED, "states"));
+    $this->assertEquals("Aborted at runtime", Util::getStaticArray(DHashcatStatus::ABORTED_RUNTIME, "states"));
+    $this->assertEquals("Error", Util::getStaticArray(DHashcatStatus::ERROR, "states"));
+    $this->assertEquals("Autodetect", Util::getStaticArray(DHashcatStatus::AUTODETECT, "states"));
+    $this->assertEquals("Unknown", Util::getStaticArray(12, "states"));
   }
   
   /**

@@ -146,6 +146,7 @@ final class AccessGroupUtilsTest extends TestBase {
     $statusCases = [
       DHashcatStatus::INIT => DHashcatStatus::ABORTED,
       DHashcatStatus::AUTOTUNE => DHashcatStatus::AUTOTUNE,
+      DHashcatStatus::SELFTEST => DHashcatStatus::SELFTEST,
       DHashcatStatus::RUNNING => DHashcatStatus::ABORTED,
       DHashcatStatus::PAUSED => DHashcatStatus::PAUSED,
       DHashcatStatus::EXHAUSTED => DHashcatStatus::EXHAUSTED,
@@ -154,7 +155,10 @@ final class AccessGroupUtilsTest extends TestBase {
       DHashcatStatus::QUIT => DHashcatStatus::QUIT,
       DHashcatStatus::BYPASS => DHashcatStatus::BYPASS,
       DHashcatStatus::ABORTED_CHECKPOINT => DHashcatStatus::ABORTED_CHECKPOINT,
-      DHashcatStatus::STATUS_ABORTED_RUNTIME => DHashcatStatus::STATUS_ABORTED_RUNTIME,
+      DHashcatStatus::ABORTED_RUNTIME => DHashcatStatus::ABORTED_RUNTIME,
+      DHashcatStatus::ERROR => DHashcatStatus::ERROR,
+      DHashcatStatus::ABORTED_FINISH => DHashcatStatus::ABORTED_FINISH,
+      DHashcatStatus::AUTODETECT => DHashcatStatus::AUTODETECT,
     ];
 
 

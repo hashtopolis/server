@@ -41095,47 +41095,67 @@
                                                         },
                                                         {
                                                             "const": 2,
-                                                            "title": "Running",
+                                                            "title": "Selftest",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 3,
-                                                            "title": "Paused",
+                                                            "title": "Running",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 4,
-                                                            "title": "Exhausted",
+                                                            "title": "Paused",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 5,
-                                                            "title": "Cracked",
+                                                            "title": "Exhausted",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 6,
-                                                            "title": "Aborted",
+                                                            "title": "Cracked",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 7,
-                                                            "title": "Quit",
+                                                            "title": "Aborted",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 8,
-                                                            "title": "Bypass",
+                                                            "title": "Quit",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 9,
-                                                            "title": "Aborted at checkpoint",
+                                                            "title": "Bypass",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 10,
+                                                            "title": "Aborted at checkpoint",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 11,
                                                             "title": "Aborted at runtime",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 13,
+                                                            "title": "Error",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 14,
+                                                            "title": "Aborted at finish",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 16,
+                                                            "title": "Autodetect",
                                                             "type": "integer"
                                                         }
                                                     ]
@@ -42106,47 +42126,67 @@
                                                         },
                                                         {
                                                             "const": 2,
-                                                            "title": "Running",
+                                                            "title": "Selftest",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 3,
-                                                            "title": "Paused",
+                                                            "title": "Running",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 4,
-                                                            "title": "Exhausted",
+                                                            "title": "Paused",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 5,
-                                                            "title": "Cracked",
+                                                            "title": "Exhausted",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 6,
-                                                            "title": "Aborted",
+                                                            "title": "Cracked",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 7,
-                                                            "title": "Quit",
+                                                            "title": "Aborted",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 8,
-                                                            "title": "Bypass",
+                                                            "title": "Quit",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 9,
-                                                            "title": "Aborted at checkpoint",
+                                                            "title": "Bypass",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 10,
+                                                            "title": "Aborted at checkpoint",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 11,
                                                             "title": "Aborted at runtime",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 13,
+                                                            "title": "Error",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 14,
+                                                            "title": "Aborted at finish",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 16,
+                                                            "title": "Autodetect",
                                                             "type": "integer"
                                                         }
                                                     ]
@@ -43169,47 +43209,67 @@
                                                         },
                                                         {
                                                             "const": 2,
-                                                            "title": "Running",
+                                                            "title": "Selftest",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 3,
-                                                            "title": "Paused",
+                                                            "title": "Running",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 4,
-                                                            "title": "Exhausted",
+                                                            "title": "Paused",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 5,
-                                                            "title": "Cracked",
+                                                            "title": "Exhausted",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 6,
-                                                            "title": "Aborted",
+                                                            "title": "Cracked",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 7,
-                                                            "title": "Quit",
+                                                            "title": "Aborted",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 8,
-                                                            "title": "Bypass",
+                                                            "title": "Quit",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 9,
-                                                            "title": "Aborted at checkpoint",
+                                                            "title": "Bypass",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 10,
+                                                            "title": "Aborted at checkpoint",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 11,
                                                             "title": "Aborted at runtime",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 13,
+                                                            "title": "Error",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 14,
+                                                            "title": "Aborted at finish",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 16,
+                                                            "title": "Autodetect",
                                                             "type": "integer"
                                                         }
                                                     ]
@@ -49195,47 +49255,67 @@
                                             },
                                             {
                                                 "const": 2,
-                                                "title": "Running",
+                                                "title": "Selftest",
                                                 "type": "integer"
                                             },
                                             {
                                                 "const": 3,
-                                                "title": "Paused",
+                                                "title": "Running",
                                                 "type": "integer"
                                             },
                                             {
                                                 "const": 4,
-                                                "title": "Exhausted",
+                                                "title": "Paused",
                                                 "type": "integer"
                                             },
                                             {
                                                 "const": 5,
-                                                "title": "Cracked",
+                                                "title": "Exhausted",
                                                 "type": "integer"
                                             },
                                             {
                                                 "const": 6,
-                                                "title": "Aborted",
+                                                "title": "Cracked",
                                                 "type": "integer"
                                             },
                                             {
                                                 "const": 7,
-                                                "title": "Quit",
+                                                "title": "Aborted",
                                                 "type": "integer"
                                             },
                                             {
                                                 "const": 8,
-                                                "title": "Bypass",
+                                                "title": "Quit",
                                                 "type": "integer"
                                             },
                                             {
                                                 "const": 9,
-                                                "title": "Aborted at checkpoint",
+                                                "title": "Bypass",
                                                 "type": "integer"
                                             },
                                             {
                                                 "const": 10,
+                                                "title": "Aborted at checkpoint",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 11,
                                                 "title": "Aborted at runtime",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 13,
+                                                "title": "Error",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 14,
+                                                "title": "Aborted at finish",
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "const": 16,
+                                                "title": "Autodetect",
                                                 "type": "integer"
                                             }
                                         ]
@@ -49800,47 +49880,67 @@
                                                 },
                                                 {
                                                     "const": 2,
-                                                    "title": "Running",
+                                                    "title": "Selftest",
                                                     "type": "integer"
                                                 },
                                                 {
                                                     "const": 3,
-                                                    "title": "Paused",
+                                                    "title": "Running",
                                                     "type": "integer"
                                                 },
                                                 {
                                                     "const": 4,
-                                                    "title": "Exhausted",
+                                                    "title": "Paused",
                                                     "type": "integer"
                                                 },
                                                 {
                                                     "const": 5,
-                                                    "title": "Cracked",
+                                                    "title": "Exhausted",
                                                     "type": "integer"
                                                 },
                                                 {
                                                     "const": 6,
-                                                    "title": "Aborted",
+                                                    "title": "Cracked",
                                                     "type": "integer"
                                                 },
                                                 {
                                                     "const": 7,
-                                                    "title": "Quit",
+                                                    "title": "Aborted",
                                                     "type": "integer"
                                                 },
                                                 {
                                                     "const": 8,
-                                                    "title": "Bypass",
+                                                    "title": "Quit",
                                                     "type": "integer"
                                                 },
                                                 {
                                                     "const": 9,
-                                                    "title": "Aborted at checkpoint",
+                                                    "title": "Bypass",
                                                     "type": "integer"
                                                 },
                                                 {
                                                     "const": 10,
+                                                    "title": "Aborted at checkpoint",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 11,
                                                     "title": "Aborted at runtime",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 13,
+                                                    "title": "Error",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 14,
+                                                    "title": "Aborted at finish",
+                                                    "type": "integer"
+                                                },
+                                                {
+                                                    "const": 16,
+                                                    "title": "Autodetect",
                                                     "type": "integer"
                                                 }
                                             ]
@@ -58773,47 +58873,67 @@
                                                         },
                                                         {
                                                             "const": 2,
-                                                            "title": "Running",
+                                                            "title": "Selftest",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 3,
-                                                            "title": "Paused",
+                                                            "title": "Running",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 4,
-                                                            "title": "Exhausted",
+                                                            "title": "Paused",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 5,
-                                                            "title": "Cracked",
+                                                            "title": "Exhausted",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 6,
-                                                            "title": "Aborted",
+                                                            "title": "Cracked",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 7,
-                                                            "title": "Quit",
+                                                            "title": "Aborted",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 8,
-                                                            "title": "Bypass",
+                                                            "title": "Quit",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 9,
-                                                            "title": "Aborted at checkpoint",
+                                                            "title": "Bypass",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 10,
+                                                            "title": "Aborted at checkpoint",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 11,
                                                             "title": "Aborted at runtime",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 13,
+                                                            "title": "Error",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 14,
+                                                            "title": "Aborted at finish",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 16,
+                                                            "title": "Autodetect",
                                                             "type": "integer"
                                                         }
                                                     ]
@@ -59298,47 +59418,67 @@
                                                         },
                                                         {
                                                             "const": 2,
-                                                            "title": "Running",
+                                                            "title": "Selftest",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 3,
-                                                            "title": "Paused",
+                                                            "title": "Running",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 4,
-                                                            "title": "Exhausted",
+                                                            "title": "Paused",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 5,
-                                                            "title": "Cracked",
+                                                            "title": "Exhausted",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 6,
-                                                            "title": "Aborted",
+                                                            "title": "Cracked",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 7,
-                                                            "title": "Quit",
+                                                            "title": "Aborted",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 8,
-                                                            "title": "Bypass",
+                                                            "title": "Quit",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 9,
-                                                            "title": "Aborted at checkpoint",
+                                                            "title": "Bypass",
                                                             "type": "integer"
                                                         },
                                                         {
                                                             "const": 10,
+                                                            "title": "Aborted at checkpoint",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 11,
                                                             "title": "Aborted at runtime",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 13,
+                                                            "title": "Error",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 14,
+                                                            "title": "Aborted at finish",
+                                                            "type": "integer"
+                                                        },
+                                                        {
+                                                            "const": 16,
+                                                            "title": "Autodetect",
                                                             "type": "integer"
                                                         }
                                                     ]

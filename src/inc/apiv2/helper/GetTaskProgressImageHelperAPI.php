@@ -8,6 +8,7 @@ use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
+use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\HTException;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -186,7 +187,7 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
         }
         
         if ($end - $start < 3) {
-          if ($chunk->getState() >= 6) {
+          if (in_array($chunk->getState(), DHashcatStatus::ABORTED_STATES, true)) {
             imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $red);
           }
           else if ($chunk->getCracked() > 0) {
@@ -197,7 +198,7 @@ class GetTaskProgressImageHelperAPI extends AbstractHelperAPI {
           }
         }
         else {
-          if ($chunk->getState() >= 6) {
+          if (in_array($chunk->getState(), DHashcatStatus::ABORTED_STATES, true)) {
             imagerectangle($image, $start, 0, $end, ($size[1] - 1), $red);
           }
           else {
