@@ -619,7 +619,7 @@ final class UtilTest extends TestBase {
    * getStaticArray returns the state label for each chunk state.
    */
   public function testGetStaticArrayStates(): void {
-    $this->assertEquals("Init", Util::getStaticArray(DHashcatStatus::INIT, "states"));
+    $this->assertEquals("New", Util::getStaticArray(DHashcatStatus::INIT, "states"));
     $this->assertEquals("Running", Util::getStaticArray(DHashcatStatus::RUNNING, "states"));
     $this->assertEquals("Cracked", Util::getStaticArray(DHashcatStatus::CRACKED, "states"));
     $this->assertEquals("Aborted at runtime", Util::getStaticArray(DHashcatStatus::ABORTED_RUNTIME, "states"));
