@@ -38,6 +38,7 @@ use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DDeviceCompress;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\defines\DFileType;
+use Hashtopolis\inc\defines\DHashcatStatus;
 use Hashtopolis\inc\defines\DHashlistFormat;
 use Hashtopolis\inc\defines\DLogEntry;
 use Hashtopolis\inc\defines\DLogEntryIssuer;
@@ -1050,17 +1051,21 @@ class Util {
       "hashes_binary"
     );
     $states = array(
-      "New",
-      "Init",
-      "Running",
-      "Paused",
-      "Exhausted",
-      "Cracked",
-      "Aborted",
-      "Quit",
-      "Bypass",
-      "Trimmed",
-      "Aborting..."
+      DHashcatStatus::INIT               => "New",
+      DHashcatStatus::AUTOTUNE           => "Autotune",
+      DHashcatStatus::SELFTEST           => "Selftest",
+      DHashcatStatus::RUNNING            => "Running",
+      DHashcatStatus::PAUSED             => "Paused",
+      DHashcatStatus::EXHAUSTED          => "Exhausted",
+      DHashcatStatus::CRACKED            => "Cracked",
+      DHashcatStatus::ABORTED            => "Aborted",
+      DHashcatStatus::QUIT               => "Quit",
+      DHashcatStatus::BYPASS             => "Bypass",
+      DHashcatStatus::ABORTED_CHECKPOINT => "Aborted at checkpoint",
+      DHashcatStatus::ABORTED_RUNTIME    => "Aborted at runtime",
+      DHashcatStatus::ERROR              => "Error",
+      DHashcatStatus::ABORTED_FINISH     => "Aborted at finish",
+      DHashcatStatus::AUTODETECT          => "Autodetect"
     );
     switch ($id) {
       case 'os':
@@ -1069,7 +1074,7 @@ class Util {
         }
         return $oses[$val];
       case 'states':
-        return $states[$val];
+        return $states[$val] ?? "Unknown";
       case 'formats':
         return $formats[$val];
       case 'formattables':
