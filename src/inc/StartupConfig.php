@@ -309,7 +309,7 @@ class StartupConfig {
   }
   
   public function getVersion(): string {
-    return "v1.1.1";
+    return "v1.1.1+dev";
   }
   
   public function getBuild(): string {
