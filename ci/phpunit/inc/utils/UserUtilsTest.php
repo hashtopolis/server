@@ -101,6 +101,18 @@ final class UserUtilsTest extends TestBase {
     }
   }
   
+  /**
+   * @throws InternalError
+   * @throws HttpError
+   * @throws HttpConflict
+   */
+  public function testCreateUserRejectsASessionLifetimeBelowTheMinimum(): void {
+    $username = $this->uniqueUsername('short_lifetime');
+    
+    $this->expectException(HTException::class);
+    UserUtils::createUser($username, $username . '@example.com', $this->createRightGroup()->getId(), $this->adminUser, true, RefreshTokenUtils::MIN_LIFETIME_SECONDS - 1);
+  }
+  
   private function uniqueUsername(string $prefix): string {
     return $prefix . '_' . uniqid();
   }

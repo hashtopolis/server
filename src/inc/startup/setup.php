@@ -18,6 +18,7 @@ use Hashtopolis\inc\Util;
 use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\CrackerUtils;
 use Hashtopolis\inc\utils\MigrationUtils;
+use Hashtopolis\inc\utils\RefreshTokenUtils;
 
 session_start();
 
@@ -181,7 +182,7 @@ if ($initialSetup === true) {
   $options = array('cost' => 12);
   $newHash = password_hash($CIPHER, PASSWORD_BCRYPT, $options);
   
-  $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId());
+  $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), RefreshTokenUtils::MIN_LIFETIME_SECONDS, $group->getId());
   $user = Factory::getUserFactory()->save($user);
   
   // create default access group and associate admin user to it
