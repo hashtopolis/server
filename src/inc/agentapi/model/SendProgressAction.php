@@ -394,7 +394,6 @@ final class SendProgressAction implements AgentAction {
                 break;
         }
 
-        Util::cleaning();
         return $this->success($response, PActions::SEND_PROGRESS, [
             PResponseSendProgress::NUM_CRACKED => $sumCracked,
             PResponseSendProgress::NUM_SKIPPED => $skipped,

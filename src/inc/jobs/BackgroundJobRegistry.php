@@ -4,6 +4,7 @@ namespace Hashtopolis\inc\jobs;
 
 use Hashtopolis\inc\defines\DBackgroundJobType;
 use Hashtopolis\inc\jobs\handlers\ChecksumFileJob;
+use Hashtopolis\inc\jobs\handlers\CleaningJob;
 use Hashtopolis\inc\jobs\handlers\RecountFileJob;
 use Hashtopolis\inc\jobs\handlers\ScanCrackerJob;
 
@@ -13,6 +14,7 @@ class BackgroundJobRegistry {
     DBackgroundJobType::RECOUNT_FILE => RecountFileJob::class,
     DBackgroundJobType::SCAN_CRACKER => ScanCrackerJob::class,
     DBackgroundJobType::CHECKSUM_FILE => ChecksumFileJob::class,
+    DBackgroundJobType::CLEANING => CleaningJob::class,
   ];
 
   /**
@@ -32,5 +34,22 @@ class BackgroundJobRegistry {
       return null;
     }
     return new $class();
+  }
+
+  /**
+   * All handlers which are scheduled periodically by the PeriodicJobScheduler instead of
+   * being enqueued on demand.
+   *
+   * @return array<string, PeriodicBackgroundJobHandler> job type identifier to handler
+   */
+  public static function getPeriodicHandlers(): array {
+    $handlers = [];
+    foreach (self::HANDLERS as $jobType => $class) {
+      $handler = new $class();
+      if ($handler instanceof PeriodicBackgroundJobHandler) {
+        $handlers[$jobType] = $handler;
+      }
+    }
+    return $handlers;
   }
 }

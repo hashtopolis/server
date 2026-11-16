@@ -6,4 +6,5 @@ class DBackgroundJobType {
   const RECOUNT_FILE = 'recount_file';
   const SCAN_CRACKER = 'scan_cracker';
   const CHECKSUM_FILE = 'checksum_file';
+  const CLEANING = 'cleaning';
 }
