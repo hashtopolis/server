@@ -202,10 +202,10 @@ class TestBase extends TestCase {
   /**
    * @throws Exception
    */
-  protected function createHashlist(AccessGroup $group, HashType $hashType, int $isSecret = 0): Hashlist {
+  protected function createHashlist(AccessGroup $group, HashType $hashType, int $isSecret = 0, int $hexSalt = 0): Hashlist {
     $hashlist = $this->createDatabaseObject(
       Factory::getHashlistFactory(),
-      new Hashlist(null, 'hashlist_' . uniqid(), DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, $isSecret, 0, 0, $group->getId(), '', 0, 0, 0)
+      new Hashlist(null, 'hashlist_' . uniqid(), DHashlistFormat::PLAIN, $hashType->getId(), 1, ':', 0, $isSecret, $hexSalt, 0, $group->getId(), '', 0, 0, 0)
     );
     $this->assertTrue($hashlist instanceof Hashlist);
     return $hashlist;
