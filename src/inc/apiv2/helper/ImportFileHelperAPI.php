@@ -304,7 +304,14 @@ class ImportFileHelperAPI extends AbstractHelperAPI {
     }
     $dt = (new DateTime())->setTimeStamp($ds['upload_expires']);
     if (($dt->getTimestamp() - $now->getTimestamp()) <= 0) {
-      Util::tusFileCleaning();
+      // reclaim this single expired upload right away, but leave the rest to the periodic
+      // cleaning job so no directory scan happens while the client waits for a response
+      // the upload file is known to exist here, as its absence returned a 404 above
+      unlink($filename);
+      $metaPath = self::getMetaPath($args['id']);
+      if (file_exists($metaPath)) {
+        unlink($metaPath);
+      }
       $response->getBody()->write('Upload token expired');
       return $response->withStatus(410);
     }
