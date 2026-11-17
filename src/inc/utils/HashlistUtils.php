@@ -27,6 +27,7 @@ use Hashtopolis\dba\models\Zap;
 use Hashtopolis\dba\models\AgentZap;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Speed;
+use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DDirectories;
@@ -1236,17 +1237,36 @@ class HashlistUtils {
    * @param $accessGroupId int
    * @param $user User
    * @throws HTException
+   * @throws HttpConflict
    * @throws Exception
    */
   public static function changeAccessGroup(int $hashlistId, int $accessGroupId, User $user): void {
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     $accessGroup = AccessGroupUtils::getGroup($accessGroupId);
-    
+
     $userAccessGroupIds = Util::getAccessGroupIds($user->getId());
     if (!in_array($accessGroupId, $userAccessGroupIds) || !in_array($hashlist->getAccessGroupId(), $userAccessGroupIds)) {
       throw new HTException("No access to this group!");
     }
-    
+
+    // the cracker binary of a task cannot be changed, so the hashlist cannot be moved if a task of it
+    // uses a binary of another access group, agents of the new group might have no access to it
+    $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=", Factory::getTaskWrapperFactory());
+    $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
+    $joined = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    /** @var Task[] $tasks */
+    $tasks = $joined[Factory::getTaskFactory()->getModelName()];
+    $mismatchingTaskIds = [];
+    foreach ($tasks as $task) {
+      $binary = Factory::getCrackerBinaryFactory()->get($task->getCrackerBinaryId());
+      if ($binary !== null && $binary->getAccessGroupId() != $accessGroup->getId()) {
+        $mismatchingTaskIds[] = $task->getId();
+      }
+    }
+    if (sizeof($mismatchingTaskIds) > 0) {
+      throw new HttpConflict("The hashlist cannot be moved to this access group, the following tasks reference this hashlist and use a cracker binary of another access group: " . implode(", ", $mismatchingTaskIds));
+    }
+
     $qF = new QueryFilter(Hashlist::HASHLIST_ID, $hashlist->getId(), "=");
     $uS = new UpdateSet(Hashlist::ACCESS_GROUP_ID, $accessGroup->getId());
     Factory::getHashlistFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
