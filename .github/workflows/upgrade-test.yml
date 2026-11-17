@@ -71,6 +71,12 @@ jobs:
           - start-tag: v1.1.0
             db-type: postgres
             db-version: postgres:18
+          - start-tag: v1.1.1
+            db-type: mysql
+            db-version: mysql:9.7
+          - start-tag: v1.1.1
+            db-type: postgres
+            db-version: postgres:18
       fail-fast: false
 
     steps:
