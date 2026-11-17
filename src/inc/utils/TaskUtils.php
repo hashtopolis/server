@@ -935,6 +935,10 @@ class TaskUtils {
     else if ($enforcePipe < 0 || $enforcePipe > 1) {
       throw new HttpError("Invalid enforce pipe value");
     }
+    
+    if ($hashlist->getHexSalt() == 1 && !str_contains($attackCmd, "--hex-salt")) {
+      $attackCmd = "--hex-salt " . $attackCmd;
+    }
     $benchtype = ($benchtype == 'speed') ? 1 : 0;
     if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
       $color = null;

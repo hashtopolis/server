@@ -7,6 +7,7 @@ use Exception;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\CrackerBinaryHashtype;
+use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -392,5 +393,80 @@ final class TaskUtilsTest extends TestBase {
     $this->registerDatabaseObject(Factory::getTaskFactory(), $task);
 
     $this->assertSame($fixtures["crackerBinary"]->getId(), $task->getCrackerBinaryId());
+  }
+
+  /**
+   * Test that task creation prepends --hex-salt to the attack command when
+   * the hashlist has the hex salt option enabled.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testCreateTaskPrependsHexSalt(): void {
+    $fixtures = $this->createTaskFixtures();
+    Factory::getHashlistFactory()->set($fixtures["hashlist"], Hashlist::HEX_SALT, 1);
+
+    $task = TaskUtils::createTask(
+      $fixtures["hashlist"]->getId(), "Test", "#HL# -a3 ?l?l?l?l", 600, 30, 'speed', '', false, false, 0, '', 0, 0, 0, [],
+      $fixtures["crackerBinary"]->getId(), $fixtures["user"]
+    );
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    $this->assertNotNull($taskWrapper);
+    // the task must be deleted before the task wrapper it belongs to, the
+    // teardown deletes the registered objects in reverse registration order
+    $this->registerDatabaseObject(Factory::getTaskWrapperFactory(), $taskWrapper);
+    $this->registerDatabaseObject(Factory::getTaskFactory(), $task);
+
+    $attackCmd = $task->getAttackCmd();
+    $this->assertStringContainsString("--hex-salt", $attackCmd);
+    $this->assertStringContainsString("#HL# -a3 ?l?l?l?l", $attackCmd);
+  }
+
+  /**
+   * Test that task creation does not prepend --hex-salt a second time when
+   * the attack command already contains it.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testCreateTaskDoesNotDuplicateHexSalt(): void {
+    $fixtures = $this->createTaskFixtures();
+    Factory::getHashlistFactory()->set($fixtures["hashlist"], Hashlist::HEX_SALT, 1);
+
+    $task = TaskUtils::createTask(
+      $fixtures["hashlist"]->getId(), "Test", "--hex-salt #HL# -a3 ?l?l?l?l", 600, 30, 'speed', '', false, false, 0, '', 0, 0, 0, [],
+      $fixtures["crackerBinary"]->getId(), $fixtures["user"]
+    );
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    $this->assertNotNull($taskWrapper);
+    $this->registerDatabaseObject(Factory::getTaskWrapperFactory(), $taskWrapper);
+    $this->registerDatabaseObject(Factory::getTaskFactory(), $task);
+
+    $attackCmd = $task->getAttackCmd();
+    $this->assertStringContainsString("--hex-salt", $attackCmd);
+    $this->assertSame(1, substr_count($attackCmd, "--hex-salt"));
+  }
+
+  /**
+   * Test that task creation leaves the attack command unchanged when the
+   * hashlist does not have the hex salt option enabled.
+   *
+   * @return void
+   * @throws Exception
+   */
+  public function testCreateTaskDoesNotPrependHexSaltWithoutFlag(): void {
+    $fixtures = $this->createTaskFixtures();
+
+    $task = TaskUtils::createTask(
+      $fixtures["hashlist"]->getId(), "Test", "#HL# -a3 ?l?l?l?l", 600, 30, 'speed', '', false, false, 0, '', 0, 0, 0, [],
+      $fixtures["crackerBinary"]->getId(), $fixtures["user"]
+    );
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    $this->assertNotNull($taskWrapper);
+    $this->registerDatabaseObject(Factory::getTaskWrapperFactory(), $taskWrapper);
+    $this->registerDatabaseObject(Factory::getTaskFactory(), $task);
+
+    $this->assertStringNotContainsString("--hex-salt", $task->getAttackCmd());
+    $this->assertStringContainsString("#HL# -a3 ?l?l?l?l", $task->getAttackCmd());
   }
 }
