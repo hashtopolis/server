@@ -1603,6 +1603,99 @@ class PermissionsTest(BaseTest):
         self.assertEqual(response.status_code, 204, response.text)
         self.assertEqual(User.objects.get(pk=user.id).email, new_email)
 
+    def test_api_token_current_user_patch_session_lifetime_without_scopes(self):
+        """currentUser PATCH can update the token owner's session lifetime without user-update scope.
+
+        Users choose how long their own sessions last, so the helper accepts the lifetime next to
+        the email. This verifies that patching only the lifetime leaves the email untouched.
+        """
+        user, token = self._create_empty_scope_token_for_restricted_user()
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/currentUser',
+            method='PATCH',
+            payload={'data': {'type': 'user', 'id': user.id, 'attributes': {'sessionLifetime': 6 * 3600}}},
+        )
+
+        self.assertEqual(response.status_code, 204, response.text)
+        updated = User.objects.get(pk=user.id)
+        self.assertEqual(updated.sessionLifetime, 6 * 3600)
+        self.assertEqual(updated.email, user.email)
+
+    def test_api_token_current_user_patch_rejects_session_lifetime_below_minimum(self):
+        """currentUser PATCH rejects a session lifetime shorter than an access token.
+
+        The client only refreshes once its access token expires, so a shorter lifetime would end
+        every session after two hours. This verifies the lifetime is validated and left unchanged.
+        """
+        user, token = self._create_empty_scope_token_for_restricted_user()
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/currentUser',
+            method='PATCH',
+            payload={'data': {'type': 'user', 'id': user.id, 'attributes': {'sessionLifetime': 3600}}},
+        )
+
+        self.assertEqual(response.status_code, 500, response.text)
+        self.assertEqual(User.objects.get(pk=user.id).sessionLifetime, user.sessionLifetime)
+
+    def test_api_token_current_user_patch_rejected_email_leaves_session_lifetime(self):
+        """currentUser PATCH applies nothing when one of the attributes is rejected.
+
+        A valid lifetime sent together with an invalid email must not be stored on its own,
+        so the client never ends up with a half-applied update behind an error response.
+        """
+        user, token = self._create_empty_scope_token_for_restricted_user()
+
+        response = request_with_api_token(
+            token.token,
+            '/helper/currentUser',
+            method='PATCH',
+            payload={'data': {'type': 'user', 'id': user.id,
+                              'attributes': {'sessionLifetime': 6 * 3600, 'email': 'not-an-email'}}},
+        )
+
+        self.assertEqual(response.status_code, 500, response.text)
+        updated = User.objects.get(pk=user.id)
+        self.assertEqual(updated.sessionLifetime, user.sessionLifetime)
+        self.assertEqual(updated.email, user.email)
+
+    def test_api_token_current_user_patch_partial_updates(self):
+        """currentUser PATCH changes only the attributes it receives.
+
+        Patching the email alone must keep the session lifetime, and patching the session
+        lifetime alone afterwards must keep the email that was just set.
+        """
+        user, token = self._create_empty_scope_token_for_restricted_user()
+        new_email = f'partial-{time.time_ns()}@example.com'
+        new_lifetime = 8 * 3600
+
+        email_response = request_with_api_token(
+            token.token,
+            '/helper/currentUser',
+            method='PATCH',
+            payload={'data': {'type': 'user', 'id': user.id, 'attributes': {'email': new_email}}},
+        )
+
+        self.assertEqual(email_response.status_code, 204, email_response.text)
+        after_email = User.objects.get(pk=user.id)
+        self.assertEqual(after_email.email, new_email)
+        self.assertEqual(after_email.sessionLifetime, user.sessionLifetime)
+
+        lifetime_response = request_with_api_token(
+            token.token,
+            '/helper/currentUser',
+            method='PATCH',
+            payload={'data': {'type': 'user', 'id': user.id, 'attributes': {'sessionLifetime': new_lifetime}}},
+        )
+
+        self.assertEqual(lifetime_response.status_code, 204, lifetime_response.text)
+        after_lifetime = User.objects.get(pk=user.id)
+        self.assertEqual(after_lifetime.sessionLifetime, new_lifetime)
+        self.assertEqual(after_lifetime.email, new_email)
+
     def test_api_token_get_user_permission_allowed_without_scopes(self):
         """getUserPermission returns the token owner's permission group without scopes.
 

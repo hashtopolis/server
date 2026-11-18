@@ -238,7 +238,7 @@ class UserUtils {
    * @throws InternalError
    * @throws Exception
    */
-  public static function createUser(string $username, string $email, int $rightGroupId, User $adminUser, bool $isValid = true, int $session_lifetime = 3600): User {
+  public static function createUser(string $username, string $email, int $rightGroupId, User $adminUser, bool $isValid = true, int $session_lifetime = RefreshTokenUtils::MIN_LIFETIME_SECONDS): User {
     $username = htmlentities($username, ENT_QUOTES, "UTF-8");
     $group = AccessControlUtils::getGroup($rightGroupId);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) == 0) {
@@ -247,6 +247,7 @@ class UserUtils {
     else if (strlen($username) < 2) {
       throw new HttpError("Username is too short!");
     }
+    AccountUtils::validateSessionLifetime($session_lifetime);
     $qF = new QueryFilter("username", $username, "=");
     $res = Factory::getUserFactory()->filter([Factory::FILTER => $qF], true);
     if ($res != null) {

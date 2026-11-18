@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\helper;
 
 use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
@@ -68,15 +69,47 @@ class CurrentUserHelperAPI extends AbstractHelperAPI {
   // PATCH endpoint in order to patch attributes of own user, even when user doesnt have permissions to alter users
   
   /**
+   * Updates the email and/or session lifetime (in seconds) of the current user. Attributes left out
+   * of the request stay unchanged.
+   *
    * @throws HTException
+   * @throws HttpError
    * @throws HttpForbidden
    */
   public function actionPatch(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
     $user = $this->getCurrentUser();
-    $data = $request->getParsedBody()['data'];
+    $attributes = $request->getParsedBody()['data']['attributes'] ?? [];
 
-    AccountUtils::setEmail($data["attributes"]["email"], $user);
+    if (!is_array($attributes)) {
+      throw new HttpError("attributes must be an object!");
+    }
+
+    $hasLifetime = array_key_exists(User::SESSION_LIFETIME, $attributes);
+    $hasEmail = array_key_exists(User::EMAIL, $attributes);
+
+    if ($hasLifetime && !is_int($attributes[User::SESSION_LIFETIME])) {
+      throw new HttpError("sessionLifetime must be an integer number of seconds!");
+    }
+
+    if ($hasEmail && !is_string($attributes[User::EMAIL])) {
+      throw new HttpError("email must be a string!");
+    }
+
+    /* setEmail validates before it writes, so checking the lifetime up front leaves the user untouched
+       when either attribute is rejected. */
+    if ($hasLifetime) {
+      AccountUtils::validateSessionLifetime($attributes[User::SESSION_LIFETIME]);
+    }
+
+    if ($hasEmail) {
+      AccountUtils::setEmail($attributes[User::EMAIL], $user);
+    }
+
+    if ($hasLifetime) {
+      AccountUtils::updateSessionLifetime($attributes[User::SESSION_LIFETIME], $user);
+    }
+
     return $response->withStatus(204);
   }
   

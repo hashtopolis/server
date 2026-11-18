@@ -338,7 +338,7 @@ def do_create_user(global_permission_group_id=1):
         email='test@example.com',
         globalPermissionGroupId=global_permission_group_id,
         isValid=True,
-        sessionLifetime=3600,
+        sessionLifetime=7200,
     )
     obj = User(**payload)
     obj.save()
