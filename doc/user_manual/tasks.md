@@ -105,7 +105,7 @@ The **SuperTask menu** shows a list of all supertasks and their associated preco
 - **Show/Hide**: Expands the supertask view to show the included subtasks with their details:
   - **ID**: Preconfigured task ID.
   - **Name**: Clickable name to open and view the subtask details. 
-  - **SubTask Priority**: Controls subtask execution order within the supertask (higher = first).
+  - **SubTask Priority**: Controls subtask execution order within the supertask (higher = first). Every supertask keeps its own priority per subtask, taken from the preconfigured task when the subtask is added, so a preconfigured task used in several supertasks can run at a different priority in each of them.
   - **SubTask Max Agents**: Limits the number of agents per subtask.
   - **Remove**: Removes the subtask from the supertask but doesn't delete it unless initially imported via "Import SuperTask".
 

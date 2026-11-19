@@ -32,7 +32,7 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
    * @return SupertaskPretask
    */
   function getNullObject(): SupertaskPretask {
-    return new SupertaskPretask(-1, null, null);
+    return new SupertaskPretask(-1, null, null, null);
   }
   
   /**
@@ -45,6 +45,6 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
       $conv[strtolower($key)] = $val;
     }
     $dict = $conv;
-    return new SupertaskPretask($dict['supertaskpretaskid'], $dict['supertaskid'], $dict['pretaskid']);
+    return new SupertaskPretask($dict['supertaskpretaskid'], $dict['supertaskid'], $dict['pretaskid'], $dict['priority']);
   }
 }
