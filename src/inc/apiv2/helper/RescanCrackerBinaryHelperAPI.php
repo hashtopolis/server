@@ -58,6 +58,9 @@ class RescanCrackerBinaryHelperAPI extends AbstractHelperAPI {
    * @throws Exception
    */
   public function actionPost($data): AbstractModel|array|null {
+    if (!isset($data[CrackerBinary::CRACKER_BINARY_ID])) {
+      throw new HttpError("Required parameter 'crackerBinaryId' not specified!");
+    }
     $binaryId = $data[CrackerBinary::CRACKER_BINARY_ID];
     $binary = Factory::getCrackerBinaryFactory()->get($binaryId);
     if ($binary === null) {
