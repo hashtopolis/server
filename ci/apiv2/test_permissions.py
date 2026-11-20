@@ -164,6 +164,12 @@ HELPER_PERMISSION_CASES = [
         'permissions': ['permConfigUpdate'],
     },
     {
+        'name': 'rescanCrackerBinary',
+        'path': '/helper/rescanCrackerBinary',
+        'payload': {'crackerBinaryId': 1},
+        'permissions': ['permCrackerBinaryUpdate'],
+    },
+    {
         'name': 'rescanGlobalFiles',
         'path': '/helper/rescanGlobalFiles',
         'payload': {},

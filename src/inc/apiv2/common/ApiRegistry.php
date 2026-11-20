@@ -29,6 +29,7 @@ use Hashtopolis\inc\apiv2\helper\PurgeTaskHelperAPI;
 use Hashtopolis\inc\apiv2\helper\RebuildChunkCacheHelperAPI;
 use Hashtopolis\inc\apiv2\helper\RecomputeFileChecksumHelperAPI;
 use Hashtopolis\inc\apiv2\helper\RecountFileLinesHelperAPI;
+use Hashtopolis\inc\apiv2\helper\RescanCrackerBinaryHelperAPI;
 use Hashtopolis\inc\apiv2\helper\RescanGlobalFilesHelperAPI;
 use Hashtopolis\inc\apiv2\helper\ResetChunkHelperAPI;
 use Hashtopolis\inc\apiv2\helper\ResetUserPasswordHelperAPI;
@@ -139,6 +140,7 @@ final class ApiRegistry {
     RebuildChunkCacheHelperAPI::class,
     RecomputeFileChecksumHelperAPI::class,
     RecountFileLinesHelperAPI::class,
+    RescanCrackerBinaryHelperAPI::class,
     RescanGlobalFilesHelperAPI::class,
     ResetChunkHelperAPI::class,
     ResetUserPasswordHelperAPI::class,

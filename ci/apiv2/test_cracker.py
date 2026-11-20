@@ -1062,3 +1062,144 @@ class TestCrackerHashtypes(BaseTest):
         # the deleted binary is not associated with the hashtype anymore
         hashtype_obj = HashType.objects.prefetch_related('crackerBinaries').get(pk=hashtype.id)
         self.assertNotIn(obj.id, sorted(cracker.id for cracker in hashtype_obj.crackerBinaries_set))
+
+    def rescan_request(self, binary_id, headers=None):
+        """POSTs to the rescanCrackerBinary helper, as admin unless other headers are given."""
+        if headers is None:
+            headers = {'Authorization': f'Bearer {get_bearer_token()}',
+                       'Content-Type': 'application/json'}
+        return requests.post(f'{APIV2}/helper/rescanCrackerBinary', headers=headers,
+                             json={'crackerBinaryId': binary_id})
+
+    def test_rescan_enqueues_scan_after_finished_scan(self):
+        """A rescan queues a new pending scan once the previous one is not pending anymore."""
+        source_data = self.build_fake_cracker_archive()
+        obj = self.create_local_cracker(source_data=source_data)
+        try:
+            run_background_job_runner()
+            self.assertEqual([], [job for job in self.scan_jobs_of(obj) if job.status == 0])
+
+            r = self.rescan_request(obj.id)
+            self.assertEqual(200, r.status_code, f'Rescan failed: {r.text}')
+            body = r.json()
+            self.assertEqual('crackerBinary', body['data']['type'])
+            self.assertEqual(obj.id, body['data']['id'])
+
+            pending = [job for job in self.scan_jobs_of(obj) if job.status == 0]
+            self.assertEqual(1, len(pending), 'Expected exactly one pending scan job after the rescan')
+        finally:
+            self.delete_scan_jobs(obj)
+            for hashtype_id in (880001, 880002):
+                requests.delete(f'{APIV2}/ui/hashtypes/{hashtype_id}',
+                                headers={'Authorization': f'Bearer {get_bearer_token()}'})
+
+    def test_rescan_with_pending_scan_enqueues_no_duplicate(self):
+        """A rescan while a scan is still pending does not queue a second one."""
+        obj = self.create_cracker()
+        try:
+            self.assertEqual(1, len([job for job in self.scan_jobs_of(obj) if job.status == 0]))
+
+            r = self.rescan_request(obj.id)
+            self.assertEqual(200, r.status_code, f'Rescan failed: {r.text}')
+
+            self.assertEqual(1, len([job for job in self.scan_jobs_of(obj) if job.status == 0]),
+                             'The pending scan must not be duplicated')
+        finally:
+            self.delete_scan_jobs(obj)
+
+    def test_rescan_redownloads_url_binary_after_failed_scan(self):
+        """The case of the rescan: the scan of an url-referenced binary failed,
+        because its archive could not be downloaded. Once the url serves the
+        archive again, a rescan downloads it again and the scan succeeds,
+        without changing the url of the binary."""
+        archive = base64.b64decode(self.build_fake_cracker_archive())
+        state = {'available': True}
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                if not state['available']:
+                    self.send_response(404)
+                    self.end_headers()
+                    return
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/octet-stream')
+                self.send_header('Content-Length', str(len(archive)))
+                self.end_headers()
+                self.wfile.write(archive)
+
+            def log_message(self, format, *args):
+                pass
+
+        server = HTTPServer(('127.0.0.1', 0), Handler)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        url = f'http://127.0.0.1:{server.server_address[1]}/fake-hashcat.7z'
+        obj = None
+        try:
+            obj = self.create_cracker(extra_payload={'downloadUrl': url, 'version': '9.9.9'})
+            # the local copy is lost and the url is temporarily unavailable,
+            # so the queued scan fails
+            os.unlink(url_copy_path(obj))
+            state['available'] = False
+            run_background_job_runner()
+            self.assertEqual([-1], [job.status for job in self.scan_jobs_of(obj)])
+            self.assertListEqual([], self.hashtype_ids_of(obj))
+
+            # while the url is unavailable, the rescan reports the download error
+            r = self.rescan_request(obj.id)
+            self.assertEqual(400, r.status_code, f'Rescan should fail: {r.text}')
+            self.assertIn('download', r.text)
+
+            # once the url is available again, the rescan restores the local
+            # copy and the queued scan populates the associations
+            state['available'] = True
+            r = self.rescan_request(obj.id)
+            self.assertEqual(200, r.status_code, f'Rescan failed: {r.text}')
+            self.assertTrue(os.path.isfile(url_copy_path(obj)), 'The local copy was not downloaded again')
+            self.assertEqual(url, Cracker.objects.get(pk=obj.id).downloadUrl)
+
+            run_background_job_runner()
+            self.assertListEqual([0, 880001, 880002], self.hashtype_ids_of(obj))
+        finally:
+            server.shutdown()
+            if obj is not None:
+                self.delete_scan_jobs(obj)
+            for hashtype_id in (880001, 880002):
+                requests.delete(f'{APIV2}/ui/hashtypes/{hashtype_id}',
+                                headers={'Authorization': f'Bearer {get_bearer_token()}'})
+
+    def test_rescan_of_non_hashcat_binary_rejects(self):
+        """Binaries of other types are never scanned, a rescan is rejected."""
+        obj = self.create_generic_cracker()
+
+        r = self.rescan_request(obj.id)
+        self.assertEqual(400, r.status_code, f'Rescan should be rejected: {r.text}')
+        self.assertListEqual([], self.scan_jobs_of(obj))
+
+    def test_rescan_of_unknown_binary_rejects(self):
+        r = self.rescan_request(999999999)
+        self.assertEqual(404, r.status_code, f'Rescan should be rejected: {r.text}')
+
+    def test_rescan_enforces_binary_access_group(self):
+        """A user with the update permission but without access to the access
+        group of the binary cannot rescan it, and learns nothing about its type."""
+        obj = self.create_cracker()
+        generic_obj = self.create_generic_cracker()
+        try:
+            self.delete_scan_jobs(obj)
+            username, password = create_restricted_user(self, {
+                'permCrackerBinaryRead': True,
+                'permCrackerBinaryUpdate': True,
+            })
+            r = requests.post(f'{APIV2}/auth/token', auth=(username, password))
+            self.assertEqual(201, r.status_code, f'Could not get a token: {r.text}')
+            headers = {'Authorization': f"Bearer {r.json()['token']}",
+                       'Content-Type': 'application/json'}
+
+            for binary in (obj, generic_obj):
+                r = self.rescan_request(binary.id, headers=headers)
+                self.assertEqual(403, r.status_code, f'Rescan should be denied: {r.text}')
+                self.assertNotIn('hashcat', r.text,
+                                 'The rejection must not disclose the type of the binary!')
+            self.assertListEqual([], self.scan_jobs_of(obj))
+        finally:
+            self.delete_scan_jobs(obj)
