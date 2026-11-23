@@ -44,15 +44,39 @@ class RefreshTokenUtils {
   const FALLBACK_LIFETIME_HOURS = 48;
   
   /**
-   * How long a newly issued refresh token lives, in seconds.
+   * Shortest session lifetime a user may choose, in seconds. It matches the lifetime of an access
+   * token: the client only refreshes once its access token runs out, so a refresh token living any
+   * shorter would already be gone by then and end every session after this long, active or not.
+   */
+  const MIN_LIFETIME_SECONDS = 2 * 3600;
+
+  /**
+   * How long a newly issued refresh token for the given user lives, in seconds.
    *
-   * This is the maxSessionLength runtime setting, so how long a login lasts is something an
-   * administrator changes from the interface rather than a value baked into the deployment. Rotation
-   * restarts the window, so it bounds how long a session may sit idle, not how long it may exist.
+   * This is the session lifetime the user chose for themselves, raised to MIN_LIFETIME_SECONDS and
+   * capped at the maxSessionLength runtime setting, so an administrator lowering that setting
+   * shortens every session. Rotation restarts the window, so it bounds how long a session may sit
+   * idle, not how long it may exist.
+   *
+   * @param User $user
+   * @return int
+   */
+  public static function lifetimeSeconds(User $user): int {
+    $lifetime = max((int)$user->getSessionLifetime(), self::MIN_LIFETIME_SECONDS);
+
+    return min($lifetime, self::maxLifetimeSeconds());
+  }
+
+  /**
+   * Longest session lifetime a user may choose, in seconds.
+   *
+   * This is the maxSessionLength runtime setting, so the upper bound is something an administrator
+   * changes from the interface rather than a value baked into the deployment. It never drops below
+   * MIN_LIFETIME_SECONDS, as a shorter refresh token would end every session, active or not.
    *
    * @return int
    */
-  public static function lifetimeSeconds(): int {
+  public static function maxLifetimeSeconds(): int {
     $hours = (int)SConfig::getInstance()->getVal(DConfig::MAX_SESSION_LENGTH);
 
     /* A misconfigured or missing value would otherwise issue tokens that expire the moment they are
@@ -61,7 +85,7 @@ class RefreshTokenUtils {
       $hours = self::FALLBACK_LIFETIME_HOURS;
     }
 
-    return $hours * 3600;
+    return max($hours * 3600, self::MIN_LIFETIME_SECONDS);
   }
 
   /**
@@ -75,24 +99,24 @@ class RefreshTokenUtils {
   /**
    * Issues a new refresh token for a user.
    *
-   * @param int $userId
+   * @param User $user
    * @param string|null $familyId continues an existing session when given, starts a new one otherwise
    * @return string the token string; this is the only moment it exists in plaintext
    * @throws RandomException
    * @throws Exception
    */
-  public static function issue(int $userId, ?string $familyId = null): string {
-    self::purgeExpired($userId);
+  public static function issue(User $user, ?string $familyId = null): string {
+    self::purgeExpired($user->getId());
     
     $plain = bin2hex(random_bytes(self::TOKEN_BYTES));
     $now = time();
     $token = new RefreshToken(
       null,
-      $userId,
+      $user->getId(),
       self::hashToken($plain),
       $familyId ?? bin2hex(random_bytes(16)),
       $now,
-      $now + self::lifetimeSeconds(),
+      $now + self::lifetimeSeconds($user),
       null,
       0
     );
@@ -142,7 +166,7 @@ class RefreshTokenUtils {
     
     return [
       "user" => $user,
-      "token" => self::issue($token->getUserId(), $token->getFamilyId()),
+      "token" => self::issue($user, $token->getFamilyId()),
     ];
   }
   

@@ -29,9 +29,10 @@ const USER_AUD = "user_hashtopolis";
 /**
  * Lifetime of an access token in seconds. Access tokens are not revocable, so this is the window in
  * which a leaked one stays usable; clients are expected to keep it short and lean on the refresh
- * token at /api/v2/auth/refresh to stay logged in beyond it.
+ * token at /api/v2/auth/refresh to stay logged in beyond it. It is also the shortest session
+ * lifetime a user may choose, since a refresh token living any shorter would be gone before it is used.
  */
-const ACCESS_TOKEN_LIFETIME = 2 * 3600;
+const ACCESS_TOKEN_LIFETIME = RefreshTokenUtils::MIN_LIFETIME_SECONDS;
 
 /**
  * Mints an access token for a user which has already been authenticated.
@@ -162,7 +163,7 @@ $app->group("/api/v2/auth/oauth-token", function (RouteCollectorProxy $group) {
     $expires = time() + ACCESS_TOKEN_LIFETIME;
     $response = accessTokenResponse($response, generateAccessToken($user, $expires), $expires);
     
-    return RefreshTokenCookie::attach($request, $response, RefreshTokenUtils::issue($user->getId()));
+    return RefreshTokenCookie::attach($request, $response, RefreshTokenUtils::issue($user), $user);
   });
 });
 
@@ -181,7 +182,7 @@ $app->group("/api/v2/auth/token", function (RouteCollectorProxy $group) {
     $response = accessTokenResponse($response, generateAccessToken($user, $expires), $expires);
     
     /* Starts a new refresh token family, so logging in again leaves sessions on other devices alone. */
-    return RefreshTokenCookie::attach($request, $response, RefreshTokenUtils::issue($user->getId()));
+    return RefreshTokenCookie::attach($request, $response, RefreshTokenUtils::issue($user), $user);
   });
 });
 
@@ -213,7 +214,7 @@ $app->group("/api/v2/auth/refresh", function (RouteCollectorProxy $group) {
     $expires = time() + ACCESS_TOKEN_LIFETIME;
     $response = accessTokenResponse($response, generateAccessToken($rotated["user"], $expires), $expires);
     
-    return RefreshTokenCookie::attach($request, $response, $rotated["token"]);
+    return RefreshTokenCookie::attach($request, $response, $rotated["token"], $rotated["user"]);
   });
   
   /* Logout: ends the session the cookie belongs to and drops the cookie. */
