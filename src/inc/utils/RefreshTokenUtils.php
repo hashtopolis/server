@@ -283,14 +283,15 @@ class RefreshTokenUtils {
    * Revoked tokens are kept until they expire so that a replay is still recognised as such.
    *
    * @param int|null $userId limits the cleanup to one user when given
+   * @return int number of deleted tokens
    * @throws Exception
    */
-  public static function purgeExpired(?int $userId = null): void {
+  public static function purgeExpired(?int $userId = null): int {
     $filters = [new QueryFilter(RefreshToken::END_VALID, time(), "<")];
     if ($userId !== null) {
       $filters[] = new QueryFilter(RefreshToken::USER_ID, $userId, "=");
     }
-    Factory::getRefreshTokenFactory()->massDeletion([Factory::FILTER => $filters]);
+    return Factory::getRefreshTokenFactory()->massDeletion([Factory::FILTER => $filters])->rowCount();
   }
   
   /**

@@ -61,7 +61,6 @@ class Statement {
     'Hashtopolis\\inc\\defines\\DAgentIgnoreErrors',
     'Hashtopolis\\inc\\defines\\DAgentStatsType',
     'Hashtopolis\\inc\\defines\\DApiAction',
-    'Hashtopolis\\inc\\defines\\DCleaning',
     'Hashtopolis\\inc\\defines\\DConfig',
     'Hashtopolis\\inc\\defines\\DConfigAction',
     'Hashtopolis\\inc\\defines\\DConfigType',

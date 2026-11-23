@@ -79,6 +79,20 @@ class ConfigTest(BaseTest):
             config.value = original_value
             config.save()
 
+    def test_cleaning_interval_rejects_zero(self):
+        # a cleaning interval of 0 would schedule a cleaning job on every runner pass
+        config = Config.objects.get(item='cleaningInterval')
+        original_value = config.value
+
+        try:
+            config.value = '0'
+            with self.assertRaises(HashtopolisError) as e:
+                config.save()
+            self.assertIn('at least 1', e.exception.title)
+        finally:
+            config.value = original_value
+            config.save()
+
     def test_field_separator_max_length_is_validated(self):
         config = Config.objects.get(item='fieldseparator')
         original_value = config.value

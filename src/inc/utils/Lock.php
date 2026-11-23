@@ -8,6 +8,7 @@ class Lock {
   const CHUNKING       = "chunking.lock";
   const LOG            = "log.lock";
   const BACKGROUND_JOBS = "background-jobs.lock";
+  const PERIODIC_JOBS   = "periodic-jobs.lock";
   
   private string $lockFile;
   private        $lock;
