@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Utils;
+namespace Hashtopolis\inc\utils;
 
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Factory;
@@ -15,8 +15,6 @@ use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\utils\CrackerUtils;
-use Hashtopolis\inc\utils\Lock;
 use Hashtopolis\TestBase;
 use Override;
 use PDOException;
