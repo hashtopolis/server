@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Utils;
+namespace Hashtopolis\inc\utils;
 
 use Hashtopolis\dba\models\Assignment;
 use Hashtopolis\dba\models\Task;
@@ -9,7 +9,6 @@ use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DTaskStaticChunking;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\SConfig;
-use Hashtopolis\inc\utils\ChunkUtils;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Hashtopolis\TestBase;
 

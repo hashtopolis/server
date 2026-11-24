@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Utils;
+namespace Hashtopolis\inc\utils;
 
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Factory;
@@ -8,9 +8,6 @@ use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryType;
 use Hashtopolis\dba\models\AccessGroupUser;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\utils\AccessGroupUtils;
-use Hashtopolis\inc\utils\AccessUtils;
-use Hashtopolis\inc\utils\CrackerBinaryUtils;
 use Hashtopolis\TestBase;
 
 
