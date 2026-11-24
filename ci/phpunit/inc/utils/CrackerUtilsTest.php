@@ -16,6 +16,7 @@ use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\CrackerUtils;
+use Hashtopolis\inc\utils\Lock;
 use Hashtopolis\TestBase;
 use Override;
 use PDOException;
@@ -928,5 +929,66 @@ final class CrackerUtilsTest extends TestBase {
     $this->assertSame(1, $this->pendingScanJobCount($binary->getId()));
     CrackerUtils::deleteBinary($binary->getId());
     $this->cleanupScanJobs($binary->getId());
+  }
+
+  // Verifies that storeLocalCopy() waits while another process holds the lock
+  // of the binary: concurrent downloads of the same binary (e.g. two rescans,
+  // or a rescan and the scan job) share the temporary download file and would
+  // otherwise remove or publish each other's partial download.
+  public function testStoreLocalCopyWaitsForTheLockOfTheBinary(): void {
+    $content = self::SEVEN_ZIP_MAGIC . 'locked-content';
+    $url = $this->serveHttpFile('cracker.7z', $content);
+    $binary = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
+      new CrackerBinary(null, $this->type->getId(), '4.0.0', $url, 'testcracker', null, 1)
+    );
+    $target = CrackerUtils::getCrackersPath() . $binary->getId() . '_test-crackerutils-type-4.0.0.7z';
+    $holdSeconds = 1.5;
+
+    // another process holds the lock of the binary for a while, a loop
+    // instead of a single sleep, a sleep can return early on a signal
+    $autoload = dirname(__FILE__) . '/../../../../vendor/autoload.php';
+    $code = 'require ' . var_export($autoload, true) . ';'
+      . '$lock = new ' . Lock::class . '(' . var_export(Lock::CRACKER_BINARY . $binary->getId(), true) . ');'
+      . '$lock->getLock(); echo "locked\n";'
+      . '$end = microtime(true) + ' . $holdSeconds . '; while (microtime(true) < $end) { usleep(10000); }'
+      . '$lock->release();';
+    $proc = proc_open(['php', '-d', 'xdebug.mode=off', '-r', $code], [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']], $pipes);
+    try {
+      // the child's stderr is only read on failure: reading it blocks until the child exited
+      $line = fgets($pipes[1]);
+      if ($line !== "locked\n") {
+        $this->fail('The child process did not get the lock: ' . stream_get_contents($pipes[2]));
+      }
+
+      $start = microtime(true);
+      CrackerUtils::storeLocalCopy($binary);
+      $elapsed = microtime(true) - $start;
+    }
+    finally {
+      proc_close($proc);
+    }
+
+    // the download only ran once the other process released the lock
+    $this->assertGreaterThan($holdSeconds * 0.8, $elapsed);
+    $this->assertSame($content, file_get_contents($target));
+    $this->assertFileDoesNotExist($target . '.part');
+    CrackerUtils::deleteBinary($binary->getId());
+  }
+
+  // Verifies that deleting a binary removes its lock file as well.
+  public function testDeleteBinaryRemovesLockFile(): void {
+    $url = $this->serveHttpFile('cracker.7z', self::SEVEN_ZIP_MAGIC . 'lock-file-content');
+    $binary = $this->createDatabaseObject(
+      Factory::getCrackerBinaryFactory(),
+      new CrackerBinary(null, $this->type->getId(), '5.0.0', $url, 'testcracker', null, 1)
+    );
+    CrackerUtils::storeLocalCopy($binary);
+    $lockFile = dirname(__FILE__) . '/../../../../src/inc/utils/locks/' . Lock::CRACKER_BINARY . $binary->getId();
+    $this->assertFileExists($lockFile);
+
+    CrackerUtils::deleteBinary($binary->getId());
+
+    $this->assertFileDoesNotExist($lockFile);
   }
 }

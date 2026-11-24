@@ -54,7 +54,8 @@ class CrackerUtils {
    * scan is the only way the hashtype associations are populated, manual
    * changes are not allowed. Binaries of other types are not scanned at all,
    * their hashtypes are associated manually. A binary which already has a
-   * pending scan is not enqueued again.
+   * pending scan is not enqueued again. The check and the enqueue run under
+   * the lock of the binary, so concurrent callers cannot both queue a scan.
    *
    * @param CrackerBinary $binary the binary which was created or updated
    * @param User|null $user the user triggering the scan, null if it was triggered by the system
@@ -65,17 +66,44 @@ class CrackerUtils {
     if (!CrackerUtils::isHashcatBinary($binary)) {
       return;
     }
-    foreach (CrackerUtils::getScanJobs($binary->getId()) as $job) {
-      if ($job->getStatus() == DBackgroundJobStatus::PENDING) {
-        // the pending scan already covers the current state of the binary
-        return;
+    CrackerUtils::withBinaryLock($binary->getId(), function () use ($binary, $user) {
+      foreach (CrackerUtils::getScanJobs($binary->getId()) as $job) {
+        if ($job->getStatus() == DBackgroundJobStatus::PENDING) {
+          // the pending scan already covers the current state of the binary
+          return;
+        }
       }
+      BackgroundJobUtils::enqueue(
+        DBackgroundJobType::SCAN_CRACKER,
+        [CrackerBinary::CRACKER_BINARY_ID => $binary->getId()],
+        $user
+      );
+    });
+  }
+  
+  /**
+   * Runs the given callback while holding the exclusive lock of the given
+   * cracker binary, blocking until the lock is available. Serializes the
+   * operations on the local archive and the scan jobs of one binary across
+   * concurrent requests and the background job runner. Must not be nested
+   * for the same binary: every call opens its own lock file handle, a nested
+   * call would wait for the outer one forever.
+   *
+   * @template T
+   * @param int $binaryId
+   * @param callable(): T $callback
+   * @return T
+   * @throws Exception
+   */
+  private static function withBinaryLock(int $binaryId, callable $callback): mixed {
+    $lock = new Lock(Lock::CRACKER_BINARY . $binaryId);
+    $lock->getLock();
+    try {
+      return $callback();
     }
-    BackgroundJobUtils::enqueue(
-      DBackgroundJobType::SCAN_CRACKER,
-      [CrackerBinary::CRACKER_BINARY_ID => $binary->getId()],
-      $user
-    );
+    finally {
+      $lock->release();
+    }
   }
 
   /**
@@ -363,7 +391,9 @@ class CrackerUtils {
    * downloaded to a temporary file first, so a failed download cannot destroy
    * a previously stored local copy, and only moved into place after it was
    * validated as a 7z archive. Local copies of previous versions or urls of
-   * the binary are removed.
+   * the binary are removed. The download runs under the lock of the binary:
+   * concurrent downloads of the same binary would otherwise share the
+   * temporary file and remove or publish each other's partial download.
    *
    * Also used by the setup seeding, the binary check and the scan job itself
    * to make sure the archive is available locally, so the background scan can
@@ -380,27 +410,35 @@ class CrackerUtils {
     $filename = CrackerUtils::buildArchiveFilename($binaryType, $binary->getVersion());
     $target = $crackersPath . $binary->getId() . '_' . $filename;
     $temporary = $target . '.part';
-    if (file_exists($temporary)) {
-      unlink($temporary);
-    }
-    [$success, $msg] = Util::uploadFile($temporary, "url", $binary->getDownloadUrl());
-    if (!$success) {
+    CrackerUtils::withBinaryLock($binary->getId(), function () use ($binary, $crackersPath, $target, $temporary) {
+      // a leftover of an aborted download, no other download of this binary is running
       if (file_exists($temporary)) {
         unlink($temporary);
       }
-      throw new HttpError("Failed to download the archive from the download url: " . $msg);
-    }
-    if (!CrackerUtils::isSevenZipArchive($temporary)) {
-      unlink($temporary);
-      throw new HttpError("The archive at the download url is not a valid 7z archive!");
-    }
-    rename($temporary, $target);
-    // remove local copies of previous versions or urls of this binary
-    foreach (glob($crackersPath . $binary->getId() . '_*') ?: [] as $path) {
-      if ($path != $target) {
-        unlink($path);
+      [$success, $msg] = Util::uploadFile($temporary, "url", $binary->getDownloadUrl());
+      if (!$success) {
+        if (file_exists($temporary)) {
+          unlink($temporary);
+        }
+        throw new HttpError("Failed to download the archive from the download url: " . $msg);
       }
-    }
+      if (!CrackerUtils::isSevenZipArchive($temporary)) {
+        unlink($temporary);
+        throw new HttpError("The archive at the download url is not a valid 7z archive!");
+      }
+      if (!rename($temporary, $target)) {
+        if (file_exists($temporary)) {
+          unlink($temporary);
+        }
+        throw new HttpError("Failed to store the downloaded archive!");
+      }
+      // remove local copies of previous versions or urls of this binary
+      foreach (glob($crackersPath . $binary->getId() . '_*') ?: [] as $path) {
+        if ($path != $target) {
+          unlink($path);
+        }
+      }
+    });
   }
   
   /**
@@ -462,9 +500,12 @@ class CrackerUtils {
     Factory::getCrackerBinaryHashtypeFactory()->massDeletion([Factory::FILTER => $qF]);
     // remove the scan jobs of this binary, the queued scan is cancelled with it
     CrackerUtils::deleteScanJobs($binary->getId());
-    // remove a locally stored archive if there is one
-    CrackerUtils::deleteLocalArchive($binary);
+    // remove a locally stored archive if there is one, a download of the
+    // binary which is still running finishes first, so its archive is
+    // removed as well
+    CrackerUtils::withBinaryLock($binary->getId(), fn() => CrackerUtils::deleteLocalArchive($binary));
     Factory::getCrackerBinaryFactory()->delete($binary);
+    LockUtils::deleteCrackerBinaryLockFile($binary->getId());
   }
   
   /**
@@ -496,7 +537,7 @@ class CrackerUtils {
     // remove the archives of locally stored binaries and their scan jobs,
     // the queued scans are cancelled with their binaries
     foreach ($binaries as $binary) {
-      CrackerUtils::deleteLocalArchive($binary);
+      CrackerUtils::withBinaryLock($binary->getId(), fn() => CrackerUtils::deleteLocalArchive($binary));
       CrackerUtils::deleteScanJobs($binary->getId());
     }
     
@@ -509,6 +550,9 @@ class CrackerUtils {
     // delete
     Factory::getCrackerBinaryFactory()->massDeletion([Factory::FILTER => $qF]);
     Factory::getCrackerBinaryTypeFactory()->delete($binaryType);
+    foreach ($versionIds as $binaryId) {
+      LockUtils::deleteCrackerBinaryLockFile($binaryId);
+    }
   }
   
   /**

@@ -8,6 +8,8 @@ class Lock {
   const CHUNKING       = "chunking.lock";
   const LOG            = "log.lock";
   const BACKGROUND_JOBS = "background-jobs.lock";
+  /** prefix of the per-binary locks, the cracker binary id is appended */
+  const CRACKER_BINARY = "cracker-binary.lock";
   
   private string $lockFile;
   private        $lock;
