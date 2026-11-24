@@ -28,6 +28,10 @@ def get_jobs_for_file(file_id, job_type=None):
             and (job_type is None or job.jobType == job_type)]
 
 
+def get_cleaning_jobs():
+    return [job for job in BackgroundJob.objects.all() if job.jobType == 'cleaning']
+
+
 def get_admin_connector():
     connector = BackgroundJob.objects.get_conn()
     connector.authenticate()
@@ -128,3 +132,29 @@ class BackgroundJobTest(BaseTest):
             headers={'Authorization': f'Bearer {token}'},
         )
         self.assertEqual(response.status_code, 403, response.text)
+
+    def test_cleaning_job_is_scheduled_and_completed_by_cron(self):
+        # The cleaning job is not enqueued by anyone, the runner schedules it itself once its
+        # interval has elapsed. An earlier test may already have triggered it, so this only
+        # asserts that one exists and that every one of them ran successfully.
+        run_background_job_runner()
+
+        jobs = get_cleaning_jobs()
+        self.assertGreaterEqual(len(jobs), 1)
+        for job in jobs:
+            self.assertEqual(job.status, 2, job.resultMessage)
+            self.assertEqual(job.exitCode, 0, job.resultMessage)
+            # scheduled by the server, not by a user. The leftover check relies on this.
+            self.assertIsNone(job.userId)
+            self.assertTrue(job.resultMessage)
+            self.assertIsNotNone(job.startedAt)
+            self.assertIsNotNone(job.finishedAt)
+
+    def test_cleaning_job_is_not_scheduled_twice_within_the_interval(self):
+        run_background_job_runner()
+        before = len(get_cleaning_jobs())
+
+        run_background_job_runner()
+        run_background_job_runner()
+
+        self.assertEqual(len(get_cleaning_jobs()), before)

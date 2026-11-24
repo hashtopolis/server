@@ -63,6 +63,7 @@ class DConfig {
   const VOUCHER_DELETION  = "voucherDeletion";
   const SERVER_LOG_LEVEL  = "serverLogLevel";
   const ALLOW_DEREGISTER  = "allowDeregister";
+  const CLEANING_INTERVAL = "cleaningInterval";
   
   // Section: Multicast
   const MULTICAST_ENABLE    = "multicastEnable";
@@ -167,6 +168,7 @@ class DConfig {
       DConfig::HASHCAT_BRAIN_PASS => DConfigType::STRING_INPUT,
       DConfig::HASHLIST_IMPORT_CHECK => DConfigType::TICKBOX,
       DConfig::ALLOW_DEREGISTER => DConfigType::TICKBOX,
+      DConfig::CLEANING_INTERVAL => DConfigType::NUMBER_INPUT,
       DConfig::AGENT_TEMP_THRESHOLD_1 => DConfigType::NUMBER_INPUT,
       DConfig::AGENT_TEMP_THRESHOLD_2 => DConfigType::NUMBER_INPUT,
       DConfig::AGENT_UTIL_THRESHOLD_1 => DConfigType::NUMBER_INPUT,
@@ -236,6 +238,7 @@ class DConfig {
       DConfig::HASHCAT_BRAIN_PASS => "Password to be used to access hashcat brain server",
       DConfig::HASHLIST_IMPORT_CHECK => "Check all hashes of a hashlist on import in case they are already cracked in another list",
       DConfig::ALLOW_DEREGISTER => "Allow clients to deregister themselves automatically from the server.",
+      DConfig::CLEANING_INTERVAL => "Interval in minutes in which the server cleans up outdated agent data, the zap queue, stale uploads, expired tokens and the background job history.",
       DConfig::AGENT_TEMP_THRESHOLD_1 => "Temperature threshold from which on an agent is shown in orange on the agent status page.",
       DConfig::AGENT_TEMP_THRESHOLD_2 => "Temperature threshold from which on an agent is shown in red on the agent status page.",
       DConfig::AGENT_UTIL_THRESHOLD_1 => "Util value where an agent is shown in orange on the agent status page, if below.",

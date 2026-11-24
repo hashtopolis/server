@@ -33,7 +33,6 @@ use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\UpdateSet;
 use Hashtopolis\dba\models\Speed;
 use Composer\Semver\Comparator;
-use Hashtopolis\inc\defines\DCleaning;
 use Hashtopolis\inc\defines\DConfig;
 use Hashtopolis\inc\defines\DDeviceCompress;
 use Hashtopolis\inc\defines\DDirectories;
@@ -61,6 +60,9 @@ use SplFileObject;
  *         Bunch of useful static functions.
  */
 class Util {
+  /** grace period in seconds before an expired TUS upload is reclaimed */
+  const TUS_EXPIRY_GRACE = 300;
+  
   /**
    * Determines the file extension of the given file name (based on the last dot).
    * Returns an empty string if no extension was found.
@@ -646,47 +648,34 @@ class Util {
   }
   
   /**
+   * Deletes agent utilisation, temperature and speed entries which are older than the
+   * configured agent data lifetime. Run periodically by the CleaningJob.
+   *
+   * @return int number of deleted entries
    * @throws Exception
    */
-  public static function cleaning(): void {
-    $entry = Factory::getStoredValueFactory()->get(DCleaning::LAST_CLEANING);
-    if ($entry == null) {
-      $entry = new StoredValue(DCleaning::LAST_CLEANING, 0);
-      Factory::getStoredValueFactory()->save($entry);
-    }
-    $time = time();
-    if ($time - $entry->getVal() > 600) {
-      self::agentStatCleaning();
-      self::zapCleaning();
-      self::tusFileCleaning();
-      Factory::getStoredValueFactory()->set($entry, StoredValue::VAL, $time);
-    }
-  }
-  
-  /**
-   * Checks if it is longer than 10 mins since the last time it was checked if there are
-   * any old agent statistic entries which can be deleted. If necessary, check is executed
-   * and old entries are deleted.
-   * @throws Exception
-   */
-  public static function agentStatCleaning(): void {
+  public static function agentStatCleaning(): int {
     $lifetime = intval(SConfig::getInstance()->getVal(DConfig::AGENT_DATA_LIFETIME));
     if ($lifetime <= 0) {
       $lifetime = 3600;
     }
     $qF = new QueryFilter(AgentStat::TIME, time() - $lifetime, "<=");
-    Factory::getAgentStatFactory()->massDeletion([Factory::FILTER => $qF]);
+    $deleted = Factory::getAgentStatFactory()->massDeletion([Factory::FILTER => $qF])->rowCount();
     
     $qF = new QueryFilter(Speed::TIME, time() - $lifetime, "<=");
-    Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
+    $deleted += Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF])->rowCount();
     
+    return $deleted;
   }
   
   /**
-   * Used by the solver. Cleans the zap-queue
+   * Cleans the zap queue, dropping entries which were solved long enough ago that every
+   * agent had the chance to pick them up. Run periodically by the CleaningJob.
+   *
+   * @return int number of deleted zap entries
    * @throws Exception
    */
-  public static function zapCleaning(): void {
+  public static function zapCleaning(): int {
     $zapFilter = new QueryFilter(Zap::SOLVE_TIME, time() - 600, "<=");
     
     // delete dependencies on AgentZap
@@ -696,7 +685,7 @@ class Util {
     $qF = new ContainFilter(AgentZap::LAST_ZAP_ID, $zapIds);
     Factory::getAgentZapFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
     
-    Factory::getZapFactory()->massDeletion([Factory::FILTER => $zapFilter]);
+    return Factory::getZapFactory()->massDeletion([Factory::FILTER => $zapFilter])->rowCount();
   }
   
   /**
@@ -706,32 +695,42 @@ class Util {
    * metadata to determine upload expiration, and removes expired metadata files
    * together with their corresponding upload (.part) files. It performs file
    * system operations and may delete files on disk.
+   *
+   * @return int number of deleted files
    * @throws Exception
    */
-  public static function tusFileCleaning(): void {
+  public static function tusFileCleaning(): int {
     $tusDirectory = Factory::getStoredValueFactory()->get(DDirectories::TUS);
+    $deleted = 0;
     
     if ($tusDirectory !== null) {
       $tusDirectory = $tusDirectory->getVal();
       $uploadDirectory = $tusDirectory . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SEPARATOR;
       $metaDirectory = $tusDirectory . DIRECTORY_SEPARATOR . "meta" . DIRECTORY_SEPARATOR;
-      $expiration_time = time() + 3600;
+      // an upload is stamped with an expiration in the future, so an upload is stale once
+      // its expiration lies in the past. The grace period keeps a request which was still
+      // running when the upload expired from racing this cleanup.
+      $expiration_time = time() - self::TUS_EXPIRY_GRACE;
       if (file_exists($metaDirectory) && is_dir($metaDirectory)) {
         if ($metaDirectoryHandler = opendir($metaDirectory)) {
-          while ($file = readdir($metaDirectoryHandler)) {
+          while (($file = readdir($metaDirectoryHandler)) !== false) {
             if (str_ends_with($file, ".meta")) {
               $metaFile = $metaDirectory . $file;
-              $metadata = (array)json_decode(file_get_contents($metaFile), true);
-              if (!isset($metadata['upload_expires'])) {
+              $content = file_get_contents($metaFile);
+              if ($content === false) {
                 continue;
               }
-              if ($metadata['upload_expires'] > $expiration_time) {
+              $metadata = json_decode($content, true);
+              if (!is_array($metadata) || !isset($metadata['upload_expires'])) {
+                continue;
+              }
+              if (intval($metadata['upload_expires']) <= $expiration_time) {
                 $uploadFile = $uploadDirectory . pathinfo($file, PATHINFO_FILENAME) . ".part";
-                if (file_exists($metaFile)) {
-                  unlink($metaFile);
+                if (file_exists($metaFile) && unlink($metaFile)) {
+                  $deleted++;
                 }
-                if (file_exists($uploadFile)) {
-                  unlink($uploadFile);
+                if (file_exists($uploadFile) && unlink($uploadFile)) {
+                  $deleted++;
                 }
               }
             }
@@ -740,6 +739,7 @@ class Util {
         }
       }
     }
+    return $deleted;
   }
   
   /**
