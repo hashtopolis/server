@@ -1,10 +1,9 @@
 <?php
 
-namespace Tests\Utils;
+namespace Hashtopolis\inc\utils;
 
 use Hashtopolis\dba\models\Config;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\utils\ConfigUtils;
 use Hashtopolis\TestBase;
 
 require_once(dirname(__FILE__) . '/../../TestBase.php');
