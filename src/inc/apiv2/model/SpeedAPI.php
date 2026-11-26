@@ -17,7 +17,6 @@ use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\models\Speed;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
-use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\Util;
@@ -48,8 +47,8 @@ class SpeedAPI extends AbstractModelAPI {
    * @param Speed $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, AbstractModel $object): bool {
-    $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+  protected function getSingleACL(AbstractModel $object): bool {
+    $accessGroupsUser = $this->getCurrentUserAccessGroupIds();
     
     $agent = Factory::getAgentFactory()->get($object->getAgentId());
     $accessGroupsAgent = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent));
@@ -71,7 +70,7 @@ class SpeedAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getFilterACL(): array {
-    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    $accessGroups = $this->getCurrentUserAccessGroupIds();
     
     return [
       Factory::JOIN => [

@@ -4,7 +4,6 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
 use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 
@@ -12,10 +11,8 @@ use Hashtopolis\dba\models\Chunk;
 use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\JoinFilter;
-use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
-use Hashtopolis\inc\Util;
 
 
 /**
@@ -38,8 +35,8 @@ class HashAPI extends AbstractModelAPI {
    * @param Hash $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, AbstractModel $object): bool {
-    $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+  protected function getSingleACL(AbstractModel $object): bool {
+    $accessGroupsUser = $this->getCurrentUserAccessGroupIds();
     $hashlist = Factory::getHashlistFactory()->get($object->getHashlistId());
     
     return in_array($hashlist->getAccessGroupId(), $accessGroupsUser);
@@ -49,7 +46,7 @@ class HashAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getFilterACL(): array {
-    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    $accessGroups = $this->getCurrentUserAccessGroupIds();
     
     return [
       Factory::JOIN => [

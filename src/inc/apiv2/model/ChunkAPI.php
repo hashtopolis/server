@@ -4,7 +4,6 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
 use Hashtopolis\dba\AbstractModel;
-use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroupAgent;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\ExistsFilter;
@@ -17,10 +16,8 @@ use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
-use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
-use Hashtopolis\inc\Util;
 
 
 /**
@@ -43,8 +40,8 @@ class ChunkAPI extends AbstractModelAPI {
    * @param Chunk $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, AbstractModel $object): bool {
-    $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+  protected function getSingleACL(AbstractModel $object): bool {
+    $accessGroupsUser = $this->getCurrentUserAccessGroupIds();
     
     $qF1 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupsUser, Factory::getHashlistFactory());
     $qF2 = new QueryFilter(Chunk::CHUNK_ID, $object->getId(), "=");
@@ -60,7 +57,7 @@ class ChunkAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getFilterACL(): array {
-    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    $accessGroups = $this->getCurrentUserAccessGroupIds();
     $baseFilter = new QueryFilter(Chunk::AGENT_ID, null, "=");
     return [
       Factory::JOIN => [

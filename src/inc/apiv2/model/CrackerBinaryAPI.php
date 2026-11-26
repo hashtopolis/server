@@ -7,7 +7,6 @@ use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\inc\utils\CrackerUtils;
-use Hashtopolis\inc\utils\AccessUtils;
 
 use Hashtopolis\dba\models\CrackerBinary;
 use Hashtopolis\dba\models\CrackerBinaryHashtype;
@@ -21,7 +20,6 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\Util;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -42,10 +40,10 @@ class CrackerBinaryAPI extends AbstractModelAPI {
    * @param CrackerBinary $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, AbstractModel $object): bool {
+  protected function getSingleACL(AbstractModel $object): bool {
     return in_array(
       $object->getAccessGroupId(),
-      Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user))
+      $this->getCurrentUserAccessGroupIds()
     );
   }
 
@@ -57,7 +55,7 @@ class CrackerBinaryAPI extends AbstractModelAPI {
       Factory::FILTER => [
         new ContainFilter(
           CrackerBinary::ACCESS_GROUP_ID,
-          Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()))
+          $this->getCurrentUserAccessGroupIds()
         )
       ]
     ];

@@ -13,7 +13,6 @@ use Hashtopolis\dba\models\Agent;
 use Hashtopolis\dba\models\HealthCheck;
 use Hashtopolis\dba\models\HealthCheckAgent;
 use Hashtopolis\dba\JoinFilter;
-use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\Util;
@@ -39,8 +38,8 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
    * @param HealthCheckAgent $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, AbstractModel $object): bool {
-    $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+  protected function getSingleACL(AbstractModel $object): bool {
+    $accessGroupsUser = $this->getCurrentUserAccessGroupIds();
     $agent = Factory::getAgentFactory()->get($object->getAgentId());
     $accessGroupsAgent = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent));
     
@@ -51,7 +50,7 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getFilterACL(): array {
-    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    $accessGroups = $this->getCurrentUserAccessGroupIds();
     
     return [
       Factory::JOIN => [

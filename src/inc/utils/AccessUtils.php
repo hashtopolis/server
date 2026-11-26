@@ -160,7 +160,20 @@ class AccessUtils {
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     return $joined[Factory::getAccessGroupFactory()->getModelName()];
   }
-  
+
+  /**
+   * Ids of the access groups a user is a member of, read from the membership table alone.
+   *
+   * @param int $userId
+   * @return int[]
+   * @throws Exception
+   */
+  public static function getAccessGroupIdsOfUser(int $userId): array {
+    $qF = new QueryFilter(AccessGroupUser::USER_ID, $userId, "=");
+    $memberships = Factory::getAccessGroupUserFactory()->filter([Factory::FILTER => $qF]);
+    return array_map(fn(AccessGroupUser $membership) => $membership->getAccessGroupId(), $memberships);
+  }
+
   /**
    * @param Agent $agent
    * @return AccessGroup[]

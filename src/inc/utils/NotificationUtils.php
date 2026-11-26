@@ -16,22 +16,43 @@ use Hashtopolis\inc\Login;
 
 class NotificationUtils {
   /**
+   * Creates a notification for the legacy UI, checking permissions through the AccessControl singleton.
+   * APIv2 calls createNotificationSetting() instead, with a check against the request's token.
+   *
    * @param string $actionType
    * @param string $notification
    * @param string $receiver
    * @param array $post
-   * @param User|null $user
+   * @param User|null $user the owner of the notification, the logged-in user when null
    * @return NotificationSetting
    * @throws HTException
    * @throws HttpError
    * @throws Exception
    */
-  
   public static function createNotification(string $actionType, string $notification, string $receiver, array $post, ?User $user = null): NotificationSetting {
     if ($user == null) {
       $user = Login::getInstance()->getUser();
     }
-    
+    return self::createNotificationSetting($actionType, $notification, $receiver, $post, $user,
+      fn(string|array $perm): bool => AccessControl::getInstance()->hasPermission($perm)
+    );
+  }
+  
+  /**
+   * @param string $actionType one of DNotificationType
+   * @param string $notification name of the HashtopolisNotification to send through
+   * @param string $receiver
+   * @param array $post the object the notification is about, under 'users', 'agents', 'hashlists' or 'tasks'
+   *   depending on the action type; "ALL" or an id
+   * @param User $user the owner of the notification
+   * @param callable(string|array): bool $hasPermission tells whether the caller holds a DAccessControl
+   *   permission (an array meaning any one of them)
+   * @return NotificationSetting
+   * @throws HTException
+   * @throws HttpError
+   * @throws Exception
+   */
+  public static function createNotificationSetting(string $actionType, string $notification, string $receiver, array $post, User $user, callable $hasPermission): NotificationSetting {
     $receiver = trim($receiver);
     if (!isset(HashtopolisNotification::getInstances()[$notification])) {
       throw new HttpError("This notification is not available!");
@@ -42,20 +63,19 @@ class NotificationUtils {
     else if (strlen($receiver) == 0) {
       throw new HttpError("You need to fill in a receiver!");
     }
-    else if (!AccessControl::getInstance()->hasPermission(DNotificationType::getRequiredPermission($actionType))) {
+    else if (!$hasPermission(DNotificationType::getRequiredPermission($actionType))) {
       throw new HttpError("You are not allowed to use this action type!");
     }
     $objectId = null;
     switch (DNotificationType::getObjectType($actionType)) {
       case DNotificationObjectType::USER:
-        if (!AccessControl::getInstance()->hasPermission(DAccessControl::USER_CONFIG_ACCESS)) {
+        if (!$hasPermission(DAccessControl::USER_CONFIG_ACCESS)) {
           throw new HttpError("You are not allowed to use user action types!");
         }
         if ($post['users'] == "ALL") {
           break;
         }
-        $user = UserUtils::getUser($post['users']);
-        $objectId = $user->getId();
+        $objectId = UserUtils::getUser($post['users'])->getId();
         break;
       case DNotificationObjectType::AGENT:
         if ($post['agents'] == "ALL") {

@@ -5,7 +5,6 @@ namespace Hashtopolis\inc\apiv2\common;
 use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\MassUpdateSet;
-use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\error\ErrorHandler;
 use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -140,7 +139,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if ($relationship['filterACL'] ?? false) {
       $relationClass = $relationship['relationType'];
       $relationApiClass = new ($this->container->get('classMapper')->get($relationClass))($this->container);
-      $relationApiClass->setCurrentUser($this->getCurrentUser());
+      $relationApiClass->setIdentity($this->getIdentity());
       $relationFilters = $relationApiClass->getFilterACL();
     }
 
@@ -475,12 +474,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   }
   
   /**
-   * Checks if a user has access to the given single element retrieved
-   * @param User $user
+   * Checks if the logged-in user has access to the given single element retrieved
    * @param AbstractModel $object
    * @return bool true if the access is allowed
    */
-  protected function getSingleACL(User $user, AbstractModel $object): bool {
+  protected function getSingleACL(AbstractModel $object): bool {
     return true;
   }
   
@@ -503,10 +501,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     if ($object === null) {
       throw new ResourceNotFoundError();
     }
-    $group = Factory::getRightGroupFactory()->get($this->getCurrentUser()->getRightGroupId());
-    if ($group->getPermissions() !== 'ALL' && $otherFactory == null && $this->getSingleACL($this->getCurrentUser(),
-        $object
-      ) === false) {
+    if (!$this->currentUserIsAdmin() && $otherFactory == null && $this->getSingleACL($object) === false) {
       throw new HttpForbidden("No access to this object!", 403);
     }
     

@@ -13,8 +13,6 @@ use Hashtopolis\dba\models\Hash;
 use Hashtopolis\dba\models\HashBinary;
 use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\QueryFilter;
-use Hashtopolis\inc\Util;
-use Hashtopolis\inc\utils\AccessUtils;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use stdClass;
@@ -76,7 +74,7 @@ class GetCracksPerDayHelperAPI extends AbstractHelperAPI {
      * Cracks are only reported for hashlists within the access groups of the requesting user,
      * the same restriction HashAPI applies to its listing.
      */
-    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    $accessGroups = $this->getCurrentUserAccessGroupIds();
     
     $start = time() - 3600 * 24 * 365;
     $qF1 = new QueryFilter(Hash::IS_CRACKED, 1, "=");

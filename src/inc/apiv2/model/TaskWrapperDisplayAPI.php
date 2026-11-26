@@ -5,7 +5,6 @@ namespace Hashtopolis\inc\apiv2\model;
 use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Aggregation;
-use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\JoinFilter;
@@ -15,7 +14,6 @@ use Hashtopolis\dba\models\Hashlist;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 use Hashtopolis\dba\models\TaskWrapperDisplay;
-use Hashtopolis\dba\models\User;
 use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
@@ -50,8 +48,8 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
    * @param TaskWrapperDisplay $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, AbstractModel $object): bool {
-    $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+  protected function getSingleACL(AbstractModel $object): bool {
+    $accessGroupsUser = $this->getCurrentUserAccessGroupIds();
     
     $qF1 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupsUser, Factory::getHashlistFactory());
     $qF2 = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $object->getId(), "=");
@@ -65,7 +63,7 @@ class TaskWrapperDisplayAPI extends AbstractModelAPI {
    */
   protected function getFilterACL(): array {
     
-    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    $accessGroups = $this->getCurrentUserAccessGroupIds();
     
     return [
       Factory::JOIN => [

@@ -6,7 +6,6 @@ use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\UQueryHashlist;
-use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\HashlistUtils;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\ContainFilter;
@@ -19,11 +18,9 @@ use Hashtopolis\dba\models\HashlistHashlist;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
 
-use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\HTException;
 use Middlewares\Utils\HttpErrorException;
-use Hashtopolis\inc\Util;
 
 
 /**
@@ -93,8 +90,8 @@ class HashlistAPI extends AbstractModelAPI {
    * @param Hashlist $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, AbstractModel $object): bool {
-    $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+  protected function getSingleACL(AbstractModel $object): bool {
+    $accessGroupsUser = $this->getCurrentUserAccessGroupIds();
     
     return in_array($object->getAccessGroupId(), $accessGroupsUser);
   }
@@ -105,7 +102,7 @@ class HashlistAPI extends AbstractModelAPI {
   protected function getFilterACL(): array {
     return [
       Factory::FILTER => [
-        new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser())))
+        new ContainFilter(Hashlist::ACCESS_GROUP_ID, $this->getCurrentUserAccessGroupIds())
       ]
     ];
   }
