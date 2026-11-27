@@ -24355,94 +24355,6 @@
                 ],
                 "summary": "Get NotificationSettings",
                 "operationId": "getNotificationsByIdRelationshipsUser"
-            },
-            "patch": {
-                "tags": [
-                    "NotificationSettings"
-                ],
-                "responses": {
-                    "400": {
-                        "description": "Invalid request",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Authentication failed",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Permission denied",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "204": {
-                        "description": "Successfull operation"
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Resource already exists",
-                        "content": {
-                            "application/problem+json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "description": "PATCH request to update a to one relationship.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/vnd.api+json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/NotificationSettingRelationUser"
-                            }
-                        }
-                    }
-                },
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "summary": "Update NotificationSettings",
-                "operationId": "patchNotificationsByIdRelationshipsUser"
             }
         },
         "/api/v2/ui/notifications/{id}": {
@@ -37204,6 +37116,142 @@
                 ],
                 "summary": "List Helpers",
                 "operationId": "getGetGlobalConfig",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/helper/getNotificationActions": {
+            "get": {
+                "description": "Lists the notification actions this server offers, together with the<br />object type they can be tied to, the permission required to use them and<br />whether the requesting user holds it. Clients should offer the actions<br />with 'allowed' set to true when creating a notification setting.",
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetNotificationActionsHelperAPIResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [],
+                "tags": [
+                    "Helpers"
+                ],
+                "summary": "List Helpers",
+                "operationId": "getGetNotificationActions",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/helper/getNotificationChannels": {
+            "get": {
+                "description": "Lists the notification channels (delivery implementations) this server<br />offers. Clients should offer them for the 'notification' attribute when<br />creating a notification setting.",
+                "responses": {
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication failed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Permission denied",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/vnd.api+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetNotificationChannelsHelperAPIResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [],
+                "tags": [
+                    "Helpers"
+                ],
+                "summary": "List Helpers",
+                "operationId": "getGetNotificationChannels",
                 "security": [
                     {
                         "bearerAuth": []
@@ -68989,13 +69037,17 @@
                                     },
                                     "receiver": {
                                         "type": "string"
+                                    },
+                                    "isActive": {
+                                        "type": "boolean"
                                     }
                                 },
                                 "required": [
                                     "actionFilter",
                                     "action",
                                     "notification",
-                                    "receiver"
+                                    "receiver",
+                                    "isActive"
                                 ]
                             }
                         }
@@ -70311,31 +70363,6 @@
                         },
                         "maxItems": 0,
                         "description": "Always empty: the count is reported under meta."
-                    }
-                }
-            },
-            "NotificationSettingRelationUser": {
-                "type": "object",
-                "required": [
-                    "data"
-                ],
-                "properties": {
-                    "data": {
-                        "type": "object",
-                        "required": [
-                            "type",
-                            "id"
-                        ],
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "const": "user"
-                            },
-                            "id": {
-                                "type": "integer",
-                                "example": 1
-                            }
-                        }
                     }
                 }
             },
@@ -85912,6 +85939,157 @@
                         "items": {
                             "$ref": "#/components/schemas/ConfigResourceObject"
                         }
+                    }
+                }
+            },
+            "GetNotificationActionsHelperAPIResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "meta",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "required": [
+                            "actions"
+                        ],
+                        "properties": {
+                            "actions": {
+                                "type": "array",
+                                "description": "All notification actions available on this server, in the order they are defined in.",
+                                "items": {
+                                    "type": "object",
+                                    "required": [
+                                        "action",
+                                        "objectType",
+                                        "requiredPermission",
+                                        "allowed"
+                                    ],
+                                    "properties": {
+                                        "action": {
+                                            "type": "string",
+                                            "description": "Action to create a notification for, to be used as the 'action' attribute of a notification setting."
+                                        },
+                                        "objectType": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Hashlist",
+                                                "Agent",
+                                                "User",
+                                                "Task",
+                                                "NONE"
+                                            ],
+                                            "description": "Type of the objects the action can be tied to via the 'actionFilter' of a notification setting, 'NONE' for actions which are only available for all objects."
+                                        },
+                                        "requiredPermission": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "description": "Legacy permission(s), any of which grants the use of the action."
+                                        },
+                                        "allowed": {
+                                            "type": "boolean",
+                                            "description": "Whether the requesting user holds one of the required permissions and is allowed to create a notification for this action."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        },
+                        "maxItems": 0,
+                        "description": "Always empty: a helper answers with meta only."
+                    }
+                }
+            },
+            "GetNotificationChannelsHelperAPIResponse": {
+                "type": "object",
+                "required": [
+                    "jsonapi",
+                    "meta",
+                    "data"
+                ],
+                "properties": {
+                    "jsonapi": {
+                        "type": "object",
+                        "required": [
+                            "version"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "string",
+                                "default": "1.1"
+                            },
+                            "ext": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": [
+                                    "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+                                ]
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "required": [
+                            "channels"
+                        ],
+                        "properties": {
+                            "channels": {
+                                "type": "array",
+                                "description": "All notification channels (delivery implementations) available on this server.",
+                                "items": {
+                                    "type": "object",
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "description": "Channel name, to be used as the 'notification' attribute of a notification setting."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        },
+                        "maxItems": 0,
+                        "description": "Always empty: a helper answers with meta only."
                     }
                 }
             },

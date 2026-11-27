@@ -5,6 +5,8 @@ namespace Hashtopolis\inc\apiv2\openapi;
 use Hashtopolis\inc\apiv2\helper\AbortChunkHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetBestTasksAgent;
 use Hashtopolis\inc\apiv2\helper\GetCracksPerDayHelperAPI;
+use Hashtopolis\inc\apiv2\helper\GetNotificationActionsHelperAPI;
+use Hashtopolis\inc\apiv2\helper\GetNotificationChannelsHelperAPI;
 use PHPUnit\Framework\TestCase;
 
 require_once(__DIR__ . '/SpecFixtureTrait.php');
@@ -69,6 +71,51 @@ final class SpecBuilderHelperApiTest extends TestCase {
     $responseSchema = $spec['components']['schemas'][GetCracksPerDayHelperAPI::class . 'Response'];
     $this->assertSame(['jsonapi', 'meta', 'data'], $responseSchema['required']);
     $this->assertSame(['type' => 'integer'], $responseSchema['properties']['meta']['additionalProperties']);
+    $this->assertSame(0, $responseSchema['properties']['data']['maxItems']);
+  }
+
+  public function testGetNotificationActionsSpec(): void {
+    // GET helper answering meta only: the notification actions are defined by
+    // the server, so they are described by a schema, not by a sample map.
+    $spec = (new SpecBuilder())->buildForApiClasses([GetNotificationActionsHelperAPI::class]);
+
+    $get = $spec['paths']['/api/v2/helper/getNotificationActions']['get'];
+    $this->assertStringStartsWith('Lists the notification actions', $get['description']);
+    $this->assertSame([], $get['parameters']);
+    $this->assertSame(
+      ['$ref' => '#/components/schemas/' . GetNotificationActionsHelperAPI::class . 'Response'],
+      $get['responses']['200']['content']['application/vnd.api+json']['schema']
+    );
+
+    $responseSchema = $spec['components']['schemas'][GetNotificationActionsHelperAPI::class . 'Response'];
+    $this->assertSame(['jsonapi', 'meta', 'data'], $responseSchema['required']);
+    $actions = $responseSchema['properties']['meta']['properties']['actions'];
+    $this->assertSame(
+      ['action', 'objectType', 'requiredPermission', 'allowed'],
+      $actions['items']['required']
+    );
+    $this->assertSame(['Hashlist', 'Agent', 'User', 'Task', 'NONE'], $actions['items']['properties']['objectType']['enum']);
+    $this->assertSame(0, $responseSchema['properties']['data']['maxItems']);
+  }
+
+  public function testGetNotificationChannelsSpec(): void {
+    // GET helper answering meta only: the channel names come from the
+    // registered notification implementations, so they are described by a
+    // schema, not by a sample map.
+    $spec = (new SpecBuilder())->buildForApiClasses([GetNotificationChannelsHelperAPI::class]);
+
+    $get = $spec['paths']['/api/v2/helper/getNotificationChannels']['get'];
+    $this->assertStringStartsWith('Lists the notification channels', $get['description']);
+    $this->assertSame([], $get['parameters']);
+    $this->assertSame(
+      ['$ref' => '#/components/schemas/' . GetNotificationChannelsHelperAPI::class . 'Response'],
+      $get['responses']['200']['content']['application/vnd.api+json']['schema']
+    );
+
+    $responseSchema = $spec['components']['schemas'][GetNotificationChannelsHelperAPI::class . 'Response'];
+    $this->assertSame(['jsonapi', 'meta', 'data'], $responseSchema['required']);
+    $channels = $responseSchema['properties']['meta']['properties']['channels'];
+    $this->assertSame(['name'], $channels['items']['required']);
     $this->assertSame(0, $responseSchema['properties']['data']['maxItems']);
   }
 

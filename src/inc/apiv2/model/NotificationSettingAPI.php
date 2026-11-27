@@ -3,8 +3,10 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Hashtopolis\dba\AbstractModel;
+use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\models\NotificationSetting;
 use Hashtopolis\dba\models\User;
+use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DNotificationObjectType;
@@ -28,6 +30,9 @@ class NotificationSettingAPI extends AbstractModelAPI {
     return [
       'user' => [
         'key' => NotificationSetting::USER_ID,
+        // the owner of a notification setting cannot be changed,
+        // delete the setting and create a new one instead
+        'readonly' => true,
         
         'relationType' => User::class,
         'relationKey' => User::USER_ID,
@@ -35,10 +40,27 @@ class NotificationSettingAPI extends AbstractModelAPI {
     ];
   }
   
-  function getAllPostParameters(array $features): array {
-    $features = parent::getAllPostParameters($features);
-    unset($features[NotificationSetting::IS_ACTIVE]);
-    return $features;
+  /**
+   * Notification settings are personal settings of the owning user, only the
+   * owner (or an administrator, right group with permissions 'ALL') can see
+   * and manage them.
+   */
+  protected function getFilterACL(): array {
+    if ($this->getRightGroup($this->getCurrentUser()->getRightGroupId())->getPermissions() == 'ALL') {
+      return [];
+    }
+    return [
+      Factory::FILTER => [
+        new QueryFilter(NotificationSetting::USER_ID, $this->getCurrentUser()->getId(), "=")
+      ]
+    ];
+  }
+  
+  /**
+   * @param NotificationSetting $object
+   */
+  protected function getSingleACL(User $user, AbstractModel $object): bool {
+    return $object->getUserId() == $user->getId();
   }
   
   public function getFormFields(): array {
@@ -72,6 +94,7 @@ class NotificationSettingAPI extends AbstractModelAPI {
       $data[NotificationSetting::RECEIVER],
       $dummyPost,
       $this->getCurrentUser(),
+      $data[NotificationSetting::IS_ACTIVE],
     );
     return $notification->getId();
   }
@@ -84,9 +107,16 @@ class NotificationSettingAPI extends AbstractModelAPI {
     NotificationUtils::delete($object->getId(), $this->getCurrentUser());
   }
   
+  /**
+   * @param int $id
+   * @param User $current_user
+   */
   protected function getUpdateHandlers($id, $current_user): array {
     return [
       NotificationSetting::IS_ACTIVE => fn($value) => NotificationUtils::setActive($id, $value, false, $current_user),
+      NotificationSetting::ACTION => fn($value) => NotificationUtils::updateAction($id, $value, $current_user),
+      NotificationSetting::NOTIFICATION => fn($value) => NotificationUtils::updateNotification($id, $value, $current_user),
+      NotificationSetting::RECEIVER => fn($value) => NotificationUtils::updateReceiver($id, $value, $current_user),
     ];
   }
 }
