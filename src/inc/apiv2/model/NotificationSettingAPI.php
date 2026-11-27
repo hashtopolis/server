@@ -108,6 +108,25 @@ class NotificationSettingAPI extends AbstractModelAPI {
   }
   
   /**
+   * The update handlers persist every attribute on its own, so all requested
+   * changes are validated up front here: a rejected PATCH (or bulk PATCH)
+   * leaves the setting completely unchanged instead of partially updated.
+   *
+   * @param int $objectId
+   * @param array $data
+   * @throws HTException
+   * @throws HttpError
+   */
+  protected function updateObject(int $objectId, array $data): void {
+    if (sizeof($data) > 0) {
+      $notificationSetting = NotificationUtils::getNotification($objectId);
+      NotificationUtils::assertOwner($notificationSetting, $this->getCurrentUser());
+      NotificationUtils::validateUpdate($notificationSetting, $data);
+    }
+    parent::updateObject($objectId, $data);
+  }
+
+  /**
    * @param int $id
    * @param User $current_user
    */

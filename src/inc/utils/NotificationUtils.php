@@ -142,19 +142,41 @@ class NotificationUtils {
   }
 
   /**
-   * Change the action of a notification setting. The permission required for
-   * the new action is checked again, an action can only be changed to another
-   * action of the same object type while the setting is tied to an object.
+   * Validates the requested attributes of a notification setting update
+   * against the current state of the setting. NotificationSettingAPI calls
+   * this before applying any of the changes, so a rejected update leaves the
+   * setting completely unchanged.
    *
-   * @param int $notification
-   * @param string $action
-   * @param User $user
-   * @throws HTException
+   * @param NotificationSetting $notificationSetting
+   * @param array $data attributes to update as key-value pairs
    * @throws HttpError
    */
-  public static function updateAction(int $notification, string $action, User $user): void {
-    $notificationSetting = NotificationUtils::getNotification($notification);
-    NotificationUtils::assertOwner($notificationSetting, $user);
+  public static function validateUpdate(NotificationSetting $notificationSetting, array $data): void {
+    foreach ($data as $key => $value) {
+      switch ($key) {
+        case NotificationSetting::ACTION:
+          NotificationUtils::validateAction($notificationSetting, $value);
+          break;
+        case NotificationSetting::NOTIFICATION:
+          NotificationUtils::validateNotificationChannel($value);
+          break;
+        case NotificationSetting::RECEIVER:
+          NotificationUtils::validateReceiver($value);
+          break;
+      }
+    }
+  }
+
+  /**
+   * An action can only be changed to another action of the same object type
+   * while the setting is tied to an object, the permission required for the
+   * new action is checked again.
+   *
+   * @param NotificationSetting $notificationSetting
+   * @param string $action
+   * @throws HttpError
+   */
+  public static function validateAction(NotificationSetting $notificationSetting, string $action): void {
     if (!in_array($action, DNotificationType::getAll())) {
       throw new HttpError("This actionType is not available!");
     }
@@ -165,8 +187,43 @@ class NotificationUtils {
         && DNotificationType::getObjectType($action) != DNotificationType::getObjectType($notificationSetting->getAction())) {
       throw new HttpError("This notification is tied to an object, only actions of the same object type can be used!");
     }
-    $notificationSetting->setAction($action);
-    Factory::getNotificationSettingFactory()->update($notificationSetting);
+  }
+
+  /**
+   * @param string $notification
+   * @throws HttpError
+   */
+  public static function validateNotificationChannel(string $notification): void {
+    if (!isset(HashtopolisNotification::getInstances()[$notification])) {
+      throw new HttpError("This notification is not available!");
+    }
+  }
+
+  /**
+   * @param string $receiver
+   * @throws HttpError
+   */
+  public static function validateReceiver(string $receiver): void {
+    if (strlen(trim($receiver)) == 0) {
+      throw new HttpError("You need to fill in a receiver!");
+    }
+  }
+
+  /**
+   * Change the action of a notification setting. Only the action column is
+   * written, concurrent changes to the other columns are kept.
+   *
+   * @param int $notification
+   * @param string $action
+   * @param User $user
+   * @throws HTException
+   * @throws HttpError
+   */
+  public static function updateAction(int $notification, string $action, User $user): void {
+    $notificationSetting = NotificationUtils::getNotification($notification);
+    NotificationUtils::assertOwner($notificationSetting, $user);
+    NotificationUtils::validateAction($notificationSetting, $action);
+    Factory::getNotificationSettingFactory()->set($notificationSetting, NotificationSetting::ACTION, $action);
   }
 
   /**
@@ -179,11 +236,8 @@ class NotificationUtils {
   public static function updateNotification(int $notification, string $newNotification, User $user): void {
     $notificationSetting = NotificationUtils::getNotification($notification);
     NotificationUtils::assertOwner($notificationSetting, $user);
-    if (!isset(HashtopolisNotification::getInstances()[$newNotification])) {
-      throw new HttpError("This notification is not available!");
-    }
-    $notificationSetting->setNotification($newNotification);
-    Factory::getNotificationSettingFactory()->update($notificationSetting);
+    NotificationUtils::validateNotificationChannel($newNotification);
+    Factory::getNotificationSettingFactory()->set($notificationSetting, NotificationSetting::NOTIFICATION, $newNotification);
   }
 
   /**
@@ -196,12 +250,8 @@ class NotificationUtils {
   public static function updateReceiver(int $notification, string $receiver, User $user): void {
     $notificationSetting = NotificationUtils::getNotification($notification);
     NotificationUtils::assertOwner($notificationSetting, $user);
-    $receiver = trim($receiver);
-    if (strlen($receiver) == 0) {
-      throw new HttpError("You need to fill in a receiver!");
-    }
-    $notificationSetting->setReceiver($receiver);
-    Factory::getNotificationSettingFactory()->update($notificationSetting);
+    NotificationUtils::validateReceiver($receiver);
+    Factory::getNotificationSettingFactory()->set($notificationSetting, NotificationSetting::RECEIVER, trim($receiver));
   }
   
   /**

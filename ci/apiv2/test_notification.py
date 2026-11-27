@@ -114,14 +114,31 @@ class NotificationTest(BaseTest):
 
     def test_acl_delete(self):
         """A restricted user must not be able to delete a notification setting of another user."""
-        model_obj = self.create_test_object(delete=False)
+        model_obj = self.create_test_object()
         auth = create_restricted_user(self, {'permNotificationSettingRead': True})
         with self.assertRaises(HashtopolisError) as e:
             self.conn.delete(model_obj, auth=auth)
         self.assertIn(e.exception.status_code, [400, 403])
 
+        # the notification still exists, teardown (running as admin) removes it
         obj = Notification.objects.get(pk=model_obj.id)
         self.assertIsNotNone(obj)
+
+    def test_rejected_patch_is_not_partially_applied(self):
+        """A PATCH with a valid and an invalid attribute must not apply the valid one."""
+        model_obj = self.create_test_object()
+        original_action = model_obj.action
+        original_notification = model_obj.notification
+
+        model_obj.action = 'logError'  # valid
+        model_obj.notification = 'DoesNotExist'  # invalid
+        with self.assertRaises(HashtopolisError) as e:
+            model_obj.save()
+        self.assertIn(e.exception.status_code, [400, 403])
+
+        obj = Notification.objects.get(pk=model_obj.id)
+        self.assertEqual(obj.action, original_action, "action must be unchanged by the rejected PATCH")
+        self.assertEqual(obj.notification, original_notification)
 
     def test_admin_manages_all_users(self):
         """An administrator can update and delete the notification settings of other users."""
