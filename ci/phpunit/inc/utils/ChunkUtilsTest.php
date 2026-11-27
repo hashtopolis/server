@@ -136,11 +136,11 @@ final class ChunkUtilsTest extends TestBase {
   // getKeyspaceProgress()=1000, making remaining=0 and triggering the null path.
   public function testCreateNewChunkReturnsNullWhenKeyspaceExhausted(): void {
     $this->mockSConfig([DConfig::DISP_TOLERANCE => 0, DConfig::CHUNK_DURATION => 600]);
-    $task = $this->createMock(Task::class);
+    $task = $this->createStub(Task::class);
     $task->method('getSkipKeyspace')->willReturn(0);
     $task->method('getKeyspaceProgress')->willReturn(1000);
     $task->method('getKeyspace')->willReturn(1000);
-    $this->assertNull(ChunkUtils::createNewChunk($task, $this->createMock(Assignment::class)));
+    $this->assertNull(ChunkUtils::createNewChunk($task, $this->createStub(Assignment::class)));
   }
 
   // TODO: handleExistingChunk() and createNewChunk() require further test coverage.
