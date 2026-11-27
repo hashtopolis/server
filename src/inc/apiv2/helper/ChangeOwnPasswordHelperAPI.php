@@ -46,7 +46,8 @@ class ChangeOwnPasswordHelperAPI extends AbstractHelperAPI {
    * @throws HttpError
    */
   public function actionPost($data): AbstractModel|array|null {
-    $user = $this->getCurrentUser();
+    // The password check needs the stored hash, which the token does not carry
+    $user = $this->loadCurrentUser();
     
     /* Set user password if provided */
     UserUtils::changePassword($user, $data["oldPassword"], $data["newPassword"], $data["confirmPassword"]);

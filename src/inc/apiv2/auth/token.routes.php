@@ -61,6 +61,10 @@ function generateAccessToken(User $user, int $expires): string {
     "exp" => $expires,
     "jti" => bin2hex(random_bytes(16)),
     "userId" => $user->getId(),
+    // The user fields APIv2 works with, so a request can be served without reading the user back from the
+    // database. They are as fresh as the token: a change to the user shows up at the next refresh.
+    "username" => $user->getUsername(),
+    "rightGroupId" => $user->getRightGroupId(),
     "scope" => $group->getPermissions(),
     "iss" => "Hashtopolis",
     "kid" => hash("sha256", $secret),

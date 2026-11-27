@@ -4,7 +4,6 @@ namespace Hashtopolis\inc\apiv2\model;
 
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\defines\DDirectories;
-use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\defines\DFileType;
 use Exception;
 use Hashtopolis\inc\utils\FileUtils;
@@ -15,11 +14,9 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\OrderFilter;
 
 use Hashtopolis\dba\models\File;
-use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\Util;
 
 
 /**
@@ -38,8 +35,8 @@ class FileAPI extends AbstractModelAPI {
    * @param File $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, AbstractModel $object): bool {
-    $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+  protected function getSingleACL(AbstractModel $object): bool {
+    $accessGroupsUser = $this->getCurrentUserAccessGroupIds();
     
     return in_array($object->getAccessGroupId(), $accessGroupsUser);
   }
@@ -48,7 +45,7 @@ class FileAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getFilterACL(): array {
-    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    $accessGroups = $this->getCurrentUserAccessGroupIds();
     
     return [
       Factory::FILTER => [

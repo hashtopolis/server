@@ -63,8 +63,8 @@ class ApiTokenAPI extends AbstractModelAPI {
   /**
    * @param JwtApiKey $object
    */
-  protected function getSingleACL(User $user, AbstractModel $object): bool {
-    return ($object->getUserId() === $user->getId());
+  protected function getSingleACL(AbstractModel $object): bool {
+    return ($object->getUserId() === $this->getCurrentUser()->getId());
   }
   
   protected function getFilterACL(): array {

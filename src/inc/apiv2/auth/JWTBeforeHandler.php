@@ -4,10 +4,13 @@ namespace Hashtopolis\inc\apiv2\auth;
 
 use Exception;
 use Hashtopolis\dba\Factory;
+use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\model\ApiTokenAPI;
 use Hashtopolis\inc\defines\DTokenType;
+use Hashtopolis\inc\HTException;
+use Hashtopolis\inc\utils\UserUtils;
 use JimTools\JwtAuth\Handlers\BeforeHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -40,9 +43,56 @@ class JWTBeforeHandler implements BeforeHandlerInterface {
         throw new HttpForbidden("Token is revoked");
       }
     }
-    // adds the decoded userId, scope and aud to the request attributes
-    $aud = $arguments["decoded"]["aud"] ?? "user_hashtopolis";
-    return $request->withAttribute("userId", $arguments["decoded"]["userId"])->withAttribute("scope", $arguments["decoded"]["scope"])
-                    ->withAttribute("aud", $aud);
+    $decoded = $arguments["decoded"];
+    $aud = $decoded["aud"] ?? "user_hashtopolis";
+    $user = self::resolveUser($decoded, $aud);
+    $identity = new RequestIdentity($user, $decoded["scope"], $aud, self::resolveIsAdmin($user, $decoded, $aud));
+    
+    // adds the decoded userId, scope and aud to the request attributes, plus the identity built from them
+    return $request->withAttribute("userId", $decoded["userId"])->withAttribute("scope", $decoded["scope"])
+                    ->withAttribute("aud", $aud)->withAttribute("identity", $identity);
+  }
+  
+  /**
+   * Whether the token carries the user's fields itself. Only login tokens do; API tokens live for
+   * months and are always resolved against the database, as are login tokens minted before the claims
+   * existed.
+   *
+   * @param array<string, mixed> $decoded
+   */
+  private static function carriesUserClaims(array $decoded, string $aud): bool {
+    return $aud !== ApiTokenAPI::API_AUD && isset($decoded["username"], $decoded["rightGroupId"]);
+  }
+  
+  /**
+   * @param array<string, mixed> $decoded
+   * @throws HttpForbidden when the user is deactivated (only checked when the user is read from the database)
+   * @throws HTException when the user no longer exists
+   */
+  private static function resolveUser(array $decoded, string $aud): User {
+    if (self::carriesUserClaims($decoded, $aud)) {
+      // A deactivated user cannot refresh, so a token in hand means the user was valid when it was minted
+      return new User((int)$decoded["userId"], (string)$decoded["username"], null, null, null, 1, null, null, null, null, (int)$decoded["rightGroupId"]);
+    }
+    $user = UserUtils::getUser((int)$decoded["userId"]);
+    if ($user->getIsValid() != 1) {
+      throw new HttpForbidden("User is set to invalid");
+    }
+    return $user;
+  }
+  
+  /**
+   * A login token's scope is the user's right-group permissions, so it answers this directly; an API
+   * token's scope is its own, so the right group is looked up.
+   *
+   * @param array<string, mixed> $decoded
+   * @throws Exception
+   */
+  private static function resolveIsAdmin(User $user, array $decoded, string $aud): bool {
+    if ($aud !== ApiTokenAPI::API_AUD) {
+      return $decoded["scope"] === "ALL";
+    }
+    $group = Factory::getRightGroupFactory()->get($user->getRightGroupId());
+    return $group !== null && $group->getPermissions() === "ALL";
   }
 }

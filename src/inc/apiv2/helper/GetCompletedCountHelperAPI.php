@@ -16,8 +16,6 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\defines\DTaskTypes;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\Util;
-use Hashtopolis\inc\utils\AccessUtils;
 use JsonException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -76,7 +74,7 @@ class GetCompletedCountHelperAPI extends AbstractHelperAPI {
      * TaskWrapperDisplayAPI and TaskWrapperAPI restrict their listings. Without this the
      * dashboard reports more completed tasks than there are tasks visible to the user.
      */
-    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    $accessGroups = $this->getCurrentUserAccessGroupIds();
     
     // count of completed normal tasks
     $qF1 = new QueryFilter(TaskWrapperDisplay::TASK_TYPE, DTaskTypes::NORMAL, "=");

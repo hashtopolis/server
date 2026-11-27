@@ -6,7 +6,6 @@ use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
 
@@ -23,7 +22,6 @@ use Hashtopolis\dba\QueryFilter;
 use Hashtopolis\dba\models\Speed;
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
-use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\DTaskStatus;
@@ -46,8 +44,8 @@ class TaskAPI extends AbstractModelAPI {
    * @param Task $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, AbstractModel $object): bool {
-    $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+  protected function getSingleACL(AbstractModel $object): bool {
+    $accessGroupsUser = $this->getCurrentUserAccessGroupIds();
     
     $qF1 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupsUser, Factory::getHashlistFactory());
     $qF2 = new QueryFilter(Task::TASK_ID, $object->getId(), "=");
@@ -62,7 +60,7 @@ class TaskAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getFilterACL(): array {
-    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    $accessGroups = $this->getCurrentUserAccessGroupIds();
     
     return [
       Factory::JOIN => [

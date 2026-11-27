@@ -5,7 +5,6 @@ namespace Hashtopolis\inc\apiv2\model;
 use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\defines\DTaskTypes;
-use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\dba\models\AccessGroup;
 use Hashtopolis\dba\ContainFilter;
 use Hashtopolis\dba\Factory;
@@ -16,12 +15,10 @@ use Hashtopolis\dba\QueryFilter;
 
 use Hashtopolis\dba\models\Task;
 use Hashtopolis\dba\models\TaskWrapper;
-use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\HTException;
 use Hashtopolis\inc\utils\TaskUtils;
-use Hashtopolis\inc\Util;
 use Hashtopolis\inc\utils\TaskWrapperUtils;
 
 
@@ -45,8 +42,8 @@ class TaskWrapperAPI extends AbstractModelAPI {
    * @param TaskWrapper $object
    * @throws Exception
    */
-  protected function getSingleACL(User $user, AbstractModel $object): bool {
-    $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+  protected function getSingleACL(AbstractModel $object): bool {
+    $accessGroupsUser = $this->getCurrentUserAccessGroupIds();
     
     $qF1 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupsUser, Factory::getHashlistFactory());
     $qF2 = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $object->getId(), "=");
@@ -60,7 +57,7 @@ class TaskWrapperAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function getFilterACL(): array {
-    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    $accessGroups = $this->getCurrentUserAccessGroupIds();
     
     return [
       Factory::JOIN => [

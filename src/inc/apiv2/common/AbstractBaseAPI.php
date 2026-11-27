@@ -9,7 +9,7 @@ use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\apiv2\error\InternalError;
 use Hashtopolis\inc\apiv2\error\ResourceNotFoundError;
-use Hashtopolis\inc\utils\AccessControl;
+use Hashtopolis\inc\apiv2\auth\RequestIdentity;
 use Hashtopolis\inc\defines\DAccessControl;
 use Hashtopolis\dba\JoinFilter;
 use Hashtopolis\inc\HTException;
@@ -79,8 +79,8 @@ abstract class AbstractBaseAPI {
   
   abstract public function getRequiredPermissions(string $method): array;
   
-  /** @var User $user is currently logged in user */
-  private User $user;
+  /** @var RequestIdentity $identity who is making the current request, see JWTBeforeHandler */
+  private RequestIdentity $identity;
   
   /** @var RouteParserInterface|null $routeParser contains routing information
    * which are for example used dynamic creation of _self references
@@ -318,14 +318,55 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * Retrieve currently logged-in user
+   * Retrieve currently logged-in user.
+   *
+   * For a login token this user is built from the token's claims and is partial: only id, username,
+   * rightGroupId and isValid are set. Load the user from the database when any other field is needed.
    */
   final protected function getCurrentUser(): User {
-    return $this->user;
+    return $this->identity->user;
   }
   
-  public function setCurrentUser(User $user): void {
-    $this->user = $user;
+  /**
+   * Read the logged-in user's full row from the database, for the few endpoints that need a field
+   * getCurrentUser() does not carry (email, password hash, session lifetime, ...).
+   *
+   * @throws HTException when the user no longer exists
+   */
+  final protected function loadCurrentUser(): User {
+    return UserUtils::getUser($this->getCurrentUser()->getId());
+  }
+  
+  /**
+   * Ids of the access groups the logged-in user is a member of, read once per request
+   *
+   * @return int[]
+   * @throws Exception
+   */
+  final protected function getCurrentUserAccessGroupIds(): array {
+    return $this->identity->accessGroupIds();
+  }
+  
+  /**
+   * The permissions granted by the token of the current request: 'ALL' or a JSON-encoded permission dict
+   */
+  final protected function getCurrentScope(): string {
+    return $this->identity->scope;
+  }
+  
+  /**
+   * Whether the logged-in user's right group holds the 'ALL' (administrator) permissions
+   */
+  final protected function currentUserIsAdmin(): bool {
+    return $this->identity->isAdmin;
+  }
+  
+  final protected function getIdentity(): RequestIdentity {
+    return $this->identity;
+  }
+  
+  public function setIdentity(RequestIdentity $identity): void {
+    $this->identity = $identity;
   }
   
   
@@ -968,7 +1009,7 @@ abstract class AbstractBaseAPI {
     foreach ($expands as $expand) {
       $apiClass = $this->container->get('classMapper')->get(get_class($object));
       $apiClassObject = new $apiClass($this->container);
-      $apiClassObject->setCurrentUser($this->getCurrentUser());
+      $apiClassObject->setIdentity($this->getIdentity());
       $expandResult[$expand] = $apiClassObject->fetchVisibleExpandObjects([$object], $expand);
     }
     
@@ -1528,17 +1569,28 @@ abstract class AbstractBaseAPI {
   /**
    * Validate permissions
    */
-  protected function validatePermissions(string $permissions, array $required_perms, string $method, string $aud, array $permsExpandMatching = []): bool|array {
-    // Retrieve permissions from RightGroup part of the User
-    
+  /**
+   * Decode the permission dict a token carries: 'ALL' expands to every legacy permission.
+   *
+   * @return array<string, bool>
+   */
+  private static function decodeScope(string $permissions): array {
     if ($permissions == 'ALL') {
       // Special (legacy) case for administrative access, enable all available permissions
       $all_perms = array_keys(self::$acl_mapping);
-      $rightgroup_perms = array_combine($all_perms, array_fill(0, count($all_perms), true));
+      return array_combine($all_perms, array_fill(0, count($all_perms), true));
     }
-    else {
-      $rightgroup_perms = json_decode($permissions, true);
-    }
+    return json_decode($permissions, true) ?? [];
+  }
+  
+  /**
+   * The APIv2 permissions a token grants. A login token carries legacy right-group permissions, which
+   * are expanded through $acl_mapping; an API token carries the APIv2 permissions directly.
+   *
+   * @return string[]
+   */
+  private static function availablePermissions(string $permissions, string $aud): array {
+    $rightgroup_perms = self::decodeScope($permissions);
     
     if ($aud === "user_hashtopolis") {
       // Validate if no undefined permissions are set in $acl_mapping for the legacy permissions
@@ -1550,11 +1602,45 @@ abstract class AbstractBaseAPI {
           $user_available_perms = array_unique(array_merge($user_available_perms, self::$acl_mapping[$rightgroup_perm]));
         }
       }
+      return $user_available_perms;
     }
-    else {
-      $user_available_perms = array_keys($rightgroup_perms, true, true);
+    return array_keys($rightgroup_perms, true, true);
+  }
+  
+  /**
+   * Check a legacy DAccessControl permission against the token of the current request, for the utils
+   * that still express their checks in those terms (see NotificationUtils::createNotificationSetting()).
+   *
+   * Same semantics as AccessControl::hasPermission(): an array is a list of alternatives, any one of
+   * which is enough. A login token is checked against its right-group permissions directly; an API token
+   * holds a legacy permission when it holds every APIv2 permission $acl_mapping maps it to.
+   *
+   * @param string|array $legacyPerm a DAccessControl constant
+   */
+  protected function hasLegacyPermission(string|array $legacyPerm): bool {
+    $scope = $this->getCurrentScope();
+    if ($scope === 'ALL') {
+      return true;
     }
+    $aud = $this->identity->aud;
+    $granted = self::decodeScope($scope);
+    $available = self::availablePermissions($scope, $aud);
     
+    foreach ((array)$legacyPerm as $perm) {
+      if ($aud === "user_hashtopolis") {
+        if (!empty($granted[$perm])) {
+          return true;
+        }
+      }
+      elseif (isset(self::$acl_mapping[$perm]) && count(array_diff(self::$acl_mapping[$perm], $available)) === 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  protected function validatePermissions(string $permissions, array $required_perms, string $method, string $aud, array $permsExpandMatching = []): bool|array {
+    $user_available_perms = self::availablePermissions($permissions, $aud);
     
     // Sort to display values in a unified format for user and debugging
     sort($required_perms);
@@ -1649,33 +1735,20 @@ abstract class AbstractBaseAPI {
   }
   
   /**
-   * Common features for all requests, like setting user and checking basic permissions
-   * @throws HTException
-   * @throws HttpForbidden
-   * @throws Exception
-   */
-  /**
-   * Prepare the request: look up the user, set up AccessControl and grab the route parser.
+   * Prepare the request: take over the identity JWTBeforeHandler established and grab the route parser.
    * This does not check any permissions. The serializers (getOneResource/getManyResources)
    * call it because they need this context to render, but they leave the permission check
    * to whoever called them. See authorize() for that part.
+   *
+   * @throws HttpError when the request did not pass through the JWT middleware
    */
   protected function bootRequest(Request $request): void {
-    $userId = $request->getAttribute(('userId'));
-    $user = UserUtils::getUser($userId);
-    if ($user->getIsValid() != 1) {
-      throw new HttpForbidden("User is set to invalid");
+    $identity = $request->getAttribute("identity");
+    if (!$identity instanceof RequestIdentity) {
+      throw new HttpError("No authenticated user on this request");
     }
-    $this->user = $user;
-    # 'Initiate' AccessControl class, by requesting instance with parameter of logged-in user.
-    # This will cause the AccessControl class to initiate it's static 'instance' parameter,
-    # which is in turn used at later stages (e.g. src/inc/utils/NotificationUtils.class.php) to
-    # request an object on which authentication takes place.
-    #
-    # At some point we might want to remove this strange behaviour always pass the $user object
-    # to the AccessControl class when requested.
-    AccessControl::getInstance($this->user);
-
+    $this->identity = $identity;
+    
     $routeContext = RouteContext::fromRequest($request);
     $this->routeParser = $routeContext->getRouteParser();
   }

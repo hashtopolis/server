@@ -9,8 +9,6 @@ use Hashtopolis\inc\apiv2\common\AbstractHelperAPI;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\defines\DDirectories;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\Util;
-use Hashtopolis\inc\utils\AccessUtils;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Hashtopolis\dba\Factory;
@@ -63,7 +61,7 @@ class GetFileHelperAPI extends AbstractHelperAPI {
     if (!$file) {
       throw new HttpNotFoundException($request, "No file with id: " . $file_id);
     }
-    $accessGroupsUser = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    $accessGroupsUser = $this->getCurrentUserAccessGroupIds();
     if (!in_array($file->getAccessGroupId(), $accessGroupsUser)) {
       throw new HttpForbidden("No access to this file");
     }

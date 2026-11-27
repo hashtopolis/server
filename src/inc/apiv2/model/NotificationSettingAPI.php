@@ -66,12 +66,13 @@ class NotificationSettingAPI extends AbstractModelAPI {
         break;
     }
     
-    $notification = NotificationUtils::createNotification(
+    $notification = NotificationUtils::createNotificationSetting(
       $data[NotificationSetting::ACTION],
       $data[NotificationSetting::NOTIFICATION],
       $data[NotificationSetting::RECEIVER],
       $dummyPost,
       $this->getCurrentUser(),
+      fn(string|array $perm): bool => $this->hasLegacyPermission($perm),
     );
     return $notification->getId();
   }

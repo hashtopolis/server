@@ -6,7 +6,6 @@ use Exception;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\dba\Factory;
 use Hashtopolis\dba\QueryFilter;
-use Hashtopolis\inc\utils\AccessUtils;
 use Hashtopolis\inc\utils\CrackerUtils;
 
 use Hashtopolis\dba\models\CrackerBinary;
@@ -17,7 +16,6 @@ use Hashtopolis\inc\apiv2\error\HttpConflict;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\apiv2\error\HttpForbidden;
 use Hashtopolis\inc\HTException;
-use Hashtopolis\inc\Util;
 
 
 /**
@@ -79,10 +77,8 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
    * @throws Exception
    */
   protected function deleteObject(AbstractModel $object): void {
-    $currentUser = $this->getCurrentUser();
-    $rightGroup = Factory::getRightGroupFactory()->get($currentUser->getRightGroupId());
-    if ($rightGroup->getPermissions() !== 'ALL') {
-      $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($currentUser));
+    if (!$this->currentUserIsAdmin()) {
+      $accessGroupIds = $this->getCurrentUserAccessGroupIds();
       $filter = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $object->getId(), '=');
       $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $filter]);
       foreach ($binaries as $binary) {

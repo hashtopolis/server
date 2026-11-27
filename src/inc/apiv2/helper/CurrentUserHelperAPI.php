@@ -45,7 +45,7 @@ class CurrentUserHelperAPI extends AbstractHelperAPI {
    */
   public function handleGet(Request $request, Response $response): Response {
     $this->preCommon($request);
-    $user = $this->getCurrentUser();
+    $user = $this->loadCurrentUser();
     $userResource = self::obj2Resource($user);
     
     $ret = self::createJsonResponse(data: $userResource);
@@ -78,7 +78,7 @@ class CurrentUserHelperAPI extends AbstractHelperAPI {
    */
   public function actionPatch(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
-    $user = $this->getCurrentUser();
+    $user = $this->loadCurrentUser();
     $attributes = $request->getParsedBody()['data']['attributes'] ?? [];
 
     if (!is_array($attributes)) {
