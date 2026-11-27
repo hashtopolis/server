@@ -41866,7 +41866,8 @@
                                             "required": [
                                                 "taskId",
                                                 "agentId",
-                                                "benchmark"
+                                                "benchmark",
+                                                "chunkSpeed"
                                             ],
                                             "properties": {
                                                 "taskId": {
@@ -41877,6 +41878,13 @@
                                                 },
                                                 "benchmark": {
                                                     "type": "string"
+                                                },
+                                                "chunkSpeed": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "format": "int64"
                                                 }
                                             }
                                         }
@@ -42897,7 +42905,8 @@
                                             "required": [
                                                 "taskId",
                                                 "agentId",
-                                                "benchmark"
+                                                "benchmark",
+                                                "chunkSpeed"
                                             ],
                                             "properties": {
                                                 "taskId": {
@@ -42908,6 +42917,13 @@
                                                 },
                                                 "benchmark": {
                                                     "type": "string"
+                                                },
+                                                "chunkSpeed": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "format": "int64"
                                                 }
                                             }
                                         }
@@ -43980,7 +43996,8 @@
                                             "required": [
                                                 "taskId",
                                                 "agentId",
-                                                "benchmark"
+                                                "benchmark",
+                                                "chunkSpeed"
                                             ],
                                             "properties": {
                                                 "taskId": {
@@ -43991,6 +44008,13 @@
                                                 },
                                                 "benchmark": {
                                                     "type": "string"
+                                                },
+                                                "chunkSpeed": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "format": "int64"
                                                 }
                                             }
                                         }
@@ -44650,7 +44674,8 @@
                                 "required": [
                                     "taskId",
                                     "agentId",
-                                    "benchmark"
+                                    "benchmark",
+                                    "chunkSpeed"
                                 ],
                                 "properties": {
                                     "taskId": {
@@ -44661,6 +44686,13 @@
                                     },
                                     "benchmark": {
                                         "type": "string"
+                                    },
+                                    "chunkSpeed": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ],
+                                        "format": "int64"
                                     },
                                     "crackingTime": {
                                         "type": "integer"
@@ -45124,7 +45156,8 @@
                                 "required": [
                                     "taskId",
                                     "agentId",
-                                    "benchmark"
+                                    "benchmark",
+                                    "chunkSpeed"
                                 ],
                                 "properties": {
                                     "taskId": {
@@ -45135,6 +45168,13 @@
                                     },
                                     "benchmark": {
                                         "type": "string"
+                                    },
+                                    "chunkSpeed": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ],
+                                        "format": "int64"
                                     },
                                     "crackingTime": {
                                         "type": "integer"
@@ -45649,7 +45689,8 @@
                                     "required": [
                                         "taskId",
                                         "agentId",
-                                        "benchmark"
+                                        "benchmark",
+                                        "chunkSpeed"
                                     ],
                                     "properties": {
                                         "taskId": {
@@ -45660,6 +45701,13 @@
                                         },
                                         "benchmark": {
                                             "type": "string"
+                                        },
+                                        "chunkSpeed": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ],
+                                            "format": "int64"
                                         },
                                         "crackingTime": {
                                             "type": "integer"
