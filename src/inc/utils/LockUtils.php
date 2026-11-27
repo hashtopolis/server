@@ -80,4 +80,16 @@ class LockUtils {
       unlink($lockFile);
     }
   }
+  
+  /**
+   * Deletes the lock file of the cracker binary with the given id if it exists.
+   *
+   * @param int $binaryId
+   */
+  public static function deleteCrackerBinaryLockFile(int $binaryId): void {
+    $lockFile = dirname(__FILE__) . "/locks/" . Lock::CRACKER_BINARY . $binaryId;
+    if (file_exists($lockFile)) {
+      unlink($lockFile);
+    }
+  }
 }
