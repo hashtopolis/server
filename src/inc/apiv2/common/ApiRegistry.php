@@ -20,6 +20,8 @@ use Hashtopolis\inc\apiv2\helper\GetCracksOfTaskHelper;
 use Hashtopolis\inc\apiv2\helper\GetCracksPerDayHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetFileHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetGlobalConfigHelperAPI;
+use Hashtopolis\inc\apiv2\helper\GetNotificationActionsHelperAPI;
+use Hashtopolis\inc\apiv2\helper\GetNotificationChannelsHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetTaskProgressImageHelperAPI;
 use Hashtopolis\inc\apiv2\helper\GetUserPermissionHelperAPI;
 use Hashtopolis\inc\apiv2\helper\ImportCrackedHashesHelperAPI;
@@ -133,6 +135,8 @@ final class ApiRegistry {
     GetCracksPerDayHelperAPI::class,
     GetFileHelperAPI::class,
     GetGlobalConfigHelperAPI::class,
+    GetNotificationActionsHelperAPI::class,
+    GetNotificationChannelsHelperAPI::class,
     GetTaskProgressImageHelperAPI::class,
     GetUserPermissionHelperAPI::class,
     ImportCrackedHashesHelperAPI::class,
