@@ -18,16 +18,44 @@ No custom theme is loaded by default. The built-in `light` and `dark` themes
 
 `HASHTOPOLIS_CUSTOM_THEMES_DIR` is the on/off switch: it names the folder the container scans for `.css` files on startup. When it is unset, no custom themes are loaded and the app uses the built-in `light`/`dark` themes only.
 
-To enable themes with Docker Compose, set the variable to the container path the entrypoint should scan and mount your `.css` folder to that same path by uncommenting both lines in `docker-compose.yml` (or `.devcontainer/docker-compose.yml`):
+To enable themes with Docker Compose, set the variable to the container path the entrypoint should scan and mount your `.css` folder to that same path by adding both lines in the fronted section of your `docker-compose.yml` (or `.devcontainer/docker-compose.yml`):
 
 ```yaml
     environment:
-      - HASHTOPOLIS_CUSTOM_THEMES_DIR=/custom-themes
+      HASHTOPOLIS_CUSTOM_THEMES_DIR: /custom-themes
     volumes:
       - ./custom-themes:/custom-themes:ro
 ```
+Frontend section of the docker compose section now looks like this:
 
-### Baking themes into the image (no runtime mount)
+```yaml
+    hashtopolis-frontend:
+    container_name: hashtopolis-frontend
+    image: hashtopolis/frontend:latest
+    volumes:
+      - ./custom-themes:/custom-themes:ro
+    environment:
+      HASHTOPOLIS_BACKEND_URL: $HASHTOPOLIS_BACKEND_URL
+      HASHTOPOLIS_CUSTOM_THEMES_DIR: /custom-themes
+    restart: always
+    depends_on:
+      - hashtopolis-backend
+    ports:
+      - "4200:80" 
+```
+> [!NOTE]
+> If you use WSL you need to adjust the both lines to:
+> ```
+    environment:
+      HASHTOPOLIS_CUSTOM_THEMES_DIR: ./custom-themes
+>  ```
+> and
+  ```
+    volumes:
+      - ./custom-themes:/custom-themes:ro
+>```
+
+### Baking themes into the image (no runtime mount) - Only needed if you build the docker images yourself
 
 When building your own production image, pass the `CUSTOM_THEMES_DIR` build arg to copy a folder of `.css` files into the image (the default bakes nothing):
 
