@@ -877,6 +877,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       $objects = array_reverse($objects);
     }
     
+    $apiClass->prepareAggregates($objects, $request);
+
     /* Resolve all expandables */
     $expandResult = [];
     foreach ($expands as $expand) {

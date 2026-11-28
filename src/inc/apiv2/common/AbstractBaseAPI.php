@@ -189,6 +189,14 @@ abstract class AbstractBaseAPI {
   }
   
   /**
+   * Prepare any requested aggregates that can be loaded together before serializing the response.
+   *
+   * @param AbstractModel[] $objects
+   */
+  protected function prepareAggregates(array $objects, Request $request): void {
+  }
+
+  /**
    * Overridable function to aggregate data in the object. Used for Tasks and Agents.
    *
    * @param AbstractModel $object $object The object to aggregate data from.
@@ -1813,6 +1821,7 @@ abstract class AbstractBaseAPI {
     $expands = $apiClass->makeExpandables($request, $validExpandables);
     
     $objects = [$object];
+    $apiClass->prepareAggregates($objects, $request);
     
     /* Resolve all expandables */
     $expandResult = [];

@@ -17904,6 +17904,23 @@
                             "accessGroup",
                             "hashType"
                         ]
+                    },
+                    {
+                        "name": "aggregate",
+                        "in": "query",
+                        "style": "deepObject",
+                        "explode": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "description": "Aggregated fields to include by type (comma separated values). Possible options: hashlist: taskCount",
+                        "example": {
+                            "aggregate[hashlist]": "taskCount"
+                        }
                     }
                 ],
                 "summary": "List Hashlists",
@@ -61254,6 +61271,9 @@
                                     },
                                     "isArchived": {
                                         "type": "boolean"
+                                    },
+                                    "taskCount": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -62031,6 +62051,9 @@
                                     },
                                     "isArchived": {
                                         "type": "boolean"
+                                    },
+                                    "taskCount": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -62808,6 +62831,9 @@
                                     },
                                     "isArchived": {
                                         "type": "boolean"
+                                    },
+                                    "taskCount": {
+                                        "type": "integer"
                                     }
                                 }
                             },
@@ -63636,6 +63662,9 @@
                                         },
                                         "isArchived": {
                                             "type": "boolean"
+                                        },
+                                        "taskCount": {
+                                            "type": "integer"
                                         }
                                     }
                                 },

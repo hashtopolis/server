@@ -3,6 +3,7 @@
 namespace Hashtopolis\inc\apiv2\model;
 
 use Exception;
+use PDO;
 use Hashtopolis\dba\AbstractModel;
 use Hashtopolis\inc\apiv2\error\HttpError;
 use Hashtopolis\inc\defines\UQueryHashlist;
@@ -23,6 +24,7 @@ use Hashtopolis\dba\models\User;
 use Hashtopolis\inc\apiv2\common\AbstractModelAPI;
 use Hashtopolis\inc\HTException;
 use Middlewares\Utils\HttpErrorException;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Hashtopolis\inc\Util;
 
 
@@ -30,6 +32,8 @@ use Hashtopolis\inc\Util;
  * @extends AbstractModelAPI<Hashlist>
  */
 class HashlistAPI extends AbstractModelAPI {
+  private array $taskCounts = [];
+
   public static function getBaseUri(): string {
     return "/api/v2/ui/hashlists";
   }
@@ -110,6 +114,79 @@ class HashlistAPI extends AbstractModelAPI {
     ];
   }
   
+  public function getAggregateFieldsets(): array {
+    return ['hashlist' => ['taskCount' => fn(AbstractModel $object) => $this->taskCounts[$object->getId()] ?? null]];
+  }
+
+  public static function getAggregateFeatures(): array {
+    return ['taskCount' => self::aggregateFeature('int', 'taskCount')];
+  }
+
+  protected function prepareAggregates(array $objects, Request $request): void {
+    $this->taskCounts = [];
+    $aggregate = $request->getQueryParams()['aggregate']['hashlist'] ?? '';
+    if (!is_string($aggregate) || !in_array('taskCount', explode(',', $aggregate), true)) {
+      return;
+    }
+
+    // Successful authorization resets permissionErrors, which may already contain include errors.
+    $includeErrors = $this->permissionErrors;
+    $this->authorize($request, [Task::PERM_READ]);
+    $this->permissionErrors = $includeErrors;
+    if ($objects === []) {
+      return;
+    }
+
+    $ids = Util::arrayOfIds($objects);
+    $groups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser()));
+    $this->taskCounts = $this->countTasksForHashlists($ids, $groups);
+  }
+
+  /**
+   * Count actual Task rows, including archived tasks and tasks deployed through a supertask.
+   * A member hashlist also counts tasks attached to visible parent superhashlists.
+   *
+   * @param int[] $ids
+   * @param int[] $groups
+   * @return array<int, int>
+   */
+  private function countTasksForHashlists(array $ids, array $groups): array {
+    $counts = array_fill_keys($ids, 0);
+    if ($groups === []) {
+      return $counts;
+    }
+
+    $idParams = implode(',', array_fill(0, count($ids), '?'));
+    $groupParams = implode(',', array_fill(0, count($groups), '?'));
+    $hashlists = Factory::getHashlistFactory()->getMappedModelTable();
+    $memberships = Factory::getHashlistHashlistFactory()->getMappedModelTable();
+    $wrappers = Factory::getTaskWrapperFactory()->getMappedModelTable();
+    $tasks = Factory::getTaskFactory()->getMappedModelTable();
+
+    // UNION deduplicates (list, target) pairs before joining to Task.
+    $statement = Factory::getTaskFactory()->getDB()->prepare("
+      SELECT targets.listId, COUNT(*) AS taskCount
+      FROM (
+        SELECT hashlistId AS listId, hashlistId AS targetId
+        FROM $hashlists
+        WHERE hashlistId IN ($idParams)
+        UNION
+        SELECT membership.hashlistId AS listId, membership.parentHashlistId AS targetId
+        FROM $memberships membership
+        JOIN $hashlists parent ON parent.hashlistId = membership.parentHashlistId
+        WHERE membership.hashlistId IN ($idParams) AND parent.accessGroupId IN ($groupParams)
+      ) targets
+      JOIN $wrappers wrapper ON wrapper.hashlistId = targets.targetId
+      JOIN $tasks task ON task.taskWrapperId = wrapper.taskWrapperId
+      GROUP BY targets.listId
+    ");
+    $statement->execute([...$ids, ...$ids, ...$groups]);
+    foreach ($statement->fetchAll(PDO::FETCH_KEY_PAIR) as $id => $count) {
+      $counts[$id] = (int)$count;
+    }
+    return $counts;
+  }
+
   public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return [
