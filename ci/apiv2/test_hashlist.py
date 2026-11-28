@@ -1,5 +1,5 @@
 from hashtopolis import Hashlist, Helper, File, HashtopolisError
-from utils import BaseTest
+from utils import BaseTest, request_with_api_token
 
 
 class HashlistTest(BaseTest):
@@ -27,6 +27,39 @@ class HashlistTest(BaseTest):
         model_obj = self.create_test_object()
         expandables = ['accessGroup', 'hashType', 'hashes', 'hashlists', 'tasks']
         self._test_expandables(model_obj, expandables)
+
+    def test_task_count_includes_parent_and_archived_tasks(self):
+        member = self.create_hashlist()
+        untouched = self.create_hashlist()
+        parent = Helper().create_superhashlist(name="Task count parent", hashlists=[member])
+        self.delete_after_test(parent)
+        self.create_task(parent)
+        direct = self.create_task(member)
+        direct.isArchived = True
+        direct.save()
+        token = self.create_apitoken(extra_payload={'scopes': ['permHashlistRead', 'permTaskRead']})
+
+        for hashlist, expected in [(member, 2), (parent, 1), (untouched, 0)]:
+            with self.subTest(hashlist=hashlist.id):
+                query = f'/ui/hashlists?filter[hashlistId__eq]={hashlist.id}&aggregate[hashlist]=taskCount'
+                response = request_with_api_token(token.token, query)
+                self.assertEqual(response.status_code, 200, response.text)
+                body = response.json()
+                self.assertEqual(len(body['data']), 1)
+                self.assertEqual(body['data'][0]['attributes']['taskCount'], expected)
+                self.assertNotIn('task', {item['type'] for item in body.get('included', [])})
+
+    def test_task_count_requires_task_read(self):
+        hashlist = self.create_hashlist()
+        token = self.create_apitoken(extra_payload={'scopes': ['permHashlistRead']})
+        response = request_with_api_token(token.token, f'/ui/hashlists/{hashlist.id}')
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertNotIn('taskCount', response.json()['data']['attributes'])
+
+        response = request_with_api_token(
+            token.token, f'/ui/hashlists/{hashlist.id}?aggregate[hashlist]=taskCount'
+        )
+        self.assertEqual(response.status_code, 403, response.text)
 
     def test_filter_archived(self):
         model_obj = self.create_test_object()
